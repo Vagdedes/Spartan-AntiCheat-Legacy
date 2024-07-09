@@ -9,6 +9,7 @@ import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.listeners.bukkit.*;
+import com.vagdedes.spartan.listeners.bukkit.chunks.Event_Chunks;
 import com.vagdedes.spartan.utils.minecraft.server.ProxyUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;

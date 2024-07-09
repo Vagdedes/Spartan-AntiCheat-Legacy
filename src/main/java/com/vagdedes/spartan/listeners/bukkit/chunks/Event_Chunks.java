@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.listeners.bukkit;
+package com.vagdedes.spartan.listeners.bukkit.chunks;
 
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
@@ -9,7 +9,6 @@ import org.bukkit.Chunk;
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.block.data.BlockData;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -24,16 +23,16 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Event_Chunks implements Listener {
 
     private static final Map<Long, Boolean> loaded = new ConcurrentHashMap<>();
-    private static final Map<World, Map<Long, ChunkData>> map = new ConcurrentHashMap<>();
-    private static final boolean heightSupport = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17);
+    static final Map<World, Map<Long, ChunkData>> map = new ConcurrentHashMap<>();
+    static final boolean heightSupport = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17);
 
     // Separator
 
-    private static final class ChunkData {
+    static final class ChunkData {
 
         private long creation;
         private boolean queued;
-        private ChunkSnapshot snapshot;
+        ChunkSnapshot snapshot;
 
         private ChunkData(ChunkSnapshot snapshot) {
             this.creation = System.currentTimeMillis();
@@ -110,24 +109,6 @@ public class Event_Chunks implements Listener {
             }
         }
         return false;
-    }
-
-    public static BlockData getBlockData(World world, int x, int y, int z) {
-        if (y < (heightSupport ? world.getMinHeight() : 0)
-                || y >= (heightSupport ? world.getMaxHeight() : PlayerUtils.height)) {
-            return null;
-        }
-        Map<Long, ChunkData> subMap = map.get(world);
-
-        if (subMap == null) {
-            return null;
-        }
-        ChunkData data = subMap.get(hashChunk(SpartanLocation.getChunkPos(x), SpartanLocation.getChunkPos(z)));
-
-        if (data == null) {
-            return null;
-        }
-        return data.snapshot.getBlockData(x & 0xF, y, z & 0xF);
     }
 
     public static Material getBlockType(World world, int x, int y, int z) {

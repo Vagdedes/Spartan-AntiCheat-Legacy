@@ -2,7 +2,8 @@ package com.vagdedes.spartan.abstraction.world;
 
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.listeners.bukkit.Event_Chunks;
+import com.vagdedes.spartan.listeners.bukkit.chunks.Event_Chunks;
+import com.vagdedes.spartan.listeners.bukkit.chunks.Event_Chunks_v1_13;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.CombatUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
@@ -237,7 +238,7 @@ public class SpartanLocation implements Cloneable {
 
     private SpartanBlock setAsyncBlock() {
         if (SpartanLocation.v_1_13) {
-            BlockData data = Event_Chunks.getBlockData(this.world, this.getBlockX(), this.getBlockY(), this.getBlockZ());
+            BlockData data = Event_Chunks_v1_13.getBlockData(this.world, this.getBlockX(), this.getBlockY(), this.getBlockZ());
 
             if (data != null) {
                 return new SpartanBlock(
