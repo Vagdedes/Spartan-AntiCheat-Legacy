@@ -83,7 +83,7 @@ public class SpartanPlayer {
             List<SpartanPlayer> players = SpartanBukkit.getPlayers();
 
             if (!players.isEmpty()) {
-                if (Event_Chunks.enabled()) {
+                if (MultiVersion.folia || Event_Chunks.enabled()) {
                     Set<Integer> worldHashes = new HashSet<>();
 
                     for (World world : Bukkit.getWorlds()) {
@@ -535,14 +535,7 @@ public class SpartanPlayer {
     // Separator
 
     public List<Entity> getNearbyEntities(double x, double y, double z) {
-        if (SpartanBukkit.isSynchronised()) { // todo
-            List<Entity> nearbyEntities = new ArrayList<>();
-            SpartanBukkit.runTask(
-                    this,
-                    () -> nearbyEntities.addAll(this.getInstance().getNearbyEntities(x, y, z))
-            );
-            return nearbyEntities;
-        } else if (Event_Chunks.enabled()) {
+        if (MultiVersion.folia || Event_Chunks.enabled()) {
             Map<Long, List<Entity>> perChunk = entities.get(this.getWorld().getName().hashCode());
 
             if (perChunk != null) {
