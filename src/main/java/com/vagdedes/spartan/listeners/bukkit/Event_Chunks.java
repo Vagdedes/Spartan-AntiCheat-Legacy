@@ -7,6 +7,7 @@ import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import org.bukkit.Chunk;
 import org.bukkit.ChunkSnapshot;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.event.EventHandler;
@@ -111,7 +112,7 @@ public class Event_Chunks implements Listener {
         return false;
     }
 
-    public static BlockData get(World world, int x, int y, int z) {
+    public static BlockData getBlockData(World world, int x, int y, int z) {
         if (y < (heightSupport ? world.getMinHeight() : 0)
                 || y >= (heightSupport ? world.getMaxHeight() : PlayerUtils.height)) {
             return null;
@@ -127,6 +128,24 @@ public class Event_Chunks implements Listener {
             return null;
         }
         return data.snapshot.getBlockData(x & 0xF, y, z & 0xF);
+    }
+
+    public static Material getBlockType(World world, int x, int y, int z) {
+        if (y < (heightSupport ? world.getMinHeight() : 0)
+                || y >= (heightSupport ? world.getMaxHeight() : PlayerUtils.height)) {
+            return null;
+        }
+        Map<Long, ChunkData> subMap = map.get(world);
+
+        if (subMap == null) {
+            return null;
+        }
+        ChunkData data = subMap.get(hashChunk(SpartanLocation.getChunkPos(x), SpartanLocation.getChunkPos(z)));
+
+        if (data == null) {
+            return null;
+        }
+        return data.snapshot.getBlockType(x & 0xF, y, z & 0xF);
     }
 
     private static boolean hasPlayers(World world, int x, int z) {

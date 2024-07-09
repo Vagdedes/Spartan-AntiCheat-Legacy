@@ -37,7 +37,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class LiveViolation {
 
-    public static final String violationLevelIdentifier = "VL:";
+    public static final String
+            violationLevelIdentifier = "VL:",
+            javaPlayerIdentifier = "Java:";
 
     private final SpartanPlayer player;
     private final Enums.HackType hackType;
@@ -391,8 +393,9 @@ public class LiveViolation {
         String information = Config.getConstruct() + player.name + " failed " + hackType
                 + " (" + violationLevelIdentifier + " " + playerViolation.level + "+" + playerViolation.increase + ") "
                 + "[(Version: " + MultiVersion.versionString() + "), (IV: " + (canPrevent ? "-" : "") + ignoredViolations + ")"
-                + " (Silent: " + hackType.getCheck().isSilent(player.getWorld().getName()) + "), (Java: " + (!player.bedrockPlayer) + ")"
-                + ", (Packets: " + SpartanBukkit.packetsEnabled() + "), (Ping: " + player.getPing() + "ms), " +
+                + " (Silent: " + hackType.getCheck().isSilent(player.getWorld().getName()) + "), ("
+                + javaPlayerIdentifier + " " + (!player.bedrockPlayer) + ")" + ", (Packets: "
+                + SpartanBukkit.packetsEnabled() + "), (Ping: " + player.getPing() + "ms), " +
                 "(XYZ: " + location.getBlockX() + " " + location.getBlockY() + " "
                 + location.getBlockZ() + "), (" + playerViolation.information + ")]";
         AntiCheatLogs.logInfo(player, information, true, null, playerViolation);

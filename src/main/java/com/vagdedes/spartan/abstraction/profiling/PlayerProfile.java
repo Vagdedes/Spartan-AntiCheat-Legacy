@@ -123,6 +123,11 @@ public class PlayerProfile {
         return skull;
     }
 
+    public void setDataType(Enums.DataType dataType) {
+        this.bedrockPlayerCheck = true;
+        this.bedrockPlayer = dataType == Enums.DataType.BEDROCK;
+    }
+
     public Enums.DataType getDataType() {
         return isBedrockPlayer() ? Enums.DataType.BEDROCK : Enums.DataType.JAVA;
     }

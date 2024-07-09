@@ -535,7 +535,14 @@ public class SpartanPlayer {
     // Separator
 
     public List<Entity> getNearbyEntities(double x, double y, double z) {
-        if (Event_Chunks.enabled()) {
+        if (SpartanBukkit.isSynchronised()) { // todo
+            List<Entity> nearbyEntities = new ArrayList<>();
+            SpartanBukkit.runTask(
+                    this,
+                    () -> nearbyEntities.addAll(this.getInstance().getNearbyEntities(x, y, z))
+            );
+            return nearbyEntities;
+        } else if (Event_Chunks.enabled()) {
             Map<Long, List<Entity>> perChunk = entities.get(this.getWorld().getName().hashCode());
 
             if (perChunk != null) {

@@ -236,17 +236,32 @@ public class SpartanLocation implements Cloneable {
     }
 
     private SpartanBlock setAsyncBlock() {
-        BlockData data = Event_Chunks.get(this.world, this.getBlockX(), this.getBlockY(), this.getBlockZ());
+        if (SpartanLocation.v_1_13) {
+            BlockData data = Event_Chunks.getBlockData(this.world, this.getBlockX(), this.getBlockY(), this.getBlockZ());
 
-        if (data != null) {
-            return new SpartanBlock(
-                    this,
-                    data.getMaterial(),
-                    BlockUtils.isLiquid(data.getMaterial()),
-                    BlockUtils.isWaterLogged(data)
-            );
+            if (data != null) {
+                return new SpartanBlock(
+                        this,
+                        data.getMaterial(),
+                        BlockUtils.isLiquid(data.getMaterial()),
+                        BlockUtils.isWaterLogged(data)
+                );
+            } else {
+                return new SpartanBlock(this, Material.AIR, false, false);
+            }
         } else {
-            return new SpartanBlock(this, Material.AIR, false, false);
+            Material type = Event_Chunks.getBlockType(this.world, this.getBlockX(), this.getBlockY(), this.getBlockZ());
+
+            if (type != null) {
+                return new SpartanBlock(
+                        this,
+                        type,
+                        BlockUtils.isLiquid(type),
+                        false
+                );
+            } else {
+                return new SpartanBlock(this, Material.AIR, false, false);
+            }
         }
     }
 

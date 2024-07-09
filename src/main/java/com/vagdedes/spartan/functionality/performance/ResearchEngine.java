@@ -265,6 +265,15 @@ public class ResearchEngine {
         return null;
     }
 
+    private static Enums.DataType getDataType(String s) {
+        int index1 = s.indexOf("(" + LiveViolation.javaPlayerIdentifier + " ");
+
+        if (index1 > -1) {
+            // todo
+        }
+        return null;
+    }
+
     private static boolean isStorageMode() {
         return Config.settings.getBoolean("Logs.log_file") || Config.sql.isEnabled();
     }
@@ -426,7 +435,11 @@ public class ResearchEngine {
                                     String name = split[0];
                                     String hackTypeString = split[2];
                                     PlayerProfile playerProfile = getPlayerProfile(name);
+                                    Enums.DataType dataType = getDataType(data);
 
+                                    if (dataType != null) {
+                                        playerProfile.setDataType(dataType);
+                                    }
                                     for (Enums.HackType hackType : Enums.HackType.values()) {
                                         if (hackTypeString.equals(hackType.toString())) {
                                             // Separator
