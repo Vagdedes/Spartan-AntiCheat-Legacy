@@ -1,2 +1,3 @@
 [#] Fixed a ProtocolLib ping-pong transactions console error.
 [#] Fixed a 1.8 get block direction console error.
+[-] Removed the staff chat functionality because it's not related to the anticheat's needs.

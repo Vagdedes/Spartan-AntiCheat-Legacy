@@ -3,7 +3,6 @@ package com.vagdedes.spartan.listeners.bukkit;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.chat.ChatProtection;
-import com.vagdedes.spartan.functionality.chat.StaffChat;
 import com.vagdedes.spartan.functionality.connection.PlayerLimitPerIP;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import me.vagdedes.spartan.system.Enums;
@@ -40,8 +39,7 @@ public class Event_Chat implements Listener {
             p.getExecutor(Enums.HackType.Exploits).handle(cancelled, msg);
 
             // Protections
-            if (!cancelled && StaffChat.run(p, msg) // Features
-                    || !cancelled && ChatProtection.runChat(p, msg)) { // Features
+            if (!cancelled && ChatProtection.runChat(p, msg)) { // Features
                 e.setCancelled(true);
             }
         }
