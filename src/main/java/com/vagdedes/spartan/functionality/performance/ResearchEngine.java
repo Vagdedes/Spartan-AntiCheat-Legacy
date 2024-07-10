@@ -6,7 +6,6 @@ import com.vagdedes.spartan.abstraction.inventory.implementation.MainMenu;
 import com.vagdedes.spartan.abstraction.pattern.Pattern;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.profiling.MiningHistory;
-import com.vagdedes.spartan.abstraction.profiling.PlayerEvidence;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.profiling.PlayerViolation;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
@@ -509,7 +508,6 @@ public class ResearchEngine {
 
     private static void updateCache() {
         if (!playerProfiles.isEmpty()) {
-            Set<Integer> positiveProfiled = new HashSet<>();
             Set<Enums.HackType> accessed = new HashSet<>();
 
             for (Enums.DataType dataType : getDynamicUsableDataTypes()) {
@@ -554,16 +552,11 @@ public class ResearchEngine {
 
                             for (Map.Entry<PlayerProfile, Integer> entryChild : profileMap.entrySet()) {
                                 PlayerProfile profile = entryChild.getKey();
-                                int hash = (profile.hashCode() * SpartanBukkit.hashCodeMultiplier) + hackType.hashCode();
+                                double probability = StatisticsMath.getCumulativeProbability(
+                                        (entryChild.getValue() - mean) / deviation
+                                );
 
-                                if (!positiveProfiled.contains(hash)) {
-                                    double probability = StatisticsMath.getCumulativeProbability(
-                                            (entryChild.getValue() - mean) / deviation
-                                    );
-
-                                    if (probability >= PlayerEvidence.punishment) {
-                                        positiveProfiled.add(hash);
-                                    }
+                                if (probability > profile.evidence.get(hackType)) {
                                     profile.evidence.add(
                                             hackType,
                                             probability

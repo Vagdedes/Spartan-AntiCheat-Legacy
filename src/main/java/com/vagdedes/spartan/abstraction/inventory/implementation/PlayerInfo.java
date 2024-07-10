@@ -25,10 +25,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class PlayerInfo extends InventoryMenu {
 
@@ -62,20 +59,24 @@ public class PlayerInfo extends InventoryMenu {
             lore.add("");
 
             if (!evidenceDetails.isEmpty()) {
-                lore.add("§7Evaluated for§8:");
+                lore.add("§7Certainty of cheating§8:");
+                Map<Double, HackType> map = new TreeMap<>(Collections.reverseOrder());
 
                 for (Map.Entry<HackType, Double> entry : evidenceDetails) {
-                    double probability = entry.getValue();
+                    map.put(entry.getValue(), entry.getKey());
+                }
+                for (Map.Entry<Double, HackType> entry : map.entrySet()) {
+                    double probability = entry.getKey();
 
                     if (probability < PlayerEvidence.prevention) {
                         lore.add(
-                                "§2" + entry.getKey().getCheck().getName()
-                                        + "§8: §a" + AlgebraUtils.integerRound(entry.getValue() * 100.0) + "% Certainty"
+                                "§2" + entry.getValue().getCheck().getName()
+                                        + "§8: §a" + AlgebraUtils.integerRound(probability * 100.0) + "%"
                         );
                     } else {
                         lore.add(
-                                "§4" + entry.getKey().getCheck().getName()
-                                        + "§8: §c" + AlgebraUtils.integerRound(entry.getValue() * 100.0) + "% Certainty"
+                                "§4" + entry.getValue().getCheck().getName()
+                                        + "§8: §c" + AlgebraUtils.integerRound(probability * 100.0) + "%"
                         );
                     }
                 }
