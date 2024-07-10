@@ -5,7 +5,6 @@ import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.profiling.InformationAnalysis;
 import com.vagdedes.spartan.abstraction.profiling.PlayerViolation;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
-import com.vagdedes.spartan.functionality.connection.Latency;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudConnections;
 import com.vagdedes.spartan.functionality.connection.cloud.CrossServerInformation;
@@ -27,7 +26,6 @@ import me.vagdedes.spartan.api.PlayerViolationCommandEvent;
 import me.vagdedes.spartan.api.PlayerViolationEvent;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -83,7 +81,7 @@ public class LiveViolation {
                         PlayerViolationEvent playerViolationEvent = new PlayerViolationEvent(
                                 player.getInstance(),
                                 hackType,
-                                playerViolation.level + playerViolation.increase,
+                                playerViolation.sum(),
                                 information
                         );
                         Register.manager.callEvent(playerViolationEvent);
@@ -101,7 +99,7 @@ public class LiveViolation {
                             && (silentCause == null
                             || silentCause.hasExpired()
                             || !silentCause.pointerMatches(information))
-                            && (playerViolation.level + playerViolation.increase) >= playerViolation.getIgnoredViolations(player.dataType);
+                            && player.protocol.getProfile().evidence.has(hackType);
                 };
 
                 if (!event || SpartanBukkit.isSynchronised()) {
@@ -277,37 +275,6 @@ public class LiveViolation {
 
     // Separator
 
-    public double getSuspicionRatio() {
-        if (!this.level.isEmpty()) {
-            Iterator<Map.Entry<Integer, Long>> iterator = this.level.entrySet().iterator();
-            int latency = AlgebraUtils.integerCeil(Latency.getDelay(player));
-
-            while (iterator.hasNext()) {
-                Map.Entry<Integer, Long> entry = iterator.next();
-                int level = this.calculateLevel(entry.getValue());
-
-                if (level > 0) {
-                    double violationCount = level
-                            - latency
-                            - this.hackType.getCheck().getIgnoredViolations(player.dataType, entry.getKey());
-
-                    if (violationCount > 0.0) {
-                        double ratio = violationCount / Check.standardIgnoredViolations;
-
-                        if (ratio >= Check.standardIgnoredViolations) {
-                            return AlgebraUtils.cut(ratio, 2);
-                        }
-                    }
-                } else {
-                    iterator.remove();
-                }
-            }
-        }
-        return -1.0;
-    }
-
-    // Separator
-
     private void performPunishments() {
         Check check = hackType.getCheck();
 
@@ -377,14 +344,12 @@ public class LiveViolation {
     }
 
     private void performNotification(PlayerViolation playerViolation) {
-        boolean canPrevent = this.prevention != null,
-                individualOnlyNotifications = Config.settings.getBoolean("Notifications.individual_only_notifications");
-        int ignoredViolations = playerViolation.getIgnoredViolations(player.dataType);
+        boolean individualOnlyNotifications = Config.settings.getBoolean("Notifications.individual_only_notifications");
         String message = ConfigUtils.replaceWithSyntax(
                 player,
                 Config.messages.getColorfulString("detection_notification")
                         .replace("{info}", playerViolation.information)
-                        .replace("{vls:detection}", Integer.toString(playerViolation.level + playerViolation.increase)),
+                        .replace("{vls:detection}", Integer.toString(playerViolation.sum())),
                 hackType
         );
         CrossServerInformation.queueNotification(message, true);
@@ -392,8 +357,8 @@ public class LiveViolation {
         SpartanLocation location = player.movement.getLocation();
         String information = Config.getConstruct() + player.name + " failed " + hackType
                 + " (" + violationLevelIdentifier + " " + playerViolation.level + "+" + playerViolation.increase + ") "
-                + "[(Version: " + MultiVersion.versionString() + "), (IV: " + (canPrevent ? "-" : "") + ignoredViolations + ")"
-                + " (Silent: " + hackType.getCheck().isSilent(player.getWorld().getName()) + "), ("
+                + "[(Version: " + MultiVersion.versionString() + "), "
+                + "(Silent: " + hackType.getCheck().isSilent(player.getWorld().getName()) + "), ("
                 + javaPlayerIdentifier + " " + (!player.bedrockPlayer) + ")" + ", (Packets: "
                 + SpartanBukkit.packetsEnabled() + "), (Ping: " + player.getPing() + "ms), " +
                 "(XYZ: " + location.getBlockX() + " " + location.getBlockY() + " "
@@ -405,31 +370,21 @@ public class LiveViolation {
                 .replace("{player}", player.name);
 
         if (individualOnlyNotifications) {
-            Integer frequency = DetectionNotifications.getFrequency(player, false);
-
-            if (DetectionNotifications.canAcceptMessages(player, frequency, false)) { // Attention
-                Player realPlayer = player.getInstance();
-
-                if (realPlayer != null) {
-                    ClickableMessage.sendCommand(realPlayer, message, command, command);
-                }
+            if (DetectionNotifications.hasPermission(player)) { // Attention
+                ClickableMessage.sendCommand(player.getInstance(), message, command, command);
             }
         } else {
-            List<SpartanPlayer> notificationPlayers = DetectionNotifications.getPlayers(false);
+            List<SpartanPlayer> notificationPlayers = DetectionNotifications.getPlayers();
 
             if (!notificationPlayers.isEmpty()) {
                 for (SpartanPlayer staff : notificationPlayers) {
                     if (!hasNotificationCooldown(staff, player, playerViolation)) {
-                        Player realPlayer = staff.getInstance();
-
-                        if (realPlayer != null) {
-                            ClickableMessage.sendCommand(
-                                    realPlayer,
-                                    message,
-                                    command,
-                                    command
-                            );
-                        }
+                        ClickableMessage.sendCommand(
+                                staff.getInstance(),
+                                message,
+                                command,
+                                command
+                        );
                     }
                 }
             }
@@ -439,9 +394,8 @@ public class LiveViolation {
     // Separator
 
     private static int getNotificationTicksCooldown(SpartanPlayer staff,
-                                                    SpartanPlayer detectedPlayer,
-                                                    int def) {
-        Integer frequency = DetectionNotifications.getFrequency(staff, true);
+                                                    SpartanPlayer detectedPlayer) {
+        Integer frequency = DetectionNotifications.getFrequency(staff);
 
         if (frequency != null
                 && frequency != DetectionNotifications.defaultFrequency) {
@@ -452,28 +406,32 @@ public class LiveViolation {
                 && AlgebraUtils.getHorizontalDistance(staff.movement.getLocation(), detectedPlayer.movement.getLocation()) <= PlayerUtils.chunk)) {
             return 0;
         } else {
-            return -def;
+            return -((int) TPS.maximum);
         }
     }
 
     public static boolean hasNotificationCooldown(SpartanPlayer staff, SpartanPlayer player,
                                                   PlayerViolation playerViolation) {
         if (staff.cooldowns.canDo("notification")) {
-            boolean hasViolations = playerViolation != null;
-            int frequency = getNotificationTicksCooldown(
-                    staff,
-                    player,
-                    hasViolations
-                            ? playerViolation.getIgnoredViolations(player.dataType)
-                            : Check.standardIgnoredViolations
-            );
-            boolean def = !hasViolations || frequency < 0;
+            int frequency = getNotificationTicksCooldown(staff, player);
 
-            if (def || (playerViolation.level + playerViolation.increase) >= frequency) {
-                staff.cooldowns.add(
-                        "notification",
-                        def ? Math.abs(frequency) * TPS.tickTimeInteger : frequency
-                );
+            if (frequency < 0) {
+                if (playerViolation == null
+                        || playerViolation.sum() > AlgebraUtils.integerRound(Math.sqrt(-frequency))) {
+                    staff.cooldowns.add(
+                            "notification",
+                            -frequency
+                    );
+                    return true;
+                }
+            } else {
+                if (frequency > 0) {
+                    staff.cooldowns.add(
+                            "notification",
+                            frequency
+                    );
+                }
+                return true;
             }
         }
         return false;

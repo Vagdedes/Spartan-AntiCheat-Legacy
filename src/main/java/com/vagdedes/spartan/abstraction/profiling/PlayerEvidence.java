@@ -1,18 +1,18 @@
 package com.vagdedes.spartan.abstraction.profiling;
 
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import me.vagdedes.spartan.system.Enums;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class PlayerEvidence {
 
-    private final PlayerProfile parent;
     private final Map<Enums.HackType, String> historical, informational; // Live object is used for synchronization
 
-    PlayerEvidence(PlayerProfile profile) {
-        this.parent = profile;
+    PlayerEvidence() {
         this.historical = new ConcurrentHashMap<>(2, 1.0f);
         this.informational = new ConcurrentHashMap<>(2, 1.0f);
     }
@@ -26,6 +26,10 @@ public class PlayerEvidence {
         if (informational) {
             this.informational.clear();
         }
+    }
+
+    public boolean has(Enums.HackType hackType) {
+        return this.historical.containsKey(hackType);
     }
 
     public void remove(Enums.HackType hackType, boolean historical, boolean informational) {
@@ -52,16 +56,7 @@ public class PlayerEvidence {
 
     public Collection<Enums.HackType> getKnowledgeList(boolean informational) {
         Collection<Enums.HackType> set = new HashSet<>(this.historical.keySet());
-        SpartanPlayer player = this.parent.getSpartanPlayer();
 
-        if (player != null) {
-            for (Enums.HackType hackType : Enums.HackType.values()) {
-                if (!set.contains(hackType)
-                        && player.getViolations(hackType).getSuspicionRatio() != -1.0) {
-                    set.add(hackType);
-                }
-            }
-        }
         if (informational) {
             set.addAll(this.informational.keySet());
         }
@@ -70,25 +65,6 @@ public class PlayerEvidence {
 
     public Set<Map.Entry<Enums.HackType, String>> getKnowledgeEntries(boolean informational) {
         Set<Map.Entry<Enums.HackType, String>> set = new HashSet<>(this.historical.entrySet());
-        SpartanPlayer player = this.parent.getSpartanPlayer();
-
-        if (player != null) {
-            Map<Enums.HackType, String> map = new LinkedHashMap<>();
-
-            for (Enums.HackType hackType : Enums.HackType.values()) {
-                if (!this.historical.containsKey(hackType)) {
-                    double suspicion = player.getViolations(hackType).getSuspicionRatio();
-
-                    if (suspicion != -1.0) {
-                        map.put(hackType, "Ratio: " + suspicion);
-                    }
-                }
-            }
-
-            if (!map.isEmpty()) {
-                set.addAll(map.entrySet());
-            }
-        }
 
         if (informational) {
             set.addAll(this.informational.entrySet());

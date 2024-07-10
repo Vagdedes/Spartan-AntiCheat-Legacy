@@ -31,7 +31,7 @@ public class PlayerProfile {
 
         // Separator
         this.name = name;
-        this.evidence = new PlayerEvidence(this);
+        this.evidence = new PlayerEvidence();
         this.skull = null;
         this.offlinePlayer = null;
 
@@ -65,7 +65,7 @@ public class PlayerProfile {
         this.uuid = player.uuid;
         this.name = player.name;
         this.offlinePlayer = player.getInstance(); // Attention
-        this.evidence = new PlayerEvidence(this);
+        this.evidence = new PlayerEvidence();
         this.skull = null;
         this.offlinePlayer = null;
         this.bedrockPlayer = player.bedrockPlayer; // Attention
@@ -132,7 +132,7 @@ public class PlayerProfile {
         return isBedrockPlayer() ? Enums.DataType.BEDROCK : Enums.DataType.JAVA;
     }
 
-    public boolean isBedrockPlayer() {
+    private boolean isBedrockPlayer() {
         if (bedrockPlayer) {
             return true;
         }

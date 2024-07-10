@@ -282,12 +282,7 @@ public class Enums {
 
         public void resetCheck() {
             if (this.check != null) {
-                this.check.clearConfigurationCache();
-                this.check = new Check(
-                        this,
-                        this.check.copyIgnoredViolations(),
-                        true
-                );
+                this.check = new Check(this);
             }
         }
     }
