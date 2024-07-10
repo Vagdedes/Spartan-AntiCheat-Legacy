@@ -70,12 +70,12 @@ public class PlayerInfo extends InventoryMenu {
                     if (probability < PlayerEvidence.prevention) {
                         lore.add(
                                 "§2" + entry.getKey().getCheck().getName()
-                                        + "§8: §a" + AlgebraUtils.cut(entry.getValue() * 100.0, 2) + "% Certainty"
+                                        + "§8: §a" + AlgebraUtils.integerRound(entry.getValue() * 100.0) + "% Certainty"
                         );
                     } else {
                         lore.add(
                                 "§4" + entry.getKey().getCheck().getName()
-                                        + "§8: §c" + AlgebraUtils.cut(entry.getValue() * 100.0, 2) + "% Certainty"
+                                        + "§8: §c" + AlgebraUtils.integerRound(entry.getValue() * 100.0) + "% Certainty"
                         );
                     }
                 }
