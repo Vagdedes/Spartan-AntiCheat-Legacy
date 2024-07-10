@@ -3,6 +3,7 @@ package com.vagdedes.spartan.abstraction.check;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.profiling.InformationAnalysis;
+import com.vagdedes.spartan.abstraction.profiling.PlayerEvidence;
 import com.vagdedes.spartan.abstraction.profiling.PlayerViolation;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
@@ -90,7 +91,7 @@ public class LiveViolation {
                             return;
                         }
                     }
-                    player.protocol.getProfile().getViolationHistory(hackType).store(playerViolation);
+                    player.protocol.getProfile().getViolationHistory(player.dataType, hackType).store(playerViolation);
                     this.increaseLevel(playerViolation.identity, increaseInt);
                     this.performNotification(playerViolation);
                     this.performPunishments();
@@ -99,7 +100,7 @@ public class LiveViolation {
                             && (silentCause == null
                             || silentCause.hasExpired()
                             || !silentCause.pointerMatches(information))
-                            && player.protocol.getProfile().evidence.has(hackType);
+                            && player.protocol.getProfile().evidence.get(this.hackType) >= PlayerEvidence.prevention;
                 };
 
                 if (!event || SpartanBukkit.isSynchronised()) {

@@ -146,7 +146,7 @@ public class Event_Chunks implements Listener {
         return false;
     }
 
-    static void cache(Chunk chunk, boolean force) {
+    public static void cache(Chunk chunk, boolean force) {
         World world = chunk.getWorld();
 
         if (!force && !hasPlayers(world, chunk.getX(), chunk.getZ())) {

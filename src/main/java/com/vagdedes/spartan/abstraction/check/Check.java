@@ -55,7 +55,7 @@ public class Check {
                 silents_config = getOption("silent_worlds", "exampleSilentWorld1, exampleSilentWorld2", false).toString();
 
         // Separator
-        Enums.DataType[] dataTypes = ResearchEngine.getDynamicUsableDataTypes(false);
+        Enums.DataType[] dataTypes = ResearchEngine.getDynamicUsableDataTypes();
         this.enabled = new boolean[ResearchEngine.usableDataTypes.length];
         Object oldOptionValue = getOption("enabled", null, false);
         boolean hasOldOption = oldOptionValue instanceof Boolean;
@@ -185,7 +185,7 @@ public class Check {
     // Separator
 
     public boolean isEnabled(Enums.DataType dataType, String world, SpartanPlayer player) {
-        Enums.DataType[] dataTypes = ResearchEngine.getDynamicUsableDataTypes(false);
+        Enums.DataType[] dataTypes = ResearchEngine.getDynamicUsableDataTypes();
 
         if (dataType == null) {
             for (Enums.DataType type : dataTypes) {
@@ -207,11 +207,11 @@ public class Check {
         Enums.DataType[] dataTypes;
 
         if (dataType == null) {
-            dataTypes = ResearchEngine.getDynamicUsableDataTypes(false);
+            dataTypes = ResearchEngine.getDynamicUsableDataTypes();
         } else {
             dataTypes = null;
 
-            for (Enums.DataType type : ResearchEngine.getDynamicUsableDataTypes(false)) {
+            for (Enums.DataType type : ResearchEngine.getDynamicUsableDataTypes()) {
                 if (type == dataType) {
                     dataTypes = new Enums.DataType[]{dataType};
                     break;

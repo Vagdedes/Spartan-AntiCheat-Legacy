@@ -110,7 +110,7 @@ public class PlayerStateLists {
 
                 if (!evidenceDetails.isEmpty()) {
                     lore.clear();
-                    lore.add("§7Detected for§8:");
+                    lore.add("§7Suspected for§8:");
 
                     for (Enums.HackType hackType : evidenceDetails) {
                         lore.add("§4" + hackType.getCheck().getName());

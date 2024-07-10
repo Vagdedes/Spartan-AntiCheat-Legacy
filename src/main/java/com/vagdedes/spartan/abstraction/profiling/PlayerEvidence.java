@@ -10,66 +10,71 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class PlayerEvidence {
 
-    private final Map<Enums.HackType, String> historical, informational; // Live object is used for synchronization
+    public static double
+            prevention = 2.0 / 3.0,
+            punishment = 0.9;
+
+    private final Map<Enums.HackType, Double> probability; // Live object is used for synchronization
 
     PlayerEvidence() {
-        this.historical = new ConcurrentHashMap<>(2, 1.0f);
-        this.informational = new ConcurrentHashMap<>(2, 1.0f);
+        this.probability = new ConcurrentHashMap<>(2, 1.0f);
+    }
+
+    public double get(Enums.HackType hackType) {
+        return this.probability.getOrDefault(hackType, 0.0);
+    }
+
+    public void remove(Enums.HackType hackType) {
+        this.probability.remove(hackType);
+    }
+
+    public void add(Enums.HackType hackType, double probability) {
+        this.probability.put(hackType, probability);
     }
 
     // Separator
 
-    public void clear(boolean historical, boolean informational) {
-        if (historical) {
-            this.historical.clear();
-        }
+     boolean has(boolean informational) {
         if (informational) {
-            this.informational.clear();
+            return !this.probability.keySet().isEmpty();
+        } else {
+            for (Map.Entry<Enums.HackType, Double> entry : this.probability.entrySet()) {
+                if (entry.getValue() >= punishment) {
+                    return true;
+                }
+            }
+            return false;
         }
     }
-
-    public boolean has(Enums.HackType hackType) {
-        return this.historical.containsKey(hackType);
-    }
-
-    public void remove(Enums.HackType hackType, boolean historical, boolean informational) {
-        if (historical) {
-            this.historical.remove(hackType);
-        }
-        if (informational) {
-            this.informational.remove(hackType);
-        }
-    }
-
-    public void add(Enums.HackType hackType, String info,
-                    boolean historical,
-                    boolean informational) {
-        if (historical) {
-            this.historical.put(hackType, info);
-        }
-        if (informational) {
-            this.informational.put(hackType, info);
-        }
-    }
-
-    // Separator
 
     public Collection<Enums.HackType> getKnowledgeList(boolean informational) {
-        Collection<Enums.HackType> set = new HashSet<>(this.historical.keySet());
-
         if (informational) {
-            set.addAll(this.informational.keySet());
+            return new HashSet<>(this.probability.keySet());
+        } else {
+            Collection<Enums.HackType> set = new HashSet<>();
+
+            for (Map.Entry<Enums.HackType, Double> entry : this.probability.entrySet()) {
+                if (entry.getValue() >= punishment) {
+                    set.add(entry.getKey());
+                }
+            }
+            return set;
         }
-        return set;
     }
 
-    public Set<Map.Entry<Enums.HackType, String>> getKnowledgeEntries(boolean informational) {
-        Set<Map.Entry<Enums.HackType, String>> set = new HashSet<>(this.historical.entrySet());
-
+    public Set<Map.Entry<Enums.HackType, Double>> getKnowledgeEntries(boolean informational) {
         if (informational) {
-            set.addAll(this.informational.entrySet());
+            return new HashSet<>(this.probability.entrySet());
+        } else {
+            Set<Map.Entry<Enums.HackType, Double>> set = new HashSet<>();
+
+            for (Map.Entry<Enums.HackType, Double> entry : this.probability.entrySet()) {
+                if (entry.getValue() >= punishment) {
+                    set.add(entry);
+                }
+            }
+            return set;
         }
-        return set;
     }
 
 }

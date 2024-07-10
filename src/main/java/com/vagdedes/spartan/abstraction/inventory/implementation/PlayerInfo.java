@@ -4,6 +4,7 @@ import com.vagdedes.spartan.abstraction.check.CancelCause;
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.inventory.InventoryMenu;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.profiling.PlayerEvidence;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
@@ -14,6 +15,7 @@ import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.Enums.HackType;
 import me.vagdedes.spartan.system.Enums.Permission;
@@ -55,19 +57,27 @@ public class PlayerInfo extends InventoryMenu {
             return false;
         } else {
             setTitle(player, menu + (isOnline ? target.spartanPlayer.name : profile.getName()));
-            boolean legitimate = profile.isLegitimate();
-            Set<Map.Entry<HackType, String>> evidenceDetails = profile.evidence.getKnowledgeEntries(legitimate);
+            Set<Map.Entry<HackType, Double>> evidenceDetails = profile.evidence.getKnowledgeEntries(true);
             List<String> lore = new ArrayList<>(20);
             lore.add("");
 
             if (!evidenceDetails.isEmpty()) {
-                lore.add(legitimate ? "§7Evaluated for§8:" : "§7Suspected for§8:");
+                lore.add("§7Evaluated for§8:");
 
-                for (Map.Entry<HackType, String> entry : evidenceDetails) {
-                    lore.add(
-                            "§4" + entry.getKey().getCheck().getName()
-                                    + (legitimate ? "" : "§8: §c" + entry.getValue())
-                    );
+                for (Map.Entry<HackType, Double> entry : evidenceDetails) {
+                    double probability = entry.getValue();
+
+                    if (probability < PlayerEvidence.prevention) {
+                        lore.add(
+                                "§2" + entry.getKey().getCheck().getName()
+                                        + "§8: §a" + AlgebraUtils.cut(entry.getValue() * 100.0, 2) + "% Certainty"
+                        );
+                    } else {
+                        lore.add(
+                                "§4" + entry.getKey().getCheck().getName()
+                                        + "§8: §c" + AlgebraUtils.cut(entry.getValue() * 100.0, 2) + "% Certainty"
+                        );
+                    }
                 }
                 lore.add("");
             }
@@ -78,9 +88,6 @@ public class PlayerInfo extends InventoryMenu {
                 lore.add("§7Edition§8:§c " + target.spartanPlayer.dataType);
                 lore.add("");
                 lore.add("§eLeft click to reset the player's live violations.");
-            } else {
-                lore.add("§7Edition§8:§c " + profile.getDataType().toString());
-                lore.add("");
             }
             lore.add("§cRight click to delete the player's stored data.");
             add(
@@ -124,7 +131,7 @@ public class PlayerInfo extends InventoryMenu {
 
         // Separator
 
-        Enums.DataType dataType = isOnline ? player.dataType : playerProfile.getDataType();
+        Enums.DataType dataType = isOnline ? player.dataType : null;
         boolean notChecked = isOnline && !PlayerDetectionSlots.isChecked(player.uuid);
         String cancellableCompatibility = isOnline ? player.getCancellableCompatibility() : null;
 
@@ -158,7 +165,7 @@ public class PlayerInfo extends InventoryMenu {
         if (!hasPlayer) {
             return "Offline";
         }
-        if (!SpartanEdition.hasDetectionsPurchased(dataType)) {
+        if (dataType != null && !SpartanEdition.hasDetectionsPurchased(dataType)) {
             return "Detection Missing";
         }
         String worldName = player.getWorld().getName();

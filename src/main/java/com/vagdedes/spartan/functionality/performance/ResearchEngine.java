@@ -6,6 +6,7 @@ import com.vagdedes.spartan.abstraction.inventory.implementation.MainMenu;
 import com.vagdedes.spartan.abstraction.pattern.Pattern;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.profiling.MiningHistory;
+import com.vagdedes.spartan.abstraction.profiling.PlayerEvidence;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.profiling.PlayerViolation;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
@@ -18,6 +19,7 @@ import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.AntiCheatLogs;
 import com.vagdedes.spartan.utils.java.TimeUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
+import com.vagdedes.spartan.utils.math.statistics.StatisticsMath;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -36,6 +38,7 @@ public class ResearchEngine {
             Enums.DataType.JAVA,
             Enums.DataType.BEDROCK
     };
+    // todo fix datatype problem
     private static final Map<String, PlayerProfile> playerProfiles = new ConcurrentHashMap<>();
 
     static {
@@ -65,11 +68,12 @@ public class ResearchEngine {
         }, 1L, 1L);
     }
 
-    public static Enums.DataType[] getDynamicUsableDataTypes(boolean universal) {
+    public static Enums.DataType[] getDynamicUsableDataTypes() {
         Enums.DataType dataType = SpartanEdition.getMissingDetection();
-        return dataType == null ? (universal ? Enums.DataType.values() : usableDataTypes) :
-                dataType == Enums.DataType.BEDROCK ? (universal ? new Enums.DataType[]{Enums.DataType.UNIVERSAL, Enums.DataType.JAVA} : new Enums.DataType[]{Enums.DataType.JAVA}) :
-                        (universal ? new Enums.DataType[]{Enums.DataType.UNIVERSAL, Enums.DataType.BEDROCK} : new Enums.DataType[]{Enums.DataType.BEDROCK});
+        return dataType == null ? usableDataTypes :
+                dataType == Enums.DataType.BEDROCK
+                        ? new Enums.DataType[]{Enums.DataType.JAVA}
+                        : new Enums.DataType[]{Enums.DataType.BEDROCK};
     }
 
     // Separator
@@ -131,8 +135,10 @@ public class ResearchEngine {
 
             if (!playerProfiles.isEmpty()) {
                 for (PlayerProfile playerProfile : playerProfiles.values()) {
-                    playerProfile.getViolationHistory(hackType).clear();
-                    playerProfile.evidence.remove(hackType, true, true);
+                    for (Enums.DataType dataType : usableDataTypes) {
+                        playerProfile.getViolationHistory(dataType, hackType).clear();
+                    }
+                    playerProfile.evidence.remove(hackType);
                 }
             }
 
@@ -271,7 +277,7 @@ public class ResearchEngine {
         if (index1 > -1) {
             // todo
         }
-        return null;
+        return Enums.DataType.JAVA;
     }
 
     private static boolean isStorageMode() {
@@ -436,9 +442,6 @@ public class ResearchEngine {
                                     PlayerProfile playerProfile = getPlayerProfile(name);
                                     Enums.DataType dataType = getDataType(data);
 
-                                    if (dataType != null) {
-                                        playerProfile.setDataType(dataType);
-                                    }
                                     for (Enums.HackType hackType : Enums.HackType.values()) {
                                         if (hackTypeString.equals(hackType.toString())) {
                                             // Separator
@@ -453,7 +456,7 @@ public class ResearchEngine {
                                                                     AntiCheatLogs.dateFormat :
                                                                     AntiCheatLogs.usualDateFormat
                                                     );
-                                                    playerProfile.getViolationHistory(hackType).store(
+                                                    playerProfile.getViolationHistory(dataType, hackType).store(
                                                             new PlayerViolation(
                                                                     sdf.parse(fullDate).getTime(),
                                                                     hackType,
@@ -505,6 +508,81 @@ public class ResearchEngine {
     }
 
     private static void updateCache() {
-        // todo
+        if (!playerProfiles.isEmpty()) {
+            Set<Integer> positiveProfiled = new HashSet<>();
+            Set<Enums.HackType> accessed = new HashSet<>();
+
+            for (Enums.DataType dataType : getDynamicUsableDataTypes()) {
+                Map<Enums.HackType, Map<Integer, Map<PlayerProfile, Integer>>> wave = new LinkedHashMap<>();
+
+                for (PlayerProfile profile : playerProfiles.values()) {
+                    for (Enums.HackType hackType : Enums.HackType.values()) {
+                        Collection<PlayerViolation> collection = profile.getViolationHistory(dataType, hackType).getCollection();
+
+                        if (!collection.isEmpty()) {
+                            for (PlayerViolation violation : collection) {
+                                Map<PlayerProfile, Integer> subMap = wave.computeIfAbsent(
+                                        hackType,
+                                        k -> new LinkedHashMap<>()
+                                ).computeIfAbsent(
+                                        violation.identity,
+                                        k -> new LinkedHashMap<>()
+                                );
+                                subMap.put(
+                                        profile,
+                                        subMap.getOrDefault(profile, 0) + violation.increase
+                                );
+                            }
+                        }
+                    }
+                }
+
+                if (!wave.isEmpty()) {
+                    for (Map.Entry<Enums.HackType, Map<Integer, Map<PlayerProfile, Integer>>> entry : wave.entrySet()) {
+                        Enums.HackType hackType = entry.getKey();
+                        accessed.add(hackType);
+
+                        for (Map<PlayerProfile, Integer> profileMap : entry.getValue().values()) {
+                            int sum = 0, squareSum = 0;
+
+                            for (int value : profileMap.values()) {
+                                sum += value;
+                                squareSum += value * value;
+                            }
+                            double mean = sum / (double) profileMap.size(),
+                                    deviation = Math.sqrt(squareSum / (double) profileMap.size());
+
+                            for (Map.Entry<PlayerProfile, Integer> entryChild : profileMap.entrySet()) {
+                                PlayerProfile profile = entryChild.getKey();
+                                int hash = (profile.hashCode() * SpartanBukkit.hashCodeMultiplier) + hackType.hashCode();
+
+                                if (!positiveProfiled.contains(hash)) {
+                                    double probability = StatisticsMath.getCumulativeProbability(
+                                            (entryChild.getValue() - mean) / deviation
+                                    );
+
+                                    if (probability >= PlayerEvidence.punishment) {
+                                        positiveProfiled.add(hash);
+                                    }
+                                    profile.evidence.add(
+                                            hackType,
+                                            probability
+                                    );
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            for (Enums.HackType hackType : Enums.HackType.values()) {
+                if (!accessed.contains(hackType)) {
+                    for (PlayerProfile profile : playerProfiles.values()) {
+                        profile.evidence.remove(hackType);
+                    }
+                }
+            }
+        }
     }
+
 }

@@ -2,7 +2,7 @@ package com.vagdedes.spartan.abstraction.profiling;
 
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
-import com.vagdedes.spartan.compatibility.necessary.BedrockCompatibility;
+import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.minecraft.inventory.InventoryUtils;
 import me.vagdedes.spartan.system.Enums;
@@ -17,10 +17,9 @@ public class PlayerProfile {
 
     private UUID uuid;
     public final String name;
-    private final ViolationHistory[] violationHistory;
+    private final ViolationHistory[][] violationHistory;
     private final MiningHistory[] miningHistory;
     public final PlayerEvidence evidence;
-    private boolean bedrockPlayer, bedrockPlayerCheck;
     private ItemStack skull;
     private OfflinePlayer offlinePlayer;
 
@@ -36,24 +35,13 @@ public class PlayerProfile {
         this.offlinePlayer = null;
 
         // Separator
-        SpartanPlayer player = this.getSpartanPlayer();
-
-        if (player != null) {
-            this.uuid = player.uuid;
-            this.bedrockPlayer = player.bedrockPlayer;
-            this.bedrockPlayerCheck = true;
-        } else {
-            this.uuid = null;
-            this.bedrockPlayer = BedrockCompatibility.isPlayer(name);
-            this.bedrockPlayerCheck = this.bedrockPlayer;
-        }
-
-        // Separator
-        this.violationHistory = new ViolationHistory[hackTypes.length];
+        this.violationHistory = new ViolationHistory[ResearchEngine.usableDataTypes.length][hackTypes.length];
         this.miningHistory = new MiningHistory[MiningHistory.MiningOre.values().length];
 
-        for (Enums.HackType hackType : hackTypes) {
-            this.violationHistory[hackType.ordinal()] = new ViolationHistory();
+        for (Enums.DataType dataType : ResearchEngine.usableDataTypes) {
+            for (Enums.HackType hackType : hackTypes) {
+                this.violationHistory[dataType.ordinal()][hackType.ordinal()] = new ViolationHistory();
+            }
         }
         for (MiningHistory.MiningOre ore : MiningHistory.MiningOre.values()) {
             this.miningHistory[ore.ordinal()] = new MiningHistory(ore);
@@ -68,14 +56,14 @@ public class PlayerProfile {
         this.evidence = new PlayerEvidence();
         this.skull = null;
         this.offlinePlayer = null;
-        this.bedrockPlayer = player.bedrockPlayer; // Attention
-        this.bedrockPlayerCheck = true;
 
-        this.violationHistory = new ViolationHistory[hackTypes.length];
+        this.violationHistory = new ViolationHistory[ResearchEngine.usableDataTypes.length][hackTypes.length];
         this.miningHistory = new MiningHistory[MiningHistory.MiningOre.values().length];
 
-        for (Enums.HackType hackType : hackTypes) {
-            this.violationHistory[hackType.ordinal()] = new ViolationHistory();
+        for (Enums.DataType dataType : ResearchEngine.usableDataTypes) {
+            for (Enums.HackType hackType : hackTypes) {
+                this.violationHistory[dataType.ordinal()][hackType.ordinal()] = new ViolationHistory();
+            }
         }
         for (MiningHistory.MiningOre ore : MiningHistory.MiningOre.values()) {
             this.miningHistory[ore.ordinal()] = new MiningHistory(ore);
@@ -84,8 +72,6 @@ public class PlayerProfile {
 
     public void update(SpartanPlayer player) {
         this.uuid = player.uuid;
-        this.bedrockPlayer = player.bedrockPlayer;
-        this.bedrockPlayerCheck = true;
     }
 
     // Separator
@@ -123,33 +109,6 @@ public class PlayerProfile {
         return skull;
     }
 
-    public void setDataType(Enums.DataType dataType) {
-        this.bedrockPlayerCheck = true;
-        this.bedrockPlayer = dataType == Enums.DataType.BEDROCK;
-    }
-
-    public Enums.DataType getDataType() {
-        return isBedrockPlayer() ? Enums.DataType.BEDROCK : Enums.DataType.JAVA;
-    }
-
-    private boolean isBedrockPlayer() {
-        if (bedrockPlayer) {
-            return true;
-        }
-        if (!bedrockPlayerCheck) {
-            SpartanPlayer player = getSpartanPlayer();
-
-            if (player != null) {
-                bedrockPlayerCheck = true;
-
-                if (player.bedrockPlayer) {
-                    return bedrockPlayer = true;
-                }
-            }
-        }
-        return false;
-    }
-
     public OfflinePlayer getOfflinePlayer() {
         if (offlinePlayer == null) {
             if (this.uuid == null) {
@@ -164,11 +123,6 @@ public class PlayerProfile {
                 }
             } else {
                 this.offlinePlayer = Bukkit.getOfflinePlayer(uuid);
-            }
-            if (!bedrockPlayerCheck && !bedrockPlayer
-                    && BedrockCompatibility.isPlayer(uuid, name)) {
-                this.bedrockPlayerCheck = true;
-                this.bedrockPlayer = true;
             }
         }
         return offlinePlayer;
@@ -187,18 +141,27 @@ public class PlayerProfile {
 
     // Separator
 
-    public ViolationHistory getViolationHistory(Enums.HackType hackType) {
-        return violationHistory[hackType.ordinal()];
+    public ViolationHistory getViolationHistory(Enums.DataType dataType, Enums.HackType hackType) {
+        return violationHistory[dataType.ordinal()][hackType.ordinal()];
     }
 
     public MiningHistory getMiningHistory(MiningHistory.MiningOre ore) {
         return miningHistory[ore.ordinal()];
     }
 
+    public boolean hasData(Enums.DataType dataType) {
+        for (Enums.HackType hackType : Enums.HackType.values()) {
+            if (!violationHistory[dataType.ordinal()][hackType.ordinal()].isEmpty()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     // Separator
 
     public boolean isLegitimate() {
-        return evidence.getKnowledgeList(false).isEmpty();
+        return !evidence.has(false);
     }
 
 }
