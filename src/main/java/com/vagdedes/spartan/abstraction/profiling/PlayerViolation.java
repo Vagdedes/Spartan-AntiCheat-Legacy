@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.abstraction.profiling;
 
+import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import me.vagdedes.spartan.system.Enums;
 
 public class PlayerViolation {
@@ -27,6 +28,7 @@ public class PlayerViolation {
         if (this.increase > 1) {
             this.hackType.getCheck().enableMultiViolations();
         }
+        ResearchEngine.violationFired = true;
     }
 
     public PlayerViolation(long time,

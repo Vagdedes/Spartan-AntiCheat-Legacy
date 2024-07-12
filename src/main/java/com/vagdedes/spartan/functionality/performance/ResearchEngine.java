@@ -31,6 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ResearchEngine {
 
+    public static boolean violationFired = true;
     private static long schedulerTicks = 0L;
     public static final Enums.DataType[] usableDataTypes = new Enums.DataType[]{
             Enums.DataType.JAVA,
@@ -47,7 +48,7 @@ public class ResearchEngine {
                     refresh(Register.isPluginEnabled());
                 } else {
                     SpartanBukkit.analysisThread.executeIfFree(() -> {
-                        updateCache();
+                        updateCache(false);
                         MainMenu.refresh();
                     });
                 }
@@ -55,7 +56,7 @@ public class ResearchEngine {
                 schedulerTicks -= 1;
 
                 SpartanBukkit.analysisThread.executeIfFree(() -> {
-                    updateCache();
+                    updateCache(false);
 
                     if (schedulerTicks % TPS.maximum == 0) {
                         MainMenu.refresh();
@@ -496,7 +497,7 @@ public class ResearchEngine {
                             }
                         }
                     }
-                    updateCache();
+                    updateCache(true);
                     MainMenu.refresh();
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -505,37 +506,26 @@ public class ResearchEngine {
         }
     }
 
-    private static void updateCache() {
-        if (!playerProfiles.isEmpty()) {
-            Set<Enums.HackType> accessed = new HashSet<>();
+    private static void updateCache(boolean force) {
+        if (force || violationFired) {
+            violationFired = false;
 
-            for (Enums.DataType dataType : usableDataTypes) {
-                Map<Enums.HackType, Map<Integer, Map<PlayerProfile, Integer>>>
-                        violationWave = new LinkedHashMap<>(),
-                        timeWave = new LinkedHashMap<>();
+            if (!playerProfiles.isEmpty()) {
+                Set<Enums.HackType> accessed = new HashSet<>();
 
-                for (PlayerProfile profile : playerProfiles.values()) {
-                    for (Enums.HackType hackType : Enums.HackType.values()) {
-                        Iterator<PlayerViolation> collection = profile.getViolationHistory(dataType, hackType).getCollection().iterator();
+                for (Enums.DataType dataType : usableDataTypes) {
+                    Map<Enums.HackType, Map<Integer, Map<PlayerProfile, Integer>>>
+                            violationWave = new LinkedHashMap<>(),
+                            timeWave = new LinkedHashMap<>();
 
-                        if (collection.hasNext()) {
-                            PlayerViolation violation = collection.next();
-                            long previous = violation.time;
-                            Map<PlayerProfile, Integer> subMap = violationWave.computeIfAbsent(
-                                    hackType,
-                                    k -> new LinkedHashMap<>()
-                            ).computeIfAbsent(
-                                    violation.identity,
-                                    k -> new LinkedHashMap<>()
-                            );
-                            subMap.put(
-                                    profile,
-                                    subMap.getOrDefault(profile, 0) + violation.increase
-                            );
+                    for (PlayerProfile profile : playerProfiles.values()) {
+                        for (Enums.HackType hackType : Enums.HackType.values()) {
+                            Iterator<PlayerViolation> collection = profile.getViolationHistory(dataType, hackType).getCollection().iterator();
 
-                            while (collection.hasNext()) {
-                                violation = collection.next();
-                                subMap = violationWave.computeIfAbsent(
+                            if (collection.hasNext()) {
+                                PlayerViolation violation = collection.next();
+                                long previous = violation.time;
+                                Map<PlayerProfile, Integer> subMap = violationWave.computeIfAbsent(
                                         hackType,
                                         k -> new LinkedHashMap<>()
                                 ).computeIfAbsent(
@@ -547,80 +537,60 @@ public class ResearchEngine {
                                         subMap.getOrDefault(profile, 0) + violation.increase
                                 );
 
-                                long difference = Math.min(
-                                        violation.time - previous,
-                                        60_000L
-                                );
-                                subMap = timeWave.computeIfAbsent(
-                                        hackType,
-                                        k -> new LinkedHashMap<>()
-                                ).computeIfAbsent(
-                                        violation.identity,
-                                        k -> new LinkedHashMap<>()
-                                );
-                                subMap.put(
-                                        profile,
-                                        subMap.getOrDefault(profile, 0) + ((int) difference)
-                                );
-                            }
-                        }
-                    }
-                }
-
-                if (!violationWave.isEmpty()) {
-                    for (Map.Entry<Enums.HackType, Map<Integer, Map<PlayerProfile, Integer>>> entry : violationWave.entrySet()) {
-                        Enums.HackType hackType = entry.getKey();
-                        accessed.add(hackType);
-
-                        for (Map<PlayerProfile, Integer> profileMap : entry.getValue().values()) {
-                            int sum = 0, squareSum = 0;
-
-                            for (int value : profileMap.values()) {
-                                sum += value;
-                                squareSum += value * value;
-                            }
-                            double mean = sum / (double) profileMap.size(),
-                                    deviation = Math.sqrt(squareSum / (double) profileMap.size());
-
-                            for (Map.Entry<PlayerProfile, Integer> entryChild : profileMap.entrySet()) {
-                                PlayerProfile profile = entryChild.getKey();
-                                double probability = StatisticsMath.getCumulativeProbability(
-                                        (entryChild.getValue() - mean) / deviation
-                                );
-
-                                if (probability > profile.evidence.get(hackType)) {
-                                    profile.evidence.add(
+                                while (collection.hasNext()) {
+                                    violation = collection.next();
+                                    subMap = violationWave.computeIfAbsent(
                                             hackType,
-                                            probability
+                                            k -> new LinkedHashMap<>()
+                                    ).computeIfAbsent(
+                                            violation.identity,
+                                            k -> new LinkedHashMap<>()
+                                    );
+                                    subMap.put(
+                                            profile,
+                                            subMap.getOrDefault(profile, 0) + violation.increase
+                                    );
+
+                                    long difference = Math.min(
+                                            violation.time - previous,
+                                            60_000L
+                                    );
+                                    subMap = timeWave.computeIfAbsent(
+                                            hackType,
+                                            k -> new LinkedHashMap<>()
+                                    ).computeIfAbsent(
+                                            violation.identity,
+                                            k -> new LinkedHashMap<>()
+                                    );
+                                    subMap.put(
+                                            profile,
+                                            subMap.getOrDefault(profile, 0) + ((int) difference)
                                     );
                                 }
                             }
                         }
                     }
-                }
-                if (!timeWave.isEmpty()) {
-                    for (Map.Entry<Enums.HackType, Map<Integer, Map<PlayerProfile, Integer>>> entry : timeWave.entrySet()) {
-                        Enums.HackType hackType = entry.getKey();
-                        accessed.add(hackType);
 
-                        for (Map<PlayerProfile, Integer> profileMap : entry.getValue().values()) {
-                            int sum = 0, squareSum = 0;
+                    if (!violationWave.isEmpty()) {
+                        for (Map.Entry<Enums.HackType, Map<Integer, Map<PlayerProfile, Integer>>> entry : violationWave.entrySet()) {
+                            Enums.HackType hackType = entry.getKey();
+                            accessed.add(hackType);
 
-                            for (int value : profileMap.values()) {
-                                sum += value;
-                                squareSum += value * value;
-                            }
-                            double mean = sum / (double) profileMap.size(),
-                                    deviation = Math.sqrt(squareSum / (double) profileMap.size());
+                            for (Map<PlayerProfile, Integer> profileMap : entry.getValue().values()) {
+                                int sum = 0, squareSum = 0;
 
-                            for (Map.Entry<PlayerProfile, Integer> entryChild : profileMap.entrySet()) {
-                                PlayerProfile profile = entryChild.getKey();
-                                double probability = StatisticsMath.getCumulativeProbability(
-                                        (entryChild.getValue() - mean) / deviation
-                                );
+                                for (int value : profileMap.values()) {
+                                    sum += value;
+                                    squareSum += value * value;
+                                }
+                                double mean = sum / (double) profileMap.size(),
+                                        deviation = Math.sqrt(squareSum / (double) profileMap.size());
 
-                                if (probability < 0.0) {
-                                    probability = 0.0 - probability;
+                                for (Map.Entry<PlayerProfile, Integer> entryChild : profileMap.entrySet()) {
+                                    PlayerProfile profile = entryChild.getKey();
+                                    double probability = StatisticsMath.getCumulativeProbability(
+                                            (entryChild.getValue() - mean) / deviation
+                                    );
 
                                     if (probability > profile.evidence.get(hackType)) {
                                         profile.evidence.add(
@@ -632,13 +602,48 @@ public class ResearchEngine {
                             }
                         }
                     }
-                }
-            }
+                    if (!timeWave.isEmpty()) {
+                        for (Map.Entry<Enums.HackType, Map<Integer, Map<PlayerProfile, Integer>>> entry : timeWave.entrySet()) {
+                            Enums.HackType hackType = entry.getKey();
+                            accessed.add(hackType);
 
-            for (Enums.HackType hackType : Enums.HackType.values()) {
-                if (!accessed.contains(hackType)) {
-                    for (PlayerProfile profile : playerProfiles.values()) {
-                        profile.evidence.remove(hackType);
+                            for (Map<PlayerProfile, Integer> profileMap : entry.getValue().values()) {
+                                int sum = 0, squareSum = 0;
+
+                                for (int value : profileMap.values()) {
+                                    sum += value;
+                                    squareSum += value * value;
+                                }
+                                double mean = sum / (double) profileMap.size(),
+                                        deviation = Math.sqrt(squareSum / (double) profileMap.size());
+
+                                for (Map.Entry<PlayerProfile, Integer> entryChild : profileMap.entrySet()) {
+                                    PlayerProfile profile = entryChild.getKey();
+                                    double probability = StatisticsMath.getCumulativeProbability(
+                                            (entryChild.getValue() - mean) / deviation
+                                    );
+
+                                    if (probability < 0.0) {
+                                        probability = 0.0 - probability;
+
+                                        if (probability > profile.evidence.get(hackType)) {
+                                            profile.evidence.add(
+                                                    hackType,
+                                                    probability
+                                            );
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                for (Enums.HackType hackType : Enums.HackType.values()) {
+                    if (!accessed.contains(hackType)) {
+                        for (PlayerProfile profile : playerProfiles.values()) {
+                            profile.evidence.remove(hackType);
+                        }
                     }
                 }
             }
