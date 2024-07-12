@@ -199,13 +199,13 @@ public class Config {
 
     public static void enableSilentChecking() {
         for (HackType hackType : Enums.HackType.values()) {
-            hackType.getCheck().setSilent(true);
+            hackType.getCheck().setSilent(null, true);
         }
     }
 
     public static void disableSilentChecking() {
         for (HackType hackType : Enums.HackType.values()) {
-            hackType.getCheck().setSilent(false);
+            hackType.getCheck().setSilent(null, false);
         }
     }
 }

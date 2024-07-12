@@ -180,7 +180,7 @@ public class PlayerInfo extends InventoryMenu {
                 cancellableCompatibility != null ? cancellableCompatibility + " Compatibility" :
                         notChecked ? "Temporarily Not Checked" :
                                 disabledCause != null ? "Cancelled (" + disabledCause.getReason() + ")" :
-                                        (check.isSilent(worldName) ? "Silent " : "") + "Checking";
+                                        (check.isSilent(dataType, worldName) ? "Silent " : "") + "Checking";
     }
 
     public void refresh(String targetName) {

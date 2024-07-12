@@ -108,7 +108,7 @@ public class BackgroundAPI {
     }
 
     static boolean isSilent(HackType HackType) {
-        return HackType.getCheck().isSilent(null);
+        return HackType.getCheck().isSilent(null, null);
     }
 
     static int getVL(Player p, HackType hackType) {
@@ -216,13 +216,13 @@ public class BackgroundAPI {
 
     static void enableSilentChecking(HackType HackType) {
         if (Config.settings.getBoolean("Important.enable_developer_api")) {
-            HackType.getCheck().setSilent(true);
+            HackType.getCheck().setSilent(null, true);
         }
     }
 
     static void disableSilentChecking(HackType HackType) {
         if (Config.settings.getBoolean("Important.enable_developer_api")) {
-            HackType.getCheck().setSilent(false);
+            HackType.getCheck().setSilent(null, false);
         }
     }
 

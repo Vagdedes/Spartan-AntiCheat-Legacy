@@ -96,11 +96,12 @@ public class LiveViolation {
                     this.performNotification(playerViolation);
                     this.performPunishments();
                     this.prevention = newPrevention;
-                    this.prevention.canPrevent = !hackType.getCheck().isSilent(player.getWorld().getName())
-                            && (silentCause == null
-                            || silentCause.hasExpired()
-                            || !silentCause.pointerMatches(information))
-                            && player.protocol.getProfile().evidence.get(this.hackType) >= PlayerEvidence.prevention;
+                    this.prevention.canPrevent =
+                            !hackType.getCheck().isSilent(player.dataType, player.getWorld().getName())
+                                    && (silentCause == null
+                                    || silentCause.hasExpired()
+                                    || !silentCause.pointerMatches(information))
+                                    && player.protocol.getProfile().evidence.get(this.hackType) >= PlayerEvidence.prevention;
                 };
 
                 if (!event || SpartanBukkit.isSynchronised()) {
@@ -279,12 +280,12 @@ public class LiveViolation {
     private void performPunishments() {
         Check check = hackType.getCheck();
 
-        if (check.canPunish) {
+        if (check.canPunish(player.dataType)) {
             List<String> commands = Config.settings.getPunishmentCommands();
 
             if (!commands.isEmpty()) {
                 Collection<Enums.HackType> detectedHacks = player.protocol.getProfile().evidence.getKnowledgeList(false);
-                detectedHacks.removeIf(loopHackType -> !loopHackType.getCheck().canPunish);
+                detectedHacks.removeIf(loopHackType -> !loopHackType.getCheck().canPunish(player.dataType));
 
                 if (!detectedHacks.isEmpty()) {
                     int index = 0;
@@ -359,7 +360,7 @@ public class LiveViolation {
         String information = Config.getConstruct() + player.name + " failed " + hackType
                 + " (" + violationLevelIdentifier + " " + playerViolation.level + "+" + playerViolation.increase + ") "
                 + "[(Version: " + MultiVersion.versionString() + "), "
-                + "(Silent: " + hackType.getCheck().isSilent(player.getWorld().getName()) + "), ("
+                + "(Silent: " + hackType.getCheck().isSilent(player.dataType, player.getWorld().getName()) + "), ("
                 + javaPlayerIdentifier + " " + (!player.bedrockPlayer) + ")" + ", (Packets: "
                 + SpartanBukkit.packetsEnabled() + "), (Ping: " + player.getPing() + "ms), " +
                 "(XYZ: " + location.getBlockX() + " " + location.getBlockY() + " "

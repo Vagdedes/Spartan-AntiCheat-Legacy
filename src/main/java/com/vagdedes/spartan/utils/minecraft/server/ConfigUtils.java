@@ -49,7 +49,6 @@ public class ConfigUtils {
             Check check = hackType.getCheck();
             message = replace(message, "{detection}", check.getName());
             message = replace(message, "{detection:real}", hackType.toString());
-            message = replace(message, "{punish:detection}", String.valueOf(check.canPunish));
         }
         return message;
     }
@@ -73,7 +72,8 @@ public class ConfigUtils {
         message = replace(message, "{cps}", String.valueOf(p.clicks.getCount()));
 
         if (hackType != null) {
-            message = replace(message, "{silent:detection}", String.valueOf(hackType.getCheck().isSilent(worldName)));
+            message = replace(message, "{silent:detection}", String.valueOf(hackType.getCheck().isSilent(p.dataType, worldName)));
+            message = replace(message, "{punish:detection}", String.valueOf(hackType.getCheck().canPunish(p.dataType)));
         }
         return ChatColor.translateAlternateColorCodes('&', replaceWithSyntax(message, hackType));
     }
@@ -107,13 +107,16 @@ public class ConfigUtils {
                 message = replace(message, "{cps}", String.valueOf(p.clicks.getCount()));
 
                 if (hasHackType) {
-                    message = replace(message, "{silent:detection}", String.valueOf(hackType.getCheck().isSilent(worldName)));
+                    message = replace(message, "{silent:detection}", String.valueOf(hackType.getCheck().isSilent(p.dataType, worldName)));
+                    message = replace(message, "{punish:detection}", String.valueOf(hackType.getCheck().canPunish(p.dataType)));
                 }
             } else if (hasHackType) {
-                message = replace(message, "{silent:detection}", String.valueOf(hackType.getCheck().isSilent(null)));
+                message = replace(message, "{silent:detection}", String.valueOf(hackType.getCheck().isSilent(null, null)));
+                message = replace(message, "{punish:detection}", String.valueOf(hackType.getCheck().canPunish(null)));
             }
         } else if (hasHackType) {
-            message = replace(message, "{silent:detection}", String.valueOf(hackType.getCheck().isSilent(null)));
+            message = replace(message, "{silent:detection}", String.valueOf(hackType.getCheck().isSilent(null, null)));
+            message = replace(message, "{punish:detection}", String.valueOf(hackType.getCheck().canPunish(null)));
         }
         return ChatColor.translateAlternateColorCodes('&', replaceWithSyntax(message, hackType));
     }
