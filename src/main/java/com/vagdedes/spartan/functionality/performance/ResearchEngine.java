@@ -261,10 +261,19 @@ public class ResearchEngine {
     }
 
     private static Enums.DataType getDataType(String s) {
-        int index1 = s.indexOf("(" + LiveViolation.javaPlayerIdentifier + " ");
+        String find = "(" + LiveViolation.javaPlayerIdentifier + " ";
+        int index = s.indexOf(find);
 
-        if (index1 > -1) {
-            // todo
+        if (index > -1) {
+            s = s.substring(index + find.length());
+            index = s.indexOf(")");
+            s = s.substring(0, index);
+
+            for (Enums.DataType dataType : usableDataTypes) {
+                if (s.equals(dataType.toString())) {
+                    return dataType;
+                }
+            }
         }
         return Enums.DataType.JAVA;
     }
