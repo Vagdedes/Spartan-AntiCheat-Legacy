@@ -49,26 +49,17 @@ public class SpartanEdition {
             currentVersion = !CloudBase.hasToken();
         }
         SpartanBukkit.connectionThread.executeIfSyncElseHere(() -> {
-            boolean changed = false;
-
             if (!currentVersion
                     && CloudConnections.ownsProduct(
                     getProductID(currentType)
             )) {
                 currentVersion = true;
-                changed = true;
             }
             if (!alternativeVersion
                     && CloudConnections.ownsProduct(
                     getProductID(oppositeType)
             )) {
                 alternativeVersion = true;
-                changed = true;
-            }
-            if (changed) {
-                for (Enums.HackType hackType : Enums.HackType.values()) {
-                    hackType.resetCheck();
-                }
             }
         });
     }
