@@ -10,7 +10,6 @@ import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.profiling.PlayerViolation;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
-import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
@@ -37,7 +36,6 @@ public class ResearchEngine {
             Enums.DataType.JAVA,
             Enums.DataType.BEDROCK
     };
-    // todo fix datatype problem
     private static final Map<String, PlayerProfile> playerProfiles = new ConcurrentHashMap<>();
 
     static {
@@ -65,14 +63,6 @@ public class ResearchEngine {
                 });
             }
         }, 1L, 1L);
-    }
-
-    public static Enums.DataType[] getDynamicUsableDataTypes() {
-        Enums.DataType dataType = SpartanEdition.getMissingDetection();
-        return dataType == null ? usableDataTypes :
-                dataType == Enums.DataType.BEDROCK
-                        ? new Enums.DataType[]{Enums.DataType.JAVA}
-                        : new Enums.DataType[]{Enums.DataType.BEDROCK};
     }
 
     // Separator
@@ -510,7 +500,7 @@ public class ResearchEngine {
         if (!playerProfiles.isEmpty()) {
             Set<Enums.HackType> accessed = new HashSet<>();
 
-            for (Enums.DataType dataType : getDynamicUsableDataTypes()) {
+            for (Enums.DataType dataType : usableDataTypes) {
                 Map<Enums.HackType, Map<Integer, Map<PlayerProfile, Integer>>> wave = new LinkedHashMap<>();
 
                 for (PlayerProfile profile : playerProfiles.values()) {
