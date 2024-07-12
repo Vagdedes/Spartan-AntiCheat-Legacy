@@ -1,3 +1,8 @@
 [#] Fixed a ProtocolLib ping-pong transactions console error.
 [#] Fixed a 1.8 get block direction console error.
+[#] Fixed a Velocity material console error.
+[#] Fixed a Velocity surrounding block false positive.
+[#] Fixed a few BlockReach distance false positives.
+[#] Rewrote the statistics that judge who is hacking to use quantitative probability.
+[+] Add more information to the Player Info menu that should help with judging a player.
 [-] Removed the staff chat functionality because it's not related to the anticheat's needs.
