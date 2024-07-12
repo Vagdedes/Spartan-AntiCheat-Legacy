@@ -6,6 +6,7 @@ import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.world.SpartanBlock;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
+import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -61,7 +62,9 @@ public class ImpossibleActions extends CheckExecutor {
                         case SOUTH:
                         case SOUTH_EAST:
                         case SOUTH_SOUTH_EAST:
-                            double directionDistance = blockFace.getDirection().distance(playerLocation.getDirection());
+                            double directionDistance = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)
+                                    ? Double.MAX_VALUE
+                                    : blockFace.getDirection().distance(playerLocation.getDirection());
 
                             if (directionDistance <= 1.35) {
                                 cancel(

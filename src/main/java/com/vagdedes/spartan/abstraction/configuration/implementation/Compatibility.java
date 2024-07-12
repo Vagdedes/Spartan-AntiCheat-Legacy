@@ -41,7 +41,7 @@ public class Compatibility {
         ADVANCED_ABILITIES("AdvancedAbilities"), CRACK_SHOT("CrackShot"),
         CRACK_SHOT_PLUS("CrackShotPlus"), CRAFT_BOOK("CraftBook"),
         MAGIC_SPELLS("MagicSpells"), PROTOCOL_LIB("ProtocolLib"),
-        MC_MMO("mcMMO"), AUTHENTICATION("Authentication"),
+        MC_MMO("mcMMO"), PROTOCOL_SUPPORT("ProtocolSupport"),
         TREE_FELLER("TreeFeller"), VEIN_MINER("VeinMiner"),
         GRAPPLING_HOOK("GrapplingHook"), RECENT_PVP_MECHANICS("RecentPvPMechanics"),
         MINE_BOMB("MineBomb"), SUPER_PICKAXE("SuperPickaxe"),
@@ -54,8 +54,7 @@ public class Compatibility {
         ITEMS_ADDER("ItemsAdder"), RAMPEN_DRILLS("RampenDrills"),
         OLD_COMBAT_MECHANICS("OldCombatMechanics"), CUSTOM_KNOCKBACK("CustomKnockback"),
         PROJECT_KORRA("ProjectKorra"), ACID_RAIN("AcidRain"),
-        FILE_GUI("FileGUI"), FLOODGATE("Floodgate"),
-        PROTOCOL_SUPPORT("ProtocolSupport");
+        FILE_GUI("FileGUI"), FLOODGATE("Floodgate");
 
         private boolean enabled, forced, functional, elseRunnable;
         private final String name;
@@ -84,11 +83,6 @@ public class Compatibility {
                     hardcoded = true;
                     contains = false;
                     name = this.toString().toLowerCase();
-                    break;
-                case AUTHENTICATION: // General
-                    hardcoded = true;
-                    contains = true;
-                    name = "auth";
                     break;
                 default:
                     hardcoded = false;

@@ -6,9 +6,9 @@ import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
 import com.vagdedes.spartan.utils.math.RayUtils;
+import com.vagdedes.spartan.utils.minecraft.world.BlockPatternUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import me.vagdedes.spartan.system.Enums;
-import org.bukkit.Material;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerVelocityEvent;
 
@@ -29,8 +29,6 @@ public class Velocity extends CheckExecutor {
 
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
-        if (!SpartanBukkit.packetsEnabled()) return;
-        if (blockCause(player)) return;
         if (object instanceof PlayerVelocityEvent) {
             PlayerVelocityEvent event = (PlayerVelocityEvent) object;
             veloV = true;
@@ -94,34 +92,32 @@ public class Velocity extends CheckExecutor {
     }
 
     @Override
-    protected boolean canRun() {
-        return CombatProcessing.canCheck(player)
-                && !player.isOutsideOfTheBorder(-1.0);
+    protected void cannotHandle(boolean cancelled, Object object) {
+        veloV = true;
+        veloH = true;
+        arrayV = 0;
+        arrayH = 0;
+        verticalSended = 0;
+        xSended = 0;
+        zSended = 0;
     }
 
-    private boolean blockCause(SpartanPlayer player) {
-        SpartanLocation location = player.movement.getRawLocation();
 
-        if (location.getBlock().material != Material.AIR) {
-            return true;
-        }
-        for (int x = location.getBlockX() - 1; x <= location.getBlockX() + 1; x++) {
-            for (int y = location.getBlockY(); y <= location.getBlockY() + 2; y++) {
-                for (int z = location.getBlockZ() - 1; z <= location.getBlockZ() + 1; z++) {
-                    if (BlockUtils.isSolid(new SpartanLocation(
-                            location.world,
-                            location.getX(),
-                            location.getY(),
-                            location.getZ(),
-                            0.0f,
-                            0.0f
-                    ).getBlock().material)) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
+    @Override
+    protected boolean canRun() {
+        return SpartanBukkit.packetsEnabled()
+                && CombatProcessing.canCheck(player)
+                && !player.isOutsideOfTheBorder(-1.0)
+                && !BlockPatternUtils.isBlockPattern(
+                new double[][]{
+                        {1, 0, 1},
+                        {1, 1, 1},
+                        {1, player.getInstance().getEyeHeight(), 1}
+                },
+                player.movement.getLocation(),
+                true,
+                BlockUtils.solid, BlockUtils.semi_solid
+        );
     }
 
 }

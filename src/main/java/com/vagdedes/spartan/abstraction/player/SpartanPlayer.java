@@ -23,8 +23,8 @@ import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.Elytra;
-import com.vagdedes.spartan.listeners.bukkit.Event_Chunks;
 import com.vagdedes.spartan.listeners.bukkit.Event_Movement;
+import com.vagdedes.spartan.listeners.bukkit.chunks.Event_Chunks;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
@@ -83,7 +83,7 @@ public class SpartanPlayer {
             List<SpartanPlayer> players = SpartanBukkit.getPlayers();
 
             if (!players.isEmpty()) {
-                if (Event_Chunks.enabled()) {
+                if (MultiVersion.folia || Event_Chunks.enabled()) {
                     Set<Integer> worldHashes = new HashSet<>();
 
                     for (World world : Bukkit.getWorlds()) {
@@ -535,7 +535,7 @@ public class SpartanPlayer {
     // Separator
 
     public List<Entity> getNearbyEntities(double x, double y, double z) {
-        if (Event_Chunks.enabled()) {
+        if (MultiVersion.folia || Event_Chunks.enabled()) {
             Map<Long, List<Entity>> perChunk = entities.get(this.getWorld().getName().hashCode());
 
             if (perChunk != null) {

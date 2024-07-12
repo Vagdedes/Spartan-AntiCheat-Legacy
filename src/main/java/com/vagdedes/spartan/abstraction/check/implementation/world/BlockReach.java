@@ -9,9 +9,11 @@ import com.vagdedes.spartan.compatibility.manual.abilities.AureliumSkills;
 import com.vagdedes.spartan.compatibility.manual.building.MineBomb;
 import com.vagdedes.spartan.compatibility.manual.building.PrinterMode;
 import com.vagdedes.spartan.compatibility.manual.building.TreeFeller;
+import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import com.vagdedes.spartan.utils.minecraft.world.GroundUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
+import org.bukkit.Material;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -27,7 +29,7 @@ public class BlockReach extends CheckExecutor {
     }
 
     private double getLimit() {
-        double limit = player.bedrockPlayer ? 7.0 : 6.0;
+        double limit = 7.0;
         return Math.max(
                 hackType.getCheck().getDecimalOption("overall_distance", limit),
                 limit
@@ -75,6 +77,9 @@ public class BlockReach extends CheckExecutor {
                             ab_distance = to.distance(blockAgainst);
 
                     if (!player.bedrockPlayer
+                            && BlockUtils.isFullSolid(block.material)
+                            && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
+                            || block.material != Material.BARRIER)
                             && player.getInstance().getVehicle() == null
                             && distance > (ab_distance + GroundUtils.boundingBox)) {
                         cancel("type: unusual, distance: " + distance + ", block-against-distance: " + ab_distance + ", block: " + BlockUtils.blockToString(block));

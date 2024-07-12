@@ -14,9 +14,11 @@ import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.AntiCheatLogs;
 import com.vagdedes.spartan.utils.java.TimeUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
+import com.vagdedes.spartan.utils.math.statistics.StatisticsMath;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -30,12 +32,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ResearchEngine {
 
-    public static final double requiredProfiles = 10;
     private static long schedulerTicks = 0L;
     public static final Enums.DataType[] usableDataTypes = new Enums.DataType[]{
             Enums.DataType.JAVA,
             Enums.DataType.BEDROCK
     };
+    // todo fix datatype problem
     private static final Map<String, PlayerProfile> playerProfiles = new ConcurrentHashMap<>();
 
     static {
@@ -53,22 +55,24 @@ public class ResearchEngine {
                 }
             } else {
                 schedulerTicks -= 1;
-                SpartanBukkit.analysisThread.executeIfFree(ResearchEngine::updateCache);
+
+                SpartanBukkit.analysisThread.executeIfFree(() -> {
+                    updateCache();
+
+                    if (schedulerTicks % TPS.maximum == 0) {
+                        MainMenu.refresh();
+                    }
+                });
             }
         }, 1L, 1L);
     }
 
-    public static Enums.DataType[] getDynamicUsableDataTypes(boolean universal) {
+    public static Enums.DataType[] getDynamicUsableDataTypes() {
         Enums.DataType dataType = SpartanEdition.getMissingDetection();
-        return dataType == null ? (universal ? Enums.DataType.values() : usableDataTypes) :
-                dataType == Enums.DataType.BEDROCK ? (universal ? new Enums.DataType[]{Enums.DataType.UNIVERSAL, Enums.DataType.JAVA} : new Enums.DataType[]{Enums.DataType.JAVA}) :
-                        (universal ? new Enums.DataType[]{Enums.DataType.UNIVERSAL, Enums.DataType.BEDROCK} : new Enums.DataType[]{Enums.DataType.BEDROCK});
-    }
-
-    // Separator
-
-    public static boolean enoughData() {
-        return playerProfiles.size() >= requiredProfiles;
+        return dataType == null ? usableDataTypes :
+                dataType == Enums.DataType.BEDROCK
+                        ? new Enums.DataType[]{Enums.DataType.JAVA}
+                        : new Enums.DataType[]{Enums.DataType.BEDROCK};
     }
 
     // Separator
@@ -125,14 +129,15 @@ public class ResearchEngine {
     public static void resetData(Enums.HackType hackType) {
         SpartanBukkit.analysisThread.execute(() -> {
             String hackTypeString = hackType.toString();
-            hackType.getCheck().clearIgnoredViolations();
 
             // Separator
 
             if (!playerProfiles.isEmpty()) {
                 for (PlayerProfile playerProfile : playerProfiles.values()) {
-                    playerProfile.getViolationHistory(hackType).clear();
-                    playerProfile.evidence.remove(hackType, true, true);
+                    for (Enums.DataType dataType : usableDataTypes) {
+                        playerProfile.getViolationHistory(dataType, hackType).clear();
+                    }
+                    playerProfile.evidence.remove(hackType);
                 }
             }
 
@@ -265,6 +270,15 @@ public class ResearchEngine {
         return null;
     }
 
+    private static Enums.DataType getDataType(String s) {
+        int index1 = s.indexOf("(" + LiveViolation.javaPlayerIdentifier + " ");
+
+        if (index1 > -1) {
+            // todo
+        }
+        return Enums.DataType.JAVA;
+    }
+
     private static boolean isStorageMode() {
         return Config.settings.getBoolean("Logs.log_file") || Config.sql.isEnabled();
     }
@@ -387,7 +401,6 @@ public class ResearchEngine {
             } else {
                 CloudBase.clear(true);
                 Pattern.clear();
-                ViolationAnalysis.clear();
             }
         });
     }
@@ -426,6 +439,7 @@ public class ResearchEngine {
                                     String name = split[0];
                                     String hackTypeString = split[2];
                                     PlayerProfile playerProfile = getPlayerProfile(name);
+                                    Enums.DataType dataType = getDataType(data);
 
                                     for (Enums.HackType hackType : Enums.HackType.values()) {
                                         if (hackTypeString.equals(hackType.toString())) {
@@ -441,7 +455,7 @@ public class ResearchEngine {
                                                                     AntiCheatLogs.dateFormat :
                                                                     AntiCheatLogs.usualDateFormat
                                                     );
-                                                    playerProfile.getViolationHistory(hackType).store(
+                                                    playerProfile.getViolationHistory(dataType, hackType).store(
                                                             new PlayerViolation(
                                                                     sdf.parse(fullDate).getTime(),
                                                                     hackType,
@@ -494,91 +508,74 @@ public class ResearchEngine {
 
     private static void updateCache() {
         if (!playerProfiles.isEmpty()) {
-            Collection<PlayerProfile> playerProfiles = new ArrayList<>(ResearchEngine.playerProfiles.values());
-            Enums.DataType[] dataTypes = getDynamicUsableDataTypes(false);
-            ViolationAnalysis.calculateData(playerProfiles);
+            Set<Enums.HackType> accessed = new HashSet<>();
 
-            // Separator
+            for (Enums.DataType dataType : getDynamicUsableDataTypes()) {
+                Map<Enums.HackType, Map<Integer, Map<PlayerProfile, Integer>>> wave = new LinkedHashMap<>();
 
-            if (enoughData()) {
-                for (Enums.HackType hackType : Enums.HackType.values()) {
-                    for (Enums.DataType dataType : dataTypes) {
-                        if (hackType.getCheck().isEnabled(dataType, null, null)) {
-                            boolean bedrock = dataType == Enums.DataType.BEDROCK;
-                            Map<Integer, ViolationAnalysis.TimePeriod> averages = new LinkedHashMap<>();
+                for (PlayerProfile profile : playerProfiles.values()) {
+                    for (Enums.HackType hackType : Enums.HackType.values()) {
+                        Collection<PlayerViolation> collection = profile.getViolationHistory(dataType, hackType).getCollection();
 
-                            for (PlayerProfile playerProfile : playerProfiles) {
-                                if (bedrock == playerProfile.isBedrockPlayer()
-                                        && playerProfile.isLegitimate()) {
-                                    Collection<PlayerViolation> list = playerProfile.getViolationHistory(hackType).getCollection();
-
-                                    // Organize the violations into time period pieces
-                                    if (!list.isEmpty()) {
-                                        for (PlayerViolation playerViolation : list) {
-                                            averages.computeIfAbsent(
-                                                    AlgebraUtils.integerFloor(playerViolation.time / (double) hackType.violationTimeWorth),
-                                                    k -> new ViolationAnalysis.TimePeriod()
-                                            ).add(playerProfile, playerViolation);
-                                        }
-                                    }
-                                }
+                        if (!collection.isEmpty()) {
+                            for (PlayerViolation violation : collection) {
+                                Map<PlayerProfile, Integer> subMap = wave.computeIfAbsent(
+                                        hackType,
+                                        k -> new LinkedHashMap<>()
+                                ).computeIfAbsent(
+                                        violation.identity,
+                                        k -> new LinkedHashMap<>()
+                                );
+                                subMap.put(
+                                        profile,
+                                        subMap.getOrDefault(profile, 0) + violation.increase
+                                );
                             }
-
-                            if (!averages.isEmpty()) {
-                                Map<Integer, Double>
-                                        sum = new LinkedHashMap<>(),
-                                        count = new LinkedHashMap<>();
-
-                                // Add the average violations for the executed detections based on each time period
-                                for (ViolationAnalysis.TimePeriod timePeriod : averages.values()) {
-                                    Map<Integer, Double> averageViolations = timePeriod.getSquareViolations();
-
-                                    if (!averageViolations.isEmpty()) {
-                                        for (Map.Entry<Integer, Double> averageViolationsEntry : averageViolations.entrySet()) {
-                                            sum.put(
-                                                    averageViolationsEntry.getKey(),
-                                                    sum.getOrDefault(averageViolationsEntry.getKey(), 0.0)
-                                                            + averageViolationsEntry.getValue()
-                                            );
-                                            count.put(
-                                                    averageViolationsEntry.getKey(),
-                                                    count.getOrDefault(averageViolationsEntry.getKey(), 0.0)
-                                                            + 1.0
-                                            );
-                                        }
-                                    }
-                                }
-
-                                // Calculate the average violations for each
-                                if (hackType.getCheck().hasMultiViolations()) {
-                                    for (Map.Entry<Integer, Double> entry : sum.entrySet()) {
-                                        entry.setValue(entry.getValue() / count.get(entry.getKey()));
-                                    }
-                                } else {
-                                    for (Map.Entry<Integer, Double> entry : sum.entrySet()) {
-                                        entry.setValue(Math.sqrt(entry.getValue() / count.get(entry.getKey())));
-                                    }
-                                }
-                                hackType.getCheck().setIgnoredViolations(dataType, sum);
-                            } else {
-                                hackType.getCheck().clearIgnoredViolations(dataType);
-                            }
-                        } else {
-                            hackType.getCheck().clearIgnoredViolations(dataType);
                         }
                     }
                 }
-            } else {
-                for (Enums.HackType hackType : Enums.HackType.values()) {
-                    hackType.getCheck().clearIgnoredViolations();
+
+                if (!wave.isEmpty()) {
+                    for (Map.Entry<Enums.HackType, Map<Integer, Map<PlayerProfile, Integer>>> entry : wave.entrySet()) {
+                        Enums.HackType hackType = entry.getKey();
+                        accessed.add(hackType);
+
+                        for (Map<PlayerProfile, Integer> profileMap : entry.getValue().values()) {
+                            int sum = 0, squareSum = 0;
+
+                            for (int value : profileMap.values()) {
+                                sum += value;
+                                squareSum += value * value;
+                            }
+                            double mean = sum / (double) profileMap.size(),
+                                    deviation = Math.sqrt(squareSum / (double) profileMap.size());
+
+                            for (Map.Entry<PlayerProfile, Integer> entryChild : profileMap.entrySet()) {
+                                PlayerProfile profile = entryChild.getKey();
+                                double probability = StatisticsMath.getCumulativeProbability(
+                                        (entryChild.getValue() - mean) / deviation
+                                );
+
+                                if (probability > profile.evidence.get(hackType)) {
+                                    profile.evidence.add(
+                                            hackType,
+                                            probability
+                                    );
+                                }
+                            }
+                        }
+                    }
                 }
             }
-        } else { // We clear because there are no players
-            ViolationAnalysis.clear();
 
             for (Enums.HackType hackType : Enums.HackType.values()) {
-                hackType.getCheck().clearIgnoredViolations();
+                if (!accessed.contains(hackType)) {
+                    for (PlayerProfile profile : playerProfiles.values()) {
+                        profile.evidence.remove(hackType);
+                    }
+                }
             }
         }
     }
+
 }

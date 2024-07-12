@@ -351,7 +351,7 @@ public class SQLFeature extends ConfigurationBuilder {
                             + ", " + (hasPlayer ? syntaxForColumn(location.getBlockY()) : "NULL")
                             + ", " + (hasPlayer ? syntaxForColumn(location.getBlockZ()) : "NULL")
                             + ", " + (hasMaterial ? syntaxForColumn(material) : hasCheck ? syntaxForColumn(playerViolation.hackType) : "NULL")
-                            + ", " + (hasCheck ? syntaxForColumn(playerViolation.level + playerViolation.increase) : "NULL")
+                            + ", " + (hasCheck ? syntaxForColumn(playerViolation.sum()) : "NULL")
                             + ");"
             );
 

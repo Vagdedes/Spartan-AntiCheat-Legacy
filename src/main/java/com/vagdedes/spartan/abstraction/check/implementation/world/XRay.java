@@ -17,28 +17,27 @@ import java.util.Set;
 public class XRay extends CheckExecutor {
 
     private static double getAverageDeviation(World.Environment environment, MiningHistory.MiningOre ore) {
+        int required = 10;
         Collection<PlayerProfile> profiles = ResearchEngine.getPlayerProfiles();
 
-        if (profiles.size() <= ResearchEngine.requiredProfiles) {
+        if (profiles.size() <= required) {
             return 0.0;
         } else {
             int profileCount = 0;
             Map<String, Integer> count = new HashMap<>();
 
             for (PlayerProfile profile : profiles) {
-                if (profile.isLegitimate()) {
-                    Set<Map.Entry<String, Integer>> entries = profile.getMiningHistory(ore).getMinesEntry(environment);
+                Set<Map.Entry<String, Integer>> entries = profile.getMiningHistory(ore).getMinesEntry(environment);
 
-                    if (!entries.isEmpty()) {
-                        profileCount++;
+                if (!entries.isEmpty()) {
+                    profileCount++;
 
-                        for (Map.Entry<String, Integer> entry : entries) {
-                            count.put(entry.getKey(), count.getOrDefault(entry.getKey(), 0) + entry.getValue());
-                        }
+                    for (Map.Entry<String, Integer> entry : entries) {
+                        count.put(entry.getKey(), count.getOrDefault(entry.getKey(), 0) + entry.getValue());
                     }
                 }
             }
-            if (profileCount >= ResearchEngine.requiredProfiles) {
+            if (profileCount >= required) {
                 int mines = 0;
 
                 for (Map.Entry<String, Integer> entry : count.entrySet()) {

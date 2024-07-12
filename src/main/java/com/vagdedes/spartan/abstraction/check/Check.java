@@ -20,9 +20,7 @@ public class Check {
 
     // Static
 
-    public static final int
-            maxCommands = 10,
-            standardIgnoredViolations = 3;
+    public static final int maxCommands = 10;
 
     // Object
 
@@ -31,7 +29,6 @@ public class Check {
     private final Map<String, Object> options;
     private boolean silent;
     public final boolean handleCancelledEvents;
-    private final Map<Enums.DataType, Map<Integer, Integer>> ignoredViolations;
     private final boolean[] enabled;
     public final boolean
             canPunish,
@@ -44,16 +41,9 @@ public class Check {
     // Object Methods
 
     public Check(Enums.HackType hackType) {
-        this(hackType, new LinkedHashMap<>(), false);
-    }
-
-    public Check(Enums.HackType hackType,
-                 Map<Enums.DataType, Map<Integer, Integer>> ignoredViolations,
-                 boolean copy) {
         this.hasMultiViolations = false;
         this.options = Collections.synchronizedMap(new LinkedHashMap<>());
         this.hackType = hackType;
-        this.ignoredViolations = copy ? ignoredViolations : Collections.synchronizedMap(ignoredViolations);
 
         // Separator
 
@@ -65,7 +55,7 @@ public class Check {
                 silents_config = getOption("silent_worlds", "exampleSilentWorld1, exampleSilentWorld2", false).toString();
 
         // Separator
-        Enums.DataType[] dataTypes = ResearchEngine.getDynamicUsableDataTypes(false);
+        Enums.DataType[] dataTypes = ResearchEngine.getDynamicUsableDataTypes();
         this.enabled = new boolean[ResearchEngine.usableDataTypes.length];
         Object oldOptionValue = getOption("enabled", null, false);
         boolean hasOldOption = oldOptionValue instanceof Boolean;
@@ -192,16 +182,10 @@ public class Check {
         }
     }
 
-    public void clearConfigurationCache() {
-        synchronized (options) {
-            options.clear();
-        }
-    }
-
     // Separator
 
     public boolean isEnabled(Enums.DataType dataType, String world, SpartanPlayer player) {
-        Enums.DataType[] dataTypes = ResearchEngine.getDynamicUsableDataTypes(false);
+        Enums.DataType[] dataTypes = ResearchEngine.getDynamicUsableDataTypes();
 
         if (dataType == null) {
             for (Enums.DataType type : dataTypes) {
@@ -223,11 +207,11 @@ public class Check {
         Enums.DataType[] dataTypes;
 
         if (dataType == null) {
-            dataTypes = ResearchEngine.getDynamicUsableDataTypes(false);
+            dataTypes = ResearchEngine.getDynamicUsableDataTypes();
         } else {
             dataTypes = null;
 
-            for (Enums.DataType type : ResearchEngine.getDynamicUsableDataTypes(false)) {
+            for (Enums.DataType type : ResearchEngine.getDynamicUsableDataTypes()) {
                 if (type == dataType) {
                     dataTypes = new Enums.DataType[]{dataType};
                     break;
@@ -255,7 +239,9 @@ public class Check {
                     this.enabled[ordinal] = b;
 
                     if (!b) {
-                        clearConfigurationCache();
+                        synchronized (options) {
+                            options.clear();
+                        }
 
                         for (SpartanPlayer player : SpartanBukkit.getPlayers()) {
                             player.getViolations(hackType).reset();
@@ -543,53 +529,6 @@ public class Check {
             return setOption("silent", b);
         } else {
             return false;
-        }
-    }
-
-    // Separator
-
-    public void setIgnoredViolations(Enums.DataType dataType, Map<Integer, Double> map) {
-        synchronized (ignoredViolations) {
-            Map<Integer, Integer> createdMap = new LinkedHashMap<>();
-            ignoredViolations.put(dataType, createdMap);
-
-            for (Map.Entry<Integer, Double> entry : map.entrySet()) {
-                createdMap.put(
-                        entry.getKey(),
-                        AlgebraUtils.integerCeil(entry.getValue()) // Ceil to be the safest
-                );
-            }
-        }
-    }
-
-    public void clearIgnoredViolations(Enums.DataType dataType) {
-        synchronized (ignoredViolations) {
-            ignoredViolations.remove(dataType);
-        }
-    }
-
-    public void clearIgnoredViolations() {
-        synchronized (ignoredViolations) {
-            ignoredViolations.clear();
-        }
-    }
-
-    public Map<Enums.DataType, Map<Integer, Integer>> copyIgnoredViolations() {
-        return ignoredViolations;
-    }
-
-    public int getIgnoredViolations(Enums.DataType dataType, int hash) {
-        synchronized (ignoredViolations) {
-            Map<Integer, Integer> map = ignoredViolations.get(dataType);
-
-            if (map == null) {
-                return standardIgnoredViolations;
-            } else {
-                Integer integer = map.get(hash);
-                return integer == null
-                        ? standardIgnoredViolations
-                        : Math.max(integer, standardIgnoredViolations);
-            }
         }
     }
 

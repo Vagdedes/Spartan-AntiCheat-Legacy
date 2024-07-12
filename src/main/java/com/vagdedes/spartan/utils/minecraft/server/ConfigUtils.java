@@ -3,10 +3,8 @@ package com.vagdedes.spartan.utils.minecraft.server;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
-import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.connection.cloud.CrossServerInformation;
-import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
@@ -112,11 +110,6 @@ public class ConfigUtils {
                     message = replace(message, "{silent:detection}", String.valueOf(hackType.getCheck().isSilent(worldName)));
                 }
             } else if (hasHackType) {
-                PlayerProfile profile = ResearchEngine.getPlayerProfile(name);
-
-                if (profile != null) {
-                    message = replace(message, "{player:type}", profile.getDataType().toString().toLowerCase());
-                }
                 message = replace(message, "{silent:detection}", String.valueOf(hackType.getCheck().isSilent(null)));
             }
         } else if (hasHackType) {

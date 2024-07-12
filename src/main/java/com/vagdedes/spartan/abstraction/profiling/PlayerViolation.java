@@ -44,8 +44,8 @@ public class PlayerViolation {
         );
     }
 
-    public int getIgnoredViolations(Enums.DataType dataType) {
-        return hackType.getCheck().getIgnoredViolations(dataType, this.identity);
+    public int sum() {
+        return this.level + this.increase;
     }
 
 }

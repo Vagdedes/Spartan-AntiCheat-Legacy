@@ -70,7 +70,6 @@ public class Settings extends ConfigurationBuilder {
         addOption("Chat.prevent_same_message", false);
         addOption("Chat.blocked_words", "blockedWord1, blockedWord2");
         addOption("Chat.blocked_commands", "blockedCommand1, blockedCommand2");
-        addOption("Chat.staff_chat_character", "@");
 
         addOption(tpsProtectionOption, true);
         addOption("Protections.max_supported_player_latency", TPS.tickTimeInteger * 100);
@@ -92,7 +91,6 @@ public class Settings extends ConfigurationBuilder {
         addOption("Discord.webhook_hex_color", "4caf50");
         addOption("Discord.checks_webhook_url", "");
         addOption("Discord.punishments_webhook_url", "");
-        addOption("Discord.communication_webhook_url", "");
 
         if (!local && exists) {
             CrossServerInformation.sendConfiguration(file);

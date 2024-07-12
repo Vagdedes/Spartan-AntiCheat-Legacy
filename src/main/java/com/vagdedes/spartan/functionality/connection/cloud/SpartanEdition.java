@@ -171,7 +171,7 @@ public class SpartanEdition {
 
                                 if (!playerProfiles.isEmpty()) {
                                     for (PlayerProfile profile : playerProfiles) {
-                                        if (missingDetection == profile.getDataType()) {
+                                        if (profile.hasData(missingDetection)) {
                                             notifyCache = true;
                                             sendVersionNotification(player, missingDetection);
                                             return;

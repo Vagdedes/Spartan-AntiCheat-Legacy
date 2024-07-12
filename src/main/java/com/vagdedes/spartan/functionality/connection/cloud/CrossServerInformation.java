@@ -96,9 +96,7 @@ public class CrossServerInformation {
             broadcastNotifications.clear();
             CloudConnections.sendCrossServerInformation(type, serverName, notificationsArray);
         }
-        List<SpartanPlayer> notificationPlayers = DetectionNotifications.getPlayers(true);
-
-        if (!notificationPlayers.isEmpty()) {
+        if (!DetectionNotifications.getPlayers().isEmpty()) {
             String[] incomingInformation = CloudConnections.getCrossServerInformation(type, null);
 
             if (incomingInformation.length > 0) {
@@ -128,7 +126,7 @@ public class CrossServerInformation {
                 }
                 iterator.remove();
 
-                for (SpartanPlayer player : DetectionNotifications.getPlayers(true)) {
+                for (SpartanPlayer player : DetectionNotifications.getPlayers()) {
                     if (!LiveViolation.hasNotificationCooldown(
                             player,
                             notificationPlayer != null ? notificationPlayer.spartanPlayer : null,

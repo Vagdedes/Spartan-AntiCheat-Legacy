@@ -153,22 +153,23 @@ public class NoFall extends CheckExecutor {
                 && (!PlayerUtils.levitation || !player.hasPotionEffect(PotionEffectType.LEVITATION, 0))
                 && !BlockPatternUtils.isBlockPattern(new double[]{
                         1,
-                        0.0,
+                        0,
                         1
                 },
-                player.movement.getEventToLocation(),
+                player.movement.getLocation(),
                 true,
                 BlockUtils.climbable,
                 BlockUtils.interactive_and_passable,
                 BlockUtils.slime_block,
                 BlockUtils.bed,
                 BlockUtils.liquid)
-                && !BlockPatternUtils.isBlockPattern(new double[]{
+                && !BlockPatternUtils.isBlockPattern(
+                        new double[]{
                         1,
-                        -1.0,
+                        -1,
                         1
                 },
-                player.movement.getEventToLocation(),
+                player.movement.getLocation(),
                 true,
                 BlockUtils.interactive_and_passable,
                 BlockUtils.slime_block,
@@ -178,7 +179,7 @@ public class NoFall extends CheckExecutor {
                         0.0,
                         1
                 },
-                player.movement.getEventToLocation(),
+                player.movement.getLocation(),
                 true);
     }
 

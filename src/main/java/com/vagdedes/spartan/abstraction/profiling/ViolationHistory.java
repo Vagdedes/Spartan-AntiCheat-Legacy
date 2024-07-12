@@ -12,6 +12,10 @@ public class ViolationHistory {
         this.memory = new CopyOnWriteArrayList<>();
     }
 
+    boolean isEmpty() {
+        return memory.isEmpty();
+    }
+
     public void clear() {
         memory.clear();
     }
