@@ -1,10 +1,15 @@
 package com.vagdedes.spartan.functionality.connection.cloud;
 
 import com.vagdedes.spartan.Register;
+import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
+import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.java.RequestUtils;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
+
+import java.util.List;
 
 public class JarVerification {
 
@@ -23,10 +28,25 @@ public class JarVerification {
             });
         }
 
-        if (!isValid() && (enabled || CloudBase.hasToken())) {
-            Register.disablePlugin();
+        if (enabled || CloudBase.hasToken()) {
+            if (isValid()) {
+                SpartanEdition.refresh();
+            } else {
+                Register.disablePlugin();
+            }
         } else {
-            SpartanEdition.refresh();
+            String message = "This version of Spartan does not have a license."
+                    + " If this download is pirated, please consider purchasing the plugin"
+                    + " when your server starts making enough money. We also sell on BuiltByBit"
+                    + " which supports many payment methods for all countries including yours.";
+            List<SpartanPlayer> staff = Permissions.getStaff();
+
+            if (!staff.isEmpty()) {
+                for (SpartanPlayer sp : staff) {
+                    sp.sendImportantMessage(AwarenessNotifications.getNotification(message));
+                }
+            }
+            AwarenessNotifications.forcefullySend(message);
         }
     }
 
