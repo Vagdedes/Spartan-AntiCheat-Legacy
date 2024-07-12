@@ -40,7 +40,6 @@ public class MCClient {
         if (protocol.isSprinting()) {
             this.jumpMovementFactor = (float) ((double) this.jumpMovementFactor + 0.005999999865889549D);
         }
-
     }
 
     protected float getJumpUpwardsMotion() {
