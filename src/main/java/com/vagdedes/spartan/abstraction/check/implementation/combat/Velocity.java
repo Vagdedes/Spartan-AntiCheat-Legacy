@@ -93,8 +93,8 @@ public class Velocity extends CheckExecutor {
 
     @Override
     protected void cannotHandle(boolean cancelled, Object object) {
-        veloV = true;
-        veloH = true;
+        veloV = false;
+        veloH = false;
         arrayV = 0;
         arrayH = 0;
         verticalSended = 0;
