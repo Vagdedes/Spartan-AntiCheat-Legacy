@@ -102,7 +102,7 @@ public class CrossServerInformation {
                     String[] split = information.split(CloudBase.separator, 3);
 
                     if (split.length == 2) {
-                        sendNotifications.add("§3(" + split[0] + ")§f " + split[1]);
+                        sendNotifications.add(split[1]);
                     }
                 }
             }
