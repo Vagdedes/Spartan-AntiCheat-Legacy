@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.abstraction.check;
 
 import com.vagdedes.spartan.Register;
+import com.vagdedes.spartan.abstraction.data.Cooldowns;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.profiling.InformationAnalysis;
 import com.vagdedes.spartan.abstraction.profiling.PlayerEvidence;
@@ -45,12 +46,14 @@ public class LiveViolation {
     private final Map<Integer, Long> level;
     private CancelCause disableCause, silentCause;
     private HackPrevention prevention;
+    private Cooldowns notifications;
 
     public LiveViolation(SpartanPlayer player, Enums.HackType hackType) {
         this.player = player;
         this.hackType = hackType;
         this.level = new ConcurrentHashMap<>();
         this.prevention = new HackPrevention();
+        this.notifications = new Cooldowns(player);
     }
 
     // Separator
@@ -284,7 +287,7 @@ public class LiveViolation {
             List<String> commands = Config.settings.getPunishmentCommands();
 
             if (!commands.isEmpty()) {
-                Collection<Enums.HackType> detectedHacks = player.protocol.getProfile().evidence.getKnowledgeList(false);
+                Collection<Enums.HackType> detectedHacks = player.protocol.getProfile().evidence.getKnowledgeList(PlayerEvidence.punishment);
                 detectedHacks.removeIf(loopHackType -> !loopHackType.getCheck().canPunish(player.dataType));
 
                 if (!detectedHacks.isEmpty()) {
@@ -380,7 +383,7 @@ public class LiveViolation {
 
             if (!notificationPlayers.isEmpty()) {
                 for (SpartanPlayer staff : notificationPlayers) {
-                    if (!hasNotificationCooldown(staff, player, playerViolation)) {
+                    if (!this.hasNotificationCooldown(staff)) {
                         ClickableMessage.sendCommand(
                                 staff.getInstance(),
                                 message,
@@ -395,46 +398,29 @@ public class LiveViolation {
 
     // Separator
 
-    private static int getNotificationTicksCooldown(SpartanPlayer staff,
-                                                    SpartanPlayer detectedPlayer) {
+    private int getNotificationTicksCooldown(SpartanPlayer staff) {
         Integer frequency = DetectionNotifications.getFrequency(staff);
 
         if (frequency != null
                 && frequency != DetectionNotifications.defaultFrequency) {
             return frequency;
-        } else if (detectedPlayer != null
-                && (staff.uuid.equals(detectedPlayer.uuid)
-                || staff.getWorld().equals(detectedPlayer.getWorld())
-                && AlgebraUtils.getHorizontalDistance(staff.movement.getLocation(), detectedPlayer.movement.getLocation()) <= PlayerUtils.chunk)) {
-            return 0;
+        } else if (staff.uuid.equals(this.player.uuid)
+                || staff.getWorld().equals(this.player.getWorld())
+                && staff.movement.getLocation().distance(this.player.movement.getLocation()) <= PlayerUtils.chunk) {
+            return AlgebraUtils.integerRound(Math.sqrt(TPS.maximum));
         } else {
-            return -((int) TPS.maximum);
+            return (int) TPS.maximum;
         }
     }
 
-    public static boolean hasNotificationCooldown(SpartanPlayer staff, SpartanPlayer player,
-                                                  PlayerViolation playerViolation) {
-        if (staff.cooldowns.canDo("notification")) {
-            int frequency = getNotificationTicksCooldown(staff, player);
-
-            if (frequency < 0) {
-                if (playerViolation == null
-                        || playerViolation.sum() > AlgebraUtils.integerRound(Math.sqrt(-frequency))) {
-                    staff.cooldowns.add(
-                            "notification",
-                            -frequency
-                    );
-                    return true;
-                }
-            } else {
-                if (frequency > 0) {
-                    staff.cooldowns.add(
-                            "notification",
-                            frequency
-                    );
-                }
-                return true;
-            }
+    public boolean hasNotificationCooldown(SpartanPlayer staff) {
+        if (staff.cooldowns.canDo("notification")
+                && player.protocol.getProfile().evidence.get(hackType) >= PlayerEvidence.notification) {
+            staff.cooldowns.add(
+                    "notification",
+                    this.getNotificationTicksCooldown(staff)
+            );
+            return true;
         }
         return false;
     }

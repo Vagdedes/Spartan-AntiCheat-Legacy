@@ -54,7 +54,7 @@ public class PlayerInfo extends InventoryMenu {
             return false;
         } else {
             setTitle(player, menu + (isOnline ? target.spartanPlayer.name : profile.getName()));
-            Set<Map.Entry<HackType, Double>> evidenceDetails = profile.evidence.getKnowledgeEntries(true);
+            Set<Map.Entry<HackType, Double>> evidenceDetails = profile.evidence.getKnowledgeEntries(0.0);
             List<String> lore = new ArrayList<>(20);
             lore.add("");
 

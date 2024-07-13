@@ -1,9 +1,7 @@
 package com.vagdedes.spartan.functionality.connection.cloud;
 
-import com.vagdedes.spartan.abstraction.check.LiveViolation;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Settings;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
@@ -115,25 +113,9 @@ public class CrossServerInformation {
 
             if (iterator.hasNext()) {
                 String message = iterator.next();
-                SpartanProtocol notificationPlayer = null;
-
-                for (String word : message.split(" ")) {
-                    notificationPlayer = SpartanBukkit.getProtocol(word);
-
-                    if (notificationPlayer != null) {
-                        break;
-                    }
-                }
-                iterator.remove();
 
                 for (SpartanPlayer player : DetectionNotifications.getPlayers()) {
-                    if (!LiveViolation.hasNotificationCooldown(
-                            player,
-                            notificationPlayer != null ? notificationPlayer.spartanPlayer : null,
-                            null
-                    )) {
-                        player.sendMessage(message);
-                    }
+                    // todo
                 }
             }
         }

@@ -161,7 +161,7 @@ public class PlayerProfile {
     // Separator
 
     public boolean isLegitimate() {
-        return !evidence.has(false);
+        return !evidence.has(PlayerEvidence.prevention);
     }
 
 }
