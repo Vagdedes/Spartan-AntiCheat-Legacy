@@ -25,7 +25,7 @@ public class SuspicionNotifications {
                 while (iterator.hasNext()) {
                     Integer frequency = DetectionNotifications.getFrequency(iterator.next());
 
-                    if (frequency == null || Math.abs(frequency) >= 100) {
+                    if (frequency == null || frequency >= 100) {
                         iterator.remove();
                     }
                 }

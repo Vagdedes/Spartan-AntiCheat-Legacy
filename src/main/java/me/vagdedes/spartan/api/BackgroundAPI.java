@@ -69,7 +69,7 @@ public class BackgroundAPI {
             SpartanPlayer player = SpartanBukkit.getProtocol(p).spartanPlayer;
 
             if (player != null) {
-                DetectionNotifications.set(player, 0);
+                DetectionNotifications.set(player, DetectionNotifications.defaultFrequency);
             }
         } else {
             SpartanPlayer player = SpartanBukkit.getProtocol(p).spartanPlayer;

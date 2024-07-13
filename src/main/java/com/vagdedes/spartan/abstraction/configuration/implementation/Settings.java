@@ -101,7 +101,7 @@ public class Settings extends ConfigurationBuilder {
         if (getBoolean("Notifications.enable_notifications_on_login")
                 && DetectionNotifications.hasPermission(p)
                 && !DetectionNotifications.isEnabled(p)) {
-            DetectionNotifications.set(p, 0);
+            DetectionNotifications.set(p, DetectionNotifications.defaultFrequency);
         }
     }
 
