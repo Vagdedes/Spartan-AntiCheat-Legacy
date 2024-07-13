@@ -6,6 +6,7 @@ import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.chat.ChatProtection;
 import com.vagdedes.spartan.functionality.connection.PlayerLimitPerIP;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudConnections;
+import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.performance.PlayerDetectionSlots;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import me.vagdedes.spartan.system.Enums;
@@ -51,6 +52,7 @@ public class Event_Status implements Listener {
         // Features
         PlayerDetectionSlots.remove(p);
         ChatProtection.remove(p);
+        DetectionNotifications.runOnLeave(p);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

@@ -27,7 +27,7 @@ public class DetectionNotifications {
         if (!notifications.isEmpty()) {
             List<SpartanPlayer> list = new ArrayList<>(notifications.size());
 
-            for (UUID uuid  : notifications.keySet()) {
+            for (UUID uuid : notifications.keySet()) {
                 SpartanProtocol p = SpartanBukkit.getProtocol(uuid);
 
                 if (p != null) {
@@ -51,6 +51,10 @@ public class DetectionNotifications {
         return notifications.get(p.uuid);
     }
 
+    public static void remove(SpartanPlayer p) {
+        notifications.remove(p.uuid);
+    }
+
     public static void set(SpartanPlayer p, int i) {
         Integer frequency = notifications.put(p.uuid, i);
 
@@ -61,6 +65,15 @@ public class DetectionNotifications {
         } else {
             notifications.remove(p.uuid);
             p.sendMessage(Config.messages.getColorfulString("notifications_disable"));
+        }
+    }
+
+    // Separator
+
+    public static void runOnLeave(SpartanPlayer p) {
+        if (notifications.containsKey(p.uuid)
+                && !DetectionNotifications.hasPermission(p)) {
+            notifications.remove(p.uuid);
         }
     }
 

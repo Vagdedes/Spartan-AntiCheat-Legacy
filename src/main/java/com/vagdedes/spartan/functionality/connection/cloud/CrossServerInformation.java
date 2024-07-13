@@ -21,7 +21,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class CrossServerInformation {
 
-
     private static int ticks = 0;
     private static final char colorSyntaxCharacter = '&';
     private static String serverName = null;

@@ -375,7 +375,7 @@ public class LiveViolation {
                 .replace("{player}", player.name);
 
         if (individualOnlyNotifications) {
-            if (DetectionNotifications.hasPermission(player)) { // Attention
+            if (DetectionNotifications.isEnabled(player)) { // Attention
                 ClickableMessage.sendCommand(player.getInstance(), message, command, command);
             }
         } else {
@@ -383,7 +383,7 @@ public class LiveViolation {
 
             if (!notificationPlayers.isEmpty()) {
                 for (SpartanPlayer staff : notificationPlayers) {
-                    if (!this.hasNotificationCooldown(staff)) {
+                    if (this.canSendNotification(staff)) {
                         ClickableMessage.sendCommand(
                                 staff.getInstance(),
                                 message,
@@ -413,16 +413,16 @@ public class LiveViolation {
         }
     }
 
-    public boolean hasNotificationCooldown(SpartanPlayer staff) {
+    public boolean canSendNotification(SpartanPlayer staff) {
         if (staff.cooldowns.canDo("notification")
                 && player.protocol.getProfile().evidence.get(hackType) >= PlayerEvidence.notification) {
             staff.cooldowns.add(
                     "notification",
                     this.getNotificationTicksCooldown(staff)
             );
-            return true;
+            return false;
         }
-        return false;
+        return true;
     }
 
 }
