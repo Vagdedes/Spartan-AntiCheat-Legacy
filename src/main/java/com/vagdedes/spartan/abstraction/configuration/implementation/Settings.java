@@ -24,10 +24,7 @@ public class Settings extends ConfigurationBuilder {
         super("settings");
     }
 
-    public static final String
-            tpsProtectionOption = "Protections.use_tps_protection",
-            cloudServerNameOption = "Cloud.server_name",
-            cloudSynchroniseFilesOption = "Cloud.synchronise_files";
+    public static final String crossServerNotificationsName = "Important.server_name";
     private static final List<String> defaultPunishments = new ArrayList<>(Check.maxCommands);
     private Collection<String> punishments = null;
 
@@ -69,7 +66,6 @@ public class Settings extends ConfigurationBuilder {
         addOption("Chat.blocked_words", "blockedWord1, blockedWord2");
         addOption("Chat.blocked_commands", "blockedCommand1, blockedCommand2");
 
-        addOption(tpsProtectionOption, true);
         addOption("Protections.max_supported_player_latency", TPS.tickTimeInteger * 100);
         addOption("Protections.player_limit_per_ip", 0);
 
@@ -79,9 +75,7 @@ public class Settings extends ConfigurationBuilder {
         addOption("Important.bedrock_player_prefix", ".");
         addOption("Important.enable_npc", true);
         addOption("Important.enable_watermark", true);
-
-        addOption(cloudServerNameOption, "specify server name");
-        addOption(cloudSynchroniseFilesOption, true);
+        addOption(crossServerNotificationsName, "");
 
         addOption("Detections.ground_teleport_on_detection", true);
         addOption("Detections.fall_damage_on_teleport", false);
