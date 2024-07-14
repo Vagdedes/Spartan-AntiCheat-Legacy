@@ -18,9 +18,7 @@ import java.io.File;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public class SQLFeature extends ConfigurationBuilder {
 
@@ -31,7 +29,6 @@ public class SQLFeature extends ConfigurationBuilder {
     private static boolean enabled = false;
 
     private static Connection con = null;
-    private static final List<String> list = new CopyOnWriteArrayList<>();
 
     // Separator
 
@@ -136,14 +133,6 @@ public class SQLFeature extends ConfigurationBuilder {
     }
 
     public void refreshDatabase() {
-        // Queries
-        if (!list.isEmpty()) {
-            for (String insert : list) {
-                update(insert);
-            }
-            list.clear();
-        }
-
         if (isConnected(false)) {
             try {
                 con.close();
@@ -175,7 +164,7 @@ public class SQLFeature extends ConfigurationBuilder {
         addOption("escape_special_characters", false);
         refreshConfiguration();
 
-        SpartanBukkit.dataThread.executeWithPriority(this::connect);
+        SpartanBukkit.connectionThread.executeWithPriority(this::connect);
     }
 
     // Separator
@@ -326,7 +315,7 @@ public class SQLFeature extends ConfigurationBuilder {
                     hasMaterial = material != null;
             UUID uuid = hasPlayer ? p.uuid : null;
             SpartanLocation location = hasPlayer ? p.movement.getLocation() : null;
-            list.add(
+            SpartanBukkit.connectionThread.execute(() -> update(
                     "INSERT INTO " + table
                             + " (creation_date"
                             + ", plugin_version, server_version, online_players"
@@ -347,16 +336,7 @@ public class SQLFeature extends ConfigurationBuilder {
                             + ", " + (hasMaterial ? syntaxForColumn(material) : hasCheck ? syntaxForColumn(playerViolation.hackType) : "NULL")
                             + ", " + (hasCheck ? syntaxForColumn(playerViolation.sum()) : "NULL")
                             + ");"
-            );
-
-            if (list.size() >= 10) {
-                SpartanBukkit.dataThread.executeIfSyncElseHere(() -> {
-                    for (String insert : list) {
-                        update(insert);
-                    }
-                    list.clear();
-                });
-            }
+            ));
         }
     }
 

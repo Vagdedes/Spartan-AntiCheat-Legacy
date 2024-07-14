@@ -8,7 +8,7 @@ import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 public class CrossServerNotifications {
 
     static {
-        SpartanBukkit.runRepeatingTask(() -> SpartanBukkit.dataThread.execute(() -> {
+        SpartanBukkit.runRepeatingTask(() -> SpartanBukkit.connectionThread.executeIfFree(() -> {
             for (SpartanPlayer player : DetectionNotifications.getPlayers()) {
                 // todo with SQL
             }
