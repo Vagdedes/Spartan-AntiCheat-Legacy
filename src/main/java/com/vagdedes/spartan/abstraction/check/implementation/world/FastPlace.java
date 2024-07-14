@@ -20,9 +20,9 @@ public class FastPlace extends CheckExecutor {
 
     public FastPlace(HackType hackType, SpartanPlayer player) {
         super(hackType, player, 0, false);
-        this.fastBuffer = new Buffer.IndividualBuffer(player);
-        this.mediumBuffer = new Buffer.IndividualBuffer(player);
-        this.slowBuffer = new Buffer.IndividualBuffer(player);
+        this.fastBuffer = new Buffer.IndividualBuffer();
+        this.mediumBuffer = new Buffer.IndividualBuffer();
+        this.slowBuffer = new Buffer.IndividualBuffer();
     }
 
     @Override

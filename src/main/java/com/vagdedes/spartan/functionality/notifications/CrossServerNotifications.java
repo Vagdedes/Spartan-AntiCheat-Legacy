@@ -10,7 +10,7 @@ public class CrossServerNotifications {
     static {
         SpartanBukkit.runRepeatingTask(() -> SpartanBukkit.dataThread.execute(() -> {
             for (SpartanPlayer player : DetectionNotifications.getPlayers()) {
-                // todo
+                // todo with SQL
             }
         }), 1L, 1L);
     }

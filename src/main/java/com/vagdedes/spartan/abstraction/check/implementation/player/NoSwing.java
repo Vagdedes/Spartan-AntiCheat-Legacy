@@ -33,7 +33,7 @@ public class NoSwing extends CheckExecutor {
         super(hackType, player, 0, false);
         this.breakTime = Long.MAX_VALUE;
         this.animationTime = Long.MAX_VALUE;
-        this.damageBuffer = new Buffer.IndividualBuffer(player);
+        this.damageBuffer = new Buffer.IndividualBuffer();
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.vagdedes.spartan.abstraction.inventory.implementation;
 
 import com.vagdedes.spartan.abstraction.check.CancelCause;
 import com.vagdedes.spartan.abstraction.check.Check;
+import com.vagdedes.spartan.abstraction.data.Cooldowns;
 import com.vagdedes.spartan.abstraction.inventory.InventoryMenu;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.profiling.PlayerEvidence;
@@ -15,6 +16,7 @@ import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.utils.java.OverflowMap;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.Enums.HackType;
@@ -26,9 +28,13 @@ import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class PlayerInfo extends InventoryMenu {
 
+    private static final Cooldowns cooldowns = new Cooldowns(
+            new OverflowMap<>(new ConcurrentHashMap<>(), 512)
+    );
     private static final String
             menu = ("§0Player Info: ").substring(MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? 2 : 0),
             documentationURL = "https://docs.google.com/document/d/e/2PACX-1vRSwc6vazSE5uCv6pcYkaWsP_RaHTmkU70lBLB9f9tudlSbJZr2ZdRQg3ZGXFtz-QWjDzTQqkSzmMt2/pub";
@@ -194,8 +200,8 @@ public class PlayerInfo extends InventoryMenu {
                     InventoryView inventoryView = no.getOpenInventory();
 
                     if (inventoryView.getTitle().equals(PlayerInfo.menu + targetName)
-                            && o.cooldowns.canDo("player-info")) {
-                        o.cooldowns.add("player-info", 1);
+                            && cooldowns.canDo("player-info=" + o.uuid)) {
+                        cooldowns.add("player-info=" + o.uuid, 1);
                         InteractiveInventory.playerInfo.open(o, targetName);
                     }
                 }

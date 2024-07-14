@@ -23,8 +23,8 @@ public class IrregularMovementsMoveLength extends DetectionExecutor {
         super(executor, executor.hackType, executor.player);
         previousPitch = executor.player.movement.getEventFromLocation().getPitch();
         previousPitchDifference = 0.0f;
-        this.buffer = new Buffer.IndividualBuffer(player);
-        this.safeBuffer = new Buffer.IndividualBuffer(player);
+        this.buffer = new Buffer.IndividualBuffer();
+        this.safeBuffer = new Buffer.IndividualBuffer();
     }
 
     void run() {

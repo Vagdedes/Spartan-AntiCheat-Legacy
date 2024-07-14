@@ -52,7 +52,7 @@ public class LiveViolation {
         this.hackType = hackType;
         this.level = new ConcurrentHashMap<>();
         this.prevention = new HackPrevention();
-        this.notifications = new Cooldowns(player);
+        this.notifications = new Cooldowns(new ConcurrentHashMap<>());
     }
 
     // Separator
