@@ -307,6 +307,7 @@ public class SQLFeature extends ConfigurationBuilder {
     // Separator
 
     public void logInfo(SpartanPlayer p,
+                        String notification,
                         String information,
                         Material material,
                         PlayerViolation playerViolation) {
@@ -321,7 +322,7 @@ public class SQLFeature extends ConfigurationBuilder {
                     "INSERT INTO " + table
                             + " (creation_date"
                             + ", server_name, plugin_version, server_version, online_players"
-                            + ", type, information"
+                            + ", type, notification, information"
                             + ", player_uuid, player_latency, player_x, player_y, player_z"
                             + ", functionality, violation_level) "
                             + "VALUES (" + syntaxForColumn(DateTimeFormatter.ofPattern(AntiCheatLogs.dateFormat).format(LocalDateTime.now()))
@@ -330,6 +331,7 @@ public class SQLFeature extends ConfigurationBuilder {
                             + ", " + syntaxForColumn(MultiVersion.versionString())
                             + ", " + syntaxForColumn(SpartanBukkit.getPlayerCount())
                             + ", " + syntaxForColumn(hasMaterial ? "mining" : hasCheck ? "violation" : "other")
+                            + ", " + (notification != null ? syntaxForColumn(notification) : "NULL")
                             + ", " + syntaxForColumn(information)
                             + ", " + (hasPlayer ? syntaxForColumn(uuid) : "NULL")
                             + ", " + (hasPlayer ? syntaxForColumn(p.getPing()) : "NULL")

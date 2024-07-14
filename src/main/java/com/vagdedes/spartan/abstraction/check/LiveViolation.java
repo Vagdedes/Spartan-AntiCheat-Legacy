@@ -349,7 +349,7 @@ public class LiveViolation {
 
     private void performNotification(PlayerViolation playerViolation) {
         boolean individualOnlyNotifications = Config.settings.getBoolean("Notifications.individual_only_notifications");
-        String message = ConfigUtils.replaceWithSyntax(
+        String notification = ConfigUtils.replaceWithSyntax(
                 player,
                 Config.messages.getColorfulString("detection_notification")
                         .replace("{info}", playerViolation.information)
@@ -366,7 +366,7 @@ public class LiveViolation {
                 + SpartanBukkit.packetsEnabled() + "), (Ping: " + player.getPing() + "ms), " +
                 "(XYZ: " + location.getBlockX() + " " + location.getBlockY() + " "
                 + location.getBlockZ() + "), (" + playerViolation.information + ")]";
-        AntiCheatLogs.logInfo(player, information, true, null, playerViolation);
+        AntiCheatLogs.logInfo(player, notification, information, true, null, playerViolation);
 
         // Local Notifications
         String command = Config.settings.getString("Notifications.message_clickable_command")
@@ -374,17 +374,17 @@ public class LiveViolation {
 
         if (individualOnlyNotifications) {
             if (DetectionNotifications.isEnabled(player)) { // Attention
-                ClickableMessage.sendCommand(player.getInstance(), message, command, command);
+                ClickableMessage.sendCommand(player.getInstance(), notification, command, command);
             }
         } else {
             List<SpartanPlayer> notificationPlayers = DetectionNotifications.getPlayers();
 
             if (!notificationPlayers.isEmpty()) {
                 for (SpartanPlayer staff : notificationPlayers) {
-                    if (this.canSendNotification(staff)) {
+                    if (staff.getViolations(this.hackType).canSendNotification(this.player)) {
                         ClickableMessage.sendCommand(
                                 staff.getInstance(),
-                                message,
+                                notification,
                                 command,
                                 command
                         );
@@ -396,27 +396,29 @@ public class LiveViolation {
 
     // Separator
 
-    private int getNotificationTicksCooldown(SpartanPlayer staff) {
-        Integer frequency = DetectionNotifications.getFrequency(staff);
+    private int getNotificationTicksCooldown(SpartanPlayer detected) {
+        Integer frequency = DetectionNotifications.getFrequency(this.player);
 
         if (frequency != null
                 && frequency != DetectionNotifications.defaultFrequency) {
             return frequency;
-        } else if (staff.uuid.equals(this.player.uuid)
-                || staff.getWorld().equals(this.player.getWorld())
-                && staff.movement.getLocation().distance(this.player.movement.getLocation()) <= PlayerUtils.chunk) {
+        } else if (detected != null
+                && (detected.uuid.equals(this.player.uuid)
+                || detected.getWorld().equals(this.player.getWorld())
+                && detected.movement.getLocation().distance(this.player.movement.getLocation()) <= PlayerUtils.chunk)) {
             return AlgebraUtils.integerRound(Math.sqrt(TPS.maximum));
         } else {
             return (int) TPS.maximum;
         }
     }
 
-    public boolean canSendNotification(SpartanPlayer staff) {
-        if (notifications.canDo("notification")
-                && player.protocol.getProfile().evidence.get(hackType) >= PlayerEvidence.notification) {
-            notifications.add(
-                    "notification",
-                    this.getNotificationTicksCooldown(staff)
+    public boolean canSendNotification(SpartanPlayer detected) {
+        if (this.notifications.canDo("")
+                && (detected == null
+                || detected.protocol.getProfile().evidence.get(hackType) >= PlayerEvidence.notification)) {
+            this.notifications.add(
+                    "",
+                    this.getNotificationTicksCooldown(detected)
             );
             return false;
         }

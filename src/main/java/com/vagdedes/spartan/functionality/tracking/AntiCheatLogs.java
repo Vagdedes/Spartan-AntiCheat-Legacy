@@ -68,11 +68,8 @@ public class AntiCheatLogs {
 
     // Separator
 
-    public static void logInfo(SpartanPlayer p, String info, boolean console) {
-        logInfo(p, info, console, null, null);
-    }
-
     public static void logInfo(SpartanPlayer p,
+                               String notification,
                                String information,
                                boolean console,
                                Material material,
@@ -106,7 +103,7 @@ public class AntiCheatLogs {
                 storeInFile(information);
             }
         }
-        Config.sql.logInfo(p, information, material, playerViolation);
+        Config.sql.logInfo(p, notification, information, material, playerViolation);
     }
 
     public static void logMining(SpartanPlayer player, SpartanBlock block, boolean cancelled) {
@@ -135,6 +132,7 @@ public class AntiCheatLogs {
                 if (event == null || !event.isCancelled()) {
                     AntiCheatLogs.logInfo(
                             player,
+                            null,
                             log,
                             false,
                             block.material,
