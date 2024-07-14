@@ -15,7 +15,7 @@ public class CrossServerNotifications {
         }), 1L, 1L);
     }
 
-    public static String getOptionValue() {
+    public static String getServerName() {
         return Config.settings.getString(Settings.crossServerNotificationsName);
     }
 

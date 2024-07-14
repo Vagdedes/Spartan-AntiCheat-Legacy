@@ -7,6 +7,7 @@
 [#] Rewrote the statistics that judge who is hacking to use quantitative probability.
 [#] Added java/bedrock split options to the punish & silent options in checks.yml.
 [#] Generalized the KillAura move-length detection by moving it to the IrregularMovements check.
+[#] Modified the SQL feature's table with updated columns and new columns, resetting your table is recommended.
 [+] Add more information to the Player Info menu that should help with judging a player.
 [-] Removed the staff chat functionality because it's not related to the anticheat's future path.
 [-] Removed the chat protection functionality because it's not related to the anticheat's future path.

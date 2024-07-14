@@ -208,7 +208,7 @@ public class CloudConnections {
                 SpartanBukkit.connectionThread.executeIfSyncElseHere(() -> {
                     try {
                         int webhookVersion = 2;
-                        String crossServerInformationOption = CrossServerNotifications.getOptionValue();
+                        String crossServerInformationOption = CrossServerNotifications.getServerName();
                         RequestUtils.get(StringUtils.decodeBase64(CloudBase.website) + "?" + CloudBase.identification
                                 + "&action=add&data=discordWebhooks&version=" + CloudBase.version + "&value="
                                 + URLEncoder.encode(

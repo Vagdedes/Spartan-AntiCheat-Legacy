@@ -34,7 +34,7 @@ public class ConfigUtils {
         message = replace(message, "{online}", String.valueOf(SpartanBukkit.getPlayerCount()));
         message = replace(message, "{staff}", String.valueOf(Permissions.getStaff().size()));
         message = replace(message, "{motd}", Bukkit.getMotd());
-        message = replace(message, "{server:name}", CrossServerNotifications.getOptionValue());
+        message = replace(message, "{server:name}", CrossServerNotifications.getServerName());
         message = replace(message, "{plugin:version}", API.getVersion());
         message = replace(message, "{server:version}", MultiVersion.versionString());
         message = replace(message, "{line}", "\n");

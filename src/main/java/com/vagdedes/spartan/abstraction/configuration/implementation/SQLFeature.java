@@ -5,6 +5,7 @@ import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.profiling.PlayerViolation;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
+import com.vagdedes.spartan.functionality.notifications.CrossServerNotifications;
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
@@ -282,6 +283,7 @@ public class SQLFeature extends ConfigurationBuilder {
                         "id INT(11) NOT NULL AUTO_INCREMENT, " +
                         "creation_date VARCHAR(30), " +
 
+                        "server_name VARCHAR(64), " +
                         "plugin_version VARCHAR(16), " +
                         "server_version VARCHAR(7), " +
                         "online_players INT(11), " +
@@ -296,7 +298,7 @@ public class SQLFeature extends ConfigurationBuilder {
                         "player_z INT(11), " +
 
                         "functionality VARCHAR(32), " +
-                        "violation_level INT(3), " +
+                        "violation_level INT(11), " +
 
                         "primary key (id));"
         );
@@ -318,11 +320,12 @@ public class SQLFeature extends ConfigurationBuilder {
             SpartanBukkit.connectionThread.execute(() -> update(
                     "INSERT INTO " + table
                             + " (creation_date"
-                            + ", plugin_version, server_version, online_players"
+                            + ", server_name, plugin_version, server_version, online_players"
                             + ", type, information"
                             + ", player_uuid, player_latency, player_x, player_y, player_z"
                             + ", functionality, violation_level) "
                             + "VALUES (" + syntaxForColumn(DateTimeFormatter.ofPattern(AntiCheatLogs.dateFormat).format(LocalDateTime.now()))
+                            + ", " + syntaxForColumn(CrossServerNotifications.getServerName())
                             + ", " + syntaxForColumn(API.getVersion())
                             + ", " + syntaxForColumn(MultiVersion.versionString())
                             + ", " + syntaxForColumn(SpartanBukkit.getPlayerCount())
