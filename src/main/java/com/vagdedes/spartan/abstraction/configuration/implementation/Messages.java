@@ -23,7 +23,6 @@ public class Messages extends ConfigurationBuilder {
         addOption("console_name", "Console");
         addOption("no_permission", "&cYou don't have permission to interact with this.");
         addOption("player_not_found_message", "&cPlayer not found.");
-        addOption("staff_chat_message", "&8[&4Staff Chat&8]&c {player} &e{message}");
         addOption("not_enough_saved_logs", "&8[&2" + prefix + "&8]&c Not enough saved logs. Must be at least {amount} rows.");
 
         // Config
@@ -41,13 +40,6 @@ public class Messages extends ConfigurationBuilder {
         addOption("detection_notification", "&8[&2" + prefix + "&8] "
                 + "&4{player} &cis using &4{detection} x{vls:detection} "
                 + "&8&b| &r&f{ping}ms &8&b| &r&fsilent: {silent:detection}, {info}");
-
-        // Chat Protection
-        addOption("blocked_command_message", "&8[&2" + prefix + "&8]&c You are not allowed to dispatch that command.");
-        addOption("blocked_word_message", "&8[&2" + prefix + "&8]&c You are not allowed to type that.");
-        addOption("chat_cooldown_message", "&8[&2" + prefix + "&8]&c Please wait {time} second(s) until typing again.");
-        addOption("command_cooldown_message", "&8[&2" + prefix + "&8]&c Please wait {time} second(s) until dispatching a command again.");
-        addOption("same_message_warning", "&8[&2" + prefix + "&8]&c Please avoid sending the same message again.");
 
         // Checks
         addOption("check_stored_data_delete_message", "&8[&2" + prefix + "&8]&a Stored data successfully deleted for check&8: &2{check}");

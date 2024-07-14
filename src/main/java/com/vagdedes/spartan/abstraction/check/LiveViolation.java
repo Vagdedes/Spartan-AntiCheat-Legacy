@@ -9,7 +9,6 @@ import com.vagdedes.spartan.abstraction.profiling.PlayerViolation;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudConnections;
-import com.vagdedes.spartan.functionality.notifications.CrossServerNotifications;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.notifications.clickable.ClickableMessage;
@@ -46,7 +45,7 @@ public class LiveViolation {
     private final Map<Integer, Long> level;
     private CancelCause disableCause, silentCause;
     private HackPrevention prevention;
-    private Cooldowns notifications;
+    private final Cooldowns notifications;
 
     public LiveViolation(SpartanPlayer player, Enums.HackType hackType) {
         this.player = player;
@@ -413,9 +412,9 @@ public class LiveViolation {
     }
 
     public boolean canSendNotification(SpartanPlayer staff) {
-        if (staff.cooldowns.canDo("notification")
+        if (notifications.canDo("notification")
                 && player.protocol.getProfile().evidence.get(hackType) >= PlayerEvidence.notification) {
-            staff.cooldowns.add(
+            notifications.add(
                     "notification",
                     this.getNotificationTicksCooldown(staff)
             );

@@ -16,8 +16,6 @@ import org.bukkit.OfflinePlayer;
 
 import java.io.File;
 import java.net.URLEncoder;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.UUID;
 
 public class CloudConnections {
@@ -217,7 +215,7 @@ public class CloudConnections {
                                 webhookVersion + CloudBase.separator
                                         + url + CloudBase.separator
                                         + color + CloudBase.separator
-                                        + (CrossServerNotifications.isOptionValid(crossServerInformationOption) ? crossServerInformationOption : "NULL") + CloudBase.separator
+                                        + (!crossServerInformationOption.isEmpty() ? crossServerInformationOption : "NULL") + CloudBase.separator
                                         + name + CloudBase.separator
                                         + uuid + CloudBase.separator
                                         + x + CloudBase.separator

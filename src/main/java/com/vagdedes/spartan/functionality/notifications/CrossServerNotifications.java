@@ -4,11 +4,8 @@ import com.vagdedes.spartan.abstraction.configuration.implementation.Settings;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.utils.java.StringUtils;
 
 public class CrossServerNotifications {
-
-    private static String serverName = null;
 
     static {
         SpartanBukkit.runRepeatingTask(() -> SpartanBukkit.dataThread.execute(() -> {
@@ -18,28 +15,8 @@ public class CrossServerNotifications {
         }), 1L, 1L);
     }
 
-    public static void refresh() {
-        serverName = null;
-    }
-
-    public static boolean isOptionValid(String option) {
-        return !option.isEmpty();
-    }
-
     public static String getOptionValue() {
-        if (serverName != null) {
-            return serverName;
-        }
-        String option = Config.settings.getString(Settings.crossServerNotificationsName);
-        int length = option.length();
-
-        if (length > 0) {
-            if (length > 32) {
-                option = option.substring(0, 32);
-            }
-            return serverName = StringUtils.getClearColorString(option);
-        }
-        return serverName = "";
+        return Config.settings.getString(Settings.crossServerNotificationsName);
     }
 
 }

@@ -6,8 +6,10 @@ import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibili
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.connection.PlayerLimitPerIP;
-import com.vagdedes.spartan.functionality.connection.cloud.*;
-import com.vagdedes.spartan.functionality.notifications.CrossServerNotifications;
+import com.vagdedes.spartan.functionality.connection.cloud.AutoUpdater;
+import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
+import com.vagdedes.spartan.functionality.connection.cloud.IDs;
+import com.vagdedes.spartan.functionality.connection.cloud.JarVerification;
 import com.vagdedes.spartan.functionality.npc.NPCManager;
 import com.vagdedes.spartan.utils.java.ReflectionUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -219,7 +221,6 @@ public class SpartanBukkit {
         AutoUpdater.complete();
         playerProtocol.clear();
         Threads.disable();
-        CrossServerNotifications.clear();
         PlayerLimitPerIP.clear();
         NPCManager.clear();
         Config.create();

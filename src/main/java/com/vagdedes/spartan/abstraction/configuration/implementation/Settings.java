@@ -3,7 +3,6 @@ package com.vagdedes.spartan.abstraction.configuration.implementation;
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.configuration.ConfigurationBuilder;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
-import com.vagdedes.spartan.functionality.chat.ChatProtection;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
@@ -40,9 +39,6 @@ public class Settings extends ConfigurationBuilder {
     public void clear() {
         punishments = null;
         internalClear();
-
-        // Systems based in this configuration
-        ChatProtection.clear();
     }
 
     @Override
@@ -59,12 +55,6 @@ public class Settings extends ConfigurationBuilder {
         addOption("Notifications.enable_notifications_on_login", true);
         addOption("Notifications.awareness_notifications", true);
         addOption("Notifications.message_clickable_command", "/teleport {player}");
-
-        addOption("Chat.message_cooldown", 0);
-        addOption("Chat.command_cooldown", 0);
-        addOption("Chat.prevent_same_message", false);
-        addOption("Chat.blocked_words", "blockedWord1, blockedWord2");
-        addOption("Chat.blocked_commands", "blockedCommand1, blockedCommand2");
 
         addOption("Protections.max_supported_player_latency", TPS.tickTimeInteger * 100);
         addOption("Protections.player_limit_per_ip", 0);
