@@ -19,7 +19,6 @@ import java.io.File;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.UUID;
 
 public class SQLFeature extends ConfigurationBuilder {
 
@@ -292,6 +291,7 @@ public class SQLFeature extends ConfigurationBuilder {
                         "information VARCHAR(4096), " +
 
                         "player_uuid VARCHAR(36), " +
+                        "player_name VARCHAR(24), " +
                         "player_latency INT(11), " +
                         "player_x INT(11), " +
                         "player_y INT(11), " +
@@ -316,14 +316,13 @@ public class SQLFeature extends ConfigurationBuilder {
             boolean hasPlayer = p != null,
                     hasCheck = playerViolation != null,
                     hasMaterial = material != null;
-            UUID uuid = hasPlayer ? p.uuid : null;
             SpartanLocation location = hasPlayer ? p.movement.getLocation() : null;
             SpartanBukkit.connectionThread.execute(() -> update(
                     "INSERT INTO " + table
                             + " (creation_date"
                             + ", server_name, plugin_version, server_version, online_players"
                             + ", type, notification, information"
-                            + ", player_uuid, player_latency, player_x, player_y, player_z"
+                            + ", player_uuid, player_name, player_latency, player_x, player_y, player_z"
                             + ", functionality, violation_level) "
                             + "VALUES (" + syntaxForColumn(DateTimeFormatter.ofPattern(AntiCheatLogs.dateFormat).format(LocalDateTime.now()))
                             + ", " + syntaxForColumn(CrossServerNotifications.getServerName())
@@ -333,7 +332,8 @@ public class SQLFeature extends ConfigurationBuilder {
                             + ", " + syntaxForColumn(hasMaterial ? "mining" : hasCheck ? "violation" : "other")
                             + ", " + (notification != null ? syntaxForColumn(notification) : "NULL")
                             + ", " + syntaxForColumn(information)
-                            + ", " + (hasPlayer ? syntaxForColumn(uuid) : "NULL")
+                            + ", " + (hasPlayer ? syntaxForColumn(p.uuid) : "NULL")
+                            + ", " + (hasPlayer ? syntaxForColumn(p.name) : "NULL")
                             + ", " + (hasPlayer ? syntaxForColumn(p.getPing()) : "NULL")
                             + ", " + (hasPlayer ? syntaxForColumn(location.getBlockX()) : "NULL")
                             + ", " + (hasPlayer ? syntaxForColumn(location.getBlockY()) : "NULL")

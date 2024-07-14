@@ -28,7 +28,7 @@ public class CrossServerNotifications {
                 if (!players.isEmpty()) {
                     try {
                         ResultSet rs = Config.sql.query("SELECT "
-                                + "id, server_name, notification, functionality"
+                                + "id, player_name, server_name, notification, functionality"
                                 + " FROM " + Config.sql.getTable()
                                 + " WHERE notification IS NOT NULL"
                                 + " ORDER BY id DESC LIMIT " + rowLimit + ";");
@@ -43,11 +43,12 @@ public class CrossServerNotifications {
                                     for (Enums.HackType hackType : Enums.HackType.values()) {
                                         if (hackType.toString().equals(functionality)) {
                                             String notification = rs.getString("notification"),
-                                                    serverName = rs.getString("server_name");
+                                                    serverName = rs.getString("server_name"),
+                                                    playerName = rs.getString("player_name");
                                             notification = "§l[" + serverName + "]§r " + notification;
 
                                             for (SpartanPlayer player : players) {
-                                                if (player.getViolations(hackType).canSendNotification(null)) {
+                                                if (player.getViolations(hackType).canSendNotification(playerName)) {
                                                     player.sendMessage(notification);
                                                     processed.put(id, true);
                                                 }

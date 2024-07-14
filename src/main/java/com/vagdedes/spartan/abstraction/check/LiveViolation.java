@@ -13,6 +13,7 @@ import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.notifications.clickable.ClickableMessage;
 import com.vagdedes.spartan.functionality.performance.PlayerDetectionSlots;
+import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
@@ -412,13 +413,17 @@ public class LiveViolation {
         }
     }
 
-    public boolean canSendNotification(SpartanPlayer detected) {
+    public boolean canSendNotification(Object detected) {
+        boolean player = detected instanceof SpartanPlayer;
         if (this.notifications.canDo("")
-                && (detected == null
-                || detected.protocol.getProfile().evidence.get(hackType) >= PlayerEvidence.notification)) {
+                && (player
+                ? ((SpartanPlayer) detected).protocol.getProfile().evidence.get(hackType) >= PlayerEvidence.notification
+                : ResearchEngine.getPlayerProfile(detected.toString()).evidence.get(hackType) >= PlayerEvidence.notification)) {
             this.notifications.add(
                     "",
-                    this.getNotificationTicksCooldown(detected)
+                    this.getNotificationTicksCooldown(
+                            player ? (SpartanPlayer) detected : null
+                    )
             );
             return false;
         }
