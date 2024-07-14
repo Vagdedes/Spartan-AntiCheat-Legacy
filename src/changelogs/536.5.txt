@@ -9,6 +9,8 @@
 [#] Generalized the KillAura move-length detection by moving it to the IrregularMovements check.
 [#] Modified the SQL feature's table with updated columns and new columns, resetting your table is recommended.
 [+] Add more information to the Player Info menu that should help with judging a player.
-[-] Removed the staff chat functionality because it's not related to the anticheat's future path.
-[-] Removed the chat protection functionality because it's not related to the anticheat's future path.
+[+] Added back the 'cross server notifications' functionality by basing it on the SQL functionality.
+[-] Removed the 'staff chat' functionality because it's not related to the anticheat's future path.
+[-] Removed the 'chat protection' functionality because it's not related to the anticheat's future path.
+[-] Removed the 'cross server information' cloud functionality to be replaced by the SQL functionality.
 [-] Deprecated the 'setVerbose' Developer API method.
