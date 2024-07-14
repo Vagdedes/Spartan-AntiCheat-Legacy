@@ -4,7 +4,6 @@ import com.vagdedes.spartan.abstraction.configuration.ConfigurationBuilder;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.profiling.PlayerViolation;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
-import com.vagdedes.spartan.functionality.connection.cloud.CrossServerInformation;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
@@ -161,9 +160,8 @@ public class SQLFeature extends ConfigurationBuilder {
     // Separator
 
     @Override
-    public void create(boolean local) {
+    public void create() {
         file = new File(directory);
-        boolean exists = file.exists();
         addOption("host", "");
         addOption("user", "");
         addOption("password", "");
@@ -178,10 +176,6 @@ public class SQLFeature extends ConfigurationBuilder {
         refreshConfiguration();
 
         SpartanBukkit.dataThread.executeWithPriority(this::connect);
-
-        if (!local && exists) {
-            CrossServerInformation.sendConfiguration(file);
-        }
     }
 
     // Separator

@@ -4,7 +4,6 @@ import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.configuration.ConfigurationBuilder;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.functionality.chat.ChatProtection;
-import com.vagdedes.spartan.functionality.connection.cloud.CrossServerInformation;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
@@ -50,9 +49,8 @@ public class Settings extends ConfigurationBuilder {
     }
 
     @Override
-    public void create(boolean local) {
+    public void create() {
         file = new File(directory);
-        boolean exists = file.exists();
         clear();
 
         addOption("Punishments.broadcast_on_punishment", true);
@@ -91,10 +89,6 @@ public class Settings extends ConfigurationBuilder {
         addOption("Discord.webhook_hex_color", "4caf50");
         addOption("Discord.checks_webhook_url", "");
         addOption("Discord.punishments_webhook_url", "");
-
-        if (!local && exists) {
-            CrossServerInformation.sendConfiguration(file);
-        }
     }
 
     public void runOnLogin(SpartanPlayer p) {

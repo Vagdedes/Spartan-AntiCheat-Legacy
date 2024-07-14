@@ -9,7 +9,7 @@ import com.vagdedes.spartan.abstraction.profiling.PlayerViolation;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudConnections;
-import com.vagdedes.spartan.functionality.connection.cloud.CrossServerInformation;
+import com.vagdedes.spartan.functionality.notifications.CrossServerNotifications;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.notifications.clickable.ClickableMessage;
@@ -357,7 +357,6 @@ public class LiveViolation {
                         .replace("{vls:detection}", Integer.toString(playerViolation.sum())),
                 hackType
         );
-        CrossServerInformation.queueNotification(message, true);
 
         SpartanLocation location = player.movement.getLocation();
         String information = Config.getConstruct() + player.name + " failed " + hackType

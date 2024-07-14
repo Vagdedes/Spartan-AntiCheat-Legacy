@@ -1,13 +1,12 @@
-package com.vagdedes.spartan.abstraction.check.implementation.combat.killaura;
+package com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
-import com.vagdedes.spartan.utils.minecraft.entity.CombatUtils;
 
-public class MoveLength extends DetectionExecutor {
+public class IrregularMovementsMoveLength extends DetectionExecutor {
 
     private static final double
             gcdMultiplier = Math.pow(2, 24), // 16777216
@@ -20,7 +19,7 @@ public class MoveLength extends DetectionExecutor {
             previousPitchDifference;
     private final Buffer.IndividualBuffer buffer, safeBuffer;
 
-    MoveLength(CheckExecutor executor) {
+    IrregularMovementsMoveLength(CheckExecutor executor) {
         super(executor, executor.hackType, executor.player);
         previousPitch = executor.player.movement.getEventFromLocation().getPitch();
         previousPitchDifference = 0.0f;
@@ -28,11 +27,9 @@ public class MoveLength extends DetectionExecutor {
         this.safeBuffer = new Buffer.IndividualBuffer(player);
     }
 
-    void runMove() {
-        if (!player.bedrockPlayer
-                && player.getLastDamageDealt().timePassed() <= KillAura.pastDamageMilliseconds
-                && !player.getNearbyEntities(CombatUtils.maxHitDistance, CombatUtils.maxHitDistance, CombatUtils.maxHitDistance).isEmpty()) {
-            float pitch = player.movement.getLocation().getPitch(),
+    void run() {
+        if (!player.bedrockPlayer) {
+            float pitch = player.movement.getEventToLocation().getPitch(),
                     pitchDifference = Math.abs(pitch - previousPitch);
 
             if (pitchDifference > 0.0

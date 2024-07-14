@@ -4,7 +4,7 @@ import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
-import com.vagdedes.spartan.functionality.connection.cloud.CrossServerInformation;
+import com.vagdedes.spartan.functionality.notifications.CrossServerNotifications;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
@@ -34,7 +34,7 @@ public class ConfigUtils {
         message = replace(message, "{online}", String.valueOf(SpartanBukkit.getPlayerCount()));
         message = replace(message, "{staff}", String.valueOf(Permissions.getStaff().size()));
         message = replace(message, "{motd}", Bukkit.getMotd());
-        message = replace(message, "{server:name}", CrossServerInformation.getOptionValue());
+        message = replace(message, "{server:name}", CrossServerNotifications.getOptionValue());
         message = replace(message, "{plugin:version}", API.getVersion());
         message = replace(message, "{server:version}", MultiVersion.versionString());
         message = replace(message, "{line}", "\n");

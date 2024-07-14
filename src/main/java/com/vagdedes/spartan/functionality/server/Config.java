@@ -8,7 +8,7 @@ import com.vagdedes.spartan.abstraction.configuration.implementation.SQLFeature;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Settings;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
-import com.vagdedes.spartan.functionality.connection.cloud.CrossServerInformation;
+import com.vagdedes.spartan.functionality.notifications.CrossServerNotifications;
 import com.vagdedes.spartan.functionality.connection.cloud.IDs;
 import com.vagdedes.spartan.functionality.moderation.Wave;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
@@ -105,7 +105,7 @@ public class Config {
         // Identification & Labelling
         construct = "[Spartan " + API.getVersion() + "/" + IDs.hide(IDs.user()) + "/" + IDs.hide(IDs.file()) + "] ";
         CloudBase.clear(false);
-        CrossServerInformation.refresh();
+        CrossServerNotifications.refresh();
 
         // Check Cache
         if (clearChecksCache) {
@@ -115,19 +115,12 @@ public class Config {
         }
     }
 
-    public static void createConfigurations(boolean local) {
-        if (!local) { // Always first
-            File file = getFile();
-
-            if (file.exists()) {
-                CrossServerInformation.sendConfiguration(file);
-            }
-        }
-        settings.create(local); // Always Second (Research Engine File Logs)
-        sql.create(local); // Always Third (Research Engine SQL Logs)
-        messages.create(local);
-        Compatibility.create(local);
-        Wave.create(local);
+    public static void createConfigurations() {
+        settings.create(); // Always Second (Research Engine File Logs)
+        sql.create(); // Always Third (Research Engine SQL Logs)
+        messages.create();
+        Compatibility.create();
+        Wave.create();
     }
 
     // Separator
@@ -140,7 +133,7 @@ public class Config {
 
         if (enabledPlugin) {
             // Configuration
-            createConfigurations(false); // Always First
+            createConfigurations(); // Always First
 
             // System
             AwarenessNotifications.refresh();

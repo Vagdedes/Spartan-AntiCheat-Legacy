@@ -6,6 +6,7 @@
 [#] Improved how checks are loaded and reset to be faster and more memory efficient.
 [#] Rewrote the statistics that judge who is hacking to use quantitative probability.
 [#] Added java/bedrock split options to the punish & silent options in checks.yml.
+[#] Generalized the KillAura move-length detection by moving it to the IrregularMovements check.
 [+] Add more information to the Player Info menu that should help with judging a player.
 [-] Removed the staff chat functionality because it's not related to the anticheat's needs.
 [-] Deprecated the 'setVerbose' Developer API method.

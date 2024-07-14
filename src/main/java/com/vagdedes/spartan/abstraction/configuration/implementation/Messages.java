@@ -1,7 +1,6 @@
 package com.vagdedes.spartan.abstraction.configuration.implementation;
 
 import com.vagdedes.spartan.abstraction.configuration.ConfigurationBuilder;
-import com.vagdedes.spartan.functionality.connection.cloud.CrossServerInformation;
 
 import java.io.File;
 
@@ -17,9 +16,8 @@ public class Messages extends ConfigurationBuilder {
     }
 
     @Override
-    public void create(boolean local) {
+    public void create() {
         file = new File(directory);
-        boolean exists = file.exists();
 
         clear();
         addOption("console_name", "Console");
@@ -84,9 +82,5 @@ public class Messages extends ConfigurationBuilder {
         addOption("failed_command", "&8[&2" + prefix + "&8]&c Command failed. Please check your arguments and try again.");
         addOption("successful_command", "&8[&2" + prefix + "&8]&a Command successful.");
         addOption("massive_command_reason", "&8[&2" + prefix + "&8]&c The length of the reason is too big.");
-
-        if (!local && exists) {
-            CrossServerInformation.sendConfiguration(file);
-        }
     }
 }
