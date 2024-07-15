@@ -417,8 +417,9 @@ public class LiveViolation {
         boolean player = detected instanceof SpartanPlayer;
         if (this.notifications.canDo("")
                 && (player
-                ? ((SpartanPlayer) detected).protocol.getProfile().evidence.get(hackType) >= PlayerEvidence.notification
-                : ResearchEngine.getPlayerProfile(detected.toString()).evidence.get(hackType) >= PlayerEvidence.notification)) {
+                ? ((SpartanPlayer) detected).protocol.getProfile().evidence.get(this.hackType)
+                : ResearchEngine.getPlayerProfile(detected.toString()).evidence.get(this.hackType))
+                >= PlayerEvidence.notification) {
             this.notifications.add(
                     "",
                     this.getNotificationTicksCooldown(
