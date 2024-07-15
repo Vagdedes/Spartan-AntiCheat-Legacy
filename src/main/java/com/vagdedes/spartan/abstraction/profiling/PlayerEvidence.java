@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class PlayerEvidence {
 
     public static double
-            notification = 1.0 / 4.0,
+            notification = 0.25,
             prevention = 2.0 / 3.0,
             punishment = 0.9;
 

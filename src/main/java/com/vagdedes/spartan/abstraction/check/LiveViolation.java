@@ -349,7 +349,6 @@ public class LiveViolation {
     }
 
     private void performNotification(PlayerViolation playerViolation) {
-        boolean individualOnlyNotifications = Config.settings.getBoolean("Notifications.individual_only_notifications");
         String notification = ConfigUtils.replaceWithSyntax(
                 player,
                 Config.messages.getColorfulString("detection_notification")
@@ -373,7 +372,7 @@ public class LiveViolation {
         String command = Config.settings.getString("Notifications.message_clickable_command")
                 .replace("{player}", player.name);
 
-        if (individualOnlyNotifications) {
+        if (Config.settings.getBoolean("Notifications.individual_only_notifications")) {
             if (DetectionNotifications.isEnabled(player)) { // Attention
                 ClickableMessage.sendCommand(player.getInstance(), notification, command, command);
             }
@@ -415,20 +414,22 @@ public class LiveViolation {
 
     public boolean canSendNotification(Object detected) {
         boolean player = detected instanceof SpartanPlayer;
+
         if (this.notifications.canDo("")
                 && (player
                 ? ((SpartanPlayer) detected).protocol.getProfile().evidence.get(this.hackType)
                 : ResearchEngine.getPlayerProfile(detected.toString()).evidence.get(this.hackType))
                 >= PlayerEvidence.notification) {
-            this.notifications.add(
-                    "",
-                    this.getNotificationTicksCooldown(
-                            player ? (SpartanPlayer) detected : null
-                    )
+            int ticks = this.getNotificationTicksCooldown(
+                    player ? (SpartanPlayer) detected : null
             );
-            return false;
+
+            if (ticks > 0) {
+                this.notifications.add("", ticks);
+            }
+            return true;
         }
-        return true;
+        return false;
     }
 
 }
