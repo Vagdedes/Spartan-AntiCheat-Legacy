@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.abstraction.player;
 
+import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.LiveViolation;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
@@ -209,7 +210,7 @@ public class SpartanPlayer {
     }
 
     public boolean debug(boolean function, boolean broadcast, boolean cutDecimals, Object... message) {
-        if (function && SpartanBukkit.testMode) {
+        if (function && Bukkit.getMotd().contains(Register.plugin.getName())) {
             Player p = getInstance();
 
             if (p.isWhitelisted()) {

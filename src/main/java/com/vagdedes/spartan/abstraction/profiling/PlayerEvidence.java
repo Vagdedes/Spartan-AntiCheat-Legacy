@@ -35,7 +35,7 @@ public class PlayerEvidence {
 
     // Separator
 
-     boolean has(double threshold) {
+    public boolean has(double threshold) {
         if (threshold == 0.0) {
             return !this.probability.keySet().isEmpty();
         } else {

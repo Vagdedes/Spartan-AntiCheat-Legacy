@@ -83,7 +83,7 @@ public class PlayerStateLists {
             List<PlayerProfile> list = new ArrayList<>(playerProfiles.size());
 
             for (PlayerProfile playerProfile : playerProfiles) {
-                if (!playerProfile.isLegitimate()) {
+                if (playerProfile.evidence.has(PlayerEvidence.prevention)) {
                     list.add(playerProfile);
                 }
             }

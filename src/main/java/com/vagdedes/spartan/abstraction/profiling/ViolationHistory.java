@@ -1,5 +1,7 @@
 package com.vagdedes.spartan.abstraction.profiling;
 
+import com.vagdedes.spartan.functionality.performance.ResearchEngine;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -22,6 +24,7 @@ public class ViolationHistory {
 
     public void store(PlayerViolation playerViolation) {
         memory.add(playerViolation);
+        ResearchEngine.violationFired = true;
     }
 
     public Collection<PlayerViolation> getCollection() {

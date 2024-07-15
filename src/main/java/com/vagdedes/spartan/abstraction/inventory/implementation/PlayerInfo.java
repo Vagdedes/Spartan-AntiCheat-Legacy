@@ -53,7 +53,7 @@ public class PlayerInfo extends InventoryMenu {
         boolean isOnline = target != null;
         PlayerProfile profile = isOnline
                 ? target.getProfile()
-                : ResearchEngine.getPlayerProfileAdvanced(object.toString());
+                : ResearchEngine.getPlayerProfile(object.toString());
 
         if (profile == null) {
             player.sendInventoryCloseMessage(Config.messages.getColorfulString("player_not_found_message"));

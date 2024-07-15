@@ -32,12 +32,10 @@ public class Check {
     private final String[]
             disabledWorlds,
             silentWorlds;
-    private boolean hasMultiViolations;
 
     // Object Methods
 
     public Check(Enums.HackType hackType) {
-        this.hasMultiViolations = false;
         this.options = Collections.synchronizedMap(new LinkedHashMap<>());
         this.hackType = hackType;
 
@@ -573,16 +571,6 @@ public class Check {
                 }
             }
         }
-    }
-
-    // Separator
-
-    public void enableMultiViolations() {
-        this.hasMultiViolations = true;
-    }
-
-    public boolean hasMultiViolations() {
-        return hasMultiViolations;
     }
 
 }

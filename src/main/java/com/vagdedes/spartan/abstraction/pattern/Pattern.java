@@ -394,8 +394,7 @@ public class Pattern {
             boolean notifications = frequency != null,
                     found = false,
                     store = false,
-                    include = !SpartanBukkit.testMode
-                            || !notifications
+                    include = !notifications
                             || frequency != testingNotificationDivisorFrequency;
 
             synchronized (this.generalizations) {
