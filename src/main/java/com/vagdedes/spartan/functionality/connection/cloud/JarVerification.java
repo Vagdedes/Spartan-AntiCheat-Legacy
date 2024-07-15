@@ -15,7 +15,7 @@ public class JarVerification {
 
     private static boolean valid = true;
 
-    static {
+    public static void run() {
         if (!IDs.enabled) {
             SpartanBukkit.connectionThread.execute(() -> {
                 int userID = CloudConnections.getUserIdentification();

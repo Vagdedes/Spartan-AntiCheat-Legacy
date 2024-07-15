@@ -50,7 +50,6 @@ public class CloudConnections {
 
                                 if (!name.isEmpty()) {
                                     String[] reply = RequestUtils.get(StringUtils.decodeBase64(CloudBase.accountWebsite) + "?token=" + name);
-                                    AwarenessNotifications.forcefullySend(Arrays.toString(reply));
 
                                     if (reply.length > 0) {
                                         String line = reply[0];
@@ -76,7 +75,6 @@ public class CloudConnections {
                             + "&data=userIdentification"
                             + "&version=" + CloudBase.version,
                     RequestUtils.defaultTimeOut);
-            AwarenessNotifications.forcefullySend(Arrays.toString(reply));
 
             if (reply.length > 0) {
                 String line = reply[0];
