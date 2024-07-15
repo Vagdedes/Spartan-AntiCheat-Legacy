@@ -19,8 +19,6 @@ import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import java.io.File;
-
 public class Config {
 
     public static final String checksFileName = "checks.yml";
@@ -33,34 +31,7 @@ public class Config {
     public static Compatibility compatibility = new Compatibility();
 
     static {
-        refreshFields(false);
-    }
-
-    // Separator
-
-    public static File getFile() {
-        return new File(Register.plugin.getDataFolder() + "/" + checksFileName);
-    }
-
-    public static YamlConfiguration getConfiguration() { // Synchronise it in all uses
-        if (configuration == null) {
-            File file = getFile();
-
-            if (file.exists()) {
-                configuration = YamlConfiguration.loadConfiguration(file);
-            } else {
-                try {
-                    if (file.createNewFile()) {
-                        configuration = YamlConfiguration.loadConfiguration(file);
-                    } else {
-                        configuration = null;
-                    }
-                } catch (Exception ignored) {
-                    configuration = null;
-                }
-            }
-        }
-        return configuration;
+        refreshFields();
     }
 
     public static String getConstruct() {
@@ -83,34 +54,9 @@ public class Config {
 
     // Separator
 
-    public static void refreshFields(boolean clearChecksCache) {
-        // Configuration
-        File file = getFile();
-
-        if (!file.exists()) {
-            try {
-                if (file.createNewFile()) {
-                    configuration = YamlConfiguration.loadConfiguration(file);
-                } else {
-                    configuration = null;
-                }
-            } catch (Exception ignored) {
-                configuration = null;
-            }
-        } else {
-            configuration = YamlConfiguration.loadConfiguration(file);
-        }
-
-        // Identification & Labelling
+    public static void refreshFields() {
         construct = "[Spartan " + API.getVersion() + "/" + IDs.hide(IDs.user()) + "/" + IDs.hide(IDs.file()) + "] ";
         CloudBase.clear(false);
-
-        // Check Cache
-        if (clearChecksCache) {
-            for (HackType hackType : Enums.HackType.values()) {
-                hackType.resetCheck();
-            }
-        }
     }
 
     public static void createConfigurations() {
@@ -127,8 +73,11 @@ public class Config {
         boolean enabledPlugin = Register.isPluginEnabled();
 
         // Utilities
-        refreshFields(true);
+        refreshFields();
 
+        for (HackType hackType : Enums.HackType.values()) {
+            hackType.resetCheck();
+        }
         if (enabledPlugin) {
             // Configuration
             createConfigurations(); // Always First

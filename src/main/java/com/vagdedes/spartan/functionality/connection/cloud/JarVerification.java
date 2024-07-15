@@ -32,7 +32,9 @@ public class JarVerification {
             } else {
                 Register.disablePlugin();
             }
-        } else if (!isValid()) {
+        } else if (isValid()) {
+            SpartanEdition.refresh();
+        } else {
             String message = "This version of Spartan does not have a license."
                     + " If this download is pirated, please consider purchasing the plugin"
                     + " when your server starts making enough money. We also sell on BuiltByBit"

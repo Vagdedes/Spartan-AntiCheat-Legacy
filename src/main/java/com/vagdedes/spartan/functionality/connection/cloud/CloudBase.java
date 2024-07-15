@@ -248,7 +248,11 @@ public class CloudBase {
                                 Config.sql.refreshConfiguration();
                                 Config.compatibility.clearCache();
                                 Config.compatibility.fastRefresh();
-                                Config.refreshFields(true);
+                                Config.refreshFields();
+
+                                for (Enums.HackType hackType : Enums.HackType.values()) {
+                                    hackType.resetCheck();
+                                }
                             }
                         }
                     } catch (Exception e) {
@@ -341,8 +345,7 @@ public class CloudBase {
                         () -> detectionSlots = CloudConnections.getDetectionSlots()
                 );
             }
-        } else {
-            clear(true);
         }
     }
+
 }

@@ -29,7 +29,7 @@ public class IDs {
     static void set(int user, int nonce) {
         IDs.user = Integer.toString(user);
         IDs.file = Integer.toString(nonce);
-        Config.refreshFields(false);
+        Config.refreshFields();
     }
 
     public static void setPlatform(int id) {

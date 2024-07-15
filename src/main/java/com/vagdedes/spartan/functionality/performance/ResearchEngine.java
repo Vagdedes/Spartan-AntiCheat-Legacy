@@ -510,30 +510,22 @@ public class ResearchEngine {
             violationFired = false;
 
             if (!playerProfiles.isEmpty()) {
-                LinkedList<PlayerProfile> profiles = new LinkedList<>(playerProfiles.values());
-
-                for (SpartanPlayer player : SpartanBukkit.getPlayers()) {
-                    profiles.remove(player.protocol.getProfile());
-                    profiles.addFirst(player.protocol.getProfile());
-                }
+                Collection<PlayerProfile> profiles = playerProfiles.values();
                 Set<Enums.HackType> accessed = new HashSet<>();
 
                 for (Enums.DataType dataType : usableDataTypes) {
-                    Map<Enums.HackType, Map<Integer, Map<PlayerProfile, Integer>>>
-                            violationWave = new LinkedHashMap<>(),
-                            timeWave = new LinkedHashMap<>();
+                    for (Enums.HackType hackType : Enums.HackType.values()) {
+                        Map<Integer, Map<PlayerProfile, Integer>>
+                                violationWave = new LinkedHashMap<>(),
+                                timeWave = new LinkedHashMap<>();
 
-                    for (PlayerProfile profile : profiles) {
-                        for (Enums.HackType hackType : Enums.HackType.values()) {
+                        for (PlayerProfile profile : profiles) {
                             Iterator<PlayerViolation> collection = profile.getViolationHistory(dataType, hackType).getCollection().iterator();
 
                             if (collection.hasNext()) {
                                 PlayerViolation violation = collection.next();
                                 long previous = violation.time;
                                 Map<PlayerProfile, Integer> subMap = violationWave.computeIfAbsent(
-                                        hackType,
-                                        k -> new LinkedHashMap<>()
-                                ).computeIfAbsent(
                                         violation.identity,
                                         k -> new LinkedHashMap<>()
                                 );
@@ -545,9 +537,6 @@ public class ResearchEngine {
                                 while (collection.hasNext()) {
                                     violation = collection.next();
                                     subMap = violationWave.computeIfAbsent(
-                                            hackType,
-                                            k -> new LinkedHashMap<>()
-                                    ).computeIfAbsent(
                                             violation.identity,
                                             k -> new LinkedHashMap<>()
                                     );
@@ -561,9 +550,6 @@ public class ResearchEngine {
                                             60_000L
                                     );
                                     subMap = timeWave.computeIfAbsent(
-                                            hackType,
-                                            k -> new LinkedHashMap<>()
-                                    ).computeIfAbsent(
                                             violation.identity,
                                             k -> new LinkedHashMap<>()
                                     );
@@ -574,14 +560,11 @@ public class ResearchEngine {
                                 }
                             }
                         }
-                    }
 
-                    if (!violationWave.isEmpty()) {
-                        for (Map.Entry<Enums.HackType, Map<Integer, Map<PlayerProfile, Integer>>> entry : violationWave.entrySet()) {
-                            Enums.HackType hackType = entry.getKey();
+                        if (!violationWave.isEmpty()) {
                             accessed.add(hackType);
 
-                            for (Map<PlayerProfile, Integer> profileMap : entry.getValue().values()) {
+                            for (Map<PlayerProfile, Integer> profileMap : violationWave.values()) {
                                 int sum = 0, squareSum = 0;
 
                                 for (int value : profileMap.values()) {
@@ -606,13 +589,10 @@ public class ResearchEngine {
                                 }
                             }
                         }
-                    }
-                    if (!timeWave.isEmpty()) {
-                        for (Map.Entry<Enums.HackType, Map<Integer, Map<PlayerProfile, Integer>>> entry : timeWave.entrySet()) {
-                            Enums.HackType hackType = entry.getKey();
+                        if (!timeWave.isEmpty()) {
                             accessed.add(hackType);
 
-                            for (Map<PlayerProfile, Integer> profileMap : entry.getValue().values()) {
+                            for (Map<PlayerProfile, Integer> profileMap : violationWave.values()) {
                                 int sum = 0, squareSum = 0;
 
                                 for (int value : profileMap.values()) {
