@@ -31,7 +31,7 @@ public class Simulation extends CheckExecutor {
                     dy = RayUtils.scaleVal(to.getY() - from.getY(), 4),
                     dz = RayUtils.scaleVal(to.getZ() - from.getZ(), 4);
             client.movement(dx, dy, dz);
-            player.sendMessage("v: " + dx + " | " + dy + " | " + dz);
+            //player.sendMessage("v: " + dx + " | " + dy + " | " + dz);
 
         }
     }
