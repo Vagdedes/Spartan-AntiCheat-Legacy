@@ -65,18 +65,24 @@ public class BackgroundAPI {
     }
 
     static void setNotifications(Player p, boolean value) {
-        if (Config.settings.getBoolean("Important.enable_developer_api")) {
+        if (value) {
             SpartanPlayer player = SpartanBukkit.getProtocol(p).spartanPlayer;
 
             if (player != null) {
-                DetectionNotifications.set(player, -1);
+                DetectionNotifications.set(player, DetectionNotifications.defaultFrequency);
+            }
+        } else {
+            SpartanPlayer player = SpartanBukkit.getProtocol(p).spartanPlayer;
+
+            if (player != null) {
+                DetectionNotifications.remove(player);
             }
         }
     }
 
     @Deprecated
     static void setVerbose(Player p, boolean value, int frequency) {
-        setNotifications(p, frequency);
+        AwarenessNotifications.forcefullySend("The API method 'setVerbose' has been removed.");
     }
 
     static void setNotifications(Player p, int frequency) {
@@ -84,7 +90,7 @@ public class BackgroundAPI {
             SpartanPlayer player = SpartanBukkit.getProtocol(p).spartanPlayer;
 
             if (player != null) {
-                DetectionNotifications.set(player, -Math.max(1, Math.abs(frequency)));
+                DetectionNotifications.set(player, Math.abs(frequency));
             }
         }
     }
@@ -108,7 +114,7 @@ public class BackgroundAPI {
     }
 
     static boolean isSilent(HackType HackType) {
-        return HackType.getCheck().isSilent(null);
+        return HackType.getCheck().isSilent(null, null);
     }
 
     static int getVL(Player p, HackType hackType) {
@@ -216,13 +222,13 @@ public class BackgroundAPI {
 
     static void enableSilentChecking(HackType HackType) {
         if (Config.settings.getBoolean("Important.enable_developer_api")) {
-            HackType.getCheck().setSilent(true);
+            HackType.getCheck().setSilent(null, true);
         }
     }
 
     static void disableSilentChecking(HackType HackType) {
         if (Config.settings.getBoolean("Important.enable_developer_api")) {
-            HackType.getCheck().setSilent(false);
+            HackType.getCheck().setSilent(null, false);
         }
     }
 

@@ -23,7 +23,7 @@ public class FastHeal extends CheckExecutor {
     public FastHeal(HackType hackType, SpartanPlayer player) {
         super(hackType, player, 0, false);
         this.previousHealth = player.getInstance().getHealth();
-        this.buffer = new Buffer.IndividualBuffer(player);
+        this.buffer = new Buffer.IndividualBuffer();
     }
 
     private long calculate() {

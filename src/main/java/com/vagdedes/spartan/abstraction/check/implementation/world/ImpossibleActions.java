@@ -32,7 +32,7 @@ public class ImpossibleActions extends CheckExecutor {
 
     public ImpossibleActions(Enums.HackType hackType, SpartanPlayer player) {
         super(hackType, player, 0, false);
-        this.buffer = new Buffer(player);
+        this.buffer = new Buffer();
     }
 
     @Override

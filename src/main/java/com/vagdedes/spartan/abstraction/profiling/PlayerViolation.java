@@ -20,13 +20,8 @@ public class PlayerViolation {
         this.information = information;
         this.level = level;
         this.increase = increase;
-
         this.detection = analysis.detection;
         this.identity = analysis.identity;
-
-        if (this.increase > 1) {
-            this.hackType.getCheck().enableMultiViolations();
-        }
     }
 
     public PlayerViolation(long time,

@@ -8,6 +8,7 @@ import java.util.Objects;
 
 public class IDs {
 
+    public static final boolean enabled = AlgebraUtils.validInteger("%%__RESOURCE__%%");
     private static String
             user = "%%__USER__%%",
             file = "%%__NONCE__%%";
@@ -28,7 +29,7 @@ public class IDs {
     static void set(int user, int nonce) {
         IDs.user = Integer.toString(user);
         IDs.file = Integer.toString(nonce);
-        Config.refreshFields(false);
+        Config.refreshFields();
     }
 
     public static void setPlatform(int id) {
@@ -42,11 +43,7 @@ public class IDs {
     }
 
     public static String file() {
-        return !JarVerification.enabled ? (CloudBase.hasToken() ? Integer.toString(CloudBase.getRawToken().hashCode()) : user) : file;
-    }
-
-    static String resource() {
-        return "%%__RESOURCE__%%";
+        return !IDs.enabled ? (CloudBase.hasToken() ? Integer.toString(CloudBase.getRawToken().hashCode()) : user) : file;
     }
 
     static String platform() {
@@ -54,6 +51,10 @@ public class IDs {
     }
 
     // Platforms
+
+    public static boolean canAdvertise() {
+        return !IDs.enabled || IDs.isBuiltByBit() || IDs.isPolymart();
+    }
 
     public static boolean isBuiltByBit() {
         return platform == 2 || "%%__FILEHASH__%%".length() != 16;
@@ -65,8 +66,8 @@ public class IDs {
 
     public static String hide(String id) {
         try {
-            double version = Double.parseDouble(API.getVersion().substring(6));
-            double number = AlgebraUtils.cut(Integer.parseInt(id) / version, 6);
+            double version = Double.parseDouble(API.getVersion().substring(6)),
+                    number = AlgebraUtils.cut(Integer.parseInt(id) / version, 6);
             return String.valueOf(number).replace("-", "*").replace(".", "-");
         } catch (Exception ex) {
             return "0";

@@ -26,11 +26,10 @@ public class KillAura extends CheckExecutor {
     private final ResponseTime responseTime;
     private final MoveDirection moveDirection;
     private final MoveDirectionML moveDirectionML;
-    private final MoveLength moveLength;
     private final FightAnalysis analysis;
 
     public KillAura(Enums.HackType hackType, SpartanPlayer player) {
-        super(hackType, player, 11, false);
+        super(hackType, player, 10, false);
         this.addDetections(new DetectionExecutor[]{
                 irregular = new Irregular(this),
                 entityRaytrace = new EntityRaytrace(this),
@@ -40,13 +39,10 @@ public class KillAura extends CheckExecutor {
                 hitDirection = new HitDirection(this),
                 responseTime = new ResponseTime(this),
                 moveDirection = new MoveDirection(this),
-                moveLength = new MoveLength(this),
                 hitDirectionML = new HitDirectionML(this),
                 moveDirectionML = new MoveDirectionML(this)
         });
     }
-
-    static final long pastDamageMilliseconds = 1_000L;
 
     private void runDetection(String option, Runnable runnable) {
         if (hackType.getCheck().getBooleanOption(option, true)) {
@@ -69,10 +65,6 @@ public class KillAura extends CheckExecutor {
 
     @Override
     protected void runInternal(boolean cancelled) {
-        runDetection(
-                "check_move_length",
-                moveLength::runMove
-        );
         runDetection(
                 "check_response_time",
                 responseTime::runMove

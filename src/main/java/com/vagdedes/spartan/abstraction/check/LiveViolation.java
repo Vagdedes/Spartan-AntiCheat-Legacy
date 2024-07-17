@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.abstraction.check;
 
 import com.vagdedes.spartan.Register;
+import com.vagdedes.spartan.abstraction.data.Cooldowns;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.profiling.InformationAnalysis;
 import com.vagdedes.spartan.abstraction.profiling.PlayerEvidence;
@@ -8,11 +9,11 @@ import com.vagdedes.spartan.abstraction.profiling.PlayerViolation;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudConnections;
-import com.vagdedes.spartan.functionality.connection.cloud.CrossServerInformation;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.notifications.clickable.ClickableMessage;
 import com.vagdedes.spartan.functionality.performance.PlayerDetectionSlots;
+import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
@@ -45,12 +46,14 @@ public class LiveViolation {
     private final Map<Integer, Long> level;
     private CancelCause disableCause, silentCause;
     private HackPrevention prevention;
+    private final Cooldowns notifications;
 
     public LiveViolation(SpartanPlayer player, Enums.HackType hackType) {
         this.player = player;
         this.hackType = hackType;
         this.level = new ConcurrentHashMap<>();
         this.prevention = new HackPrevention();
+        this.notifications = new Cooldowns(new ConcurrentHashMap<>());
     }
 
     // Separator
@@ -96,11 +99,12 @@ public class LiveViolation {
                     this.performNotification(playerViolation);
                     this.performPunishments();
                     this.prevention = newPrevention;
-                    this.prevention.canPrevent = !hackType.getCheck().isSilent(player.getWorld().getName())
-                            && (silentCause == null
-                            || silentCause.hasExpired()
-                            || !silentCause.pointerMatches(information))
-                            && player.protocol.getProfile().evidence.get(this.hackType) >= PlayerEvidence.prevention;
+                    this.prevention.canPrevent =
+                            !hackType.getCheck().isSilent(player.dataType, player.getWorld().getName())
+                                    && (silentCause == null
+                                    || silentCause.hasExpired()
+                                    || !silentCause.pointerMatches(information))
+                                    && player.protocol.getProfile().evidence.get(this.hackType) >= PlayerEvidence.prevention;
                 };
 
                 if (!event || SpartanBukkit.isSynchronised()) {
@@ -279,12 +283,12 @@ public class LiveViolation {
     private void performPunishments() {
         Check check = hackType.getCheck();
 
-        if (check.canPunish) {
+        if (check.canPunish(player.dataType)) {
             List<String> commands = Config.settings.getPunishmentCommands();
 
             if (!commands.isEmpty()) {
-                Collection<Enums.HackType> detectedHacks = player.protocol.getProfile().evidence.getKnowledgeList(false);
-                detectedHacks.removeIf(loopHackType -> !loopHackType.getCheck().canPunish);
+                Collection<Enums.HackType> detectedHacks = player.protocol.getProfile().evidence.getKnowledgeList(PlayerEvidence.punishment);
+                detectedHacks.removeIf(loopHackType -> !loopHackType.getCheck().canPunish(player.dataType));
 
                 if (!detectedHacks.isEmpty()) {
                     int index = 0;
@@ -345,44 +349,42 @@ public class LiveViolation {
     }
 
     private void performNotification(PlayerViolation playerViolation) {
-        boolean individualOnlyNotifications = Config.settings.getBoolean("Notifications.individual_only_notifications");
-        String message = ConfigUtils.replaceWithSyntax(
+        String notification = ConfigUtils.replaceWithSyntax(
                 player,
                 Config.messages.getColorfulString("detection_notification")
                         .replace("{info}", playerViolation.information)
                         .replace("{vls:detection}", Integer.toString(playerViolation.sum())),
                 hackType
         );
-        CrossServerInformation.queueNotification(message, true);
 
         SpartanLocation location = player.movement.getLocation();
         String information = Config.getConstruct() + player.name + " failed " + hackType
                 + " (" + violationLevelIdentifier + " " + playerViolation.level + "+" + playerViolation.increase + ") "
                 + "[(Version: " + MultiVersion.versionString() + "), "
-                + "(Silent: " + hackType.getCheck().isSilent(player.getWorld().getName()) + "), ("
+                + "(Silent: " + hackType.getCheck().isSilent(player.dataType, player.getWorld().getName()) + "), ("
                 + javaPlayerIdentifier + " " + (!player.bedrockPlayer) + ")" + ", (Packets: "
                 + SpartanBukkit.packetsEnabled() + "), (Ping: " + player.getPing() + "ms), " +
                 "(XYZ: " + location.getBlockX() + " " + location.getBlockY() + " "
                 + location.getBlockZ() + "), (" + playerViolation.information + ")]";
-        AntiCheatLogs.logInfo(player, information, true, null, playerViolation);
+        AntiCheatLogs.logInfo(player, notification, information, true, null, playerViolation);
 
         // Local Notifications
         String command = Config.settings.getString("Notifications.message_clickable_command")
                 .replace("{player}", player.name);
 
-        if (individualOnlyNotifications) {
-            if (DetectionNotifications.hasPermission(player)) { // Attention
-                ClickableMessage.sendCommand(player.getInstance(), message, command, command);
+        if (Config.settings.getBoolean("Notifications.individual_only_notifications")) {
+            if (DetectionNotifications.isEnabled(player)) { // Attention
+                ClickableMessage.sendCommand(player.getInstance(), notification, command, command);
             }
         } else {
             List<SpartanPlayer> notificationPlayers = DetectionNotifications.getPlayers();
 
             if (!notificationPlayers.isEmpty()) {
                 for (SpartanPlayer staff : notificationPlayers) {
-                    if (!hasNotificationCooldown(staff, player, playerViolation)) {
+                    if (staff.getViolations(this.hackType).canSendNotification(this.player)) {
                         ClickableMessage.sendCommand(
                                 staff.getInstance(),
-                                message,
+                                notification,
                                 command,
                                 command
                         );
@@ -394,46 +396,38 @@ public class LiveViolation {
 
     // Separator
 
-    private static int getNotificationTicksCooldown(SpartanPlayer staff,
-                                                    SpartanPlayer detectedPlayer) {
-        Integer frequency = DetectionNotifications.getFrequency(staff);
+    private int getNotificationTicksCooldown(SpartanPlayer detected) {
+        Integer frequency = DetectionNotifications.getFrequency(this.player);
 
         if (frequency != null
                 && frequency != DetectionNotifications.defaultFrequency) {
             return frequency;
-        } else if (detectedPlayer != null
-                && (staff.uuid.equals(detectedPlayer.uuid)
-                || staff.getWorld().equals(detectedPlayer.getWorld())
-                && AlgebraUtils.getHorizontalDistance(staff.movement.getLocation(), detectedPlayer.movement.getLocation()) <= PlayerUtils.chunk)) {
-            return 0;
+        } else if (detected != null
+                && (detected.uuid.equals(this.player.uuid)
+                || detected.getWorld().equals(this.player.getWorld())
+                && detected.movement.getLocation().distance(this.player.movement.getLocation()) <= PlayerUtils.chunk)) {
+            return AlgebraUtils.integerRound(Math.sqrt(TPS.maximum));
         } else {
-            return -((int) TPS.maximum);
+            return (int) TPS.maximum;
         }
     }
 
-    public static boolean hasNotificationCooldown(SpartanPlayer staff, SpartanPlayer player,
-                                                  PlayerViolation playerViolation) {
-        if (staff.cooldowns.canDo("notification")) {
-            int frequency = getNotificationTicksCooldown(staff, player);
+    public boolean canSendNotification(Object detected) {
+        boolean player = detected instanceof SpartanPlayer;
 
-            if (frequency < 0) {
-                if (playerViolation == null
-                        || playerViolation.sum() > AlgebraUtils.integerRound(Math.sqrt(-frequency))) {
-                    staff.cooldowns.add(
-                            "notification",
-                            -frequency
-                    );
-                    return true;
-                }
-            } else {
-                if (frequency > 0) {
-                    staff.cooldowns.add(
-                            "notification",
-                            frequency
-                    );
-                }
-                return true;
+        if (this.notifications.canDo("")
+                && (player
+                ? ((SpartanPlayer) detected).protocol.getProfile().evidence.get(this.hackType)
+                : ResearchEngine.getPlayerProfile(detected.toString()).evidence.get(this.hackType))
+                >= PlayerEvidence.notification) {
+            int ticks = this.getNotificationTicksCooldown(
+                    player ? (SpartanPlayer) detected : null
+            );
+
+            if (ticks > 0) {
+                this.notifications.add("", ticks);
             }
+            return true;
         }
         return false;
     }

@@ -3,6 +3,7 @@ package com.vagdedes.spartan;
 import com.vagdedes.spartan.functionality.command.CommandExecution;
 import com.vagdedes.spartan.functionality.command.CommandTab;
 import com.vagdedes.spartan.functionality.connection.PlayerLimitPerIP;
+import com.vagdedes.spartan.functionality.connection.cloud.JarVerification;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.npc.NPCManager;
 import com.vagdedes.spartan.functionality.server.Config;
@@ -30,6 +31,7 @@ public class Register extends JavaPlugin {
     public void onEnable() {
         plugin = this;
         plugin.setNaggable(false);
+        JarVerification.run();
         Config.create();
 
         // Version

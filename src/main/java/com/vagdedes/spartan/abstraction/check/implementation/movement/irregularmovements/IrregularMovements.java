@@ -15,15 +15,17 @@ public class IrregularMovements extends CheckExecutor {
     private final IrregularMovementsJump jump;
     private final IrregularMovementsHorizontal horizontal;
     private final IrregularMovementsFoodSprint foodSprint;
+    private final IrregularMovementsMoveLength moveLength;
 
     public IrregularMovements(HackType hackType, SpartanPlayer player) {
-        super(hackType, player, 5, false);
+        super(hackType, player, 6, false);
         this.addDetections(new DetectionExecutor[]{
                 step = new IrregularMovementsStep(this),
                 gravity = new IrregularMovementsGravity(this),
                 jump = new IrregularMovementsJump(this),
                 horizontal = new IrregularMovementsHorizontal(this),
-                foodSprint = new IrregularMovementsFoodSprint(this)
+                foodSprint = new IrregularMovementsFoodSprint(this),
+                moveLength = new IrregularMovementsMoveLength(this)
         });
     }
 
@@ -58,6 +60,7 @@ public class IrregularMovements extends CheckExecutor {
             this.gravity.run(vertical, oldVertical, box, oldBox);
         }
         jump.run(vertical, box);
+        moveLength.run();
     }
 
     @Override

@@ -4,7 +4,7 @@ import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
-import com.vagdedes.spartan.functionality.connection.cloud.CrossServerInformation;
+import com.vagdedes.spartan.functionality.notifications.CrossServerNotifications;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
@@ -34,7 +34,7 @@ public class ConfigUtils {
         message = replace(message, "{online}", String.valueOf(SpartanBukkit.getPlayerCount()));
         message = replace(message, "{staff}", String.valueOf(Permissions.getStaff().size()));
         message = replace(message, "{motd}", Bukkit.getMotd());
-        message = replace(message, "{server:name}", CrossServerInformation.getOptionValue());
+        message = replace(message, "{server:name}", CrossServerNotifications.getServerName());
         message = replace(message, "{plugin:version}", API.getVersion());
         message = replace(message, "{server:version}", MultiVersion.versionString());
         message = replace(message, "{line}", "\n");
@@ -49,7 +49,6 @@ public class ConfigUtils {
             Check check = hackType.getCheck();
             message = replace(message, "{detection}", check.getName());
             message = replace(message, "{detection:real}", hackType.toString());
-            message = replace(message, "{punish:detection}", String.valueOf(check.canPunish));
         }
         return message;
     }
@@ -73,7 +72,8 @@ public class ConfigUtils {
         message = replace(message, "{cps}", String.valueOf(p.clicks.getCount()));
 
         if (hackType != null) {
-            message = replace(message, "{silent:detection}", String.valueOf(hackType.getCheck().isSilent(worldName)));
+            message = replace(message, "{silent:detection}", String.valueOf(hackType.getCheck().isSilent(p.dataType, worldName)));
+            message = replace(message, "{punish:detection}", String.valueOf(hackType.getCheck().canPunish(p.dataType)));
         }
         return ChatColor.translateAlternateColorCodes('&', replaceWithSyntax(message, hackType));
     }
@@ -107,13 +107,16 @@ public class ConfigUtils {
                 message = replace(message, "{cps}", String.valueOf(p.clicks.getCount()));
 
                 if (hasHackType) {
-                    message = replace(message, "{silent:detection}", String.valueOf(hackType.getCheck().isSilent(worldName)));
+                    message = replace(message, "{silent:detection}", String.valueOf(hackType.getCheck().isSilent(p.dataType, worldName)));
+                    message = replace(message, "{punish:detection}", String.valueOf(hackType.getCheck().canPunish(p.dataType)));
                 }
             } else if (hasHackType) {
-                message = replace(message, "{silent:detection}", String.valueOf(hackType.getCheck().isSilent(null)));
+                message = replace(message, "{silent:detection}", String.valueOf(hackType.getCheck().isSilent(null, null)));
+                message = replace(message, "{punish:detection}", String.valueOf(hackType.getCheck().canPunish(null)));
             }
         } else if (hasHackType) {
-            message = replace(message, "{silent:detection}", String.valueOf(hackType.getCheck().isSilent(null)));
+            message = replace(message, "{silent:detection}", String.valueOf(hackType.getCheck().isSilent(null, null)));
+            message = replace(message, "{punish:detection}", String.valueOf(hackType.getCheck().canPunish(null)));
         }
         return ChatColor.translateAlternateColorCodes('&', replaceWithSyntax(message, hackType));
     }

@@ -11,6 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class PlayerEvidence {
 
     public static double
+            notification = 0.25,
             prevention = 2.0 / 3.0,
             punishment = 0.9;
 
@@ -34,12 +35,12 @@ public class PlayerEvidence {
 
     // Separator
 
-     boolean has(boolean informational) {
-        if (informational) {
+    public boolean has(double threshold) {
+        if (threshold == 0.0) {
             return !this.probability.keySet().isEmpty();
         } else {
             for (Map.Entry<Enums.HackType, Double> entry : this.probability.entrySet()) {
-                if (entry.getValue() >= punishment) {
+                if (entry.getValue() >= threshold) {
                     return true;
                 }
             }
@@ -47,14 +48,14 @@ public class PlayerEvidence {
         }
     }
 
-    public Collection<Enums.HackType> getKnowledgeList(boolean informational) {
-        if (informational) {
+    public Collection<Enums.HackType> getKnowledgeList(double threshold) {
+        if (threshold == 0.0) {
             return new HashSet<>(this.probability.keySet());
         } else {
             Collection<Enums.HackType> set = new HashSet<>();
 
             for (Map.Entry<Enums.HackType, Double> entry : this.probability.entrySet()) {
-                if (entry.getValue() >= punishment) {
+                if (entry.getValue() >= threshold) {
                     set.add(entry.getKey());
                 }
             }
@@ -62,14 +63,14 @@ public class PlayerEvidence {
         }
     }
 
-    public Set<Map.Entry<Enums.HackType, Double>> getKnowledgeEntries(boolean informational) {
-        if (informational) {
+    public Set<Map.Entry<Enums.HackType, Double>> getKnowledgeEntries(double threshold) {
+        if (threshold == 0.0) {
             return new HashSet<>(this.probability.entrySet());
         } else {
             Set<Map.Entry<Enums.HackType, Double>> set = new HashSet<>();
 
             for (Map.Entry<Enums.HackType, Double> entry : this.probability.entrySet()) {
-                if (entry.getValue() >= punishment) {
+                if (entry.getValue() >= threshold) {
                     set.add(entry);
                 }
             }

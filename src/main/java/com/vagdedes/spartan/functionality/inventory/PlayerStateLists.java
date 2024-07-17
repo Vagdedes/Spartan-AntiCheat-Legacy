@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.functionality.inventory;
 
+import com.vagdedes.spartan.abstraction.profiling.PlayerEvidence;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
@@ -82,7 +83,7 @@ public class PlayerStateLists {
             List<PlayerProfile> list = new ArrayList<>(playerProfiles.size());
 
             for (PlayerProfile playerProfile : playerProfiles) {
-                if (!playerProfile.isLegitimate()) {
+                if (playerProfile.evidence.has(PlayerEvidence.prevention)) {
                     list.add(playerProfile);
                 }
             }
@@ -106,7 +107,7 @@ public class PlayerStateLists {
 
         if (listSize > 0) {
             for (PlayerProfile playerProfile : playerProfiles) {
-                Collection<Enums.HackType> evidenceDetails = playerProfile.evidence.getKnowledgeList(false);
+                Collection<Enums.HackType> evidenceDetails = playerProfile.evidence.getKnowledgeList(PlayerEvidence.prevention);
 
                 if (!evidenceDetails.isEmpty()) {
                     lore.clear();
