@@ -22,6 +22,7 @@ import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import com.vagdedes.spartan.utils.minecraft.server.ConfigUtils;
+import me.vagdedes.spartan.api.API;
 import me.vagdedes.spartan.api.CheckCancelEvent;
 import me.vagdedes.spartan.api.PlayerViolationCommandEvent;
 import me.vagdedes.spartan.api.PlayerViolationEvent;
@@ -35,7 +36,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class LiveViolation {
 
     public static final String
-            violationLevelIdentifier = "VL:",
+            violationLevelIdentifier = "Violations:",
             javaPlayerIdentifier = "Java:";
 
     private final SpartanPlayer player;
@@ -66,7 +67,6 @@ public class LiveViolation {
                 PlayerViolation playerViolation = new PlayerViolation(
                         time,
                         hackType,
-                        information,
                         this.getLevel(),
                         increaseInt
                 );
@@ -88,7 +88,7 @@ public class LiveViolation {
                     }
                     player.protocol.getProfile().getViolationHistory(player.dataType, hackType).store(playerViolation);
                     this.increaseLevel(increaseInt);
-                    this.performNotification(playerViolation);
+                    this.performNotification(playerViolation, information);
                     this.performPunishments();
                     this.prevention = newPrevention;
                     this.prevention.canPrevent =
@@ -304,24 +304,26 @@ public class LiveViolation {
         }
     }
 
-    private void performNotification(PlayerViolation playerViolation) {
+    private void performNotification(PlayerViolation playerViolation, String information) {
         String notification = ConfigUtils.replaceWithSyntax(
                 player,
                 Config.messages.getColorfulString("detection_notification")
-                        .replace("{info}", playerViolation.information)
+                        .replace("{info}", information)
                         .replace("{vls:detection}", Integer.toString(playerViolation.sum())),
                 hackType
         );
 
         SpartanLocation location = player.movement.getLocation();
-        String information = Config.getConstruct() + player.name + " failed " + hackType
-                + " (" + violationLevelIdentifier + " " + playerViolation.level + "+" + playerViolation.increase + ") "
-                + "[(Version: " + MultiVersion.versionString() + "), "
-                + "(Silent: " + hackType.getCheck().isSilent(player.dataType, player.getWorld().getName()) + "), ("
-                + javaPlayerIdentifier + " " + (!player.bedrockPlayer) + ")" + ", (Packets: "
-                + SpartanBukkit.packetsEnabled() + "), (Ping: " + player.getPing() + "ms), " +
-                "(XYZ: " + location.getBlockX() + " " + location.getBlockY() + " "
-                + location.getBlockZ() + "), (" + playerViolation.information + ")]";
+        information = player.name + " failed " + hackType
+                + " (" + violationLevelIdentifier + " " + playerViolation.level + "+" + playerViolation.increase + "), "
+                + "(Server-Version: " + MultiVersion.versionString() + "), "
+                + "(Plugin-Version: " + API.getVersion() + "), "
+                + "(Silent: " + hackType.getCheck().isSilent(player.dataType, player.getWorld().getName()) + "), "
+                + "(" + javaPlayerIdentifier + " " + (!player.bedrockPlayer) + ")" + ", "
+                + "(Packets: " + SpartanBukkit.packetsEnabled() + "), "
+                + "(Ping: " + player.getPing() + "ms), "
+                + "(W-XYZ: " + location.world.getName() + " " + location.getBlockX() + " " + location.getBlockY() + " " + location.getBlockZ() + "), "
+                + "[Information: " + information + "]";
         AntiCheatLogs.logInfo(player, notification, information, true, null, playerViolation);
 
         // Local Notifications

@@ -1,6 +1,5 @@
 package com.vagdedes.spartan.functionality.connection.cloud;
 
-import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.api.API;
 
@@ -29,7 +28,7 @@ public class IDs {
     static void set(int user, int nonce) {
         IDs.user = Integer.toString(user);
         IDs.file = Integer.toString(nonce);
-        Config.refreshFields();
+        CloudBase.clear(false);
     }
 
     public static void setPlatform(int id) {

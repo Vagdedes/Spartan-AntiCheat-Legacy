@@ -23,14 +23,11 @@ import java.io.File;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Random;
 
 public class AntiCheatLogs {
 
     public static final String
-            dateFormatChanger = ".",
-            usualDateFormat = "yyyy/MM/dd HH:mm:ss",
-            dateFormat = "yyyy/MM/dd HH:mm:ss" + dateFormatChanger + "SSSSSSSSS",
+            dateFormat = "yyyy/MM/dd HH:mm:ss.SSSSSSSSS",
             folderPath = Register.plugin.getDataFolder() + "/logs";
 
     private static Timestamp time = new Timestamp(System.currentTimeMillis());
@@ -57,8 +54,7 @@ public class AntiCheatLogs {
         if (fileConfiguration != null) {
             SpartanBukkit.dataThread.executeIfSyncElseHere(() -> {
                 fileConfiguration.set(
-                        "(" + new Random().nextInt() + ")"
-                                + "[" + DateTimeFormatter.ofPattern(dateFormat).format(LocalDateTime.now()) + "]",
+                        DateTimeFormatter.ofPattern(dateFormat).format(LocalDateTime.now()),
                         information
                 );
                 save();

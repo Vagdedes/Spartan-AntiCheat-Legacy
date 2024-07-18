@@ -6,7 +6,6 @@ import com.vagdedes.spartan.abstraction.profiling.PlayerViolation;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.notifications.CrossServerNotifications;
-import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.AntiCheatLogs;
@@ -232,7 +231,7 @@ public class SQLFeature extends ConfigurationBuilder {
                         createTable(table);
                     }
                 } catch (SQLException e) {
-                    AwarenessNotifications.forcefullySend(Config.getConstruct() + "SQL Initial Connection Error:\n" + e.getMessage());
+                    AwarenessNotifications.forcefullySend("SQL Initial Connection Error:\n" + e.getMessage());
                     e.printStackTrace();
                 }
             }

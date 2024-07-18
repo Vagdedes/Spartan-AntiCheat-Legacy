@@ -218,19 +218,22 @@ public class ResearchEngine {
     // Separator
 
     private static String getDetectionInformation(String s) {
-        String[] split = s.split("\\), \\(");
-        s = split[split.length - 1];
-        return s.length() < 2 ? null : s.substring(0, s.length() - 2);
+        int index = s.indexOf("\\[");
+        return index > -1
+                ? s.substring(index + 1, s.length() - 1)
+                : null;
     }
 
     private static int[] getDetectionViolationLevel(String s) {
-        int index1 = s.indexOf("(" + LiveViolation.violationLevelIdentifier + " ");
+        String search = "(" + LiveViolation.violationLevelIdentifier + " ";
+        int index1 = s.indexOf(search);
 
         if (index1 > -1) {
-            int index2 = s.indexOf(") [");
+            s = s.substring(index1 + search.length());
+            int index2 = s.indexOf(")");
 
-            if (index2 > -1 && index2 > index1) {
-                String number = s.substring(index1 + 5, index2);
+            if (index2 != -1) {
+                String number = s.substring(0, index2);
                 String[] split = number.split("\\+", 3);
 
                 if (split.length == 2) {
@@ -319,7 +322,7 @@ public class ResearchEngine {
                         while (rs.next()) {
                             String data = rs.getString("information");
                             String[] all = TimeUtils.getAll(rs.getTimestamp("creation_date"));
-                            String date = "(" + new Random().nextInt() + ")[" + all[0] + " " + all[1] + "]";
+                            String date = all[0] + " " + all[1];
                             cache.put(date, data);
                             byteSize += date.length() + data.length();
 
@@ -407,90 +410,66 @@ public class ResearchEngine {
         if (isStorageMode()) {
             Map<String, String> logs = getLogs();
 
-            // Separator
-            int size = logs.size();
-
-            if (size > 0) {
+            if (!logs.isEmpty()) {
                 try {
-                    String construct = Config.getConstruct();
-
                     for (Map.Entry<String, String> entry : logs.entrySet()) {
-                        String key = entry.getKey();
-                        int dateStart = key.indexOf("[") + 1;
+                        String fullDate = entry.getKey(),
+                                partialDate = fullDate.substring(0, 10),
+                                data = entry.getValue();
+                        String[] split = data.split(" ");
 
-                        if (dateStart > 0) {
-                            String fullDate = key.substring(dateStart, key.length() - 1);
-                            String partialDate = key.substring(dateStart, dateStart + 10);
+                        if (data.contains(" failed ")) {
+                            if (split.length >= 3) {
+                                String name = split[0];
+                                String hackTypeString = split[2];
+                                PlayerProfile playerProfile = getPlayerProfile(name);
+                                Enums.DataType dataType = getDataType(data);
 
-                            String data = entry.getValue().replace(construct, "");
-                            int dataLength = data.length();
-                            int index = data.indexOf("]");
+                                for (Enums.HackType hackType : Enums.HackType.values()) {
+                                    if (hackTypeString.equals(hackType.toString())) {
+                                        String detection = getDetectionInformation(data);
 
-                            if (index > -1 && index != (dataLength - 1)) {
-                                data = data.substring(index + 2);
-                            }
-                            int greatestSplitPosition = 10; // Attention
-                            String[] split = data.split(" ", greatestSplitPosition + 1);
+                                        if (detection != null) {
+                                            int[] violation = getDetectionViolationLevel(data);
 
-                            if (data.contains(" failed ")) {
-                                if (split.length >= 3) {
-                                    String name = split[0];
-                                    String hackTypeString = split[2];
-                                    PlayerProfile playerProfile = getPlayerProfile(name);
-                                    Enums.DataType dataType = getDataType(data);
-
-                                    for (Enums.HackType hackType : Enums.HackType.values()) {
-                                        if (hackTypeString.equals(hackType.toString())) {
-                                            // Separator
-                                            String detection = getDetectionInformation(data);
-
-                                            if (detection != null) {
-                                                int[] violation = getDetectionViolationLevel(data);
-
-                                                if (violation != null) {
-                                                    SimpleDateFormat sdf = new SimpleDateFormat(
-                                                            fullDate.contains(AntiCheatLogs.dateFormatChanger) ?
-                                                                    AntiCheatLogs.dateFormat :
-                                                                    AntiCheatLogs.usualDateFormat
-                                                    );
-                                                    playerProfile.getViolationHistory(dataType, hackType).store(
-                                                            new PlayerViolation(
-                                                                    sdf.parse(fullDate).getTime(),
-                                                                    hackType,
-                                                                    detection,
-                                                                    violation[0],
-                                                                    violation[1]
-                                                            )
-                                                    );
-                                                }
+                                            if (violation != null) {
+                                                SimpleDateFormat sdf = new SimpleDateFormat(AntiCheatLogs.dateFormat);
+                                                playerProfile.getViolationHistory(dataType, hackType).store(
+                                                        new PlayerViolation(
+                                                                sdf.parse(fullDate).getTime(),
+                                                                hackType,
+                                                                violation[0],
+                                                                violation[1]
+                                                        )
+                                                );
                                             }
-                                            break;
                                         }
+                                        break;
                                     }
                                 }
-                            } else if (data.contains(" found ")) {
-                                if (split.length >= 9) {
-                                    String name = split[0].toLowerCase();
+                            }
+                        } else if (data.contains(" found ")) {
+                            if (split.length >= 9) {
+                                String name = split[0].toLowerCase();
 
-                                    try {
-                                        MiningHistory.MiningOre ore = MiningHistory.getMiningOre(
-                                                Material.getMaterial(
-                                                        split[3].toUpperCase().replace("-", "_")
-                                                )
-                                        );
+                                try {
+                                    MiningHistory.MiningOre ore = MiningHistory.getMiningOre(
+                                            Material.getMaterial(
+                                                    split[3].toUpperCase().replace("-", "_")
+                                            )
+                                    );
 
-                                        if (ore != null) {
-                                            MiningHistory miningHistory = getPlayerProfile(name).getMiningHistory(ore);
+                                    if (ore != null) {
+                                        MiningHistory miningHistory = getPlayerProfile(name).getMiningHistory(ore);
 
-                                            if (miningHistory != null) {
-                                                World.Environment environment = World.Environment.valueOf(
-                                                        split[8].toUpperCase().replace("-", "_")
-                                                );
-                                                miningHistory.increaseMines(environment, 1, partialDate);
-                                            }
+                                        if (miningHistory != null) {
+                                            World.Environment environment = World.Environment.valueOf(
+                                                    split[8].toUpperCase().replace("-", "_")
+                                            );
+                                            miningHistory.increaseMines(environment, 1, partialDate);
                                         }
-                                    } catch (Exception ignored) {
                                     }
+                                } catch (Exception ignored) {
                                 }
                             }
                         }
@@ -517,15 +496,18 @@ public class ResearchEngine {
             }
 
             for (Enums.DataType dataType : usableDataTypes) {
-                for (Enums.HackType hackType : Enums.HackType.values()) {
+                for (Enums.HackType hackType : (force
+                        ? Arrays.asList(Enums.HackType.values())
+                        : violationFired.keySet())) {
                     Map<PlayerProfile, int[]> wave = new LinkedHashMap<>();
 
-                    if (force || violationFired.remove(hackType) != null) {
-                        for (PlayerProfile profile : profiles) {
-                            ViolationHistory violationHistory = profile.getViolationHistory(
-                                    dataType,
-                                    hackType
-                            );
+                    for (PlayerProfile profile : profiles) {
+                        ViolationHistory violationHistory = profile.getViolationHistory(
+                                dataType,
+                                hackType
+                        );
+
+                        if (!violationHistory.isEmpty()) {
                             wave.put(
                                     profile,
                                     new int[]{
@@ -534,8 +516,6 @@ public class ResearchEngine {
                                     }
                             );
                         }
-                    } else {
-                        continue;
                     }
 
                     if (!wave.isEmpty()) {
@@ -598,6 +578,7 @@ public class ResearchEngine {
                         }
                     }
                 }
+                violationFired.clear();
             }
         }
     }

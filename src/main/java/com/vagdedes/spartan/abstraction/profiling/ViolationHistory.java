@@ -11,7 +11,7 @@ public class ViolationHistory {
         this.previous = null;
     }
 
-    boolean isEmpty() {
+    public boolean isEmpty() {
         return this.previous == null;
     }
 

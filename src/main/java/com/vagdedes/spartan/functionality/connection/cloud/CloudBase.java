@@ -248,7 +248,6 @@ public class CloudBase {
                                 Config.sql.refreshConfiguration();
                                 Config.compatibility.clearCache();
                                 Config.compatibility.fastRefresh();
-                                Config.refreshFields();
 
                                 for (Enums.HackType hackType : Enums.HackType.values()) {
                                     hackType.resetCheck();
