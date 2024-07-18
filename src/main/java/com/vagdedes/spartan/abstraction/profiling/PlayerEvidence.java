@@ -25,6 +25,10 @@ public class PlayerEvidence {
         return this.probability.getOrDefault(hackType, 0.0);
     }
 
+    public void clear() {
+        this.probability.clear();
+    }
+
     public void remove(Enums.HackType hackType) {
         this.probability.remove(hackType);
     }

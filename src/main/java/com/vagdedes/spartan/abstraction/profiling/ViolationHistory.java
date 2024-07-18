@@ -2,33 +2,36 @@ package com.vagdedes.spartan.abstraction.profiling;
 
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 public class ViolationHistory {
 
-    private final Collection<PlayerViolation> memory;
+    private PlayerViolation previous;
+    private int increaseSum, timeDifferenceSum;
 
     ViolationHistory() {
-        this.memory = new CopyOnWriteArrayList<>();
+        this.previous = null;
     }
 
     boolean isEmpty() {
-        return memory.isEmpty();
-    }
-
-    public void clear() {
-        memory.clear();
+        return this.previous == null;
     }
 
     public void store(PlayerViolation playerViolation) {
-        memory.add(playerViolation);
-        ResearchEngine.violationFired = true;
+        this.increaseSum += playerViolation.increase;
+
+        if (this.previous != null) {
+            int timeDifference = (int) (playerViolation.time - this.previous.time);
+            this.timeDifferenceSum += timeDifference;
+        }
+        this.previous = playerViolation;
+        ResearchEngine.queueToCache(playerViolation);
     }
 
-    public Collection<PlayerViolation> getCollection() {
-        return new ArrayList<>(memory);
+    public int getIncreaseSum() {
+        return this.increaseSum;
+    }
+
+    public int getTimeDifferenceSum() {
+        return this.timeDifferenceSum;
     }
 
 }

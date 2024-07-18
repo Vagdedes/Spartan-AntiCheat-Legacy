@@ -3,7 +3,6 @@ package com.vagdedes.spartan.abstraction.check;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.data.Cooldowns;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
-import com.vagdedes.spartan.abstraction.profiling.InformationAnalysis;
 import com.vagdedes.spartan.abstraction.profiling.PlayerEvidence;
 import com.vagdedes.spartan.abstraction.profiling.PlayerViolation;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
@@ -30,9 +29,7 @@ import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Bukkit;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class LiveViolation {
@@ -43,7 +40,7 @@ public class LiveViolation {
 
     private final SpartanPlayer player;
     private final Enums.HackType hackType;
-    private final Map<Integer, Long> level;
+    private long level;
     private CancelCause disableCause, silentCause;
     private HackPrevention prevention;
     private final Cooldowns notifications;
@@ -51,7 +48,7 @@ public class LiveViolation {
     public LiveViolation(SpartanPlayer player, Enums.HackType hackType) {
         this.player = player;
         this.hackType = hackType;
-        this.level = new ConcurrentHashMap<>();
+        this.level = 0L;
         this.prevention = new HackPrevention();
         this.notifications = new Cooldowns(new ConcurrentHashMap<>());
     }
@@ -65,18 +62,13 @@ public class LiveViolation {
                     && (disableCause == null
                     || disableCause.hasExpired()
                     || !disableCause.pointerMatches(information))) {
-                InformationAnalysis analysis = new InformationAnalysis(hackType, information);
                 int increaseInt = Math.max(AlgebraUtils.integerRound(increase), 1);
                 PlayerViolation playerViolation = new PlayerViolation(
                         time,
                         hackType,
                         information,
-                        Math.max(
-                                this.getLevel(analysis.identity),
-                                AlgebraUtils.integerRound(Math.sqrt(this.getTotalLevel()))
-                        ),
-                        increaseInt,
-                        analysis
+                        this.getLevel(),
+                        increaseInt
                 );
                 boolean event = Config.settings.getBoolean("Important.enable_developer_api");
 
@@ -95,7 +87,7 @@ public class LiveViolation {
                         }
                     }
                     player.protocol.getProfile().getViolationHistory(player.dataType, hackType).store(playerViolation);
-                    this.increaseLevel(playerViolation.identity, increaseInt);
+                    this.increaseLevel(increaseInt);
                     this.performNotification(playerViolation);
                     this.performPunishments();
                     this.prevention = newPrevention;
@@ -174,61 +166,25 @@ public class LiveViolation {
 
     // Separator
 
-    private int getLevel(int hash) {
-        Long time = this.level.get(hash);
-        return time != null ? this.calculateLevel(time) : 0;
-    }
-
-    private int calculateLevel(long time) {
-        time -= System.currentTimeMillis();
-        return time > 0L
-                ? AlgebraUtils.integerCeil(time / (double) hackType.violationTimeWorth)
+    public int getLevel() {
+        long level = this.level;
+        level -= System.currentTimeMillis();
+        return level > 0L
+                ? AlgebraUtils.integerCeil(level / (double) hackType.violationTimeWorth)
                 : 0;
     }
 
-    public int getTotalLevel() {
-        if (!this.level.isEmpty()) {
-            int total = 0;
-
-            for (Long level : this.level.values()) {
-                total += this.calculateLevel(level);
-            }
-            return total;
-        } else {
-            return 0;
-        }
-    }
-
     public boolean hasLevel() {
-        if (!this.level.isEmpty()) {
-            Iterator<Long> iterator = this.level.values().iterator();
-
-            while (iterator.hasNext()) {
-                long level = iterator.next();
-
-                if (this.calculateLevel(level) > 0) {
-                    return true;
-                } else {
-                    iterator.remove();
-                }
-            }
-        }
-        return false;
+        return this.level - System.currentTimeMillis() > 0L;
     }
 
-    private void increaseLevel(int hash, int amount) {
-        Long time = this.level.get(hash);
+    private void increaseLevel(int amount) {
+        long current = System.currentTimeMillis();
 
-        if (time == null) {
-            this.level.put(hash, System.currentTimeMillis() + (hackType.violationTimeWorth * amount));
+        if (this.level < current) {
+            this.level = current + (hackType.violationTimeWorth * amount);
         } else {
-            long current = System.currentTimeMillis();
-
-            if (time < current) {
-                this.level.put(hash, current + (hackType.violationTimeWorth * amount));
-            } else {
-                this.level.put(hash, time + (hackType.violationTimeWorth * amount));
-            }
+            this.level += (hackType.violationTimeWorth * amount);
         }
         InteractiveInventory.playerInfo.refresh(player.name);
     }
@@ -236,7 +192,7 @@ public class LiveViolation {
     // Separator
 
     public void reset() {
-        this.level.clear();
+        this.level = 0L;
         InteractiveInventory.playerInfo.refresh(player.name);
     }
 

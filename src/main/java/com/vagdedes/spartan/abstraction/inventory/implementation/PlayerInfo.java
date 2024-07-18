@@ -125,7 +125,7 @@ public class PlayerInfo extends InventoryMenu {
         if (isOnline) {
             for (HackType hackType : hackTypes) {
                 if (hackType.category == checkType) {
-                    violations += player.getViolations(hackType).getTotalLevel();
+                    violations += player.getViolations(hackType).getLevel();
                 }
             }
         }
@@ -144,7 +144,7 @@ public class PlayerInfo extends InventoryMenu {
 
         for (HackType hackType : hackTypes) {
             if (hackType.category == checkType) {
-                violations = isOnline ? player.getViolations(hackType).getTotalLevel() : 0;
+                violations = isOnline ? player.getViolations(hackType).getLevel() : 0;
                 String state = getDetectionState(
                         player,
                         hackType,

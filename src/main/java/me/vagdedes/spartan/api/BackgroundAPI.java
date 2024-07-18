@@ -121,7 +121,7 @@ public class BackgroundAPI {
         SpartanPlayer player = SpartanBukkit.getProtocol(p).spartanPlayer;
 
         if (player != null) {
-            return player.getViolations(hackType).getTotalLevel();
+            return player.getViolations(hackType).getLevel();
         } else {
             return 0;
         }
@@ -140,7 +140,7 @@ public class BackgroundAPI {
             int total = 0;
 
             for (HackType hackType : Enums.HackType.values()) {
-                total += player.getViolations(hackType).getTotalLevel();
+                total += player.getViolations(hackType).getLevel();
             }
             return total;
         } else {
