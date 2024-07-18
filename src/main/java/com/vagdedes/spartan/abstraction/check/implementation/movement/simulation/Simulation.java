@@ -2,6 +2,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.simulatio
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.simulation.modules.MCClient;
+import com.vagdedes.spartan.abstraction.check.implementation.movement.simulation.modules.engine.motion.MotionVector;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
@@ -10,6 +11,8 @@ import com.vagdedes.spartan.utils.math.RayUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.Location;
 import org.bukkit.event.player.PlayerMoveEvent;
+
+import java.util.List;
 
 public class Simulation extends CheckExecutor {
 
@@ -27,12 +30,32 @@ public class Simulation extends CheckExecutor {
             Location to = event.getTo();
             Location from = event.getFrom();
 
-            double dx = RayUtils.scaleVal(to.getX() - from.getX(), 4),
-                    dy = RayUtils.scaleVal(to.getY() - from.getY(), 4),
-                    dz = RayUtils.scaleVal(to.getZ() - from.getZ(), 4);
+            double
+            dx = RayUtils.scaleVal(to.getX() - from.getX(), 4),
+            dy = RayUtils.scaleVal(to.getY() - from.getY(), 4),
+            dz = RayUtils.scaleVal(to.getZ() - from.getZ(), 4);
+            double
+            xDf = 999,
+            yDf = 999,
+            zDf = 999;
+
+            MotionVector mV = new MotionVector(dx, dy, dz);
             client.movement(dx, dy, dz);
+            List<MotionVector> predicted = client.getPredicted();
             //player.sendMessage("v: " + dx + " | " + dy + " | " + dz);
 
+            for (MotionVector pV : predicted) {
+                double
+                xD = Math.abs(mV.x - pV.x),
+                yD = Math.abs(mV.y - pV.y),
+                zD = Math.abs(mV.z - pV.z);
+
+                xDf = Math.min(xD, xDf);
+                yDf = Math.min(yD, yDf);
+                zDf = Math.min(zD, zDf);
+            }
+
+            //player.sendMessage("p: " + xDf + " | " + yDf + " | " + zDf);
         }
     }
 

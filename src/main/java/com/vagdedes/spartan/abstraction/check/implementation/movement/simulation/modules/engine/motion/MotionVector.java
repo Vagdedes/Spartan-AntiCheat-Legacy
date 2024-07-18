@@ -2,7 +2,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.simulatio
 
 public class MotionVector {
 
-    public static MotionVector ZERO = new MotionVector(0, 0, 0);
+    public static final MotionVector ZERO = new MotionVector(0, 0, 0);
 
     public double x;
     public double y;

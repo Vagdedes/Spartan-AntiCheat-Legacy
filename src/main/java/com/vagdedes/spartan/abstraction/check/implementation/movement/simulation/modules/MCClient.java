@@ -54,8 +54,13 @@ public class MCClient {
                 vectors.add(new MotionVector(x, 0, -z));
                 vectors.add(new MotionVector(-x, 0, z));
                 vectors.add(new MotionVector(-x, 0, -z));
+                vectors.add(new MotionVector(x, 0, 0));
+                vectors.add(new MotionVector(-x, 0, 0));
+                vectors.add(new MotionVector(0, 0, z));
+                vectors.add(new MotionVector(0, 0, -z));
             }
         }
+        vectors.add(new MotionVector(0, 0, 0));
     }
     public void movement(double dx, double dy, double dz) {
         this.predicted.clear();
@@ -72,7 +77,7 @@ public class MCClient {
             isAirBorne = false;
         }
         for (MotionVector vector : vectors) {
-            this.motion = MotionVector.ZERO;
+            this.motion = MotionVector.ZERO.cloneVector();
             livingTick(vector);
             this.predicted.add(this.motion);
         }
@@ -207,7 +212,7 @@ public class MCClient {
             JumpEvent jumpEvent = new JumpEvent(protocol.getLocation().getYaw());
 
             float f1 = jumpEvent.getYaw() * ((float) Math.PI / 180F);
-            this.setMotion(this.getMotion().addWithClone((double) (-Math.sin(f1) * 0.2F), 0.0D, (double) (Math.cos(f1) * 0.2F)));
+            this.getMotion().add((double) (-Math.sin(f1) * 0.2F), 0.0D, (double) (Math.cos(f1) * 0.2F));
         }
 
         this.isAirBorne = true;
