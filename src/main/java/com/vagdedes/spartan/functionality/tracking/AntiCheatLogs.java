@@ -27,12 +27,12 @@ import java.time.format.DateTimeFormatter;
 public class AntiCheatLogs {
 
     public static final String
-            dateFormat = "yyyy/MM/dd HH:mm:ss.SSSSSSSSS",
+            dateFormat = "yyyy/MM/dd HH:mm:ss:SSSSSSSSS",
             folderPath = Register.plugin.getDataFolder() + "/logs";
 
     private static Timestamp time = new Timestamp(System.currentTimeMillis());
     private static File savedFile = createFile(time);
-    private static YamlConfiguration fileConfiguration = null;
+    private static YamlConfiguration fileConfiguration = YamlConfiguration.loadConfiguration(savedFile);
 
     private static File createFile(Timestamp timestamp) {
         return new File(
@@ -82,19 +82,7 @@ public class AntiCheatLogs {
                 }
                 time = now;
                 savedFile = createFile(time);
-
-                try {
-                    if (savedFile.createNewFile()) {
-                        fileConfiguration = YamlConfiguration.loadConfiguration(savedFile);
-                        storeInFile(information);
-                    } else {
-                        fileConfiguration = null;
-                        savedFile = null;
-                    }
-                } catch (Exception ignored) {
-                    fileConfiguration = null;
-                    savedFile = null;
-                }
+                fileConfiguration = YamlConfiguration.loadConfiguration(savedFile);
             } else {
                 storeInFile(information);
             }

@@ -314,34 +314,32 @@ public class ResearchEngine {
         // Separator
 
         if (Config.sql.isEnabled()) {
-            if (!isFull) {
-                try {
-                    ResultSet rs = Config.sql.query("SELECT creation_date, information FROM " + Config.sql.getTable() + " ORDER BY id DESC LIMIT " + SpartanBukkit.maxSQLRows + ";");
+            try {
+                ResultSet rs = Config.sql.query("SELECT creation_date, information FROM " + Config.sql.getTable() + " ORDER BY id DESC LIMIT " + SpartanBukkit.maxSQLRows + ";");
 
-                    if (rs != null) {
-                        while (rs.next()) {
-                            String data = rs.getString("information");
-                            String[] all = TimeUtils.getAll(rs.getTimestamp("creation_date"));
-                            String date = all[0] + " " + all[1];
-                            cache.put(date, data);
-                            byteSize += date.length() + data.length();
+                if (rs != null) {
+                    while (rs.next()) {
+                        String data = rs.getString("information");
+                        String[] all = TimeUtils.getAll(rs.getTimestamp("creation_date"));
+                        String date = all[0] + " " + all[1];
+                        cache.put(date, data);
+                        byteSize += date.length() + data.length();
 
-                            if (byteSize >= SpartanBukkit.maxBytes) {
-                                isFull = true;
-                                break;
-                            }
+                        if (byteSize >= SpartanBukkit.maxBytes) {
+                            isFull = true;
+                            break;
                         }
-                        rs.close();
+                    }
+                    rs.close();
 
-                        if (cache.isEmpty()) {
-                            continueWithYAML = true;
-                        }
-                    } else {
+                    if (cache.isEmpty()) {
                         continueWithYAML = true;
                     }
-                } catch (Exception ex) {
+                } else {
                     continueWithYAML = true;
                 }
+            } catch (Exception ex) {
+                continueWithYAML = true;
             }
         } else {
             continueWithYAML = true;
