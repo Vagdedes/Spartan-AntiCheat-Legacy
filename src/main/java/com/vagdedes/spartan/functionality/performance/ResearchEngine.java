@@ -505,11 +505,12 @@ public class ResearchEngine {
     }
 
     private static void updateCache(boolean force) {
-        if ((force || !violationFired.isEmpty())
-                && !playerProfiles.isEmpty()) {
+        if ((force || !violationFired.isEmpty()) && !playerProfiles.isEmpty()) {
             Collection<PlayerProfile> profiles = playerProfiles.values();
 
             if (force) {
+                violationFired.clear();
+
                 for (PlayerProfile profile : profiles) {
                     profile.evidence.clear();
                 }
@@ -517,52 +518,43 @@ public class ResearchEngine {
 
             for (Enums.DataType dataType : usableDataTypes) {
                 for (Enums.HackType hackType : Enums.HackType.values()) {
-                    Map<PlayerProfile, Integer>
-                            violationWave = new LinkedHashMap<>(),
-                            timeWave = new LinkedHashMap<>();
+                    Map<PlayerProfile, int[]> wave = new LinkedHashMap<>();
 
-                    if (violationFired.remove(hackType) != null || force) {
+                    if (force || violationFired.remove(hackType) != null) {
                         for (PlayerProfile profile : profiles) {
                             ViolationHistory violationHistory = profile.getViolationHistory(
                                     dataType,
                                     hackType
                             );
-                            violationWave.put(
+                            wave.put(
                                     profile,
-                                    violationHistory.getIncreaseSum()
-                            );
-                            timeWave.put(
-                                    profile,
-                                    violationHistory.getTimeDifferenceSum()
+                                    new int[]{
+                                            violationHistory.getIncreaseSum(),
+                                            violationHistory.getTimeDifferenceSum()
+                                    }
                             );
                         }
                     } else {
                         continue;
                     }
 
-                    if (!violationWave.isEmpty()) {
+                    if (!wave.isEmpty()) {
                         int sum = 0, squareSum = 0;
 
-                        for (int value : violationWave.values()) {
-                            sum += value;
-                            squareSum += value * value;
+                        for (int[] value : wave.values()) {
+                            sum += value[0];
+                            squareSum += value[0] * value[0];
                         }
-                        double mean = sum / (double) violationWave.size(),
-                                deviation = Math.sqrt(squareSum / (double) violationWave.size());
+                        double divisor = wave.size(),
+                                mean = sum / divisor,
+                                deviation = Math.sqrt(squareSum / divisor);
 
-                        for (Map.Entry<PlayerProfile, Integer> entryChild : violationWave.entrySet()) {
+                        for (Map.Entry<PlayerProfile, int[]> entryChild : wave.entrySet()) {
                             PlayerProfile profile = entryChild.getKey();
-
                             double probability = StatisticsMath.getCumulativeProbability(
-                                    (entryChild.getValue() - mean) / deviation
+                                    (entryChild.getValue()[0] - mean) / deviation
                             );
 
-                            if (profile.getSpartanPlayer() != null) {
-                                profile.getSpartanPlayer().debug(
-                                        true, false, true,
-                                        probability
-                                );
-                            }
                             if (probability > profile.evidence.get(hackType)) {
                                 profile.evidence.add(
                                         hackType,
@@ -573,27 +565,34 @@ public class ResearchEngine {
 
                         // Separator
 
-                        for (int value : timeWave.values()) {
-                            sum += value;
-                            squareSum += value * value;
-                        }
-                        mean = sum / (double) timeWave.size();
-                        deviation = Math.sqrt(squareSum / (double) timeWave.size());
+                        divisor--; // Because of the previous violation required for comparison
 
-                        for (Map.Entry<PlayerProfile, Integer> entryChild : timeWave.entrySet()) {
-                            PlayerProfile profile = entryChild.getKey();
-                            double probability = StatisticsMath.getCumulativeProbability(
-                                    (entryChild.getValue() - mean) / deviation
-                            );
+                        if (divisor > 0) {
+                            sum = 0;
+                            squareSum = 0;
 
-                            if (probability < 0.0) {
-                                probability = 0.0 - probability;
+                            for (int[] value : wave.values()) {
+                                sum += value[1];
+                                squareSum += value[1] * value[1];
+                            }
+                            mean = sum / divisor;
+                            deviation = Math.sqrt(squareSum / divisor);
 
-                                if (probability > profile.evidence.get(hackType)) {
-                                    profile.evidence.add(
-                                            hackType,
-                                            probability
-                                    );
+                            for (Map.Entry<PlayerProfile, int[]> entryChild : wave.entrySet()) {
+                                PlayerProfile profile = entryChild.getKey();
+                                double probability = StatisticsMath.getCumulativeProbability(
+                                        (entryChild.getValue()[1] - mean) / deviation
+                                );
+
+                                if (probability < 0.0) {
+                                    probability = 0.0 - probability;
+
+                                    if (probability > profile.evidence.get(hackType)) {
+                                        profile.evidence.add(
+                                                hackType,
+                                                probability
+                                        );
+                                    }
                                 }
                             }
                         }
