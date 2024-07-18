@@ -218,7 +218,7 @@ public class ResearchEngine {
     // Separator
 
     private static String getDetectionInformation(String s) {
-        int index = s.indexOf("\\[");
+        int index = s.indexOf("[");
         return index > -1
                 ? s.substring(index + 1, s.length() - 1)
                 : null;
@@ -412,14 +412,12 @@ public class ResearchEngine {
                         String fullDate = entry.getKey(),
                                 partialDate = fullDate.substring(0, 10),
                                 data = entry.getValue();
-                        String[] split = data.split(" ");
 
                         if (data.contains(" failed ")) {
+                            String[] split = data.split(" ");
+
                             if (split.length >= 3) {
-                                String name = split[0];
                                 String hackTypeString = split[2];
-                                PlayerProfile playerProfile = getPlayerProfile(name);
-                                Enums.DataType dataType = getDataType(data);
 
                                 for (Enums.HackType hackType : Enums.HackType.values()) {
                                     if (hackTypeString.equals(hackType.toString())) {
@@ -430,7 +428,7 @@ public class ResearchEngine {
 
                                             if (violation != null) {
                                                 SimpleDateFormat sdf = new SimpleDateFormat(AntiCheatLogs.dateFormat);
-                                                playerProfile.getViolationHistory(dataType, hackType).store(
+                                                getPlayerProfile(split[0]).getViolationHistory(getDataType(data), hackType).store(
                                                         new PlayerViolation(
                                                                 sdf.parse(fullDate).getTime(),
                                                                 hackType,
@@ -445,6 +443,8 @@ public class ResearchEngine {
                                 }
                             }
                         } else if (data.contains(" found ")) {
+                            String[] split = data.split(" ");
+
                             if (split.length >= 9) {
                                 String name = split[0].toLowerCase();
 
