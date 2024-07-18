@@ -353,8 +353,6 @@ public class ResearchEngine {
             Collection<File> files = getFiles();
 
             if (!files.isEmpty()) {
-                //Arrays.sort(files, Comparator.comparingLong(File::lastModified).reversed());
-
                 for (File file : files) {
                     YamlConfiguration c = YamlConfiguration.loadConfiguration(file);
 
