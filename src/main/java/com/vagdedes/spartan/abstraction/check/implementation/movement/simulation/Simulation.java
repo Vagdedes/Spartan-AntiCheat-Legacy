@@ -11,10 +11,13 @@ import com.vagdedes.spartan.utils.math.RayUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.Location;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerVelocityEvent;
 
 import java.util.List;
 
 public class Simulation extends CheckExecutor {
+
+    public double diffVl = 0;
 
     public Simulation(HackType hackType, SpartanPlayer player) {
         super(hackType, player, 0, false);
@@ -31,9 +34,9 @@ public class Simulation extends CheckExecutor {
             Location from = event.getFrom();
 
             double
-            dx = RayUtils.scaleVal(to.getX() - from.getX(), 4),
-            dy = RayUtils.scaleVal(to.getY() - from.getY(), 4),
-            dz = RayUtils.scaleVal(to.getZ() - from.getZ(), 4);
+            dx = to.getX() - from.getX(),
+            dy = to.getY() - from.getY(),
+            dz = to.getZ() - from.getZ();
             double
             xDf = 999,
             yDf = 999,
@@ -46,17 +49,34 @@ public class Simulation extends CheckExecutor {
 
             for (MotionVector pV : predicted) {
                 double
-                xD = Math.abs(mV.x - pV.x),
-                yD = Math.abs(mV.y - pV.y),
-                zD = Math.abs(mV.z - pV.z);
+                xD = s(dx) - s(pV.getX()),
+                yD = s(dy) - s(pV.getY()),
+                zD = s(dz) - s(pV.getZ());
 
                 xDf = Math.min(xD, xDf);
                 yDf = Math.min(yD, yDf);
                 zDf = Math.min(zD, zDf);
             }
 
-            //player.sendMessage("p: " + xDf + " | " + yDf + " | " + zDf);
+            diffVl += Math.abs(yDf);
+            if (diffVl > 1) {
+               // player.sendMessage("ban wave: you are banned! " + diffVl);
+            }
+
+            if (yDf < 0.1) {
+                client.verifiedMotion = mV.cloneVector();
+            }
+            diffVl /= 1.5;
         }
+        if (object instanceof PlayerVelocityEvent) {
+            PlayerVelocityEvent event = (PlayerVelocityEvent) object;
+            org.bukkit.util.Vector velo = event.getVelocity();
+            client.motion.add(velo.getX(), velo.getY(), velo.getZ());
+        }
+    }
+
+    public double s(double v) {
+        return RayUtils.scaleVal(v, 4);
     }
 
     @Override

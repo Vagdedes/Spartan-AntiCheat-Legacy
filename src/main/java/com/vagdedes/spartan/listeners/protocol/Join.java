@@ -6,6 +6,7 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.simulation.modules.MCClient;
+import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.listeners.Shared;
@@ -41,7 +42,7 @@ public class Join extends PacketAdapter {
         }
         SpartanBukkit.getProtocol(player).setLastTransaction();
         LagCompensation.newPacket(player.getEntityId());
-        clientContainer.put(player.getUniqueId(), new MCClient(SpartanBukkit.getProtocol(player)));
+        clientContainer.put(player.getUniqueId(), new MCClient(new SpartanPlayer(SpartanBukkit.getProtocol(player))));
         SpartanBukkit.transferTask(player, () -> {
             SpartanBukkit.createProtocol(player);
             Shared.join(new PlayerJoinEvent(player, (String) null));

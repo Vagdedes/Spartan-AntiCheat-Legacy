@@ -16,7 +16,7 @@ public class SpartanProtocol {
 
     public final Player player;
     public final SpartanPlayer spartanPlayer;
-    private boolean isOnGround, isSprinting, isSneaking, onLoadStatus;
+    private boolean isOnGround, isOnGroundFrom, isSprinting, isSneaking, onLoadStatus;
     private Location location;
     private Vector velocity;
     private long lastTransaction;
@@ -29,6 +29,7 @@ public class SpartanProtocol {
     public SpartanProtocol(Player player) {
         this.player = player;
         this.isOnGround = false;
+        this.isOnGroundFrom = false;
         this.location = player.getLocation();
         this.isSprinting = false;
         this.isSneaking = false;
@@ -45,6 +46,11 @@ public class SpartanProtocol {
         return SpartanBukkit.packetsEnabled_Movement()
                 ? this.isOnGround
                 : this.player.isOnGround();
+    }
+    public boolean isOnGroundFrom() {
+        return SpartanBukkit.packetsEnabled_Movement()
+                        ? this.isOnGroundFrom
+                        : this.player.isOnGround();
     }
 
     public boolean isSprinting() {
@@ -94,6 +100,9 @@ public class SpartanProtocol {
         if (this.isOnGround) {
             this.spartanPlayer.movement.resetAirTicks();
         }
+    }
+    public void setOnGroundFrom(boolean isOnGroundFrom) {
+        this.isOnGroundFrom = isOnGroundFrom;
     }
 
     public void setSprinting(boolean isSprinting) {

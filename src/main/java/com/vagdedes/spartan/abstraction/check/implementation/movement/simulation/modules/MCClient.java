@@ -3,26 +3,31 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.simulatio
 import com.vagdedes.spartan.abstraction.check.implementation.movement.simulation.modules.engine.Attribute;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.simulation.modules.engine.Attributes;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.simulation.modules.engine.motion.*;
+import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.player.SpartanPotionEffect;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
+import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.math.MathHelper;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.potion.PotionEffectType;
 
+import java.security.Key;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MCClient {
 
-    public SpartanProtocol protocol;
     public float jumpMovementFactor;
     public int onAir;
+    public SpartanPlayer player;
     private final List<MotionVector> predicted;
     public boolean isAirBorne, isJumping;
     public MotionVector motion;
+    public MotionVector verifiedMotion;
     private final List<MotionVector> vectors = new ArrayList<>();
+    private final List<KeyBind> binds = new ArrayList<>();
 
     public MotionVector getMotion() {
         return motion;
@@ -38,14 +43,15 @@ public class MCClient {
         this.motion.setZ(z);
     }
 
-    public MCClient(SpartanProtocol protocol) {
-        this.protocol = protocol;
+    public MCClient(SpartanPlayer player) {
+        this.player = player;
         this.isAirBorne = false;
         this.isJumping = false;
         this.onAir = 0;
         this.motion = new MotionVector(0, 0, 0);
         this.jumpMovementFactor = 0.0F;
         this.predicted = new ArrayList<>();
+        this.verifiedMotion = new MotionVector(0, 0, 0);
         double[] values = {0.9800000190734863, 0.2940000295639038};
 
         for (double x : values) {
@@ -61,45 +67,94 @@ public class MCClient {
             }
         }
         vectors.add(new MotionVector(0, 0, 0));
+        binds.add(new KeyBind(true, false, false, false));
+        binds.add(new KeyBind(false, true, false, false));
+        binds.add(new KeyBind(true, false, true, false));
+        binds.add(new KeyBind(true, false, false, true));
+        binds.add(new KeyBind(false, true, true, false));
+        binds.add(new KeyBind(false, true, false, true));
+        binds.add(new KeyBind(false, false, true, false));
+        binds.add(new KeyBind(false, false, false, true));
+        binds.add(new KeyBind(false, false, false, false));
     }
     public void movement(double dx, double dy, double dz) {
         this.predicted.clear();
-        boolean onGround = this.protocol.isOnGround();
+        preTick(new MotionVector(dx, dy, dz));
+        for (KeyBind bind : binds) {
+            this.motion = this.verifiedMotion.cloneVector();
+            tick(bind, new MotionVector(dx, dy, dz));
+            this.predicted.add(this.motion);
+        }
+    }
+    public SpartanProtocol p() {
+        return SpartanBukkit.getProtocol(this.player.uuid);
+    }
+    public void preTick(MotionVector currentMotion) {
+        boolean onGround = this.p().isOnGround();
         if (!onGround) {
             onAir++;
-            if (onAir == 1 && dy > 0) {
-                jump();
-                isJumping = true;
-            }
         } else {
             onAir = 0;
             isJumping = false;
             isAirBorne = false;
         }
-        for (MotionVector vector : vectors) {
-            this.motion = MotionVector.ZERO.cloneVector();
-            livingTick(vector);
-            this.predicted.add(this.motion);
+    }
+
+    public void tick(KeyBind keyBind, MotionVector currentMotion) {
+        boolean onGround = this.p().isOnGround();
+        if (!onGround) {
+            { // air Y sim
+                SpartanPotionEffect levitation = this.p().spartanPlayer.getPotionEffect(PotionEffectType.LEVITATION, 0);
+                double d0 = 0.08D;
+                boolean flag = this.getMotion().y <= 0.0D;
+
+                if (flag && this.p().spartanPlayer.getPotionEffect(PotionEffectType.SLOW_FALLING, 0) != null)
+                {
+                    d0 = 0.01D;
+                }
+                Location blockpos = this.p().getLocation().clone().add(0, -1, 0);
+                float f3 = BlockUtils.getSlipperiness(this.p().spartanPlayer.getWorld().getBlockAt(blockpos));
+                MotionVector vector3d5 = this.revelantVec(new MotionVector(0, 0, 0), f3);
+                double d2 = vector3d5.y;
+                if (levitation != null)
+                {
+                    d2 += (0.05D * (double)(levitation.bukkitEffect.getAmplifier() + 1) - vector3d5.y) * 0.2D;
+                    //this.fallDistance = 0.0F;
+                }
+                if (this.p().player.hasGravity())
+                {
+                    d2 -= d0;
+                }
+                this.getMotion().y = d2 * (double)0.98F;
+                if (onAir == 1 && currentMotion.y > 0) {
+                    jump();
+                    isJumping = true;
+                }
+            }
+        } else {
+            this.getMotion().y = 0;
         }
+
+
     }
 
     public void livingTick(MotionVector travelVector) {
-        SpartanPotionEffect levitation = protocol.spartanPlayer.getPotionEffect(PotionEffectType.LEVITATION, 0);
+        SpartanPotionEffect levitation = this.p().spartanPlayer.getPotionEffect(PotionEffectType.LEVITATION, 0);
         this.jumpMovementFactor = 0.02F;
 
-        if (this.protocol.isSprinting()) {
+        if (this.p().isSprinting()) {
             this.jumpMovementFactor = (float) ((double) this.jumpMovementFactor + 0.005999999865889549D);
         }
         double d0 = 0.08D;
         boolean flag = this.getMotion().y <= 0.0D;
 
-        if (flag && protocol.spartanPlayer.getPotionEffect(PotionEffectType.SLOW_FALLING, 0) != null)
+        if (flag && this.p().spartanPlayer.getPotionEffect(PotionEffectType.SLOW_FALLING, 0) != null)
         {
             d0 = 0.01D;
         }
-        Location blockpos = this.protocol.getLocation().clone().add(0, -1, 0);
-        float f3 = BlockUtils.getSlipperiness(this.protocol.spartanPlayer.getWorld().getBlockAt(blockpos));
-        float f4 = this.protocol.isOnGround() ? f3 * 0.91F : 0.91F;
+        Location blockpos = this.p().getLocation().clone().add(0, -1, 0);
+        float f3 = BlockUtils.getSlipperiness(this.p().spartanPlayer.getWorld().getBlockAt(blockpos));
+        float f4 = this.p().isOnGround() ? f3 * 0.91F : 0.91F;
         MotionVector vector3d5 = this.revelantVec(travelVector, f3);
         double d2 = vector3d5.y;
 
@@ -108,9 +163,9 @@ public class MCClient {
             d2 += (0.05D * (double)(levitation.bukkitEffect.getAmplifier() + 1) - vector3d5.y) * 0.2D;
             //this.fallDistance = 0.0F;
         }
-        else if (this.protocol.player.hasGravity())
+        else if (this.p().player.hasGravity())
         {
-            d2 -= d0;
+           d2 -= d0;
         }
 
         this.setMotion(vector3d5.x * (double)f4, d2 * (double)0.98F, vector3d5.z * (double)f4);
@@ -131,7 +186,7 @@ public class MCClient {
         this.move(MoverType.SELF, this.getMotion());
         MotionVector vector3d = this.getMotion();
 
-        if (this.isJumping && this.canClimb(this.protocol))
+        if (this.isJumping && this.canClimb(this.p()))
         {
             vector3d = new MotionVector(vector3d.x, 0.2D, vector3d.z);
         }
@@ -140,7 +195,7 @@ public class MCClient {
     }
     private MotionVector handleOnClimbable(MotionVector vector)
     {
-        if (this.canClimb(this.protocol))
+        if (this.canClimb(this.p()))
         {
             float f = 0.15F;
             double d0 = MathHelper.clamp_double(vector.x, (double) - 0.15F, (double)0.15F);
@@ -169,8 +224,8 @@ public class MCClient {
     }
     private float getRelevantMoveFactor(float p_213335_1_)
     {
-        return this.protocol.isOnGround() ?
-                        (float) Attributes.getAttributeValue(Attribute.MOVEMENT_SPEED, this.protocol)
+        return this.p().isOnGround() ?
+                        (float) Attributes.getAttributeValue(Attribute.MOVEMENT_SPEED, this.p())
                                         * (0.21600002F / (p_213335_1_ * p_213335_1_ * p_213335_1_))
                         : this.jumpMovementFactor;
     }
@@ -178,7 +233,7 @@ public class MCClient {
         // for now - nothing
     }
     public void moveRelative(float friction, MotionVector relative) {
-        StrafeEvent event = new StrafeEvent(friction, relative, this.protocol.getLocation().getYaw());
+        StrafeEvent event = new StrafeEvent(friction, relative, this.p().getLocation().getYaw());
         MotionVector vector3d = getAbsoluteMotion(event.getRelative(), event.getFriction(), event.getYaw());
         this.getMotion().add(vector3d.x, vector3d.y, vector3d.z);
     }
@@ -198,7 +253,7 @@ public class MCClient {
 
     public void jump() {
         float f = this.getJumpUpwardsMotion();
-        SpartanPotionEffect jumpEffect = this.protocol.spartanPlayer.getPotionEffect(PotionEffectType.JUMP, 0);
+        SpartanPotionEffect jumpEffect = this.p().spartanPlayer.getPotionEffect(PotionEffectType.JUMP, 0);
 
         if (jumpEffect != null) {
             f += 0.1F * (float) (jumpEffect.bukkitEffect.getAmplifier() + 1);
@@ -207,9 +262,9 @@ public class MCClient {
         MotionVector vector3d = this.getMotion();
         this.setMotion(vector3d.x, (double) f, vector3d.z);
 
-        if (this.protocol.isSprinting()) {
+        if (this.p().isSprinting()) {
 
-            JumpEvent jumpEvent = new JumpEvent(protocol.getLocation().getYaw());
+            JumpEvent jumpEvent = new JumpEvent(this.p().getLocation().getYaw());
 
             float f1 = jumpEvent.getYaw() * ((float) Math.PI / 180F);
             this.getMotion().add((double) (-Math.sin(f1) * 0.2F), 0.0D, (double) (Math.cos(f1) * 0.2F));
