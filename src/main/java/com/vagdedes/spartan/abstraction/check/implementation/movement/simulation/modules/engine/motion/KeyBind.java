@@ -12,4 +12,10 @@ public class KeyBind {
         this.left = left;
         this.right = right;
     }
+    public boolean isNone() {
+        return !this.up && !this.down && !this.left && !this.right;
+    }
+    public boolean is(boolean up, boolean down, boolean left, boolean right) {
+        return this.up == up && this.down == down && this.left == left && this.right == right;
+    }
 }

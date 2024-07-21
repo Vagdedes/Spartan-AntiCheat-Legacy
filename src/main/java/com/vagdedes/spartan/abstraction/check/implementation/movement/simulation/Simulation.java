@@ -1,5 +1,8 @@
 package com.vagdedes.spartan.abstraction.check.implementation.movement.simulation;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.events.PacketContainer;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.simulation.modules.MCClient;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.simulation.modules.engine.motion.MotionVector;
@@ -53,28 +56,39 @@ public class Simulation extends CheckExecutor {
                 yD = s(dy) - s(pV.getY()),
                 zD = s(dz) - s(pV.getZ());
 
-                xDf = Math.min(xD, xDf);
-                yDf = Math.min(yD, yDf);
-                zDf = Math.min(zD, zDf);
+                xDf = Math.min(Math.abs(xD), xDf);
+                yDf = Math.min(Math.abs(yD), yDf);
+                zDf = Math.min(Math.abs(zD), zDf);
             }
+
+            // 0.003 / 0.03 packets is a real problem
+            // not best solve idea, but it works
+            if (yDf == 0.003 || yDf == 0.0031) yDf = 0;
+            if (xDf == 0.003 || xDf == 0.0031) xDf = 0;
+            if (zDf == 0.003 || zDf == 0.0031) zDf = 0;
+
 
             diffVl += Math.abs(yDf);
-            if (diffVl > 1) {
-               // player.sendMessage("ban wave: you are banned! " + diffVl);
+            //player.sendMessage("y: " + s(dy) + " | " + s(predicted.get(0).y)
+            //                + " | total: " + yDf + " | air: " + client.onAir);
+            //player.sendMessage("vl: " + yDf);
+            if (diffVl > 0.05) {
+                cancel("[Y] " + yDf);
+                diffVl /= 1.75;
             }
 
-            if (yDf < 0.1) {
+            if (yDf == 0) {
                 client.verifiedMotion = mV.cloneVector();
+            } else {
+                client.verifiedMotion = predicted.get(predicted.size() - 1);
             }
-            diffVl /= 1.5;
+            diffVl /= 1.1;
         }
         if (object instanceof PlayerVelocityEvent) {
             PlayerVelocityEvent event = (PlayerVelocityEvent) object;
-            org.bukkit.util.Vector velo = event.getVelocity();
-            client.motion.add(velo.getX(), velo.getY(), velo.getZ());
+            client.claimVelocity(event.getVelocity());
         }
     }
-
     public double s(double v) {
         return RayUtils.scaleVal(v, 4);
     }

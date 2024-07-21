@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.abstraction.check.implementation.movement.simulation.modules;
 
+import com.comphenix.protocol.events.PacketContainer;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.simulation.modules.engine.Attribute;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.simulation.modules.engine.Attributes;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.simulation.modules.engine.motion.*;
@@ -9,11 +10,12 @@ import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.math.MathHelper;
+import com.vagdedes.spartan.utils.math.RayUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.security.Key;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +24,7 @@ public class MCClient {
     public float jumpMovementFactor;
     public int onAir;
     public SpartanPlayer player;
+    public org.bukkit.util.Vector veloClaim;
     private final List<MotionVector> predicted;
     public boolean isAirBorne, isJumping;
     public MotionVector motion;
@@ -47,6 +50,7 @@ public class MCClient {
         this.player = player;
         this.isAirBorne = false;
         this.isJumping = false;
+        this.veloClaim = null;
         this.onAir = 0;
         this.motion = new MotionVector(0, 0, 0);
         this.jumpMovementFactor = 0.0F;
@@ -81,10 +85,16 @@ public class MCClient {
         this.predicted.clear();
         preTick(new MotionVector(dx, dy, dz));
         for (KeyBind bind : binds) {
-            this.motion = this.verifiedMotion.cloneVector();
-            tick(bind, new MotionVector(dx, dy, dz));
-            this.predicted.add(this.motion);
+            if (veloClaim != null) {
+                this.predicted.add(this.verifiedMotion);
+            } else {
+                this.motion = this.verifiedMotion.cloneVector();
+                tick(bind, new MotionVector(dx, dy, dz));
+                this.predicted.add(this.motion);
+            }
+            checkCollide();
         }
+        veloClaim = null;
     }
     public SpartanProtocol p() {
         return SpartanBukkit.getProtocol(this.player.uuid);
@@ -98,6 +108,10 @@ public class MCClient {
             isJumping = false;
             isAirBorne = false;
         }
+    }
+
+    public void checkCollide() {
+
     }
 
     public void tick(KeyBind keyBind, MotionVector currentMotion) {
@@ -126,13 +140,40 @@ public class MCClient {
                     d2 -= d0;
                 }
                 this.getMotion().y = d2 * (double)0.98F;
-                if (onAir == 1 && currentMotion.y > 0) {
+                if (this.onAir == 6) {
+                    /*
+                    when jumping in the 6th tick, the speed change is different.
+                     */
+                    double mY = RayUtils.scaleVal(currentMotion.y, 4);
+                    double pV = RayUtils.scaleVal(this.getMotion().getY(), 4);
+                    if (keyBind.isNone()) {
+                        if (mY == -0.0784 && pV == 0.0031) {
+                            this.getMotion().y = -0.0784;
+                        }
+                        if (mY == 0.0 && pV == 0.0031) {
+                            this.getMotion().y = 0.0;
+                        }
+                    }
+                }
+                if (onAir == 1 && currentMotion.y > 0 && veloClaim == null) {
                     jump();
                     isJumping = true;
                 }
             }
         } else {
-            this.getMotion().y = 0;
+            if (!this.p().isOnGroundFrom() && currentMotion.y < this.motion.y
+                            && Math.abs(currentMotion.y - this.motion.y) < 0.03) {
+                this.motion.y = currentMotion.y;
+            } else if (!this.p().isOnGroundFrom() && currentMotion.y > this.motion.y) {
+                /*
+                Let's prevent lagged block falses by allowing moving
+                through the blocks at the bottom,
+                because it's going to teleport them back anyway.
+                 */
+                this.motion.y = currentMotion.getY();
+            } else {
+                this.getMotion().y = 0;
+            }
         }
 
 
@@ -253,10 +294,10 @@ public class MCClient {
 
     public void jump() {
         float f = this.getJumpUpwardsMotion();
-        SpartanPotionEffect jumpEffect = this.p().spartanPlayer.getPotionEffect(PotionEffectType.JUMP, 0);
+        PotionEffect jumpEffect = this.p().spartanPlayer.getInstance().getPotionEffect(PotionEffectType.JUMP);
 
         if (jumpEffect != null) {
-            f += 0.1F * (float) (jumpEffect.bukkitEffect.getAmplifier() + 1);
+            f += 0.1F * (float) (jumpEffect.getAmplifier() + 1);
         }
 
         MotionVector vector3d = this.getMotion();
@@ -271,6 +312,11 @@ public class MCClient {
         }
 
         this.isAirBorne = true;
+    }
+
+    public void claimVelocity(org.bukkit.util.Vector velocity) {
+        this.verifiedMotion.set(velocity.getX(), velocity.getY(), velocity.getZ());
+        this.veloClaim = velocity;
     }
 
 }
