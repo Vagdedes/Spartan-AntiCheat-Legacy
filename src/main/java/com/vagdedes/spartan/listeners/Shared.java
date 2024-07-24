@@ -92,7 +92,6 @@ public class Shared {
         boolean cancelled = e.isCancelled();
 
         p.getExecutor(Enums.HackType.KillAura).handle(cancelled, e);
-        p.getExecutor(Enums.HackType.FastClicks).handle(cancelled, e);
     }
 
     public static void movement(PlayerMoveEvent e) {
