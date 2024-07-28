@@ -1,10 +1,8 @@
 package com.vagdedes.spartan.abstraction.check.implementation.movement.simulation.modules;
 
-import com.comphenix.protocol.events.PacketContainer;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.simulation.modules.engine.Attribute;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.simulation.modules.engine.Attributes;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.simulation.modules.engine.motion.*;
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.player.SpartanPotionEffect;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
@@ -23,7 +21,7 @@ public class MCClient {
 
     public float jumpMovementFactor;
     public int onAir;
-    public SpartanPlayer player;
+    public SpartanProtocol protocol;
     public org.bukkit.util.Vector veloClaim;
     private final List<MotionVector> predicted;
     public boolean isAirBorne, isJumping;
@@ -46,8 +44,8 @@ public class MCClient {
         this.motion.setZ(z);
     }
 
-    public MCClient(SpartanPlayer player) {
-        this.player = player;
+    public MCClient(SpartanProtocol protocol) {
+        this.protocol = protocol;
         this.isAirBorne = false;
         this.isJumping = false;
         this.veloClaim = null;
@@ -81,6 +79,7 @@ public class MCClient {
         binds.add(new KeyBind(false, false, false, true));
         binds.add(new KeyBind(false, false, false, false));
     }
+
     public void movement(double dx, double dy, double dz) {
         this.predicted.clear();
         preTick(new MotionVector(dx, dy, dz));
@@ -96,9 +95,11 @@ public class MCClient {
         }
         veloClaim = null;
     }
+
     public SpartanProtocol p() {
-        return SpartanBukkit.getProtocol(this.player.uuid);
+        return SpartanBukkit.getProtocol(this.protocol.spartanPlayer.uuid);
     }
+
     public void preTick(MotionVector currentMotion) {
         boolean onGround = this.p().isOnGround();
         if (!onGround) {
@@ -122,24 +123,21 @@ public class MCClient {
                 double d0 = 0.08D;
                 boolean flag = this.getMotion().y <= 0.0D;
 
-                if (flag && this.p().spartanPlayer.getPotionEffect(PotionEffectType.SLOW_FALLING, 0) != null)
-                {
+                if (flag && this.p().spartanPlayer.getPotionEffect(PotionEffectType.SLOW_FALLING, 0) != null) {
                     d0 = 0.01D;
                 }
                 Location blockpos = this.p().getLocation().clone().add(0, -1, 0);
                 float f3 = BlockUtils.getSlipperiness(this.p().spartanPlayer.getWorld().getBlockAt(blockpos));
                 MotionVector vector3d5 = this.revelantVec(new MotionVector(0, 0, 0), f3);
                 double d2 = vector3d5.y;
-                if (levitation != null)
-                {
-                    d2 += (0.05D * (double)(levitation.bukkitEffect.getAmplifier() + 1) - vector3d5.y) * 0.2D;
+                if (levitation != null) {
+                    d2 += (0.05D * (double) (levitation.bukkitEffect.getAmplifier() + 1) - vector3d5.y) * 0.2D;
                     //this.fallDistance = 0.0F;
                 }
-                if (this.p().player.hasGravity())
-                {
+                if (this.p().player.hasGravity()) {
                     d2 -= d0;
                 }
-                this.getMotion().y = d2 * (double)0.98F;
+                this.getMotion().y = d2 * (double) 0.98F;
                 if (this.onAir == 6) {
                     /*
                     when jumping in the 6th tick, the speed change is different.
@@ -162,7 +160,7 @@ public class MCClient {
             }
         } else {
             if (!this.p().isOnGroundFrom() && currentMotion.y < this.motion.y
-                            && Math.abs(currentMotion.y - this.motion.y) < 0.03) {
+                    && Math.abs(currentMotion.y - this.motion.y) < 0.03) {
                 this.motion.y = currentMotion.y;
             } else if (!this.p().isOnGroundFrom() && currentMotion.y > this.motion.y) {
                 /*
@@ -189,8 +187,7 @@ public class MCClient {
         double d0 = 0.08D;
         boolean flag = this.getMotion().y <= 0.0D;
 
-        if (flag && this.p().spartanPlayer.getPotionEffect(PotionEffectType.SLOW_FALLING, 0) != null)
-        {
+        if (flag && this.p().spartanPlayer.getPotionEffect(PotionEffectType.SLOW_FALLING, 0) != null) {
             d0 = 0.01D;
         }
         Location blockpos = this.p().getLocation().clone().add(0, -1, 0);
@@ -199,17 +196,14 @@ public class MCClient {
         MotionVector vector3d5 = this.revelantVec(travelVector, f3);
         double d2 = vector3d5.y;
 
-        if (levitation != null)
-        {
-            d2 += (0.05D * (double)(levitation.bukkitEffect.getAmplifier() + 1) - vector3d5.y) * 0.2D;
+        if (levitation != null) {
+            d2 += (0.05D * (double) (levitation.bukkitEffect.getAmplifier() + 1) - vector3d5.y) * 0.2D;
             //this.fallDistance = 0.0F;
-        }
-        else if (this.p().player.hasGravity())
-        {
-           d2 -= d0;
+        } else if (this.p().player.hasGravity()) {
+            d2 -= d0;
         }
 
-        this.setMotion(vector3d5.x * (double)f4, d2 * (double)0.98F, vector3d5.z * (double)f4);
+        this.setMotion(vector3d5.x * (double) f4, d2 * (double) 0.98F, vector3d5.z * (double) f4);
 
 
     }
@@ -217,62 +211,65 @@ public class MCClient {
     protected float getJumpUpwardsMotion() {
         return 0.42F; // * this.getJumpFactor();
     }
+
     public List<MotionVector> getPredicted() {
         return this.predicted;
     }
-    public MotionVector revelantVec(MotionVector vector, float v)
-    {
+
+    public MotionVector revelantVec(MotionVector vector, float v) {
         this.moveRelative(this.getRelevantMoveFactor(v), vector);
         this.setMotion(this.handleOnClimbable(this.getMotion()));
         this.move(MoverType.SELF, this.getMotion());
         MotionVector vector3d = this.getMotion();
 
-        if (this.isJumping && this.canClimb(this.p()))
-        {
+        if (this.isJumping && this.canClimb(this.p())) {
             vector3d = new MotionVector(vector3d.x, 0.2D, vector3d.z);
         }
 
         return vector3d;
     }
-    private MotionVector handleOnClimbable(MotionVector vector)
-    {
-        if (this.canClimb(this.p()))
-        {
+
+    private MotionVector handleOnClimbable(MotionVector vector) {
+        if (this.canClimb(this.p())) {
             float f = 0.15F;
-            double d0 = MathHelper.clamp_double(vector.x, (double) - 0.15F, (double)0.15F);
-            double d1 = MathHelper.clamp_double(vector.z, (double) - 0.15F, (double)0.15F);
-            double d2 = Math.max(vector.y, (double) - 0.15F);
+            double d0 = MathHelper.clamp_double(vector.x, (double) -0.15F, (double) 0.15F);
+            double d1 = MathHelper.clamp_double(vector.z, (double) -0.15F, (double) 0.15F);
+            double d2 = Math.max(vector.y, (double) -0.15F);
 
             vector = new MotionVector(d0, d2, d1);
         }
 
         return vector;
     }
+
     private boolean canClimb(SpartanLocation location) {
         Material material = location.getBlock().material;
         return com.vagdedes.spartan.utils.minecraft.world.BlockUtils.canClimb(material, false)
-                        || com.vagdedes.spartan.utils.minecraft.world.BlockUtils.areTrapdoors(material)
-                        && (com.vagdedes.spartan.utils.minecraft.world.BlockUtils.canClimb(location.clone().add(0, 1, 0).getBlock().material, false)
-                        || com.vagdedes.spartan.utils.minecraft.world.BlockUtils.canClimb(location.clone().add(0, -1, 0).getBlock().material, false));
+                || com.vagdedes.spartan.utils.minecraft.world.BlockUtils.areTrapdoors(material)
+                && (com.vagdedes.spartan.utils.minecraft.world.BlockUtils.canClimb(location.clone().add(0, 1, 0).getBlock().material, false)
+                || com.vagdedes.spartan.utils.minecraft.world.BlockUtils.canClimb(location.clone().add(0, -1, 0).getBlock().material, false));
     }
+
     private boolean canClimb(SpartanProtocol protocol) {
         SpartanLocation location = new SpartanLocation(protocol.getLocation());
         Material material = location.getBlock().material;
         return com.vagdedes.spartan.utils.minecraft.world.BlockUtils.canClimb(material, false)
-                        || com.vagdedes.spartan.utils.minecraft.world.BlockUtils.areTrapdoors(material)
-                        && (com.vagdedes.spartan.utils.minecraft.world.BlockUtils.canClimb(location.clone().add(0, 1, 0).getBlock().material, false)
-                        || com.vagdedes.spartan.utils.minecraft.world.BlockUtils.canClimb(location.clone().add(0, -1, 0).getBlock().material, false));
+                || com.vagdedes.spartan.utils.minecraft.world.BlockUtils.areTrapdoors(material)
+                && (com.vagdedes.spartan.utils.minecraft.world.BlockUtils.canClimb(location.clone().add(0, 1, 0).getBlock().material, false)
+                || com.vagdedes.spartan.utils.minecraft.world.BlockUtils.canClimb(location.clone().add(0, -1, 0).getBlock().material, false));
     }
-    private float getRelevantMoveFactor(float p_213335_1_)
-    {
+
+    private float getRelevantMoveFactor(float p_213335_1_) {
         return this.p().isOnGround() ?
-                        (float) Attributes.getAttributeValue(Attribute.MOVEMENT_SPEED, this.p())
-                                        * (0.21600002F / (p_213335_1_ * p_213335_1_ * p_213335_1_))
-                        : this.jumpMovementFactor;
+                (float) Attributes.getAttributeValue(Attribute.MOVEMENT_SPEED, this.p())
+                        * (0.21600002F / (p_213335_1_ * p_213335_1_ * p_213335_1_))
+                : this.jumpMovementFactor;
     }
+
     public void move(MoverType typeIn, MotionVector pos) {
         // for now - nothing
     }
+
     public void moveRelative(float friction, MotionVector relative) {
         StrafeEvent event = new StrafeEvent(friction, relative, this.p().getLocation().getYaw());
         MotionVector vector3d = getAbsoluteMotion(event.getRelative(), event.getFriction(), event.getYaw());
