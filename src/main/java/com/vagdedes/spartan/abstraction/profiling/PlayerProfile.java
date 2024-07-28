@@ -48,14 +48,13 @@ public class PlayerProfile {
         }
     }
 
-    public PlayerProfile(SpartanPlayer player) {
+    public PlayerProfile(SpartanProtocol protocol) {
         Enums.HackType[] hackTypes = Enums.HackType.values();
-        this.uuid = player.uuid;
-        this.name = player.name;
-        this.offlinePlayer = player.getInstance(); // Attention
+        this.uuid = protocol.spartanPlayer.uuid;
+        this.name = protocol.spartanPlayer.name;
+        this.offlinePlayer = protocol.player; // Attention
         this.evidence = new PlayerEvidence();
         this.skull = null;
-        this.offlinePlayer = null;
 
         this.violationHistory = new ViolationHistory[ResearchEngine.usableDataTypes.length][hackTypes.length];
         this.miningHistory = new MiningHistory[MiningHistory.MiningOre.values().length];
@@ -70,8 +69,8 @@ public class PlayerProfile {
         }
     }
 
-    public void update(SpartanPlayer player) {
-        this.uuid = player.uuid;
+    public void update(SpartanProtocol protocol) {
+        this.uuid = protocol.spartanPlayer.uuid;
     }
 
     // Separator

@@ -4,7 +4,6 @@ import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.LiveViolation;
 import com.vagdedes.spartan.abstraction.inventory.implementation.MainMenu;
 import com.vagdedes.spartan.abstraction.pattern.Pattern;
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.profiling.MiningHistory;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.profiling.PlayerViolation;
@@ -88,19 +87,19 @@ public class ResearchEngine {
         return playerProfile;
     }
 
-    public static PlayerProfile getPlayerProfile(SpartanPlayer player, boolean force) {
+    public static PlayerProfile getPlayerProfile(SpartanProtocol protocol, boolean force) {
         PlayerProfile playerProfile;
 
         if (!force) {
-            playerProfile = playerProfiles.get(player.name.toLowerCase());
+            playerProfile = playerProfiles.get(protocol.spartanPlayer.name.toLowerCase());
 
             if (playerProfile != null) {
-                playerProfile.update(player);
+                playerProfile.update(protocol);
                 return playerProfile;
             }
         }
-        playerProfile = new PlayerProfile(player);
-        playerProfiles.put(player.name.toLowerCase(), playerProfile);
+        playerProfile = new PlayerProfile(protocol);
+        playerProfiles.put(protocol.spartanPlayer.name.toLowerCase(), playerProfile);
         return playerProfile;
     }
 
@@ -178,7 +177,7 @@ public class ResearchEngine {
                     playerProfiles.remove(playerName);
 
                     if (foundPlayer) {
-                        p.setProfile(getPlayerProfile(p.spartanPlayer, true));
+                        p.setProfile(getPlayerProfile(p, true));
                     }
                     if (Config.sql.isEnabled()) {
                         Config.sql.update("DELETE FROM " + Config.sql.getTable() + " WHERE information LIKE '%" + playerName + "%';");
@@ -207,7 +206,7 @@ public class ResearchEngine {
                 playerProfiles.remove(playerName);
 
                 if (foundPlayer) {
-                    p.setProfile(getPlayerProfile(p.spartanPlayer, true));
+                    p.setProfile(getPlayerProfile(p, true));
                 }
             }
             MainMenu.refresh();

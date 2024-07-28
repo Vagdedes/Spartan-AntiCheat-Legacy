@@ -14,6 +14,7 @@ import java.util.List;
 
 public class SpartanProtocol {
 
+    private final long time;
     public final Player player;
     public final SpartanPlayer spartanPlayer;
     private boolean isOnGround, isOnGroundFrom, isSprinting, isSneaking, onLoadStatus;
@@ -27,6 +28,7 @@ public class SpartanProtocol {
     private boolean mutateTeleport;
 
     public SpartanProtocol(Player player) {
+        this.time = System.currentTimeMillis();
         this.player = player;
         this.isOnGround = false;
         this.isOnGroundFrom = false;
@@ -39,7 +41,11 @@ public class SpartanProtocol {
         this.lastTransaction = Long.MIN_VALUE;
         this.teleportEngine = new LinkedList<>();
         this.mutateTeleport = false;
-        this.setProfile(ResearchEngine.getPlayerProfile(this.spartanPlayer, false));
+        this.setProfile(ResearchEngine.getPlayerProfile(this, false));
+    }
+
+    public long timePassed() {
+        return System.currentTimeMillis() - this.time;
     }
 
     public boolean isOnGround() {
@@ -47,10 +53,11 @@ public class SpartanProtocol {
                 ? this.isOnGround
                 : this.player.isOnGround();
     }
+
     public boolean isOnGroundFrom() {
         return SpartanBukkit.packetsEnabled_Movement()
-                        ? this.isOnGroundFrom
-                        : this.player.isOnGround();
+                ? this.isOnGroundFrom
+                : this.player.isOnGround();
     }
 
     public boolean isSprinting() {
@@ -82,7 +89,10 @@ public class SpartanProtocol {
     public int getPing() {
         return this.ping;
     }
-    public boolean isMutateTeleport() { return this.mutateTeleport; }
+
+    public boolean isMutateTeleport() {
+        return this.mutateTeleport;
+    }
 
     public short getTransactionID() {
         return this.transactionID;
@@ -101,6 +111,7 @@ public class SpartanProtocol {
             this.spartanPlayer.movement.resetAirTicks();
         }
     }
+
     public void setOnGroundFrom(boolean isOnGroundFrom) {
         this.isOnGroundFrom = isOnGroundFrom;
     }
@@ -120,10 +131,14 @@ public class SpartanProtocol {
     public void setVelocity(Vector velocity) {
         this.velocity = velocity;
     }
+
     public void setLocation(Location location) {
         this.location = location;
     }
-    public void setMutateTeleport(boolean b) { this.mutateTeleport = b; }
+
+    public void setMutateTeleport(boolean b) {
+        this.mutateTeleport = b;
+    }
 
     public void setLastTransaction() {
         if (this.lastTransaction != Long.MIN_VALUE) {

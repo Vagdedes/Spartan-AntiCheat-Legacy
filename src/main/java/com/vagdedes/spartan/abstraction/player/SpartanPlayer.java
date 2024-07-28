@@ -66,7 +66,6 @@ public class SpartanPlayer {
     public final Trackers trackers;
     public final Clicks clicks;
 
-    private final long time;
     private final Map<EntityDamageEvent.DamageCause, SpartanPlayerDamage>
             damageReceived,
             damageDealt;
@@ -188,7 +187,6 @@ public class SpartanPlayer {
                     new SpartanPlayerDamage(this)
             );
         }
-        this.time = System.currentTimeMillis();
 
         this.buffer = new Buffer();
         this.executors = new CheckExecutor[hackTypes.length];
@@ -346,10 +344,6 @@ public class SpartanPlayer {
 
     public Player getInstance() {
         return this.protocol.player;
-    }
-
-    public long timePassed() {
-        return System.currentTimeMillis() - this.time;
     }
 
     // Separator
@@ -721,4 +715,5 @@ public class SpartanPlayer {
                 this.protocol.getPing()
         );
     }
+
 }
