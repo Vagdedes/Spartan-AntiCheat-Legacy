@@ -3,9 +3,9 @@ package com.vagdedes.spartan.abstraction.check.implementation.combat.fastclicks;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 
-public class ClickPattern extends DetectionExecutor {
+public class ClickPatternML extends DetectionExecutor {
 
-    ClickPattern(CheckExecutor executor) {
+    ClickPatternML(CheckExecutor executor) {
         super(executor, executor.hackType, executor.player);
     }
 
