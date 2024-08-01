@@ -5,6 +5,7 @@ import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.LiveViolation;
 import com.vagdedes.spartan.abstraction.inventory.implementation.MainMenu;
 import com.vagdedes.spartan.abstraction.pattern.Pattern;
+import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.profiling.MiningHistory;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.profiling.PlayerViolation;
@@ -12,7 +13,9 @@ import com.vagdedes.spartan.abstraction.profiling.ViolationHistory;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
+import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.server.Config;
+import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.AntiCheatLogs;
@@ -575,6 +578,25 @@ public class ResearchEngine {
                     }
                 }
                 violationFired.clear();
+            }
+        }
+        if (playerProfiles.size() < TPS.maximum) {
+            String message = AwarenessNotifications.getOptionalNotification(
+                    "The plugin has not yet collected enough data."
+                    + " This problem is normal and will be resolved as more players join your server."
+                    + " Due to the limited data, certain checks may not notify, prevent or punish players."
+            );
+
+            if (message != null) {
+                List<SpartanPlayer> players = Permissions.getStaff();
+
+                if (!players.isEmpty()) {
+                    for (SpartanPlayer p : players) {
+                        if (AwarenessNotifications.canSend(p.uuid, "limited-data", 60 * 60)) {
+                            p.sendMessage(message);
+                        }
+                    }
+                }
             }
         }
     }
