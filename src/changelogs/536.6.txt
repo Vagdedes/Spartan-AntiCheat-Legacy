@@ -1,0 +1,1 @@
+[+] Added notification column in the SQL table to not cause SQL errors.
