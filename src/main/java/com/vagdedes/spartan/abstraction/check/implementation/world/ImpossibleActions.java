@@ -63,8 +63,8 @@ public class ImpossibleActions extends CheckExecutor {
                         case SOUTH_EAST:
                         case SOUTH_SOUTH_EAST:
                             double directionDistance = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)
-                                    ? Double.MAX_VALUE
-                                    : blockFace.getDirection().distance(playerLocation.getDirection());
+                                    ? blockFace.getDirection().distance(playerLocation.getDirection())
+                                    : Double.MAX_VALUE;
 
                             if (directionDistance <= 1.35) {
                                 cancel(
