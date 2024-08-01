@@ -1,1 +1,2 @@
 [+] Added notification column in the SQL table to not cause SQL errors.
+[#] Detection Slots will now be counted only for enabled checks per java/bedrock players.

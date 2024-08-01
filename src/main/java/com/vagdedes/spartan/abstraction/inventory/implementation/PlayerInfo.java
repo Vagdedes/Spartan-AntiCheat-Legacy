@@ -139,7 +139,9 @@ public class PlayerInfo extends InventoryMenu {
         // Separator
 
         Enums.DataType dataType = isOnline ? player.dataType : null;
-        boolean notChecked = isOnline && !PlayerDetectionSlots.isChecked(player.uuid);
+        boolean notChecked = isOnline
+                && !PlayerDetectionSlots.isChecked(player)
+                && Config.isEnabled(player.dataType);
         String cancellableCompatibility = isOnline ? player.getCancellableCompatibility() : null;
 
         for (HackType hackType : hackTypes) {
