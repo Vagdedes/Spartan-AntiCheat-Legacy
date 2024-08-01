@@ -69,17 +69,17 @@ public class Simulation extends CheckExecutor {
             //player.sendMessage("y: " + s(dy) + " | " + s(predicted.get(0).y)
             //                + " | total: " + yDf + " | air: " + client.onAir);
             //player.sendMessage("vl: " + yDf);
-            if (diffVl > 0.05) {
-                cancel("[Y] " + yDf);
-                diffVl /= 1.75;
-            }
 
             if (yDf == 0) {
                 client.verifiedMotion = mV.cloneVector();
             } else {
                 client.verifiedMotion = predicted.get(predicted.size() - 1);
             }
-            diffVl /= 1.1;
+            if (diffVl > 0.03) {
+                cancel("[Y] " + yDf);
+                diffVl = 0;
+            }
+            diffVl /= 1.25;
         }
         if (object instanceof PlayerVelocityEvent) {
             PlayerVelocityEvent event = (PlayerVelocityEvent) object;

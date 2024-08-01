@@ -11,6 +11,8 @@ import com.vagdedes.spartan.utils.math.MathHelper;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -20,7 +22,7 @@ import java.util.List;
 public class MCClient {
 
     public float jumpMovementFactor;
-    public int onAir;
+    public int onAir, onGroundTicks;
     public SpartanProtocol protocol;
     public org.bukkit.util.Vector veloClaim;
     private final List<MotionVector> predicted;
@@ -50,6 +52,7 @@ public class MCClient {
         this.isJumping = false;
         this.veloClaim = null;
         this.onAir = 0;
+        this.onGroundTicks = 0;
         this.motion = new MotionVector(0, 0, 0);
         this.jumpMovementFactor = 0.0F;
         this.predicted = new ArrayList<>();
@@ -91,7 +94,6 @@ public class MCClient {
                 tick(bind, new MotionVector(dx, dy, dz));
                 this.predicted.add(this.motion);
             }
-            checkCollide();
         }
         veloClaim = null;
     }
@@ -104,17 +106,70 @@ public class MCClient {
         boolean onGround = this.p().isOnGround();
         if (!onGround) {
             onAir++;
+            onGroundTicks = 0;
         } else {
             onAir = 0;
+            onGroundTicks++;
             isJumping = false;
             isAirBorne = false;
         }
     }
 
-    public void checkCollide() {
+    public boolean checkCollide() {
+        Location location = this.p().getLocation();
+        for (int x = location.getBlockX() - 1; x <= location.getBlockX() + 1; x++) {
+            for (int y = location.getBlockY() - 1; y <= location.getBlockY() + 1; y++) {
+                for (int z = location.getBlockZ() - 1; z <= location.getBlockZ() + 1; z++) {
+                    if (location.getWorld().getBlockAt(x, y, z).getType().isSolid()
+                                    || ignore(location.getWorld().getBlockAt(x, y, z).toString().toLowerCase())) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+    public boolean checkCollideSpecify() {
+        Location location = this.p().getLocation();
+        for (int x = location.getBlockX() - 1; x <= location.getBlockX() + 1; x++) {
+            for (int y = location.getBlockY() - 1; y <= location.getBlockY() + 1; y++) {
+                for (int z = location.getBlockZ() - 1; z <= location.getBlockZ() + 1; z++) {
+                    if (ignore(location.getWorld().getBlockAt(x, y, z).toString().toLowerCase())) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+    public boolean checkCollideOnTop() {
+        Location location = this.p().getLocation();
+        World world = location.getWorld();
+        double startX = location.getX() - 0.3;
+        double endX = location.getX() + 0.3;
+        double startY = location.getY();
+        double endY = location.getY() + 2;
+        double startZ = location.getZ() - 0.3;
+        double endZ = location.getZ() + 0.3;
+        double increment = 0.3;
 
+        for (double x = startX; x <= endX; x += increment) {
+            for (double y = startY; y <= endY; y += 1) {
+                for (double z = startZ; z <= endZ; z += increment) {
+                    Block block = world.getBlockAt(new Location(world, x, y, z));
+                    if (block.getType().isSolid()
+                                    || ignore(block.toString().toLowerCase())) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
+    private static boolean ignore(String block) {
+        return block.matches(".*(snow|step|frame|table|slab|stair|ladder|vine|waterlily|wall|carpet|fence|rod|bed|skull|pot|hopper|door|piston|lily|slime).*");
+    }
     public void tick(KeyBind keyBind, MotionVector currentMotion) {
         boolean onGround = this.p().isOnGround();
         if (!onGround) {
@@ -157,6 +212,13 @@ public class MCClient {
                     jump();
                     isJumping = true;
                 }
+                if (this.checkCollideOnTop()) {
+                    if (keyBind.isNone()) this.getMotion().y = -0.0784;
+                    if (keyBind.is(true, false, false, false)
+                                    && this.getMotion().y > currentMotion.y) {
+                        this.getMotion().y = RayUtils.scaleVal(currentMotion.getY(), 4);
+                    }
+                }
             }
         } else {
             if (!this.p().isOnGroundFrom() && currentMotion.y < this.motion.y
@@ -172,38 +234,23 @@ public class MCClient {
             } else {
                 this.getMotion().y = 0;
             }
+            if (keyBind.is(false, true, false, false)) {
+                if (this.getMotion().y == 0 && onGroundTicks < 3
+                                && RayUtils.scaleVal(currentMotion.y, 4) == -0.1216) {
+                    this.getMotion().y = RayUtils.scaleVal(currentMotion.getY(), 4);
+                }
+            }
         }
 
-
-    }
-
-    public void livingTick(MotionVector travelVector) {
-        SpartanPotionEffect levitation = this.p().spartanPlayer.getPotionEffect(PotionEffectType.LEVITATION, 0);
-        this.jumpMovementFactor = 0.02F;
-
-        if (this.p().isSprinting()) {
-            this.jumpMovementFactor = (float) ((double) this.jumpMovementFactor + 0.005999999865889549D);
+        /*
+        Specify actions
+        Like collision
+         */
+        if (checkCollideSpecify() && keyBind.isNone()) {
+            if (Math.abs(this.getMotion().y - currentMotion.y) <= 0.5) {
+                this.getMotion().y = RayUtils.scaleVal(currentMotion.getY(), 4);
+            }
         }
-        double d0 = 0.08D;
-        boolean flag = this.getMotion().y <= 0.0D;
-
-        if (flag && this.p().spartanPlayer.getPotionEffect(PotionEffectType.SLOW_FALLING, 0) != null) {
-            d0 = 0.01D;
-        }
-        Location blockpos = this.p().getLocation().clone().add(0, -1, 0);
-        float f3 = BlockUtils.getSlipperiness(this.p().spartanPlayer.getWorld().getBlockAt(blockpos));
-        float f4 = this.p().isOnGround() ? f3 * 0.91F : 0.91F;
-        MotionVector vector3d5 = this.revelantVec(travelVector, f3);
-        double d2 = vector3d5.y;
-
-        if (levitation != null) {
-            d2 += (0.05D * (double) (levitation.bukkitEffect.getAmplifier() + 1) - vector3d5.y) * 0.2D;
-            //this.fallDistance = 0.0F;
-        } else if (this.p().player.hasGravity()) {
-            d2 -= d0;
-        }
-
-        this.setMotion(vector3d5.x * (double) f4, d2 * (double) 0.98F, vector3d5.z * (double) f4);
 
 
     }
