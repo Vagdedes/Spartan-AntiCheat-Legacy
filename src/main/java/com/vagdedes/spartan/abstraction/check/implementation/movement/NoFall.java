@@ -148,6 +148,7 @@ public class NoFall extends CheckExecutor {
                 && !player.isFrozen()
                 && !player.movement.isInVoid()
                 && !player.movement.isInLiquids()
+                && !player.trackers.has(Trackers.TrackerType.TRIDENT)
                 && !player.trackers.has(Trackers.TrackerType.BOUNCING_BLOCKS)
                 && !player.trackers.has(Trackers.TrackerType.BUBBLE_WATER, "soul-sand")
                 && (!PlayerUtils.levitation || !player.hasPotionEffect(PotionEffectType.LEVITATION, 0))

@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.functionality.performance;
 
 import com.vagdedes.spartan.Register;
+import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.LiveViolation;
 import com.vagdedes.spartan.abstraction.inventory.implementation.MainMenu;
 import com.vagdedes.spartan.abstraction.pattern.Pattern;
@@ -34,9 +35,9 @@ public class ResearchEngine {
     private static boolean firstLoad = false;
     public static Map<Enums.HackType, Boolean> violationFired = new ConcurrentHashMap<>();
     private static long schedulerTicks = 0L;
-    public static final Enums.DataType[] usableDataTypes = new Enums.DataType[]{
-            Enums.DataType.JAVA,
-            Enums.DataType.BEDROCK
+    public static final Check.DataType[] usableDataTypes = new Check.DataType[]{
+            Check.DataType.JAVA,
+            Check.DataType.BEDROCK
     };
     private static final Map<String, PlayerProfile> playerProfiles = new ConcurrentHashMap<>();
 
@@ -254,7 +255,7 @@ public class ResearchEngine {
         return null;
     }
 
-    private static Enums.DataType getDataType(String s) {
+    private static Check.DataType getDataType(String s) {
         String find = "(" + LiveViolation.javaPlayerIdentifier + " ";
         int index = s.indexOf(find);
 
@@ -263,13 +264,13 @@ public class ResearchEngine {
             index = s.indexOf(")");
             s = s.substring(0, index);
 
-            for (Enums.DataType dataType : usableDataTypes) {
+            for (Check.DataType dataType : usableDataTypes) {
                 if (s.equals(dataType.toString())) {
                     return dataType;
                 }
             }
         }
-        return Enums.DataType.JAVA;
+        return Check.DataType.JAVA;
     }
 
     private static boolean isStorageMode() {
@@ -490,7 +491,7 @@ public class ResearchEngine {
                 }
             }
 
-            for (Enums.DataType dataType : usableDataTypes) {
+            for (Check.DataType dataType : usableDataTypes) {
                 for (Enums.HackType hackType : (force
                         ? Arrays.asList(Enums.HackType.values())
                         : violationFired.keySet())) {

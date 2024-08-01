@@ -81,7 +81,7 @@ public class BlockReach extends CheckExecutor {
                             && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
                             || block.material != Material.BARRIER)
                             && player.getInstance().getVehicle() == null
-                            && distance > (ab_distance + GroundUtils.boundingBox)) {
+                            && distance > (ab_distance + GroundUtils.boundingBox + 0.1)) {
                         cancel("type: unusual, distance: " + distance + ", block-against-distance: " + ab_distance + ", block: " + BlockUtils.blockToString(block));
                     } else {
                         double limit = getLimit();

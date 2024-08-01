@@ -95,15 +95,14 @@ public class ImpossibleActions extends CheckExecutor {
                                             SpartanLocation loopLocation = iterator.next();
 
                                             if (loopLocation.timePassed() <= requiredComparisons * 2 * TPS.tickTime) {
-                                                double diff = (previousLocation.getYaw() % 360.0f)
-                                                        - (loopLocation.getYaw() % 360.0f);
+                                                double diff = (previousLocation.getYaw() - loopLocation.getYaw()) % 360.0f;
                                                 yawDeviation += diff * diff;
                                                 previousLocation = loopLocation;
                                             } else {
                                                 return;
                                             }
                                         }
-                                        yawDeviation = Math.sqrt(yawDeviation / (requiredSize - 1.0));
+                                        yawDeviation = Math.sqrt(yawDeviation / ((double) requiredComparisons));
 
                                         if (yawDeviation >= 90.0) {
                                             cancel(
@@ -137,6 +136,7 @@ public class ImpossibleActions extends CheckExecutor {
                                 if (deltaXZ > 0.1) {
                                     possiblePlacements += AlgebraUtils.integerCeil(deltaXZ / 0.25);
                                 }
+                                possiblePlacements = Math.max(possiblePlacements, 2);
                                 int hash = (block.getX() * SpartanBukkit.hashCodeMultiplier) + block.getZ();
 
                                 if (buffer.count("tower" + hash, motionTicks) > possiblePlacements) {

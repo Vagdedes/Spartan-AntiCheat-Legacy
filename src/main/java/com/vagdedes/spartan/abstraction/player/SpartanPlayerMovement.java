@@ -302,7 +302,7 @@ public class SpartanPlayerMovement {
     // Separator
 
     public List<SpartanLocation> getLocations() {
-        List<SpartanLocation> toReturn = new ArrayList<>();
+        List<SpartanLocation> toReturn = new ArrayList<>(this.locations.size());
 
         synchronized (this.locations) {
             for (List<SpartanLocation> list : locations.values()) {
