@@ -3,7 +3,9 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.irregular
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.data.Trackers;
+import com.vagdedes.spartan.abstraction.player.SpartanPlayerDamage;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
+import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockPatternUtils;
@@ -13,6 +15,7 @@ import org.bukkit.Material;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class IrregularMovementsGravity extends DetectionExecutor {
@@ -24,7 +27,8 @@ public class IrregularMovementsGravity extends DetectionExecutor {
     }
 
     void run(double vertical, double oldVertical, double box, double oldBox) {
-        if (hackType.getCheck().getBooleanOption("check_gravity", true)) {
+        if (hackType.getCheck().getBooleanOption("check_gravity", true)
+                && !isUsingMace()) {
             int airTicks = player.movement.getTicksOnAir();
             SpartanLocation to = player.movement.getEventToLocation(),
                     from = player.movement.getEventFromLocation();
@@ -174,13 +178,13 @@ public class IrregularMovementsGravity extends DetectionExecutor {
                                 && !player.movement.isFalling(vertical, -player.movement.getAirAcceleration(), PlayerUtils.airDrag, GroundUtils.maxHeightLengthRatio)
                                 && !player.movement.isFalling(oldVertical, -player.movement.getAirAcceleration(), PlayerUtils.airDrag, GroundUtils.maxHeightLengthRatio)
                                 ? GroundUtils.maxPlayerStep
-                                : PlayerUtils.getJumpTicks(PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP) + 1);
+                                : PlayerUtils.getJumpTicks(PlayerUtils.getPotionLevel(player, PlayerUtils.JUMP) + 1);
                     }
                     double limit = Math.max(
                             this.sensitive ? product : product / (double) airTicks,
                             player.trackers.has(Trackers.TrackerFamily.VELOCITY)
-                                    ? GroundUtils.maxBoundingBox :
-                                    liquid || player.trackers.has(Trackers.TrackerFamily.MOTION) ? GroundUtils.maxPlayerStep :
+                                    || player.trackers.has(Trackers.TrackerFamily.MOTION) ? GroundUtils.maxBoundingBox :
+                                    liquid ? GroundUtils.maxPlayerStep :
                                             player.bedrockPlayer || sensitive ? PlayerUtils.climbingDownDefault :
                                                     GroundUtils.maxHeightLengthRatio
                     );
@@ -225,6 +229,23 @@ public class IrregularMovementsGravity extends DetectionExecutor {
                 || BlockUtils.areTrapdoors(material)
                 && (BlockUtils.canClimb(location.clone().add(0, 1, 0).getBlock().material, false)
                 || BlockUtils.canClimb(location.clone().add(0, -1, 0).getBlock().material, false));
+    }
+
+    private boolean isUsingMace() {
+        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_20)) {
+            Collection<SpartanPlayerDamage> damages = player.getDealtDamages();
+
+            if (!damages.isEmpty()) {
+                for (SpartanPlayerDamage damage : damages) {
+                    if (damage.timePassed() <= (TPS.tickTime * TPS.maximum * 3)
+                            && (player.getItemInHand().getType() == Material.MACE
+                            || player.getInventory().getItemInOffHand().getType() == Material.MACE)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
 }

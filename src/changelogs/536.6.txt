@@ -6,3 +6,4 @@
 [#] Fixed a Folia fork startup console error that prevented the plugin from loading.
 [#] Fixed an ImpossibleActions tower false positive caused by a mathematical limit.
 [#] Potentially fixed an ImpossibleActions scaffold false positive caused by a mathematical mistake.
+[#] Fixed several IrregularMovements new mace item false positives.

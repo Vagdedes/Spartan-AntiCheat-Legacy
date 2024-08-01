@@ -21,7 +21,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffectType;
 
 import java.util.Iterator;
 import java.util.List;
@@ -121,7 +120,7 @@ public class ImpossibleActions extends CheckExecutor {
                                     block.location
                             ) <= 1.0) {
                                 ItemStack handItem = player.getItemInHand();
-                                int jumpLevel = PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP) + 1,
+                                int jumpLevel = PlayerUtils.getPotionLevel(player, PlayerUtils.JUMP) + 1,
                                         motionTicks = PlayerUtils.getJumpTicks(jumpLevel);
                                 double motionSum = PlayerUtils.getJumpMotionSum(jumpLevel),
                                         blockHeight = GroundUtils.getMinHeight(

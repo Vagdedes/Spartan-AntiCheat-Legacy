@@ -43,6 +43,7 @@ public class PlayerUtils {
             gold_spade = MaterialUtils.get("gold_spade"),
             stone_spade = MaterialUtils.get("stone_spade"),
             wood_spade = MaterialUtils.get("wood_spade");
+    public static final PotionEffectType JUMP;
 
     public static final double
             optimizationY = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9) ? 0.005 : 0.003,
@@ -71,6 +72,12 @@ public class PlayerUtils {
     private static final Map<PotionEffectType, Long> handledPotionEffects = new LinkedHashMap<>();
 
     static {
+        PotionEffectType effect = PotionEffectType.getByName("JUMP");
+
+        if (effect == null) {
+            effect = JUMP_BOOST;
+        }
+        JUMP = effect;
         handledPotionEffects.put(JUMP, AlgebraUtils.integerRound(TPS.maximum * 5L) * TPS.tickTime);
         handledPotionEffects.put(SPEED, AlgebraUtils.integerRound(TPS.maximum * 2L) * TPS.tickTime);
 
