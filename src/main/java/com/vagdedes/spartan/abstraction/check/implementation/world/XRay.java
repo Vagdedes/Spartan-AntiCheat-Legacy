@@ -5,6 +5,7 @@ import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.profiling.MiningHistory;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
+import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.World;
@@ -17,10 +18,9 @@ import java.util.Set;
 public class XRay extends CheckExecutor {
 
     private static double getAverageDeviation(World.Environment environment, MiningHistory.MiningOre ore) {
-        int required = 10;
         Collection<PlayerProfile> profiles = ResearchEngine.getPlayerProfiles();
 
-        if (profiles.size() <= required) {
+        if (profiles.size() <= TPS.maximum) {
             return 0.0;
         } else {
             int profileCount = 0;
@@ -37,7 +37,7 @@ public class XRay extends CheckExecutor {
                     }
                 }
             }
-            if (profileCount >= required) {
+            if (profileCount >= TPS.maximum) {
                 int mines = 0;
 
                 for (Map.Entry<String, Integer> entry : count.entrySet()) {

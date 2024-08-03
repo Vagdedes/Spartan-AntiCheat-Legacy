@@ -9,7 +9,6 @@ import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockPatternUtils;
 import com.vagdedes.spartan.utils.minecraft.world.GroundUtils;
-import org.bukkit.potion.PotionEffectType;
 
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -49,7 +48,7 @@ public class IrregularMovementsJump extends DetectionExecutor {
                 && player.trackers.has(Trackers.TrackerFamily.VELOCITY)
                 ? player.movement.justJumped(vertical)
                 : player.movement.isJumping(vertical)) {
-            int jumpEffect = PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP) + 1,
+            int jumpEffect = PlayerUtils.getPotionLevel(player, PlayerUtils.JUMP) + 1,
                     jumpTicks = PlayerUtils.getJumpTicks(jumpEffect);
             boolean contains = heights.get(jumpEffect).contains(AlgebraUtils.cut(box, MovementProcessing.heightPrecision));
 

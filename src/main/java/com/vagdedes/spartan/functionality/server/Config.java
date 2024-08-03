@@ -127,7 +127,7 @@ public class Config {
 
     // Separator
 
-    public static boolean isEnabled(Enums.DataType dataType) {
+    public static boolean isEnabled(Check.DataType dataType) {
         for (HackType hackType : Enums.HackType.values()) {
             if (hackType.getCheck().isEnabled(dataType, null, null)) {
                 return true;

@@ -12,7 +12,6 @@ import com.vagdedes.spartan.utils.minecraft.world.GroundUtils;
 import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Horse;
-import org.bukkit.potion.PotionEffectType;
 
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -141,7 +140,7 @@ public class IrregularMovementsStep extends DetectionExecutor {
                         double limit = (player.bedrockPlayer ? bedrockPlayerStepExtra : 0.0)
                                 + (player.trackers.has(Trackers.TrackerFamily.VELOCITY) ? 1.0 : 0.0)
                                 + PlayerUtils.getJumpMotion(
-                                PlayerUtils.getPotionLevel(player, PotionEffectType.JUMP) + 1,
+                                PlayerUtils.getPotionLevel(player, PlayerUtils.JUMP) + 1,
                                 0
                         );
 

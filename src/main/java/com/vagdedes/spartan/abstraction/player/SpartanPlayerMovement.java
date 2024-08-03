@@ -14,7 +14,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Vehicle;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import java.util.*;
@@ -209,7 +208,7 @@ public class SpartanPlayerMovement {
     public boolean isJumping(double d) {
         return PlayerUtils.isJumping(
                 d,
-                PlayerUtils.getPotionLevel(this.parent, PotionEffectType.JUMP) + 1,
+                PlayerUtils.getPotionLevel(this.parent, PlayerUtils.JUMP) + 1,
                 GroundUtils.maxHeightLengthRatio
         );
     }
@@ -217,7 +216,7 @@ public class SpartanPlayerMovement {
     public boolean justJumped(double d) {
         return PlayerUtils.justJumped(
                 d,
-                PlayerUtils.getPotionLevel(this.parent, PotionEffectType.JUMP) + 1,
+                PlayerUtils.getPotionLevel(this.parent, PlayerUtils.JUMP) + 1,
                 GroundUtils.maxHeightLengthRatio
         );
     }
@@ -236,7 +235,7 @@ public class SpartanPlayerMovement {
                 acceleration,
                 drag,
                 precision,
-                PlayerUtils.getPotionLevel(this.parent, PotionEffectType.JUMP) + 1
+                PlayerUtils.getPotionLevel(this.parent, PlayerUtils.JUMP) + 1
         );
     }
 
@@ -302,7 +301,7 @@ public class SpartanPlayerMovement {
     // Separator
 
     public List<SpartanLocation> getLocations() {
-        List<SpartanLocation> toReturn = new ArrayList<>();
+        List<SpartanLocation> toReturn = new ArrayList<>(this.locations.size());
 
         synchronized (this.locations) {
             for (List<SpartanLocation> list : locations.values()) {

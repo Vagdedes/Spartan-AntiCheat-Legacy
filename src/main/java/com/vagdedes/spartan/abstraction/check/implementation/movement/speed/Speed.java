@@ -96,7 +96,7 @@ public class Speed extends CheckExecutor {
         boolean onGround = player.isOnGround(false);
 
         SpartanPotionEffect speedEffect = player.getPotionEffect(PotionEffectType.SPEED, 0);
-        SpartanPotionEffect jumpEffect = player.getPotionEffect(PotionEffectType.JUMP, 0);
+        SpartanPotionEffect jumpEffect = player.getPotionEffect(PlayerUtils.JUMP, 0);
         SpartanPotionEffect glideEffect = PlayerUtils.slowFall
                 ? player.getPotionEffect(PotionEffectType.SLOW_FALLING, 0)
                 : null;
