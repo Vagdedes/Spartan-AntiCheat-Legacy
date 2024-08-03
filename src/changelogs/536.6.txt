@@ -1,4 +1,5 @@
 [+] Added notification column in the SQL table to not cause SQL errors.
+[+] Implemented new classes to handle modified constants of forks.
 [#] Detection Slots will now be counted only for enabled checks per java/bedrock players.
 [#] Fixed ImpossibleActions block-face console error.
 [#] Fixed a BlockReach near block unusual detection false positive.
