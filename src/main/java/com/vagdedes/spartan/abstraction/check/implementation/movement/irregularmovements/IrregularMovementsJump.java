@@ -7,6 +7,7 @@ import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
+import com.vagdedes.spartan.utils.minecraft.entity.PotionEffectUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockPatternUtils;
 import com.vagdedes.spartan.utils.minecraft.world.GroundUtils;
 
@@ -48,7 +49,7 @@ public class IrregularMovementsJump extends DetectionExecutor {
                 && player.trackers.has(Trackers.TrackerFamily.VELOCITY)
                 ? player.movement.justJumped(vertical)
                 : player.movement.isJumping(vertical)) {
-            int jumpEffect = PlayerUtils.getPotionLevel(player, PlayerUtils.JUMP) + 1,
+            int jumpEffect = PlayerUtils.getPotionLevel(player, PotionEffectUtils.JUMP) + 1,
                     jumpTicks = PlayerUtils.getJumpTicks(jumpEffect);
             boolean contains = heights.get(jumpEffect).contains(AlgebraUtils.cut(box, MovementProcessing.heightPrecision));
 

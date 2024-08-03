@@ -8,6 +8,7 @@ import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
+import com.vagdedes.spartan.utils.minecraft.entity.PotionEffectUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockPatternUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import com.vagdedes.spartan.utils.minecraft.world.GroundUtils;
@@ -178,7 +179,7 @@ public class IrregularMovementsGravity extends DetectionExecutor {
                                 && !player.movement.isFalling(vertical, -player.movement.getAirAcceleration(), PlayerUtils.airDrag, GroundUtils.maxHeightLengthRatio)
                                 && !player.movement.isFalling(oldVertical, -player.movement.getAirAcceleration(), PlayerUtils.airDrag, GroundUtils.maxHeightLengthRatio)
                                 ? GroundUtils.maxPlayerStep
-                                : PlayerUtils.getJumpTicks(PlayerUtils.getPotionLevel(player, PlayerUtils.JUMP) + 1);
+                                : PlayerUtils.getJumpTicks(PlayerUtils.getPotionLevel(player, PotionEffectUtils.JUMP) + 1);
                     }
                     double limit = Math.max(
                             this.sensitive ? product : product / (double) airTicks,

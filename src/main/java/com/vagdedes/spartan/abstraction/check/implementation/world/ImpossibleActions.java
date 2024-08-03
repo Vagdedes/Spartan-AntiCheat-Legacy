@@ -11,6 +11,7 @@ import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
+import com.vagdedes.spartan.utils.minecraft.entity.PotionEffectUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import com.vagdedes.spartan.utils.minecraft.world.GroundUtils;
 import me.vagdedes.spartan.system.Enums;
@@ -120,7 +121,7 @@ public class ImpossibleActions extends CheckExecutor {
                                     block.location
                             ) <= 1.0) {
                                 ItemStack handItem = player.getItemInHand();
-                                int jumpLevel = PlayerUtils.getPotionLevel(player, PlayerUtils.JUMP) + 1,
+                                int jumpLevel = PlayerUtils.getPotionLevel(player, PotionEffectUtils.JUMP) + 1,
                                         motionTicks = PlayerUtils.getJumpTicks(jumpLevel);
                                 double motionSum = PlayerUtils.getJumpMotionSum(jumpLevel),
                                         blockHeight = GroundUtils.getMinHeight(

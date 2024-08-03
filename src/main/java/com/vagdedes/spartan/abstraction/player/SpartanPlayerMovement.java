@@ -7,6 +7,7 @@ import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
+import com.vagdedes.spartan.utils.minecraft.entity.PotionEffectUtils;
 import com.vagdedes.spartan.utils.minecraft.world.GroundUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -208,7 +209,7 @@ public class SpartanPlayerMovement {
     public boolean isJumping(double d) {
         return PlayerUtils.isJumping(
                 d,
-                PlayerUtils.getPotionLevel(this.parent, PlayerUtils.JUMP) + 1,
+                PlayerUtils.getPotionLevel(this.parent, PotionEffectUtils.JUMP) + 1,
                 GroundUtils.maxHeightLengthRatio
         );
     }
@@ -216,7 +217,7 @@ public class SpartanPlayerMovement {
     public boolean justJumped(double d) {
         return PlayerUtils.justJumped(
                 d,
-                PlayerUtils.getPotionLevel(this.parent, PlayerUtils.JUMP) + 1,
+                PlayerUtils.getPotionLevel(this.parent, PotionEffectUtils.JUMP) + 1,
                 GroundUtils.maxHeightLengthRatio
         );
     }
@@ -235,7 +236,7 @@ public class SpartanPlayerMovement {
                 acceleration,
                 drag,
                 precision,
-                PlayerUtils.getPotionLevel(this.parent, PlayerUtils.JUMP) + 1
+                PlayerUtils.getPotionLevel(this.parent, PotionEffectUtils.JUMP) + 1
         );
     }
 

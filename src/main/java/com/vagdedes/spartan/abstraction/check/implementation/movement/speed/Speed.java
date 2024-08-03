@@ -12,6 +12,7 @@ import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.math.RayLine;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
+import com.vagdedes.spartan.utils.minecraft.entity.PotionEffectUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.World;
@@ -96,7 +97,7 @@ public class Speed extends CheckExecutor {
         boolean onGround = player.isOnGround(false);
 
         SpartanPotionEffect speedEffect = player.getPotionEffect(PotionEffectType.SPEED, 0);
-        SpartanPotionEffect jumpEffect = player.getPotionEffect(PlayerUtils.JUMP, 0);
+        SpartanPotionEffect jumpEffect = player.getPotionEffect(PotionEffectUtils.JUMP, 0);
         SpartanPotionEffect glideEffect = PlayerUtils.slowFall
                 ? player.getPotionEffect(PotionEffectType.SLOW_FALLING, 0)
                 : null;

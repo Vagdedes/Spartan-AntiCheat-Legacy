@@ -7,6 +7,7 @@ import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.java.ReflectionUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
+import com.vagdedes.spartan.utils.minecraft.entity.PotionEffectUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import com.vagdedes.spartan.utils.minecraft.world.GroundUtils;
 import org.bukkit.entity.AbstractHorse;
@@ -140,7 +141,7 @@ public class IrregularMovementsStep extends DetectionExecutor {
                         double limit = (player.bedrockPlayer ? bedrockPlayerStepExtra : 0.0)
                                 + (player.trackers.has(Trackers.TrackerFamily.VELOCITY) ? 1.0 : 0.0)
                                 + PlayerUtils.getJumpMotion(
-                                PlayerUtils.getPotionLevel(player, PlayerUtils.JUMP) + 1,
+                                PlayerUtils.getPotionLevel(player, PotionEffectUtils.JUMP) + 1,
                                 0
                         );
 

@@ -9,7 +9,7 @@ import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.math.MathHelper;
 import com.vagdedes.spartan.utils.math.RayUtils;
-import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
+import com.vagdedes.spartan.utils.minecraft.entity.PotionEffectUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -339,7 +339,7 @@ public class MCClient {
 
     public void jump() {
         float f = this.getJumpUpwardsMotion();
-        PotionEffect jumpEffect = this.p().spartanPlayer.getInstance().getPotionEffect(PlayerUtils.JUMP);
+        PotionEffect jumpEffect = this.p().spartanPlayer.getInstance().getPotionEffect(PotionEffectUtils.JUMP);
 
         if (jumpEffect != null) {
             f += 0.1F * (float) (jumpEffect.getAmplifier() + 1);
