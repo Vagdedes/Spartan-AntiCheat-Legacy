@@ -481,6 +481,7 @@ public class Speed extends CheckExecutor {
                 onDamage = true;
                 needToCheckAura = false;
                 ignoreP = true;
+                groundSwitches = 0;
                 // player.sendMessage(String.valueOf(horizontal));
             }
         } else if (object instanceof EntityDamageByEntityEvent) {
@@ -492,6 +493,8 @@ public class Speed extends CheckExecutor {
                 DataProcessor.getKeepSprint(damager.getUniqueId()).newHit();
                 DataProcessor.getKeepSprint(damager.getUniqueId()).setTimedOut(System.currentTimeMillis());
             }
+
+            groundSwitches = 0;
 
             needToCheckAura = false;
             double multi = 0.4;
