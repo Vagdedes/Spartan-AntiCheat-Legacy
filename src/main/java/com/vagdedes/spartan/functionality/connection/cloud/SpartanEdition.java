@@ -194,8 +194,8 @@ public class SpartanEdition {
                         + " Visit §n" + DiscordMemberCount.discordURL + "§r§c to fix this.";
             } else {
                 message = AwarenessNotifications.getNotification(
-                        versionNotificationMessage
-                                + (IDs.canAdvertise() ? "\nClick §n" + product + "§r§c to §lfix this§r§c." : "")
+                        (versionNotificationMessage
+                                + (IDs.canAdvertise() ? "\nClick §n" + product + "§r§c to §lfix this§r§c." : ""))
                                 .replace(type, dataType.toString())
                                 .replace(
                                         product,
