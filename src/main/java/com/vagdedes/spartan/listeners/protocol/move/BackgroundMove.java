@@ -92,7 +92,6 @@ public class BackgroundMove {
                         protocol.spartanPlayer.movement.refreshLocation(protocol.getLocation())
                 ));
             }
-            protocol.setOnGroundFrom(onGroundPacketLevel(event));
         }
     }
 

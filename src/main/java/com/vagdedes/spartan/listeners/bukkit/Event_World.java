@@ -43,6 +43,7 @@ public class Event_World implements Listener {
         Event_Chunks.cache(nb.getChunk(), true);
         SpartanBlock b = new SpartanBlock(nb);
         boolean cancelled = e.isCancelled();
+        p.movement.judgeGround();
 
         // Detections
         if (!ItemsAdder.is(nb)) {
