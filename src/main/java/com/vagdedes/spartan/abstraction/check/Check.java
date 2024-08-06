@@ -522,7 +522,7 @@ public class Check {
         } else if (!this.silent[dataType.ordinal()]) {
             return false;
         }
-        return world != null && isSilentOnWorld(world);
+        return world == null || isSilentOnWorld(world);
     }
 
     public boolean isSilentOnWorld(String world) {
