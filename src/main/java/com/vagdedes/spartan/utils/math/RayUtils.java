@@ -7,6 +7,7 @@ import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.minecraft.entity.AxisAlignedBB;
 import com.vagdedes.spartan.utils.minecraft.entity.MovingObjectPosition;
 import com.vagdedes.spartan.utils.minecraft.vector.Vec3;
+import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -194,7 +195,7 @@ public class RayUtils {
                 for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
                     SpartanBlock block = new SpartanLocation(world, x, y, z, 0.0f, 0.0f).getBlock();
 
-                    if (!block.material.isEmpty()) {
+                    if (BlockUtils.isSolid(block.material)) {
                         return true;
                     }
                 }
