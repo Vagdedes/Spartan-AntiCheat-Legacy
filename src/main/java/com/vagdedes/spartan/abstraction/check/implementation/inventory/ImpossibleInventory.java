@@ -9,7 +9,7 @@ import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockPatternUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
-import com.vagdedes.spartan.utils.minecraft.world.MaterialUtils;
+import com.vagdedes.spartan.utils.minecraft.inventory.MaterialUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.ClickType;

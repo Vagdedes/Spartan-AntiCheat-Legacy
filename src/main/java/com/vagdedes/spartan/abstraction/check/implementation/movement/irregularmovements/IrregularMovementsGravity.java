@@ -9,6 +9,7 @@ import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PotionEffectUtils;
+import com.vagdedes.spartan.utils.minecraft.inventory.MaterialUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockPatternUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import com.vagdedes.spartan.utils.minecraft.world.GroundUtils;
@@ -20,6 +21,10 @@ import java.util.Collection;
 import java.util.List;
 
 public class IrregularMovementsGravity extends DetectionExecutor {
+
+    private static final Material MACE = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_20)
+            ? MaterialUtils.findMaterial("MACE")
+            : null;
 
     private boolean ignore, sensitive;
 
@@ -233,14 +238,14 @@ public class IrregularMovementsGravity extends DetectionExecutor {
     }
 
     private boolean isUsingMace() {
-        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_20)) {
+        if (MACE != null) {
             Collection<SpartanPlayerDamage> damages = player.getDealtDamages();
 
             if (!damages.isEmpty()) {
                 for (SpartanPlayerDamage damage : damages) {
                     if (damage.timePassed() <= (TPS.tickTime * TPS.maximum * 3)
-                            && (player.getItemInHand().getType() == Material.MACE
-                            || player.getInventory().getItemInOffHand().getType() == Material.MACE)) {
+                            && (player.getItemInHand().getType() == MACE
+                            || player.getInventory().getItemInOffHand().getType() == MACE)) {
                         return true;
                     }
                 }

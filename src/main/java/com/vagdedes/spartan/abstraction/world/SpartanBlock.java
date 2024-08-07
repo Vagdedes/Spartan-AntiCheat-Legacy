@@ -2,7 +2,7 @@ package com.vagdedes.spartan.abstraction.world;
 
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
-import com.vagdedes.spartan.utils.minecraft.world.MaterialUtils;
+import com.vagdedes.spartan.utils.minecraft.inventory.MaterialUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
