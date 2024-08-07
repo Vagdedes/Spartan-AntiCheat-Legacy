@@ -25,6 +25,9 @@ public class Simulation extends CheckExecutor {
 
     @Override
     public void handleInternal(boolean cancelled, Object object) {
+        if (true) {
+            return;
+        }
         SpartanProtocol protocol = SpartanBukkit.getProtocol(player.uuid);
         MCClient client = Join.getContainer().get(player.uuid);
 
