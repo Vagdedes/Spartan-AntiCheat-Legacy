@@ -247,23 +247,23 @@ public class MCClient {
         // Start of Velocity handle
         MotionVector velocityMotionMC = (this.velocityQuery == null) ? null : this.velocityQuery.cloneVector();
         MotionVector velocityMotionOT = (this.velocityQuery == null) ? null : this.motion.addWithClone(velocityQuery.getX(), velocityQuery.getY(), velocityQuery.getZ());
-
+        if (keyBind.isFull() && velocityMotionMC != null
+                        && velocityMotionOT != null && (checkCollide() || onAir < 3)) {
+            velocityMotionMC.add(0, 0.42, 0);
+            velocityMotionOT.add(0, 0.42, 0);
+        }
         if (velocityMotionMC != null && currentMotion.compare(velocityMotionMC)) {
             this.setMotion(velocityMotionMC);
-            this.verifiedMotion = velocityMotionMC;
             this.velocityQuery = null;
         } else if (velocityMotionOT != null && currentMotion.compare(velocityMotionOT)) {
             this.setMotion(velocityMotionOT);
-            this.verifiedMotion = velocityMotionOT;
             this.velocityQuery = null;
-        } else if (verifiedPacket > 2 && velocityQuery != null) {
+        } else if (verifiedPacket > 3 && velocityQuery != null) {
             this.setMotion(velocityMotionMC);
-            this.verifiedMotion = velocityMotionMC;
             this.velocityQuery = null;
             this.verifiedPacket = 0;
-        } else if (keyBind.isNone() && velocityQuery != null) {
+        } else if (keyBind.isNone() && keyBind.isFull() && velocityQuery != null) {
             this.setMotion(velocityMotionMC);
-            this.verifiedMotion = velocityMotionMC;
         }
 
         /*
