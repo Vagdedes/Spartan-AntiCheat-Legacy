@@ -2,6 +2,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.simulatio
 
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
+import com.vagdedes.spartan.utils.math.RayUtils;
 import org.bukkit.Location;
 
 public class MotionVector {
@@ -122,6 +123,10 @@ public class MotionVector {
 
     public double lengthSquared() {
         return this.x * this.x + this.y * this.y + this.z * this.z;
+    }
+
+    public boolean compare(MotionVector vector) {
+        return RayUtils.scaleVal(vector.y, 2) == RayUtils.scaleVal(this.y, 2);
     }
 }
 

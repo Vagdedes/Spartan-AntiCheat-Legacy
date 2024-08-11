@@ -24,11 +24,14 @@ public class MCClient {
 
     public float jumpMovementFactor;
     public int onAir, onGroundTicks;
+    public long lastPacketTime;
     public SpartanProtocol protocol;
     public org.bukkit.util.Vector veloClaim;
     private final List<MotionVector> predicted;
     public boolean isAirBorne, isJumping;
     public MotionVector motion;
+    public MotionVector velocityQuery = null;
+    public int verifiedPacket;
     public MotionVector verifiedMotion;
     private final List<MotionVector> vectors = new ArrayList<>();
     private final List<KeyBind> binds = new ArrayList<>();
@@ -58,6 +61,8 @@ public class MCClient {
         this.jumpMovementFactor = 0.0F;
         this.predicted = new ArrayList<>();
         this.verifiedMotion = new MotionVector(0, 0, 0);
+        this.verifiedPacket = 0;
+        this.lastPacketTime = System.currentTimeMillis();
         double[] values = {0.9800000190734863, 0.2940000295639038};
 
         for (double x : values) {
@@ -88,13 +93,9 @@ public class MCClient {
         this.predicted.clear();
         preTick(new MotionVector(dx, dy, dz));
         for (KeyBind bind : binds) {
-            if (veloClaim != null) {
-                this.predicted.add(this.verifiedMotion);
-            } else {
-                this.motion = this.verifiedMotion.cloneVector();
-                tick(bind, new MotionVector(dx, dy, dz));
-                this.predicted.add(this.motion);
-            }
+            this.motion = this.verifiedMotion.cloneVector();
+            tick(bind, new MotionVector(dx, dy, dz));
+            this.predicted.add(this.motion);
         }
         veloClaim = null;
     }
@@ -243,6 +244,28 @@ public class MCClient {
             }
         }
 
+        // Start of Velocity handle
+        MotionVector velocityMotionMC = (this.velocityQuery == null) ? null : this.velocityQuery.cloneVector();
+        MotionVector velocityMotionOT = (this.velocityQuery == null) ? null : this.motion.addWithClone(velocityQuery.getX(), velocityQuery.getY(), velocityQuery.getZ());
+
+        if (velocityMotionMC != null && currentMotion.compare(velocityMotionMC)) {
+            this.setMotion(velocityMotionMC);
+            this.verifiedMotion = velocityMotionMC;
+            this.velocityQuery = null;
+        } else if (velocityMotionOT != null && currentMotion.compare(velocityMotionOT)) {
+            this.setMotion(velocityMotionOT);
+            this.verifiedMotion = velocityMotionOT;
+            this.velocityQuery = null;
+        } else if (verifiedPacket > 2 && velocityQuery != null) {
+            this.setMotion(velocityMotionMC);
+            this.verifiedMotion = velocityMotionMC;
+            this.velocityQuery = null;
+            this.verifiedPacket = 0;
+        } else if (keyBind.isNone() && velocityQuery != null) {
+            this.setMotion(velocityMotionMC);
+            this.verifiedMotion = velocityMotionMC;
+        }
+
         /*
         Specify actions
         Like collision
@@ -360,8 +383,12 @@ public class MCClient {
     }
 
     public void claimVelocity(org.bukkit.util.Vector velocity) {
-        this.verifiedMotion.set(velocity.getX(), velocity.getY(), velocity.getZ());
+        this.velocityQuery = new MotionVector(velocity.getX(), velocity.getY(), velocity.getZ());
         this.veloClaim = velocity;
+        this.verifiedPacket = 0;
+    }
+    private void debug(String msg) {
+        this.p().player.sendMessage(msg);
     }
 
 }

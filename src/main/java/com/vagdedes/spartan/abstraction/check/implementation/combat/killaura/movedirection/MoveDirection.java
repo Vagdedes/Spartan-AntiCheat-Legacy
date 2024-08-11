@@ -16,7 +16,6 @@ import java.util.UUID;
 import static java.lang.Math.PI;
 
 public class MoveDirection extends DetectionExecutor {
-
     private AttackHandle attackHandle;
     private final LinkedList<AttackData> aimAnalysis;
     private float vl;
