@@ -7,6 +7,7 @@ import com.vagdedes.spartan.abstraction.player.SpartanPotionEffect;
 import com.vagdedes.spartan.abstraction.world.SpartanBlock;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
+import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.math.RayLine;
@@ -15,6 +16,7 @@ import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PotionEffectUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import me.vagdedes.spartan.system.Enums;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
@@ -546,14 +548,16 @@ public class Speed extends CheckExecutor {
             groundSwitches = 0;
             multiplyGround = 0;
             ignoreP = false;
-        } else if (object == SpeedAction.RIPTIDE) {
-            newRayRequest = true;
-            wrappedOnAir = 1;
-            if (multiply < 9.5D) multiply = 9.5D;
-        } else if (object == SpeedAction.RIPTIDE_UNSAFE) {
-            newRayRequest = true;
-            wrappedOnAir = 1;
-            if (multiply < 36D) multiply = 36D;
+        } else if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
+            if (object == Material.TRIDENT) {
+                newRayRequest = true;
+                wrappedOnAir = 1;
+                if (multiply < 9.5D) multiply = 9.5D;
+            } else {
+                newRayRequest = true;
+                wrappedOnAir = 1;
+                if (multiply < 36D) multiply = 36D;
+            }
         }
     }
 

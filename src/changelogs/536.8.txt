@@ -3,3 +3,4 @@
 [#] Improved the suspicion notifications with better discord webhooks
 [#] Fixed a MACE material console error caused by the material missing.
 [#] Notifications, preventions & punishments will now take place more accurately.
+[#] Removed Speed check code that was outside of its responsible class.
