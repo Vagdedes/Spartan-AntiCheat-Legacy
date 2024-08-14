@@ -91,12 +91,17 @@ public class LiveViolation {
                     this.performNotification(playerViolation, information);
                     this.performPunishments();
                     this.prevention = newPrevention;
-                    this.prevention.canPrevent =
-                            !hackType.getCheck().isSilent(player.dataType, player.getWorld().getName())
-                                    && (silentCause == null
-                                    || silentCause.hasExpired()
-                                    || !silentCause.pointerMatches(information))
-                                    && player.protocol.getProfile().evidence.get(this.hackType) >= PlayerEvidence.prevention;
+
+                    if (!hackType.getCheck().isSilent(player.dataType, player.getWorld().getName())
+                            && (silentCause == null
+                            || silentCause.hasExpired()
+                            || !silentCause.pointerMatches(information))) {
+                        PlayerEvidence.EvidenceDetails details = player.protocol.getProfile().evidence.get(this.hackType);
+                        this.prevention.canPrevent = details.probability >= PlayerEvidence.preventionProbability
+                                && details.meanRatio() >= PlayerEvidence.preventionRatio;
+                    } else {
+                        this.prevention.canPrevent = false;
+                    }
                 };
 
                 if (!event || SpartanBukkit.isSynchronised()) {
@@ -243,7 +248,10 @@ public class LiveViolation {
             List<String> commands = Config.settings.getPunishmentCommands();
 
             if (!commands.isEmpty()) {
-                Collection<Enums.HackType> detectedHacks = player.protocol.getProfile().evidence.getKnowledgeList(PlayerEvidence.punishment);
+                Collection<Enums.HackType> detectedHacks = player.protocol.getProfile().evidence.getKnowledgeList(
+                        PlayerEvidence.punishmentProbability,
+                        PlayerEvidence.punishmentRatio
+                );
                 detectedHacks.removeIf(loopHackType -> !loopHackType.getCheck().canPunish(player.dataType));
 
                 if (!detectedHacks.isEmpty()) {
@@ -371,21 +379,27 @@ public class LiveViolation {
     }
 
     public boolean canSendNotification(Object detected) {
-        boolean player = detected instanceof SpartanPlayer;
+        if (this.notifications.canDo("")) {
+            boolean player = detected instanceof SpartanPlayer;
+            PlayerEvidence.EvidenceDetails details;
 
-        if (this.notifications.canDo("")
-                && (player
-                ? ((SpartanPlayer) detected).protocol.getProfile().evidence.get(this.hackType)
-                : ResearchEngine.getPlayerProfile(detected.toString()).evidence.get(this.hackType))
-                >= PlayerEvidence.notification) {
-            int ticks = this.getNotificationTicksCooldown(
-                    player ? (SpartanPlayer) detected : null
-            );
-
-            if (ticks > 0) {
-                this.notifications.add("", ticks);
+            if (player) {
+                details = ((SpartanPlayer) detected).protocol.getProfile().evidence.get(this.hackType);
+            } else {
+                details = ResearchEngine.getPlayerProfile(detected.toString()).evidence.get(this.hackType);
             }
-            return true;
+
+            if (details.probability >= PlayerEvidence.notificationProbability
+                    && details.meanRatio() >= PlayerEvidence.notificationRatio) {
+                int ticks = this.getNotificationTicksCooldown(
+                        player ? (SpartanPlayer) detected : null
+                );
+
+                if (ticks > 0) {
+                    this.notifications.add("", ticks);
+                }
+                return true;
+            }
         }
         return false;
     }

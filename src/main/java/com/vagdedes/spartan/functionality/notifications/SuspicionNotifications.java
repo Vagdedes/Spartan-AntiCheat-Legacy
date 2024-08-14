@@ -44,7 +44,10 @@ public class SuspicionNotifications {
         int size = 0, commaLength = comma.length();
 
         for (SpartanPlayer player : online) {
-            Collection<Enums.HackType> list = player.protocol.getProfile().evidence.getKnowledgeList(PlayerEvidence.notification);
+            Collection<Enums.HackType> list = player.protocol.getProfile().evidence.getKnowledgeList(
+                    PlayerEvidence.notificationProbability,
+                    PlayerEvidence.notificationRatio
+            );
 
             if (!list.isEmpty()) {
                 StringBuilder evidence = new StringBuilder();

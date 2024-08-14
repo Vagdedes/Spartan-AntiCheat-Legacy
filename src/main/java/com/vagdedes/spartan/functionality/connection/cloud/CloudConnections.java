@@ -145,7 +145,7 @@ public class CloudConnections {
         StringBuilder value = new StringBuilder();
 
         for (PlayerProfile playerProfile : ResearchEngine.getPlayerProfiles()) {
-            if (playerProfile.evidence.has(PlayerEvidence.prevention)) {
+            if (playerProfile.evidence.has(PlayerEvidence.preventionProbability, PlayerEvidence.preventionRatio)) {
                 SpartanPlayer player = playerProfile.getSpartanPlayer();
                 boolean isNull = player == null;
 
