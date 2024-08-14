@@ -2,3 +2,4 @@
 [#] Fixed a console error caused by missing class method.
 [#] Improved the suspicion notifications with better discord webhooks
 [#] Fixed a MACE material console error caused by the material missing.
+[#] Notifications, preventions & punishments will now take place more accurately.

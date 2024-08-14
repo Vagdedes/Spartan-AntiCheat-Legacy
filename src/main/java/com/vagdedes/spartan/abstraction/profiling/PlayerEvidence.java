@@ -11,9 +11,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public class PlayerEvidence {
 
     public static double
-            notification = 0.25,
-            prevention = 2.0 / 3.0,
-            punishment = 0.9;
+            notification = 0.5,
+            prevention = 0.75,
+            punishment = 0.95;
 
     private final Map<Enums.HackType, Double> probability; // Live object is used for synchronization
 
