@@ -98,7 +98,7 @@ public class LiveViolation {
                             || !silentCause.pointerMatches(information))) {
                         PlayerEvidence.EvidenceDetails details = player.protocol.getProfile().evidence.get(this.hackType);
                         this.prevention.canPrevent = details.probability >= PlayerEvidence.preventionProbability
-                                && details.meanRatio() >= PlayerEvidence.preventionRatio;
+                                && details.surpassesMeanByRatio(PlayerEvidence.preventionRatio);
                     } else {
                         this.prevention.canPrevent = false;
                     }
@@ -390,7 +390,7 @@ public class LiveViolation {
             }
 
             if (details.probability >= PlayerEvidence.notificationProbability
-                    && details.meanRatio() >= PlayerEvidence.notificationRatio) {
+                    && details.surpassesMeanByRatio(PlayerEvidence.notificationRatio)) {
                 int ticks = this.getNotificationTicksCooldown(
                         player ? (SpartanPlayer) detected : null
                 );

@@ -540,7 +540,8 @@ public class ResearchEngine {
                                         hackType,
                                         probability,
                                         mean,
-                                        self
+                                        self,
+                                        true
                                 );
                             }
                         }
@@ -575,7 +576,8 @@ public class ResearchEngine {
                                                 hackType,
                                                 probability,
                                                 mean,
-                                                self
+                                                self,
+                                                false
                                         );
                                     }
                                 }

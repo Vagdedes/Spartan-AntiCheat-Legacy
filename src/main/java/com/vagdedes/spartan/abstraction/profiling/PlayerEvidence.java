@@ -14,15 +14,20 @@ public class PlayerEvidence {
 
         public final double probability;
         private final double mean, self;
+        private final boolean positive;
 
-        private EvidenceDetails(double probability, double mean, double self) {
+        private EvidenceDetails(double probability, double mean, double self, boolean positive) {
             this.probability = probability;
             this.mean = mean;
             this.self = self;
+            this.positive = positive;
         }
 
-        public double meanRatio() {
-            return this.self / this.mean;
+        public boolean surpassesMeanByRatio(double required) {
+            double ratio = this.self / this.mean;
+            return positive
+                    ? ratio >= required
+                    : ratio <= (1 / required);
         }
     }
 
@@ -45,7 +50,7 @@ public class PlayerEvidence {
     public EvidenceDetails get(Enums.HackType hackType) {
         return this.probability.getOrDefault(
                 hackType,
-                new EvidenceDetails(0.0, 0.0, 0.0)
+                new EvidenceDetails(0.0, 0.0, 0.0, false)
         );
     }
 
@@ -57,11 +62,12 @@ public class PlayerEvidence {
         this.probability.remove(hackType);
     }
 
-    public void add(Enums.HackType hackType, double probability, double mean, double self) {
+    public void add(Enums.HackType hackType, double probability, double mean, double self, boolean positive) {
         this.probability.put(hackType, new EvidenceDetails(
                 probability,
                 mean,
-                self
+                self,
+                positive
         ));
     }
 
@@ -73,7 +79,7 @@ public class PlayerEvidence {
         } else {
             for (Map.Entry<Enums.HackType, EvidenceDetails> entry : this.probability.entrySet()) {
                 if (entry.getValue().probability >= threshold
-                        && entry.getValue().meanRatio() >= meanRatio) {
+                        && entry.getValue().surpassesMeanByRatio(meanRatio)) {
                     return true;
                 }
             }
@@ -89,7 +95,7 @@ public class PlayerEvidence {
 
             for (Map.Entry<Enums.HackType, EvidenceDetails> entry : this.probability.entrySet()) {
                 if (entry.getValue().probability >= threshold
-                        && entry.getValue().meanRatio() >= meanRatio) {
+                        && entry.getValue().surpassesMeanByRatio(meanRatio)) {
                     set.add(entry.getKey());
                 }
             }
@@ -105,7 +111,7 @@ public class PlayerEvidence {
 
             for (Map.Entry<Enums.HackType, EvidenceDetails> entry : this.probability.entrySet()) {
                 if (entry.getValue().probability >= threshold
-                        && entry.getValue().meanRatio() >= meanRatio) {
+                        && entry.getValue().surpassesMeanByRatio(meanRatio)) {
                     set.add(entry);
                 }
             }
