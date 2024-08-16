@@ -498,7 +498,7 @@ public class ResearchEngine {
                 for (Enums.HackType hackType : (force
                         ? Arrays.asList(Enums.HackType.values())
                         : violationFired.keySet())) {
-                    Map<PlayerProfile, int[]> wave = new LinkedHashMap<>();
+                    Map<PlayerProfile, double[]> wave = new LinkedHashMap<>();
 
                     for (PlayerProfile profile : profiles) {
                         ViolationHistory violationHistory = profile.getViolationHistory(
@@ -509,18 +509,18 @@ public class ResearchEngine {
                         if (!violationHistory.isEmpty()) {
                             wave.put(
                                     profile,
-                                    new int[]{
-                                            violationHistory.getIncreaseSum(),
-                                            violationHistory.getTimeDifferenceSum()
+                                    new double[]{
+                                            violationHistory.getViolationIncrease(),
+                                            violationHistory.getTimeDifference()
                                     }
                             );
                         }
                     }
 
                     if (!wave.isEmpty()) {
-                        int sum = 0, squareSum = 0;
+                        double sum = 0, squareSum = 0;
 
-                        for (int[] value : wave.values()) {
+                        for (double[] value : wave.values()) {
                             sum += value[0];
                             squareSum += value[0] * value[0];
                         }
@@ -528,7 +528,7 @@ public class ResearchEngine {
                                 mean = sum / divisor,
                                 deviation = Math.sqrt(squareSum / divisor);
 
-                        for (Map.Entry<PlayerProfile, int[]> entryChild : wave.entrySet()) {
+                        for (Map.Entry<PlayerProfile, double[]> entryChild : wave.entrySet()) {
                             PlayerProfile profile = entryChild.getKey();
                             double self = entryChild.getValue()[0],
                                     probability = StatisticsMath.getCumulativeProbability(
@@ -554,14 +554,14 @@ public class ResearchEngine {
                             sum = 0;
                             squareSum = 0;
 
-                            for (int[] value : wave.values()) {
+                            for (double[] value : wave.values()) {
                                 sum += value[1];
                                 squareSum += value[1] * value[1];
                             }
                             mean = sum / divisor;
                             deviation = Math.sqrt(squareSum / divisor);
 
-                            for (Map.Entry<PlayerProfile, int[]> entryChild : wave.entrySet()) {
+                            for (Map.Entry<PlayerProfile, double[]> entryChild : wave.entrySet()) {
                                 PlayerProfile profile = entryChild.getKey();
                                 double self = entryChild.getValue()[1],
                                         probability = StatisticsMath.getCumulativeProbability(
