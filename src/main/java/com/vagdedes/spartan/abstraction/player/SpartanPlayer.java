@@ -23,7 +23,6 @@ import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
-import com.vagdedes.spartan.functionality.tracking.Elytra;
 import com.vagdedes.spartan.listeners.bukkit.chunks.Event_Chunks;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -114,18 +113,12 @@ public class SpartanPlayer {
                     entities.clear();
                 }
                 for (SpartanPlayer p : players) {
-                    p.movement.judgeGround();
-
-                    if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
-                        Elytra.judge(p, false);
+                    if (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
+                        SpartanBukkit.runTask(p, () -> {
+                            p.setStoredPotionEffects(p.getInstance().getActivePotionEffects());
+                        });
                     }
-                    // Separator
                     p.movement.schedulerFrom = p.movement.getLocation();
-
-                    // Separator
-                    SpartanBukkit.runTask(p, () -> {
-                        p.setStoredPotionEffects(p.getInstance().getActivePotionEffects()); // Bad
-                    });
                 }
             }
         }, 1L, 1L);
