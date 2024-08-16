@@ -9,3 +9,5 @@
 [#] Made part of the Exploits elytra detection a protection instead of a detection.
 [+] Added has-account notification to help users get better access to our systems.
 [+] Improved the tab completion of the plugin with more commands loaded.
+[+] Implemented panic mode command for managing silent mode and check punishments for players.
+[+] KillAura "BlockRaytrace" check (hitting through block)
