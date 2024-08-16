@@ -9,3 +9,4 @@
 [#] Made part of the Exploits elytra detection a protection instead of a detection.
 [+] Added has-account notification to help users get better access to our systems.
 [+] Improved the tab completion of the plugin with more commands loaded.
+[+] KillAura "BlockRaytrace" check (through block hitting)
