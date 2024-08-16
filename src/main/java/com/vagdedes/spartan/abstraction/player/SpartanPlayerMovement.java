@@ -175,13 +175,9 @@ public class SpartanPlayerMovement {
     }
 
     public boolean isWalkJumping(double vertical) {
-        return !this.isSprinting()
+        return !this.parent.protocol.isSprinting()
                 && this.getValueOrDefault(this.getEventDistance(), 0.0) > 0.0
                 && this.justJumped(vertical);
-    }
-
-    public boolean isSneaking() {
-        return this.parent.protocol.isSneaking();
     }
 
     public boolean isFlying() {
@@ -196,12 +192,8 @@ public class SpartanPlayerMovement {
 
     // Separator
 
-    public boolean isSprinting() {
-        return this.parent.protocol.isSprinting();
-    }
-
     public boolean isSprintJumping(double vertical) {
-        return this.isSprinting() && this.isJumping(vertical);
+        return this.parent.protocol.isSprinting() && this.isJumping(vertical);
     }
 
     // Separator

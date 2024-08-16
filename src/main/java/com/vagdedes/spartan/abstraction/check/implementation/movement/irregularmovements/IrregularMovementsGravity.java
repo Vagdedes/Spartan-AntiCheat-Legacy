@@ -124,7 +124,7 @@ public class IrregularMovementsGravity extends DetectionExecutor {
             if (climb) {
                 if (vertical == 0.0 && oldVertical == 0.0) {
                     if (!player.isOnGround(to, true)
-                            && !player.movement.isSneaking()
+                            && !player.protocol.isSneaking()
                             && player.getNearbyEntities(1.0, 1.0, 1.0).isEmpty()
                             && !BlockPatternUtils.isBlockPattern(
                             new double[]{

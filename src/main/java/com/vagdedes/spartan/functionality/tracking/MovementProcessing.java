@@ -11,9 +11,9 @@ import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.minecraft.entity.CombatUtils;
+import com.vagdedes.spartan.utils.minecraft.inventory.MaterialUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import com.vagdedes.spartan.utils.minecraft.world.GroundUtils;
-import com.vagdedes.spartan.utils.minecraft.inventory.MaterialUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 

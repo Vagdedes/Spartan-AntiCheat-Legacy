@@ -7,9 +7,9 @@ import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
+import com.vagdedes.spartan.utils.minecraft.inventory.MaterialUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockPatternUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
-import com.vagdedes.spartan.utils.minecraft.inventory.MaterialUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.ClickType;
@@ -111,10 +111,10 @@ public class ImpossibleInventory extends CheckExecutor {
         } else {
             Check check = hackType.getCheck();
             return check.getBooleanOption("check_sneaking", true)
-                    && player.movement.isSneaking() ? 1
+                    && player.protocol.isSneaking() ? 1
                     : !MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_15)
                     && check.getBooleanOption("check_sprinting", true)
-                    && player.movement.isSprinting() ? 2
+                    && player.protocol.isSprinting() ? 2
                     : check.getBooleanOption("check_sleeping", true)
                     && player.getInstance().isSleeping() ? 3
                     : check.getBooleanOption("check_dead", true)
