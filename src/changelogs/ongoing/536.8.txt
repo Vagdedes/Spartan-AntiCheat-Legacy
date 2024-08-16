@@ -7,3 +7,4 @@
 [-] Removed redundant code from classes related to the player.
 [#] Improved the base functionality of the plugin by improving the input of abstractions.
 [#] Made part of the Exploits elytra detection a protection instead of a detection.
+[+] Added has-account notification to help users get better access to our systems.
