@@ -93,7 +93,7 @@ public class KillAura extends CheckExecutor {
                 );
                 runDetection(
                         "check_block_raytrace",
-                        blockRaytrace::runDamage
+                        () -> blockRaytrace.runDamage(target)
                 );
                 runDetection(
                         "check_entity_raytrace",
