@@ -16,7 +16,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 public class GhostHand extends CheckExecutor {
 
     public GhostHand(HackType hackType, SpartanPlayer player) {
-        super(hackType, player, 0, false);
+        super(hackType, player, 0, false, false);
     }
 
     @Override

@@ -13,7 +13,6 @@ import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
-import com.vagdedes.spartan.listeners.bukkit.Event_Movement;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Location;
@@ -120,8 +119,9 @@ public class Shared {
         }
         MovementProcessing.run(p, to, ver, box);
 
-        for (Enums.HackType hackType : Event_Movement.handledChecks) {
-            if (p.getViolations(hackType).prevent()) {
+        for (Enums.HackType hackType : Enums.HackType.values()) {
+            if (p.getExecutor(hackType).scheduledPrevention
+                    && p.getViolations(hackType).prevent()) {
                 break;
             }
         }

@@ -13,7 +13,7 @@ public class AutoRespawn extends CheckExecutor {
     private long memory;
 
     public AutoRespawn(HackType hackType, SpartanPlayer player) {
-        super(hackType, player, 0, true);
+        super(hackType, player, 0, true, false);
         this.memory = 0L;
     }
 

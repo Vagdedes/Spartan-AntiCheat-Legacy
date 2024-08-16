@@ -530,14 +530,18 @@ public class ResearchEngine {
 
                         for (Map.Entry<PlayerProfile, int[]> entryChild : wave.entrySet()) {
                             PlayerProfile profile = entryChild.getKey();
-                            double probability = StatisticsMath.getCumulativeProbability(
-                                    (entryChild.getValue()[0] - mean) / deviation
-                            );
+                            double self = entryChild.getValue()[0],
+                                    probability = StatisticsMath.getCumulativeProbability(
+                                            (self - mean) / deviation
+                                    );
 
-                            if (probability > profile.evidence.get(hackType)) {
+                            if (probability > profile.evidence.get(hackType).probability) {
                                 profile.evidence.add(
                                         hackType,
-                                        probability
+                                        probability,
+                                        mean,
+                                        self,
+                                        true
                                 );
                             }
                         }
@@ -559,17 +563,21 @@ public class ResearchEngine {
 
                             for (Map.Entry<PlayerProfile, int[]> entryChild : wave.entrySet()) {
                                 PlayerProfile profile = entryChild.getKey();
-                                double probability = StatisticsMath.getCumulativeProbability(
-                                        (entryChild.getValue()[1] - mean) / deviation
-                                );
+                                double self = entryChild.getValue()[1],
+                                        probability = StatisticsMath.getCumulativeProbability(
+                                                (self - mean) / deviation
+                                        );
 
                                 if (probability < 0.0) {
                                     probability = 0.0 - probability;
 
-                                    if (probability > profile.evidence.get(hackType)) {
+                                    if (probability > profile.evidence.get(hackType).probability) {
                                         profile.evidence.add(
                                                 hackType,
-                                                probability
+                                                probability,
+                                                mean,
+                                                self,
+                                                false
                                         );
                                     }
                                 }
@@ -583,8 +591,8 @@ public class ResearchEngine {
         if (playerProfiles.size() < TPS.maximum) {
             String message = AwarenessNotifications.getOptionalNotification(
                     "The plugin has not yet collected enough data."
-                    + " This problem is normal and will be resolved as more players join your server."
-                    + " Due to the limited data, certain checks may not notify, prevent or punish players."
+                            + " This problem is normal and will be resolved as more players join your server."
+                            + " Due to the limited data, certain checks may not notify, prevent or punish players."
             );
 
             if (message != null) {

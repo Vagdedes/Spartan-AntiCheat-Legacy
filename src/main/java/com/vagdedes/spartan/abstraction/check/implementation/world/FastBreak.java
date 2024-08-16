@@ -15,8 +15,8 @@ import com.vagdedes.spartan.compatibility.manual.entity.Vehicles;
 import com.vagdedes.spartan.functionality.connection.Latency;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
-import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import com.vagdedes.spartan.utils.minecraft.inventory.MaterialUtils;
+import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -37,7 +37,7 @@ public class FastBreak extends CheckExecutor {
             individualSurroundingsPerSecondBuffer;
 
     public FastBreak(HackType hackType, SpartanPlayer player) {
-        super(hackType, player, 0, false);
+        super(hackType, player, 0, false, false);
         this.interactTime = new LinkedHashMap<>();
         this.breaksPerSecondBuffer = new Buffer.IndividualBuffer();
         this.individualSurroundingsPerSecondBuffer = new Buffer.IndividualBuffer();

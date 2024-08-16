@@ -7,6 +7,7 @@ import com.vagdedes.spartan.abstraction.player.SpartanPotionEffect;
 import com.vagdedes.spartan.abstraction.world.SpartanBlock;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
+import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.math.RayLine;
@@ -15,6 +16,7 @@ import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PotionEffectUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import me.vagdedes.spartan.system.Enums;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
@@ -87,7 +89,7 @@ public class Speed extends CheckExecutor {
             multiply;
 
     public Speed(Enums.HackType hackType, SpartanPlayer player) {
-        super(hackType, player, 0, false);
+        super(hackType, player, 0, false, true);
     }
 
     @Override
@@ -263,7 +265,7 @@ public class Speed extends CheckExecutor {
             limit += ((speedEffect != null) ? (speedEffect.bukkitEffect.getAmplifier() + 1) * 0.2D : 0);
             limit += (collideMinecraftShitMathFactor ? 0.05 : 0);
             limit = RayUtils.scaleVal(limit * (1 + multiply), 2);
-            double wrapLimit = !player.movement.isSprinting() ? RayUtils.scaleVal(limit / 1.2, 2) : limit;
+            double wrapLimit = !player.protocol.isSprinting() ? RayUtils.scaleVal(limit / 1.2, 2) : limit;
             ticksOnGround = 0;
             if (horizontal > limit) {
                 antiAbuseProcessor = (int) (antiAbuseProcessor + (60 * horizontal / limit));
@@ -276,7 +278,7 @@ public class Speed extends CheckExecutor {
                 }
             }
             if (horizontal > wrapLimit
-                    && DataProcessor.keepSprint.containsKey(player.uuid) && !player.movement.isSprinting()
+                    && DataProcessor.keepSprint.containsKey(player.uuid) && !player.protocol.isSprinting()
                     && !DataProcessor.getKeepSprint(player.uuid).isTimedOut() && !ignoreP) {
                 antiAbuseProcessor = antiAbuseProcessor + 25;
                 if (hackType.getCheck().getBooleanOption("check_keepsprint_silent", true)
@@ -312,7 +314,7 @@ public class Speed extends CheckExecutor {
                 boolean validPsychic = RayUtils.validRayLines(new RayLine(dx, dz), jumpRayLine, 35),
                         muchThanAllowedStrafe = horizontal > limit / 1.4,
                         muchThanAllowedRotation = horizontal > limit / 1.5;
-                if (!player.movement.isSprinting()) {
+                if (!player.protocol.isSprinting()) {
                     DataProcessor.getKeepSprint(player.uuid).sprint();
                 }
 
@@ -349,7 +351,7 @@ public class Speed extends CheckExecutor {
                     }
                 }
                 if (horizontal >= limitNonSprint && deltaYaw > 4 && horizontal < limitNonSprint * 1.15
-                        && !player.movement.isSprinting() && !ignoreBasicChecks
+                        && !player.protocol.isSprinting() && !ignoreBasicChecks
                         && speedModify < 1.0 && checkDirection && !ignoreP) {
                     double calcDiff = RayUtils.scaleVal(RayUtils.calculateRayLines(a, b), 2);
                     if (calcDiff > 10 && !allowedAngle(calcDiff)) {
@@ -383,7 +385,7 @@ public class Speed extends CheckExecutor {
             double limitStraight = 0.3D * (speedMultiply) * ((speedModify > 0) ? 2 : 1);
             if (DataProcessor.keepSprint.containsKey(player.uuid)
                     && !DataProcessor.getKeepSprint(player.uuid).isTimedOut()
-                    && !player.movement.isSprinting()) {
+                    && !player.protocol.isSprinting()) {
                 sprintVl = sprintVl + 2;
 
                 if (sprintVl > 4) {
@@ -416,7 +418,7 @@ public class Speed extends CheckExecutor {
                 }
             }
             if (horizontal >= limit / 1.7
-                    && !player.movement.isSprinting()
+                    && !player.protocol.isSprinting()
                     && speedModify < 1.0) {
                 double calcDiff = RayUtils.scaleVal(RayUtils.calculateRayLines(a, b), 2);
                 if (calcDiff > 10 && !allowedAngle(calcDiff) && !ignoreP) {
@@ -546,14 +548,16 @@ public class Speed extends CheckExecutor {
             groundSwitches = 0;
             multiplyGround = 0;
             ignoreP = false;
-        } else if (object == SpeedAction.RIPTIDE) {
-            newRayRequest = true;
-            wrappedOnAir = 1;
-            if (multiply < 9.5D) multiply = 9.5D;
-        } else if (object == SpeedAction.RIPTIDE_UNSAFE) {
-            newRayRequest = true;
-            wrappedOnAir = 1;
-            if (multiply < 36D) multiply = 36D;
+        } else if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
+            if (object == Material.TRIDENT) {
+                newRayRequest = true;
+                wrappedOnAir = 1;
+                if (multiply < 9.5D) multiply = 9.5D;
+            } else {
+                newRayRequest = true;
+                wrappedOnAir = 1;
+                if (multiply < 36D) multiply = 36D;
+            }
         }
     }
 

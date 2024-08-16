@@ -60,7 +60,10 @@ public class PlayerInfo extends InventoryMenu {
             return false;
         } else {
             setTitle(player, menu + (isOnline ? target.spartanPlayer.name : profile.getName()));
-            Set<Map.Entry<HackType, Double>> evidenceDetails = profile.evidence.getKnowledgeEntries(0.0);
+            Set<Map.Entry<HackType, PlayerEvidence.EvidenceDetails>> evidenceDetails = profile.evidence.getKnowledgeEntries(
+                    0.0,
+                    0.0
+            );
             List<String> lore = new ArrayList<>();
             lore.add("");
 
@@ -68,13 +71,13 @@ public class PlayerInfo extends InventoryMenu {
                 lore.add("§7Certainty of cheating§8:");
                 Map<Double, HackType> map = new TreeMap<>(Collections.reverseOrder());
 
-                for (Map.Entry<HackType, Double> entry : evidenceDetails) {
-                    map.put(entry.getValue(), entry.getKey());
+                for (Map.Entry<HackType, PlayerEvidence.EvidenceDetails> entry : evidenceDetails) {
+                    map.put(entry.getValue().probability, entry.getKey());
                 }
                 for (Map.Entry<Double, HackType> entry : map.entrySet()) {
                     double probability = entry.getKey();
 
-                    if (probability < PlayerEvidence.prevention) {
+                    if (probability < PlayerEvidence.preventionProbability) {
                         lore.add(
                                 "§2" + entry.getValue().getCheck().getName()
                                         + "§8: §a" + AlgebraUtils.integerRound(probability * 100.0) + "%"

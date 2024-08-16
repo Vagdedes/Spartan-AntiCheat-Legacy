@@ -18,7 +18,7 @@ public class MorePackets extends CheckExecutor {
     private int buffer;
 
     public MorePackets(HackType hackType, SpartanPlayer player) {
-        super(hackType, player, 0, true);
+        super(hackType, player, 0, true, true);
         this.nmsMap = new LinkedHashMap<>((int) TPS.maximum + 1, 1.0f);
         this.buffer = 0;
     }
