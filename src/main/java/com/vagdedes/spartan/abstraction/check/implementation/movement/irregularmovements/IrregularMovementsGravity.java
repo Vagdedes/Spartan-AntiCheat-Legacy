@@ -44,7 +44,7 @@ public class IrregularMovementsGravity extends DetectionExecutor {
             List<Double> predictions = new ArrayList<>(5);
             boolean levitation = levitationLevel != -1,
                     slowFall = PlayerUtils.slowFall && player.hasPotionEffect(PotionEffectType.SLOW_FALLING, 0),
-                    liquid = player.movement.isInLiquids() || player.movement.wasInLiquids(),
+                    liquid = player.movement.isInLiquids() || player.movement.isInLiquids(),
                     climb = player.isFrozen() || canClimb(to) || canClimb(from),
                     web = BlockPatternUtils.isBlockPattern(
                             new double[][]{

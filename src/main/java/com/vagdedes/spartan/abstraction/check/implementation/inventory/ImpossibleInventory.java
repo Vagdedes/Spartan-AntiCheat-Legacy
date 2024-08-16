@@ -31,7 +31,7 @@ public class ImpossibleInventory extends CheckExecutor {
     private long autoTotem;
 
     public ImpossibleInventory(Enums.HackType hackType, SpartanPlayer player) {
-        super(hackType, player, 0, false);
+        super(hackType, player, 0, false, true);
     }
 
     @Override
@@ -106,7 +106,8 @@ public class ImpossibleInventory extends CheckExecutor {
     }
 
     private int getActionCase() {
-        if (player.movement.isFlying() || player.movement.isCrawling()) {
+        if (player.movement.isFlying()
+                || player.movement.isLowEyeHeight()) {
             return 0;
         } else {
             Check check = hackType.getCheck();

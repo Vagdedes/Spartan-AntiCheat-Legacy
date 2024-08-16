@@ -5,3 +5,4 @@
 [#] Notifications, preventions & punishments will now take place more accurately.
 [-] Removed Speed check code that was outside of its responsible class.
 [-] Removed redundant code from classes related to the player.
+[#] Improved the base functionality of the plugin by improving the input of abstractions.

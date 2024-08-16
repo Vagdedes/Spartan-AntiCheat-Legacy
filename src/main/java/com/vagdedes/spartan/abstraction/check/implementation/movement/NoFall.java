@@ -39,7 +39,7 @@ public class NoFall extends CheckExecutor {
     private boolean ignore;
 
     public NoFall(HackType hackType, SpartanPlayer player) {
-        super(hackType, player, 0, false);
+        super(hackType, player, 0, false, true);
         this.handleInternal(false, null);
     }
 
@@ -165,7 +165,7 @@ public class NoFall extends CheckExecutor {
                 BlockUtils.bed,
                 BlockUtils.liquid)
                 && !BlockPatternUtils.isBlockPattern(
-                        new double[]{
+                new double[]{
                         1,
                         -1,
                         1

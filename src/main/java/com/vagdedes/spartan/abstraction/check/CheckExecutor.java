@@ -10,13 +10,16 @@ import org.bukkit.GameMode;
 public abstract class CheckExecutor extends DetectionExecutor {
 
     protected final DetectionExecutor[] detections;
+    public final boolean scheduledPrevention;
     private boolean function;
     private Object scheduler;
 
-    public CheckExecutor(Enums.HackType hackType, SpartanPlayer player, int detections, boolean scheduler) {
+    public CheckExecutor(Enums.HackType hackType, SpartanPlayer player, int detections,
+                         boolean scheduler, boolean scheduledPrevention) {
         super(null, hackType, player);
         this.detections = new DetectionExecutor[detections];
         this.function = false;
+        this.scheduledPrevention = scheduledPrevention;
 
         if (scheduler) {
             this.scheduler = SpartanBukkit.runRepeatingTask(player, () -> {
@@ -34,6 +37,13 @@ public abstract class CheckExecutor extends DetectionExecutor {
                         scheduler();
                     } else {
                         cannotSchedule();
+                    }
+
+                    if (scheduledPrevention) {
+                        SpartanBukkit.runTask(
+                                this.player,
+                                () -> this.player.getViolations(hackType).prevent()
+                        );
                     }
                 }
             }, 1L, 1L);
