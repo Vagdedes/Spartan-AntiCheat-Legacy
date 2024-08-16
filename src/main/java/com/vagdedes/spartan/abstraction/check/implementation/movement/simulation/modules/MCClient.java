@@ -249,6 +249,7 @@ public class MCClient {
         MotionVector velocityMotionOT = (this.velocityQuery == null) ? null : this.motion.addWithClone(velocityQuery.getX(), velocityQuery.getY(), velocityQuery.getZ());
         if (keyBind.isFull() && velocityMotionMC != null
                         && velocityMotionOT != null && (checkCollide() || onAir < 3)) {
+            // Jumping after Velocity will cause value modifier
             velocityMotionMC.add(0, 0.42, 0);
             velocityMotionOT.add(0, 0.42, 0);
         }
@@ -260,6 +261,7 @@ public class MCClient {
             this.velocityQuery = null;
         } else if (verifiedPacket > 3 && velocityQuery != null) {
             this.setMotion(velocityMotionMC);
+            this.verifiedMotion = velocityMotionMC;
             this.velocityQuery = null;
             this.verifiedPacket = 0;
         } else if (keyBind.isNone() && keyBind.isFull() && velocityQuery != null) {
