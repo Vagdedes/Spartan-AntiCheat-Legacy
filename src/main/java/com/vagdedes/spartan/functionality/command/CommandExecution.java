@@ -97,6 +97,8 @@ public class CommandExecution implements CommandExecutor {
                                 "Click this command to open the plugin's inventory menu.");
                     }
                     if (manage) {
+                        ClickableMessage.sendCommand(sender, ChatColor.RED + "/" + command + " panic",
+                                "This command can be used to enable silent mode and disable punishments for all checks.", null);
                         ClickableMessage.sendCommand(sender, ChatColor.RED + "/" + command + " toggle <check>",
                                 "This command can be used to enable/disable a check and its detections.", null);
                     }
@@ -211,7 +213,18 @@ public class CommandExecution implements CommandExecutor {
             } else if (args.length == 1) {
                 if (isPlayer && args[0].equalsIgnoreCase("Menu")) {
                     InteractiveInventory.mainMenu.open(player);
+                } else if (args[0].equalsIgnoreCase("Panic")) {
+                    if (isPlayer && !Permissions.has(player, Permission.MANAGE)) {
+                        sender.sendMessage(Config.messages.getColorfulString("no_permission"));
+                        return true;
+                    }
+                    Check.panic = !Check.panic;
 
+                    if (Check.panic) {
+                        sender.sendMessage(Config.messages.getColorfulString("panic_mode_enable"));
+                    } else {
+                        sender.sendMessage(Config.messages.getColorfulString("panic_mode_disable"));
+                    }
                 } else if (args[0].equalsIgnoreCase("Moderation")) {
                     completeMessage(sender, args[0].toLowerCase());
 
