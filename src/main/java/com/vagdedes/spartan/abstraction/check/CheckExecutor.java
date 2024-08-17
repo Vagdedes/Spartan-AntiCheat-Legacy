@@ -297,7 +297,7 @@ public abstract class CheckExecutor extends DetectionExecutor {
 
     // Prevention
 
-    public boolean prevent() {
+    public final boolean prevent() {
         synchronized (this) {
             if (this.prevention.canPrevent
                     && !this.prevention.hasExpired()) {
