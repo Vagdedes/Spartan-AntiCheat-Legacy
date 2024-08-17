@@ -3,7 +3,6 @@ package com.vagdedes.spartan.abstraction.player;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
-import com.vagdedes.spartan.abstraction.check.LiveViolation;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.data.Clicks;
@@ -69,7 +68,6 @@ public class SpartanPlayer {
             damageReceived,
             damageDealt;
     private final CheckExecutor[] executors;
-    private final LiveViolation[] violations;
 
     private SpartanPlayerDamage
             lastDamageReceived,
@@ -164,17 +162,13 @@ public class SpartanPlayer {
 
         this.buffer = new Buffer();
         this.executors = new CheckExecutor[hackTypes.length];
-        this.violations = new LiveViolation[hackTypes.length];
 
         for (Enums.HackType hackType : hackTypes) {
-            int id = hackType.ordinal();
-            this.violations[id] = new LiveViolation(this, hackType);
-
             try {
                 CheckExecutor executor = (CheckExecutor) hackType.executor
                         .getConstructor(hackType.getClass(), this.getClass())
                         .newInstance(hackType, this);
-                this.executors[id] = executor;
+                this.executors[hackType.ordinal()] = executor;
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -241,12 +235,6 @@ public class SpartanPlayer {
         for (Trackers.TrackerType handlerType : Trackers.TrackerType.values()) {
             trackers.remove(handlerType);
         }
-    }
-
-    // Separator
-
-    public LiveViolation getViolations(Enums.HackType hackType) {
-        return violations[hackType.ordinal()];
     }
 
     // Separator
