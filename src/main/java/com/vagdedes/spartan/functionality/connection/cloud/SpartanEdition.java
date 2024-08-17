@@ -31,9 +31,17 @@ public class SpartanEdition {
     private static final String
             type = "{type}",
             product = "{product}",
-            versionNotificationMessage = "\n§cHey, just a heads up! You have " + type + " players which cannot be checked by the anti-cheat due to missing " + type + " detections.",
-            limitNotificationMessage = "\n§cHey, just a heads up! You have more online players than the anti-cheat can check at once."
-                    + "\nClick §n" + patreonURL + "§r§c to learn how §lDetection Slots §r§cwork.";
+            versionNotificationMessage = "\n§cHey, just a heads up!"
+                    + " You have " + type + " players which cannot be checked by the anti-cheat due to missing " + type + " detections.",
+            noVersionNotificationMessage = "\n§cHey, just a heads up!"
+                    + " Your owned editions of Spartan could not be verified."
+                    + " Visit §n" + DiscordMemberCount.discordURL + "§r§c §lfix this§r§c.",
+            limitNotificationMessage = "\n§cHey, just a heads up!"
+                    + " You have more online players than the anti-cheat can check at once."
+                    + " Click §n" + patreonURL + "§r§c to learn how §lDetection Slots §r§cwork.",
+            hasAccountNotificationMessage = "\n§cHey, just a heads up!"
+                    + " You do not seem to have an account paired with your Spartan AntiCheat license."
+                    + " Visit §n" + DiscordMemberCount.discordURL + "§r§c §lfix this§r§c.";
     private static boolean
             hasAccount = true,
             firstLoad = true,
@@ -119,9 +127,7 @@ public class SpartanEdition {
     public static void attemptNotifications(SpartanPlayer player) {
         if (!attemptVersionNotification(player) && !hasAccount) {
             String message = AwarenessNotifications.getNotification(
-                    "\n§cHey, just a heads up!"
-                            + " You do not seem to have an account paired with your Spartan AntiCheat license."
-                            + " Visit §n" + DiscordMemberCount.discordURL + "§r§c to fix this."
+                    hasAccountNotificationMessage
             );
 
             if (AwarenessNotifications.canSend(player.uuid, "has-account", notificationCooldown)) {
@@ -214,14 +220,14 @@ public class SpartanEdition {
 
             if (dataType == null) {
                 message = AwarenessNotifications.getNotification(
-                        "\n§cHey, just a heads up!"
-                                + " Your owned editions of Spartan could not be verified."
-                                + " Visit §n" + DiscordMemberCount.discordURL + "§r§c to fix this."
+                        noVersionNotificationMessage
                 );
             } else {
                 message = AwarenessNotifications.getNotification(
                         (versionNotificationMessage
-                                + (IDs.canAdvertise() ? "\nClick §n" + product + "§r§c to §lfix this§r§c." : ""))
+                                + (IDs.canAdvertise()
+                                ? " Click §n" + product + "§r§c to §lfix this§r§c."
+                                : " Visit §n" + DiscordMemberCount.discordURL + "§r§c to §lfix this§r§c."))
                                 .replace(type, dataType.toString())
                                 .replace(
                                         product,
