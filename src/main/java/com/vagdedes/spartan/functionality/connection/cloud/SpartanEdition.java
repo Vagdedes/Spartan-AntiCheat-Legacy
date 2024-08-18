@@ -68,7 +68,7 @@ public class SpartanEdition {
             )) {
                 alternativeVersion = true;
             }
-            hasAccount = !JarVerification.isValid() || CloudConnections.hasAccount();
+            hasAccount = !JarVerification.isValid(false) || CloudConnections.hasAccount();
         });
     }
 

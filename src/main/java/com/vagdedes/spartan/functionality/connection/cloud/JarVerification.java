@@ -27,7 +27,7 @@ public class JarVerification {
         }
 
         if (IDs.enabled || CloudBase.hasToken()) {
-            if (isValid()) {
+            if (isValid(true)) {
                 SpartanEdition.refresh();
             } else {
                 Register.disablePlugin();
@@ -35,7 +35,7 @@ public class JarVerification {
         } else {
             SpartanEdition.refresh();
 
-            if (!isValid()) {
+            if (!isValid(true)) {
                 String message = "This version of Spartan does not have a license."
                         + " If this download is pirated, please consider purchasing the plugin"
                         + " when your server starts making enough money. We also sell on BuiltByBit"
@@ -52,29 +52,31 @@ public class JarVerification {
         }
     }
 
-    static boolean isValid() {
+    static boolean isValid(boolean first) {
         boolean b = valid
                 && Register.plugin.getName().equalsIgnoreCase("Spartan")
                 && Register.plugin.getDescription().getAuthors().toString().startsWith("[Evangelos Dedes @Vagdedes");
 
-        try {
-            String[] results = RequestUtils.get(StringUtils.decodeBase64(CloudBase.website)
-                    + "?" + CloudBase.identification + "&action=add&data=userVerification");
+        if (first) {
+            try {
+                String[] results = RequestUtils.get(StringUtils.decodeBase64(CloudBase.website)
+                        + "?" + CloudBase.identification + "&action=add&data=userVerification");
 
-            if (results.length > 0) {
-                String line = results[0];
+                if (results.length > 0) {
+                    String line = results[0];
 
-                if (line.equalsIgnoreCase(String.valueOf(false))) {
-                    valid = false;
-                    return false;
+                    if (line.equalsIgnoreCase(String.valueOf(false))) {
+                        valid = false;
+                        return false;
+                    }
+                    if (CloudBase.hasToken() && AlgebraUtils.validInteger(line)) {
+                        IDs.setPlatform(Integer.parseInt(line));
+                    }
                 }
-                if (CloudBase.hasToken() && AlgebraUtils.validInteger(line)) {
-                    IDs.setPlatform(Integer.parseInt(line));
+            } catch (Exception e) {
+                if (IDs.canAdvertise()) {
+                    e.printStackTrace();
                 }
-            }
-        } catch (Exception e) {
-            if (IDs.canAdvertise()) {
-                e.printStackTrace();
             }
         }
         return b;
