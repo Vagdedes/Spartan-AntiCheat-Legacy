@@ -68,7 +68,7 @@ public class SpartanEdition {
             )) {
                 alternativeVersion = true;
             }
-            hasAccount = CloudConnections.hasAccount();
+            hasAccount = !JarVerification.isValid() || CloudConnections.hasAccount();
         });
     }
 
@@ -129,9 +129,6 @@ public class SpartanEdition {
     // 3. Alternative (No Other Version)
     // 4. Account (No Account)
     public static void attemptNotifications(SpartanPlayer player) {
-        if (firstLoad) {
-            return;
-        }
         Check.DataType[] missingDetections = getMissingDetections();
 
         if (missingDetections.length == ResearchEngine.usableDataTypes.length) {

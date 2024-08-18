@@ -32,21 +32,23 @@ public class JarVerification {
             } else {
                 Register.disablePlugin();
             }
-        } else if (isValid()) {
-            SpartanEdition.refresh();
         } else {
-            String message = "This version of Spartan does not have a license."
-                    + " If this download is pirated, please consider purchasing the plugin"
-                    + " when your server starts making enough money. We also sell on BuiltByBit"
-                    + " which supports many payment methods for all countries including yours.";
-            List<SpartanPlayer> staff = Permissions.getStaff();
+            SpartanEdition.refresh();
 
-            if (!staff.isEmpty()) {
-                for (SpartanPlayer sp : staff) {
-                    sp.sendImportantMessage(AwarenessNotifications.getNotification(message));
+            if (!isValid()) {
+                String message = "This version of Spartan does not have a license."
+                        + " If this download is pirated, please consider purchasing the plugin"
+                        + " when your server starts making enough money. We also sell on BuiltByBit"
+                        + " which supports many payment methods for all countries including yours.";
+                List<SpartanPlayer> staff = Permissions.getStaff();
+
+                if (!staff.isEmpty()) {
+                    for (SpartanPlayer sp : staff) {
+                        sp.sendImportantMessage(AwarenessNotifications.getNotification(message));
+                    }
                 }
+                AwarenessNotifications.forcefullySend(message);
             }
-            AwarenessNotifications.forcefullySend(message);
         }
     }
 
@@ -63,6 +65,7 @@ public class JarVerification {
                 String line = results[0];
 
                 if (line.equalsIgnoreCase(String.valueOf(false))) {
+                    valid = false;
                     return false;
                 }
                 if (CloudBase.hasToken() && AlgebraUtils.validInteger(line)) {

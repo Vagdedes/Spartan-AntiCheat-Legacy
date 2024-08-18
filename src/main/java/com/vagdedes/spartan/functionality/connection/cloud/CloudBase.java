@@ -155,9 +155,7 @@ public class CloudBase {
 
             // Separator
             if (independent) {
-                if (JarVerification.isValid()) {
-                    SpartanBukkit.connectionThread.executeIfSyncElseHere(SpartanEdition::refresh);
-                }
+                SpartanBukkit.connectionThread.executeIfSyncElseHere(SpartanEdition::refresh);
             } else {
                 SpartanBukkit.connectionThread.executeIfSyncElseHere(CloudConnections::punishPlayers);
             }

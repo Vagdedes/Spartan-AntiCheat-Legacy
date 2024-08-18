@@ -21,8 +21,6 @@ import java.util.UUID;
 
 public class CloudConnections {
 
-    // Once
-
     static int getUserIdentification() {
         try {
             File path = new File("plugins/");
@@ -117,8 +115,6 @@ public class CloudConnections {
         }
         return false;
     }
-
-    // Multiple
 
     static int getDetectionSlots() { // Once
         try {
