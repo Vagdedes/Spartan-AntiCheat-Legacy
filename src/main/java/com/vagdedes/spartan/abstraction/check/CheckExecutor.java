@@ -95,6 +95,13 @@ public abstract class CheckExecutor extends DetectionExecutor {
                             && player.getCancellableCompatibility() == null
                             && hackType.getCheck().isEnabled(player.dataType, player.getWorld().getName(), player)
                             && canRun();
+
+                    if (scheduledPrevention) {
+                        SpartanBukkit.runTask(
+                                this.player,
+                                this::prevent
+                        );
+                    }
                 }
             }, 1L, 1L);
         }
