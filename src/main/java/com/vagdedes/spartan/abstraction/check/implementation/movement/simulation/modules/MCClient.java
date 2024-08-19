@@ -10,6 +10,7 @@ import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.math.MathHelper;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PotionEffectUtils;
+import com.vagdedes.spartan.utils.minecraft.vector.SpartanVector2F;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -31,7 +32,7 @@ public class MCClient {
     public boolean isAirBorne, isJumping;
     public MotionVector motion;
     public MotionVector velocityQuery = null;
-    public int verifiedPacket;
+    public int verifiedPacket, veloTicker;
     public MotionVector verifiedMotion;
     private final List<MotionVector> vectors = new ArrayList<>();
     private final List<KeyBind> binds = new ArrayList<>();
@@ -63,6 +64,7 @@ public class MCClient {
         this.verifiedMotion = new MotionVector(0, 0, 0);
         this.verifiedPacket = 0;
         this.lastPacketTime = System.currentTimeMillis();
+        this.veloTicker = 0;
         double[] values = {0.9800000190734863, 0.2940000295639038};
 
         for (double x : values) {
@@ -174,6 +176,9 @@ public class MCClient {
     }
     public void tick(KeyBind keyBind, MotionVector currentMotion) {
         boolean onGround = this.p().isOnGround();
+        final double yaw = Math.toRadians(this.p().getLocation().getYaw());
+        double xM = -Math.sin(yaw);
+        double zM = Math.cos(yaw);
         if (!onGround) {
             { // air Y sim
                 SpartanPotionEffect levitation = this.p().spartanPlayer.getPotionEffect(PotionEffectType.LEVITATION, 0);
@@ -185,7 +190,7 @@ public class MCClient {
                 }
                 Location blockpos = this.p().getLocation().clone().add(0, -1, 0);
                 float f3 = BlockUtils.getSlipperiness(this.p().spartanPlayer.getWorld().getBlockAt(blockpos));
-                MotionVector vector3d5 = this.revelantVec(new MotionVector(0, 0, 0), f3);
+                MotionVector vector3d5 = this.revelantVec(new MotionVector(0, 0, 0));
                 double d2 = vector3d5.y;
                 if (levitation != null) {
                     d2 += (0.05D * (double) (levitation.bukkitEffect.getAmplifier() + 1) - vector3d5.y) * 0.2D;
@@ -212,7 +217,7 @@ public class MCClient {
                 }
                 if (onAir == 1 && currentMotion.y > 0 && veloClaim == null) {
                     jump();
-                    isJumping = true;
+                    this.isJumping = true;
                 }
                 if (this.checkCollideOnTop()) {
                     if (keyBind.isNone()) this.getMotion().y = -0.0784;
@@ -222,7 +227,55 @@ public class MCClient {
                     }
                 }
             }
+
+            { // XZ sim on air
+                if (this.onAir == 1 && this.veloTicker == 0) {
+                    if(this.p().isSprinting()) {
+                        this.motion.x = (keyBind.isNone()) ? getAirSprintMoveFactor().x * xM : getAirSprintMoveFactor().y * xM;
+                        this.motion.z = (keyBind.isNone()) ? getAirSprintMoveFactor().x * zM : getAirSprintMoveFactor().y * zM;
+                    } else {
+                        this.motion.x = (keyBind.isNone()) ? getAirDefaultMoveFactor().x * xM : getAirDefaultMoveFactor().y * xM;
+                        this.motion.z = (keyBind.isNone()) ? getAirDefaultMoveFactor().x * zM : getAirDefaultMoveFactor().y * zM;
+                    }
+                }
+                if (this.onAir == 2) {
+                    if (veloTicker > 0) {
+                        this.motion.x = this.verifiedMotion.x / 1.831501942690627;
+                        this.motion.z = this.verifiedMotion.z / 1.831501942690627;
+                    } else {
+                        this.motion.x = this.verifiedMotion.x / 1.701358475829172;
+                        this.motion.z = this.verifiedMotion.z / 1.701358475829172;
+                    }
+                }
+                if (this.onAir > 1) {
+                    if (keyBind.is(true, false, false, false)) {
+                        this.motion.x += getRelevantMoveFactor() * xM;
+                        this.motion.z += getRelevantMoveFactor() * zM;
+                    }
+                    if (keyBind.isNone()) {
+                        this.motion.x /= 1.2;
+                        this.motion.z /= 1.2;
+                    }
+                }
+                if (this.onAir > 2) {
+                    this.motion.x = this.verifiedMotion.x / 1.098901066812599;
+                    this.motion.z = this.verifiedMotion.z / 1.098901066812599;
+                }
+            }
         } else {
+
+            { // onGround logic XZ
+                if (this.onGroundTicks > 1 || keyBind.isFull()) {
+                    this.motion.x = getRelevantMoveFactor() * xM;
+                    this.motion.z = getRelevantMoveFactor() * zM;
+                }
+                if (keyBind.isNone()) {
+                    this.motion.x /= 20;
+                    this.motion.z /= 20;
+                }
+            }
+
+            // Other
             if (!this.p().isOnGroundFrom() && currentMotion.y < this.motion.y
                     && Math.abs(currentMotion.y - this.motion.y) < 0.03) {
                 this.motion.y = currentMotion.y;
@@ -273,12 +326,12 @@ public class MCClient {
         Like collision
          */
         if (checkCollideSpecify() && keyBind.isNone()) {
-            if (Math.abs(this.getMotion().y - currentMotion.y) <= 0.5) {
+            if (Math.abs(this.getMotion().y - currentMotion.y) <= 0.7) {
                 this.getMotion().y = RayUtils.scaleVal(currentMotion.getY(), 4);
             }
         }
 
-
+        if (veloTicker > 0) veloTicker--;
     }
 
     protected float getJumpUpwardsMotion() {
@@ -289,8 +342,8 @@ public class MCClient {
         return this.predicted;
     }
 
-    public MotionVector revelantVec(MotionVector vector, float v) {
-        this.moveRelative(this.getRelevantMoveFactor(v), vector);
+    public MotionVector revelantVec(MotionVector vector) {
+        this.moveRelative(this.getRelevantMoveFactor(), vector);
         this.setMotion(this.handleOnClimbable(this.getMotion()));
         this.move(MoverType.SELF, this.getMotion());
         MotionVector vector3d = this.getMotion();
@@ -332,13 +385,18 @@ public class MCClient {
                 || com.vagdedes.spartan.utils.minecraft.world.BlockUtils.canClimb(location.clone().add(0, -1, 0).getBlock().material, false));
     }
 
-    private float getRelevantMoveFactor(float p_213335_1_) {
-        return this.p().isOnGround() ?
-                (float) Attributes.getAttributeValue(Attribute.MOVEMENT_SPEED, this.p())
-                        * (0.21600002F / (p_213335_1_ * p_213335_1_ * p_213335_1_))
-                : this.jumpMovementFactor;
+    public float getRelevantMoveFactor() {
+        return (float) Attributes.getAttributeValue(Attribute.MOVEMENT_SPEED, this.p())
+                        * (0.21600002F) * 10;
     }
-
+    public SpartanVector2F getAirSprintMoveFactor() {
+        float v = (float) Attributes.getAttributeValue(Attribute.MOVEMENT_SPEED, this.p());
+        return new SpartanVector2F(v * 10 * 0.3274F, v * 10 * 0.615342F);
+    }
+    public SpartanVector2F getAirDefaultMoveFactor() {
+        float v = (float) Attributes.getAttributeValue(Attribute.MOVEMENT_SPEED, this.p());
+        return new SpartanVector2F(0.0F, v * 10 * 0.280047F);
+    }
     public void move(MoverType typeIn, MotionVector pos) {
         // for now - nothing
     }
@@ -388,6 +446,7 @@ public class MCClient {
         this.velocityQuery = new MotionVector(velocity.getX(), velocity.getY(), velocity.getZ());
         this.veloClaim = velocity;
         this.verifiedPacket = 0;
+        this.veloTicker = 2;
     }
     private void debug(String msg) {
         this.p().player.sendMessage(msg);

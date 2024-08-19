@@ -25,6 +25,7 @@ public class Simulation extends CheckExecutor {
 
     @Override
     public void handleInternal(boolean cancelled, Object object) {
+        //if (true) return;
         if (true) return;
         SpartanProtocol protocol = SpartanBukkit.getProtocol(player.uuid);
         MCClient client = Join.getContainer().get(player.uuid);
@@ -35,24 +36,39 @@ public class Simulation extends CheckExecutor {
             Location from = event.getFrom();
 
             double
-            dx = to.getX() - from.getX(),
-            dy = to.getY() - from.getY(),
-            dz = to.getZ() - from.getZ();
+            dx = RayUtils.scaleVal(to.getX() - from.getX(), 6),
+            dy = RayUtils.scaleVal(to.getY() - from.getY(), 6),
+            dz = RayUtils.scaleVal(to.getZ() - from.getZ(), 6);
             double
             xDf = 999,
             yDf = 999,
             zDf = 999;
 
+            double
+            xMin = 999,
+            yMin = 999,
+            zMin = 999,
+            xMax = -999,
+            yMax = -999,
+            zMax = -999;
+
             MotionVector mV = new MotionVector(dx, dy, dz);
             client.movement(dx, dy, dz);
+            double horizontal = RayUtils.scaleVal(Math.sqrt(dx * dx + dz * dz), 6);
             List<MotionVector> predicted = client.getPredicted();
-            //player.sendMessage("v: " + dx + " | " + dy + " | " + dz);
+           // player.sendMessage("v: " + horizontal + " | " + client.getRelevantMoveFactor());
 
             for (MotionVector pV : predicted) {
                 double
                 xD = s(dx) - s(pV.getX()),
                 yD = s(dy) - s(pV.getY()),
                 zD = s(dz) - s(pV.getZ());
+                if (xD > xMax) xMax = xD + 0.03;
+                if (yD > yMax) yMax = yD + 0.03;
+                if (zD > zMax) zMax = zD + 0.03;
+                if (xD < xMin) xMin = xD - 0.03;
+                if (yD < yMin) yMin = yD - 0.03;
+                if (zD < zMin) zMin = zD - 0.03;
 
                 xDf = Math.min(Math.abs(xD), xDf);
                 yDf = Math.min(Math.abs(yD), yDf);
@@ -65,22 +81,20 @@ public class Simulation extends CheckExecutor {
             if (xDf == 0.003 || xDf == 0.0031) xDf = 0;
             if (zDf == 0.003 || zDf == 0.0031) zDf = 0;
 
+            boolean isXValid = (dx >= xMin && dx <= xMax) || Math.abs(xDf) < 0.01;
+            boolean isYValid = (dy >= yMin && dy <= yMax) || Math.abs(yDf) < 0.01;
+            boolean isZValid = (dz >= zMin && dz <= zMax) || Math.abs(zDf) < 0.01;
 
-            diffVl += Math.abs(yDf);
-            //player.sendMessage("y: " + s(dy) + " | " + s(predicted.get(0).y)
-            //                + " | total: " + yDf + " | air: " + client.onAir);
-            //player.sendMessage("vl: " + yDf);
 
-            if (yDf == 0) {
+            if (isXValid && isYValid && isZValid) {
                 client.verifiedMotion = mV.cloneVector();
             } else {
                 client.verifiedMotion = predicted.get(predicted.size() - 1);
             }
-            if (diffVl > 0.03) {
-                cancel("[Y] " + yDf);
-                diffVl = 0;
-            }
-            diffVl /= 1.25;
+
+            player.sendMessage("dx: " + dx + ", dy: " + dy + ", dz: " + dz + ", xMin: " + xMin + " / xMax: " + xMax + ", yMin: " + yMin + " / yMax: " + yMax + ", zMin: " + zMin + " / zMax: " + zMax);
+            player.sendMessage(isXValid + " " + isYValid + " "  + isZValid);
+
         }
         if (object instanceof PlayerVelocityEvent) {
             PlayerVelocityEvent event = (PlayerVelocityEvent) object;

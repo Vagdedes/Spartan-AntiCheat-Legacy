@@ -19,6 +19,7 @@ public class BackgroundMove {
     static void run(PacketEvent event) {
         Player player = event.getPlayer();
         MCClient client = Join.getContainer().get(player.getUniqueId());
+        if (client == null) return;
 
         if (ProtocolLib.isTemporary(player)) {
             return;
