@@ -309,12 +309,12 @@ public class CloudBase {
             // Separator
             if (independent) {
                 SpartanBukkit.connectionThread.executeIfSyncElseHere(() -> {
-                    String[][] announcements = CloudConnections.getStaffAnnouncements();
+                    List<SpartanPlayer> players = Permissions.getStaff();
 
-                    if (announcements.length > 0) {
-                        List<SpartanPlayer> players = Permissions.getStaff();
+                    if (!players.isEmpty()) {
+                        String[][] announcements = CloudConnections.getStaffAnnouncements();
 
-                        if (!players.isEmpty()) {
+                        if (announcements.length > 0) {
                             for (String[] announcement : announcements) {
                                 for (SpartanPlayer p : players) {
                                     if (AwarenessNotifications.canSend(
@@ -326,13 +326,10 @@ public class CloudBase {
                                     }
                                 }
                             }
-                        }
-                    }
-                    List<SpartanPlayer> players = SpartanBukkit.getPlayers();
-
-                    if (!players.isEmpty()) {
-                        for (SpartanPlayer p : players) {
-                            SpartanEdition.attemptNotifications(p);
+                        } else {
+                            for (SpartanPlayer p : players) {
+                                SpartanEdition.attemptNotifications(p);
+                            }
                         }
                     }
                 });

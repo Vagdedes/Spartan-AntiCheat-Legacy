@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.listeners;
 
+import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
@@ -120,8 +121,9 @@ public class Shared {
         MovementProcessing.run(p, to, ver, box);
 
         for (Enums.HackType hackType : Enums.HackType.values()) {
-            if (p.getExecutor(hackType).scheduledPrevention
-                    && p.getViolations(hackType).prevent()) {
+            CheckExecutor executor = p.getExecutor(hackType);
+
+            if (executor.scheduledPrevention && executor.prevent()) {
                 break;
             }
         }

@@ -2,7 +2,7 @@ package com.vagdedes.spartan.functionality.performance;
 
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.Check;
-import com.vagdedes.spartan.abstraction.check.LiveViolation;
+import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.inventory.implementation.MainMenu;
 import com.vagdedes.spartan.abstraction.pattern.Pattern;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
@@ -168,7 +168,7 @@ public class ResearchEngine {
                 profile = p.getProfile();
 
                 for (Enums.HackType hackType : Enums.HackType.values()) {
-                    p.spartanPlayer.getViolations(hackType).reset();
+                    p.spartanPlayer.getExecutor(hackType).resetLevel();
                 }
             } else {
                 profile = getPlayerProfile(playerName);
@@ -228,7 +228,7 @@ public class ResearchEngine {
     }
 
     private static int[] getDetectionViolationLevel(String s) {
-        String search = "(" + LiveViolation.violationLevelIdentifier + " ";
+        String search = "(" + CheckExecutor.violationLevelIdentifier + " ";
         int index1 = s.indexOf(search);
 
         if (index1 > -1) {
@@ -259,7 +259,7 @@ public class ResearchEngine {
     }
 
     private static Check.DataType getDataType(String s) {
-        String find = "(" + LiveViolation.javaPlayerIdentifier + " ";
+        String find = "(" + CheckExecutor.javaPlayerIdentifier + " ";
         int index = s.indexOf(find);
 
         if (index > -1) {

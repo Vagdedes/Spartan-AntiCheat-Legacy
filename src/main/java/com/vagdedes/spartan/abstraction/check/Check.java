@@ -212,7 +212,7 @@ public class Check {
         }
         return (world == null || isEnabledOnWorld(world))
                 && (player == null
-                || player.getViolations(hackType).getDisableCause() == null
+                || player.getExecutor(hackType).getDisableCause() == null
                 && !Permissions.isBypassing(player, hackType));
     }
 
@@ -257,7 +257,7 @@ public class Check {
                         }
 
                         for (SpartanPlayer player : SpartanBukkit.getPlayers()) {
-                            player.getViolations(hackType).reset();
+                            player.getExecutor(hackType).resetLevel();
                         }
                     }
                     setOption("enabled." + type.toString().toLowerCase(), b);

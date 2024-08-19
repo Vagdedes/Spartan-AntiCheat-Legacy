@@ -128,7 +128,7 @@ public class PlayerInfo extends InventoryMenu {
         if (isOnline) {
             for (HackType hackType : hackTypes) {
                 if (hackType.category == checkType) {
-                    violations += player.getViolations(hackType).getLevel();
+                    violations += player.getExecutor(hackType).getLevel();
                 }
             }
         }
@@ -149,7 +149,7 @@ public class PlayerInfo extends InventoryMenu {
 
         for (HackType hackType : hackTypes) {
             if (hackType.category == checkType) {
-                violations = isOnline ? player.getViolations(hackType).getLevel() : 0;
+                violations = isOnline ? player.getExecutor(hackType).getLevel() : 0;
                 String state = getDetectionState(
                         player,
                         hackType,
@@ -186,7 +186,7 @@ public class PlayerInfo extends InventoryMenu {
         if (!check.isEnabled(dataType, worldName, null)) { // Do not put player because we calculate it below
             return "Disabled";
         }
-        CancelCause disabledCause = player.getViolations(hackType).getDisableCause();
+        CancelCause disabledCause = player.getExecutor(hackType).getDisableCause();
         return Permissions.isBypassing(player, hackType) ? "Permission Bypass" :
                 cancellableCompatibility != null ? cancellableCompatibility + " Compatibility" :
                         notChecked ? "Temporarily Not Checked" :
@@ -228,7 +228,7 @@ public class PlayerInfo extends InventoryMenu {
 
                 if (t != null && clickType.isLeftClick()) {
                     for (HackType hackType : Enums.HackType.values()) {
-                        t.spartanPlayer.getViolations(hackType).reset();
+                        t.spartanPlayer.getExecutor(hackType).resetLevel();
                     }
                     String message = Config.messages.getColorfulString("player_violation_reset_message").replace("{player}", t.spartanPlayer.name);
                     player.sendMessage(message);
