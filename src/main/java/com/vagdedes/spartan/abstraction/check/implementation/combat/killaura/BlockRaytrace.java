@@ -25,17 +25,19 @@ public class BlockRaytrace extends DetectionExecutor {
             Location targetLocation = target.getLocation();
             double distToTarget = playerLocation.distance(targetLocation);
             Material result = intercept(player, playerLocation, targetLocation, distToTarget);
+
             if (result != null) {
-                cancel("Attacking through block: " + result);
+                cancel("Attacking through block: " + BlockUtils.materialToString(result));
             }
         }
     }
+
     public static Material intercept(SpartanProtocol iPlayer, Location location, Location targetLoc, double distToTarget) {
         for (int x = location.getBlockX() - 2; x <= location.getBlockX() + 2; x++) {
             for (int y = location.getBlockY() - 2; y <= location.getBlockY() + 2; y++) {
                 for (int z = location.getBlockZ() - 2; z <= location.getBlockZ() + 2; z++) {
                     if (location.getWorld().getBlockAt(x, y, z).getType().isSolid()
-                                    && !ignore(location.getWorld().getBlockAt(x, y, z).getType())) {
+                            && !ignore(location.getWorld().getBlockAt(x, y, z).getType())) {
                         double distToBlock = location.distance(new Location(location.getWorld(), x, y, z));
                         if (distToTarget > 0.5 && RayUtils.inHitbox(iPlayer.spartanPlayer, targetLoc, 0.5F))
                             return location.getWorld().getBlockAt(x, y, z).getType();
