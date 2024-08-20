@@ -5,8 +5,8 @@ import com.vagdedes.spartan.abstraction.check.implementation.movement.simulation
 import com.vagdedes.spartan.abstraction.check.implementation.movement.simulation.modules.engine.motion.*;
 import com.vagdedes.spartan.abstraction.player.SpartanPotionEffect;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.abstraction.world.SpartanBlock;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
-import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.math.MathHelper;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PotionEffectUtils;
@@ -14,7 +14,6 @@ import com.vagdedes.spartan.utils.minecraft.vector.SpartanVector2F;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -103,7 +102,7 @@ public class MCClient {
     }
 
     public SpartanProtocol p() {
-        return SpartanBukkit.getProtocol(this.protocol.spartanPlayer.uuid);
+        return this.protocol;
     }
 
     public void preTick(MotionVector currentMotion) {
@@ -121,11 +120,13 @@ public class MCClient {
 
     public boolean checkCollide() {
         Location location = this.p().getLocation();
+
         for (int x = location.getBlockX() - 1; x <= location.getBlockX() + 1; x++) {
             for (int y = location.getBlockY() - 1; y <= location.getBlockY() + 1; y++) {
                 for (int z = location.getBlockZ() - 1; z <= location.getBlockZ() + 1; z++) {
-                    if (location.getWorld().getBlockAt(x, y, z).getType().isSolid()
-                                    || ignore(location.getWorld().getBlockAt(x, y, z).toString().toLowerCase())) {
+                    SpartanBlock block = new SpartanLocation(location.getWorld(), x, y, z, 0.0f, 0.0f).getBlock();
+
+                    if (block.material.isSolid() || ignore(block.material)) {
                         return true;
                     }
                 }
@@ -133,12 +134,16 @@ public class MCClient {
         }
         return false;
     }
+
     public boolean checkCollideSpecify() {
         Location location = this.p().getLocation();
+
         for (int x = location.getBlockX() - 1; x <= location.getBlockX() + 1; x++) {
             for (int y = location.getBlockY() - 1; y <= location.getBlockY() + 1; y++) {
                 for (int z = location.getBlockZ() - 1; z <= location.getBlockZ() + 1; z++) {
-                    if (ignore(location.getWorld().getBlockAt(x, y, z).toString().toLowerCase())) {
+                    SpartanBlock block = new SpartanLocation(location.getWorld(), x, y, z, 0.0f, 0.0f).getBlock();
+
+                    if (ignore(block.material)) {
                         return true;
                     }
                 }
@@ -146,6 +151,7 @@ public class MCClient {
         }
         return false;
     }
+
     public boolean checkCollideOnTop() {
         Location location = this.p().getLocation();
         World world = location.getWorld();
@@ -160,9 +166,9 @@ public class MCClient {
         for (double x = startX; x <= endX; x += increment) {
             for (double y = startY; y <= endY; y += 1) {
                 for (double z = startZ; z <= endZ; z += increment) {
-                    Block block = world.getBlockAt(new Location(world, x, y, z));
-                    if (block.getType().isSolid()
-                                    || ignore(block.toString().toLowerCase())) {
+                    SpartanBlock block = new SpartanLocation(world, x, y, z, 0.0f, 0.0f).getBlock();
+
+                    if (block.material.isSolid() || ignore(block.material)) {
                         return true;
                     }
                 }
@@ -171,9 +177,10 @@ public class MCClient {
         return false;
     }
 
-    private static boolean ignore(String block) {
-        return block.matches(".*(snow|step|frame|table|slab|stair|ladder|vine|waterlily|wall|carpet|fence|rod|bed|skull|pot|hopper|door|piston|lily|slime).*");
+    private static boolean ignore(Material material) {
+        return com.vagdedes.spartan.utils.minecraft.world.BlockUtils.isSemiSolid(material);
     }
+
     public void tick(KeyBind keyBind, MotionVector currentMotion) {
         boolean onGround = this.p().isOnGround();
         final double yaw = Math.toRadians(this.p().getLocation().getYaw());
@@ -189,7 +196,7 @@ public class MCClient {
                     d0 = 0.01D;
                 }
                 Location blockpos = this.p().getLocation().clone().add(0, -1, 0);
-                float f3 = BlockUtils.getSlipperiness(this.p().spartanPlayer.getWorld().getBlockAt(blockpos));
+                float f3 = BlockUtils.getSlipperiness(new SpartanLocation(blockpos).getBlock());
                 MotionVector vector3d5 = this.revelantVec(new MotionVector(0, 0, 0));
                 double d2 = vector3d5.y;
                 if (levitation != null) {
@@ -222,7 +229,7 @@ public class MCClient {
                 if (this.checkCollideOnTop()) {
                     if (keyBind.isNone()) this.getMotion().y = -0.0784;
                     if (keyBind.is(true, false, false, false)
-                                    && this.getMotion().y > currentMotion.y) {
+                            && this.getMotion().y > currentMotion.y) {
                         this.getMotion().y = RayUtils.scaleVal(currentMotion.getY(), 4);
                     }
                 }
@@ -230,7 +237,7 @@ public class MCClient {
 
             { // XZ sim on air
                 if (this.onAir == 1 && this.veloTicker == 0) {
-                    if(this.p().isSprinting()) {
+                    if (this.p().isSprinting()) {
                         this.motion.x = (keyBind.isNone()) ? getAirSprintMoveFactor().x * xM : getAirSprintMoveFactor().y * xM;
                         this.motion.z = (keyBind.isNone()) ? getAirSprintMoveFactor().x * zM : getAirSprintMoveFactor().y * zM;
                     } else {
@@ -291,7 +298,7 @@ public class MCClient {
             }
             if (keyBind.is(false, true, false, false)) {
                 if (this.getMotion().y == 0 && onGroundTicks < 3
-                                && RayUtils.scaleVal(currentMotion.y, 4) == -0.1216) {
+                        && RayUtils.scaleVal(currentMotion.y, 4) == -0.1216) {
                     this.getMotion().y = RayUtils.scaleVal(currentMotion.getY(), 4);
                 }
             }
@@ -301,7 +308,7 @@ public class MCClient {
         MotionVector velocityMotionMC = (this.velocityQuery == null) ? null : this.velocityQuery.cloneVector();
         MotionVector velocityMotionOT = (this.velocityQuery == null) ? null : this.motion.addWithClone(velocityQuery.getX(), velocityQuery.getY(), velocityQuery.getZ());
         if (keyBind.isFull() && velocityMotionMC != null
-                        && velocityMotionOT != null && (checkCollide() || onAir < 3)) {
+                && velocityMotionOT != null && (checkCollide() || onAir < 3)) {
             // Jumping after Velocity will cause value modifier
             velocityMotionMC.add(0, 0.42, 0);
             velocityMotionOT.add(0, 0.42, 0);
@@ -387,16 +394,19 @@ public class MCClient {
 
     public float getRelevantMoveFactor() {
         return (float) Attributes.getAttributeValue(Attribute.MOVEMENT_SPEED, this.p())
-                        * (0.21600002F) * 10;
+                * (0.21600002F) * 10;
     }
+
     public SpartanVector2F getAirSprintMoveFactor() {
         float v = (float) Attributes.getAttributeValue(Attribute.MOVEMENT_SPEED, this.p());
         return new SpartanVector2F(v * 10 * 0.3274F, v * 10 * 0.615342F);
     }
+
     public SpartanVector2F getAirDefaultMoveFactor() {
         float v = (float) Attributes.getAttributeValue(Attribute.MOVEMENT_SPEED, this.p());
         return new SpartanVector2F(0.0F, v * 10 * 0.280047F);
     }
+
     public void move(MoverType typeIn, MotionVector pos) {
         // for now - nothing
     }
@@ -448,6 +458,7 @@ public class MCClient {
         this.verifiedPacket = 0;
         this.veloTicker = 2;
     }
+
     private void debug(String msg) {
         this.p().player.sendMessage(msg);
     }

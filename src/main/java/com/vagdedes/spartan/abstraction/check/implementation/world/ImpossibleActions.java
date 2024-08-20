@@ -188,7 +188,7 @@ public class ImpossibleActions extends CheckExecutor {
                     if (b == null) {
                         cancel("type: actions, action: " + action_string + ", case: " + cases);
                     } else {
-                        cancel("type: actions, action: " + action_string + ", case: " + cases + ", block: " + BlockUtils.blockToString(new SpartanBlock(b)));
+                        cancel("type: actions, action: " + action_string + ", case: " + cases + ", block: " + BlockUtils.blockToString(b));
                     }
                 }
             }

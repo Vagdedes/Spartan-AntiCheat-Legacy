@@ -5,7 +5,6 @@ import com.comphenix.protocol.ProtocolManager;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.listeners.protocol.*;
-import com.vagdedes.spartan.listeners.protocol.async.transactions.SendPingPong;
 import com.vagdedes.spartan.listeners.protocol.async.transactions.SendTransaction;
 import com.vagdedes.spartan.listeners.protocol.move.Move;
 import com.vagdedes.spartan.listeners.protocol.move.Move_Deprecated;
@@ -22,12 +21,12 @@ public class BackgroundProtocolLib {
 
             if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)) {
                 p.addPacketListener(new Move());
-                p.addPacketListener(new SendPingPong());
+                //p.addPacketListener(new SendPingPong());
             } else {
                 p.addPacketListener(new Move_Deprecated());
 
                 if (SendTransaction.isValid) {
-                    p.addPacketListener(new SendTransaction());
+                    //p.addPacketListener(new SendTransaction());
                 }
             }
             p.addPacketListener(new ServerPosition());

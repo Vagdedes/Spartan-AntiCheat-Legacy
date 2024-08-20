@@ -147,8 +147,8 @@ public class Speed extends CheckExecutor {
         double wrappedYaw = Math.toDegrees(RayUtils.calculateRayLine(a)),
                 deltaYaw = RayUtils.scaleVal(Math.abs(wrappedYaw - oldYaw), 2);
         if (onAir == 3) multiplyGround = 0.5;
-        if (RayUtils.onBlock(player, to, BlockUtils.ice)
-                || RayUtils.onBlock(player, to.clone().subtract(0, 1, 0), BlockUtils.ice)) {
+        if (RayUtils.onBlock(player, to, BlockUtils.ice, BlockUtils.blue_ice)
+                || RayUtils.onBlock(player, to.clone().subtract(0, 1, 0), BlockUtils.ice, BlockUtils.blue_ice)) {
             if (multiply < 0.6 * multiplexSpecify) multiply = 0.6 * multiplexSpecify;
             if (multiplyGround < 0.8 * multiplexSpecify) multiplyGround = 0.8 * multiplexSpecify;
         }

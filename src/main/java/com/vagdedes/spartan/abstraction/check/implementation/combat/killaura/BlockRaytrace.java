@@ -3,6 +3,8 @@ package com.vagdedes.spartan.abstraction.check.implementation.combat.killaura;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.abstraction.world.SpartanBlock;
+import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
@@ -36,11 +38,12 @@ public class BlockRaytrace extends DetectionExecutor {
         for (int x = location.getBlockX() - 2; x <= location.getBlockX() + 2; x++) {
             for (int y = location.getBlockY() - 2; y <= location.getBlockY() + 2; y++) {
                 for (int z = location.getBlockZ() - 2; z <= location.getBlockZ() + 2; z++) {
-                    if (location.getWorld().getBlockAt(x, y, z).getType().isSolid()
-                            && !ignore(location.getWorld().getBlockAt(x, y, z).getType())) {
+                    SpartanBlock block = new SpartanLocation(location.getWorld(), x, y, z, 0.0f, 0.0f).getBlock();
+
+                    if (block.material.isSolid() && !ignore(block.material)) {
                         double distToBlock = location.distance(new Location(location.getWorld(), x, y, z));
                         if (distToTarget > 0.5 && RayUtils.inHitbox(iPlayer.spartanPlayer, targetLoc, 0.5F))
-                            return location.getWorld().getBlockAt(x, y, z).getType();
+                            return block.material;
                     }
                 }
             }

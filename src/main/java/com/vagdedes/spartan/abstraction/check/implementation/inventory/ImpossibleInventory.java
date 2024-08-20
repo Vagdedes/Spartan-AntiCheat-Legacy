@@ -89,7 +89,11 @@ public class ImpossibleInventory extends CheckExecutor {
                 && !player.movement.isSwimming()
                 && player.getInstance().getVehicle() == null
                 && player.getOpenInventory().countSlots() > PlayerUtils.playerInventorySlots
-                && !BlockPatternUtils.isBlockPattern(belowBlocks, player.movement.getLocation(), true, BlockUtils.ice)) {
+                && !BlockPatternUtils.isBlockPattern(
+                belowBlocks,
+                player.movement.getLocation(),
+                true,
+                BlockUtils.ice, BlockUtils.blue_ice)) {
             cancel("type: closed-inventory, case: " + cases);
         }
     }
