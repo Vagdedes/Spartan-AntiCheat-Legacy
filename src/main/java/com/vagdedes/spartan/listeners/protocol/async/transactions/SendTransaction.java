@@ -15,6 +15,10 @@ import java.util.Objects;
 
 public class SendTransaction extends PacketAdapter {
 
+    public static final boolean isValid =
+            PacketType.Play.Client.TRANSACTION.isSupported()
+            && !PacketType.Play.Client.TRANSACTION.isDeprecated();
+
     public SendTransaction() {
         super(
                 Register.plugin,

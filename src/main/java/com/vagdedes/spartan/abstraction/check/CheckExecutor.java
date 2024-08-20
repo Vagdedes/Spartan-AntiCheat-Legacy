@@ -452,7 +452,7 @@ public abstract class CheckExecutor extends DetectionExecutor {
                 + "(Silent: " + hackType.getCheck().isSilent(player.dataType, player.getWorld().getName()) + "), "
                 + "(" + javaPlayerIdentifier + " " + (!player.bedrockPlayer) + ")" + ", "
                 + "(Packets: " + SpartanBukkit.packetsEnabled() + "), "
-                + "(Ping: " + player.getPing() + "ms), "
+                + "(Ping: " + player.protocol.getPing() + "ms), "
                 + "(W-XYZ: " + location.world.getName() + " " + location.getBlockX() + " " + location.getBlockY() + " " + location.getBlockZ() + "), "
                 + "[Information: " + information + "]";
         AntiCheatLogs.logInfo(player, notification, information, true, null, playerViolation);

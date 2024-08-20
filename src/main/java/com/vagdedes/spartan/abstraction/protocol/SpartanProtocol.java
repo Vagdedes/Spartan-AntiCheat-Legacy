@@ -2,6 +2,7 @@ package com.vagdedes.spartan.abstraction.protocol;
 
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
+import com.vagdedes.spartan.functionality.connection.Latency;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.listeners.protocol.modules.TeleportData;
@@ -87,7 +88,9 @@ public class SpartanProtocol {
     }
 
     public int getPing() {
-        return this.ping;
+        return SpartanBukkit.packetsEnabled()
+                ? this.ping
+                : Latency.ping(this.player);
     }
 
     public boolean isMutateTeleport() {

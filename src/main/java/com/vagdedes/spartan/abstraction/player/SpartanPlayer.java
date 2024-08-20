@@ -15,7 +15,6 @@ import com.vagdedes.spartan.compatibility.manual.building.MythicMobs;
 import com.vagdedes.spartan.compatibility.manual.enchants.CustomEnchantsPlus;
 import com.vagdedes.spartan.compatibility.manual.enchants.EcoEnchants;
 import com.vagdedes.spartan.compatibility.necessary.BedrockCompatibility;
-import com.vagdedes.spartan.functionality.connection.Latency;
 import com.vagdedes.spartan.functionality.connection.PlayerLimitPerIP;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.functionality.server.Config;
@@ -667,15 +666,6 @@ public class SpartanPlayer {
         Location center = border.getCenter();
         return Math.abs(loc.getX() - center.getX()) > size
                 || Math.abs(loc.getZ() - center.getZ()) > size;
-    }
-
-    // Separator
-
-    public int getPing() {
-        return Math.max(
-                Latency.ping(this.getInstance()),
-                this.protocol.getPing()
-        );
     }
 
 }

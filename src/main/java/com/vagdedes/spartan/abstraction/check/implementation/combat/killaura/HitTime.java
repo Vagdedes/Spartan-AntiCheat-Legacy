@@ -32,7 +32,7 @@ public class HitTime extends DetectionExecutor {
         devianceTotal += deviance;
         packets += 1;
 
-        if (player.getPing() > 1_000) {
+        if (player.protocol.getPing() > 1_000) {
             return;
         }
         if (deviance < 5 && deviance != 0) {

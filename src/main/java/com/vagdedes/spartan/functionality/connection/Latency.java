@@ -29,7 +29,7 @@ public class Latency {
         if (max <= 0) {
             pingDelay = 0.0;
         } else {
-            int latency = player.getPing();
+            int latency = player.protocol.getPing();
 
             if (latency <= TPS.tickTimeInteger) {
                 pingDelay = 0.0;

@@ -335,7 +335,7 @@ public class SQLFeature extends ConfigurationBuilder {
                             + ", " + syntaxForColumn(information)
                             + ", " + (hasPlayer ? syntaxForColumn(p.uuid) : "NULL")
                             + ", " + (hasPlayer ? syntaxForColumn(p.name) : "NULL")
-                            + ", " + (hasPlayer ? syntaxForColumn(p.getPing()) : "NULL")
+                            + ", " + (hasPlayer ? syntaxForColumn(p.protocol.getPing()) : "NULL")
                             + ", " + (hasPlayer ? syntaxForColumn(location.getBlockX()) : "NULL")
                             + ", " + (hasPlayer ? syntaxForColumn(location.getBlockY()) : "NULL")
                             + ", " + (hasPlayer ? syntaxForColumn(location.getBlockZ()) : "NULL")

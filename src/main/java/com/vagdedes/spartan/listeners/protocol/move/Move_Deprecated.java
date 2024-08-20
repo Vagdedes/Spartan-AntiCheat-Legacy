@@ -10,12 +10,21 @@ public class Move_Deprecated extends PacketAdapter {
 
     public Move_Deprecated() {
         super(
-                        Register.plugin,
-                        ListenerPriority.LOWEST,
+                Register.plugin,
+                ListenerPriority.LOWEST,
+                PacketType.Play.Client.FLYING.isSupported()
+                        && !PacketType.Play.Client.FLYING.isDeprecated()
+                        ? new PacketType[]{
                         PacketType.Play.Client.POSITION,
                         PacketType.Play.Client.POSITION_LOOK,
                         PacketType.Play.Client.LOOK,
                         PacketType.Play.Client.FLYING
+                }
+                        : new PacketType[]{
+                        PacketType.Play.Client.POSITION,
+                        PacketType.Play.Client.POSITION_LOOK,
+                        PacketType.Play.Client.LOOK
+                }
         );
     }
 

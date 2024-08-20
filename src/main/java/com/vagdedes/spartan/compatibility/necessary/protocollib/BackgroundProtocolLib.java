@@ -25,7 +25,10 @@ public class BackgroundProtocolLib {
                 p.addPacketListener(new SendPingPong());
             } else {
                 p.addPacketListener(new Move_Deprecated());
-                p.addPacketListener(new SendTransaction());
+
+                if (SendTransaction.isValid) {
+                    p.addPacketListener(new SendTransaction());
+                }
             }
             p.addPacketListener(new ServerPosition());
             //p.addPacketListener(new Debug());
