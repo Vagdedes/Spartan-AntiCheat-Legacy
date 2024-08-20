@@ -240,9 +240,10 @@ public class SpartanEdition {
 
     private static void attemptNoAccountNotification(SpartanPlayer player) {
         if (!hasAccount) {
-            String message = AwarenessNotifications.getNotification(hasAccountNotificationMessage);
+            String message = AwarenessNotifications.getOptionalNotification(hasAccountNotificationMessage);
 
-            if (AwarenessNotifications.canSend(player.uuid, "has-account", notificationCooldown)) {
+            if (message != null
+                    && AwarenessNotifications.canSend(player.uuid, "has-account", notificationCooldown)) {
                 player.sendImportantMessage(message);
             }
         }
