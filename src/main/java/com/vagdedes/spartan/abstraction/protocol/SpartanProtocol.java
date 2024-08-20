@@ -42,6 +42,7 @@ public class SpartanProtocol {
         this.lastTransaction = Long.MIN_VALUE;
         this.teleportEngine = new LinkedList<>();
         this.mutateTeleport = false;
+        this.ping = Integer.MIN_VALUE;
         this.setProfile(ResearchEngine.getPlayerProfile(this, false));
     }
 
@@ -88,7 +89,7 @@ public class SpartanProtocol {
     }
 
     public int getPing() {
-        return SpartanBukkit.packetsEnabled()
+        return SpartanBukkit.packetsEnabled() && this.ping != Integer.MIN_VALUE
                 ? this.ping
                 : Latency.ping(this.player);
     }
