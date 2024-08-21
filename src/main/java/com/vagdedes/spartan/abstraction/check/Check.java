@@ -2,6 +2,7 @@ package com.vagdedes.spartan.abstraction.check;
 
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.Config;
@@ -80,6 +81,7 @@ public class Check {
         this.enabled = new boolean[ResearchEngine.usableDataTypes.length];
         this.silent = new boolean[ResearchEngine.usableDataTypes.length];
         this.punish = new boolean[ResearchEngine.usableDataTypes.length];
+        List<PlayerProfile> profiles = ResearchEngine.getPlayerProfiles();
 
         for (Check.DataType dataType : ResearchEngine.usableDataTypes) {
             Object optionValue = getOption(
@@ -87,10 +89,19 @@ public class Check {
                     true,
                     false
             );
-            this.enabled[dataType.ordinal()] = optionValue instanceof Boolean ? (boolean) optionValue :
+            boolean enabled = optionValue instanceof Boolean ? (boolean) optionValue :
                     optionValue instanceof Long || optionValue instanceof Integer || optionValue instanceof Short ? ((long) optionValue) > 0L :
                             optionValue instanceof Double || optionValue instanceof Float ? ((double) optionValue) > 0.0 :
                                     Boolean.parseBoolean(optionValue.toString().toLowerCase());
+            this.enabled[dataType.ordinal()] = enabled;
+
+            if (!enabled && !profiles.isEmpty()) {
+                for (PlayerProfile playerProfile : profiles) {
+                    if (playerProfile.hasData(dataType)) {
+                        playerProfile.evidence.remove(hackType);
+                    }
+                }
+            }
             optionValue = getOption(
                     "silent." + dataType.toString().toLowerCase(),
                     false,
@@ -235,6 +246,8 @@ public class Check {
                 return;
             }
         }
+        List<PlayerProfile> profiles = ResearchEngine.getPlayerProfiles();
+
         for (Check.DataType type : dataTypes) {
             int ordinal = type.ordinal();
 
@@ -261,6 +274,14 @@ public class Check {
                         }
                     }
                     setOption("enabled." + type.toString().toLowerCase(), b);
+
+                    if (!profiles.isEmpty()) {
+                        for (PlayerProfile playerProfile : profiles) {
+                            if (playerProfile.hasData(type)) {
+                                playerProfile.evidence.remove(hackType);
+                            }
+                        }
+                    }
                 }
             }
         }

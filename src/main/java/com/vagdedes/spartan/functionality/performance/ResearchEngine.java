@@ -498,6 +498,9 @@ public class ResearchEngine {
                 for (Enums.HackType hackType : (force
                         ? Arrays.asList(Enums.HackType.values())
                         : violationFired.keySet())) {
+                    if (!hackType.getCheck().isEnabled(dataType, null, null)) {
+                        continue;
+                    }
                     Map<PlayerProfile, double[]> wave = new LinkedHashMap<>();
 
                     for (PlayerProfile profile : profiles) {
