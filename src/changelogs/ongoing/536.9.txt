@@ -1,2 +1,3 @@
 [#] Made the has-account notification optional.
 [#] Made packets listeners not run when not supported or deprecated.
+[#] Fixed a packet listener issue which caused players not being able to connect to the server.
