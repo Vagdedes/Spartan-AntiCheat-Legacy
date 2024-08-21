@@ -108,12 +108,12 @@ public class CloudConnections {
                     + "&action=get&data=hasAccount&version=" + CloudBase.version);
 
             if (results.length > 0) {
-                return results[0].equals("true");
+                return !results[0].equals("false");
             }
         } catch (Exception e) {
             CloudBase.throwError(e, "hasAccount:GET");
         }
-        return false;
+        return true;
     }
 
     static int getDetectionSlots() { // Once
