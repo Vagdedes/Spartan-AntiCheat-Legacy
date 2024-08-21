@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.abstraction.profiling;
 
+import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
 
 import java.util.Collection;
@@ -31,7 +32,7 @@ public class PlayerEvidence {
         }
     }
 
-    public static double
+    public static final double
             notificationProbability = 0.5,
             notificationRatio = 0.9,
 
@@ -40,6 +41,10 @@ public class PlayerEvidence {
 
     punishmentProbability = 0.95,
             punishmentRatio = 2.0;
+
+    public static final int requiredPlayers = AlgebraUtils.integerCeil(
+            2.0 / (1.0 - PlayerEvidence.punishmentProbability)
+    );
 
     private final Map<Enums.HackType, EvidenceDetails> probability; // Live object is used for synchronization
 

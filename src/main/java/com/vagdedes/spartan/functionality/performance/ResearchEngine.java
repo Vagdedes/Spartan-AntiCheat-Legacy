@@ -6,10 +6,7 @@ import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.inventory.implementation.MainMenu;
 import com.vagdedes.spartan.abstraction.pattern.Pattern;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
-import com.vagdedes.spartan.abstraction.profiling.MiningHistory;
-import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
-import com.vagdedes.spartan.abstraction.profiling.PlayerViolation;
-import com.vagdedes.spartan.abstraction.profiling.ViolationHistory;
+import com.vagdedes.spartan.abstraction.profiling.*;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
@@ -591,10 +588,13 @@ public class ResearchEngine {
                 violationFired.clear();
             }
         }
-        if (playerProfiles.size() < TPS.maximum) {
+        int size = playerProfiles.size() - PlayerEvidence.requiredPlayers;
+
+        if (size < 0) {
+            size = -size;
             String message = AwarenessNotifications.getOptionalNotification(
-                    "The plugin has not yet collected enough data."
-                            + " This problem is normal and will be resolved as more players join your server."
+                    "The plugin has not yet collected enough data, it needs data from " + size + " more player/s."
+                            + " This is normal and will be resolved as more players join your server."
                             + " Due to the limited data, certain checks may not notify, prevent or punish players."
             );
 
