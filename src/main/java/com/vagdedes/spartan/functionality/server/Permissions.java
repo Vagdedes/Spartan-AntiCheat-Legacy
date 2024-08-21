@@ -11,9 +11,14 @@ public class Permissions {
 
     private static final String alternativeAdminKey = "spartan.*";
     private static final Enums.Permission[] staffPermissions = new Enums.Permission[]{
-            Enums.Permission.STAFF_CHAT, Enums.Permission.WAVE, Enums.Permission.WARN,
-            Enums.Permission.ADMIN, Enums.Permission.KICK, Enums.Permission.NOTIFICATIONS,
-            Enums.Permission.USE_BYPASS, Enums.Permission.MANAGE, Enums.Permission.INFO,
+            Enums.Permission.WAVE,
+            Enums.Permission.WARN,
+            Enums.Permission.ADMIN,
+            Enums.Permission.KICK,
+            Enums.Permission.NOTIFICATIONS,
+            Enums.Permission.USE_BYPASS,
+            Enums.Permission.MANAGE,
+            Enums.Permission.INFO,
     };
 
     // Separator
@@ -95,10 +100,7 @@ public class Permissions {
             return true;
         } else {
             for (Enums.Permission permission : staffPermissions) {
-                Player realPlayer = player.getInstance();
-
-                if (realPlayer != null
-                        && realPlayer.hasPermission(permission.getKey())) {
+                if (has(player, permission)) {
                     return true;
                 }
             }
