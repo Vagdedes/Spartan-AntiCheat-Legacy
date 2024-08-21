@@ -3,13 +3,12 @@ package com.vagdedes.spartan.abstraction.check.implementation.combat.killaura;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
-import com.vagdedes.spartan.abstraction.world.SpartanBlock;
-import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
@@ -25,25 +24,32 @@ public class BlockRaytrace extends DetectionExecutor {
             SpartanProtocol target = SpartanBukkit.getProtocol((Player) targetHandle);
             Location playerLocation = player.getLocation();
             Location targetLocation = target.getLocation();
-            double distToTarget = playerLocation.distance(targetLocation);
-            Material result = intercept(player, playerLocation, targetLocation, distToTarget);
-
-            if (result != null) {
-                cancel("Attacking through block: " + BlockUtils.materialToString(result));
+            boolean valid = true;
+            Material block = null;
+            if (playerLocation.distance(targetLocation) < 0.6) return;
+            for (double d = 0.1D; d <= 1.5D; d += 0.1D) {
+                Material result = intercept(player, playerLocation, targetLocation, d);
+                if (result != null) {
+                    valid = false;
+                    block = result;
+                    break;
+                } else if (RayUtils.inHitbox(player.spartanPlayer, targetLocation, 0.6F, d)) {
+                    break;
+                }
+            }
+            if (!valid) {
+                cancel("Attacking through block: " + block);
             }
         }
     }
-
     public static Material intercept(SpartanProtocol iPlayer, Location location, Location targetLoc, double distToTarget) {
         for (int x = location.getBlockX() - 2; x <= location.getBlockX() + 2; x++) {
             for (int y = location.getBlockY() - 2; y <= location.getBlockY() + 2; y++) {
                 for (int z = location.getBlockZ() - 2; z <= location.getBlockZ() + 2; z++) {
-                    SpartanBlock block = new SpartanLocation(location.getWorld(), x, y, z, 0.0f, 0.0f).getBlock();
-
-                    if (block.material.isSolid() && !ignore(block.material)) {
-                        double distToBlock = location.distance(new Location(location.getWorld(), x, y, z));
-                        if (distToTarget > 0.5 && RayUtils.inHitbox(iPlayer.spartanPlayer, targetLoc, 0.5F))
-                            return block.material;
+                    Block b = location.getWorld().getBlockAt(x, y, z);
+                    if (b.getType().isSolid() && !ignore(b.getType())) {
+                        if (RayUtils.inHitbox(iPlayer.spartanPlayer, b.getLocation(), 0.5F, distToTarget))
+                            return location.getWorld().getBlockAt(x, y, z).getType();
                     }
                 }
             }
