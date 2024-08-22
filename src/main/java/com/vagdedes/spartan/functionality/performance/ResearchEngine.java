@@ -598,9 +598,8 @@ public class ResearchEngine {
         if (squareSum > 0) {
             squareSum = AlgebraUtils.integerCeil(Math.sqrt(squareSum / (double) hackTypes.length));
             String message = AwarenessNotifications.getOptionalNotification(
-                    "The plugin has not yet collected enough data, it needs data from " + squareSum + " more player/s."
+                    "The plugin needs data from " + squareSum + " more player/s to enable preventions & punishments."
                             + " This is normal and will be resolved as more players join your server."
-                            + " Due to the limited data, certain checks may not notify, prevent or punish players."
             );
 
             if (message != null) {
