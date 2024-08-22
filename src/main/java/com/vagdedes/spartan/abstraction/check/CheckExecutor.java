@@ -284,7 +284,8 @@ public abstract class CheckExecutor extends DetectionExecutor {
                     if (!hackType.getCheck().isSilent(player.dataType, player.getWorld().getName())
                             && (silentCause == null
                             || silentCause.hasExpired()
-                            || !silentCause.pointerMatches(information))) {
+                            || !silentCause.pointerMatches(information))
+                            && PlayerEvidence.getRequiredPlayers(hackType, PlayerEvidence.preventionProbability) == 0) {
                         PlayerEvidence.EvidenceDetails details = player.protocol.getProfile().evidence.get(this.hackType);
                         this.prevention.canPrevent = details.probability >= PlayerEvidence.preventionProbability
                                 && details.surpassesMeanByRatio(PlayerEvidence.preventionRatio);
@@ -368,7 +369,8 @@ public abstract class CheckExecutor extends DetectionExecutor {
         if (check.canPunish(player.dataType)) {
             List<String> commands = Config.settings.getPunishmentCommands();
 
-            if (!commands.isEmpty()) {
+            if (!commands.isEmpty()
+                    && PlayerEvidence.getRequiredPlayers(hackType, PlayerEvidence.punishmentProbability) == 0) {
                 Collection<Enums.HackType> detectedHacks = player.protocol.getProfile().evidence.getKnowledgeList(
                         PlayerEvidence.punishmentProbability,
                         PlayerEvidence.punishmentRatio

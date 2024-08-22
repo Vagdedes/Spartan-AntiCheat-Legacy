@@ -5,3 +5,4 @@
 [#] Fixed a packet listener issue which caused players not being able to connect to the server.
 [-] Removed the staff chat permission since it is no longer in use.
 [#] Checks will no longer calculate or provide evidence when disabled.
+[#] Punishments and preventions will no longer run if there's not enough data.

@@ -1,12 +1,10 @@
 package com.vagdedes.spartan.abstraction.profiling;
 
+import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class PlayerEvidence {
@@ -42,9 +40,33 @@ public class PlayerEvidence {
     punishmentProbability = 0.95,
             punishmentRatio = 2.0;
 
-    public static final int requiredPlayers = AlgebraUtils.integerCeil(
-            2.0 / (1.0 - PlayerEvidence.punishmentProbability)
-    );
+    private static int probabilityToPlayers(double probability) {
+        return AlgebraUtils.integerCeil(2.0 / (1.0 - probability)); // 2 because wave has 2 cumulative probabilities
+    }
+
+    public static int getRequiredPlayers(Enums.HackType hackType, double probability) {
+        List<PlayerProfile> profiles = ResearchEngine.getPlayerProfiles();
+        int requirement = probabilityToPlayers(probability);
+
+        if (profiles.size() >= requirement) {
+            int count = 0;
+
+            for (PlayerProfile profile : profiles) {
+                if (profile.hasData(hackType)) {
+                    count++;
+
+                    if (count >= requirement) {
+                        return 0;
+                    }
+                }
+            }
+            return requirement - count;
+        } else {
+            return requirement - profiles.size();
+        }
+    }
+
+    // Separator
 
     private final Map<Enums.HackType, EvidenceDetails> probability; // Live object is used for synchronization
 

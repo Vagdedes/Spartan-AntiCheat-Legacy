@@ -149,6 +149,15 @@ public class PlayerProfile {
         return miningHistory[ore.ordinal()];
     }
 
+    public boolean hasData(Enums.HackType hackType) {
+        for (Check.DataType dataType : ResearchEngine.usableDataTypes) {
+            if (!violationHistory[dataType.ordinal()][hackType.ordinal()].isEmpty()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public boolean hasData(Check.DataType dataType) {
         for (Enums.HackType hackType : Enums.HackType.values()) {
             if (!violationHistory[dataType.ordinal()][hackType.ordinal()].isEmpty()) {
