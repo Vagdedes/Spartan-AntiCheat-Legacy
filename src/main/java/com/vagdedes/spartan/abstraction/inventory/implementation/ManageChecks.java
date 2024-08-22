@@ -153,7 +153,7 @@ public class ManageChecks extends InventoryMenu {
                 + (bypassing ? "§a" : "§c") + "Bypassing");
         int counter = 0;
 
-        for (String s : Config.settings.getPunishmentCommands()) {
+        for (String s : check.getPunishmentCommands()) {
             if (s != null) {
                 counter++;
                 String base = "§7" + counter + "§8:§f ";

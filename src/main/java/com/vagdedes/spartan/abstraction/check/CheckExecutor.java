@@ -367,7 +367,7 @@ public abstract class CheckExecutor extends DetectionExecutor {
         Check check = hackType.getCheck();
 
         if (check.canPunish(player.dataType)) {
-            List<String> commands = Config.settings.getPunishmentCommands();
+            List<String> commands = check.getPunishmentCommands();
 
             if (!commands.isEmpty()
                     && PlayerEvidence.getRequiredPlayers(hackType, PlayerEvidence.punishmentProbability) == 0) {
