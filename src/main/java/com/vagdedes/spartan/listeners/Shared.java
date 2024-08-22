@@ -5,7 +5,6 @@ import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
-import com.vagdedes.spartan.functionality.connection.PlayerLimitPerIP;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.performance.PlayerDetectionSlots;
@@ -26,12 +25,6 @@ public class Shared {
 
     public static void join(PlayerJoinEvent e) {
         Player n = e.getPlayer();
-
-        // Utils
-        if (PlayerLimitPerIP.add(n)) {
-            e.setJoinMessage(null);
-            return;
-        }
         SpartanPlayer p = SpartanBukkit.getProtocol(n).spartanPlayer;
 
         // System

@@ -5,7 +5,6 @@ import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.world.SpartanBlock;
 import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
-import com.vagdedes.spartan.functionality.connection.PlayerLimitPerIP;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.AntiCheatLogs;
@@ -121,53 +120,49 @@ public class Event_World implements Listener {
         if (ProtocolLib.isTemporary(n)) {
             return;
         }
-        if (PlayerLimitPerIP.isLimited(n)) {
-            e.setCancelled(true);
-        } else {
-            SpartanPlayer p = SpartanBukkit.getProtocol(n).spartanPlayer;
-            Block nb = e.getClickedBlock();
-            Action action = e.getAction();
-            boolean notNull = nb != null,
-                    customBlock = notNull && ItemsAdder.is(nb);
+        SpartanPlayer p = SpartanBukkit.getProtocol(n).spartanPlayer;
+        Block nb = e.getClickedBlock();
+        Action action = e.getAction();
+        boolean notNull = nb != null,
+                customBlock = notNull && ItemsAdder.is(nb);
 
-            // Object
-            p.calculateClicks(
-                    action == Action.LEFT_CLICK_AIR
-                            && (p.getLastDamageDealt().timePassed() <= 1_000
-                            || p.getLastDamageReceived().timePassed() <= 1_000)
-                            && !p.getNearbyEntities(
-                            CombatUtils.maxHitDistance,
-                            CombatUtils.maxHitDistance,
-                            CombatUtils.maxHitDistance
-                    ).isEmpty()
-            );
+        // Object
+        p.calculateClicks(
+                action == Action.LEFT_CLICK_AIR
+                        && (p.getLastDamageDealt().timePassed() <= 1_000
+                        || p.getLastDamageReceived().timePassed() <= 1_000)
+                        && !p.getNearbyEntities(
+                        CombatUtils.maxHitDistance,
+                        CombatUtils.maxHitDistance,
+                        CombatUtils.maxHitDistance
+                ).isEmpty()
+        );
 
-            if (notNull) {
-                // Detections
-                if (!customBlock) {
-                    p.getExecutor(Enums.HackType.BlockReach).handle(false, e);
-                    p.getExecutor(Enums.HackType.FastBreak).handle(false, e);
-                    p.getExecutor(Enums.HackType.ImpossibleActions).handle(false, e);
-                }
-                p.getExecutor(Enums.HackType.FastEat).handle(false, e);
-
-                if (!customBlock) {
-                    p.getExecutor(Enums.HackType.GhostHand).handle(false, e);
-                }
-            } else {
-                // Detections
-                p.getExecutor(Enums.HackType.FastEat).handle(false, e);
-            }
+        if (notNull) {
             // Detections
             if (!customBlock) {
-                p.getExecutor(Enums.HackType.NoSwing).handle(false, e);
+                p.getExecutor(Enums.HackType.BlockReach).handle(false, e);
+                p.getExecutor(Enums.HackType.FastBreak).handle(false, e);
+                p.getExecutor(Enums.HackType.ImpossibleActions).handle(false, e);
             }
-            p.getExecutor(Enums.HackType.FastBow).handle(false, e);
+            p.getExecutor(Enums.HackType.FastEat).handle(false, e);
 
-            if (p.getExecutor(Enums.HackType.GhostHand).prevent()
-                    || p.getExecutor(Enums.HackType.FastClicks).prevent()) {
-                e.setCancelled(true);
+            if (!customBlock) {
+                p.getExecutor(Enums.HackType.GhostHand).handle(false, e);
             }
+        } else {
+            // Detections
+            p.getExecutor(Enums.HackType.FastEat).handle(false, e);
+        }
+        // Detections
+        if (!customBlock) {
+            p.getExecutor(Enums.HackType.NoSwing).handle(false, e);
+        }
+        p.getExecutor(Enums.HackType.FastBow).handle(false, e);
+
+        if (p.getExecutor(Enums.HackType.GhostHand).prevent()
+                || p.getExecutor(Enums.HackType.FastClicks).prevent()) {
+            e.setCancelled(true);
         }
     }
 

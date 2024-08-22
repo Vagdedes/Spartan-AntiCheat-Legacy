@@ -24,7 +24,7 @@ public class Latency {
 
     public static double getDelay(SpartanPlayer player) {
         double pingDelay;
-        int max = Config.settings.getInteger("Protections.max_supported_player_latency");
+        int max = Config.settings.getInteger("Important.max_supported_player_latency");
 
         if (max <= 0) {
             pingDelay = 0.0;

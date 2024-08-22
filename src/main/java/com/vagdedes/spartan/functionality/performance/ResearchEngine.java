@@ -76,16 +76,20 @@ public class ResearchEngine {
         return new ArrayList<>(playerProfiles.values());
     }
 
-    public static PlayerProfile getPlayerProfile(String name) {
+    public static PlayerProfile getPlayerProfile(String name, boolean create) {
         name = name.toLowerCase();
         PlayerProfile playerProfile = playerProfiles.get(name);
 
         if (playerProfile != null) {
             return playerProfile;
         }
-        playerProfile = new PlayerProfile(name);
-        playerProfiles.put(name, playerProfile);
-        return playerProfile;
+        if (create) {
+            playerProfile = new PlayerProfile(name);
+            playerProfiles.put(name, playerProfile);
+            return playerProfile;
+        } else {
+            return null;
+        }
     }
 
     public static PlayerProfile getPlayerProfile(SpartanProtocol protocol, boolean force) {
@@ -168,7 +172,7 @@ public class ResearchEngine {
                     p.spartanPlayer.getExecutor(hackType).resetLevel();
                 }
             } else {
-                profile = getPlayerProfile(playerName);
+                profile = getPlayerProfile(playerName, true);
             }
             Pattern.deleteFromFile(profile);
 
@@ -428,7 +432,7 @@ public class ResearchEngine {
 
                                             if (violation != null) {
                                                 SimpleDateFormat sdf = new SimpleDateFormat(AntiCheatLogs.dateFormat);
-                                                getPlayerProfile(split[0]).getViolationHistory(getDataType(data), hackType).store(
+                                                getPlayerProfile(split[0], true).getViolationHistory(getDataType(data), hackType).store(
                                                         new PlayerViolation(
                                                                 sdf.parse(fullDate).getTime(),
                                                                 hackType,
@@ -456,7 +460,7 @@ public class ResearchEngine {
                                     );
 
                                     if (ore != null) {
-                                        MiningHistory miningHistory = getPlayerProfile(name).getMiningHistory(ore);
+                                        MiningHistory miningHistory = getPlayerProfile(name, true).getMiningHistory(ore);
 
                                         if (miningHistory != null) {
                                             World.Environment environment = World.Environment.valueOf(

@@ -18,7 +18,6 @@ import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.server.ConfigUtils;
 import com.vagdedes.spartan.utils.minecraft.server.ProxyUtils;
-import me.vagdedes.spartan.api.API;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.Enums.Permission;
 import org.bukkit.Bukkit;
@@ -44,18 +43,18 @@ public class CommandExecution implements CommandExecutor {
 
     public static boolean spartanMessage(CommandSender sender, boolean isPlayer) {
         if (!isPlayer || Permissions.has((Player) sender)) {
-            String v = API.getVersion();
             sender.sendMessage("");
             int slots = CloudBase.getDetectionSlots();
-            String command = "§2" + SpartanEdition.getProductName() + " §a" + v;
+            String command = "§2Spartan AntiCheat";
 
             if (slots <= 0) {
-                command += "\n§8[§eDetection Slots§7: §6Unlimited§8]";
+                command += "\n§8[§eDetection Slots§7: §6Unlimited";
             } else {
                 int players = SpartanBukkit.getPlayerCount();
                 command += "\n§8[§4Detection Slots§7: §c" + slots
-                        + " (" + Math.max(slots - players, 0) + " remaining)§8]";
+                        + " (" + Math.max(slots - players, 0) + " remaining)";
             }
+            command += "|§8]";
             ClickableMessage.sendURL(
                     sender,
                     command,
@@ -92,72 +91,177 @@ public class CommandExecution implements CommandExecutor {
 
             switch (list) {
                 case "default":
-                    if ((info || manage) && isPlayer) {
-                        buildCommand(sender, ChatColor.GREEN, "/" + command + " menu",
-                                "Click this command to open the plugin's inventory menu.");
+                    if (isPlayer) {
+                        if (manage) {
+                            ClickableMessage.sendCommand(
+                                    sender,
+                                    "§c§nPanic Mode",
+                                    "Click this command to toggle silent mode and disable punishments for all checks.",
+                                    "/" + command + " panic"
+                            );
+                        }
+                        if (info || manage) {
+                            ClickableMessage.sendCommand(
+                                    sender,
+                                    "§c§nInventory Menu",
+                                    "Click this command to open the plugin's inventory menu.",
+                                    "/" + command + " menu"
+                            );
+                        }
+                        if (Permissions.has(player, Permission.RELOAD)) {
+                            ClickableMessage.sendCommand(
+                                    sender,
+                                    "§c§nReload Plugin",
+                                    "Click this command to reload the plugin's cache.",
+                                    "/" + command + " reload"
+                            );
+                        }
+                        if (info) {
+                            ClickableMessage.sendCommand(
+                                    sender,
+                                    "§c§nPlayer Info",
+                                    "Click this command to view useful information about a player.",
+                                    "/" + command + " info *"
+                            );
+                        }
+                        if (Permissions.has(player, Permission.USE_BYPASS)) {
+                            ClickableMessage.sendCommand(
+                                    sender,
+                                    "§c§nPlayer Bypass",
+                                    "Click this command to give check bypass to a player.",
+                                    "/" + command + " bypass"
+                            );
+                        }
+                        if (manage) {
+                            ClickableMessage.sendCommand(
+                                    sender,
+                                    "§c§nToggle Checks",
+                                    "Click this command to toggle a check and its detections.",
+                                    "/" + command + " toggle"
+                            );
+                            ClickableMessage.sendCommand(
+                                    sender,
+                                    "§c§nToggle Preventions",
+                                    "Click this command to toggle a check's preventions.",
+                                    "/" + command + " toggle-silent"
+                            );
+                            ClickableMessage.sendCommand(
+                                    sender,
+                                    "§c§nToggle Punishments",
+                                    "Click this command to toggle a check's punishments.",
+                                    "/" + command + " toggle-punishment"
+                            );
+                        }
+                    } else {
+                        ClickableMessage.sendCommand(
+                                sender,
+                                ChatColor.RED + "/" + command + " panic",
+                                "This command can be used to enable silent mode and disable punishments for all checks.",
+                                null
+                        );
+                        ClickableMessage.sendCommand(
+                                sender,
+                                ChatColor.RED + "/" + command + " toggle <check>",
+                                "This command can be used to toggle a check and its detections.",
+                                null
+                        );
+                        buildCommand(
+                                sender,
+                                ChatColor.RED, "/" + command + " reload",
+                                "Click this command to reload the plugin's cache."
+                        );
                     }
-                    if (manage) {
-                        ClickableMessage.sendCommand(sender, ChatColor.RED + "/" + command + " panic",
-                                "This command can be used to enable silent mode and disable punishments for all checks.", null);
-                        ClickableMessage.sendCommand(sender, ChatColor.RED + "/" + command + " toggle <check>",
-                                "This command can be used to enable/disable a check and its detections.", null);
-                    }
-                    if (!isPlayer || Permissions.has(player, Permission.RELOAD)) {
-                        buildCommand(sender, ChatColor.RED, "/" + command + " reload",
-                                "Click this command to reload the plugin's cache.");
-                    }
-                    if (!isPlayer || info
+                    if (!isPlayer
+                            || info
                             || Permissions.has(player, Permission.KICK)
                             || Permissions.has(player, Permission.WARN)
                             || Permissions.has(player, Permission.USE_BYPASS)
                             || Permissions.has(player, Permission.WAVE)) {
-                        buildCommand(sender, ChatColor.RED, "/" + command + " moderation",
-                                "Click this command to view a list of moderation commands.");
+                        buildCommand(
+                                sender,
+                                ChatColor.RED, "/" + command + " moderation",
+                                "Click this command to view a list of moderation commands."
+                        );
                     }
-                    if (!isPlayer || Permissions.has(player, Permission.CONDITION)) {
-                        buildCommand(sender, ChatColor.RED, "/" + command + " conditions",
-                                "Click this command to view a list of conditional commands.");
+                    if (!isPlayer
+                            || Permissions.has(player, Permission.CONDITION)) {
+                        buildCommand(
+                                sender,
+                                ChatColor.RED, "/" + command + " conditions",
+                                "Click this command to view a list of conditional commands."
+                        );
                     }
                     break;
                 case "moderation":
                     boolean permission = false;
 
                     if (isPlayer && DetectionNotifications.hasPermission(player)) {
-                        ClickableMessage.sendCommand(sender, ChatColor.RED + "/" + command + " notifications [ticks-frequency]",
+                        ClickableMessage.sendCommand(
+                                sender,
+                                ChatColor.RED + "/" + command + " notifications [ticks-frequency]",
                                 "This command can be used to receive chat messages whenever a player is suspected of using hack modules.", null);
                     }
                     if (isPlayer && info) {
-                        ClickableMessage.sendCommand(sender, ChatColor.RED + "/" + command + " info [player]",
-                                "This command can be used to view useful information about a player and execute actions upon them.", null);
+                        ClickableMessage.sendCommand(
+                                sender,
+                                ChatColor.RED + "/" + command + " info [player]",
+                                "This command can be used to view useful information about a player.",
+                                null
+                        );
                     }
-                    if (!isPlayer || Permissions.has(player, Permission.USE_BYPASS)) {
+                    if (!isPlayer
+                            || Permissions.has(player, Permission.USE_BYPASS)) {
                         permission = true;
-                        ClickableMessage.sendCommand(sender, ChatColor.RED + "/" + command + " bypass <player> <check> [seconds]",
-                                "This command can be used to cause a player to temporarily bypass a check and its detections.", null);
+                        ClickableMessage.sendCommand(
+                                sender,
+                                ChatColor.RED + "/" + command + " bypass <player> <check> [seconds]",
+                                "This command can be used to cause a player to temporarily bypass a check and its detections.",
+                                null
+                        );
                     }
-                    if (!isPlayer || Permissions.has(player, Permission.WARN)) {
+                    if (!isPlayer
+                            || Permissions.has(player, Permission.WARN)) {
                         permission = true;
-                        ClickableMessage.sendCommand(sender, ChatColor.RED + "/" + command + " warn <player> <reason>",
-                                "This command can be used to individually warn a player about something important.", null);
+                        ClickableMessage.sendCommand(
+                                sender,
+                                ChatColor.RED + "/" + command + " warn <player> <reason>",
+                                "This command can be used to individually warn a player about something important.",
+                                null
+                        );
                     }
-                    if (!isPlayer || Permissions.has(player, Permission.KICK)) {
+                    if (!isPlayer
+                            || Permissions.has(player, Permission.KICK)) {
                         permission = true;
-                        ClickableMessage.sendCommand(sender, ChatColor.RED + "/" + command + " kick <player> <reason>",
-                                "This command can be used to kick players from the server for a specific reason.", null);
+                        ClickableMessage.sendCommand(
+                                sender,
+                                ChatColor.RED + "/" + command + " kick <player> <reason>",
+                                "This command can be used to kick players from the server for a specific reason.",
+                                null
+                        );
                     }
-                    if (!isPlayer || Permissions.has(player, Permission.WAVE)) {
+                    if (!isPlayer
+                            || Permissions.has(player, Permission.WAVE)) {
                         permission = true;
-                        ClickableMessage.sendCommand(sender, ChatColor.RED + "/" + command + " wave <add/remove/clear/run/list> [player] [command]",
+                        ClickableMessage.sendCommand(
+                                sender,
+                                ChatColor.RED + "/" + command + " wave <add/remove/clear/run/list> [player] [command]",
                                 "This command can be used to add a player to a list with a command representing their punishment. " +
                                         "This list can be executed manually by a player or automatically based on the plugin's configuration, " +
                                         "and cause added players to punished all at once and in order."
                                         + "\n\n"
-                                        + "Example: /" + command + " wave add playerName ban {player} You have been banned for hacking!", null);
+                                        + "Example: /" + command + " wave add playerName ban {player} You have been banned for hacking!",
+                                null
+                        );
                     }
-                    if (!isPlayer || Permissions.has(player, Permission.ADMIN)) {
+                    if (!isPlayer
+                            || Permissions.has(player, Permission.ADMIN)) {
                         permission = true;
-                        ClickableMessage.sendCommand(sender, ChatColor.RED + "/" + command + " proxy-command <command>",
-                                "This command can be used to transfer commands to the proxy/network of servers. (Example: BungeeCord)", null);
+                        ClickableMessage.sendCommand(
+                                sender,
+                                ChatColor.RED + "/" + command + " proxy-command <command>",
+                                "This command can be used to transfer commands to the proxy/network of servers. (Example: BungeeCord)",
+                                null
+                        );
                     }
 
                     if (!permission) {

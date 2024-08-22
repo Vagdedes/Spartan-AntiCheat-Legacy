@@ -21,21 +21,19 @@ public class Messages extends ConfigurationBuilder {
 
         clear();
         addOption("console_name", "Console");
-        addOption("no_permission", "&cYou don't have permission to interact with this.");
-        addOption("player_not_found_message", "&cPlayer not found.");
-        addOption("not_enough_saved_logs", "&8[&2" + prefix + "&8]&c Not enough saved logs. Must be at least {amount} rows.");
+        addOption("no_permission", "&8[&2" + prefix + "&8]&c You don't have permission to interact with this.");
+        addOption("player_not_found_message", "&8[&2" + prefix + "&8]&c Player not found.");
 
         // Config
         addOption("config_reload", "&8[&2" + prefix + "&8]&e Config successfully reloaded.");
 
         // Panic
-        addOption("panic_mode_enable", "&aPanic mode enabled, all checks are set to silent and will not punish players.");
-        addOption("panic_mode_disable", "&cPanic mode disabled, all checks will now run per configuration standards.");
+        addOption("panic_mode_enable", "&8[&2" + prefix + "&8]&a Panic mode enabled, all checks are set to silent and will not punish players.");
+        addOption("panic_mode_disable", "&8[&2" + prefix + "&8]&c Panic mode disabled, all checks will now run per configuration standards.");
 
         // Kick
         addOption("kick_reason", "&c {reason}");
         addOption("kick_broadcast_message", "&8[&2" + prefix + "&8]&c {player}&7 was kicked for&4 {reason}");
-        addOption("reconnect_kick_message", "&8[&2" + prefix + "&8]&c Please wait a few seconds before logging back in.");
         addOption("player_ip_limit_kick_message", "&8[&2" + prefix + "&8]&c The player limit of your IP has been reached.");
 
         // Violations

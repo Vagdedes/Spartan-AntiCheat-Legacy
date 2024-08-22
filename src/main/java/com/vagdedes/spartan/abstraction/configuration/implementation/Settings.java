@@ -37,16 +37,14 @@ public class Settings extends ConfigurationBuilder {
         addOption("Notifications.awareness_notifications", true);
         addOption("Notifications.message_clickable_command", "/teleport {player}");
 
-        addOption("Protections.max_supported_player_latency", TPS.tickTimeInteger * 100);
-        addOption("Protections.player_limit_per_ip", 0);
-
+        addOption("Important.max_supported_player_latency", TPS.tickTimeInteger * 100);
         addOption("Important.op_bypass", false);
+        addOption(crossServerNotificationsName, "");
         addOption("Important.bedrock_client_permission", false);
-        addOption("Important.enable_developer_api", true);
         addOption("Important.bedrock_player_prefix", ".");
+        addOption("Important.enable_developer_api", true);
         addOption("Important.enable_npc", true);
         addOption("Important.enable_watermark", true);
-        addOption(crossServerNotificationsName, "");
 
         addOption("Detections.ground_teleport_on_detection", true);
         addOption("Detections.fall_damage_on_teleport", false);

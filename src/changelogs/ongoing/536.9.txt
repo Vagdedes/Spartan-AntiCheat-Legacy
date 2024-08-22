@@ -6,3 +6,7 @@
 [-] Removed the staff chat permission since it is no longer in use.
 [#] Checks will no longer calculate or provide evidence when disabled.
 [#] Punishments and preventions will no longer run if there's not enough data.
+[+] Add prefix to messages.yml messages that should but didn't contain it.
+[-] Removed messages.yml messages that were generated but had no practical use.
+[#] Moved the settings.yml option 'max_supported_player_latency' from the Protections to the Important category.
+[-] Removed the player-limit-per-ip feature and its settings.yml option as it is not in par with the anti-cheat's future path.

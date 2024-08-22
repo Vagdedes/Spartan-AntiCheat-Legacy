@@ -509,7 +509,7 @@ public abstract class CheckExecutor extends DetectionExecutor {
             if (player) {
                 details = ((SpartanPlayer) detected).protocol.getProfile().evidence.get(this.hackType);
             } else {
-                details = ResearchEngine.getPlayerProfile(detected.toString()).evidence.get(this.hackType);
+                details = ResearchEngine.getPlayerProfile(detected.toString(), true).evidence.get(this.hackType);
             }
 
             if (details.probability >= PlayerEvidence.notificationProbability
