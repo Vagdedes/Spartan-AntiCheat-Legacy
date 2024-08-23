@@ -377,7 +377,8 @@ public abstract class CheckExecutor extends DetectionExecutor {
                 );
                 detectedHacks.removeIf(loopHackType -> !loopHackType.getCheck().canPunish(player.dataType));
 
-                if (!detectedHacks.isEmpty()) {
+                if (!detectedHacks.isEmpty()
+                        && detectedHacks.contains(hackType)) {
                     int index = 0;
                     boolean enabledDeveloperAPI = Config.settings.getBoolean("Important.enable_developer_api");
                     StringBuilder stringBuilder = new StringBuilder();

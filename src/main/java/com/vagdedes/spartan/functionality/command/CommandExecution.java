@@ -4,6 +4,7 @@ import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.functionality.connection.DiscordMemberCount;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
 import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
@@ -36,43 +37,47 @@ import java.util.UUID;
 public class CommandExecution implements CommandExecutor {
 
     public static final int maxConnectedArgumentLength = 4096;
+    public static final String support = "Click to receive plugin support.";
 
     private static void buildCommand(CommandSender sender, ChatColor chatColor, String command, String description) {
         ClickableMessage.sendCommand(sender, chatColor + command, description, command);
     }
 
-    public static boolean spartanMessage(CommandSender sender, boolean isPlayer) {
+    public static boolean spartanMessage(CommandSender sender,
+                                         boolean isPlayer,
+                                         boolean documentation) {
         if (!isPlayer || Permissions.has((Player) sender)) {
             sender.sendMessage("");
             int slots = CloudBase.getDetectionSlots();
             String command = "§2Spartan AntiCheat";
 
             if (slots <= 0) {
-                command += "\n§8[§eDetection Slots§7: §6Unlimited";
+                command += "\n§8[ §eDetection Slots§7: §6Unlimited §8]";
             } else {
                 int players = SpartanBukkit.getPlayerCount();
-                command += "\n§8[§4Detection Slots§7: §c" + slots
-                        + " (" + Math.max(slots - players, 0) + " remaining)";
+                command += "\n§8[ §4Detection Slots§7: §c" + slots
+                        + " (" + Math.max(slots - players, 0) + " remaining) §8]";
             }
-            command += "|§8]";
             ClickableMessage.sendURL(
                     sender,
                     command,
                     "Click to learn how Detection Slots work!",
                     SpartanEdition.patreonURL
             );
-            ClickableMessage.sendURL(
-                    sender,
-                    "§8§l<> §7Required command argument",
-                    "Click to learn how Detection Slots work!",
-                    SpartanEdition.patreonURL
-            );
-            ClickableMessage.sendURL(
-                    sender,
-                    "§8§l[] §7Optional command argument",
-                    "Click to learn how Detection Slots work!",
-                    SpartanEdition.patreonURL
-            );
+            if (documentation) {
+                ClickableMessage.sendURL(
+                        sender,
+                        "§8§l<> §7Required command argument",
+                        "Click to learn how Detection Slots work!",
+                        SpartanEdition.patreonURL
+                );
+                ClickableMessage.sendURL(
+                        sender,
+                        "§8§l[] §7Optional command argument",
+                        "Click to learn how Detection Slots work!",
+                        SpartanEdition.patreonURL
+                );
+            }
             return true;
         }
         sender.sendMessage(Config.messages.getColorfulString("unknown_command"));
@@ -84,18 +89,18 @@ public class CommandExecution implements CommandExecutor {
         SpartanPlayer player = isPlayer ? SpartanBukkit.getProtocol((Player) sender).spartanPlayer : null;
         isPlayer &= player != null;
 
-        if (spartanMessage(sender, isPlayer)) {
-            String command = Register.plugin.getName().toLowerCase();
-            boolean info = !isPlayer || Permissions.has(player, Enums.Permission.INFO),
-                    manage = !isPlayer || Permissions.has(player, Enums.Permission.MANAGE);
+        String command = Register.plugin.getName().toLowerCase();
+        boolean info = !isPlayer || Permissions.has(player, Enums.Permission.INFO),
+                manage = !isPlayer || Permissions.has(player, Enums.Permission.MANAGE);
 
-            switch (list) {
-                case "default":
+        switch (list) {
+            case "default":
+                if (spartanMessage(sender, isPlayer, !isPlayer)) {
                     if (isPlayer) {
                         if (manage) {
                             ClickableMessage.sendCommand(
                                     sender,
-                                    "§c§nPanic Mode",
+                                    "§cPanic Mode §7(Click)",
                                     "Click this command to toggle silent mode and disable punishments for all checks.",
                                     "/" + command + " panic"
                             );
@@ -103,7 +108,7 @@ public class CommandExecution implements CommandExecutor {
                         if (info || manage) {
                             ClickableMessage.sendCommand(
                                     sender,
-                                    "§c§nInventory Menu",
+                                    "§cInventory Menu §7(Click)",
                                     "Click this command to open the plugin's inventory menu.",
                                     "/" + command + " menu"
                             );
@@ -111,7 +116,7 @@ public class CommandExecution implements CommandExecutor {
                         if (Permissions.has(player, Permission.RELOAD)) {
                             ClickableMessage.sendCommand(
                                     sender,
-                                    "§c§nReload Plugin",
+                                    "§cReload Plugin §7(Click)",
                                     "Click this command to reload the plugin's cache.",
                                     "/" + command + " reload"
                             );
@@ -119,7 +124,7 @@ public class CommandExecution implements CommandExecutor {
                         if (info) {
                             ClickableMessage.sendCommand(
                                     sender,
-                                    "§c§nPlayer Info",
+                                    "§cPlayer Info §7(Click)",
                                     "Click this command to view useful information about a player.",
                                     "/" + command + " info *"
                             );
@@ -127,27 +132,27 @@ public class CommandExecution implements CommandExecutor {
                         if (Permissions.has(player, Permission.USE_BYPASS)) {
                             ClickableMessage.sendCommand(
                                     sender,
-                                    "§c§nPlayer Bypass",
+                                    "§cPlayer Bypass §7(Click)",
                                     "Click this command to give check bypass to a player.",
-                                    "/" + command + " bypass"
+                                    "/" + command + " bypass *"
                             );
                         }
                         if (manage) {
                             ClickableMessage.sendCommand(
                                     sender,
-                                    "§c§nToggle Checks",
+                                    "§cToggle Checks §7(Click)",
                                     "Click this command to toggle a check and its detections.",
                                     "/" + command + " toggle"
                             );
                             ClickableMessage.sendCommand(
                                     sender,
-                                    "§c§nToggle Preventions",
+                                    "§cToggle Preventions §7(Click)",
                                     "Click this command to toggle a check's preventions.",
                                     "/" + command + " toggle-silent"
                             );
                             ClickableMessage.sendCommand(
                                     sender,
-                                    "§c§nToggle Punishments",
+                                    "§cToggle Punishments §7(Click)",
                                     "Click this command to toggle a check's punishments.",
                                     "/" + command + " toggle-punishment"
                             );
@@ -191,8 +196,10 @@ public class CommandExecution implements CommandExecutor {
                                 "Click this command to view a list of conditional commands."
                         );
                     }
-                    break;
-                case "moderation":
+                }
+                break;
+            case "moderation":
+                if (spartanMessage(sender, isPlayer, true)) {
                     boolean permission = false;
 
                     if (isPlayer && DetectionNotifications.hasPermission(player)) {
@@ -267,8 +274,10 @@ public class CommandExecution implements CommandExecutor {
                     if (!permission) {
                         completeMessage(sender, "default");
                     }
-                    break;
-                case "conditions":
+                }
+                break;
+            case "conditions":
+                if (spartanMessage(sender, isPlayer, true)) {
                     if (!isPlayer || Permissions.has(player, Permission.CONDITION)) {
                         sender.sendMessage(ChatColor.RED + "/" + command + " <player> if <condition> equals <result> do <command>");
                         sender.sendMessage(ChatColor.RED + "/" + command + " <player> if <condition> contains <result> do <command>");
@@ -277,10 +286,10 @@ public class CommandExecution implements CommandExecutor {
                     } else {
                         completeMessage(sender, "default");
                     }
-                    break;
-                default:
-                    break;
-            }
+                }
+                break;
+            default:
+                break;
         }
     }
 
@@ -319,15 +328,30 @@ public class CommandExecution implements CommandExecutor {
                     InteractiveInventory.mainMenu.open(player);
                 } else if (args[0].equalsIgnoreCase("Panic")) {
                     if (isPlayer && !Permissions.has(player, Permission.MANAGE)) {
-                        sender.sendMessage(Config.messages.getColorfulString("no_permission"));
+                        ClickableMessage.sendURL(
+                                sender,
+                                Config.messages.getColorfulString("no_permission"),
+                                support,
+                                DiscordMemberCount.discordURL
+                        );
                         return true;
                     }
                     Check.panic = !Check.panic;
 
                     if (Check.panic) {
-                        sender.sendMessage(Config.messages.getColorfulString("panic_mode_enable"));
+                        ClickableMessage.sendURL(
+                                sender,
+                                Config.messages.getColorfulString("panic_mode_enable"),
+                                support,
+                                DiscordMemberCount.discordURL
+                        );
                     } else {
-                        sender.sendMessage(Config.messages.getColorfulString("panic_mode_disable"));
+                        ClickableMessage.sendURL(
+                                sender,
+                                Config.messages.getColorfulString("panic_mode_disable"),
+                                support,
+                                DiscordMemberCount.discordURL
+                        );
                     }
                 } else if (args[0].equalsIgnoreCase("Moderation")) {
                     completeMessage(sender, args[0].toLowerCase());
@@ -337,21 +361,36 @@ public class CommandExecution implements CommandExecutor {
 
                 } else if (args[0].equalsIgnoreCase("Reload") || args[0].equalsIgnoreCase("Rl")) {
                     if (isPlayer && !Permissions.has(player, Permission.RELOAD)) {
-                        sender.sendMessage(Config.messages.getColorfulString("no_permission"));
+                        ClickableMessage.sendURL(
+                                sender,
+                                Config.messages.getColorfulString("no_permission"),
+                                support,
+                                DiscordMemberCount.discordURL
+                        );
                         return true;
                     }
                     Config.reload(sender);
 
                 } else if (isPlayer && args[0].equalsIgnoreCase("Info")) {
                     if (!Permissions.has(player, Permission.INFO)) {
-                        sender.sendMessage(Config.messages.getColorfulString("no_permission"));
+                        ClickableMessage.sendURL(
+                                sender,
+                                Config.messages.getColorfulString("no_permission"),
+                                support,
+                                DiscordMemberCount.discordURL
+                        );
                         return true;
                     }
                     InteractiveInventory.playerInfo.open(player, sender.getName());
 
                 } else if (isPlayer && args[0].equalsIgnoreCase("Notifications")) {
                     if (!DetectionNotifications.hasPermission(player)) {
-                        sender.sendMessage(Config.messages.getColorfulString("no_permission"));
+                        ClickableMessage.sendURL(
+                                sender,
+                                Config.messages.getColorfulString("no_permission"),
+                                support,
+                                DiscordMemberCount.discordURL
+                        );
                         return true;
                     }
                     DetectionNotifications.set(player, DetectionNotifications.defaultFrequency);
@@ -362,7 +401,12 @@ public class CommandExecution implements CommandExecutor {
             } else {
                 if (args[0].equalsIgnoreCase("Proxy-Command")) {
                     if (isPlayer && !Permissions.has(player, Permission.ADMIN)) {
-                        sender.sendMessage(Config.messages.getColorfulString("no_permission"));
+                        ClickableMessage.sendURL(
+                                sender,
+                                Config.messages.getColorfulString("no_permission"),
+                                support,
+                                DiscordMemberCount.discordURL
+                        );
                         return true;
                     }
                     StringBuilder argumentsToStringBuilder = new StringBuilder();
@@ -372,34 +416,69 @@ public class CommandExecution implements CommandExecutor {
                     String argumentsToString = argumentsToStringBuilder.substring(0, argumentsToStringBuilder.length() - 1);
 
                     if (isPlayer ? argumentsToString.length() > player.getMaxChatLength() : argumentsToString.length() > maxConnectedArgumentLength) {
-                        sender.sendMessage(Config.messages.getColorfulString("massive_command_reason"));
+                        ClickableMessage.sendURL(
+                                sender,
+                                Config.messages.getColorfulString("massive_command_reason"),
+                                support,
+                                DiscordMemberCount.discordURL
+                        );
                         return true;
                     }
                     if (!ProxyUtils.executeCommand(isPlayer ? player.getInstance() : null, argumentsToString)) {
-                        sender.sendMessage(Config.messages.getColorfulString("failed_command"));
+                        ClickableMessage.sendURL(
+                                sender,
+                                Config.messages.getColorfulString("failed_command"),
+                                support,
+                                DiscordMemberCount.discordURL
+                        );
                         return true;
                     }
-                    sender.sendMessage(Config.messages.getColorfulString("successful_command"));
+                    ClickableMessage.sendURL(
+                            sender,
+                            Config.messages.getColorfulString("successful_command"),
+                            support,
+                            DiscordMemberCount.discordURL
+                    );
                 } else {
                     if (args.length == 2) {
                         if (args[0].equalsIgnoreCase("Wave")) {
                             String command = args[1];
 
                             if (isPlayer && !Permissions.has(player, Permission.WAVE)) {
-                                sender.sendMessage(Config.messages.getColorfulString("no_permission"));
+                                ClickableMessage.sendURL(
+                                        sender,
+                                        Config.messages.getColorfulString("no_permission"),
+                                        support,
+                                        DiscordMemberCount.discordURL
+                                );
                                 return true;
                             }
                             if (command.equalsIgnoreCase("Run")) {
                                 if (Wave.getWaveList().length == 0) {
-                                    sender.sendMessage(Config.messages.getColorfulString("empty_wave_list"));
+                                    ClickableMessage.sendURL(
+                                            sender,
+                                            Config.messages.getColorfulString("empty_wave_list"),
+                                            support,
+                                            DiscordMemberCount.discordURL
+                                    );
                                     return true;
                                 }
                                 if (!Wave.start()) {
-                                    sender.sendMessage(Config.messages.getColorfulString("failed_command"));
+                                    ClickableMessage.sendURL(
+                                            sender,
+                                            Config.messages.getColorfulString("failed_command"),
+                                            support,
+                                            DiscordMemberCount.discordURL
+                                    );
                                 }
                             } else if (command.equalsIgnoreCase("Clear")) {
                                 Wave.clear();
-                                sender.sendMessage(Config.messages.getColorfulString("wave_clear_message"));
+                                ClickableMessage.sendURL(
+                                        sender,
+                                        Config.messages.getColorfulString("wave_clear_message"),
+                                        support,
+                                        DiscordMemberCount.discordURL
+                                );
                             } else if (command.equalsIgnoreCase("List")) {
                                 sender.sendMessage(ChatColor.GRAY + "Wave Queued Players" + ChatColor.DARK_GRAY + ":");
                                 sender.sendMessage(Wave.getWaveListString());
@@ -409,7 +488,12 @@ public class CommandExecution implements CommandExecutor {
 
                         } else if (isPlayer && args[0].equalsIgnoreCase("Info")) {
                             if (!Permissions.has(player, Permission.INFO)) {
-                                sender.sendMessage(Config.messages.getColorfulString("no_permission"));
+                                ClickableMessage.sendURL(
+                                        sender,
+                                        Config.messages.getColorfulString("no_permission"),
+                                        support,
+                                        DiscordMemberCount.discordURL
+                                );
                                 return true;
                             }
                             InteractiveInventory.playerInfo.open(player, ConfigUtils.replaceWithSyntax(args[1], null));
@@ -418,7 +502,12 @@ public class CommandExecution implements CommandExecutor {
                             String check = args[1];
 
                             if (isPlayer && !Permissions.has(player, Permission.MANAGE)) {
-                                sender.sendMessage(Config.messages.getColorfulString("no_permission"));
+                                ClickableMessage.sendURL(
+                                        sender,
+                                        Config.messages.getColorfulString("no_permission"),
+                                        support,
+                                        DiscordMemberCount.discordURL
+                                );
                                 return true;
                             }
                             boolean exists = false;
@@ -450,12 +539,22 @@ public class CommandExecution implements CommandExecutor {
                                     sender.sendMessage(message);
                                 }
                             } else {
-                                sender.sendMessage(Config.messages.getColorfulString("non_existing_check"));
+                                ClickableMessage.sendURL(
+                                        sender,
+                                        Config.messages.getColorfulString("non_existing_check"),
+                                        support,
+                                        DiscordMemberCount.discordURL
+                                );
                             }
 
                         } else if (isPlayer && args[0].equalsIgnoreCase("Notifications")) {
                             if (!DetectionNotifications.hasPermission(player)) {
-                                sender.sendMessage(Config.messages.getColorfulString("no_permission"));
+                                ClickableMessage.sendURL(
+                                        sender,
+                                        Config.messages.getColorfulString("no_permission"),
+                                        support,
+                                        DiscordMemberCount.discordURL
+                                );
                                 return true;
                             }
                             String divisorString = args[1];
@@ -466,10 +565,20 @@ public class CommandExecution implements CommandExecutor {
                                 if (frequency >= 0) {
                                     DetectionNotifications.set(player, frequency);
                                 } else {
-                                    sender.sendMessage(Config.messages.getColorfulString("failed_command"));
+                                    ClickableMessage.sendURL(
+                                            sender,
+                                            Config.messages.getColorfulString("failed_command"),
+                                            support,
+                                            DiscordMemberCount.discordURL
+                                    );
                                 }
                             } else {
-                                sender.sendMessage(Config.messages.getColorfulString("failed_command"));
+                                ClickableMessage.sendURL(
+                                        sender,
+                                        Config.messages.getColorfulString("failed_command"),
+                                        support,
+                                        DiscordMemberCount.discordURL
+                                );
                             }
 
                         } else {
@@ -484,40 +593,80 @@ public class CommandExecution implements CommandExecutor {
 
                         if (args[0].equalsIgnoreCase("Kick")) {
                             if (isPlayer && !Permissions.has(player, Permission.KICK)) {
-                                sender.sendMessage(Config.messages.getColorfulString("no_permission"));
+                                ClickableMessage.sendURL(
+                                        sender,
+                                        Config.messages.getColorfulString("no_permission"),
+                                        support,
+                                        DiscordMemberCount.discordURL
+                                );
                                 return true;
                             }
                             if (isPlayer ? argumentsToString.length() > player.getMaxChatLength() : argumentsToString.length() > maxConnectedArgumentLength) {
-                                sender.sendMessage(Config.messages.getColorfulString("massive_command_reason"));
+                                ClickableMessage.sendURL(
+                                        sender,
+                                        Config.messages.getColorfulString("massive_command_reason"),
+                                        support,
+                                        DiscordMemberCount.discordURL
+                                );
                                 return true;
                             }
                             SpartanProtocol t = SpartanBukkit.getProtocol(args[1]);
 
                             if (t == null) {
-                                sender.sendMessage(Config.messages.getColorfulString("player_not_found_message"));
+                                ClickableMessage.sendURL(
+                                        sender,
+                                        Config.messages.getColorfulString("player_not_found_message"),
+                                        support,
+                                        DiscordMemberCount.discordURL
+                                );
                                 return true;
                             }
                             if (!t.spartanPlayer.punishments.kick(sender, argumentsToString)) {
-                                sender.sendMessage(Config.messages.getColorfulString("failed_command"));
+                                ClickableMessage.sendURL(
+                                        sender,
+                                        Config.messages.getColorfulString("failed_command"),
+                                        support,
+                                        DiscordMemberCount.discordURL
+                                );
                             }
 
                         } else if (args[0].equalsIgnoreCase("Warn")) {
                             if (isPlayer && !Permissions.has(player, Permission.WARN)) {
-                                sender.sendMessage(Config.messages.getColorfulString("no_permission"));
+                                ClickableMessage.sendURL(
+                                        sender,
+                                        Config.messages.getColorfulString("no_permission"),
+                                        support,
+                                        DiscordMemberCount.discordURL
+                                );
                                 return true;
                             }
                             if (isPlayer ? argumentsToString.length() > player.getMaxChatLength() : argumentsToString.length() > maxConnectedArgumentLength) {
-                                sender.sendMessage(Config.messages.getColorfulString("massive_command_reason"));
+                                ClickableMessage.sendURL(
+                                        sender,
+                                        Config.messages.getColorfulString("massive_command_reason"),
+                                        support,
+                                        DiscordMemberCount.discordURL
+                                );
                                 return true;
                             }
                             SpartanProtocol t = SpartanBukkit.getProtocol(args[1]);
 
                             if (t == null) {
-                                sender.sendMessage(Config.messages.getColorfulString("player_not_found_message"));
+                                ClickableMessage.sendURL(
+                                        sender,
+                                        Config.messages.getColorfulString("player_not_found_message"),
+                                        support,
+                                        DiscordMemberCount.discordURL
+                                );
                                 return true;
                             }
                             if (!t.spartanPlayer.punishments.warn(sender, argumentsToString)) {
-                                sender.sendMessage(Config.messages.getColorfulString("failed_command"));
+                                ClickableMessage.sendURL(
+                                        sender,
+                                        Config.messages.getColorfulString("failed_command"),
+                                        support,
+                                        DiscordMemberCount.discordURL
+                                );
                             }
 
                         } else if (args[0].equalsIgnoreCase("Bypass")) {
@@ -530,13 +679,23 @@ public class CommandExecution implements CommandExecutor {
                                 String sec = noSeconds ? null : args[3];
 
                                 if (isPlayer && !Permissions.has(player, Permission.USE_BYPASS)) {
-                                    sender.sendMessage(Config.messages.getColorfulString("no_permission"));
+                                    ClickableMessage.sendURL(
+                                            sender,
+                                            Config.messages.getColorfulString("no_permission"),
+                                            support,
+                                            DiscordMemberCount.discordURL
+                                    );
                                     return true;
                                 }
                                 SpartanProtocol t = SpartanBukkit.getProtocol(args[1]);
 
                                 if (t == null) {
-                                    sender.sendMessage(Config.messages.getColorfulString("player_not_found_message"));
+                                    ClickableMessage.sendURL(
+                                            sender,
+                                            Config.messages.getColorfulString("player_not_found_message"),
+                                            support,
+                                            DiscordMemberCount.discordURL
+                                    );
                                     return true;
                                 }
                                 List<Enums.HackType> found = new ArrayList<>(maxHackTypes);
@@ -567,7 +726,12 @@ public class CommandExecution implements CommandExecutor {
                                         sender.sendMessage(message);
                                     }
                                 } else {
-                                    sender.sendMessage(Config.messages.getColorfulString("non_existing_check"));
+                                    ClickableMessage.sendURL(
+                                            sender,
+                                            Config.messages.getColorfulString("non_existing_check"),
+                                            support,
+                                            DiscordMemberCount.discordURL
+                                    );
                                 }
                             } else {
                                 completeMessage(sender, "moderation");
@@ -577,12 +741,22 @@ public class CommandExecution implements CommandExecutor {
                             OfflinePlayer t = Bukkit.getOfflinePlayer(args[2]);
 
                             if (isPlayer && !Permissions.has(player, Permission.WAVE)) {
-                                sender.sendMessage(Config.messages.getColorfulString("no_permission"));
+                                ClickableMessage.sendURL(
+                                        sender,
+                                        Config.messages.getColorfulString("no_permission"),
+                                        support,
+                                        DiscordMemberCount.discordURL
+                                );
                                 return true;
                             }
                             if (command.equalsIgnoreCase("add") && args.length >= 4) {
                                 if (Wave.getWaveList().length >= 100) {
-                                    sender.sendMessage(Config.messages.getColorfulString("full_wave_list"));
+                                    ClickableMessage.sendURL(
+                                            sender,
+                                            Config.messages.getColorfulString("full_wave_list"),
+                                            support,
+                                            DiscordMemberCount.discordURL
+                                    );
                                     return true;
                                 }
                                 argumentsToStringBuilder = new StringBuilder();
@@ -592,7 +766,12 @@ public class CommandExecution implements CommandExecutor {
                                 argumentsToString = argumentsToStringBuilder.substring(0, argumentsToStringBuilder.length() - 1);
 
                                 if (isPlayer ? argumentsToString.length() > player.getMaxChatLength() : argumentsToString.length() > maxConnectedArgumentLength) {
-                                    sender.sendMessage(Config.messages.getColorfulString("massive_command_reason"));
+                                    ClickableMessage.sendURL(
+                                            sender,
+                                            Config.messages.getColorfulString("massive_command_reason"),
+                                            support,
+                                            DiscordMemberCount.discordURL
+                                    );
                                     return true;
                                 }
                                 String message = Config.messages.getColorfulString("wave_add_message");
@@ -625,13 +804,23 @@ public class CommandExecution implements CommandExecutor {
 
                             if (args.length >= 7) {
                                 if (isPlayer && !Permissions.has(player, Permission.CONDITION)) {
-                                    sender.sendMessage(Config.messages.getColorfulString("no_permission"));
+                                    ClickableMessage.sendURL(
+                                            sender,
+                                            Config.messages.getColorfulString("no_permission"),
+                                            support,
+                                            DiscordMemberCount.discordURL
+                                    );
                                     return true;
                                 }
                                 SpartanProtocol t = SpartanBukkit.getProtocol(args[0]);
 
                                 if (t == null) {
-                                    sender.sendMessage(Config.messages.getColorfulString("player_not_found_message"));
+                                    ClickableMessage.sendURL(
+                                            sender,
+                                            Config.messages.getColorfulString("player_not_found_message"),
+                                            support,
+                                            DiscordMemberCount.discordURL
+                                    );
                                     return true;
                                 }
                                 if (args[1].equalsIgnoreCase("if") && args[5].equalsIgnoreCase("do")) {

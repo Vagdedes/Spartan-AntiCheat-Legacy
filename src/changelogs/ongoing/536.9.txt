@@ -10,3 +10,5 @@
 [-] Removed messages.yml messages that were generated but had no practical use.
 [#] Moved the settings.yml option 'max_supported_player_latency' from the Protections to the Important category.
 [-] Removed the player-limit-per-ip feature and its settings.yml option as it is not in par with the anti-cheat's future path.
+[#] Punishments for any check will now execute only if the check called has sufficient evidence.
+[+] Added 2 new commands: toggle-prevention, toggle-punishment

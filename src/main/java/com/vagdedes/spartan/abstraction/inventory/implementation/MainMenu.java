@@ -5,12 +5,14 @@ import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.inventory.InventoryMenu;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.functionality.command.CommandExecution;
 import com.vagdedes.spartan.functionality.connection.DiscordMemberCount;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
 import com.vagdedes.spartan.functionality.connection.cloud.IDs;
 import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.functionality.inventory.PlayerStateLists;
+import com.vagdedes.spartan.functionality.notifications.clickable.ClickableMessage;
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.Permissions;
@@ -165,14 +167,26 @@ public class MainMenu extends InventoryMenu {
 
         } else if (item.equals("Compatibilities")) {
             if (!Permissions.has(player, Permission.MANAGE)) {
-                player.sendInventoryCloseMessage(Config.messages.getColorfulString("no_permission"));
+                player.getInstance().closeInventory();
+                ClickableMessage.sendURL(
+                        player.getInstance(),
+                        Config.messages.getColorfulString("no_permission"),
+                        CommandExecution.support,
+                        DiscordMemberCount.discordURL
+                );
             } else if (Compatibility.CompatibilityType.FILE_GUI.isFunctional()) {
                 Player n = player.getInstance();
 
                 if (n != null && n.hasPermission("filegui.modify")) {
                     FileGUIAPI.openMenu(n, Config.compatibility.getFile().getPath(), 1);
                 } else {
-                    player.sendInventoryCloseMessage(Config.messages.getColorfulString("no_permission"));
+                    player.getInstance().closeInventory();
+                    ClickableMessage.sendURL(
+                            player.getInstance(),
+                            Config.messages.getColorfulString("no_permission"),
+                            CommandExecution.support,
+                            DiscordMemberCount.discordURL
+                    );
                 }
             } else {
                 player.sendInventoryCloseMessage(
@@ -185,7 +199,13 @@ public class MainMenu extends InventoryMenu {
 
         } else if (item.equals("Management")) {
             if (!Permissions.has(player, Permission.MANAGE)) {
-                player.sendInventoryCloseMessage(Config.messages.getColorfulString("no_permission"));
+                player.getInstance().closeInventory();
+                ClickableMessage.sendURL(
+                        player.getInstance(),
+                        Config.messages.getColorfulString("no_permission"),
+                        CommandExecution.support,
+                        DiscordMemberCount.discordURL
+                );
             } else {
                 if (clickType == ClickType.LEFT) {
                     InteractiveInventory.manageChecks.open(player);

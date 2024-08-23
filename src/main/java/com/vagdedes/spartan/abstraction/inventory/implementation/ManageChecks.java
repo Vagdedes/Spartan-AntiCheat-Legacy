@@ -3,8 +3,11 @@ package com.vagdedes.spartan.abstraction.inventory.implementation;
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.inventory.InventoryMenu;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.functionality.command.CommandExecution;
+import com.vagdedes.spartan.functionality.connection.DiscordMemberCount;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
+import com.vagdedes.spartan.functionality.notifications.clickable.ClickableMessage;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
@@ -83,11 +86,13 @@ public class ManageChecks extends InventoryMenu {
 
                 if (check != null) {
                     ResearchEngine.resetData(check.hackType);
-                    player.sendInventoryCloseMessage(
-                            Config.messages.getColorfulString("check_stored_data_delete_message")
-                                    .replace("{check}", check.getName())
+                    player.getInstance().closeInventory();
+                    ClickableMessage.sendURL(
+                            player.getInstance(),
+                            Config.messages.getColorfulString("check_stored_data_delete_message"),
+                            CommandExecution.support,
+                            DiscordMemberCount.discordURL
                     );
-
                 }
             }
         }

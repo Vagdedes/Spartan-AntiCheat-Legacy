@@ -8,8 +8,11 @@ import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.profiling.PlayerEvidence;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.functionality.command.CommandExecution;
+import com.vagdedes.spartan.functionality.connection.DiscordMemberCount;
 import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
+import com.vagdedes.spartan.functionality.notifications.clickable.ClickableMessage;
 import com.vagdedes.spartan.functionality.performance.PlayerDetectionSlots;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.Config;
@@ -56,7 +59,13 @@ public class PlayerInfo extends InventoryMenu {
                 : ResearchEngine.getPlayerProfile(object.toString(), false);
 
         if (profile == null) {
-            player.sendInventoryCloseMessage(Config.messages.getColorfulString("player_not_found_message"));
+            player.getInstance().closeInventory();
+            ClickableMessage.sendURL(
+                    player.getInstance(),
+                    Config.messages.getColorfulString("player_not_found_message"),
+                    CommandExecution.support,
+                    DiscordMemberCount.discordURL
+            );
             return false;
         } else {
             setTitle(player, menu + (isOnline ? target.spartanPlayer.name : profile.getName()));
@@ -222,7 +231,13 @@ public class PlayerInfo extends InventoryMenu {
 
         if (item.equals(playerName)) {
             if (!Permissions.has(player, Permission.MANAGE)) {
-                player.sendInventoryCloseMessage(Config.messages.getColorfulString("no_permission"));
+                player.getInstance().closeInventory();
+                ClickableMessage.sendURL(
+                        player.getInstance(),
+                        Config.messages.getColorfulString("no_permission"),
+                        CommandExecution.support,
+                        DiscordMemberCount.discordURL
+                );
             } else {
                 SpartanProtocol t = SpartanBukkit.getProtocol(playerName);
 
@@ -236,7 +251,12 @@ public class PlayerInfo extends InventoryMenu {
                     String name = Bukkit.getOfflinePlayer(playerName).getName();
 
                     if (name == null) {
-                        player.sendMessage(Config.messages.getColorfulString("player_not_found_message"));
+                        ClickableMessage.sendURL(
+                                player.getInstance(),
+                                Config.messages.getColorfulString("player_not_found_message"),
+                                CommandExecution.support,
+                                DiscordMemberCount.discordURL
+                        );
                     } else {
                         ResearchEngine.resetData(name);
                         player.sendMessage(Config.messages.getColorfulString("player_stored_data_delete_message").replace("{player}", name));

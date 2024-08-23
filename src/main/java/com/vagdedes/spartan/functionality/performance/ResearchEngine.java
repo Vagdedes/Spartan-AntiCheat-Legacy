@@ -602,7 +602,7 @@ public class ResearchEngine {
         if (squareSum > 0) {
             squareSum = AlgebraUtils.integerCeil(Math.sqrt(squareSum / (double) hackTypes.length));
             String message = AwarenessNotifications.getOptionalNotification(
-                    "The plugin needs data from " + squareSum + " more player/s to enable preventions & punishments."
+                    "The plugin needs data from " + squareSum + " more player/s to enable preventions & punishments for all checks."
                             + " This is normal and will be resolved as more players join your server."
             );
 
