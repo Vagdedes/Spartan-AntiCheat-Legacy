@@ -7,6 +7,7 @@ import com.vagdedes.spartan.abstraction.player.SpartanPotionEffect;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanBlock;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
+import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.math.MathHelper;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PotionEffectUtils;
@@ -14,6 +15,7 @@ import com.vagdedes.spartan.utils.minecraft.vector.SpartanVector2F;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -25,7 +27,7 @@ public class MCClient {
     public float jumpMovementFactor;
     public int onAir, onGroundTicks;
     public long lastPacketTime;
-    public SpartanProtocol protocol;
+    public Player player;
     public org.bukkit.util.Vector veloClaim;
     private final List<MotionVector> predicted;
     public boolean isAirBorne, isJumping;
@@ -50,8 +52,8 @@ public class MCClient {
         this.motion.setZ(z);
     }
 
-    public MCClient(SpartanProtocol protocol) {
-        this.protocol = protocol;
+    public MCClient(Player player) {
+        this.player = player;
         this.isAirBorne = false;
         this.isJumping = false;
         this.veloClaim = null;
@@ -102,7 +104,7 @@ public class MCClient {
     }
 
     public SpartanProtocol p() {
-        return this.protocol;
+        return SpartanBukkit.getProtocol(this.player);
     }
 
     public void preTick(MotionVector currentMotion) {

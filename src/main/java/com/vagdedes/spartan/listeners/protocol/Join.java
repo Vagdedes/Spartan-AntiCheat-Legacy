@@ -41,7 +41,7 @@ public class Join extends PacketAdapter {
         }
         SpartanBukkit.getProtocol(player).setLastTransaction();
         LagCompensation.newPacket(player.getEntityId());
-        clientContainer.put(player.getUniqueId(), new MCClient(SpartanBukkit.getProtocol(player)));
+        clientContainer.put(player.getUniqueId(), new MCClient(player));
         SpartanBukkit.transferTask(player, () -> {
             SpartanBukkit.createProtocol(player);
             Shared.join(new PlayerJoinEvent(player, (String) null));
