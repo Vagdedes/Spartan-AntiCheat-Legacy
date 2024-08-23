@@ -3,7 +3,7 @@ package com.vagdedes.spartan.listeners.bukkit;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
-import com.vagdedes.spartan.functionality.connection.PlayerLimitPerIP;
+import com.vagdedes.spartan.functionality.connection.PlayerIP;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudConnections;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.performance.PlayerDetectionSlots;
@@ -26,7 +26,7 @@ public class Event_Status implements Listener {
     private void PreLogin(AsyncPlayerPreLoginEvent e) {
         if (e.getLoginResult() == AsyncPlayerPreLoginEvent.Result.ALLOWED) {
             InetAddress address = e.getAddress();
-            String ipAddress = address != null ? PlayerLimitPerIP.get(address) : null;
+            String ipAddress = address != null ? PlayerIP.get(address) : null;
             CloudConnections.updatePunishedPlayer(e.getUniqueId(), ipAddress);
         }
     }
@@ -39,9 +39,6 @@ public class Event_Status implements Listener {
             return;
         }
         SpartanProtocol protocol = SpartanBukkit.deleteProtocol(n);
-
-        // Features
-        PlayerLimitPerIP.remove(n);
 
         if (protocol == null) {
             return;

@@ -9,9 +9,11 @@ import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
+import com.vagdedes.spartan.utils.minecraft.server.ConfigUtils;
 import me.vagdedes.spartan.api.CheckSilentToggleEvent;
 import me.vagdedes.spartan.api.CheckToggleEvent;
 import me.vagdedes.spartan.system.Enums;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -52,6 +54,16 @@ public class Check {
             Register.plugin.getDataFolder() + "/checks.yml"
     );
 
+    private static final List<String> defaultPunishments = new ArrayList<>(Check.maxCommands);
+
+    static {
+        defaultPunishments.add("spartan kick {player} {detections}");
+
+        for (int position = (defaultPunishments.size() + 1); position <= Check.maxCommands; position++) {
+            defaultPunishments.add("");
+        }
+    }
+
     // Object
 
     public final Enums.HackType hackType;
@@ -62,6 +74,7 @@ public class Check {
     private final String[]
             disabledWorlds,
             silentWorlds;
+    private final Collection<String> punishments;
 
     // Object Methods
 
@@ -112,7 +125,7 @@ public class Check {
                             optionValue instanceof Double || optionValue instanceof Float ? ((double) optionValue) > 0.0 :
                                     Boolean.parseBoolean(optionValue.toString().toLowerCase());
             optionValue = getOption(
-                    "punish." + dataType.toString().toLowerCase(),
+                    "punishments.enabled." + dataType.toString().toLowerCase(),
                     true,
                     false
             );
@@ -200,6 +213,44 @@ public class Check {
             }
         } else {
             this.silentWorlds = new String[]{};
+        }
+
+        // Separator
+
+        String sectionString = hackType + ".punishments.commands";
+        YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+
+        if (!configuration.contains(sectionString)) {
+            for (int position = 0; position < defaultPunishments.size(); position++) {
+                ConfigUtils.add(file, sectionString + "." + (position + 1), defaultPunishments.get(position));
+            }
+        }
+        ConfigurationSection section = configuration.getConfigurationSection(sectionString);
+
+        if (section != null) {
+            Collection<String> list = new ArrayList<>();
+            Set<String> keys = section.getKeys(true);
+
+            if (!keys.isEmpty()) {
+                sectionString += ".";
+
+                for (String key : keys) {
+                    if (AlgebraUtils.validInteger(key)) {
+                        int number = Integer.parseInt(key);
+
+                        if (number >= 1 && number <= Check.maxCommands) {
+                            String command = configuration.getString(sectionString + number);
+
+                            if (command != null && !command.isEmpty()) {
+                                list.add(command);
+                            }
+                        }
+                    }
+                }
+            }
+            this.punishments = list;
+        } else {
+            this.punishments = new ArrayList<>(0);
         }
     }
 
@@ -614,6 +665,10 @@ public class Check {
                 }
             }
         }
+    }
+
+    public List<String> getPunishmentCommands() {
+        return new ArrayList<>(this.punishments);
     }
 
 }

@@ -284,7 +284,8 @@ public abstract class CheckExecutor extends DetectionExecutor {
                     if (!hackType.getCheck().isSilent(player.dataType, player.getWorld().getName())
                             && (silentCause == null
                             || silentCause.hasExpired()
-                            || !silentCause.pointerMatches(information))) {
+                            || !silentCause.pointerMatches(information))
+                            && PlayerEvidence.getRequiredPlayers(hackType, PlayerEvidence.preventionProbability) == 0) {
                         PlayerEvidence.EvidenceDetails details = player.protocol.getProfile().evidence.get(this.hackType);
                         this.prevention.canPrevent = details.probability >= PlayerEvidence.preventionProbability
                                 && details.surpassesMeanByRatio(PlayerEvidence.preventionRatio);
@@ -366,16 +367,18 @@ public abstract class CheckExecutor extends DetectionExecutor {
         Check check = hackType.getCheck();
 
         if (check.canPunish(player.dataType)) {
-            List<String> commands = Config.settings.getPunishmentCommands();
+            List<String> commands = check.getPunishmentCommands();
 
-            if (!commands.isEmpty()) {
+            if (!commands.isEmpty()
+                    && PlayerEvidence.getRequiredPlayers(hackType, PlayerEvidence.punishmentProbability) == 0) {
                 Collection<Enums.HackType> detectedHacks = player.protocol.getProfile().evidence.getKnowledgeList(
                         PlayerEvidence.punishmentProbability,
                         PlayerEvidence.punishmentRatio
                 );
                 detectedHacks.removeIf(loopHackType -> !loopHackType.getCheck().canPunish(player.dataType));
 
-                if (!detectedHacks.isEmpty()) {
+                if (!detectedHacks.isEmpty()
+                        && detectedHacks.contains(hackType)) {
                     int index = 0;
                     boolean enabledDeveloperAPI = Config.settings.getBoolean("Important.enable_developer_api");
                     StringBuilder stringBuilder = new StringBuilder();
@@ -507,7 +510,7 @@ public abstract class CheckExecutor extends DetectionExecutor {
             if (player) {
                 details = ((SpartanPlayer) detected).protocol.getProfile().evidence.get(this.hackType);
             } else {
-                details = ResearchEngine.getPlayerProfile(detected.toString()).evidence.get(this.hackType);
+                details = ResearchEngine.getPlayerProfile(detected.toString(), true).evidence.get(this.hackType);
             }
 
             if (details.probability >= PlayerEvidence.notificationProbability

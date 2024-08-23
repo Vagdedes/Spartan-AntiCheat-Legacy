@@ -15,7 +15,7 @@ import com.vagdedes.spartan.compatibility.manual.building.MythicMobs;
 import com.vagdedes.spartan.compatibility.manual.enchants.CustomEnchantsPlus;
 import com.vagdedes.spartan.compatibility.manual.enchants.EcoEnchants;
 import com.vagdedes.spartan.compatibility.necessary.BedrockCompatibility;
-import com.vagdedes.spartan.functionality.connection.PlayerLimitPerIP;
+import com.vagdedes.spartan.functionality.connection.PlayerIP;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
@@ -353,7 +353,7 @@ public class SpartanPlayer {
     // Separator
 
     public String getIpAddress() {
-        return PlayerLimitPerIP.get(this.getInstance());
+        return PlayerIP.get(this.getInstance());
     }
 
     public boolean isFrozen() {

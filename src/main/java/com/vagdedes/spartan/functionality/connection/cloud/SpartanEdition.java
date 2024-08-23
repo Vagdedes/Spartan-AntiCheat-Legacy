@@ -113,11 +113,11 @@ public class SpartanEdition {
 
     public static String getProductName() {
         if (currentVersion && alternativeVersion) {
-            return "Spartan AntiCheat: Java & Bedrock Edition";
+            return "Spartan AntiCheat: Java & Bedrock";
         } else if (currentVersion) {
-            return "Spartan AntiCheat: Java Edition";
+            return "Spartan AntiCheat: Java (Bedrock Missing)";
         } else {
-            return "Spartan AntiCheat: Bedrock Edition";
+            return "Spartan AntiCheat: Bedrock (Java Missing)";
         }
     }
 

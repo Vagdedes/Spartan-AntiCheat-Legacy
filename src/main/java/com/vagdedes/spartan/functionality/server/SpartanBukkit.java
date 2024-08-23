@@ -5,7 +5,6 @@ import com.vagdedes.spartan.abstraction.check.Threads;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
-import com.vagdedes.spartan.functionality.connection.PlayerLimitPerIP;
 import com.vagdedes.spartan.functionality.connection.cloud.AutoUpdater;
 import com.vagdedes.spartan.functionality.npc.NPCManager;
 import com.vagdedes.spartan.utils.java.ReflectionUtils;
@@ -208,7 +207,6 @@ public class SpartanBukkit {
         AutoUpdater.complete();
         playerProtocol.clear();
         Threads.disable();
-        PlayerLimitPerIP.clear();
         NPCManager.clear();
         Config.create();
     }

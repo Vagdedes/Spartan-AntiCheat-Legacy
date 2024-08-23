@@ -324,7 +324,7 @@ public class Pattern {
                                     continue;
                                 }
                                 try {
-                                    PlayerProfile profile = ResearchEngine.getPlayerProfile(profileName);
+                                    PlayerProfile profile = ResearchEngine.getPlayerProfile(profileName, true);
 
                                     for (PatternGeneralization generalization : generalizations.values()) {
                                         generalization.learn(
