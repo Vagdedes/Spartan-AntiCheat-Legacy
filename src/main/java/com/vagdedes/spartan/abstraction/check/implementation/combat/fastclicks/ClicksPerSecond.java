@@ -30,8 +30,8 @@ public class ClicksPerSecond extends DetectionExecutor {
                 double deviation = 0.0;
 
                 while (iterator.hasNext()) {
-                    long current = iterator.next();
-                    long difference = current - previous;
+                    long current = iterator.next(),
+                            difference = current - previous;
                     deviation += difference * difference;
                     previous = current;
                 }

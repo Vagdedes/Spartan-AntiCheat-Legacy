@@ -9,11 +9,7 @@ public class ResponseTime extends DetectionExecutor {
         super(executor, executor.hackType, executor.player);
     }
 
-    void runDamage() {
-        // todo
-    }
-
-    void runMove() {
+    void run() {
         // todo
     }
 }

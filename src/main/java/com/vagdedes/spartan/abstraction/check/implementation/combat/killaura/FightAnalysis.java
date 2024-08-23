@@ -11,7 +11,7 @@ public class FightAnalysis extends DetectionExecutor {
 
     void runDamage() {
         if (hackType.getCheck().getBooleanOption("check_fight_analysis", true)) {
-            // todo
+            // todo hits vs damages statistics
         }
     }
 }
