@@ -80,16 +80,6 @@ public class SpartanEdition {
                 : alternativeVersion;
     }
 
-    private static Check.DataType[] getMissingDetections() {
-        return !currentVersion && !alternativeVersion
-                ? new Check.DataType[]{currentType, oppositeType}
-                : !currentVersion
-                ? new Check.DataType[]{currentType}
-                : !alternativeVersion
-                ? new Check.DataType[]{oppositeType}
-                : new Check.DataType[]{};
-    }
-
     // Product
 
     private static String getProductID(Check.DataType dataType) {
@@ -114,10 +104,10 @@ public class SpartanEdition {
     public static String getProductName() {
         if (currentVersion && alternativeVersion) {
             return "Spartan AntiCheat: Java & Bedrock";
-        } else if (currentVersion) {
-            return "Spartan AntiCheat: Java (Bedrock Missing)";
+        } else if (currentVersion || alternativeVersion) {
+            return "Spartan AntiCheat: " + currentType + " (" + oppositeType + " Missing)";
         } else {
-            return "Spartan AntiCheat: Bedrock (Java Missing)";
+            return "Spartan AntiCheat";
         }
     }
 
@@ -129,7 +119,14 @@ public class SpartanEdition {
     // 3. Alternative (No Other Version)
     // 4. Account (No Account)
     public static void attemptNotifications(SpartanPlayer player) {
-        Check.DataType[] missingDetections = getMissingDetections();
+        Check.DataType[] missingDetections =
+                !currentVersion && !alternativeVersion
+                        ? new Check.DataType[]{currentType, oppositeType}
+                        : !currentVersion
+                        ? new Check.DataType[]{currentType}
+                        : !alternativeVersion
+                        ? new Check.DataType[]{oppositeType}
+                        : new Check.DataType[]{};
 
         if (missingDetections.length == ResearchEngine.usableDataTypes.length) {
             attemptVersionNotification(player, null);

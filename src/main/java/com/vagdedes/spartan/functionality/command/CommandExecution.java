@@ -50,6 +50,11 @@ public class CommandExecution implements CommandExecutor {
             sender.sendMessage("");
             int slots = CloudBase.getDetectionSlots();
             String command = "§2Spartan AntiCheat";
+            command += "\n§8[ §7Detections Available§8: "
+                    + (SpartanEdition.hasDetectionsPurchased(Check.DataType.JAVA) ? "§a" : "§c") + Check.DataType.JAVA
+                    + " §8/ "
+                    + (SpartanEdition.hasDetectionsPurchased(Check.DataType.BEDROCK) ? "§a" : "§c") + Check.DataType.BEDROCK
+                    + " §8]";
 
             if (slots <= 0) {
                 command += "\n§8[ §eDetection Slots§7: §6Unlimited §8]";
