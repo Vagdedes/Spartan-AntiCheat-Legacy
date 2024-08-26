@@ -411,8 +411,8 @@ public class ResearchEngine {
             Map<String, String> logs = getLogs();
 
             if (!logs.isEmpty()) {
-                try {
-                    for (Map.Entry<String, String> entry : logs.entrySet()) {
+                for (Map.Entry<String, String> entry : logs.entrySet()) {
+                    try {
                         String fullDate = entry.getKey(),
                                 partialDate = fullDate.substring(0, 10),
                                 data = entry.getValue();
@@ -473,12 +473,12 @@ public class ResearchEngine {
                                 }
                             }
                         }
+                    } catch (Exception ignored) {
+
                     }
-                    updateCache(true);
-                    MainMenu.refresh();
-                } catch (Exception ex) {
-                    ex.printStackTrace();
                 }
+                updateCache(true);
+                MainMenu.refresh();
             }
         }
     }
