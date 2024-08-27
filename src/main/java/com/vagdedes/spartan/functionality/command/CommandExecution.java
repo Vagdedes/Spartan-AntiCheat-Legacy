@@ -175,6 +175,18 @@ public class CommandExecution implements CommandExecutor {
                                 "This command can be used to toggle a check and its detections.",
                                 null
                         );
+                        ClickableMessage.sendCommand(
+                                sender,
+                                ChatColor.RED + "/" + command + " toggle-prevention <check>",
+                                "This command can be used to toggle a check's preventions.",
+                                null
+                        );
+                        ClickableMessage.sendCommand(
+                                sender,
+                                ChatColor.RED + "/" + command + " toggle-punishment <check>",
+                                "This command can be used to toggle a check's punishments.",
+                                null
+                        );
                         buildCommand(
                                 sender,
                                 ChatColor.RED, "/" + command + " reload",
