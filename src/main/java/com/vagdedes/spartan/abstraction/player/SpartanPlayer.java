@@ -174,6 +174,11 @@ public class SpartanPlayer {
         }
     }
 
+    @Override
+    public String toString() {
+        return this.name;
+    }
+
     public boolean debug(boolean function, boolean broadcast, boolean cutDecimals, Object... message) {
         if (function && Bukkit.getMotd().contains(Register.plugin.getName())) {
             Player p = getInstance();

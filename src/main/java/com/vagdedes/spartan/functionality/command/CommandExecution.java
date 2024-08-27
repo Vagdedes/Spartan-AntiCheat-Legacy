@@ -39,6 +39,30 @@ public class CommandExecution implements CommandExecutor {
     public static final int maxConnectedArgumentLength = 4096;
     public static final String support = "Click to receive plugin support.";
 
+    private static void commandList(CommandSender commandSender,
+                                    Object[] objects,
+                                    String command,
+                                    String title) {
+        commandSender.sendMessage("");
+        commandSender.sendMessage("§e" + title + "§8:");
+
+        for (int i = 0; i < Math.min(objects.length, 10); i++) {
+            ClickableMessage.sendCommand(
+                    commandSender,
+                    "§c" + objects[i].toString() + " §7(Click)",
+                    objects[i].toString(),
+                    "/" + command + " " + objects[i]
+            );
+        }
+        ClickableMessage.sendCommand(
+                commandSender,
+                "§eRun '§7/" + command + " " + title.toLowerCase() + "§e' for more.",
+                command,
+                "/" + command
+        );
+        commandSender.sendMessage("");
+    }
+
     private static void buildCommand(CommandSender sender, ChatColor chatColor, String command, String description) {
         ClickableMessage.sendCommand(sender, chatColor + command, description, command);
     }
@@ -134,32 +158,24 @@ public class CommandExecution implements CommandExecutor {
                                     "/" + command + " info *"
                             );
                         }
-                        if (Permissions.has(player, Permission.USE_BYPASS)) {
-                            ClickableMessage.sendCommand(
-                                    sender,
-                                    "§cPlayer Bypass §7(Click)",
-                                    "Click this command to give check bypass to a player.",
-                                    "/" + command + " bypass *"
-                            );
-                        }
                         if (manage) {
                             ClickableMessage.sendCommand(
                                     sender,
                                     "§cToggle Checks §7(Click)",
                                     "Click this command to toggle a check and its detections.",
-                                    "/" + command + " toggle"
+                                    "/" + command + " toggle *"
                             );
                             ClickableMessage.sendCommand(
                                     sender,
                                     "§cToggle Preventions §7(Click)",
                                     "Click this command to toggle a check's preventions.",
-                                    "/" + command + " toggle-silent"
+                                    "/" + command + " toggle-silent *"
                             );
                             ClickableMessage.sendCommand(
                                     sender,
                                     "§cToggle Punishments §7(Click)",
                                     "Click this command to toggle a check's punishments.",
-                                    "/" + command + " toggle-punishment"
+                                    "/" + command + " toggle-punishment *"
                             );
                         }
                     } else {
@@ -194,6 +210,20 @@ public class CommandExecution implements CommandExecutor {
                         );
                     }
                     if (!isPlayer
+                            || Permissions.has(player, Permission.USE_BYPASS)) {
+                        ClickableMessage.sendCommand(
+                                sender,
+                                "§cPlayer Bypass §7(Click)",
+                                "Click this command to give check bypass to a player.",
+                                "/" + command + " bypass *"
+                        );
+                        buildCommand(
+                                sender,
+                                ChatColor.RED, "/" + command + " moderation",
+                                "Click this command to view a list of moderation commands."
+                        );
+                    }
+                    if (!isPlayer
                             || info
                             || Permissions.has(player, Permission.KICK)
                             || Permissions.has(player, Permission.WARN)
@@ -203,14 +233,6 @@ public class CommandExecution implements CommandExecutor {
                                 sender,
                                 ChatColor.RED, "/" + command + " moderation",
                                 "Click this command to view a list of moderation commands."
-                        );
-                    }
-                    if (!isPlayer
-                            || Permissions.has(player, Permission.CONDITION)) {
-                        buildCommand(
-                                sender,
-                                ChatColor.RED, "/" + command + " conditions",
-                                "Click this command to view a list of conditional commands."
                         );
                     }
                 }
