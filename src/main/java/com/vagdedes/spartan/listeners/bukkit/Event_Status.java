@@ -59,15 +59,6 @@ public class Event_Status implements Listener {
         }, 10L);
     }
 
-    @EventHandler
-    private void PreLogin(AsyncPlayerPreLoginEvent e) {
-        if (e.getLoginResult() == AsyncPlayerPreLoginEvent.Result.ALLOWED) {
-            InetAddress address = e.getAddress();
-            String ipAddress = address != null ? PlayerIP.get(address) : null;
-            CloudConnections.updatePunishedPlayer(e.getUniqueId(), ipAddress);
-        }
-    }
-
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Leave(PlayerQuitEvent e) {
         Player n = e.getPlayer();

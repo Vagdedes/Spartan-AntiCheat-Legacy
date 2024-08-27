@@ -388,10 +388,9 @@ public class ResearchEngine {
             Config.sql.refreshDatabase();
 
             if (enabledPlugin) {
-                CloudBase.refresh(true);
                 buildCache();
                 Pattern.reload();
-                CloudBase.refresh(false);
+                CloudBase.refresh();
             } else {
                 CloudBase.clear(true);
                 Pattern.clear();

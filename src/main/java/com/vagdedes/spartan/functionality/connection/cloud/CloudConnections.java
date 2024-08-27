@@ -151,63 +151,6 @@ public class CloudConnections {
         return new String[][]{};
     }
 
-    static void punishPlayers() {
-        StringBuilder value = new StringBuilder();
-
-        for (PlayerProfile playerProfile : ResearchEngine.getPlayerProfiles()) {
-            if (playerProfile.evidence.has(PlayerEvidence.preventionProbability, PlayerEvidence.preventionRatio)) {
-                SpartanPlayer player = playerProfile.getSpartanPlayer();
-                boolean isNull = player == null;
-
-                if (isNull || !Permissions.isStaff(player)) {
-                    OfflinePlayer offlinePlayer = playerProfile.getOfflinePlayer();
-
-                    if (offlinePlayer != null && !offlinePlayer.isOp()) {
-                        UUID uuid = offlinePlayer.getUniqueId();
-                        String ipAddress;
-
-                        if (!isNull && offlinePlayer.isOnline()) {
-                            ipAddress = player.getIpAddress();
-
-                            if (ipAddress == null) {
-                                ipAddress = "NULL";
-                            }
-                        } else {
-                            ipAddress = "NULL";
-                        }
-                        value.append(StringUtils.encodeBase64(uuid + CloudBase.separator + ipAddress)).append(CloudBase.separator);
-                    }
-                }
-            }
-        }
-
-        if (value.length() > 0) {
-            value = new StringBuilder(value.substring(0, value.length() - CloudBase.separator.length()));
-
-            try {
-                RequestUtils.get(StringUtils.decodeBase64(CloudBase.website) + " " +
-                                CloudBase.identification + "&action=add&data=punishedPlayers&version=" + CloudBase.version
-                                + "&value=" + URLEncoder.encode(value.toString(), "UTF-8"),
-                        "POST");
-            } catch (Exception e) {
-                CloudBase.throwError(e, "punishedPlayers:ADD");
-            }
-        }
-    }
-
-    public static void updatePunishedPlayer(UUID uuid, String ipAddress) {
-        if (ipAddress == null) {
-            ipAddress = "NULL";
-        }
-        try {
-            RequestUtils.get(StringUtils.decodeBase64(CloudBase.website) + "?" + CloudBase.identification + "&action=get&data=punishedPlayers&version=" + CloudBase.version
-                            + "&value=" + URLEncoder.encode(uuid + CloudBase.separator + ipAddress, "UTF-8"),
-                    RequestUtils.minimumTimeOut);
-        } catch (Exception e) {
-            CloudBase.throwError(e, "punishedPlayers:GET");
-        }
-    }
-
     public static void executeDiscordWebhook(String webhook, UUID uuid, String name, int x, int y, int z, String type, String information) { // Once
         String url = Config.settings.getString("Discord." + webhook + "_webhook_url");
 
