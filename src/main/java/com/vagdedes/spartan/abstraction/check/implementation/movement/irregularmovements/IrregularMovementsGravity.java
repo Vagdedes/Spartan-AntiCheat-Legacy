@@ -36,7 +36,7 @@ public class IrregularMovementsGravity extends DetectionExecutor {
         if (hackType.getCheck().getBooleanOption("check_gravity", true)
                 && !isUsingMace()) {
             int airTicks = player.movement.getTicksOnAir();
-            SpartanLocation to = player.movement.getEventToLocation(),
+            SpartanLocation to = player.movement.getLocation(),
                     from = player.movement.getEventFromLocation();
             int levitationLevel = PlayerUtils.levitation
                     ? PlayerUtils.getPotionLevel(player, PotionEffectType.LEVITATION)

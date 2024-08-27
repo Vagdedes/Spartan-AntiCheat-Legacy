@@ -94,8 +94,7 @@ public class Speed extends CheckExecutor {
 
     @Override
     protected void runInternal(boolean cancelled) {
-        SpartanLocation to = player.movement.getEventToLocation(),
-                from = player.movement.getEventFromLocation();
+        SpartanLocation to = player.movement.getLocation();
         boolean onGround = player.isOnGround(false);
 
         SpartanPotionEffect speedEffect = player.getPotionEffect(PotionEffectType.SPEED, 0);
@@ -117,16 +116,16 @@ public class Speed extends CheckExecutor {
         boolean checkDirection = !player.bedrockPlayer;
 
         double punishMultiply = 1;
-        double dx = to.getX() - from.getX(),
-                dz = to.getZ() - from.getZ();
+        double dx = player.movement.getEventXDiff(),
+                dz = player.movement.getEventZDiff();
         int oldAir = -1;
 
         if (newRayRequest) {
             newRayRequest = false;
             jumpRayLine = new RayLine(dx, dz);
         }
-        double vertical = RayUtils.scaleVal(to.getY() - from.getY(), 2),
-                horizontal = RayUtils.scaleVal(Math.sqrt(dx * dx + dz * dz), 2);
+        double vertical = RayUtils.scaleVal(player.movement.getEventVertical(), 2),
+                horizontal = RayUtils.scaleVal(player.movement.getEventHorizontal(), 2);
         float speedMultiply = (player.getInstance().getWalkSpeed() * 5) < 1 ? 1 : (player.getInstance().getWalkSpeed() * 5);
         if (onGround && wrappedOnFly > 0) oldAir = wrappedOnFly;
         wrappedOnAir = onGround ? 0 : wrappedOnAir + 1;

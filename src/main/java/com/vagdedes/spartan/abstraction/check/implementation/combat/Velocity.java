@@ -2,7 +2,6 @@ package com.vagdedes.spartan.abstraction.check.implementation.combat;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
-import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
 import com.vagdedes.spartan.utils.math.RayUtils;
@@ -40,15 +39,10 @@ public class Velocity extends CheckExecutor {
             zSended = RayUtils.scaleVal(Math.abs(event.getVelocity().getZ()), 2);
         }
         if (object instanceof PlayerMoveEvent) {
-            PlayerMoveEvent event = (PlayerMoveEvent) object;
-            SpartanLocation to = player.movement.getEventToLocation();
-            SpartanLocation from = player.movement.getEventFromLocation();
-            double x = RayUtils.scaleVal(Math.abs(to.getX() - from.getX()), 2);
-            double z = RayUtils.scaleVal(Math.abs(to.getZ() - from.getZ()), 2);
-            double diffX = Math.abs(x - xSended);
-            double diffZ = Math.abs(z - zSended);
-            boolean blockOnTop = RayUtils.onSolidBlock(player, to.clone().add(0, 2, 0));
-            double vertical = RayUtils.scaleVal(to.getY() - from.getY(), 2);
+            double x = RayUtils.scaleVal(Math.abs(player.movement.getEventXDiff()), 2);
+            double z = RayUtils.scaleVal(Math.abs(player.movement.getEventXDiff()), 2);
+            boolean blockOnTop = RayUtils.onSolidBlock(player, player.movement.getLocation().clone().add(0, 2, 0));
+            double vertical = RayUtils.scaleVal(player.movement.getEventVertical(), 2);
             // vertical check
             if (veloV) {
                 if (blockOnTop || verticalSended < 0 || vertical < 0) {
@@ -61,8 +55,12 @@ public class Velocity extends CheckExecutor {
                         vl += 100;
                         veloV = false;
                         if (vl > 300) {
-                            cancel("type: vertical, speed-vertical: "
-                                    + vertical + ", sended-vertical: " + verticalSended, 1, from);
+                            cancel(
+                                    "type: vertical, speed-vertical: "
+                                            + vertical + ", sended-vertical: " + verticalSended,
+                                    1,
+                                    player.movement.getDetectionLocation()
+                            );
                         }
                     }
                 } else {
@@ -80,8 +78,12 @@ public class Velocity extends CheckExecutor {
                 if (x < xSended / decreace && z < zSended / decreace) {
                     vl += 100;
                     if (vl > 300) {
-                        cancel("type: horizontal, x: " + x + ", z: " + z
-                                + ", sended-x: " + xSended + ", sended-z: " + zSended, 1, from);
+                        cancel(
+                                "type: horizontal, x: " + x + ", z: " + z
+                                        + ", sended-x: " + xSended + ", sended-z: " + zSended,
+                                1,
+                                player.movement.getDetectionLocation()
+                        );
                     }
                 } else {
                     if (vl > 0) vl -= 25;

@@ -229,7 +229,7 @@ public class PlayerInfo extends InventoryMenu {
         item = item.startsWith("§") ? item.substring(2) : item;
         String playerName = title.substring(menu.length());
 
-        if (item.equals(playerName)) {
+        if (item.equalsIgnoreCase(playerName)) {
             if (!Permissions.has(player, Permission.MANAGE)) {
                 player.getInstance().closeInventory();
                 ClickableMessage.sendURL(

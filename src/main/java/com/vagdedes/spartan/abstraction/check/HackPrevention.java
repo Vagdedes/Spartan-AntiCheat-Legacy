@@ -33,12 +33,24 @@ public class HackPrevention {
         this.location = location;
         this.groundTeleport = groundTeleport;
         this.damage = damage;
-        this.expiration = System.currentTimeMillis() + (Math.max(1, cancelTicks) * TPS.tickTime);
+        this.expiration = cancelTicks <= 1 ? Long.MIN_VALUE
+                : System.currentTimeMillis() + (cancelTicks * TPS.tickTime);
         player.getExecutor(hackType).violate(this, information, violations, time);
     }
 
+    void complete() {
+        if (this.isOneTime()) {
+            this.canPrevent = false;
+        }
+    }
+
+    private boolean isOneTime() {
+        return this.expiration == Long.MIN_VALUE;
+    }
+
     boolean hasExpired() {
-        return System.currentTimeMillis() > this.expiration;
+        return !this.isOneTime()
+                && System.currentTimeMillis() > this.expiration;
     }
 
     void handle(SpartanPlayer player) {

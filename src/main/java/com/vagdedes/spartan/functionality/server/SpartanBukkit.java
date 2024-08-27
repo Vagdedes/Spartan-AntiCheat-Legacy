@@ -7,6 +7,7 @@ import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.connection.cloud.AutoUpdater;
 import com.vagdedes.spartan.functionality.npc.NPCManager;
+import com.vagdedes.spartan.functionality.performance.PlayerDetectionSlots;
 import com.vagdedes.spartan.utils.java.ReflectionUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import org.bukkit.Bukkit;
@@ -17,8 +18,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SpartanBukkit {
-
-    public static final boolean movementPacketsForcedState = false;
 
     public static final Threads.ThreadPool
             connectionThread = new Threads.ThreadPool(TPS.tickTime),
@@ -91,13 +90,13 @@ public class SpartanBukkit {
     }
 
     public static boolean packetsEnabled_Movement() {
-        return movementPacketsForcedState && packetsEnabled();
+        return packetsEnabled();
     }
 
     public static SpartanProtocol getProtocol(Player player) {
-        return playerProtocol.computeIfAbsent(
+        return playerProtocol.getOrDefault(
                 player.getUniqueId(),
-                k -> new SpartanProtocol(player)
+                new SpartanProtocol(player)
         );
     }
 
@@ -140,11 +139,14 @@ public class SpartanBukkit {
         return protocol;
     }
 
-    public static void createProtocol(Player player) {
+    public static SpartanProtocol createProtocol(Player player) {
+        SpartanProtocol protocol = new SpartanProtocol(player);
         playerProtocol.put(
                 player.getUniqueId(),
-                new SpartanProtocol(player)
+                protocol
         );
+        PlayerDetectionSlots.add(protocol.spartanPlayer);
+        return protocol;
     }
 
     public static SpartanProtocol deleteProtocol(Player real) {

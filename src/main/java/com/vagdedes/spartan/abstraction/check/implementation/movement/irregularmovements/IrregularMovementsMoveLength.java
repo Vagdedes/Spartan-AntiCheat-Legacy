@@ -29,7 +29,7 @@ public class IrregularMovementsMoveLength extends DetectionExecutor {
 
     void run() {
         if (!player.bedrockPlayer) {
-            float pitch = player.movement.getEventToLocation().getPitch(),
+            float pitch = player.movement.getLocation().getPitch(),
                     pitchDifference = Math.abs(pitch - previousPitch);
 
             if (pitchDifference > 0.0

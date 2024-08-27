@@ -35,7 +35,7 @@ public class ServerPosition extends PacketAdapter {
         PacketContainer packetContainer = event.getPacket();
         SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
 
-        if (protocol.isOnLoadStatus()) return;
+        if (protocol.isLoading()) return;
 
         if (packetContainer.getType().equals(PacketType.Play.Server.POSITION)) {
             Location teleportLocation = BackgroundMove.readLocation(event);

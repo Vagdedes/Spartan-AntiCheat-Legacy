@@ -77,7 +77,7 @@ public class IrregularMovementsJump extends DetectionExecutor {
                     }
                     if (!BlockPatternUtils.isBlockPattern(
                             patterns,
-                            player.movement.getEventToLocation(),
+                            player.movement.getLocation(),
                             true,
                             GroundUtils.abstractMaterials
                     )) {
@@ -94,9 +94,9 @@ public class IrregularMovementsJump extends DetectionExecutor {
                     }
                 }
             } else {
-                double limit = Math.max(jumpTicks, TPS.maximum);
+                int limit = Math.max(jumpTicks, AlgebraUtils.integerCeil(TPS.maximum));
 
-                if (!player.isOnGround(player.movement.getEventToLocation(), true)
+                if (!player.isOnGround(player.movement.getLocation(), true)
                         && !player.isOnGround(player.movement.getEventFromLocation(), false)
                         && !player.movement.isInLiquids()) {
                     int airTicks = player.movement.getTicksOnAir();
@@ -108,7 +108,7 @@ public class IrregularMovementsJump extends DetectionExecutor {
                                         + ", jump-effect: " + jumpEffect
                                         + ", air-ticks: " + airTicks
                                         + ", limit: " + limit,
-                                (airTicks / limit) - 1.0,
+                                (airTicks / (double) limit) - 1.0,
                                 player.movement.getDetectionLocation(),
                                 0,
                                 true

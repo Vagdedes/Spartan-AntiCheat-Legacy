@@ -63,7 +63,7 @@ public class ImpossibleInventory extends CheckExecutor {
                     cancel(
                             "type: cursor-usage, case: " + cases,
                             1.0,
-                            player.movement.getEventFromLocation(),
+                            player.movement.getDetectionLocation(),
                             0,
                             false
                     );

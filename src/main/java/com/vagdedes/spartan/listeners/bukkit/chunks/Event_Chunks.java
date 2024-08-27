@@ -59,23 +59,21 @@ public class Event_Chunks implements Listener {
     // Separator
 
     static {
-        if (SpartanBukkit.movementPacketsForcedState) {
-            SpartanBukkit.runRepeatingTask(() -> {
-                if (enabled()) {
-                    List<SpartanPlayer> players = SpartanBukkit.getPlayers();
+        SpartanBukkit.runRepeatingTask(() -> {
+            if (SpartanBukkit.packetsEnabled()) {
+                List<SpartanPlayer> players = SpartanBukkit.getPlayers();
 
-                    if (!players.isEmpty()) {
-                        for (SpartanPlayer player : players) {
-                            SpartanLocation location = player.movement.getLocation();
+                if (!players.isEmpty()) {
+                    for (SpartanPlayer player : players) {
+                        SpartanLocation location = player.movement.getLocation();
 
-                            if (isLoaded(location.world, location.getChunkX(), location.getChunkZ())) {
-                                cache(location.getBukkitLocation().getChunk(), true);
-                            }
+                        if (isLoaded(location.world, location.getChunkX(), location.getChunkZ())) {
+                            cache(location.getBukkitLocation().getChunk(), true);
                         }
                     }
                 }
-            }, 1L, 1L);
-        }
+            }
+        }, 1L, 1L);
     }
 
     // Separator
@@ -86,10 +84,6 @@ public class Event_Chunks implements Listener {
 
     private static long totalHash(World world, int x, int z) {
         return (hashChunk(x, z) * 31L) + world.getName().hashCode();
-    }
-
-    public static boolean enabled() {
-        return SpartanBukkit.packetsEnabled_Movement();
     }
 
     // Separator
@@ -173,8 +167,10 @@ public class Event_Chunks implements Listener {
         Chunk chunk = e.getChunk();
         loaded.put(totalHash(chunk.getWorld(), chunk.getX(), chunk.getZ()), true);
 
-        if (enabled()) {
+        if (SpartanBukkit.packetsEnabled()) {
             cache(chunk, false);
+        } else {
+            map.remove(chunk.getWorld());
         }
     }
 
@@ -183,7 +179,7 @@ public class Event_Chunks implements Listener {
         Chunk chunk = e.getChunk();
         loaded.remove(totalHash(chunk.getWorld(), chunk.getX(), chunk.getZ()));
 
-        if (enabled()) {
+        if (SpartanBukkit.packetsEnabled()) {
             World world = chunk.getWorld();
             Map<Long, ChunkData> subMap = map.get(world);
 
@@ -192,6 +188,8 @@ public class Event_Chunks implements Listener {
                     && subMap.isEmpty()) {
                 map.remove(world);
             }
+        } else {
+            map.remove(chunk.getWorld());
         }
     }
 

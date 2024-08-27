@@ -1,10 +1,9 @@
-package com.vagdedes.spartan.abstraction.check.implementation.movement.simulation.modules;
+package com.vagdedes.spartan.abstraction.protocol;
 
 import com.vagdedes.spartan.abstraction.check.implementation.movement.simulation.modules.engine.Attribute;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.simulation.modules.engine.Attributes;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.simulation.modules.engine.motion.*;
 import com.vagdedes.spartan.abstraction.player.SpartanPotionEffect;
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanBlock;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;

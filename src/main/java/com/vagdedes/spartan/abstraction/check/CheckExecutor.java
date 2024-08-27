@@ -41,7 +41,7 @@ public abstract class CheckExecutor extends DetectionExecutor {
             javaPlayerIdentifier = "Java:";
 
     protected final DetectionExecutor[] detections;
-    public final boolean scheduledPrevention;
+    private final boolean scheduledPrevention;
     private boolean function;
     private Object scheduler;
     private long level;
@@ -63,24 +63,26 @@ public abstract class CheckExecutor extends DetectionExecutor {
                 if (this.scheduler != null && !player.getInstance().isOnline()) {
                     SpartanBukkit.cancelTask(this.scheduler);
                 } else {
-                    function = (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
-                            || player.getInstance().getGameMode() != GameMode.SPECTATOR)
-                            && !player.protocol.isOnLoadStatus()
-                            && player.getCancellableCompatibility() == null
-                            && hackType.getCheck().isEnabled(player.dataType, player.getWorld().getName(), player)
-                            && canRun();
+                    synchronized (this) {
+                        function = (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
+                                || player.getInstance().getGameMode() != GameMode.SPECTATOR)
+                                && !player.protocol.isLoading()
+                                && player.getCancellableCompatibility() == null
+                                && hackType.getCheck().isEnabled(player.dataType, player.getWorld().getName(), player)
+                                && canRun();
 
-                    if (canFunctionOrJustImplemented()) {
-                        scheduler();
-                    } else {
-                        cannotSchedule();
-                    }
+                        if (canFunctionOrJustImplemented()) {
+                            scheduler();
+                        } else {
+                            cannotSchedule();
+                        }
 
-                    if (scheduledPrevention) {
-                        SpartanBukkit.runTask(
-                                this.player,
-                                this::prevent
-                        );
+                        if (scheduledPrevention) {
+                            SpartanBukkit.runTask(
+                                    this.player,
+                                    this::prevent
+                            );
+                        }
                     }
                 }
             }, 1L, 1L);
@@ -89,18 +91,20 @@ public abstract class CheckExecutor extends DetectionExecutor {
                 if (this.scheduler != null && !player.getInstance().isOnline()) {
                     SpartanBukkit.cancelTask(this.scheduler);
                 } else {
-                    function = (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
-                            || player.getInstance().getGameMode() != GameMode.SPECTATOR)
-                            && !player.protocol.isOnLoadStatus()
-                            && player.getCancellableCompatibility() == null
-                            && hackType.getCheck().isEnabled(player.dataType, player.getWorld().getName(), player)
-                            && canRun();
+                    synchronized (this) {
+                        function = (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
+                                || player.getInstance().getGameMode() != GameMode.SPECTATOR)
+                                && !player.protocol.isLoading()
+                                && player.getCancellableCompatibility() == null
+                                && hackType.getCheck().isEnabled(player.dataType, player.getWorld().getName(), player)
+                                && canRun();
 
-                    if (scheduledPrevention) {
-                        SpartanBukkit.runTask(
-                                this.player,
-                                this::prevent
-                        );
+                        if (scheduledPrevention) {
+                            SpartanBukkit.runTask(
+                                    this.player,
+                                    this::prevent
+                            );
+                        }
                     }
                 }
             }, 1L, 1L);
@@ -116,10 +120,12 @@ public abstract class CheckExecutor extends DetectionExecutor {
     // Run
 
     public final void run(boolean cancelled) {
-        if (canFunctionOrJustImplemented() && (!cancelled || hackType.getCheck().handleCancelledEvents)) {
-            runInternal(cancelled);
-        } else {
-            cannotRun(cancelled);
+        synchronized (this) {
+            if (canFunctionOrJustImplemented() && (!cancelled || hackType.getCheck().handleCancelledEvents)) {
+                runInternal(cancelled);
+            } else {
+                cannotRun(cancelled);
+            }
         }
     }
 
@@ -144,10 +150,12 @@ public abstract class CheckExecutor extends DetectionExecutor {
     // Handle
 
     public final void handle(boolean cancelled, Object object) {
-        if (canFunctionOrJustImplemented() && (!cancelled || hackType.getCheck().handleCancelledEvents)) {
-            handleInternal(cancelled, object);
-        } else {
-            cannotHandle(cancelled, object);
+        synchronized (this) {
+            if (canFunctionOrJustImplemented() && (!cancelled || hackType.getCheck().handleCancelledEvents)) {
+                handleInternal(cancelled, object);
+            } else {
+                cannotHandle(cancelled, object);
+            }
         }
     }
 
@@ -247,6 +255,9 @@ public abstract class CheckExecutor extends DetectionExecutor {
 
     final void violate(HackPrevention newPrevention, String information, double increase, long time) {
         synchronized (this) {
+            if (executor.scheduledPrevention) {
+                executor.prevent();
+            }
             if (PlayerDetectionSlots.isChecked(player)
                     && !CloudBase.isInformationCancelled(hackType, information)
                     && (disableCause == null
@@ -277,8 +288,8 @@ public abstract class CheckExecutor extends DetectionExecutor {
                     }
                     player.protocol.getProfile().getViolationHistory(player.dataType, hackType).store(playerViolation);
                     this.increaseLevel(increaseInt);
-                    this.performNotification(playerViolation, information);
-                    this.performPunishments();
+                    this.notify(playerViolation, information);
+                    this.punish();
                     this.prevention = newPrevention;
 
                     if (!hackType.getCheck().isSilent(player.dataType, player.getWorld().getName())
@@ -307,8 +318,9 @@ public abstract class CheckExecutor extends DetectionExecutor {
 
     public final boolean prevent() {
         synchronized (this) {
-            if (this.prevention.canPrevent
-                    && !this.prevention.hasExpired()) {
+            if (this.prevention.canPrevent && !this.prevention.hasExpired()) {
+                this.prevention.complete();
+
                 if (Config.settings.getBoolean("Important.enable_developer_api")) {
                     if (SpartanBukkit.isSynchronised()) {
                         CheckCancelEvent checkCancelEvent = new CheckCancelEvent(player.getInstance(), hackType);
@@ -363,7 +375,7 @@ public abstract class CheckExecutor extends DetectionExecutor {
 
     // Punishment
 
-    private void performPunishments() {
+    private void punish() {
         Check check = hackType.getCheck();
 
         if (check.canPunish(player.dataType)) {
@@ -438,7 +450,7 @@ public abstract class CheckExecutor extends DetectionExecutor {
 
     // Notification
 
-    private void performNotification(PlayerViolation playerViolation, String information) {
+    private void notify(PlayerViolation playerViolation, String information) {
         String notification = ConfigUtils.replaceWithSyntax(
                 player,
                 Config.messages.getColorfulString("detection_notification")

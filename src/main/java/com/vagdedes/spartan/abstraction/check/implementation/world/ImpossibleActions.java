@@ -104,7 +104,7 @@ public class ImpossibleActions extends CheckExecutor {
                                         }
                                         yawDeviation = Math.sqrt(yawDeviation / ((double) requiredComparisons));
 
-                                        if (yawDeviation >= 90.0) {
+                                        if (yawDeviation >= 270.0) {
                                             cancel(
                                                     "type: scaffold(yaw)"
                                                             + ", deviation: " + yawDeviation

@@ -2,7 +2,6 @@ package com.vagdedes.spartan.abstraction.check.implementation.combat;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
-import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
@@ -17,9 +16,7 @@ public class Criticals extends CheckExecutor {
 
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
-        SpartanLocation to = player.movement.getEventToLocation(),
-                from = player.movement.getEventFromLocation();
-        double verticalMaxAccuracy = to.getY() - from.getY();
+        double verticalMaxAccuracy = player.movement.getEventVertical();
 
         if (RayUtils.onBlock(player, player.movement.getLocation(), BlockUtils.web)) return;
 
@@ -27,7 +24,7 @@ public class Criticals extends CheckExecutor {
                 && verticalMaxAccuracy > 0
                 && player.movement.getTicksOnAir() == 1
                         && !player.movement.getLocation().getBlock().material.isBlock()
-                && !RayUtils.onSolidBlock(player, to.clone().add(0, 2, 0))) {
+                && !RayUtils.onSolidBlock(player, player.movement.getLocation().clone().add(0, 2, 0))) {
             cancel("type: packet", 1);
         }
     }

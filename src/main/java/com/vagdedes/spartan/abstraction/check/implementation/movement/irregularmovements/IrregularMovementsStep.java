@@ -137,7 +137,7 @@ public class IrregularMovementsStep extends DetectionExecutor {
             } else {
                 if (vertical > 0.0) {
                     if (!player.movement.isJumping(vertical)
-                            && !BlockUtils.isInteractiveAndPassable(player, player.movement.getEventToLocation().getBlock().material)) {
+                            && !BlockUtils.isInteractiveAndPassable(player, player.movement.getLocation().getBlock().material)) {
                         double limit = (player.bedrockPlayer ? bedrockPlayerStepExtra : 0.0)
                                 + (player.trackers.has(Trackers.TrackerFamily.VELOCITY) ? 1.0 : 0.0)
                                 + PlayerUtils.getJumpMotion(
@@ -229,8 +229,8 @@ public class IrregularMovementsStep extends DetectionExecutor {
                                         true
                                 );
                             }
-                        } else if (!player.isOnGround(player.movement.getEventToLocation(), true)
-                                && !BlockUtils.isInteractiveAndPassable(player, player.movement.getEventToLocation().getBlock().material)) {
+                        } else if (!player.isOnGround(player.movement.getLocation(), true)
+                                && !BlockUtils.isInteractiveAndPassable(player, player.movement.getLocation().getBlock().material)) {
                             double limit = (player.bedrockPlayer ? bedrockPlayerStepExtra : 0.0)
                                     + player.movement.getAirAcceleration();
 

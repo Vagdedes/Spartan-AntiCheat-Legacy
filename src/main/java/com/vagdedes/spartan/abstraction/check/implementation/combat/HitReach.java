@@ -58,7 +58,7 @@ public class HitReach extends CheckExecutor {
                         cancel(
                                 "type: hitbox-raytrace, reach: " + (bruteforceRayTrace / 0.4) * 3,
                                 vl / 100D,
-                                player.movement.getEventFromLocation()
+                                player.movement.getDetectionLocation()
                         );
                     }
                     localVl -= 60;

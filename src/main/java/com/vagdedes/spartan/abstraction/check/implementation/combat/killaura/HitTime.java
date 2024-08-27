@@ -44,24 +44,24 @@ public class HitTime extends DetectionExecutor {
         if (nullPacket > 1) {
             vl += 55;
             if (vl >= 300) {
-                cancel("type: switch", (vl - 200) / 100D, player.movement.getEventFromLocation());
+                cancel("type: switch", (vl - 200) / 100D, player.movement.getDetectionLocation());
             }
         }
         if (packets >= 5 && LagCompensation.getPlayerTicksDelay(player.getInstance().getEntityId()) < 2) {
             if (devianceTotal < 35) {
                 vlAnalysis += (devianceTotal < 10) ? 150 : 75;
                 if (vlAnalysis >= 300) {
-                    cancel("type: post(linear-analysis)", (vl - 200) / 100D, player.movement.getEventFromLocation());
+                    cancel("type: post(linear-analysis)", (vl - 200) / 100D, player.movement.getDetectionLocation());
                 }
             } else if (devianceTotal > 45 && devianceTotal < 55) {
                 vlAnalysis += 150;
                 if (vlAnalysis >= 300) {
-                    cancel("type: post(default)", (vl - 200) / 100D, player.movement.getEventFromLocation());
+                    cancel("type: post(default)", (vl - 200) / 100D, player.movement.getDetectionLocation());
                 }
             } else if (lowPackets >= 3) {
                 vlAnalysis += 100;
                 if (vlAnalysis >= 300) {
-                    cancel("type: post(low)", (vl - 200) / 100D, player.movement.getEventFromLocation());
+                    cancel("type: post(low)", (vl - 200) / 100D, player.movement.getDetectionLocation());
                 }
             } else {
                 if (vlAnalysis > 0) vlAnalysis -= 50;

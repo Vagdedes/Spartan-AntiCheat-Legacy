@@ -18,31 +18,28 @@ public class SpartanProtocol {
     private final long time;
     public final Player player;
     public final SpartanPlayer spartanPlayer;
-    private boolean isOnGround, isOnGroundFrom, isSprinting, isSneaking, onLoadStatus;
+    private boolean isOnGround, isOnGroundFrom, isSprinting, isSneaking, loaded;
     private Location location;
     private Vector velocity;
-    private long lastTransaction;
-    private int ping;
-    private short transactionID;
     private PlayerProfile profile;
     public List<TeleportData> teleportEngine;
     private boolean mutateTeleport;
+    public final MCClient mcClient;
 
     public SpartanProtocol(Player player) {
         this.time = System.currentTimeMillis();
+        this.mcClient = new MCClient(player);
         this.player = player;
         this.isOnGround = false;
         this.isOnGroundFrom = false;
         this.location = player.getLocation();
         this.isSprinting = false;
         this.isSneaking = false;
-        this.onLoadStatus = SpartanBukkit.packetsEnabled_Movement();
+        this.loaded = !SpartanBukkit.packetsEnabled();
         this.velocity = new Vector(0, 0, 0);
         this.spartanPlayer = new SpartanPlayer(this);
-        this.lastTransaction = Long.MIN_VALUE;
         this.teleportEngine = new LinkedList<>();
         this.mutateTeleport = false;
-        this.ping = Integer.MIN_VALUE;
         this.setProfile(ResearchEngine.getPlayerProfile(this, false));
     }
 
@@ -51,35 +48,35 @@ public class SpartanProtocol {
     }
 
     public boolean isOnGround() {
-        return SpartanBukkit.packetsEnabled_Movement()
+        return SpartanBukkit.packetsEnabled()
                 ? this.isOnGround
                 : this.player.isOnGround();
     }
 
     public boolean isOnGroundFrom() {
-        return SpartanBukkit.packetsEnabled_Movement()
+        return SpartanBukkit.packetsEnabled()
                 ? this.isOnGroundFrom
                 : this.player.isOnGround();
     }
 
     public boolean isSprinting() {
-        return SpartanBukkit.packetsEnabled_Movement()
+        return SpartanBukkit.packetsEnabled()
                 ? this.isSprinting
                 : this.player.isSprinting();
     }
 
     public boolean isSneaking() {
-        return SpartanBukkit.packetsEnabled_Movement()
+        return SpartanBukkit.packetsEnabled()
                 ? this.isSneaking
                 : this.player.isSneaking();
     }
 
-    public boolean isOnLoadStatus() {
-        return this.onLoadStatus;
+    public boolean isLoading() {
+        return !this.loaded;
     }
 
     public Location getLocation() {
-        return SpartanBukkit.packetsEnabled_Movement()
+        return SpartanBukkit.packetsEnabled()
                 ? this.location
                 : this.player.getLocation();
     }
@@ -89,17 +86,11 @@ public class SpartanProtocol {
     }
 
     public int getPing() {
-        return SpartanBukkit.packetsEnabled() && this.ping != Integer.MIN_VALUE
-                ? this.ping
-                : Latency.ping(this.player);
+        return Latency.ping(this.player);
     }
 
     public boolean isMutateTeleport() {
         return this.mutateTeleport;
-    }
-
-    public short getTransactionID() {
-        return this.transactionID;
     }
 
     public PlayerProfile getProfile() {
@@ -125,8 +116,8 @@ public class SpartanProtocol {
         this.isSneaking = isSneaking;
     }
 
-    public void setOnLoadStatus(boolean onLoadStatus) {
-        this.onLoadStatus = onLoadStatus;
+    public void load() {
+        this.loaded = true;
     }
 
     public void setVelocity(Vector velocity) {
@@ -139,22 +130,6 @@ public class SpartanProtocol {
 
     public void setMutateTeleport(boolean b) {
         this.mutateTeleport = b;
-    }
-
-    public void setLastTransaction() {
-        if (this.lastTransaction != Long.MIN_VALUE) {
-            this.ping = (int) (System.currentTimeMillis() - this.lastTransaction);
-        }
-        this.lastTransaction = System.currentTimeMillis();
-    }
-
-    public short increaseTransactionID() {
-        this.transactionID++;
-
-        if (this.transactionID > 1500) {
-            this.transactionID = 1488;
-        }
-        return this.transactionID;
     }
 
     public void setProfile(PlayerProfile profile) {

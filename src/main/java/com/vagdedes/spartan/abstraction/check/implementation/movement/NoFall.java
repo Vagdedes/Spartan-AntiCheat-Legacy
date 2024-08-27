@@ -96,7 +96,7 @@ public class NoFall extends CheckExecutor {
                     GroundUtils.maxHeightLengthRatio)
                     && (difference != prediction
                     || (!player.bedrockPlayer || vertical != 0.0)
-                    && !player.isOnGround(player.movement.getEventToLocation(), true)
+                    && !player.isOnGround(player.movement.getLocation(), true)
                     && !player.isOnGround(player.movement.getEventFromLocation(), false))) {
                 cancel(
                         "type: motion"

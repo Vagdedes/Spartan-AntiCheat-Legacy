@@ -77,7 +77,7 @@ public class SpartanPlayer {
             List<SpartanPlayer> players = SpartanBukkit.getPlayers();
 
             if (!players.isEmpty()) {
-                if (MultiVersion.folia || Event_Chunks.enabled()) {
+                if (MultiVersion.folia || SpartanBukkit.packetsEnabled()) {
                     Set<Integer> worldHashes = new HashSet<>();
 
                     for (World world : Bukkit.getWorlds()) {
@@ -488,7 +488,7 @@ public class SpartanPlayer {
     // Separator
 
     public List<Entity> getNearbyEntities(double x, double y, double z) {
-        if (MultiVersion.folia || Event_Chunks.enabled()) {
+        if (MultiVersion.folia || SpartanBukkit.packetsEnabled()) {
             Map<Long, List<Entity>> perChunk = entities.get(this.getWorld().getName().hashCode());
 
             if (perChunk != null) {

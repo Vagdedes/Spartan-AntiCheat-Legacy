@@ -67,7 +67,7 @@ public class KillAura extends CheckExecutor {
     protected void runInternal(boolean cancelled) {
         runDetection(
                 "check_response_time",
-                responseTime::runMove
+                responseTime::run
         );
         runDetection(
                 "check_move_direction_machine_learning",
@@ -114,10 +114,6 @@ public class KillAura extends CheckExecutor {
                 runDetection(
                         "check_hit_direction_machine_learning",
                         hitDirectionML::runDamage
-                );
-                runDetection(
-                        "check_response_time",
-                        responseTime::runDamage
                 );
                 runDetection(
                         "check_response_time",

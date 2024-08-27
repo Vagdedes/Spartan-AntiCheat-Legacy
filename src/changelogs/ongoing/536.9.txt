@@ -13,3 +13,5 @@
 [#] Punishments for any check will now execute only if the check called has sufficient evidence.
 [+] Added 2 new commands: toggle-prevention, toggle-punishment
 [#] Made the plugin show its correct edition where it would be wrong in some cases.
+[#] Made the ImpossibleActions scaffold detection more stable.
+[#] Made many detections more stable by reworking parts of the plugin's base.

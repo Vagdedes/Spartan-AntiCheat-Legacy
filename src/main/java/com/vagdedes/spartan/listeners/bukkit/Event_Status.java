@@ -4,9 +4,13 @@ import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.connection.PlayerIP;
+import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudConnections;
+import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.performance.PlayerDetectionSlots;
+import com.vagdedes.spartan.functionality.server.Config;
+import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.entity.Player;
@@ -15,12 +19,45 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
 import java.net.InetAddress;
 
 public class Event_Status implements Listener {
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    private void Join(PlayerJoinEvent e) {
+        Player n = e.getPlayer();
+
+        if (ProtocolLib.isTemporary(n)) {
+            return;
+        }
+        SpartanPlayer p = SpartanBukkit.createProtocol(n).spartanPlayer;
+
+        if (Config.settings.getBoolean("Important.enable_watermark")
+                && !Permissions.isStaff(p)) {
+            p.sendMessage("");
+            AwarenessNotifications.forcefullySend(
+                    p,
+                    "\nThis server is protected by the Spartan AntiCheat",
+                    false
+            );
+            p.sendMessage("");
+        }
+
+        // Detections
+        p.getExecutor(Enums.HackType.Speed).handle(false, e);
+        p.getExecutor(Enums.HackType.NoFall).handle(false, null);
+
+        SpartanBukkit.runDelayedTask(p, () -> {
+            if (p != null) {
+                Config.settings.runOnLogin(p);
+                CloudBase.announce(p);
+            }
+        }, 10L);
+    }
 
     @EventHandler
     private void PreLogin(AsyncPlayerPreLoginEvent e) {
