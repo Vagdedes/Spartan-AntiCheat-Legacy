@@ -551,6 +551,102 @@ public class CommandExecution implements CommandExecutor {
                                         DiscordMemberCount.discordURL
                                 );
                             }
+                        } else if (args[0].equalsIgnoreCase("Toggle-Prevention")) {
+                            String check = args[1];
+
+                            if (isPlayer && !Permissions.has(player, Permission.MANAGE)) {
+                                ClickableMessage.sendURL(
+                                        sender,
+                                        Config.messages.getColorfulString("no_permission"),
+                                        support,
+                                        DiscordMemberCount.discordURL
+                                );
+                                return true;
+                            }
+                            boolean exists = false;
+
+                            for (Enums.HackType hackType : Enums.HackType.values()) {
+                                if (hackType.getCheck().getName().equalsIgnoreCase(check)) {
+                                    check = hackType.toString();
+                                    exists = true;
+                                    break;
+                                }
+                            }
+                            if (exists) {
+                                Enums.HackType type = Enums.HackType.valueOf(check);
+                                Check checkObj = type.getCheck();
+
+                                if (checkObj.isSilent(null, null)) {
+                                    checkObj.setSilent(null, false);
+                                    String message = Config.messages.getColorfulString("check_silent_disable_message");
+                                    message = isPlayer
+                                            ? ConfigUtils.replaceWithSyntax((Player) sender, message, type)
+                                            : ConfigUtils.replaceWithSyntax(message, type);
+                                    sender.sendMessage(message);
+                                } else {
+                                    checkObj.setSilent(null, true);
+                                    String message = Config.messages.getColorfulString("check_silent_enable_message");
+                                    message = isPlayer
+                                            ? ConfigUtils.replaceWithSyntax((Player) sender, message, type)
+                                            : ConfigUtils.replaceWithSyntax(message, type);
+                                    sender.sendMessage(message);
+                                }
+                            } else {
+                                ClickableMessage.sendURL(
+                                        sender,
+                                        Config.messages.getColorfulString("non_existing_check"),
+                                        support,
+                                        DiscordMemberCount.discordURL
+                                );
+                            }
+                        } else if (args[0].equalsIgnoreCase("Toggle-Punishment")) {
+                            String check = args[1];
+
+                            if (isPlayer && !Permissions.has(player, Permission.MANAGE)) {
+                                ClickableMessage.sendURL(
+                                        sender,
+                                        Config.messages.getColorfulString("no_permission"),
+                                        support,
+                                        DiscordMemberCount.discordURL
+                                );
+                                return true;
+                            }
+                            boolean exists = false;
+
+                            for (Enums.HackType hackType : Enums.HackType.values()) {
+                                if (hackType.getCheck().getName().equalsIgnoreCase(check)) {
+                                    check = hackType.toString();
+                                    exists = true;
+                                    break;
+                                }
+                            }
+                            if (exists) {
+                                Enums.HackType type = Enums.HackType.valueOf(check);
+                                Check checkObj = type.getCheck();
+
+                                if (checkObj.canPunish(null)) {
+                                    checkObj.setEnabled(null, false);
+                                    String message = Config.messages.getColorfulString("check_punishment_disable_message");
+                                    message = isPlayer
+                                            ? ConfigUtils.replaceWithSyntax((Player) sender, message, type)
+                                            : ConfigUtils.replaceWithSyntax(message, type);
+                                    sender.sendMessage(message);
+                                } else {
+                                    checkObj.setEnabled(null, true);
+                                    String message = Config.messages.getColorfulString("check_punishment_enable_message");
+                                    message = isPlayer
+                                            ? ConfigUtils.replaceWithSyntax((Player) sender, message, type)
+                                            : ConfigUtils.replaceWithSyntax(message, type);
+                                    sender.sendMessage(message);
+                                }
+                            } else {
+                                ClickableMessage.sendURL(
+                                        sender,
+                                        Config.messages.getColorfulString("non_existing_check"),
+                                        support,
+                                        DiscordMemberCount.discordURL
+                                );
+                            }
 
                         } else if (isPlayer && args[0].equalsIgnoreCase("Notifications")) {
                             if (!DetectionNotifications.hasPermission(player)) {

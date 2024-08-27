@@ -47,6 +47,10 @@ public class Messages extends ConfigurationBuilder {
         addOption("check_stored_data_delete_message", "&8[&2" + prefix + "&8]&a Stored data successfully deleted for check&8: &2{check}");
         addOption("check_enable_message", "&8[&2" + prefix + "&8] &aYou enabled the check&8:&7 {detection}");
         addOption("check_disable_message", "&8[&2" + prefix + "&8] &cYou disabled the check&8:&7 {detection}");
+        addOption("check_silent_disable_message", "&8[&2" + prefix + "&8] &aYou enabled preventions for the check&8:&7 {detection}");
+        addOption("check_silent_enable_message", "&8[&2" + prefix + "&8] &cYou disabled preventions for the check&8:&7 {detection}");
+        addOption("check_punishment_enable_message", "&8[&2" + prefix + "&8] &aYou enabled punishments for the check&8:&7 {detection}");
+        addOption("check_punishment_disable_message", "&8[&2" + prefix + "&8] &cYou disabled punishments for the check&8:&7 {detection}");
         addOption("non_existing_check", "&8[&2" + prefix + "&8] &cThis check doesn't exist.");
         addOption("bypass_message", "&8[&2" + prefix + "&8] &c{player} &7is now bypassing the &4{detection} &7check for &e{time} &7seconds.");
 

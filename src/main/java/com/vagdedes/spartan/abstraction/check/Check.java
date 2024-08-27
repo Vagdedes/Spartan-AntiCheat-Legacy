@@ -10,6 +10,7 @@ import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.server.ConfigUtils;
+import me.vagdedes.spartan.api.CheckPunishmentToggleEvent;
 import me.vagdedes.spartan.api.CheckSilentToggleEvent;
 import me.vagdedes.spartan.api.CheckToggleEvent;
 import me.vagdedes.spartan.system.Enums;
@@ -669,6 +670,52 @@ public class Check {
 
     public List<String> getPunishmentCommands() {
         return new ArrayList<>(this.punishments);
+    }
+
+    public void setPunish(Check.DataType dataType, boolean b) {
+        Check.DataType[] dataTypes;
+
+        if (dataType == null) {
+            dataTypes = ResearchEngine.usableDataTypes;
+        } else {
+            dataTypes = null;
+
+            for (Check.DataType type : ResearchEngine.usableDataTypes) {
+                if (type == dataType) {
+                    dataTypes = new Check.DataType[]{dataType};
+                    break;
+                }
+            }
+
+            if (dataTypes == null) {
+                return;
+            }
+        }
+        for (Check.DataType type : dataTypes) {
+            int ordinal = type.ordinal();
+
+            if (this.punish[ordinal] != b) {
+                CheckPunishmentToggleEvent event;
+
+                if (Config.settings.getBoolean("Important.enable_developer_api")) {
+                    event = new CheckPunishmentToggleEvent(this.hackType, b ? Enums.ToggleAction.ENABLE : Enums.ToggleAction.DISABLE);
+                    Register.manager.callEvent(event);
+                } else {
+                    event = null;
+                }
+
+                if (event == null || !event.isCancelled()) {
+                    this.punish[ordinal] = b;
+
+                    if (!b) {
+                        synchronized (options) {
+                            options.clear();
+                        }
+                    }
+                    setOption("punishments.enabled" + type.toString().toLowerCase(), b);
+                }
+            }
+        }
     }
 
 }
