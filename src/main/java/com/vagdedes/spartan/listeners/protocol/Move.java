@@ -1,8 +1,11 @@
-package com.vagdedes.spartan.listeners.protocol.move;
+package com.vagdedes.spartan.listeners.protocol;
 
 import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.events.ListenerPriority;
+import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
+import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
@@ -12,9 +15,21 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
 
-public class BackgroundMove {
+public class Move extends PacketAdapter {
 
-    static void run(PacketEvent event) {
+    public Move() {
+        super(
+                Register.plugin,
+                ListenerPriority.LOWEST,
+                PacketType.Play.Client.POSITION,
+                PacketType.Play.Client.POSITION_LOOK,
+                PacketType.Play.Client.LOOK,
+                PacketType.Play.Client.GROUND
+        );
+    }
+
+    @Override
+    public void onPacketReceiving(PacketEvent event) {
         long time = System.currentTimeMillis();
         Player player = event.getPlayer();
 
@@ -123,4 +138,5 @@ public class BackgroundMove {
     private static boolean invalidTeleport(Location location) {
         return location.getX() + location.getZ() == 17;
     }
+
 }

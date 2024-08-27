@@ -10,7 +10,6 @@ import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.listeners.protocol.modules.TeleportData;
-import com.vagdedes.spartan.listeners.protocol.move.BackgroundMove;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -38,7 +37,7 @@ public class ServerPosition extends PacketAdapter {
         if (protocol.isLoading()) return;
 
         if (packetContainer.getType().equals(PacketType.Play.Server.POSITION)) {
-            Location teleportLocation = BackgroundMove.readLocation(event);
+            Location teleportLocation = Move.readLocation(event);
             if (protocol.isMutateTeleport()) {
                 protocol.teleportEngine.add(new TeleportData(teleportLocation, true));
                 protocol.setMutateTeleport(false);
