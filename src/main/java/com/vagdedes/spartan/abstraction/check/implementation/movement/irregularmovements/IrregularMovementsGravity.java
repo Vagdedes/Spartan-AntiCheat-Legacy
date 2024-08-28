@@ -245,7 +245,7 @@ public class IrregularMovementsGravity extends DetectionExecutor {
                 for (SpartanPlayerDamage damage : damages) {
                     if (damage.timePassed() <= (TPS.tickTime * TPS.maximum * 3)
                             && (player.getItemInHand().getType() == MACE
-                            || player.getInventory().getItemInOffHand().getType() == MACE)) {
+                            || player.getInstance().getInventory().getItemInOffHand().getType() == MACE)) {
                         return true;
                     }
                 }

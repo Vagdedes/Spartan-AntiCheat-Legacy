@@ -100,7 +100,7 @@ public class AntiCheatLogs {
                 World.Environment environment = location.world.getEnvironment();
                 int x = location.getBlockX(), y = location.getBlockY(), z = location.getBlockZ(), amount = 1;
                 String key = ore.toString(),
-                        log = player.name + " found " + amount + " " + key
+                        log = player.getInstance().getName() + " found " + amount + " " + key
                                 + " on " + x + ", " + y + ", " + z + ", " + BlockUtils.environmentToString(environment);
 
                 // API Event

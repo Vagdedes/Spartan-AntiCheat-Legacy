@@ -21,6 +21,7 @@ import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
+import com.vagdedes.spartan.listeners.bukkit.Event_World;
 import com.vagdedes.spartan.listeners.bukkit.chunks.Event_Chunks;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -37,24 +38,17 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public class SpartanPlayer {
 
-    private static final Map<Integer, Map<Long, List<Entity>>> entities = new ConcurrentHashMap<>();
-
     public final SpartanProtocol protocol;
     public final boolean bedrockPlayer;
-    public final String name;
-    public final UUID uuid;
     private final Map<PotionEffectType, SpartanPotionEffect> potionEffects;
     public final Check.DataType dataType;
     public final SpartanPlayerMovement movement;
@@ -74,48 +68,20 @@ public class SpartanPlayer {
 
     static {
         SpartanBukkit.runRepeatingTask(() -> {
-            List<SpartanPlayer> players = SpartanBukkit.getPlayers();
+            List<SpartanProtocol> protocols = SpartanBukkit.getProtocols();
 
-            if (!players.isEmpty()) {
-                if (MultiVersion.folia || SpartanBukkit.packetsEnabled()) {
-                    Set<Integer> worldHashes = new HashSet<>();
-
-                    for (World world : Bukkit.getWorlds()) {
-                        Map<Long, List<Entity>> perChunk = new ConcurrentHashMap<>();
-
-                        for (Entity entity : world.getEntities()) {
-                            Location location = entity.getLocation();
-                            perChunk.computeIfAbsent(
-                                    Event_Chunks.hashChunk(
-                                            SpartanLocation.getChunkPos(location.getBlockX()),
-                                            SpartanLocation.getChunkPos(location.getBlockZ())
-                                    ),
-                                    k -> new CopyOnWriteArrayList<>()
-                            ).add(entity);
-                        }
-                        int hash = world.getName().hashCode();
-                        worldHashes.add(hash);
-                        entities.put(hash, perChunk);
-                    }
-                    Iterator<Integer> iterator = entities.keySet().iterator();
-
-                    while (iterator.hasNext()) {
-                        int hash = iterator.next();
-
-                        if (!worldHashes.contains(hash)) {
-                            iterator.remove();
-                        }
-                    }
-                } else {
-                    entities.clear();
-                }
-                for (SpartanPlayer p : players) {
+            if (!protocols.isEmpty()) {
+                for (SpartanProtocol protocol : protocols) {
                     if (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
-                        SpartanBukkit.runTask(p, () -> {
-                            p.setStoredPotionEffects(p.getInstance().getActivePotionEffects());
-                        });
+                        SpartanBukkit.runTask(
+                                protocol.spartanPlayer,
+                                () -> protocol.spartanPlayer.setStoredPotionEffects(
+                                        protocol.player.getActivePotionEffects()
+                                )
+                        );
                     }
-                    p.movement.schedulerFrom = p.movement.getLocation();
+                    protocol.spartanPlayer.movement.schedulerFrom =
+                            protocol.spartanPlayer.movement.getLocation();
                 }
             }
         }, 1L, 1L);
@@ -128,12 +94,10 @@ public class SpartanPlayer {
         Enums.HackType[] hackTypes = Enums.HackType.values();
 
         this.protocol = protocol;
-        this.uuid = p.getUniqueId();
         this.bedrockPlayer = BedrockCompatibility.isPlayer(p);
         this.dataType = bedrockPlayer ? Check.DataType.BEDROCK : Check.DataType.JAVA;
         this.trackers = new Trackers();
 
-        this.name = p.getName();
         Collection<PotionEffect> collection = p.getActivePotionEffects();
         this.potionEffects = SpartanPotionEffect.mapFromBukkit(
                 new ConcurrentHashMap<>(collection.size() + 1, 1.0f),
@@ -176,7 +140,7 @@ public class SpartanPlayer {
 
     @Override
     public String toString() {
-        return this.name;
+        return this.protocol.player.getName();
     }
 
     public boolean debug(boolean function, boolean broadcast, boolean cutDecimals, Object... message) {
@@ -209,15 +173,15 @@ public class SpartanPlayer {
                     }
                     string += StringUtils.toString(message, " ");
                 }
-                List<SpartanPlayer> players = SpartanBukkit.getPlayers();
+                List<SpartanProtocol> protocols = SpartanBukkit.getProtocols();
 
-                if (!players.isEmpty()) {
+                if (!protocols.isEmpty()) {
                     if (broadcast) {
                         Bukkit.broadcastMessage(string);
                     } else {
-                        for (SpartanPlayer o : players) {
-                            if (o != null && o.getInstance().isOp()) {
-                                o.getInstance().sendMessage(string);
+                        for (SpartanProtocol protocol : protocols) {
+                            if (protocol.player.isOp()) {
+                                protocol.player.sendMessage(string);
                             }
                         }
                     }
@@ -247,7 +211,7 @@ public class SpartanPlayer {
         if (run) {
             clicks.calculate();
             this.getExecutor(Enums.HackType.FastClicks).run(false);
-            InteractiveInventory.playerInfo.refresh(name);
+            InteractiveInventory.playerInfo.refresh(this.protocol.player.getName());
         }
     }
 
@@ -259,10 +223,6 @@ public class SpartanPlayer {
                         || PluginUtils.exists("viaversion")
                         || Compatibility.CompatibilityType.PROTOCOL_SUPPORT.isFunctional() ? 256 :
                         100;
-    }
-
-    public void sendMessage(String message) {
-        this.getInstance().sendMessage(message);
     }
 
     public void sendInventoryCloseMessage(String message) {
@@ -284,18 +244,10 @@ public class SpartanPlayer {
         return Bukkit.createInventory(this.getInstance(), size, title);
     }
 
-    public InventoryView getOpenInventory() {
-        return this.getInstance().getOpenInventory();
-    }
-
     // Separator
 
-    public PlayerInventory getInventory() {
-        return this.getInstance().getInventory();
-    }
-
     public ItemStack getItemInHand() {
-        return this.getInventory().getItemInHand();
+        return this.getInstance().getInventory().getItemInHand();
     }
 
     // Separator
@@ -494,7 +446,7 @@ public class SpartanPlayer {
 
     public List<Entity> getNearbyEntities(double x, double y, double z) {
         if (MultiVersion.folia || SpartanBukkit.packetsEnabled()) {
-            Map<Long, List<Entity>> perChunk = entities.get(this.getWorld().getName().hashCode());
+            Map<Long, List<Entity>> perChunk = Event_World.getEntities(this.getWorld());
 
             if (perChunk != null) {
                 List<Entity> nearbyEntities = new ArrayList<>();
@@ -505,7 +457,7 @@ public class SpartanPlayer {
                 locations.addAll(surrounding);
 
                 for (SpartanLocation location : locations) {
-                    List<Entity> list = perChunk.get(Event_Chunks.hashChunk(
+                    List<Entity> list = perChunk.get(Event_Chunks.hashCoordinates(
                             SpartanLocation.getChunkPos(location.getBlockX()),
                             SpartanLocation.getChunkPos(location.getBlockZ())
                     ));

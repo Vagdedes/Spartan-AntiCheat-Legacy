@@ -29,7 +29,7 @@ public class FastBow extends CheckExecutor {
                 checkBowForce(((EntityShootBowEvent) object).getForce());
             }
         } else if (((PlayerInteractEvent) object).getAction() == Action.RIGHT_CLICK_AIR) {
-            PlayerInventory inventory = player.getInventory();
+            PlayerInventory inventory = player.getInstance().getInventory();
 
             if (inventory.getItemInHand().getType() == Material.BOW
                     && inventory.contains(Material.ARROW)) {

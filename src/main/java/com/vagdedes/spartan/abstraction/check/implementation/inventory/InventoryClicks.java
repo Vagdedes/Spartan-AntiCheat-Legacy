@@ -42,7 +42,7 @@ public class InventoryClicks extends CheckExecutor {
             Material material = item.getType();
 
             if (!BlockUtils.isSensitive(player, material)) {
-                boolean quick = player.getOpenInventory().countSlots() <= PlayerUtils.playerInventorySlots,
+                boolean quick = player.getInstance().getOpenInventory().countSlots() <= PlayerUtils.playerInventorySlots,
                         shift = click.isShiftClick();
                 String type = BlockUtils.materialToString(material);
 
@@ -52,7 +52,7 @@ public class InventoryClicks extends CheckExecutor {
 
                 if (shift
                         && !quick
-                        && !BlockUtils.hasMaterial(player.getOpenInventory().getCursor())
+                        && !BlockUtils.hasMaterial(player.getInstance().getOpenInventory().getCursor())
                         && shiftBuffer.count(1, 5) == 4) { // Inventory
                     shiftBuffer.reset();
                     cancel("type: shift, item: " + type);

@@ -5,6 +5,7 @@ import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.inventory.InventoryMenu;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.command.CommandExecution;
 import com.vagdedes.spartan.functionality.connection.DiscordMemberCount;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
@@ -39,20 +40,16 @@ public class MainMenu extends InventoryMenu {
     }
 
     public static void refresh() {
-        List<SpartanPlayer> players = SpartanBukkit.getPlayers();
+        List<SpartanProtocol> protocols = SpartanBukkit.getProtocols();
 
-        if (!players.isEmpty()) {
-            for (SpartanPlayer p : players) {
-                SpartanBukkit.transferTask(p, () -> {
-                    Player n = p.getInstance();
+        if (!protocols.isEmpty()) {
+            for (SpartanProtocol protocol : protocols) {
+                SpartanBukkit.transferTask(protocol.spartanPlayer, () -> {
+                    String title = protocol.player.getOpenInventory().getTitle();
 
-                    if (n != null) {
-                        String title = n.getOpenInventory().getTitle();
-
-                        if (title.startsWith(name)) {
-                            DiscordMemberCount.ignore();
-                            InteractiveInventory.mainMenu.open(p);
-                        }
+                    if (title.startsWith(name)) {
+                        DiscordMemberCount.ignore();
+                        InteractiveInventory.mainMenu.open(protocol.spartanPlayer);
                     }
                 });
             }
@@ -62,7 +59,7 @@ public class MainMenu extends InventoryMenu {
     @Override
     public boolean internalOpen(SpartanPlayer player, boolean permissionMessage, Object object) {
         List<String> lore = new ArrayList<>(20);
-        UUID uuid = player.uuid;
+        UUID uuid = player.getInstance().getUniqueId();
         int page = PlayerStateLists.getPage(uuid), previousPageSlot = 18, nextPageSlot = 26;
         setTitle(player, name + page + ")");
 
@@ -162,8 +159,8 @@ public class MainMenu extends InventoryMenu {
 
         if (item.equals("Auto Updater")) {
             player.sendInventoryCloseMessage("");
-            player.sendMessage("§6Discord Invite URL§8: §e§n" + DiscordMemberCount.discordURL);
-            player.sendMessage("");
+            player.getInstance().sendMessage("§6Discord Invite URL§8: §e§n" + DiscordMemberCount.discordURL);
+            player.getInstance().sendMessage("");
 
         } else if (item.equals("Compatibilities")) {
             if (!Permissions.has(player, Permission.MANAGE)) {
@@ -211,8 +208,8 @@ public class MainMenu extends InventoryMenu {
                     InteractiveInventory.manageChecks.open(player);
                 } else if (clickType == ClickType.RIGHT) {
                     player.sendInventoryCloseMessage("");
-                    player.sendMessage("§6Learn more about Detection Slots§8: §e§n" + SpartanEdition.patreonURL);
-                    player.sendMessage("");
+                    player.getInstance().sendMessage("§6Learn more about Detection Slots§8: §e§n" + SpartanEdition.patreonURL);
+                    player.getInstance().sendMessage("");
                 }
             }
 
@@ -223,7 +220,7 @@ public class MainMenu extends InventoryMenu {
                 String number = split[1];
 
                 if (AlgebraUtils.validInteger(number)) {
-                    UUID uuid = player.uuid;
+                    UUID uuid = player.getInstance().getUniqueId();
                     int itemPage = Integer.parseInt(number), currentPage = PlayerStateLists.getPage(uuid);
 
                     if (itemPage < currentPage) {

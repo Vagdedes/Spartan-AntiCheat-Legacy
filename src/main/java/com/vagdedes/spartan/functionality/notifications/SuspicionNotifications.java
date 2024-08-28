@@ -60,11 +60,11 @@ public class SuspicionNotifications {
 
                 if (evidence.length() > 0) {
                     size++;
-                    players.append(player.name).append(comma);
+                    players.append(player.getInstance().getName()).append(comma);
                     SpartanLocation location = player.movement.getLocation();
                     CloudConnections.executeDiscordWebhook(
                             "checks",
-                            player.uuid, player.name,
+                            player.getInstance().getUniqueId(), player.getInstance().getName(),
                             location.getBlockX(), location.getBlockY(), location.getBlockZ(),
                             "Suspected for", evidence.substring(0, evidence.length() - commaLength)
                     );
@@ -79,7 +79,7 @@ public class SuspicionNotifications {
 
             if (!staff.isEmpty()) {
                 for (SpartanPlayer player : staff) {
-                    player.sendMessage(message);
+                    player.getInstance().sendMessage(message);
                 }
             }
         }

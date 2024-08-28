@@ -33,13 +33,13 @@ public class Event_Status implements Listener {
 
         if (Config.settings.getBoolean("Important.enable_watermark")
                 && !Permissions.isStaff(p)) {
-            p.sendMessage("");
+            p.getInstance().sendMessage("");
             AwarenessNotifications.forcefullySend(
                     p,
                     "\nThis server is protected by the Spartan AntiCheat",
                     false
             );
-            p.sendMessage("");
+            p.getInstance().sendMessage("");
         }
 
         // Detections

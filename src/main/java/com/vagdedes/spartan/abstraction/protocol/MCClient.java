@@ -433,7 +433,7 @@ public class MCClient {
 
     public void jump() {
         float f = this.getJumpUpwardsMotion();
-        PotionEffect jumpEffect = this.p().spartanPlayer.getInstance().getPotionEffect(PotionEffectUtils.JUMP);
+        PotionEffect jumpEffect = this.p().player.getPotionEffect(PotionEffectUtils.JUMP);
 
         if (jumpEffect != null) {
             f += 0.1F * (float) (jumpEffect.getAmplifier() + 1);

@@ -3,6 +3,7 @@ package com.vagdedes.spartan.abstraction.check;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
+import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.Config;
@@ -320,8 +321,8 @@ public class Check {
                     options.clear();
                 }
                 if (!b) {
-                    for (SpartanPlayer player : SpartanBukkit.getPlayers()) {
-                        player.getExecutor(hackType).resetLevel();
+                    for (SpartanProtocol protocol : SpartanBukkit.getProtocols()) {
+                        protocol.spartanPlayer.getExecutor(hackType).resetLevel();
                     }
                 }
                 if (!profiles.isEmpty()) {

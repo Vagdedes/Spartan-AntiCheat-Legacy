@@ -46,7 +46,7 @@ public class SpartanPunishments {
                 if (!players.isEmpty()) {
                     for (SpartanPlayer o : players) {
                         if (DetectionNotifications.hasPermission(o)) {
-                            o.sendMessage(announcement);
+                            o.getInstance().sendMessage(announcement);
                         }
                     }
                 }

@@ -107,11 +107,11 @@ public class CloudBase {
                     if (!players.isEmpty()) {
                         for (String[] announcement : announcements) {
                             if (AwarenessNotifications.canSend(
-                                    player.uuid,
+                                    player.getInstance().getUniqueId(),
                                     "staff-announcement-" + announcement[0],
                                     Integer.parseInt(announcement[2])
                             )) {
-                                player.sendMessage(AwarenessNotifications.getNotification(announcement[1]));
+                                player.getInstance().sendMessage(AwarenessNotifications.getNotification(announcement[1]));
                             }
                         }
                     }
@@ -305,11 +305,11 @@ public class CloudBase {
                         for (String[] announcement : announcements) {
                             for (SpartanPlayer p : players) {
                                 if (AwarenessNotifications.canSend(
-                                        p.uuid,
+                                        p.getInstance().getUniqueId(),
                                         "staff-announcement-" + announcement[0],
                                         Integer.parseInt(announcement[2])
                                 )) {
-                                    p.sendMessage(AwarenessNotifications.getNotification(announcement[1]));
+                                    p.getInstance().sendMessage(AwarenessNotifications.getNotification(announcement[1]));
                                 }
                             }
                         }

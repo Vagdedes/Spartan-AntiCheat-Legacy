@@ -109,7 +109,7 @@ public class Speed extends CheckExecutor {
                 ? player.getPotionEffect(PotionEffectType.DOLPHINS_GRACE, 0)
                 : null;
         double speedModify = getMaxSpeedAmplifier();
-        PlayerInventory inventory = player.getInventory();
+        PlayerInventory inventory = player.getInstance().getInventory();
         Entity vehicle = player.getInstance().getVehicle();
 
         String flag = null;
@@ -277,8 +277,8 @@ public class Speed extends CheckExecutor {
                 }
             }
             if (horizontal > wrapLimit
-                    && DataProcessor.keepSprint.containsKey(player.uuid) && !player.protocol.isSprinting()
-                    && !DataProcessor.getKeepSprint(player.uuid).isTimedOut() && !ignoreP) {
+                    && DataProcessor.keepSprint.containsKey(player.getInstance().getUniqueId()) && !player.protocol.isSprinting()
+                    && !DataProcessor.getKeepSprint(player.getInstance().getUniqueId()).isTimedOut() && !ignoreP) {
                 antiAbuseProcessor = antiAbuseProcessor + 25;
                 if (hackType.getCheck().getBooleanOption("check_keepsprint_silent", true)
                         && antiAbuseProcessor > 200) {
@@ -294,7 +294,7 @@ public class Speed extends CheckExecutor {
                 jumpRayLine = new RayLine(dx, dz);
                 jumpRotation = to.getYaw();
                 yDiff = 0D;
-                DataProcessor.keepSprint.put(player.uuid, new KeepSprint());
+                DataProcessor.keepSprint.put(player.getInstance().getUniqueId(), new KeepSprint());
                 isJump = (vertical >= -0.04);
 
                 // player.sendMessage(String.valueOf(horizontal));
@@ -314,19 +314,19 @@ public class Speed extends CheckExecutor {
                         muchThanAllowedStrafe = horizontal > limit / 1.4,
                         muchThanAllowedRotation = horizontal > limit / 1.5;
                 if (!player.protocol.isSprinting()) {
-                    DataProcessor.getKeepSprint(player.uuid).sprint();
+                    DataProcessor.getKeepSprint(player.getInstance().getUniqueId()).sprint();
                 }
 
-                if (DataProcessor.getKeepSprint(player.uuid).hits() > 0
-                        && !DataProcessor.getKeepSprint(player.uuid).sprinted()
+                if (DataProcessor.getKeepSprint(player.getInstance().getUniqueId()).hits() > 0
+                        && !DataProcessor.getKeepSprint(player.getInstance().getUniqueId()).sprinted()
                         && onAir > 2 && muchThanAllowedRotation) {
-                    DataProcessor.getKeepSprint(player.uuid).newFlag();
+                    DataProcessor.getKeepSprint(player.getInstance().getUniqueId()).newFlag();
 
-                    if (DataProcessor.getKeepSprint(player.uuid).flags() > 2) {
+                    if (DataProcessor.getKeepSprint(player.getInstance().getUniqueId()).flags() > 2) {
                         antiAbuseProcessor = antiAbuseProcessor + 210;
                         if (hackType.getCheck().getBooleanOption("check_keepsprint", true)
                                 && antiAbuseProcessor > 200) {
-                            flag = "type: keepsprint, hits: " + DataProcessor.getKeepSprint(player.uuid).hits();
+                            flag = "type: keepsprint, hits: " + DataProcessor.getKeepSprint(player.getInstance().getUniqueId()).hits();
                         }
                     }
                 }
@@ -382,8 +382,8 @@ public class Speed extends CheckExecutor {
             collideMinecraftShitMathFactor = false;
             double limit = 0.3D * (speedMultiply * 1.2) * ((speedModify > 0) ? 2 : 1);
             double limitStraight = 0.3D * (speedMultiply) * ((speedModify > 0) ? 2 : 1);
-            if (DataProcessor.keepSprint.containsKey(player.uuid)
-                    && !DataProcessor.getKeepSprint(player.uuid).isTimedOut()
+            if (DataProcessor.keepSprint.containsKey(player.getInstance().getUniqueId())
+                    && !DataProcessor.getKeepSprint(player.getInstance().getUniqueId()).isTimedOut()
                     && !player.protocol.isSprinting()) {
                 sprintVl = sprintVl + 2;
 
@@ -531,7 +531,7 @@ public class Speed extends CheckExecutor {
             collideMinecraftShitMathFactor = false;
             newRayRequest = true;
             onGroundMinecraftShitMathFactor = 1.6;
-            DataProcessor.keepSprint.put(player.uuid, new KeepSprint());
+            DataProcessor.keepSprint.put(player.getInstance().getUniqueId(), new KeepSprint());
             onDamage = false;
             yDiff = 0D;
             isJump = false;

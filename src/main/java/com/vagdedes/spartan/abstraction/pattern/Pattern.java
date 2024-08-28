@@ -423,8 +423,8 @@ public class Pattern {
                 );
 
                 if (message != null
-                        && AwarenessNotifications.canSend(player.uuid, "pattern-data", 60)) {
-                    player.sendMessage(message);
+                        && AwarenessNotifications.canSend(player.getInstance().getUniqueId(), "pattern-data", 60)) {
+                    player.getInstance().sendMessage(message);
                 }
             }
         }

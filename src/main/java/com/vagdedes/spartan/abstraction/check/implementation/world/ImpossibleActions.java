@@ -175,7 +175,7 @@ public class ImpossibleActions extends CheckExecutor {
                     cases = 1;
                 } else if (player.getInstance().isDead()) {
                     cases = 2;
-                } else if (BlockUtils.hasMaterial(player.getOpenInventory().getCursor())) {
+                } else if (BlockUtils.hasMaterial(player.getInstance().getOpenInventory().getCursor())) {
                     cases = 3;
                 } else {
                     cases = 0;

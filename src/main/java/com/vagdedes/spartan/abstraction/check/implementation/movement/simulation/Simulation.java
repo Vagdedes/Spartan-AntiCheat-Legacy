@@ -26,7 +26,7 @@ public class Simulation extends CheckExecutor {
         if (true) {
             return;
         }
-        MCClient client = SpartanBukkit.getProtocol(player.uuid).mcClient;
+        MCClient client = SpartanBukkit.getProtocol(player.getInstance().getUniqueId()).mcClient;
 
         if (object instanceof PlayerMoveEvent) {
             PlayerMoveEvent event = (PlayerMoveEvent) object;
@@ -90,8 +90,8 @@ public class Simulation extends CheckExecutor {
                 client.verifiedMotion = predicted.get(predicted.size() - 1);
             }
 
-            player.sendMessage("dx: " + dx + ", dy: " + dy + ", dz: " + dz + ", xMin: " + xMin + " / xMax: " + xMax + ", yMin: " + yMin + " / yMax: " + yMax + ", zMin: " + zMin + " / zMax: " + zMax);
-            player.sendMessage(isXValid + " " + isYValid + " "  + isZValid);
+            player.getInstance().sendMessage("dx: " + dx + ", dy: " + dy + ", dz: " + dz + ", xMin: " + xMin + " / xMax: " + xMax + ", yMin: " + yMin + " / yMax: " + yMax + ", zMin: " + zMin + " / zMax: " + zMax);
+            player.getInstance().sendMessage(isXValid + " " + isYValid + " "  + isZValid);
 
         }
         if (object instanceof PlayerVelocityEvent) {

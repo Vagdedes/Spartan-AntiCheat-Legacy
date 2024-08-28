@@ -29,7 +29,7 @@ public class FastEat extends CheckExecutor {
 
     private long getDelay() {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
-            PlayerInventory inventory = player.getInventory();
+            PlayerInventory inventory = player.getInstance().getInventory();
 
             for (ItemStack itemStack : new ItemStack[]{inventory.getItemInHand(), inventory.getItemInOffHand()}) {
                 if (itemStack != null) {

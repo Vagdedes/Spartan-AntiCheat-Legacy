@@ -96,7 +96,7 @@ public class ResearchEngine {
         PlayerProfile playerProfile;
 
         if (!force) {
-            playerProfile = playerProfiles.get(protocol.spartanPlayer.name.toLowerCase());
+            playerProfile = playerProfiles.get(protocol.player.getName().toLowerCase());
 
             if (playerProfile != null) {
                 playerProfile.update(protocol);
@@ -104,7 +104,7 @@ public class ResearchEngine {
             }
         }
         playerProfile = new PlayerProfile(protocol);
-        playerProfiles.put(protocol.spartanPlayer.name.toLowerCase(), playerProfile);
+        playerProfiles.put(protocol.player.getName().toLowerCase(), playerProfile);
         return playerProfile;
     }
 
@@ -610,8 +610,8 @@ public class ResearchEngine {
 
                 if (!players.isEmpty()) {
                     for (SpartanPlayer p : players) {
-                        if (AwarenessNotifications.canSend(p.uuid, "limited-data", 60 * 60)) {
-                            p.sendMessage(message);
+                        if (AwarenessNotifications.canSend(p.getInstance().getUniqueId(), "limited-data", 60 * 60)) {
+                            p.getInstance().sendMessage(message);
                         }
                     }
                 }

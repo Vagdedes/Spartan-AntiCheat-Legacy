@@ -2,6 +2,7 @@ package com.vagdedes.spartan.abstraction.configuration.implementation;
 
 import com.vagdedes.spartan.abstraction.configuration.ConfigurationBuilder;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
@@ -63,11 +64,11 @@ public class Settings extends ConfigurationBuilder {
     }
 
     public void runOnLogin() {
-        List<SpartanPlayer> players = SpartanBukkit.getPlayers();
+        List<SpartanProtocol> protocols = SpartanBukkit.getProtocols();
 
-        if (!players.isEmpty()) {
-            for (SpartanPlayer p : players) {
-                runOnLogin(p);
+        if (!protocols.isEmpty()) {
+            for (SpartanProtocol protocol : protocols) {
+                runOnLogin(protocol.spartanPlayer);
             }
         }
     }

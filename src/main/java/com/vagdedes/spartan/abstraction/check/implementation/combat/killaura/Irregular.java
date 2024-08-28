@@ -18,7 +18,7 @@ public class Irregular extends DetectionExecutor {
         } else if (player.getInstance().isSleeping()) {
             cancel("type: irregular, scenario: sleeping");
         } else {
-            InventoryView inventoryView = player.getOpenInventory();
+            InventoryView inventoryView = player.getInstance().getOpenInventory();
 
             if (BlockUtils.hasMaterial(inventoryView.getCursor())) {
                 cancel("type: irregular, scenario: cursor");

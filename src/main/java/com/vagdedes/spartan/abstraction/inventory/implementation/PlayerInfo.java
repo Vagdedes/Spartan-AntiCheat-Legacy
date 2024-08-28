@@ -26,7 +26,6 @@ import me.vagdedes.spartan.system.Enums.HackType;
 import me.vagdedes.spartan.system.Enums.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 
@@ -68,7 +67,7 @@ public class PlayerInfo extends InventoryMenu {
             );
             return false;
         } else {
-            setTitle(player, menu + (isOnline ? target.spartanPlayer.name : profile.getName()));
+            setTitle(player, menu + (isOnline ? target.player.getName() : profile.getName()));
             Set<Map.Entry<HackType, PlayerEvidence.EvidenceDetails>> evidenceDetails = profile.evidence.getKnowledgeEntries(
                     0.0,
                     0.0
@@ -204,20 +203,16 @@ public class PlayerInfo extends InventoryMenu {
     }
 
     public void refresh(String targetName) {
-        List<SpartanPlayer> players = SpartanBukkit.getPlayers();
+        List<SpartanProtocol> protocols = SpartanBukkit.getProtocols();
 
-        if (!players.isEmpty()) {
-            for (SpartanPlayer o : players) {
-                Player no = o.getInstance();
+        if (!protocols.isEmpty()) {
+            for (SpartanProtocol protocol : protocols) {
+                InventoryView inventoryView = protocol.player.getOpenInventory();
 
-                if (no != null) {
-                    InventoryView inventoryView = no.getOpenInventory();
-
-                    if (inventoryView.getTitle().equals(PlayerInfo.menu + targetName)
-                            && cooldowns.canDo("player-info=" + o.uuid)) {
-                        cooldowns.add("player-info=" + o.uuid, 1);
-                        InteractiveInventory.playerInfo.open(o, targetName);
-                    }
+                if (inventoryView.getTitle().equals(PlayerInfo.menu + targetName)
+                        && cooldowns.canDo("player-info=" + protocol.player.getUniqueId())) {
+                    cooldowns.add("player-info=" + protocol.player.getUniqueId(), 1);
+                    InteractiveInventory.playerInfo.open(protocol.spartanPlayer, targetName);
                 }
             }
         }
@@ -245,8 +240,8 @@ public class PlayerInfo extends InventoryMenu {
                     for (HackType hackType : Enums.HackType.values()) {
                         t.spartanPlayer.getExecutor(hackType).resetLevel();
                     }
-                    String message = Config.messages.getColorfulString("player_violation_reset_message").replace("{player}", t.spartanPlayer.name);
-                    player.sendMessage(message);
+                    String message = Config.messages.getColorfulString("player_violation_reset_message").replace("{player}", t.player.getName());
+                    player.getInstance().sendMessage(message);
                 } else {
                     String name = Bukkit.getOfflinePlayer(playerName).getName();
 
@@ -259,7 +254,7 @@ public class PlayerInfo extends InventoryMenu {
                         );
                     } else {
                         ResearchEngine.resetData(name);
-                        player.sendMessage(Config.messages.getColorfulString("player_stored_data_delete_message").replace("{player}", name));
+                        player.getInstance().sendMessage(Config.messages.getColorfulString("player_stored_data_delete_message").replace("{player}", name));
                     }
                 }
                 player.sendInventoryCloseMessage(null);

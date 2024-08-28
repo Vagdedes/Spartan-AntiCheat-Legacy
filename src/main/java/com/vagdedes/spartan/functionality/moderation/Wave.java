@@ -140,7 +140,7 @@ public class Wave {
 
                         for (SpartanPlayer o : players) {
                             if (DetectionNotifications.hasPermission(o)) {
-                                o.sendMessage(message);
+                                o.getInstance().sendMessage(message);
                             }
                         }
                     }
@@ -178,7 +178,7 @@ public class Wave {
 
                 for (SpartanPlayer p : players) {
                     if (DetectionNotifications.hasPermission(p)) {
-                        p.sendMessage(message);
+                        p.getInstance().sendMessage(message);
                     }
                 }
             }

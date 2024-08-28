@@ -205,12 +205,12 @@ public abstract class CheckExecutor extends DetectionExecutor {
         } else {
             this.level += (hackType.violationTimeWorth * amount);
         }
-        InteractiveInventory.playerInfo.refresh(player.name);
+        InteractiveInventory.playerInfo.refresh(player.getInstance().getName());
     }
 
     public final void resetLevel() {
         this.level = 0L;
-        InteractiveInventory.playerInfo.refresh(player.name);
+        InteractiveInventory.playerInfo.refresh(player.getInstance().getName());
     }
 
     // Causes
@@ -229,7 +229,7 @@ public abstract class CheckExecutor extends DetectionExecutor {
         } else {
             disableCause = new CancelCause(reason, pointer, ticks);
         }
-        InteractiveInventory.playerInfo.refresh(player.name);
+        InteractiveInventory.playerInfo.refresh(player.getInstance().getName());
     }
 
     public final void addSilentCause(String reason, String pointer, int ticks) {
@@ -238,17 +238,17 @@ public abstract class CheckExecutor extends DetectionExecutor {
         } else {
             silentCause = new CancelCause(reason, pointer, ticks);
         }
-        InteractiveInventory.playerInfo.refresh(player.name);
+        InteractiveInventory.playerInfo.refresh(player.getInstance().getName());
     }
 
     public final void removeDisableCause() {
         this.disableCause = null;
-        InteractiveInventory.playerInfo.refresh(player.name);
+        InteractiveInventory.playerInfo.refresh(player.getInstance().getName());
     }
 
     public final void removeSilentCause() {
         this.silentCause = null;
-        InteractiveInventory.playerInfo.refresh(player.name);
+        InteractiveInventory.playerInfo.refresh(player.getInstance().getName());
     }
 
     // Violation
@@ -433,8 +433,8 @@ public abstract class CheckExecutor extends DetectionExecutor {
                     SpartanLocation location = player.movement.getLocation();
                     CloudConnections.executeDiscordWebhook(
                             "punishments",
-                            player.uuid,
-                            player.name,
+                            player.getInstance().getUniqueId(),
+                            player.getInstance().getName(),
                             location.getBlockX(),
                             location.getBlockY(),
                             location.getBlockZ(),
@@ -458,7 +458,7 @@ public abstract class CheckExecutor extends DetectionExecutor {
         );
 
         SpartanLocation location = player.movement.getLocation();
-        information = player.name + " failed " + hackType
+        information = player.getInstance().getName() + " failed " + hackType
                 + " (" + violationLevelIdentifier + " " + playerViolation.level + "+" + playerViolation.increase + "), "
                 + "(Server-Version: " + MultiVersion.versionString() + "), "
                 + "(Plugin-Version: " + API.getVersion() + "), "
@@ -472,7 +472,7 @@ public abstract class CheckExecutor extends DetectionExecutor {
 
         // Local Notifications
         String command = Config.settings.getString("Notifications.message_clickable_command")
-                .replace("{player}", player.name);
+                .replace("{player}", player.getInstance().getName());
 
         if (Config.settings.getBoolean("Notifications.individual_only_notifications")) {
             if (DetectionNotifications.isEnabled(player)) { // Attention
@@ -503,7 +503,7 @@ public abstract class CheckExecutor extends DetectionExecutor {
                 && frequency != DetectionNotifications.defaultFrequency) {
             return frequency;
         } else if (detected != null
-                && (detected.uuid.equals(this.player.uuid)
+                && (detected.getInstance().equals(this.player.getInstance())
                 || detected.getWorld().equals(this.player.getWorld())
                 && detected.movement.getLocation().distance(this.player.movement.getLocation()) <= PlayerUtils.chunk)) {
             return AlgebraUtils.integerRound(Math.sqrt(TPS.maximum));

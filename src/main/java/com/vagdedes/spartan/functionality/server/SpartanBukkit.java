@@ -46,6 +46,10 @@ public class SpartanBukkit {
         return playerProtocol.size();
     }
 
+    public static boolean hasPlayerCount() {
+        return !playerProtocol.isEmpty();
+    }
+
     public static Set<UUID> getUUIDs() {
         return new HashSet<>(playerProtocol.keySet());
     }
@@ -57,6 +61,10 @@ public class SpartanBukkit {
             list.add(protocol.spartanPlayer);
         }
         return list;
+    }
+
+    public static List<SpartanProtocol> getProtocols() {
+        return new ArrayList<>(playerProtocol.values());
     }
 
     public static Set<Map.Entry<UUID, SpartanProtocol>> getPlayerEntries() {
@@ -89,10 +97,6 @@ public class SpartanBukkit {
         return Compatibility.CompatibilityType.PROTOCOL_LIB.isFunctional();
     }
 
-    public static boolean packetsEnabled_Movement() {
-        return packetsEnabled();
-    }
-
     public static SpartanProtocol getProtocol(Player player) {
         return playerProtocol.getOrDefault(
                 player.getUniqueId(),
@@ -105,7 +109,7 @@ public class SpartanBukkit {
             name = name.toLowerCase();
 
             for (SpartanProtocol protocol : playerProtocol.values()) {
-                if (protocol.spartanPlayer.name.toLowerCase().equals(name)) {
+                if (protocol.player.getName().toLowerCase().equals(name)) {
                     return protocol;
                 }
             }
