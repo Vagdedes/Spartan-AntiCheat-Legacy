@@ -3,12 +3,14 @@ package com.vagdedes.spartan.abstraction.check;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.Config;
+import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
 import me.vagdedes.spartan.system.Enums;
 
 public class HackPrevention {
 
     boolean canPrevent;
+    private final long threadID;
     private final SpartanLocation location;
     private final boolean groundTeleport;
     private final double damage;
@@ -17,6 +19,7 @@ public class HackPrevention {
     // Separator
 
     HackPrevention() {
+        this.threadID = 0L;
         this.canPrevent = false;
         this.location = null;
         this.groundTeleport = false;
@@ -28,6 +31,7 @@ public class HackPrevention {
                    String information, double violations,
                    SpartanLocation location, int cancelTicks, boolean groundTeleport,
                    double damage) {
+        this.threadID = Thread.currentThread().getId();
         long time = System.currentTimeMillis();
         this.canPrevent = false;
         this.location = location;
@@ -38,35 +42,37 @@ public class HackPrevention {
         player.getExecutor(hackType).violate(this, information, violations, time);
     }
 
-    void complete() {
-        if (this.isOneTime()) {
-            this.canPrevent = false;
-        }
+    private boolean runsOnPackets() {
+        return this.threadID == SpartanBukkit.packetsThread.getID();
     }
 
     private boolean isOneTime() {
         return this.expiration == Long.MIN_VALUE;
     }
 
-    boolean hasExpired() {
-        return !this.isOneTime()
-                && System.currentTimeMillis() > this.expiration;
+    boolean complete() {
+        if (this.canPrevent) {
+            if (this.isOneTime()) {
+                this.canPrevent = false;
+            } else if (System.currentTimeMillis() > this.expiration) {
+                return false;
+            }
+            return !runsOnPackets();
+        }
+        return false;
     }
 
     void handle(SpartanPlayer player) {
         if (this.location != null) {
             player.teleport(this.location);
-            player.movement.resetData();
         }
         if (this.groundTeleport) {
             player.groundTeleport();
-            player.movement.resetData();
         }
         if (this.damage > 0.0
                 && (this.location == null && !this.groundTeleport
                 || Config.settings.getBoolean("Detections.fall_damage_on_teleport"))) {
             player.damage(this.damage);
-            player.movement.resetData();
         }
     }
 

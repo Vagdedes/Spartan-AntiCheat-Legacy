@@ -2,22 +2,18 @@ package com.vagdedes.spartan.compatibility.necessary.protocollib;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
-import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.listeners.protocol.*;
 
 public class BackgroundProtocolLib {
 
     static void run() {
-        SpartanBukkit.packetsThread.execute(() -> {
-            ProtocolManager p = ProtocolLibrary.getProtocolManager();
-            p.addPacketListener(new Join());
-            p.addPacketListener(new EntityAction());
-            p.addPacketListener(new Velocity());
-            p.addPacketListener(new Attack());
-            p.addPacketListener(new Move());
-            p.addPacketListener(new ServerPosition());
-            //p.addPacketListener(new Debug());
-        });
+        ProtocolManager p = ProtocolLibrary.getProtocolManager();
+        p.addPacketListener(new Join());
+        p.addPacketListener(new EntityAction());
+        p.addPacketListener(new Velocity());
+        p.addPacketListener(new Attack());
+        p.addPacketListener(new Move());
+        p.addPacketListener(new ServerPosition());
     }
 
 }

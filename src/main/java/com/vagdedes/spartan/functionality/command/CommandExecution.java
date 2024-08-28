@@ -653,14 +653,14 @@ public class CommandExecution implements CommandExecutor {
                                 Check checkObj = type.getCheck();
 
                                 if (checkObj.canPunish(null)) {
-                                    checkObj.setEnabled(null, false);
+                                    checkObj.setPunish(null, false);
                                     String message = Config.messages.getColorfulString("check_punishment_disable_message");
                                     message = isPlayer
                                             ? ConfigUtils.replaceWithSyntax((Player) sender, message, type)
                                             : ConfigUtils.replaceWithSyntax(message, type);
                                     sender.sendMessage(message);
                                 } else {
-                                    checkObj.setEnabled(null, true);
+                                    checkObj.setPunish(null, true);
                                     String message = Config.messages.getColorfulString("check_punishment_enable_message");
                                     message = isPlayer
                                             ? ConfigUtils.replaceWithSyntax((Player) sender, message, type)

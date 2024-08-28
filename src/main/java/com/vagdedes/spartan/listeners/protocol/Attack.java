@@ -34,16 +34,20 @@ public class Attack extends PacketAdapter {
 
     @Override
     public void onPacketReceiving(PacketEvent event) {
-        if (event.getPacketType() == PacketType.Play.Client.USE_ENTITY) {
-            handleUseEntity(event);
-        }
+        SpartanBukkit.packetsThread.execute(() -> {
+            if (event.getPacketType() == PacketType.Play.Client.USE_ENTITY) {
+                handleUseEntity(event);
+            }
+        });
     }
 
     @Override
     public void onPacketSending(PacketEvent event) {
-        if (event.getPacketType() == PacketType.Play.Server.DAMAGE_EVENT) {
-            handleEntityDamage(event);
-        }
+        SpartanBukkit.packetsThread.execute(() -> {
+            if (event.getPacketType() == PacketType.Play.Server.DAMAGE_EVENT) {
+                handleEntityDamage(event);
+            }
+        });
     }
 
     private void handleUseEntity(PacketEvent event) {

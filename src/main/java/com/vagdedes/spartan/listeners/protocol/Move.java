@@ -30,31 +30,33 @@ public class Move extends PacketAdapter {
 
     @Override
     public void onPacketReceiving(PacketEvent event) {
-        long time = System.currentTimeMillis();
-        Player player = event.getPlayer();
+        SpartanBukkit.packetsThread.execute(() -> {
+            long time = System.currentTimeMillis();
+            Player player = event.getPlayer();
 
-        if (ProtocolLib.isTemporary(player)) {
-            return;
-        }
-        SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
+            if (ProtocolLib.isTemporary(player)) {
+                return;
+            }
+            SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
 
-        if (System.currentTimeMillis() - protocol.mcClient.lastPacketTime > 4) {
-            protocol.mcClient.verifiedPacket++;
-        }
-        protocol.mcClient.lastPacketTime = time;
+            if (System.currentTimeMillis() - protocol.mcClient.lastPacketTime > 4) {
+                protocol.mcClient.verifiedPacket++;
+            }
+            protocol.mcClient.lastPacketTime = time;
 
-        if (!invalidTeleport(protocol.getLocation())
-                && protocol.isLoading()) {
-            protocol.load();
-            return;
-        } else if (!invalidTeleport(protocol.getLocation())
-                || (invalidTeleport(protocol.getLocation()) && !protocol.isLoading())) {
-            LagCompensation.add(player.getEntityId(), protocol.getLocation());
-        }
-        if (protocol.isLoading()) {
-            return;
-        }
-        movePacket(event, protocol);
+            if (!invalidTeleport(protocol.getLocation())
+                    && protocol.isLoading()) {
+                protocol.load();
+                return;
+            } else if (!invalidTeleport(protocol.getLocation())
+                    || (invalidTeleport(protocol.getLocation()) && !protocol.isLoading())) {
+                LagCompensation.add(player.getEntityId(), protocol.getLocation());
+            }
+            if (protocol.isLoading()) {
+                return;
+            }
+            movePacket(event, protocol);
+        });
     }
 
     private static void movePacket(PacketEvent event, SpartanProtocol protocol) {

@@ -72,7 +72,7 @@ public class Check {
     private final Map<String, Object> options;
     public final boolean handleCancelledEvents;
     private final boolean[] enabled, silent, punish;
-    private final String[]
+    private final Set<String>
             disabledWorlds,
             silentWorlds;
     private final Collection<String> punishments;
@@ -177,15 +177,15 @@ public class Check {
                     }
                 }
                 if (!set.isEmpty()) {
-                    this.disabledWorlds = set.toArray(new String[0]);
+                    this.disabledWorlds = set;
                 } else {
-                    this.disabledWorlds = new String[]{};
+                    this.disabledWorlds = new HashSet<>(0);
                 }
             } else {
-                this.disabledWorlds = new String[]{};
+                this.disabledWorlds = new HashSet<>(0);
             }
         } else {
-            this.disabledWorlds = new String[]{};
+            this.disabledWorlds = new HashSet<>(0);
         }
 
         // Separator
@@ -205,15 +205,15 @@ public class Check {
                     }
                 }
                 if (!set.isEmpty()) {
-                    this.silentWorlds = set.toArray(new String[0]);
+                    this.silentWorlds = set;
                 } else {
-                    this.silentWorlds = new String[]{};
+                    this.silentWorlds = new HashSet<>(0);
                 }
             } else {
-                this.silentWorlds = new String[]{};
+                this.silentWorlds = new HashSet<>(0);
             }
         } else {
-            this.silentWorlds = new String[]{};
+            this.silentWorlds = new HashSet<>(0);
         }
 
         // Separator
@@ -258,6 +258,9 @@ public class Check {
     // Separator
 
     public boolean isEnabled(Check.DataType dataType, String world, SpartanPlayer player) {
+        if (world != null && disabledWorlds.contains(world.toLowerCase())) {
+            return false;
+        }
         if (dataType == null) {
             boolean enabled = false;
 
@@ -273,10 +276,9 @@ public class Check {
         } else if (!this.enabled[dataType.ordinal()]) {
             return false;
         }
-        return (world == null || isEnabledOnWorld(world))
-                && (player == null
+        return player == null
                 || player.getExecutor(hackType).getDisableCause() == null
-                && !Permissions.isBypassing(player, hackType));
+                && !Permissions.isBypassing(player, hackType);
     }
 
     public void setEnabled(Check.DataType dataType, boolean b) {
@@ -301,59 +303,36 @@ public class Check {
         List<PlayerProfile> profiles = ResearchEngine.getPlayerProfiles();
 
         for (Check.DataType type : dataTypes) {
-            int ordinal = type.ordinal();
+            CheckToggleEvent event;
 
-            if (this.enabled[ordinal] != b) {
-                CheckToggleEvent event;
+            if (Config.settings.getBoolean("Important.enable_developer_api")) {
+                event = new CheckToggleEvent(this.hackType, b ? Enums.ToggleAction.ENABLE : Enums.ToggleAction.DISABLE);
+                Register.manager.callEvent(event);
+            } else {
+                event = null;
+            }
 
-                if (Config.settings.getBoolean("Important.enable_developer_api")) {
-                    event = new CheckToggleEvent(this.hackType, b ? Enums.ToggleAction.ENABLE : Enums.ToggleAction.DISABLE);
-                    Register.manager.callEvent(event);
-                } else {
-                    event = null;
+            if (event == null || !event.isCancelled()) {
+                this.enabled[type.ordinal()] = b;
+                setOption("enabled." + type.toString().toLowerCase(), b);
+
+                synchronized (options) {
+                    options.clear();
                 }
-
-                if (event == null || !event.isCancelled()) {
-                    this.enabled[ordinal] = b;
-
-                    if (!b) {
-                        synchronized (options) {
-                            options.clear();
-                        }
-
-                        for (SpartanPlayer player : SpartanBukkit.getPlayers()) {
-                            player.getExecutor(hackType).resetLevel();
-                        }
+                if (!b) {
+                    for (SpartanPlayer player : SpartanBukkit.getPlayers()) {
+                        player.getExecutor(hackType).resetLevel();
                     }
-                    setOption("enabled." + type.toString().toLowerCase(), b);
-
-                    if (!profiles.isEmpty()) {
-                        for (PlayerProfile playerProfile : profiles) {
-                            if (playerProfile.hasData(type)) {
-                                playerProfile.evidence.remove(hackType);
-                            }
+                }
+                if (!profiles.isEmpty()) {
+                    for (PlayerProfile playerProfile : profiles) {
+                        if (playerProfile.hasData(type)) {
+                            playerProfile.evidence.remove(hackType);
                         }
                     }
                 }
             }
         }
-    }
-
-    public boolean isEnabledOnWorld(String world) {
-        if (disabledWorlds.length > 0) {
-            world = world.toLowerCase();
-
-            for (String disabledWorld : disabledWorlds) {
-                if (disabledWorld.equals(world)) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    public String[] getDisabledWorlds() {
-        return disabledWorlds;
     }
 
     // Separator
@@ -584,7 +563,8 @@ public class Check {
     // Separator
 
     public boolean isSilent(Check.DataType dataType, String world) {
-        if (panic) {
+        if (panic
+                || world != null && silentWorlds.contains(world.toLowerCase())) {
             return true;
         }
         if (dataType == null) {
@@ -602,24 +582,7 @@ public class Check {
         } else if (!this.silent[dataType.ordinal()]) {
             return false;
         }
-        return world == null || isSilentOnWorld(world);
-    }
-
-    public boolean isSilentOnWorld(String world) {
-        if (silentWorlds.length > 0) {
-            world = world.toLowerCase();
-
-            for (String silentWorld : silentWorlds) {
-                if (silentWorld.equals(world)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    public String[] getSilentWorlds() {
-        return silentWorlds;
+        return true;
     }
 
     public void setSilent(Check.DataType dataType, boolean b) {
@@ -642,27 +605,21 @@ public class Check {
             }
         }
         for (Check.DataType type : dataTypes) {
-            int ordinal = type.ordinal();
+            CheckSilentToggleEvent event;
 
-            if (this.silent[ordinal] != b) {
-                CheckSilentToggleEvent event;
+            if (Config.settings.getBoolean("Important.enable_developer_api")) {
+                event = new CheckSilentToggleEvent(this.hackType, b ? Enums.ToggleAction.ENABLE : Enums.ToggleAction.DISABLE);
+                Register.manager.callEvent(event);
+            } else {
+                event = null;
+            }
 
-                if (Config.settings.getBoolean("Important.enable_developer_api")) {
-                    event = new CheckSilentToggleEvent(this.hackType, b ? Enums.ToggleAction.ENABLE : Enums.ToggleAction.DISABLE);
-                    Register.manager.callEvent(event);
-                } else {
-                    event = null;
-                }
+            if (event == null || !event.isCancelled()) {
+                this.silent[type.ordinal()] = b;
+                setOption("silent." + type.toString().toLowerCase(), b);
 
-                if (event == null || !event.isCancelled()) {
-                    this.silent[ordinal] = b;
-
-                    if (!b) {
-                        synchronized (options) {
-                            options.clear();
-                        }
-                    }
-                    setOption("silent." + type.toString().toLowerCase(), b);
+                synchronized (options) {
+                    options.clear();
                 }
             }
         }
@@ -692,27 +649,21 @@ public class Check {
             }
         }
         for (Check.DataType type : dataTypes) {
-            int ordinal = type.ordinal();
+            CheckPunishmentToggleEvent event;
 
-            if (this.punish[ordinal] != b) {
-                CheckPunishmentToggleEvent event;
+            if (Config.settings.getBoolean("Important.enable_developer_api")) {
+                event = new CheckPunishmentToggleEvent(this.hackType, b ? Enums.ToggleAction.ENABLE : Enums.ToggleAction.DISABLE);
+                Register.manager.callEvent(event);
+            } else {
+                event = null;
+            }
 
-                if (Config.settings.getBoolean("Important.enable_developer_api")) {
-                    event = new CheckPunishmentToggleEvent(this.hackType, b ? Enums.ToggleAction.ENABLE : Enums.ToggleAction.DISABLE);
-                    Register.manager.callEvent(event);
-                } else {
-                    event = null;
-                }
+            if (event == null || !event.isCancelled()) {
+                this.punish[type.ordinal()] = b;
+                setOption("punishments.enabled" + type.toString().toLowerCase(), b);
 
-                if (event == null || !event.isCancelled()) {
-                    this.punish[ordinal] = b;
-
-                    if (!b) {
-                        synchronized (options) {
-                            options.clear();
-                        }
-                    }
-                    setOption("punishments.enabled" + type.toString().toLowerCase(), b);
+                synchronized (options) {
+                    options.clear();
                 }
             }
         }

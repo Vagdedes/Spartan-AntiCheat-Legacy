@@ -318,9 +318,7 @@ public abstract class CheckExecutor extends DetectionExecutor {
 
     public final boolean prevent() {
         synchronized (this) {
-            if (this.prevention.canPrevent && !this.prevention.hasExpired()) {
-                this.prevention.complete();
-
+            if (this.prevention.complete()) {
                 if (Config.settings.getBoolean("Important.enable_developer_api")) {
                     if (SpartanBukkit.isSynchronised()) {
                         CheckCancelEvent checkCancelEvent = new CheckCancelEvent(player.getInstance(), hackType);

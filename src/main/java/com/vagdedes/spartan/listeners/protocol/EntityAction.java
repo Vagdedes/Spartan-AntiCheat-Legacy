@@ -23,27 +23,28 @@ public class EntityAction extends PacketAdapter {
 
     @Override
     public void onPacketReceiving(PacketEvent event) {
-        Player player = event.getPlayer();
+        SpartanBukkit.packetsThread.execute(() -> {
+            Player player = event.getPlayer();
 
-        if (ProtocolLib.isTemporary(player)) {
-            return;
-        }
-        SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
-        String typeString = event.getPacket().getModifier().getValues().get(1).toString();
-        AbilitiesEnum type = getEnum(typeString);
-
-        if (typeString != null) {
-            if (type == AbilitiesEnum.PRESS_SHIFT_KEY) {
-                protocol.setSneaking(true);
-            } else if (type == AbilitiesEnum.RELEASE_SHIFT_KEY) {
-                protocol.setSneaking(false);
-            } else if (type == AbilitiesEnum.START_SPRINTING) {
-                protocol.setSprinting(true);
-            } else if (type == AbilitiesEnum.STOP_SPRINTING) {
-                protocol.setSprinting(false);
+            if (ProtocolLib.isTemporary(player)) {
+                return;
             }
-        }
+            SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
+            String typeString = event.getPacket().getModifier().getValues().get(1).toString();
+            AbilitiesEnum type = getEnum(typeString);
 
+            if (typeString != null) {
+                if (type == AbilitiesEnum.PRESS_SHIFT_KEY) {
+                    protocol.setSneaking(true);
+                } else if (type == AbilitiesEnum.RELEASE_SHIFT_KEY) {
+                    protocol.setSneaking(false);
+                } else if (type == AbilitiesEnum.START_SPRINTING) {
+                    protocol.setSprinting(true);
+                } else if (type == AbilitiesEnum.STOP_SPRINTING) {
+                    protocol.setSprinting(false);
+                }
+            }
+        });
     }
 
     private AbilitiesEnum getEnum(String s) {

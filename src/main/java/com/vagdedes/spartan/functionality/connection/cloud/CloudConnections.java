@@ -1,19 +1,13 @@
 package com.vagdedes.spartan.functionality.connection.cloud;
 
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
-import com.vagdedes.spartan.abstraction.profiling.PlayerEvidence;
-import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.functionality.notifications.CrossServerNotifications;
-import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.Config;
-import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.java.RequestUtils;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 
 import java.io.File;
 import java.net.URLEncoder;

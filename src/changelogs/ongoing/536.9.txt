@@ -15,3 +15,4 @@
 [#] Made the plugin show its correct edition where it would be wrong in some cases.
 [#] Made the ImpossibleActions scaffold detection more stable.
 [#] Made many detections more stable by reworking parts of the plugin's base.
+[#] Preventions will no longer take place when a check runs on packets because they cause false positives.
