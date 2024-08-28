@@ -65,6 +65,18 @@ public class SpartanPlayerMovement {
         this.clampVector = new Vector();
     }
 
+    public void resetData() {
+        this.eventDistance = null;
+        this.eventHorizontal = null;
+        this.eventPreviousHorizontal = null;
+        this.eventVertical = null;
+        this.eventXDiff = null;
+        this.eventZDiff = null;
+        this.eventPreviousVertical = null;
+        this.eventBox = null;
+        this.eventPreviousBox = null;
+    }
+
     // Separator
 
     public double getValueOrDefault(Double value, double def) {
@@ -424,6 +436,18 @@ public class SpartanPlayerMovement {
         this.eventPreviousBox = this.eventBox;
         this.eventBox = box;
         this.judgeGround(true);
+
+        if (this.eventHorizontal == null
+                || this.eventPreviousHorizontal == null
+                || this.eventVertical == null
+                || this.eventPreviousVertical == null
+                || this.eventBox == null
+                || this.eventPreviousBox == null
+                || this.eventXDiff == null
+                || this.eventZDiff == null
+                || this.eventDistance == null) {
+            return false;
+        }
         return true;
     }
 

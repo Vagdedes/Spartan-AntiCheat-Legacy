@@ -56,15 +56,17 @@ public class HackPrevention {
     void handle(SpartanPlayer player) {
         if (this.location != null) {
             player.teleport(this.location);
+            player.movement.resetData();
         }
         if (this.groundTeleport) {
             player.groundTeleport();
+            player.movement.resetData();
         }
-        if (this.damage > 0.0) {
-            if (this.location == null && !this.groundTeleport
-                    || Config.settings.getBoolean("Detections.fall_damage_on_teleport")) {
-                player.damage(this.damage);
-            }
+        if (this.damage > 0.0
+                && (this.location == null && !this.groundTeleport
+                || Config.settings.getBoolean("Detections.fall_damage_on_teleport"))) {
+            player.damage(this.damage);
+            player.movement.resetData();
         }
     }
 

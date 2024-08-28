@@ -39,28 +39,22 @@ public class CommandExecution implements CommandExecutor {
     public static final int maxConnectedArgumentLength = 4096;
     public static final String support = "Click to receive plugin support.";
 
-    private static void commandList(CommandSender commandSender,
+    private static void commandList(CommandSender sender,
                                     Object[] objects,
                                     String command,
-                                    String title) {
-        commandSender.sendMessage("");
-        commandSender.sendMessage("§e" + title + "§8:");
+                                    String commandPreview) {
+        sender.sendMessage("");
+        sender.sendMessage("§e'/" + commandPreview + "'§8:");
 
         for (int i = 0; i < Math.min(objects.length, 10); i++) {
             ClickableMessage.sendCommand(
-                    commandSender,
+                    sender,
                     "§c" + objects[i].toString() + " §7(Click)",
                     objects[i].toString(),
                     "/" + command + " " + objects[i]
             );
         }
-        ClickableMessage.sendCommand(
-                commandSender,
-                "§eRun '§7/" + command + " " + title.toLowerCase() + "§e' for more.",
-                command,
-                "/" + command
-        );
-        commandSender.sendMessage("");
+        sender.sendMessage("");
     }
 
     private static void buildCommand(CommandSender sender, ChatColor chatColor, String command, String description) {
