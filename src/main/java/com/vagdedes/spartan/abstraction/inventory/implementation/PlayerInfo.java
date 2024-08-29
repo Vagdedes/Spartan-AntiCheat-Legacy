@@ -92,7 +92,7 @@ public class PlayerInfo extends InventoryMenu {
 
                     if (PlayerEvidence.surpassedProbability(
                             probability,
-                            PlayerEvidence.preventionProbability
+                            PlayerEvidence.punishmentProbability
                     )) {
                         probability = PlayerEvidence.probabilityToCertainty(probability);
                         lore.add(
@@ -101,18 +101,27 @@ public class PlayerInfo extends InventoryMenu {
                         );
                     } else if (PlayerEvidence.surpassedProbability(
                             probability,
-                            PlayerEvidence.notificationProbability
+                            PlayerEvidence.preventionProbability
                     )) {
                         probability = PlayerEvidence.probabilityToCertainty(probability);
                         lore.add(
                                 "§6" + hackType.getCheck().getName()
                                         + "§8: §e" + AlgebraUtils.integerRound(probability * 100.0) + "%"
                         );
-                    } else {
+                    } else if (PlayerEvidence.surpassedProbability(
+                            probability,
+                            PlayerEvidence.notificationProbability
+                    )) {
                         probability = PlayerEvidence.probabilityToCertainty(probability);
                         lore.add(
                                 "§2" + hackType.getCheck().getName()
                                         + "§8: §a" + AlgebraUtils.integerRound(probability * 100.0) + "%"
+                        );
+                    } else {
+                        probability = PlayerEvidence.probabilityToCertainty(probability);
+                        lore.add(
+                                "§3" + hackType.getCheck().getName()
+                                        + "§8: §b" + AlgebraUtils.integerRound(probability * 100.0) + "%"
                         );
                     }
                 }
