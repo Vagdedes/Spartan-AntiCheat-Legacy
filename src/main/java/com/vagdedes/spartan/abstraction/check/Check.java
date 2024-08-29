@@ -1,13 +1,11 @@
 package com.vagdedes.spartan.abstraction.check;
 
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.Config;
-import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.server.ConfigUtils;
@@ -258,10 +256,7 @@ public class Check {
 
     // Separator
 
-    public boolean isEnabled(Check.DataType dataType, String world, SpartanPlayer player) {
-        if (world != null && disabledWorlds.contains(world.toLowerCase())) {
-            return false;
-        }
+    public boolean isEnabled(Check.DataType dataType, String world) {
         if (dataType == null) {
             boolean enabled = false;
 
@@ -277,9 +272,8 @@ public class Check {
         } else if (!this.enabled[dataType.ordinal()]) {
             return false;
         }
-        return player == null
-                || player.getExecutor(hackType).getDisableCause() == null
-                && !Permissions.isBypassing(player, hackType);
+        return world == null
+                || !disabledWorlds.contains(world.toLowerCase());
     }
 
     public void setEnabled(Check.DataType dataType, boolean b) {

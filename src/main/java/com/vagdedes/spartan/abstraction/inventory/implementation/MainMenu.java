@@ -163,7 +163,7 @@ public class MainMenu extends InventoryMenu {
             player.getInstance().sendMessage("");
 
         } else if (item.equals("Compatibilities")) {
-            if (!Permissions.has(player, Permission.MANAGE)) {
+            if (!Permissions.has(player.getInstance(), Permission.MANAGE)) {
                 player.getInstance().closeInventory();
                 ClickableMessage.sendURL(
                         player.getInstance(),
@@ -195,7 +195,7 @@ public class MainMenu extends InventoryMenu {
             }
 
         } else if (item.equals("Management")) {
-            if (!Permissions.has(player, Permission.MANAGE)) {
+            if (!Permissions.has(player.getInstance(), Permission.MANAGE)) {
                 player.getInstance().closeInventory();
                 ClickableMessage.sendURL(
                         player.getInstance(),

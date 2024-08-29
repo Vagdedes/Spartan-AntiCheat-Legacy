@@ -32,7 +32,7 @@ public class Event_Shared implements Listener {
         }
         SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer.getExecutor(
                 Enums.HackType.MorePackets
-        ).run(e.isCancelled());
+        ).handle(e.isCancelled(), null);
     }
 
 }

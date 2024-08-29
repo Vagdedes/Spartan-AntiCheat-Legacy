@@ -18,7 +18,7 @@ public class Simulation extends CheckExecutor {
     public double diffVl = 0;
 
     public Simulation(HackType hackType, SpartanPlayer player) {
-        super(hackType, player, 0, false, false);
+        super(hackType, player, 0, false);
     }
 
     @Override

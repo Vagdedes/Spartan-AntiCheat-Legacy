@@ -71,7 +71,7 @@ public class ManageChecks extends InventoryMenu {
                 Check check = Config.getCheckByName(item);
 
                 if (check != null) {
-                    check.setEnabled(null, !check.isEnabled(null, null, null));
+                    check.setEnabled(null, !check.isEnabled(null, null));
                 }
                 open(player);
             } else if (clickType == ClickType.RIGHT) {
@@ -101,7 +101,7 @@ public class ManageChecks extends InventoryMenu {
 
     private void addCheck(SpartanPlayer player, HackType hackType) {
         Check check = hackType.getCheck();
-        boolean enabled = check.isEnabled(null, null, null),
+        boolean enabled = check.isEnabled(null, null),
                 silent = check.isSilent(null, null),
                 bypassing = Permissions.isBypassing(player, hackType);
         String[] disabledDetections = CloudBase.getShownDisabledDetections(hackType);

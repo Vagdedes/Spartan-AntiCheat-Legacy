@@ -44,7 +44,7 @@ public class DetectionNotifications {
     }
 
     public static boolean hasPermission(SpartanPlayer p) {
-        return Permissions.has(p, Enums.Permission.NOTIFICATIONS);
+        return Permissions.has(p.getInstance(), Enums.Permission.NOTIFICATIONS);
     }
 
     public static Integer getFrequency(SpartanPlayer p) {

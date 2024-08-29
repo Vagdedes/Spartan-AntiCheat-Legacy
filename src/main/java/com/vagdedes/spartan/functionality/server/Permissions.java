@@ -22,8 +22,6 @@ public class Permissions {
             Enums.Permission.INFO,
     };
 
-    // Separator
-
     public static boolean has(Player p) {
         for (Enums.Permission permission : Enums.Permission.values()) {
             if (has(p, permission)) {
@@ -33,43 +31,15 @@ public class Permissions {
         return false;
     }
 
-    public static boolean has(SpartanPlayer p) {
-        Player n = p.getInstance();
-
-        if (n != null) {
-            for (Enums.Permission permission : Enums.Permission.values()) {
-                if (has(n, permission)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    // Separator
-
-    public static boolean has(SpartanPlayer p, Enums.Permission permission) {
-        Player n = p.getInstance();
-        return n != null && has(n, permission);
-    }
-
     public static boolean has(Player p, Enums.Permission permission) {
         if (p.hasPermission(permission.getKey())) {
             return true;
         } else {
-            Enums.Permission admin = Enums.Permission.ADMIN;
-            return permission != admin
+            return permission != Enums.Permission.ADMIN
                     ? p.hasPermission(Enums.Permission.ADMIN.getKey())
                     || p.hasPermission(alternativeAdminKey)
                     : p.hasPermission(alternativeAdminKey);
         }
-    }
-
-    // Separator
-
-    public static boolean onlyHas(SpartanPlayer p, Enums.Permission permission) {
-        Player n = p.getInstance();
-        return n != null && onlyHas(n, permission);
     }
 
     public static boolean onlyHas(Player p, Enums.Permission permission) {
@@ -83,9 +53,8 @@ public class Permissions {
             return Config.settings.getBoolean("Important.op_bypass");
         } else {
             Player n = p.getInstance();
-            return n != null
-                    && (isBypassing(n, null)
-                    || hackType != null && isBypassing(n, hackType));
+            return isBypassing(n, null)
+                    || hackType != null && isBypassing(n, hackType);
         }
     }
 
@@ -96,8 +65,8 @@ public class Permissions {
 
     // Separator
 
-    public static boolean isStaff(SpartanPlayer player) {
-        if (player.getInstance().isOp()) {
+    public static boolean isStaff(Player player) {
+        if (player.isOp()) {
             return true;
         } else {
             for (Enums.Permission permission : staffPermissions) {
@@ -117,7 +86,7 @@ public class Permissions {
             List<SpartanPlayer> array = new ArrayList<>(size);
 
             for (SpartanProtocol protocol : protocols) {
-                if (isStaff(protocol.spartanPlayer)) {
+                if (isStaff(protocol.player)) {
                     array.add(protocol.spartanPlayer);
                 }
             }

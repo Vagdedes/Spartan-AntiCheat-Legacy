@@ -13,18 +13,17 @@ public class AutoRespawn extends CheckExecutor {
     private long memory;
 
     public AutoRespawn(HackType hackType, SpartanPlayer player) {
-        super(hackType, player, 0, true, false);
-        this.memory = 0L;
+        super(hackType, player, 0, false);
+    }
+
+    @Override
+    protected void handleInternal(boolean cancelled, Object object) {
+        this.memory = System.currentTimeMillis();
     }
 
     @Override
     protected void runInternal(boolean cancelled) {
-        memory = System.currentTimeMillis();
-    }
-
-    @Override
-    public void scheduler() {
-        long time = System.currentTimeMillis() - memory,
+        long time = System.currentTimeMillis() - this.memory,
                 limit = 750L;
 
         if (time <= limit && !player.getInstance().isDead()) {

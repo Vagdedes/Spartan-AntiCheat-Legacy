@@ -97,7 +97,7 @@ public class CloudBase {
     }
 
     public static void announce(SpartanPlayer player) {
-        if (Permissions.isStaff(player)) {
+        if (Permissions.isStaff(player.getInstance())) {
             SpartanBukkit.connectionThread.execute(() -> {
                 String[][] announcements = CloudConnections.getStaffAnnouncements();
 

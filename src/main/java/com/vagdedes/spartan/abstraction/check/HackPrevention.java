@@ -16,8 +16,6 @@ public class HackPrevention {
     private final double damage;
     private final long expiration;
 
-    // Separator
-
     HackPrevention() {
         this.threadID = 0L;
         this.canPrevent = false;
@@ -37,13 +35,10 @@ public class HackPrevention {
         this.location = location;
         this.groundTeleport = groundTeleport;
         this.damage = damage;
-        this.expiration = cancelTicks <= 1 ? Long.MIN_VALUE
+        this.expiration = cancelTicks <= 1
+                ? Long.MIN_VALUE
                 : System.currentTimeMillis() + (cancelTicks * TPS.tickTime);
         player.getExecutor(hackType).violate(this, information, violations, time);
-    }
-
-    private boolean runsOnPackets() {
-        return this.threadID == SpartanBukkit.packetsThread.getID();
     }
 
     private boolean isOneTime() {
@@ -51,28 +46,30 @@ public class HackPrevention {
     }
 
     boolean complete() {
-        if (this.canPrevent) {
-            if (this.isOneTime()) {
-                this.canPrevent = false;
-            } else if (System.currentTimeMillis() > this.expiration) {
-                return false;
-            }
-            return !runsOnPackets();
-        }
-        return false;
+        return this.canPrevent
+                && (this.isOneTime()
+                || System.currentTimeMillis() <= this.expiration);
     }
 
     void handle(SpartanPlayer player) {
-        if (this.location != null) {
-            player.teleport(this.location);
-        }
-        if (this.groundTeleport) {
-            player.groundTeleport();
-        }
-        if (this.damage > 0.0
-                && (this.location == null && !this.groundTeleport
-                || Config.settings.getBoolean("Detections.fall_damage_on_teleport"))) {
-            player.damage(this.damage);
+        Runnable runnable = () -> {
+            if (this.location != null) {
+                player.teleport(this.location);
+            }
+            if (this.groundTeleport) {
+                player.groundTeleport();
+            }
+            if (this.damage > 0.0
+                    && (this.location == null && !this.groundTeleport
+                    || Config.settings.getBoolean("Detections.fall_damage_on_teleport"))) {
+                player.damage(this.damage);
+            }
+        };
+
+        if (SpartanBukkit.isSynchronised()) {
+            runnable.run();
+        } else {
+            SpartanBukkit.transferTask(player, runnable);
         }
     }
 

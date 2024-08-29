@@ -80,8 +80,10 @@ public class SpartanPlayer {
                                 )
                         );
                     }
-                    protocol.spartanPlayer.movement.schedulerFrom =
-                            protocol.spartanPlayer.movement.getLocation();
+                    protocol.spartanPlayer.getExecutor(Enums.HackType.AutoRespawn).run(false);
+                    protocol.spartanPlayer.getExecutor(Enums.HackType.MorePackets).run(false);
+                    protocol.spartanPlayer.getExecutor(Enums.HackType.Exploits).run(false);
+                    protocol.spartanPlayer.movement.schedulerFrom = protocol.spartanPlayer.movement.getLocation();
                 }
             }
         }, 1L, 1L);

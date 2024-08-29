@@ -22,7 +22,7 @@ public class HitReach extends CheckExecutor {
     private int localVl = 0;
 
     public HitReach(HackType hackType, SpartanPlayer player) {
-        super(hackType, player, 0, false, false);
+        super(hackType, player, 0, false);
     }
 
     @Override

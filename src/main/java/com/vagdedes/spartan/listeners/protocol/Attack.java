@@ -34,20 +34,16 @@ public class Attack extends PacketAdapter {
 
     @Override
     public void onPacketReceiving(PacketEvent event) {
-        SpartanBukkit.packetsThread.execute(() -> {
-            if (event.getPacketType() == PacketType.Play.Client.USE_ENTITY) {
-                handleUseEntity(event);
-            }
-        });
+        if (event.getPacketType() == PacketType.Play.Client.USE_ENTITY) {
+            handleUseEntity(event);
+        }
     }
 
     @Override
     public void onPacketSending(PacketEvent event) {
-        SpartanBukkit.packetsThread.execute(() -> {
-            if (event.getPacketType() == PacketType.Play.Server.DAMAGE_EVENT) {
-                handleEntityDamage(event);
-            }
-        });
+        if (event.getPacketType() == PacketType.Play.Server.DAMAGE_EVENT) {
+            handleEntityDamage(event);
+        }
     }
 
     private void handleUseEntity(PacketEvent event) {
@@ -60,9 +56,9 @@ public class Attack extends PacketAdapter {
         int entityId = packet.getIntegers().read(0);
 
         if ((!packet.getEntityUseActions().getValues().isEmpty()) ?
-                        packet.getEntityUseActions().read(0).equals(EnumWrappers.EntityUseAction.ATTACK)
-                        : packet.getEnumEntityUseActions().read(0).getAction().equals(
-                        EnumWrappers.EntityUseAction.ATTACK)) {
+                packet.getEntityUseActions().read(0).equals(EnumWrappers.EntityUseAction.ATTACK)
+                : packet.getEnumEntityUseActions().read(0).getAction().equals(
+                EnumWrappers.EntityUseAction.ATTACK)) {
             SpartanProtocol protocol = SpartanBukkit.getProtocol(entityId);
 
             if (protocol != null) {

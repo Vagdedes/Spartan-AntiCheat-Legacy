@@ -501,7 +501,7 @@ public class ResearchEngine {
                 for (Enums.HackType hackType : (force
                         ? Arrays.asList(Enums.HackType.values())
                         : violationFired.keySet())) {
-                    if (!hackType.getCheck().isEnabled(dataType, null, null)) {
+                    if (!hackType.getCheck().isEnabled(dataType, null)) {
                         continue;
                     }
                     Map<PlayerProfile, Double> wave = new LinkedHashMap<>();

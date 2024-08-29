@@ -39,7 +39,7 @@ public class NoFall extends CheckExecutor {
     private boolean ignore;
 
     public NoFall(HackType hackType, SpartanPlayer player) {
-        super(hackType, player, 0, false, true);
+        super(hackType, player, 0, true);
         this.handleInternal(false, null);
     }
 

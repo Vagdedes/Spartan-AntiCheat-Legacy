@@ -219,7 +219,7 @@ public class PlayerInfo extends InventoryMenu {
         String worldName = player.getWorld().getName();
         Check check = hackType.getCheck();
 
-        if (!check.isEnabled(dataType, worldName, null)) { // Do not put player because we calculate it below
+        if (!check.isEnabled(dataType, worldName)) { // Do not put player because we calculate it below
             return "Disabled";
         }
         CancelCause disabledCause = player.getExecutor(hackType).getDisableCause();
@@ -253,7 +253,7 @@ public class PlayerInfo extends InventoryMenu {
         String playerName = title.substring(menu.length());
 
         if (item.equalsIgnoreCase(playerName)) {
-            if (!Permissions.has(player, Permission.MANAGE)) {
+            if (!Permissions.has(player.getInstance(), Permission.MANAGE)) {
                 player.getInstance().closeInventory();
                 ClickableMessage.sendURL(
                         player.getInstance(),

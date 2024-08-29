@@ -26,32 +26,32 @@ public class ServerPosition extends PacketAdapter {
 
     @Override
     public void onPacketSending(PacketEvent event) {
-        SpartanBukkit.packetsThread.execute(() -> {
-            Player player = event.getPlayer();
+        Player player = event.getPlayer();
 
-            if (ProtocolLib.isTemporary(player)) {
-                return;
+        if (ProtocolLib.isTemporary(player)) {
+            return;
+        }
+        SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
+
+        if (protocol.isLoading()) {
+            return;
+        }
+        PacketContainer packetContainer = event.getPacket();
+
+        if (packetContainer.getType().equals(PacketType.Play.Server.POSITION)) {
+            Location teleportLocation = Move.readLocation(event);
+            if (protocol.isMutateTeleport()) {
+                protocol.teleportEngine.add(new TeleportData(teleportLocation, true));
+                protocol.setMutateTeleport(false);
+            } else {
+                protocol.teleportEngine.add(new TeleportData(teleportLocation, false));
             }
-            PacketContainer packetContainer = event.getPacket();
-            SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
 
-            if (protocol.isLoading()) return;
-
-            if (packetContainer.getType().equals(PacketType.Play.Server.POSITION)) {
-                Location teleportLocation = Move.readLocation(event);
-                if (protocol.isMutateTeleport()) {
-                    protocol.teleportEngine.add(new TeleportData(teleportLocation, true));
-                    protocol.setMutateTeleport(false);
-                } else {
-                    protocol.teleportEngine.add(new TeleportData(teleportLocation, false));
-                }
-
-            }
-            if (packetContainer.getType().equals(PacketType.Play.Server.RESPAWN)
-                    || packetContainer.getType().equals(PacketType.Play.Server.MOUNT)) {
-                protocol.setMutateTeleport(true);
-            }
-        });
+        }
+        if (packetContainer.getType().equals(PacketType.Play.Server.RESPAWN)
+                || packetContainer.getType().equals(PacketType.Play.Server.MOUNT)) {
+            protocol.setMutateTeleport(true);
+        }
     }
 
 }

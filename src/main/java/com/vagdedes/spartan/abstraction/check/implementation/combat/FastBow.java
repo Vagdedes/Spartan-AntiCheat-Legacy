@@ -16,7 +16,7 @@ public class FastBow extends CheckExecutor {
     private final Buffer.IndividualBuffer bowForce, bowShots;
 
     public FastBow(HackType hackType, SpartanPlayer player) {
-        super(hackType, player, 0, false, false);
+        super(hackType, player, 0, false);
         this.bowForce = new Buffer.IndividualBuffer();
         this.bowShots = new Buffer.IndividualBuffer();
     }

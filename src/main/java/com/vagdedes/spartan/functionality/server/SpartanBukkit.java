@@ -21,7 +21,6 @@ public class SpartanBukkit {
 
     public static final Threads.ThreadPool
             connectionThread = new Threads.ThreadPool(TPS.tickTime),
-            packetsThread = new Threads.ThreadPool(1L),
             chunksThread = new Threads.ThreadPool(1L),
             dataThread = new Threads.ThreadPool(1L),
             analysisThread = new Threads.ThreadPool(1L);

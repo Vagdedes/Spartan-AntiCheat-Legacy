@@ -113,8 +113,8 @@ public class CommandExecution implements CommandExecutor {
         isPlayer &= player != null;
 
         String command = Register.plugin.getName().toLowerCase();
-        boolean info = !isPlayer || Permissions.has(player, Enums.Permission.INFO),
-                manage = !isPlayer || Permissions.has(player, Enums.Permission.MANAGE);
+        boolean info = !isPlayer || Permissions.has(player.getInstance(), Enums.Permission.INFO),
+                manage = !isPlayer || Permissions.has(player.getInstance(), Enums.Permission.MANAGE);
 
         switch (list) {
             case "default":
@@ -136,7 +136,7 @@ public class CommandExecution implements CommandExecutor {
                                     "/" + command + " menu"
                             );
                         }
-                        if (Permissions.has(player, Permission.RELOAD)) {
+                        if (Permissions.has(player.getInstance(), Permission.RELOAD)) {
                             ClickableMessage.sendCommand(
                                     sender,
                                     "§cReload Plugin §7(Click)",
@@ -204,7 +204,7 @@ public class CommandExecution implements CommandExecutor {
                         );
                     }
                     if (!isPlayer
-                            || Permissions.has(player, Permission.USE_BYPASS)) {
+                            || Permissions.has(player.getInstance(), Permission.USE_BYPASS)) {
                         ClickableMessage.sendCommand(
                                 sender,
                                 "§cPlayer Bypass §7(Click)",
@@ -219,10 +219,10 @@ public class CommandExecution implements CommandExecutor {
                     }
                     if (!isPlayer
                             || info
-                            || Permissions.has(player, Permission.KICK)
-                            || Permissions.has(player, Permission.WARN)
-                            || Permissions.has(player, Permission.USE_BYPASS)
-                            || Permissions.has(player, Permission.WAVE)) {
+                            || Permissions.has(player.getInstance(), Permission.KICK)
+                            || Permissions.has(player.getInstance(), Permission.WARN)
+                            || Permissions.has(player.getInstance(), Permission.USE_BYPASS)
+                            || Permissions.has(player.getInstance(), Permission.WAVE)) {
                         buildCommand(
                                 sender,
                                 ChatColor.RED, "/" + command + " moderation",
@@ -250,7 +250,7 @@ public class CommandExecution implements CommandExecutor {
                         );
                     }
                     if (!isPlayer
-                            || Permissions.has(player, Permission.USE_BYPASS)) {
+                            || Permissions.has(player.getInstance(), Permission.USE_BYPASS)) {
                         permission = true;
                         ClickableMessage.sendCommand(
                                 sender,
@@ -260,7 +260,7 @@ public class CommandExecution implements CommandExecutor {
                         );
                     }
                     if (!isPlayer
-                            || Permissions.has(player, Permission.WARN)) {
+                            || Permissions.has(player.getInstance(), Permission.WARN)) {
                         permission = true;
                         ClickableMessage.sendCommand(
                                 sender,
@@ -270,7 +270,7 @@ public class CommandExecution implements CommandExecutor {
                         );
                     }
                     if (!isPlayer
-                            || Permissions.has(player, Permission.KICK)) {
+                            || Permissions.has(player.getInstance(), Permission.KICK)) {
                         permission = true;
                         ClickableMessage.sendCommand(
                                 sender,
@@ -280,7 +280,7 @@ public class CommandExecution implements CommandExecutor {
                         );
                     }
                     if (!isPlayer
-                            || Permissions.has(player, Permission.WAVE)) {
+                            || Permissions.has(player.getInstance(), Permission.WAVE)) {
                         permission = true;
                         ClickableMessage.sendCommand(
                                 sender,
@@ -294,7 +294,7 @@ public class CommandExecution implements CommandExecutor {
                         );
                     }
                     if (!isPlayer
-                            || Permissions.has(player, Permission.ADMIN)) {
+                            || Permissions.has(player.getInstance(), Permission.ADMIN)) {
                         permission = true;
                         ClickableMessage.sendCommand(
                                 sender,
@@ -311,7 +311,7 @@ public class CommandExecution implements CommandExecutor {
                 break;
             case "conditions":
                 if (spartanMessage(sender, isPlayer, true)) {
-                    if (!isPlayer || Permissions.has(player, Permission.CONDITION)) {
+                    if (!isPlayer || Permissions.has(player.getInstance(), Permission.CONDITION)) {
                         sender.sendMessage(ChatColor.RED + "/" + command + " <player> if <condition> equals <result> do <command>");
                         sender.sendMessage(ChatColor.RED + "/" + command + " <player> if <condition> contains <result> do <command>");
                         sender.sendMessage(ChatColor.RED + "/" + command + " <player> if <number> is-less-than <result> do <command>");
@@ -345,7 +345,7 @@ public class CommandExecution implements CommandExecutor {
             }
             if (args.length == 0) {
                 if (isPlayer) {
-                    if (NPCManager.supported && Permissions.isStaff(player)) {
+                    if (NPCManager.supported && Permissions.isStaff(player.getInstance())) {
                         if (Config.settings.getBoolean("Important.enable_npc")) {
                             NPCManager.create(player);
                         } else {
@@ -360,7 +360,7 @@ public class CommandExecution implements CommandExecutor {
                 if (isPlayer && args[0].equalsIgnoreCase("Menu")) {
                     InteractiveInventory.mainMenu.open(player);
                 } else if (args[0].equalsIgnoreCase("Panic")) {
-                    if (isPlayer && !Permissions.has(player, Permission.MANAGE)) {
+                    if (isPlayer && !Permissions.has(player.getInstance(), Permission.MANAGE)) {
                         ClickableMessage.sendURL(
                                 sender,
                                 Config.messages.getColorfulString("no_permission"),
@@ -393,7 +393,7 @@ public class CommandExecution implements CommandExecutor {
                     completeMessage(sender, args[0].toLowerCase());
 
                 } else if (args[0].equalsIgnoreCase("Reload") || args[0].equalsIgnoreCase("Rl")) {
-                    if (isPlayer && !Permissions.has(player, Permission.RELOAD)) {
+                    if (isPlayer && !Permissions.has(player.getInstance(), Permission.RELOAD)) {
                         ClickableMessage.sendURL(
                                 sender,
                                 Config.messages.getColorfulString("no_permission"),
@@ -405,7 +405,7 @@ public class CommandExecution implements CommandExecutor {
                     Config.reload(sender);
 
                 } else if (isPlayer && args[0].equalsIgnoreCase("Info")) {
-                    if (!Permissions.has(player, Permission.INFO)) {
+                    if (!Permissions.has(player.getInstance(), Permission.INFO)) {
                         ClickableMessage.sendURL(
                                 sender,
                                 Config.messages.getColorfulString("no_permission"),
@@ -433,7 +433,7 @@ public class CommandExecution implements CommandExecutor {
                 }
             } else {
                 if (args[0].equalsIgnoreCase("Proxy-Command")) {
-                    if (isPlayer && !Permissions.has(player, Permission.ADMIN)) {
+                    if (isPlayer && !Permissions.has(player.getInstance(), Permission.ADMIN)) {
                         ClickableMessage.sendURL(
                                 sender,
                                 Config.messages.getColorfulString("no_permission"),
@@ -477,7 +477,7 @@ public class CommandExecution implements CommandExecutor {
                         if (args[0].equalsIgnoreCase("Wave")) {
                             String command = args[1];
 
-                            if (isPlayer && !Permissions.has(player, Permission.WAVE)) {
+                            if (isPlayer && !Permissions.has(player.getInstance(), Permission.WAVE)) {
                                 ClickableMessage.sendURL(
                                         sender,
                                         Config.messages.getColorfulString("no_permission"),
@@ -520,7 +520,7 @@ public class CommandExecution implements CommandExecutor {
                             }
 
                         } else if (isPlayer && args[0].equalsIgnoreCase("Info")) {
-                            if (!Permissions.has(player, Permission.INFO)) {
+                            if (!Permissions.has(player.getInstance(), Permission.INFO)) {
                                 ClickableMessage.sendURL(
                                         sender,
                                         Config.messages.getColorfulString("no_permission"),
@@ -534,7 +534,7 @@ public class CommandExecution implements CommandExecutor {
                         } else if (args[0].equalsIgnoreCase("Toggle")) {
                             String check = args[1];
 
-                            if (isPlayer && !Permissions.has(player, Permission.MANAGE)) {
+                            if (isPlayer && !Permissions.has(player.getInstance(), Permission.MANAGE)) {
                                 ClickableMessage.sendURL(
                                         sender,
                                         Config.messages.getColorfulString("no_permission"),
@@ -556,7 +556,7 @@ public class CommandExecution implements CommandExecutor {
                                 Enums.HackType type = Enums.HackType.valueOf(check);
                                 Check checkObj = type.getCheck();
 
-                                if (checkObj.isEnabled(null, null, null)) {
+                                if (checkObj.isEnabled(null, null)) {
                                     checkObj.setEnabled(null, false);
                                     String message = Config.messages.getColorfulString("check_disable_message");
                                     message = isPlayer
@@ -582,7 +582,7 @@ public class CommandExecution implements CommandExecutor {
                         } else if (args[0].equalsIgnoreCase("Toggle-Prevention")) {
                             String check = args[1];
 
-                            if (isPlayer && !Permissions.has(player, Permission.MANAGE)) {
+                            if (isPlayer && !Permissions.has(player.getInstance(), Permission.MANAGE)) {
                                 ClickableMessage.sendURL(
                                         sender,
                                         Config.messages.getColorfulString("no_permission"),
@@ -630,7 +630,7 @@ public class CommandExecution implements CommandExecutor {
                         } else if (args[0].equalsIgnoreCase("Toggle-Punishment")) {
                             String check = args[1];
 
-                            if (isPlayer && !Permissions.has(player, Permission.MANAGE)) {
+                            if (isPlayer && !Permissions.has(player.getInstance(), Permission.MANAGE)) {
                                 ClickableMessage.sendURL(
                                         sender,
                                         Config.messages.getColorfulString("no_permission"),
@@ -721,7 +721,7 @@ public class CommandExecution implements CommandExecutor {
                         String argumentsToString = argumentsToStringBuilder.substring(0, argumentsToStringBuilder.length() - 1);
 
                         if (args[0].equalsIgnoreCase("Kick")) {
-                            if (isPlayer && !Permissions.has(player, Permission.KICK)) {
+                            if (isPlayer && !Permissions.has(player.getInstance(), Permission.KICK)) {
                                 ClickableMessage.sendURL(
                                         sender,
                                         Config.messages.getColorfulString("no_permission"),
@@ -760,7 +760,7 @@ public class CommandExecution implements CommandExecutor {
                             }
 
                         } else if (args[0].equalsIgnoreCase("Warn")) {
-                            if (isPlayer && !Permissions.has(player, Permission.WARN)) {
+                            if (isPlayer && !Permissions.has(player.getInstance(), Permission.WARN)) {
                                 ClickableMessage.sendURL(
                                         sender,
                                         Config.messages.getColorfulString("no_permission"),
@@ -807,7 +807,7 @@ public class CommandExecution implements CommandExecutor {
                                 String[] checks = args[2].split(",", maxHackTypes);
                                 String sec = noSeconds ? null : args[3];
 
-                                if (isPlayer && !Permissions.has(player, Permission.USE_BYPASS)) {
+                                if (isPlayer && !Permissions.has(player.getInstance(), Permission.USE_BYPASS)) {
                                     ClickableMessage.sendURL(
                                             sender,
                                             Config.messages.getColorfulString("no_permission"),
@@ -869,7 +869,7 @@ public class CommandExecution implements CommandExecutor {
                             String command = args[1];
                             OfflinePlayer t = Bukkit.getOfflinePlayer(args[2]);
 
-                            if (isPlayer && !Permissions.has(player, Permission.WAVE)) {
+                            if (isPlayer && !Permissions.has(player.getInstance(), Permission.WAVE)) {
                                 ClickableMessage.sendURL(
                                         sender,
                                         Config.messages.getColorfulString("no_permission"),
@@ -932,7 +932,7 @@ public class CommandExecution implements CommandExecutor {
                             argumentsToString = argumentsToStringBuilder.substring(0, argumentsToStringBuilder.length() - 1);
 
                             if (args.length >= 7) {
-                                if (isPlayer && !Permissions.has(player, Permission.CONDITION)) {
+                                if (isPlayer && !Permissions.has(player.getInstance(), Permission.CONDITION)) {
                                     ClickableMessage.sendURL(
                                             sender,
                                             Config.messages.getColorfulString("no_permission"),

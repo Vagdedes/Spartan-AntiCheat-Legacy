@@ -18,13 +18,13 @@ public class MorePackets extends CheckExecutor {
     private int buffer;
 
     public MorePackets(HackType hackType, SpartanPlayer player) {
-        super(hackType, player, 0, true, true);
+        super(hackType, player, 0, true);
         this.nmsMap = new LinkedHashMap<>((int) TPS.maximum + 1, 1.0f);
         this.buffer = 0;
     }
 
     @Override
-    protected void runInternal(boolean cancelled) {
+    protected void handleInternal(boolean cancelled, Object object) {
         nmsMap.put(TPS.tick(), nmsMap.getOrDefault(TPS.tick(), 0) + 1);
 
         if (nmsMap.size() > configuredTicks()) {
@@ -35,7 +35,7 @@ public class MorePackets extends CheckExecutor {
     }
 
     @Override
-    protected void scheduler() {
+    protected void runInternal(boolean cancelled) {
         if (!nmsMap.isEmpty()) {
             long currentTick = TPS.tick(),
                     oldestTick = currentTick - configuredTicks();
