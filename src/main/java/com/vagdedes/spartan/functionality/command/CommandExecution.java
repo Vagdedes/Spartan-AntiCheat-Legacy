@@ -39,24 +39,6 @@ public class CommandExecution implements CommandExecutor {
     public static final int maxConnectedArgumentLength = 4096;
     public static final String support = "Click to receive plugin support.";
 
-    private static void commandList(CommandSender sender,
-                                    Object[] objects,
-                                    String command,
-                                    String commandPreview) {
-        sender.sendMessage("");
-        sender.sendMessage("§e'/" + commandPreview + "'§8:");
-
-        for (int i = 0; i < Math.min(objects.length, 10); i++) {
-            ClickableMessage.sendCommand(
-                    sender,
-                    "§c" + objects[i].toString() + " §7(Click)",
-                    objects[i].toString(),
-                    "/" + command + " " + objects[i]
-            );
-        }
-        sender.sendMessage("");
-    }
-
     private static void buildCommand(CommandSender sender, ChatColor chatColor, String command, String description) {
         ClickableMessage.sendCommand(sender, chatColor + command, description, command);
     }
@@ -148,8 +130,8 @@ public class CommandExecution implements CommandExecutor {
                             ClickableMessage.sendCommand(
                                     sender,
                                     "§cPlayer Info §7(Click)",
-                                    "Click this command to view useful information about a player.",
-                                    "/" + command + " info *"
+                                    "Click this command to view useful information yourself.",
+                                    "/" + command + " info"
                             );
                         }
                         if (manage) {
@@ -157,19 +139,19 @@ public class CommandExecution implements CommandExecutor {
                                     sender,
                                     "§cToggle Checks §7(Click)",
                                     "Click this command to toggle a check and its detections.",
-                                    "/" + command + " toggle *"
+                                    "/" + command + " manage-checks"
                             );
                             ClickableMessage.sendCommand(
                                     sender,
                                     "§cToggle Preventions §7(Click)",
                                     "Click this command to toggle a check's preventions.",
-                                    "/" + command + " toggle-silent *"
+                                    "/" + command + " manage-checks"
                             );
                             ClickableMessage.sendCommand(
                                     sender,
                                     "§cToggle Punishments §7(Click)",
                                     "Click this command to toggle a check's punishments.",
-                                    "/" + command + " toggle-punishment *"
+                                    "/" + command + " manage-checks"
                             );
                         }
                     } else {
@@ -210,11 +192,6 @@ public class CommandExecution implements CommandExecutor {
                                 "§cPlayer Bypass §7(Click)",
                                 "Click this command to give check bypass to a player.",
                                 "/" + command + " bypass *"
-                        );
-                        buildCommand(
-                                sender,
-                                ChatColor.RED, "/" + command + " moderation",
-                                "Click this command to view a list of moderation commands."
                         );
                     }
                     if (!isPlayer
@@ -359,6 +336,8 @@ public class CommandExecution implements CommandExecutor {
             } else if (args.length == 1) {
                 if (isPlayer && args[0].equalsIgnoreCase("Menu")) {
                     InteractiveInventory.mainMenu.open(player);
+                } else if (isPlayer && args[0].equalsIgnoreCase("Manage-Checks")) {
+                    InteractiveInventory.manageChecks.open(player);
                 } else if (args[0].equalsIgnoreCase("Panic")) {
                     if (isPlayer && !Permissions.has(player.getInstance(), Permission.MANAGE)) {
                         ClickableMessage.sendURL(

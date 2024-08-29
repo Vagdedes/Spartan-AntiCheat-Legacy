@@ -94,6 +94,13 @@ public class ManageChecks extends InventoryMenu {
                             DiscordMemberCount.discordURL
                     );
                 }
+            } else if (clickType.isKeyboardClick()) {
+                Check check = Config.getCheckByName(item);
+
+                if (check != null) {
+                    check.setPunish(null, !check.canPunish(null));
+                }
+                open(player);
             }
         }
         return true;
@@ -103,15 +110,22 @@ public class ManageChecks extends InventoryMenu {
         Check check = hackType.getCheck();
         boolean enabled = check.isEnabled(null, null),
                 silent = check.isSilent(null, null),
-                bypassing = Permissions.isBypassing(player, hackType);
+                bypassing = Permissions.isBypassing(player, hackType),
+                punish = check.canPunish(null);
         String[] disabledDetections = CloudBase.getShownDisabledDetections(hackType);
-        String enabledOption, silentOption, colour, secondColour;
+        String enabledOption, silentOption, punishOption, colour, secondColour;
         ItemStack item;
 
         if (silent) {
             silentOption = "§7Right click to §cdisable §7silent checking.";
         } else {
             silentOption = "§7Right click to §aenable §7silent checking.";
+        }
+
+        if (punish) {
+            punishOption = "§7Keyboard click to §cdisable §7punishments.";
+        } else {
+            punishOption = "§7Keyboard click to §aenable §7punishments.";
         }
 
         if (enabled) {
@@ -154,7 +168,7 @@ public class ManageChecks extends InventoryMenu {
         lore.add("");
         lore.add((enabled ? "§a" : "§c") + "Enabled §8/ "
                 + (silent ? "§a" : "§c") + "Silent §8/ "
-                + (check.canPunish(null) ? "§a" : "§c") + "Punishments §8/ "
+                + (punish ? "§a" : "§c") + "Punishments §8/ "
                 + (bypassing ? "§a" : "§c") + "Bypassing");
         int counter = 0;
 
@@ -174,10 +188,8 @@ public class ManageChecks extends InventoryMenu {
         // Separator
         lore.add("");
         lore.add(enabledOption);
-
-        if (silentOption != null) {
-            lore.add(silentOption);
-        }
+        lore.add(silentOption);
+        lore.add(punishOption);
         lore.add("§7Shift click to §edelete §7the check's data.");
 
         // Separator
