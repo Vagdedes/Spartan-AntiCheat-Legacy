@@ -69,6 +69,7 @@ public class AntiCheatLogs {
                                String information,
                                boolean console,
                                Material material,
+                               Enums.HackType hackType,
                                PlayerViolation playerViolation) {
         if (console && Config.settings.getBoolean("Logs.log_console")) {
             Bukkit.getConsoleSender().sendMessage(information);
@@ -87,7 +88,7 @@ public class AntiCheatLogs {
                 storeInFile(information);
             }
         }
-        Config.sql.logInfo(p, notification, information, material, playerViolation);
+        Config.sql.logInfo(p, notification, information, material, hackType, playerViolation);
     }
 
     public static void logMining(SpartanPlayer player, SpartanBlock block, boolean cancelled) {
@@ -120,6 +121,7 @@ public class AntiCheatLogs {
                             log,
                             false,
                             block.material,
+                            null,
                             null
                     );
                     MiningHistory miningHistory = player.protocol.getProfile().getMiningHistory(ore);

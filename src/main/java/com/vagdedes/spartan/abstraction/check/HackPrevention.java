@@ -31,8 +31,8 @@ public class HackPrevention {
                    String information, double violations,
                    SpartanLocation location, int cancelTicks, boolean groundTeleport,
                    double damage) {
-        this.threadID = Thread.currentThread().getId();
         long time = System.currentTimeMillis();
+        this.threadID = Thread.currentThread().getId();
         this.canPrevent = false;
         this.location = location;
         this.groundTeleport = groundTeleport;

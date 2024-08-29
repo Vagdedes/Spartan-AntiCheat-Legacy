@@ -5,6 +5,7 @@ import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.functionality.connection.Latency;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.listeners.protocol.modules.TeleportData;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -18,7 +19,8 @@ public class SpartanProtocol {
     private final long time;
     public final Player player;
     public final SpartanPlayer spartanPlayer;
-    private boolean isOnGround, isOnGroundFrom, isSprinting, isSneaking, loaded;
+    private boolean isOnGround, isOnGroundFrom, isSprinting, isSneaking;
+    private int loaded;
     private Location location;
     private Vector velocity;
     private PlayerProfile profile;
@@ -35,7 +37,7 @@ public class SpartanProtocol {
         this.location = player.getLocation();
         this.isSprinting = false;
         this.isSneaking = false;
-        this.loaded = !SpartanBukkit.packetsEnabled();
+        this.loaded = SpartanBukkit.packetsEnabled() ? 0 : (int) TPS.maximum;
         this.velocity = new Vector(0, 0, 0);
         this.spartanPlayer = new SpartanPlayer(this);
         this.teleportEngine = new LinkedList<>();
@@ -72,7 +74,7 @@ public class SpartanProtocol {
     }
 
     public boolean isLoading() {
-        return !this.loaded;
+        return this.loaded < TPS.maximum;
     }
 
     public Location getLocation() {
@@ -117,7 +119,7 @@ public class SpartanProtocol {
     }
 
     public void load() {
-        this.loaded = true;
+        this.loaded++;
     }
 
     public void setVelocity(Vector velocity) {

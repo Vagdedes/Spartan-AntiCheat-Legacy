@@ -458,8 +458,8 @@ public class SpartanPlayer {
 
                 for (SpartanLocation location : locations) {
                     List<Entity> list = perChunk.get(Event_Chunks.hashCoordinates(
-                            SpartanLocation.getChunkPos(location.getBlockX()),
-                            SpartanLocation.getChunkPos(location.getBlockZ())
+                            location.getChunkX(),
+                            location.getChunkZ()
                     ));
 
                     if (list != null) {

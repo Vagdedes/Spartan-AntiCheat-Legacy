@@ -6,7 +6,6 @@ import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
-import com.vagdedes.spartan.functionality.performance.PlayerDetectionSlots;
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
@@ -69,8 +68,12 @@ public class Event_Status implements Listener {
         SpartanPlayer p = protocol.spartanPlayer;
 
         // Features
-        PlayerDetectionSlots.remove(p);
         DetectionNotifications.runOnLeave(p);
+
+        // System
+        for (Enums.HackType hackType : Enums.HackType.values()) {
+            p.getExecutor(hackType).end();
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

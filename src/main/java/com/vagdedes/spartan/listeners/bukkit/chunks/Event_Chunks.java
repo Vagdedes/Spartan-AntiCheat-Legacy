@@ -41,7 +41,7 @@ public class Event_Chunks implements Listener {
 
         }
 
-        private void refresh(Chunk chunk) {
+        private boolean refresh(Chunk chunk) {
             synchronized (this) {
                 if (!this.queued
                         && System.currentTimeMillis() - this.creation > 500L) {
@@ -52,12 +52,16 @@ public class Event_Chunks implements Listener {
                         this.snapshot = chunk.getChunkSnapshot();
                         this.queued = false;
                     });
+                    return true;
                 }
             }
+            return false;
         }
 
         private boolean isQueued() {
-            return this.queued;
+            synchronized (this) {
+                return this.queued;
+            }
         }
 
     }
@@ -72,8 +76,8 @@ public class Event_Chunks implements Listener {
                 for (SpartanProtocol protocol : SpartanBukkit.getProtocols()) {
                     SpartanLocation location = protocol.spartanPlayer.movement.getLocation();
 
-                    if (isLoaded(location.world, location.getChunkX(), location.getChunkZ())) {
-                        cache(location.getBukkitLocation().getChunk(), true);
+                    if (isLoaded(location.world, location.getChunkX(), location.getChunkZ())
+                            && cache(location.getBukkitLocation().getChunk(), true)) {
                         break;
                     }
                 }
@@ -122,7 +126,7 @@ public class Event_Chunks implements Listener {
         }
         ChunkData data = subMap.get(hashCoordinates(SpartanLocation.getChunkPos(x), SpartanLocation.getChunkPos(z)));
 
-        if (data == null) {
+        if (data == null || data.snapshot == null) {
             return null;
         }
         return data.snapshot.getBlockType(x & 0xF, y, z & 0xF);
@@ -134,7 +138,7 @@ public class Event_Chunks implements Listener {
         if (perChunk != null) {
             List<Entity> list = perChunk.get(Event_Chunks.hashCoordinates(x, z));
 
-            if (!list.isEmpty()) {
+            if (list != null) {
                 for (Entity entity : list) {
                     if (entity instanceof Player) {
                         return true;
@@ -145,17 +149,17 @@ public class Event_Chunks implements Listener {
         return false;
     }
 
-    public static void cache(Chunk chunk, boolean force) {
+    public static boolean cache(Chunk chunk, boolean force) {
         World world = chunk.getWorld();
 
         if (!force && !hasPlayers(world, chunk.getX(), chunk.getZ())) {
-            return;
+            return false;
         }
         Map<Long, ChunkData> subMap = map.computeIfAbsent(
                 world,
                 k -> new ConcurrentHashMap<>()
         );
-        subMap.computeIfAbsent(
+        return subMap.computeIfAbsent(
                 hashCoordinates(chunk.getX(), chunk.getZ()),
                 k -> new ChunkData()
         ).refresh(chunk);

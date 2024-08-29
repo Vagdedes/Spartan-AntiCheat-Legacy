@@ -6,7 +6,10 @@ import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.inventory.implementation.MainMenu;
 import com.vagdedes.spartan.abstraction.pattern.Pattern;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
-import com.vagdedes.spartan.abstraction.profiling.*;
+import com.vagdedes.spartan.abstraction.profiling.MiningHistory;
+import com.vagdedes.spartan.abstraction.profiling.PlayerEvidence;
+import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
+import com.vagdedes.spartan.abstraction.profiling.PlayerViolation;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
@@ -432,9 +435,9 @@ public class ResearchEngine {
                                             if (violation != null) {
                                                 SimpleDateFormat sdf = new SimpleDateFormat(AntiCheatLogs.dateFormat);
                                                 getPlayerProfile(split[0], true).getViolationHistory(getDataType(data), hackType).store(
+                                                        hackType,
                                                         new PlayerViolation(
                                                                 sdf.parse(fullDate).getTime(),
-                                                                hackType,
                                                                 violation[0],
                                                                 violation[1]
                                                         )
@@ -501,90 +504,60 @@ public class ResearchEngine {
                     if (!hackType.getCheck().isEnabled(dataType, null, null)) {
                         continue;
                     }
-                    Map<PlayerProfile, double[]> wave = new LinkedHashMap<>();
+                    Map<PlayerProfile, Double> wave = new LinkedHashMap<>();
 
                     for (PlayerProfile profile : profiles) {
-                        ViolationHistory violationHistory = profile.getViolationHistory(
+                        Double timeDifference = profile.getViolationHistory(
                                 dataType,
                                 hackType
-                        );
+                        ).getTimeDifference(hackType);
 
-                        if (!violationHistory.isEmpty()) {
+                        if (timeDifference != null) {
                             wave.put(
                                     profile,
-                                    new double[]{
-                                            violationHistory.getViolationIncrease(),
-                                            violationHistory.getTimeDifference()
-                                    }
+                                    timeDifference
                             );
                         }
                     }
 
                     if (!wave.isEmpty()) {
-                        double sum = 0, squareSum = 0;
+                        double sum = 0,
+                                squareSum = 0,
+                                min = Double.MAX_VALUE,
+                                max = Double.MIN_VALUE;
 
-                        for (double[] value : wave.values()) {
-                            sum += value[0];
-                            squareSum += value[0] * value[0];
+                        for (double value : wave.values()) {
+                            sum += value;
+                            squareSum += value * value;
                         }
                         double divisor = wave.size(),
                                 mean = sum / divisor,
                                 deviation = Math.sqrt(squareSum / divisor);
 
-                        for (Map.Entry<PlayerProfile, double[]> entryChild : wave.entrySet()) {
-                            PlayerProfile profile = entryChild.getKey();
-                            double self = entryChild.getValue()[0],
-                                    probability = StatisticsMath.getCumulativeProbability(
-                                            (self - mean) / deviation
-                                    );
+                        for (Map.Entry<PlayerProfile, Double> entryChild : wave.entrySet()) {
+                            double probability = StatisticsMath.getCumulativeProbability(
+                                    (entryChild.getValue() - mean) / deviation
+                            );
+                            entryChild.setValue(probability);
 
-                            if (probability > profile.evidence.get(hackType).probability) {
-                                profile.evidence.add(
-                                        hackType,
-                                        probability,
-                                        mean,
-                                        self,
-                                        true
-                                );
+                            if (probability > max) {
+                                max = probability;
+                            }
+                            if (probability < min) {
+                                min = probability;
                             }
                         }
+                        max = 1.0 - max;
 
-                        // Separator
-
-                        divisor--; // Because of the previous violation required for comparison
-
-                        if (divisor > 0) {
-                            sum = 0;
-                            squareSum = 0;
-
-                            for (double[] value : wave.values()) {
-                                sum += value[1];
-                                squareSum += value[1] * value[1];
-                            }
-                            mean = sum / divisor;
-                            deviation = Math.sqrt(squareSum / divisor);
-
-                            for (Map.Entry<PlayerProfile, double[]> entryChild : wave.entrySet()) {
-                                PlayerProfile profile = entryChild.getKey();
-                                double self = entryChild.getValue()[1],
-                                        probability = StatisticsMath.getCumulativeProbability(
-                                                (self - mean) / deviation
-                                        );
-
-                                if (probability < 0.0) {
-                                    probability = 0.0 - probability;
-
-                                    if (probability > profile.evidence.get(hackType).probability) {
-                                        profile.evidence.add(
-                                                hackType,
-                                                probability,
-                                                mean,
-                                                self,
-                                                false
-                                        );
-                                    }
-                                }
-                            }
+                        for (Map.Entry<PlayerProfile, Double> entryChild : wave.entrySet()) {
+                            entryChild.getKey().evidence.add(
+                                    hackType,
+                                    PlayerEvidence.modifyProbability(
+                                            entryChild.getValue(),
+                                            min,
+                                            max
+                                    )
+                            );
                         }
                     }
                 }
@@ -619,8 +592,8 @@ public class ResearchEngine {
         }
     }
 
-    public static void queueToCache(PlayerViolation violation) {
-        violationFired.put(violation.hackType, true);
+    public static void queueToCache(Enums.HackType hackType) {
+        violationFired.put(hackType, true);
     }
 
 }

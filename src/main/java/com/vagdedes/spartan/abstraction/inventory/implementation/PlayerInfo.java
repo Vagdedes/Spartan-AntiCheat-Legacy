@@ -68,8 +68,7 @@ public class PlayerInfo extends InventoryMenu {
             return false;
         } else {
             setTitle(player, menu + (isOnline ? target.player.getName() : profile.getName()));
-            Set<Map.Entry<HackType, PlayerEvidence.EvidenceDetails>> evidenceDetails = profile.evidence.getKnowledgeEntries(
-                    0.0,
+            Set<Map.Entry<HackType, Double>> evidenceDetails = profile.evidence.getKnowledgeEntries(
                     0.0
             );
             List<String> lore = new ArrayList<>();
@@ -77,23 +76,43 @@ public class PlayerInfo extends InventoryMenu {
 
             if (!evidenceDetails.isEmpty()) {
                 lore.add("§7Certainty of cheating§8:");
-                Map<Double, HackType> map = new TreeMap<>(Collections.reverseOrder());
+                Map<Double, HackType> map = PlayerEvidence.POSITIVE
+                        ? new TreeMap<>(Collections.reverseOrder())
+                        : new TreeMap<>();
 
-                for (Map.Entry<HackType, PlayerEvidence.EvidenceDetails> entry : evidenceDetails) {
-                    map.put(entry.getValue().probability, entry.getKey());
+                for (Map.Entry<HackType, Double> entry : evidenceDetails) {
+                    map.put(
+                            entry.getValue(),
+                            entry.getKey()
+                    );
                 }
                 for (Map.Entry<Double, HackType> entry : map.entrySet()) {
+                    HackType hackType = entry.getValue();
                     double probability = entry.getKey();
 
-                    if (probability < PlayerEvidence.preventionProbability) {
+                    if (PlayerEvidence.surpassedProbability(
+                            probability,
+                            PlayerEvidence.preventionProbability
+                    )) {
+                        probability = PlayerEvidence.probabilityToCertainty(probability);
                         lore.add(
-                                "§2" + entry.getValue().getCheck().getName()
-                                        + "§8: §a" + AlgebraUtils.integerRound(probability * 100.0) + "%"
+                                "§4" + hackType.getCheck().getName()
+                                        + "§8: §c" + AlgebraUtils.integerRound(probability * 100.0) + "%"
+                        );
+                    } else if (PlayerEvidence.surpassedProbability(
+                            probability,
+                            PlayerEvidence.notificationProbability
+                    )) {
+                        probability = PlayerEvidence.probabilityToCertainty(probability);
+                        lore.add(
+                                "§6" + hackType.getCheck().getName()
+                                        + "§8: §e" + AlgebraUtils.integerRound(probability * 100.0) + "%"
                         );
                     } else {
+                        probability = PlayerEvidence.probabilityToCertainty(probability);
                         lore.add(
-                                "§4" + entry.getValue().getCheck().getName()
-                                        + "§8: §c" + AlgebraUtils.integerRound(probability * 100.0) + "%"
+                                "§2" + hackType.getCheck().getName()
+                                        + "§8: §a" + AlgebraUtils.integerRound(probability * 100.0) + "%"
                         );
                     }
                 }

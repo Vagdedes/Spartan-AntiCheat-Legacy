@@ -42,8 +42,8 @@ public abstract class CheckExecutor extends DetectionExecutor {
 
     protected final DetectionExecutor[] detections;
     private final boolean scheduledPrevention;
-    private boolean function;
-    private Object scheduler;
+    private Boolean function;
+    private final Object scheduler;
     private long level;
     private CancelCause disableCause, silentCause;
     private HackPrevention prevention;
@@ -53,61 +53,48 @@ public abstract class CheckExecutor extends DetectionExecutor {
                          boolean scheduler, boolean scheduledPrevention) {
         super(null, hackType, player);
         this.detections = new DetectionExecutor[detections];
-        this.function = false;
         this.scheduledPrevention = scheduledPrevention;
         this.prevention = new HackPrevention();
         this.notifications = new Cooldowns(new ConcurrentHashMap<>());
 
         if (scheduler) {
             this.scheduler = SpartanBukkit.runRepeatingTask(player, () -> {
-                if (this.scheduler != null && !player.getInstance().isOnline()) {
-                    SpartanBukkit.cancelTask(this.scheduler);
-                } else {
-                    synchronized (this) {
-                        function = (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
-                                || player.getInstance().getGameMode() != GameMode.SPECTATOR)
-                                && !player.protocol.isLoading()
-                                && player.getCancellableCompatibility() == null
-                                && hackType.getCheck().isEnabled(player.dataType, player.getWorld().getName(), player)
-                                && canRun();
+                synchronized (this) {
+                    function = null;
 
-                        if (canFunctionOrJustImplemented()) {
-                            scheduler();
-                        } else {
-                            cannotSchedule();
-                        }
+                    if (canFunctionOrJustImplemented()) {
+                        scheduler();
+                    } else {
+                        cannotSchedule();
+                    }
 
-                        if (scheduledPrevention) {
-                            SpartanBukkit.runTask(
-                                    this.player,
-                                    this::prevent
-                            );
-                        }
+                    if (scheduledPrevention) {
+                        SpartanBukkit.runTask(
+                                this.player,
+                                this::prevent
+                        );
                     }
                 }
             }, 1L, 1L);
         } else {
             this.scheduler = SpartanBukkit.runRepeatingTask(player, () -> {
-                if (this.scheduler != null && !player.getInstance().isOnline()) {
-                    SpartanBukkit.cancelTask(this.scheduler);
-                } else {
-                    synchronized (this) {
-                        function = (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
-                                || player.getInstance().getGameMode() != GameMode.SPECTATOR)
-                                && !player.protocol.isLoading()
-                                && player.getCancellableCompatibility() == null
-                                && hackType.getCheck().isEnabled(player.dataType, player.getWorld().getName(), player)
-                                && canRun();
+                synchronized (this) {
+                    function = null;
 
-                        if (scheduledPrevention) {
-                            SpartanBukkit.runTask(
-                                    this.player,
-                                    this::prevent
-                            );
-                        }
+                    if (scheduledPrevention) {
+                        SpartanBukkit.runTask(
+                                this.player,
+                                this::prevent
+                        );
                     }
                 }
             }, 1L, 1L);
+        }
+    }
+
+    public final void end() {
+        if (this.scheduler != null) {
+            SpartanBukkit.cancelTask(this.scheduler);
         }
     }
 
@@ -175,11 +162,24 @@ public abstract class CheckExecutor extends DetectionExecutor {
 
     // Separator
 
+    private void loadFunction() {
+        if (function == null) {
+            function = (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
+                    || player.getInstance().getGameMode() != GameMode.SPECTATOR)
+                    && !player.protocol.isLoading()
+                    && player.getCancellableCompatibility() == null
+                    && hackType.getCheck().isEnabled(player.dataType, player.getWorld().getName(), player)
+                    && canRun();
+        }
+    }
+
     private boolean canFunctionOrJustImplemented() {
+        loadFunction();
         return function || player.protocol.timePassed() <= TPS.maximum * TPS.tickTime;
     }
 
     final boolean canFunction() {
+        loadFunction();
         return function;
     }
 
@@ -266,7 +266,6 @@ public abstract class CheckExecutor extends DetectionExecutor {
                 int increaseInt = Math.max(AlgebraUtils.integerRound(increase), 1);
                 PlayerViolation playerViolation = new PlayerViolation(
                         time,
-                        hackType,
                         this.getLevel(),
                         increaseInt
                 );
@@ -286,23 +285,21 @@ public abstract class CheckExecutor extends DetectionExecutor {
                             return;
                         }
                     }
-                    player.protocol.getProfile().getViolationHistory(player.dataType, hackType).store(playerViolation);
+                    player.protocol.getProfile().getViolationHistory(player.dataType, hackType).store(
+                            hackType,
+                            playerViolation
+                    );
                     this.increaseLevel(increaseInt);
                     this.notify(playerViolation, information);
                     this.punish();
                     this.prevention = newPrevention;
-
-                    if (!hackType.getCheck().isSilent(player.dataType, player.getWorld().getName())
-                            && (silentCause == null
-                            || silentCause.hasExpired()
-                            || !silentCause.pointerMatches(information))
-                            && PlayerEvidence.getRequiredPlayers(hackType, PlayerEvidence.preventionProbability) == 0) {
-                        PlayerEvidence.EvidenceDetails details = player.protocol.getProfile().evidence.get(this.hackType);
-                        this.prevention.canPrevent = details.probability >= PlayerEvidence.preventionProbability
-                                && details.surpassesMeanByRatio(PlayerEvidence.preventionRatio);
-                    } else {
-                        this.prevention.canPrevent = false;
-                    }
+                    this.prevention.canPrevent =
+                            !hackType.getCheck().isSilent(player.dataType, player.getWorld().getName())
+                                    && (silentCause == null
+                                    || silentCause.hasExpired()
+                                    || !silentCause.pointerMatches(information))
+                                    && PlayerEvidence.getRequiredPlayers(hackType, PlayerEvidence.preventionProbability) == 0
+                                    && player.protocol.getProfile().evidence.surpassed(this.hackType, PlayerEvidence.preventionProbability);
                 };
 
                 if (!event || SpartanBukkit.isSynchronised()) {
@@ -382,8 +379,7 @@ public abstract class CheckExecutor extends DetectionExecutor {
             if (!commands.isEmpty()
                     && PlayerEvidence.getRequiredPlayers(hackType, PlayerEvidence.punishmentProbability) == 0) {
                 Collection<Enums.HackType> detectedHacks = player.protocol.getProfile().evidence.getKnowledgeList(
-                        PlayerEvidence.punishmentProbability,
-                        PlayerEvidence.punishmentRatio
+                        PlayerEvidence.punishmentProbability
                 );
                 detectedHacks.removeIf(loopHackType -> !loopHackType.getCheck().canPunish(player.dataType));
 
@@ -468,7 +464,7 @@ public abstract class CheckExecutor extends DetectionExecutor {
                 + "(Ping: " + player.protocol.getPing() + "ms), "
                 + "(W-XYZ: " + location.world.getName() + " " + location.getBlockX() + " " + location.getBlockY() + " " + location.getBlockZ() + "), "
                 + "[Information: " + information + "]";
-        AntiCheatLogs.logInfo(player, notification, information, true, null, playerViolation);
+        AntiCheatLogs.logInfo(player, notification, information, true, null, hackType, playerViolation);
 
         // Local Notifications
         String command = Config.settings.getString("Notifications.message_clickable_command")
@@ -515,16 +511,10 @@ public abstract class CheckExecutor extends DetectionExecutor {
     public final boolean canSendNotification(Object detected) {
         if (this.notifications.canDo("")) {
             boolean player = detected instanceof SpartanPlayer;
-            PlayerEvidence.EvidenceDetails details;
 
-            if (player) {
-                details = ((SpartanPlayer) detected).protocol.getProfile().evidence.get(this.hackType);
-            } else {
-                details = ResearchEngine.getPlayerProfile(detected.toString(), true).evidence.get(this.hackType);
-            }
-
-            if (details.probability >= PlayerEvidence.notificationProbability
-                    && details.surpassesMeanByRatio(PlayerEvidence.notificationRatio)) {
+            if (player
+                    ? ((SpartanPlayer) detected).protocol.getProfile().evidence.surpassed(this.hackType, PlayerEvidence.notificationProbability)
+                    : ResearchEngine.getPlayerProfile(detected.toString(), true).evidence.surpassed(this.hackType, PlayerEvidence.notificationProbability)) {
                 int ticks = this.getNotificationTicksCooldown(
                         player ? (SpartanPlayer) detected : null
                 );

@@ -154,7 +154,12 @@ public class SpartanBukkit {
     }
 
     public static SpartanProtocol deleteProtocol(Player real) {
-        return playerProtocol.remove(real.getUniqueId());
+        SpartanProtocol protocol = playerProtocol.remove(real.getUniqueId());
+
+        if (protocol != null) {
+            PlayerDetectionSlots.remove(protocol.spartanPlayer);
+        }
+        return protocol;
     }
 
     // Separator
