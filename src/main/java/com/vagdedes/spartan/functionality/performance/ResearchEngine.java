@@ -565,15 +565,17 @@ public class ResearchEngine {
                 violationFired.clear();
             }
         }
-        int squareSum = 0;
-        Enums.HackType[] hackTypes = Enums.HackType.values();
+        int squareSum = 0, count = 0;
 
-        for (Enums.HackType hackType : hackTypes) {
-            int result = PlayerEvidence.getRequiredPlayers(hackType, PlayerEvidence.punishmentProbability);
-            squareSum += result * result;
+        for (Enums.HackType hackType : Enums.HackType.values()) {
+            if (hackType.getCheck().isEnabled(null, null)) {
+                int result = PlayerEvidence.getRequiredPlayers(hackType, PlayerEvidence.punishmentProbability);
+                squareSum += result * result;
+                count += result;
+            }
         }
         if (squareSum > 0) {
-            squareSum = AlgebraUtils.integerCeil(Math.sqrt(squareSum / (double) hackTypes.length));
+            squareSum = AlgebraUtils.integerCeil(Math.sqrt(squareSum / (double) count));
             String message = AwarenessNotifications.getOptionalNotification(
                     "The plugin needs data from " + squareSum + " more player/s to enable preventions & punishments for all checks."
                             + " This is normal and will be resolved as more players join your server."
@@ -588,6 +590,31 @@ public class ResearchEngine {
                             p.getInstance().sendMessage(message);
                         }
                     }
+                }
+            }
+        } else if (SpartanBukkit.packetsEnabled()) {
+            for (Enums.HackType hackType : Enums.HackType.values()) {
+                Check check = hackType.getCheck();
+
+                if (check.isEnabled(null, null)
+                        && !check.isSilent(null, null)) {
+                    String message = AwarenessNotifications.getOptionalNotification(
+                            "Spartan does not support preventions when running on the packet level."
+                                    + " This is due to problems risen from trying to implement this functionality with packets."
+                    );
+
+                    if (message != null) {
+                        List<SpartanPlayer> players = Permissions.getStaff();
+
+                        if (!players.isEmpty()) {
+                            for (SpartanPlayer p : players) {
+                                if (AwarenessNotifications.canSend(p.getInstance().getUniqueId(), "packet-preventions", 60 * 60)) {
+                                    p.getInstance().sendMessage(message);
+                                }
+                            }
+                        }
+                    }
+                    break;
                 }
             }
         }

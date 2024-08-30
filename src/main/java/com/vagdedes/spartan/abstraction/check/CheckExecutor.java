@@ -1,7 +1,6 @@
 package com.vagdedes.spartan.abstraction.check;
 
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.abstraction.data.Cooldowns;
 import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.profiling.PlayerEvidence;
@@ -29,7 +28,6 @@ import org.bukkit.Bukkit;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class CheckExecutor extends DetectionExecutor {
 
@@ -40,10 +38,9 @@ public abstract class CheckExecutor extends DetectionExecutor {
     protected final DetectionExecutor[] detections;
     private final boolean scheduledPrevention;
     private final long[] function;
-    private long level;
+    private long level, notifications;
     private CancelCause disableCause, silentCause;
     private HackPrevention prevention;
-    private final Cooldowns notifications;
 
     public CheckExecutor(Enums.HackType hackType, SpartanPlayer player, int detections,
                          boolean scheduledPrevention) {
@@ -51,7 +48,6 @@ public abstract class CheckExecutor extends DetectionExecutor {
         this.detections = new DetectionExecutor[detections];
         this.scheduledPrevention = scheduledPrevention;
         this.prevention = new HackPrevention();
-        this.notifications = new Cooldowns(new ConcurrentHashMap<>());
         this.function = new long[2];
     }
 
@@ -460,19 +456,22 @@ public abstract class CheckExecutor extends DetectionExecutor {
     }
 
     public final boolean canSendNotification(Object detected) {
-        if (this.notifications.canDo("")) {
+        long tick = TPS.tick();
+
+        if (this.notifications <= tick) {
             boolean player = detected instanceof SpartanPlayer;
+            int ticks = this.getNotificationTicksCooldown(
+                    player ? (SpartanPlayer) detected : null
+            );
 
-            if (player
-                    ? ((SpartanPlayer) detected).protocol.getProfile().evidence.surpassed(this.hackType, PlayerEvidence.notificationProbability)
-                    : ResearchEngine.getPlayerProfile(detected.toString(), true).evidence.surpassed(this.hackType, PlayerEvidence.notificationProbability)) {
-                int ticks = this.getNotificationTicksCooldown(
-                        player ? (SpartanPlayer) detected : null
-                );
-
-                if (ticks > 0) {
-                    this.notifications.add("", ticks);
+            if (ticks > 0) {
+                if (player
+                        ? ((SpartanPlayer) detected).protocol.getProfile().evidence.surpassed(this.hackType, PlayerEvidence.notificationProbability)
+                        : ResearchEngine.getPlayerProfile(detected.toString(), true).evidence.surpassed(this.hackType, PlayerEvidence.notificationProbability)) {
+                    this.notifications = tick + ticks;
+                    return true;
                 }
+            } else {
                 return true;
             }
         }
