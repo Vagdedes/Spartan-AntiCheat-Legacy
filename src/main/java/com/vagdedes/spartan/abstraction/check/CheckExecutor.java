@@ -396,7 +396,11 @@ public abstract class CheckExecutor extends DetectionExecutor {
                 player,
                 Config.messages.getColorfulString("detection_notification")
                         .replace("{info}", information)
-                        .replace("{vls:detection}", Integer.toString(playerViolation.sum())),
+                        .replace("{vls:detection}", Integer.toString(playerViolation.sum()))
+                        .replace("{vls:percentage}", Double.toString(AlgebraUtils.cut(
+                                player.protocol.getProfile().evidence.getProbability(hackType) * 100.0,
+                                2
+                        ))),
                 hackType
         );
 

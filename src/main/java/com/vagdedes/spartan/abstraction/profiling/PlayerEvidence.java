@@ -69,10 +69,7 @@ public class PlayerEvidence {
 
     public boolean surpassed(Enums.HackType hackType, double threshold) {
         return surpassedProbability(
-                this.probability.getOrDefault(
-                        hackType,
-                        POSITIVE ? 0.0 : 1.0
-                ),
+                this.getProbability(hackType),
                 threshold
         );
     }
@@ -87,6 +84,13 @@ public class PlayerEvidence {
 
     public void add(Enums.HackType hackType, double probability) {
         this.probability.put(hackType, probability);
+    }
+
+    public double getProbability(Enums.HackType hackType) {
+        return this.probability.getOrDefault(
+                hackType,
+                POSITIVE ? 0.0 : 1.0
+        );
     }
 
     // Separator
