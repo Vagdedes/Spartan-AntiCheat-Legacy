@@ -548,18 +548,17 @@ public class ResearchEngine {
                             }
                         }
                         max = 1.0 - max;
+                        double distributionDifference = Math.abs(max - min);
 
-                        if (Math.abs(max - min) <= 0.25) { // Almost evenly distributed wave
-                            for (Map.Entry<PlayerProfile, Double> entryChild : wave.entrySet()) {
-                                entryChild.getKey().evidence.add(
-                                        hackType,
-                                        PlayerEvidence.modifyProbability(
-                                                entryChild.getValue(),
-                                                min,
-                                                max
-                                        )
-                                );
-                            }
+                        for (Map.Entry<PlayerProfile, Double> entryChild : wave.entrySet()) {
+                            entryChild.getKey().evidence.add(
+                                    hackType,
+                                    PlayerEvidence.modifyProbability(
+                                            entryChild.getValue(),
+                                            Math.max(min - distributionDifference, 0.0),
+                                            Math.max(max - distributionDifference, 0.0)
+                                    )
+                            );
                         }
                     }
                 }
