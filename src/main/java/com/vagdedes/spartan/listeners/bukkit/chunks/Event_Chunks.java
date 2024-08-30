@@ -46,12 +46,9 @@ public class Event_Chunks implements Listener {
                 if (!this.queued
                         && System.currentTimeMillis() - this.creation > 500L) {
                     this.queued = true;
-
-                    SpartanBukkit.chunksThread.execute(() -> {
-                        this.creation = System.currentTimeMillis();
-                        this.snapshot = chunk.getChunkSnapshot();
-                        this.queued = false;
-                    });
+                    this.creation = System.currentTimeMillis();
+                    this.snapshot = chunk.getChunkSnapshot();
+                    this.queued = false;
                     return true;
                 }
             }
