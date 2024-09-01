@@ -26,8 +26,8 @@ public class BlockRaytrace extends DetectionExecutor {
             Location targetLocation = target.getLocation();
             boolean valid = true;
             Material block = null;
-            if (playerLocation.distance(targetLocation) < 0.6) return;
-            for (double d = 0.1D; d <= 1.5D; d += 0.1D) {
+            if (playerLocation.distance(targetLocation) < 2) return;
+            for (double d = 0.3D; d <= 1.5D; d += 0.1D) {
                 Material result = intercept(player, playerLocation, targetLocation, d);
                 if (result != null) {
                     valid = false;
