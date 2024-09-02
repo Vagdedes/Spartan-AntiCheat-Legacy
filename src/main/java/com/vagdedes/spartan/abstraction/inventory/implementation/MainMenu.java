@@ -93,10 +93,9 @@ public class MainMenu extends InventoryMenu {
         add("§aManagement", lore, new ItemStack(MaterialUtils.get("crafting_table")), 47);
 
         // Live Customer Support
-        InventoryUtils.prepareDescription(lore, "Available via Discord Server");
-        lore.add("§7Download your favorite plugins");
-        lore.add("§7from our Discord server and save");
-        lore.add("§7time with our Auto Updater.");
+        InventoryUtils.prepareDescription(lore, "Discord Community");
+        lore.add("§7Get support for your plugins");
+        lore.add("§7in our welcoming community.");
         int discordMemberCount = DiscordMemberCount.get();
 
         if (discordMemberCount > 0) {
@@ -104,7 +103,7 @@ public class MainMenu extends InventoryMenu {
             lore.add((dividedBy2 ? "§2" : "§6") + discordMemberCount + " online Discord " + (discordMemberCount == 1 ? "member" : "members"));
         }
         add(
-                "§aAuto Updater",
+                "§aGet Help",
                 lore,
                 new ItemStack(dividedBy2 ? Material.EMERALD_BLOCK : Material.GOLD_BLOCK, random),
                 49
