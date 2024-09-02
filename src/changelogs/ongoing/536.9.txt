@@ -17,3 +17,4 @@
 [#] Made many detections more stable by reworking parts of the plugin's base.
 [#] Preventions will no longer take place when a check runs on packets because they cause false positives.
 [+] Added {vls:percentage} configuration syntax/placeholder for the certainty of someone hacking for detection notifications.
+[+] Added NoWeb detection to the Speed check.
