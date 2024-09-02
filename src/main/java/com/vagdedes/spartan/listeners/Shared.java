@@ -94,7 +94,7 @@ public class Shared {
         p.getExecutor(Enums.HackType.ImpossibleInventory).run(cancelled);
         p.getExecutor(Enums.HackType.NoFall).run(cancelled);
         p.getExecutor(Enums.HackType.IrregularMovements).run(cancelled);
-        p.getExecutor(Enums.HackType.Speed).run(cancelled);
+        p.getExecutor(Enums.HackType.Speed).handle(cancelled, e);
         p.getExecutor(Enums.HackType.Velocity).handle(cancelled, e);
         p.getExecutor(Enums.HackType.KillAura).handle(cancelled, e);
         p.getExecutor(Enums.HackType.Criticals).handle(cancelled, e);
