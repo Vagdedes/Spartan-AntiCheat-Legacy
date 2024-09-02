@@ -242,6 +242,10 @@ public class Speed extends CheckExecutor {
                         + multiply + multiplyVelo
                         + ((this.player.protocol.isOnGround()) ? multiplyFriction : 0));
         if (levitationEffect != null || glideEffect != null) m *= 1.3;
+        SpartanBlock block = new SpartanLocation(this.player.protocol.getLocation()).getBlock();
+        if (BlockUtils.areWebs(block.material)) {
+            m /= 4.0;
+        }
 
         return m;
     }
