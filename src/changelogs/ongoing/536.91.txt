@@ -1,2 +1,0 @@
-[+] Added certainty measurement that a player is hacking to be saved in the plugin's logs to help for many reasons.
-[-] Bedrock players will no longer be check on the packet level due to incompatibilities.
