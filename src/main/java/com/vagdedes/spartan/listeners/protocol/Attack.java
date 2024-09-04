@@ -35,6 +35,16 @@ public class Attack extends PacketAdapter {
     @Override
     public void onPacketReceiving(PacketEvent event) {
         if (event.getPacketType() == PacketType.Play.Client.USE_ENTITY) {
+            Player player = event.getPlayer();
+
+            if (ProtocolLib.isTemporary(player)) {
+                return;
+            }
+            SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
+
+            if (protocol.spartanPlayer.bedrockPlayer) {
+                return;
+            }
             handleUseEntity(event);
         }
     }
@@ -42,16 +52,21 @@ public class Attack extends PacketAdapter {
     @Override
     public void onPacketSending(PacketEvent event) {
         if (event.getPacketType() == PacketType.Play.Server.DAMAGE_EVENT) {
+            Player player = event.getPlayer();
+
+            if (ProtocolLib.isTemporary(player)) {
+                return;
+            }
+            SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
+
+            if (protocol.spartanPlayer.bedrockPlayer) {
+                return;
+            }
             handleEntityDamage(event);
         }
     }
 
     private void handleUseEntity(PacketEvent event) {
-        Player player = event.getPlayer();
-
-        if (ProtocolLib.isTemporary(player)) {
-            return;
-        }
         PacketContainer packet = event.getPacket();
         int entityId = packet.getIntegers().read(0);
 
@@ -59,25 +74,19 @@ public class Attack extends PacketAdapter {
                 packet.getEntityUseActions().read(0).equals(EnumWrappers.EntityUseAction.ATTACK)
                 : packet.getEnumEntityUseActions().read(0).getAction().equals(
                 EnumWrappers.EntityUseAction.ATTACK)) {
-            SpartanProtocol protocol = SpartanBukkit.getProtocol(entityId);
-
-            if (protocol != null) {
-                pendingAttacks.put(player.getUniqueId(), entityId);
-                Shared.useEntity(
-                        new PlayerAttackEvent(
-                                player,
-                                protocol.player,
-                                false
-                        )
-                );
-            }
+            Player player = event.getPlayer();
+            pendingAttacks.put(player.getUniqueId(), entityId);
+            Shared.useEntity(
+                    new PlayerAttackEvent(
+                            player,
+                            SpartanBukkit.getProtocol(player).player,
+                            false
+                    )
+            );
         }
     }
 
     private void handleEntityDamage(PacketEvent event) {
-        if (ProtocolLib.isTemporary(event.getPlayer())) {
-            return;
-        }
         PacketContainer packet = event.getPacket();
         int entityId = packet.getIntegers().read(0);
 

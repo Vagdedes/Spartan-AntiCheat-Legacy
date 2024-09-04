@@ -33,7 +33,8 @@ public class ServerPosition extends PacketAdapter {
         }
         SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
 
-        if (protocol.isLoading()) {
+        if (protocol.spartanPlayer.bedrockPlayer
+                || protocol.isLoading()) {
             return;
         }
         PacketContainer packetContainer = event.getPacket();
@@ -56,9 +57,10 @@ public class ServerPosition extends PacketAdapter {
         }
 
     }
+
     public static Location add(Location f, Location t) {
         return new Location(t.getWorld(), f.getX() + t.getX(),
-                        f.getY() + t.getY(), f.getZ() + t.getZ());
+                f.getY() + t.getY(), f.getZ() + t.getZ());
     }
 
 }

@@ -38,6 +38,9 @@ public class Move extends PacketAdapter {
         }
         SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
 
+        if (protocol.spartanPlayer.bedrockPlayer) {
+            return;
+        }
         if (System.currentTimeMillis() - protocol.mcClient.lastPacketTime > 4) {
             protocol.mcClient.verifiedPacket++;
         }
@@ -58,10 +61,9 @@ public class Move extends PacketAdapter {
     }
 
     private static void movePacket(PacketEvent event, SpartanProtocol protocol) {
-        if (SpartanBukkit.packetsEnabled()) {
-            PacketContainer packet = event.getPacket();
-            protocol.setOnGround(onGroundPacketLevel(event));
-            PacketType type = event.getPacket().getType();
+        PacketContainer packet = event.getPacket();
+        protocol.setOnGround(onGroundPacketLevel(event));
+        PacketType type = event.getPacket().getType();
 
             /*
             if (!protocol.teleportEngine.isEmpty()) {
@@ -83,40 +85,39 @@ public class Move extends PacketAdapter {
 
              */
 
-            if (type.equals(PacketType.Play.Client.LOOK)) {
-                Location from = protocol.getLocation().clone();
-                protocol.getLocation().setYaw(packet.getFloat().read(0));
-                protocol.getLocation().setPitch(packet.getFloat().read(1));
-                Shared.movement(new PlayerMoveEvent(
-                        event.getPlayer(),
-                        from,
-                        protocol.getLocation()
-                ));
-            } else if (type.equals(PacketType.Play.Client.POSITION_LOOK)) {
-                Location from = protocol.getLocation().clone(),
-                        location = readLocation(event);
-                protocol.getLocation().setX(location.getX());
-                protocol.getLocation().setY(location.getY());
-                protocol.getLocation().setZ(location.getZ());
-                protocol.getLocation().setYaw(packet.getFloat().read(0));
-                protocol.getLocation().setPitch(packet.getFloat().read(1));
-                Shared.movement(new PlayerMoveEvent(
-                        event.getPlayer(),
-                        from,
-                        protocol.getLocation()
-                ));
-            } else if (type.equals(PacketType.Play.Client.POSITION)) {
-                Location from = protocol.getLocation().clone(),
-                        location = readLocation(event);
-                protocol.getLocation().setX(location.getX());
-                protocol.getLocation().setY(location.getY());
-                protocol.getLocation().setZ(location.getZ());
-                Shared.movement(new PlayerMoveEvent(
-                        event.getPlayer(),
-                        from,
-                        protocol.getLocation()
-                ));
-            }
+        if (type.equals(PacketType.Play.Client.LOOK)) {
+            Location from = protocol.getLocation().clone();
+            protocol.getLocation().setYaw(packet.getFloat().read(0));
+            protocol.getLocation().setPitch(packet.getFloat().read(1));
+            Shared.movement(new PlayerMoveEvent(
+                    event.getPlayer(),
+                    from,
+                    protocol.getLocation()
+            ));
+        } else if (type.equals(PacketType.Play.Client.POSITION_LOOK)) {
+            Location from = protocol.getLocation().clone(),
+                    location = readLocation(event);
+            protocol.getLocation().setX(location.getX());
+            protocol.getLocation().setY(location.getY());
+            protocol.getLocation().setZ(location.getZ());
+            protocol.getLocation().setYaw(packet.getFloat().read(0));
+            protocol.getLocation().setPitch(packet.getFloat().read(1));
+            Shared.movement(new PlayerMoveEvent(
+                    event.getPlayer(),
+                    from,
+                    protocol.getLocation()
+            ));
+        } else if (type.equals(PacketType.Play.Client.POSITION)) {
+            Location from = protocol.getLocation().clone(),
+                    location = readLocation(event);
+            protocol.getLocation().setX(location.getX());
+            protocol.getLocation().setY(location.getY());
+            protocol.getLocation().setZ(location.getZ());
+            Shared.movement(new PlayerMoveEvent(
+                    event.getPlayer(),
+                    from,
+                    protocol.getLocation()
+            ));
         }
     }
 

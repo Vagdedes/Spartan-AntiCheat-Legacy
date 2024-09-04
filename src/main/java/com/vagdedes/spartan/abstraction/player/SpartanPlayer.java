@@ -447,7 +447,7 @@ public class SpartanPlayer {
     // Separator
 
     public List<Entity> getNearbyEntities(double x, double y, double z) {
-        if (MultiVersion.folia || SpartanBukkit.packetsEnabled()) {
+        if (MultiVersion.folia || SpartanBukkit.packetsEnabled(this.protocol)) {
             Map<Long, List<Entity>> perChunk = Event_World.getEntities(this.getWorld());
 
             if (perChunk != null) {

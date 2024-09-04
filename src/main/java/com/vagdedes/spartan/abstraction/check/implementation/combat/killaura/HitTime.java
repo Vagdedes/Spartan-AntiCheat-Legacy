@@ -24,7 +24,7 @@ public class HitTime extends DetectionExecutor {
             oldHitTiming = 0;
 
     void runDamage() {
-        if (!SpartanBukkit.packetsEnabled()) {
+        if (!SpartanBukkit.packetsEnabled(player.protocol)) {
             return;
         }
         long hitTime = System.currentTimeMillis() - lastHitTime;
