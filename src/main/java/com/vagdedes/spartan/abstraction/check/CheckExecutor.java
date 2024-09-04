@@ -392,16 +392,15 @@ public abstract class CheckExecutor extends DetectionExecutor {
     // Notification
 
     private void notify(PlayerViolation playerViolation, String information) {
+        double certainty = PlayerEvidence.probabilityToCertainty(
+                player.protocol.getProfile().evidence.getProbability(hackType)
+        ) * 100.0;
         String notification = ConfigUtils.replaceWithSyntax(
                 player,
                 Config.messages.getColorfulString("detection_notification")
                         .replace("{info}", information)
                         .replace("{vls:detection}", Integer.toString(playerViolation.sum()))
-                        .replace("{vls:percentage}", Integer.toString(AlgebraUtils.integerRound(
-                                PlayerEvidence.probabilityToCertainty(
-                                        player.protocol.getProfile().evidence.getProbability(hackType)
-                                ) * 100.0
-                        ))),
+                        .replace("{vls:percentage}", Integer.toString(AlgebraUtils.integerRound(certainty))),
                 hackType
         );
 
@@ -409,6 +408,7 @@ public abstract class CheckExecutor extends DetectionExecutor {
         information = player.getInstance().getName() + " failed " + hackType
                 + " (" + violationLevelIdentifier + " " + playerViolation.level + "+" + playerViolation.increase + "), "
                 + "(Server-Version: " + MultiVersion.versionString() + "), "
+                + "(Certainty: " + AlgebraUtils.cut(certainty, 2) + "), "
                 + "(Plugin-Version: " + API.getVersion() + "), "
                 + "(Silent: " + hackType.getCheck().isSilent(player.dataType, player.getWorld().getName()) + "), "
                 + "(" + javaPlayerIdentifier + " " + (!player.bedrockPlayer) + ")" + ", "
