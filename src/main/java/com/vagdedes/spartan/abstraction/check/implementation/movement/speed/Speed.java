@@ -222,7 +222,7 @@ public class Speed extends CheckExecutor {
         if (RayUtils.onBlock(player, to, BlockUtils.stairs)) {
             if (multiply < 0.35) multiply = 0.35;
         }
-        if (this.player.movement.isGliding() && vehicle != null) {
+        if (this.player.movement.isGliding() || vehicle != null) {
             if (multiply < 10.0) multiply = 10.0;
         }
         if (this.player.movement.isFlying()) {
