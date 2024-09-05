@@ -3,6 +3,7 @@ package com.vagdedes.spartan.abstraction.profiling;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import me.vagdedes.spartan.system.Enums;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
@@ -12,7 +13,7 @@ public class ViolationHistory {
     private final Map<Long, PlayerViolation> times;
 
     ViolationHistory() {
-        this.times = new TreeMap<>();
+        this.times = Collections.synchronizedMap(new TreeMap<>());
     }
 
     public boolean isEmpty() {
@@ -20,7 +21,9 @@ public class ViolationHistory {
     }
 
     public void store(Enums.HackType hackType, PlayerViolation playerViolation) {
-        this.times.put(playerViolation.time, playerViolation);
+        synchronized (this.times) {
+            this.times.put(playerViolation.time, playerViolation);
+        }
         ResearchEngine.queueToCache(hackType);
     }
 
@@ -28,19 +31,22 @@ public class ViolationHistory {
         int size = this.times.size();
 
         if (size > 1) {
-            Iterator<PlayerViolation> iterator = this.times.values().iterator();
-            long previous = iterator.next().time;
             double squareSum = 0L;
 
-            while (iterator.hasNext()) {
-                PlayerViolation violation = iterator.next();
-                double difference = Math.min(
-                        violation.time - previous,
-                        60_000L
-                );
-                previous = violation.time;
-                difference /= violation.increase + (hackType.violationTimeWorth / difference);
-                squareSum += difference * difference;
+            synchronized (this.times) {
+                Iterator<PlayerViolation> iterator = this.times.values().iterator();
+                long previous = iterator.next().time;
+
+                while (iterator.hasNext()) {
+                    PlayerViolation violation = iterator.next();
+                    double difference = Math.min(
+                            violation.time - previous,
+                            60_000L
+                    );
+                    previous = violation.time;
+                    difference /= violation.increase + (hackType.violationTimeWorth / difference);
+                    squareSum += difference * difference;
+                }
             }
             return Math.sqrt(squareSum / (size - 1.0));
         } else {
