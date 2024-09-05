@@ -36,7 +36,7 @@ public class Event_Shared implements Listener {
         SpartanProtocol protocol = SpartanBukkit.getProtocol(n);
 
         if (!protocol.packetsEnabled()) {
-            Shared.movement(e);
+            Shared.movement(e, false);
         }
         protocol.spartanPlayer.getExecutor(
                 Enums.HackType.MorePackets

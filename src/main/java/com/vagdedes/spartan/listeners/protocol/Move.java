@@ -82,11 +82,14 @@ public class Move extends PacketAdapter {
             } else if (!protocol.loaded) {
                 protocol.loaded = true;
             } else {
-                Shared.movement(new PlayerMoveEvent(
-                        player,
-                        from,
-                        protocol.getLocation()
-                ));
+                Shared.movement(
+                        new PlayerMoveEvent(
+                                player,
+                                from,
+                                protocol.getLocation()
+                        ),
+                        true
+                );
             }
         } else if (type.equals(PacketType.Play.Client.POSITION)
                 || type.equals(PacketType.Play.Client.POSITION_LOOK)) {
@@ -108,11 +111,14 @@ public class Move extends PacketAdapter {
             } else if (!protocol.loaded) {
                 protocol.loaded = true;
             } else {
-                Shared.movement(new PlayerMoveEvent(
-                        player,
-                        from,
-                        protocol.getLocation()
-                ));
+                Shared.movement(
+                        new PlayerMoveEvent(
+                                player,
+                                from,
+                                protocol.getLocation()
+                        ),
+                        true
+                );
             }
         }
     }
