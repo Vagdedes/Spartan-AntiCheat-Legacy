@@ -61,7 +61,7 @@ public class Event_Combat implements Listener {
                 }
                 if (entityAttack
                         && (entityIsPlayer
-                        && !SpartanBukkit.packetsEnabled(SpartanBukkit.getProtocol(entity.getUniqueId()))
+                        && !SpartanBukkit.packetsEnabled(SpartanBukkit.getProtocol((Player) entity))
                         || entity instanceof LivingEntity
                         && !SpartanBukkit.packetsEnabled())) {
                     Player player = (Player) damager;
