@@ -22,13 +22,14 @@ public class SpartanProtocol {
     public final SpartanPlayer spartanPlayer;
     private boolean isOnGround, isOnGroundFrom, isSprinting, isSneaking;
     public int loaded;
-    private Location location, lastOnLoadLocation;
+    private Location location;
     private Vector velocity;
     private PlayerProfile profile;
     public List<TeleportData> teleportEngine;
-    public boolean mutateTeleport, needToLoadLocation;
-    public final MCClient mcClient;
+    private boolean mutateTeleport;
+    public boolean needToLoadLocation;
     public World lastWorld;
+    public final MCClient mcClient;
 
     public SpartanProtocol(Player player) {
         this.time = System.currentTimeMillis();
@@ -37,7 +38,6 @@ public class SpartanProtocol {
         this.isOnGround = false;
         this.isOnGroundFrom = false;
         this.location = player.getLocation();
-        this.lastOnLoadLocation = player.getLocation();
         this.isSprinting = false;
         this.isSneaking = false;
         this.velocity = new Vector(0, 0, 0);
@@ -45,9 +45,9 @@ public class SpartanProtocol {
         this.teleportEngine = new LinkedList<>();
         this.mutateTeleport = false;
         this.loaded = SpartanBukkit.packetsEnabled(this) ? 0 : (int) TPS.maximum;
-        this.setProfile(ResearchEngine.getPlayerProfile(this, false));
-        this.lastWorld = null;
         this.needToLoadLocation = false;
+        this.lastWorld = null;
+        this.setProfile(ResearchEngine.getPlayerProfile(this, false));
     }
 
     public long timePassed() {
@@ -56,47 +56,36 @@ public class SpartanProtocol {
 
     public boolean isOnGround() {
         return SpartanBukkit.packetsEnabled(this)
-                ? this.isOnGround
-                : this.player.isOnGround();
+                        ? this.isOnGround
+                        : this.player.isOnGround();
     }
 
     public boolean isOnGroundFrom() {
         return SpartanBukkit.packetsEnabled(this)
-                ? this.isOnGroundFrom
-                : this.player.isOnGround();
+                        ? this.isOnGroundFrom
+                        : this.player.isOnGround();
     }
 
     public boolean isSprinting() {
         return SpartanBukkit.packetsEnabled(this)
-                ? this.isSprinting
-                : this.player.isSprinting();
-    }
-    public void setLastOnLoadLocation(Location location) {
-        this.lastOnLoadLocation = location;
-    }
-    public Location getLastOnLoadLocation() {
-        return this.lastOnLoadLocation;
+                        ? this.isSprinting
+                        : this.player.isSprinting();
     }
 
     public boolean isSneaking() {
         return SpartanBukkit.packetsEnabled(this)
-                ? this.isSneaking
-                : this.player.isSneaking();
+                        ? this.isSneaking
+                        : this.player.isSneaking();
     }
-
 
     public boolean isLoading() {
         return this.loaded < TPS.maximum;
     }
 
-    public void resetLoad() {
-        this.loaded = 0;
-    }
-
     public Location getLocation() {
         return SpartanBukkit.packetsEnabled(this)
-                ? this.location
-                : this.player.getLocation();
+                        ? this.location
+                        : this.player.getLocation();
     }
 
     public Vector getVelocity() {
