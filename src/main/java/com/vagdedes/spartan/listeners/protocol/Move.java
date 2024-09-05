@@ -37,6 +37,10 @@ public class Move extends PacketAdapter {
         }
         SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
 
+        if (protocol.spartanPlayer.bedrockPlayer) {
+            return;
+        }
+
         if (System.currentTimeMillis() - protocol.mcClient.lastPacketTime > 4) {
             protocol.mcClient.verifiedPacket++;
         }
@@ -52,25 +56,24 @@ public class Move extends PacketAdapter {
     }
 
     private static void movePacket(PacketEvent event, SpartanProtocol protocol, boolean check) {
-        if (SpartanBukkit.packetsEnabled()) {
-            PacketContainer packet = event.getPacket();
-            PacketType type = event.getPacket().getType();
-            if (protocol.lastWorld == null) protocol.lastWorld = protocol.player.getWorld();
-            if (!protocol.player.getWorld().getName().equals(protocol.lastWorld.getName())) {
-                protocol.needToLoadLocation = true;
-                protocol.lastWorld = protocol.player.getWorld();
+        PacketContainer packet = event.getPacket();
+        PacketType type = event.getPacket().getType();
+        if (protocol.lastWorld == null) protocol.lastWorld = protocol.player.getWorld();
+        if (!protocol.player.getWorld().getName().equals(protocol.lastWorld.getName())) {
+            protocol.needToLoadLocation = true;
+            protocol.lastWorld = protocol.player.getWorld();
+            return;
+        }
+        if (protocol.needToLoadLocation) {
+            if (isValid(event)) {
+                protocol.setLocation(readLocation(event));
+                protocol.getLocation().setWorld(protocol.player.getWorld());
+                protocol.needToLoadLocation = false;
+            } else {
                 return;
             }
-            if (protocol.needToLoadLocation) {
-                if (isValid(event)) {
-                     protocol.setLocation(readLocation(event));
-                     protocol.getLocation().setWorld(protocol.player.getWorld());
-                     protocol.needToLoadLocation = false;
-                } else {
-                    return;
-                }
-            }
-            protocol.setOnGround(onGroundPacketLevel(event));
+        }
+        protocol.setOnGround(onGroundPacketLevel(event));
             /*
             if (!protocol.teleportEngine.isEmpty()) {
                 for (TeleportData teleportData : protocol.teleportEngine) {
@@ -91,54 +94,53 @@ public class Move extends PacketAdapter {
 
              */
 
-            if (type.equals(PacketType.Play.Client.LOOK)) {
-                Location from = protocol.getLocation().clone();
-                protocol.getLocation().setYaw(packet.getFloat().read(0));
-                protocol.getLocation().setPitch(packet.getFloat().read(1));
-                protocol.getLocation().setWorld(event.getPlayer().getWorld());
-                if (!from.getWorld().equals(protocol.getLocation().getWorld())) {
-                    from = protocol.getLocation().clone();
-                }
-                if (check) {
-                    Shared.movement(new PlayerMoveEvent(
-                                    event.getPlayer(),
-                                    from,
-                                    protocol.getLocation()
-                    ));
-                }
-            } else if (type.equals(PacketType.Play.Client.POSITION_LOOK)) {
-                Location from = protocol.getLocation().clone(),
-                        location = readLocation(event);
-                protocol.getLocation().setX(location.getX());
-                protocol.getLocation().setY(location.getY());
-                protocol.getLocation().setZ(location.getZ());
-                protocol.getLocation().setYaw(packet.getFloat().read(0));
-                protocol.getLocation().setPitch(packet.getFloat().read(1));
-                protocol.getLocation().setWorld(event.getPlayer().getWorld());
-                if (check) {
-                    Shared.movement(new PlayerMoveEvent(
-                                    event.getPlayer(),
-                                    from,
-                                    protocol.getLocation()
-                    ));
-                }
-            } else if (type.equals(PacketType.Play.Client.POSITION)) {
-                Location from = protocol.getLocation().clone(),
-                        location = readLocation(event);
-                protocol.getLocation().setX(location.getX());
-                protocol.getLocation().setY(location.getY());
-                protocol.getLocation().setZ(location.getZ());
-                protocol.getLocation().setWorld(event.getPlayer().getWorld());
-                if (check) {
-                    Shared.movement(new PlayerMoveEvent(
-                                    event.getPlayer(),
-                                    from,
-                                    protocol.getLocation()
-                    ));
-                }
+        if (type.equals(PacketType.Play.Client.LOOK)) {
+            Location from = protocol.getLocation().clone();
+            protocol.getLocation().setYaw(packet.getFloat().read(0));
+            protocol.getLocation().setPitch(packet.getFloat().read(1));
+            protocol.getLocation().setWorld(event.getPlayer().getWorld());
+            if (!from.getWorld().equals(protocol.getLocation().getWorld())) {
+                from = protocol.getLocation().clone();
             }
-            protocol.lastWorld = protocol.player.getWorld();
+            if (check) {
+                Shared.movement(new PlayerMoveEvent(
+                                event.getPlayer(),
+                                from,
+                                protocol.getLocation()
+                ));
+            }
+        } else if (type.equals(PacketType.Play.Client.POSITION_LOOK)) {
+            Location from = protocol.getLocation().clone(),
+                            location = readLocation(event);
+            protocol.getLocation().setX(location.getX());
+            protocol.getLocation().setY(location.getY());
+            protocol.getLocation().setZ(location.getZ());
+            protocol.getLocation().setYaw(packet.getFloat().read(0));
+            protocol.getLocation().setPitch(packet.getFloat().read(1));
+            protocol.getLocation().setWorld(event.getPlayer().getWorld());
+            if (check) {
+                Shared.movement(new PlayerMoveEvent(
+                                event.getPlayer(),
+                                from,
+                                protocol.getLocation()
+                ));
+            }
+        } else if (type.equals(PacketType.Play.Client.POSITION)) {
+            Location from = protocol.getLocation().clone(),
+                            location = readLocation(event);
+            protocol.getLocation().setX(location.getX());
+            protocol.getLocation().setY(location.getY());
+            protocol.getLocation().setZ(location.getZ());
+            protocol.getLocation().setWorld(event.getPlayer().getWorld());
+            if (check) {
+                Shared.movement(new PlayerMoveEvent(
+                                event.getPlayer(),
+                                from,
+                                protocol.getLocation()
+                ));
+            }
         }
+        protocol.lastWorld = protocol.player.getWorld();
     }
 
     public static Location readLocation(PacketEvent event) {
