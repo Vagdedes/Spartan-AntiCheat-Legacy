@@ -123,10 +123,6 @@ public class SpartanProtocol {
         this.isSneaking = isSneaking;
     }
 
-    public void load() {
-        this.loaded++;
-    }
-
     public void setVelocity(Vector velocity) {
         this.velocity = velocity;
     }
