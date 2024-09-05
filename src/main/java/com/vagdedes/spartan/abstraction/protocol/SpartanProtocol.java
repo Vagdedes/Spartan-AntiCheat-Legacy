@@ -8,6 +8,7 @@ import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.listeners.protocol.modules.TeleportData;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
@@ -20,13 +21,14 @@ public class SpartanProtocol {
     public final Player player;
     public final SpartanPlayer spartanPlayer;
     private boolean isOnGround, isOnGroundFrom, isSprinting, isSneaking;
-    private int loaded;
-    private Location location;
+    public int loaded;
+    private Location location, lastOnLoadLocation;
     private Vector velocity;
     private PlayerProfile profile;
     public List<TeleportData> teleportEngine;
-    private boolean mutateTeleport;
+    public boolean mutateTeleport, needToLoadLocation;
     public final MCClient mcClient;
+    public World lastWorld;
 
     public SpartanProtocol(Player player) {
         this.time = System.currentTimeMillis();
@@ -35,6 +37,7 @@ public class SpartanProtocol {
         this.isOnGround = false;
         this.isOnGroundFrom = false;
         this.location = player.getLocation();
+        this.lastOnLoadLocation = player.getLocation();
         this.isSprinting = false;
         this.isSneaking = false;
         this.loaded = SpartanBukkit.packetsEnabled() ? 0 : (int) TPS.maximum;
@@ -43,6 +46,8 @@ public class SpartanProtocol {
         this.teleportEngine = new LinkedList<>();
         this.mutateTeleport = false;
         this.setProfile(ResearchEngine.getPlayerProfile(this, false));
+        this.lastWorld = null;
+        this.needToLoadLocation = false;
     }
 
     public long timePassed() {
@@ -66,6 +71,12 @@ public class SpartanProtocol {
                 ? this.isSprinting
                 : this.player.isSprinting();
     }
+    public void setLastOnLoadLocation(Location location) {
+        this.lastOnLoadLocation = location;
+    }
+    public Location getLastOnLoadLocation() {
+        return this.lastOnLoadLocation;
+    }
 
     public boolean isSneaking() {
         return SpartanBukkit.packetsEnabled()
@@ -73,8 +84,13 @@ public class SpartanProtocol {
                 : this.player.isSneaking();
     }
 
+
     public boolean isLoading() {
         return this.loaded < TPS.maximum;
+    }
+
+    public void resetLoad() {
+        this.loaded = 0;
     }
 
     public Location getLocation() {
