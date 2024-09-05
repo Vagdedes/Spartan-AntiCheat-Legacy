@@ -4,7 +4,6 @@ import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
-import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
 import com.vagdedes.spartan.listeners.protocol.async.LagCompensation;
 import com.vagdedes.spartan.utils.math.RayUtils;
@@ -29,7 +28,8 @@ public class HitReach extends CheckExecutor {
     protected void handleInternal(boolean cancelled, Object object) {
         PlayerAttackEvent event = (PlayerAttackEvent) object;
         LivingEntity target = event.getTarget();
-        if (SpartanBukkit.packetsEnabled(player.protocol)) {
+
+        if (player.protocol.packetsEnabled()) {
             if (CombatProcessing.canCheck(player, target)
                     && !player.getInstance().getGameMode().equals(GameMode.CREATIVE)) {
                 int targetId = target.getEntityId();
@@ -97,7 +97,7 @@ public class HitReach extends CheckExecutor {
         }
         double result = globalValue / rayTraceAnalysis.size();
 
-        if (result > (SpartanBukkit.packetsEnabled(player.protocol) ? 0.43 : 0.5)) punish = "simple";
+        if (result > (player.protocol.packetsEnabled() ? 0.43 : 0.5)) punish = "simple";
         int percent = (int) ((result / 0.4) * 100);
         if (punish != null) {
             vl += 100;

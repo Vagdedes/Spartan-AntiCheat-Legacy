@@ -2,7 +2,6 @@ package com.vagdedes.spartan.abstraction.check.implementation.combat;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
-import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockPatternUtils;
@@ -107,7 +106,7 @@ public class Velocity extends CheckExecutor {
 
     @Override
     protected boolean canRun() {
-        return SpartanBukkit.packetsEnabled(player.protocol)
+        return player.protocol.packetsEnabled()
                 && CombatProcessing.canCheck(player)
                 && !player.isOutsideOfTheBorder(-1.0)
                 && !BlockPatternUtils.isBlockPattern(

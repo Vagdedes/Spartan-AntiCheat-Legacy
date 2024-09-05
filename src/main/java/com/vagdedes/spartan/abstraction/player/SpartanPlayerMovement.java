@@ -51,7 +51,7 @@ public class SpartanPlayerMovement {
         this.parent = parent;
         this.lastLiquidMaterial = Material.AIR;
 
-        SpartanLocation location = new SpartanLocation(this.parent.protocol.getLocation());
+        SpartanLocation location = new SpartanLocation(parent.getInstance().getLocation());
         this.locations = Collections.synchronizedMap(new LinkedHashMap<>());
         List<SpartanLocation> list = new ArrayList<>();
         list.add(location);

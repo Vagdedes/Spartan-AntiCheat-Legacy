@@ -92,15 +92,14 @@ public class SpartanPlayer {
     // Object
 
     public SpartanPlayer(SpartanProtocol protocol) {
-        Player p = protocol.player;
         Enums.HackType[] hackTypes = Enums.HackType.values();
 
         this.protocol = protocol;
-        this.bedrockPlayer = BedrockCompatibility.isPlayer(p);
+        this.bedrockPlayer = BedrockCompatibility.isPlayer(protocol.player);
         this.dataType = bedrockPlayer ? Check.DataType.BEDROCK : Check.DataType.JAVA;
         this.trackers = new Trackers();
 
-        Collection<PotionEffect> collection = p.getActivePotionEffects();
+        Collection<PotionEffect> collection = protocol.player.getActivePotionEffects();
         this.potionEffects = SpartanPotionEffect.mapFromBukkit(
                 new ConcurrentHashMap<>(collection.size() + 1, 1.0f),
                 collection
@@ -447,7 +446,7 @@ public class SpartanPlayer {
     // Separator
 
     public List<Entity> getNearbyEntities(double x, double y, double z) {
-        if (MultiVersion.folia || SpartanBukkit.packetsEnabled(this.protocol)) {
+        if (MultiVersion.folia || this.protocol.packetsEnabled()) {
             Map<Long, List<Entity>> perChunk = Event_World.getEntities(this.getWorld());
 
             if (perChunk != null) {

@@ -21,7 +21,7 @@ public class Event_Shared implements Listener {
         if (ProtocolLib.isTemporary(n)) {
             return;
         }
-        if (!SpartanBukkit.packetsEnabled(SpartanBukkit.getProtocol(n))) {
+        if (!SpartanBukkit.getProtocol(n).packetsEnabled()) {
             Shared.velocity(e);
         }
     }
@@ -35,7 +35,7 @@ public class Event_Shared implements Listener {
         }
         SpartanProtocol protocol = SpartanBukkit.getProtocol(n);
 
-        if (!SpartanBukkit.packetsEnabled(protocol)) {
+        if (!protocol.packetsEnabled()) {
             Shared.movement(e);
         }
         protocol.spartanPlayer.getExecutor(

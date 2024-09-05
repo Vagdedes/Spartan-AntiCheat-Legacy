@@ -2,7 +2,6 @@ package com.vagdedes.spartan.abstraction.check.implementation.combat.killaura;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
-import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.listeners.protocol.async.LagCompensation;
 
 public class HitTime extends DetectionExecutor {
@@ -24,7 +23,7 @@ public class HitTime extends DetectionExecutor {
             oldHitTiming = 0;
 
     void runDamage() {
-        if (!SpartanBukkit.packetsEnabled(player.protocol)) {
+        if (!player.protocol.packetsEnabled()) {
             return;
         }
         long hitTime = System.currentTimeMillis() - lastHitTime;

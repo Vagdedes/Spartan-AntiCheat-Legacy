@@ -260,7 +260,7 @@ public abstract class CheckExecutor extends DetectionExecutor {
     public final boolean prevent() {
         if (this.prevention.complete()) {
             if (SpartanBukkit.isSynchronised()) {
-                if (SpartanBukkit.packetsEnabled(player.protocol)) {
+                if (player.protocol.packetsEnabled()) {
                     return false;
                 } else {
                     CheckCancelEvent checkCancelEvent;
@@ -280,7 +280,7 @@ public abstract class CheckExecutor extends DetectionExecutor {
                         return false;
                     }
                 }
-            } else if (!SpartanBukkit.packetsEnabled(player.protocol)) {
+            } else if (!player.protocol.packetsEnabled()) {
                 Thread thread = Thread.currentThread();
                 Boolean[] cancelled = new Boolean[1];
 
@@ -392,6 +392,7 @@ public abstract class CheckExecutor extends DetectionExecutor {
     // Notification
 
     private void notify(PlayerViolation playerViolation, String information) {
+        boolean hasSufficientData = PlayerEvidence.getRequiredPlayers(hackType, PlayerEvidence.notificationProbability) == 0;
         double probability = player.protocol.getProfile().evidence.getProbability(hackType),
                 certainty = PlayerEvidence.probabilityToCertainty(probability) * 100.0;
         String notification = ConfigUtils.replaceWithSyntax(
@@ -399,7 +400,11 @@ public abstract class CheckExecutor extends DetectionExecutor {
                 Config.messages.getColorfulString("detection_notification")
                         .replace("{info}", information)
                         .replace("{vls:detection}", Integer.toString(playerViolation.sum()))
-                        .replace("{vls:percentage}", Integer.toString(AlgebraUtils.integerRound(certainty))),
+                        .replace("{vls:percentage}",
+                                hasSufficientData
+                                        ? AlgebraUtils.integerRound(certainty) + "%"
+                                        : "unlikely"
+                        ),
                 hackType
         );
 
@@ -411,7 +416,7 @@ public abstract class CheckExecutor extends DetectionExecutor {
                 + "(Plugin-Version: " + API.getVersion() + "), "
                 + "(Silent: " + hackType.getCheck().isSilent(player.dataType, player.getWorld().getName()) + "), "
                 + "(" + javaPlayerIdentifier + " " + (!player.bedrockPlayer) + ")" + ", "
-                + "(Packets: " + SpartanBukkit.packetsEnabled(player.protocol) + "), "
+                + "(Packets: " + player.protocol.packetsEnabled() + "), "
                 + "(Ping: " + player.protocol.getPing() + "ms), "
                 + "(W-XYZ: " + location.world.getName() + " " + location.getBlockX() + " " + location.getBlockY() + " " + location.getBlockZ() + "), "
                 + "[Information: " + information + "]";
@@ -419,7 +424,11 @@ public abstract class CheckExecutor extends DetectionExecutor {
                 player,
                 notification,
                 information,
-                PlayerEvidence.surpassedProbability(probability, PlayerEvidence.notificationProbability),
+                hasSufficientData
+                        && PlayerEvidence.surpassedProbability(
+                        probability,
+                        PlayerEvidence.notificationProbability
+                ),
                 null,
                 hackType,
                 playerViolation

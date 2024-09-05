@@ -24,34 +24,44 @@ public class SpartanProtocol {
     public final SpartanPlayer spartanPlayer;
     public final Check.DataType dataType;
     private boolean isOnGround, isOnGroundFrom, isSprinting, isSneaking;
-    public int loaded;
+    public boolean loaded;
     private Location location;
     private Vector velocity;
     private PlayerProfile profile;
     public List<TeleportData> teleportEngine;
     private boolean mutateTeleport;
+<<<<<<< Updated upstream
     public boolean needToLoadLocation, bedrockPlayer;
     public World lastWorld;
+=======
+    public boolean needToLoadLocation;
+>>>>>>> Stashed changes
     public final MCClient mcClient;
 
     public SpartanProtocol(Player player) {
         this.time = System.currentTimeMillis();
+<<<<<<< Updated upstream
         this.bedrockPlayer = BedrockCompatibility.isPlayer(player);
         this.dataType = bedrockPlayer ? Check.DataType.BEDROCK : Check.DataType.JAVA;
         this.mcClient = new MCClient(player);
+=======
+>>>>>>> Stashed changes
         this.player = player;
+
         this.isOnGround = false;
         this.isOnGroundFrom = false;
-        this.location = player.getLocation();
         this.isSprinting = false;
         this.isSneaking = false;
-        this.velocity = new Vector(0, 0, 0);
-        this.spartanPlayer = new SpartanPlayer(this);
-        this.teleportEngine = new LinkedList<>();
         this.mutateTeleport = false;
-        this.loaded = SpartanBukkit.packetsEnabled(this) ? 0 : (int) TPS.maximum;
         this.needToLoadLocation = false;
-        this.lastWorld = null;
+        this.loaded = false;
+        this.location = player.getLocation();
+        this.velocity = new Vector(0, 0, 0);
+        this.teleportEngine = new LinkedList<>();
+
+        this.spartanPlayer = new SpartanPlayer(this);
+        this.mcClient = new MCClient(player);
+
         this.setProfile(ResearchEngine.getPlayerProfile(this, false));
     }
 
@@ -60,37 +70,37 @@ public class SpartanProtocol {
     }
 
     public boolean isOnGround() {
-        return SpartanBukkit.packetsEnabled(this)
-                        ? this.isOnGround
-                        : this.player.isOnGround();
+        return packetsEnabled()
+                ? this.isOnGround
+                : this.player.isOnGround();
     }
 
     public boolean isOnGroundFrom() {
-        return SpartanBukkit.packetsEnabled(this)
-                        ? this.isOnGroundFrom
-                        : this.player.isOnGround();
+        return packetsEnabled()
+                ? this.isOnGroundFrom
+                : this.player.isOnGround();
     }
 
     public boolean isSprinting() {
-        return SpartanBukkit.packetsEnabled(this)
-                        ? this.isSprinting
-                        : this.player.isSprinting();
+        return packetsEnabled()
+                ? this.isSprinting
+                : this.player.isSprinting();
     }
 
     public boolean isSneaking() {
-        return SpartanBukkit.packetsEnabled(this)
-                        ? this.isSneaking
-                        : this.player.isSneaking();
+        return packetsEnabled()
+                ? this.isSneaking
+                : this.player.isSneaking();
     }
 
     public boolean isLoading() {
-        return this.loaded < TPS.maximum;
+        return !packetsEnabled() || this.loaded;
     }
 
     public Location getLocation() {
-        return SpartanBukkit.packetsEnabled(this)
-                        ? this.location
-                        : this.player.getLocation();
+        return packetsEnabled()
+                ? this.location
+                : this.player.getLocation();
     }
 
     public Vector getVelocity() {
@@ -142,6 +152,10 @@ public class SpartanProtocol {
 
     public void setProfile(PlayerProfile profile) {
         this.profile = profile;
+    }
+
+    public boolean packetsEnabled() {
+        return SpartanBukkit.packetsEnabled() && !this.spartanPlayer.bedrockPlayer;
     }
 
 }

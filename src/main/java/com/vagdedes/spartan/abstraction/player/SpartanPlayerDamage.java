@@ -5,7 +5,6 @@ import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
-import com.vagdedes.spartan.utils.minecraft.entity.CombatUtils;
 import com.vagdedes.spartan.utils.minecraft.inventory.EnchantmentUtils;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -15,10 +14,6 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 
 public class SpartanPlayerDamage {
-
-    private static final EntityDamageEvent.DamageCause WORLD_BORDER = CombatUtils.findDamageCause("WORLD_BORDER");
-
-    // Separator
 
     private final SpartanPlayer parent;
     public final long time;
@@ -31,7 +26,7 @@ public class SpartanPlayerDamage {
         this.parent = player;
         this.time = 0L;
         this.event = null;
-        this.location = player.movement.getLocation();
+        this.location = new SpartanLocation(parent.getInstance().getLocation());
         this.activeItem = null;
         this.boss = false;
         this.explosive = false;
