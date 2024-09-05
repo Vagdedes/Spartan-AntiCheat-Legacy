@@ -402,7 +402,7 @@ public abstract class CheckExecutor extends DetectionExecutor {
                         .replace("{vls:detection}", Integer.toString(playerViolation.sum()))
                         .replace("{vls:percentage}",
                                 hasSufficientData
-                                        ? AlgebraUtils.integerRound(certainty) + "%"
+                                        ? (AlgebraUtils.integerRound(certainty) + "%%")
                                         : "unlikely"
                         ),
                 hackType

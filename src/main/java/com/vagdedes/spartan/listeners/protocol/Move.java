@@ -40,34 +40,16 @@ public class Move extends PacketAdapter {
         if (protocol.spartanPlayer.bedrockPlayer) {
             return;
         }
-
         if (System.currentTimeMillis() - protocol.mcClient.lastPacketTime > 4) {
             protocol.mcClient.verifiedPacket++;
         }
         protocol.mcClient.lastPacketTime = time;
-
-        if (invalidTeleport(readLocation(event)) && isValid(event)) {
-            protocol.needToLoadLocation = true;
-            protocol.loaded = false;
-        } else {
-            protocol.loaded = true;
-            movePacket(event, protocol);
-        }
+        movePacket(event, protocol);
     }
 
     private static void movePacket(PacketEvent event, SpartanProtocol protocol) {
         PacketContainer packet = event.getPacket();
         PacketType type = event.getPacket().getType();
-
-        if (protocol.needToLoadLocation) {
-            if (isValid(event)) {
-                protocol.setLocation(readLocation(event));
-                protocol.getLocation().setWorld(protocol.player.getWorld());
-                protocol.needToLoadLocation = false;
-            } else {
-                return;
-            }
-        }
         protocol.setOnGround(onGroundPacketLevel(event));
 
         /*if (!protocol.teleportEngine.isEmpty()) {
@@ -94,36 +76,20 @@ public class Move extends PacketAdapter {
             protocol.getLocation().setPitch(packet.getFloat().read(1));
             protocol.getLocation().setWorld(player.getWorld());
 
-            if (!from.getWorld().equals(protocol.getLocation().getWorld())) {
-                from = protocol.getLocation().clone();
-                protocol.needToLoadLocation = true;
+            if (!from.getWorld().equals(protocol.getLocation().getWorld())
+                    || invalidTeleport(protocol.getLocation())) {
+                protocol.loaded = false;
+            } else if (!protocol.loaded) {
+                protocol.loaded = true;
+            } else {
+                Shared.movement(new PlayerMoveEvent(
+                        player,
+                        from,
+                        protocol.getLocation()
+                ));
             }
-            Shared.movement(new PlayerMoveEvent(
-                    player,
-                    from,
-                    protocol.getLocation()
-            ));
-        } else if (type.equals(PacketType.Play.Client.POSITION_LOOK)) {
-            Player player = event.getPlayer();
-            Location from = protocol.getLocation().clone(),
-                    location = readLocation(event);
-            protocol.getLocation().setX(location.getX());
-            protocol.getLocation().setY(location.getY());
-            protocol.getLocation().setZ(location.getZ());
-            protocol.getLocation().setYaw(packet.getFloat().read(0));
-            protocol.getLocation().setPitch(packet.getFloat().read(1));
-            protocol.getLocation().setWorld(player.getWorld());
-
-            if (!from.getWorld().equals(protocol.getLocation().getWorld())) {
-                from = protocol.getLocation().clone();
-                protocol.needToLoadLocation = true;
-            }
-            Shared.movement(new PlayerMoveEvent(
-                    player,
-                    from,
-                    protocol.getLocation()
-            ));
-        } else if (type.equals(PacketType.Play.Client.POSITION)) {
+        } else if (type.equals(PacketType.Play.Client.POSITION)
+                || type.equals(PacketType.Play.Client.POSITION_LOOK)) {
             Player player = event.getPlayer();
             Location from = protocol.getLocation().clone(),
                     location = readLocation(event);
@@ -132,19 +98,26 @@ public class Move extends PacketAdapter {
             protocol.getLocation().setZ(location.getZ());
             protocol.getLocation().setWorld(player.getWorld());
 
-            if (!from.getWorld().equals(protocol.getLocation().getWorld())) {
-                from = protocol.getLocation().clone();
-                protocol.needToLoadLocation = true;
+            if (type.equals(PacketType.Play.Client.POSITION_LOOK)) {
+                protocol.getLocation().setYaw(packet.getFloat().read(0));
+                protocol.getLocation().setPitch(packet.getFloat().read(1));
             }
-            Shared.movement(new PlayerMoveEvent(
-                    player,
-                    from,
-                    protocol.getLocation()
-            ));
+            if (!from.getWorld().equals(location.getWorld())
+                    || invalidTeleport(location)) {
+                protocol.loaded = false;
+            } else if (!protocol.loaded) {
+                protocol.loaded = true;
+            } else {
+                Shared.movement(new PlayerMoveEvent(
+                        player,
+                        from,
+                        protocol.getLocation()
+                ));
+            }
         }
     }
 
-    public static Location readLocation(PacketEvent event) {
+    static Location readLocation(PacketEvent event) {
         PacketContainer packet = event.getPacket();
         return new Location(
                 event.getPlayer().getWorld(),
@@ -154,21 +127,15 @@ public class Move extends PacketAdapter {
         );
     }
 
-    public static boolean onGroundPacketLevel(PacketEvent event) {
+    private static boolean onGroundPacketLevel(PacketEvent event) {
         PacketContainer packet = event.getPacket();
         return packet.getBooleans().read(0);
     }
 
-    private static boolean isValid(PacketEvent event) {
-        PacketType type = event.getPacketType();
-        return (type.equals(PacketType.Play.Client.POSITION)
-                || type.equals(PacketType.Play.Client.POSITION_LOOK)
-        );
-
-    }
-
     private static boolean invalidTeleport(Location location) {
-        return location.getX() == 8.5 || location.getZ() == 8.5 || location.getX() + location.getZ() == 0;
+        return location.getX() == 8.5
+                || location.getZ() == 8.5
+                || location.getX() + location.getZ() == 0;
     }
 
 }
