@@ -201,6 +201,8 @@ public class SpartanPlayer {
     }
 
     public void resetTrackers() {
+        this.protocol.loaded = false;
+
         for (Trackers.TrackerType handlerType : Trackers.TrackerType.values()) {
             trackers.remove(handlerType);
         }

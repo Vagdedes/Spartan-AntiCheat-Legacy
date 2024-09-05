@@ -382,9 +382,6 @@ public class SpartanPlayerMovement {
                 }
                 this.locations.computeIfAbsent(TPS.tick(), k -> new ArrayList<>()).add(spartanLocation);
             }
-            if (!this.location.world.equals(location.getWorld())) {
-                this.parent.resetTrackers();
-            }
             this.location = spartanLocation;
             this.setDetectionLocation(spartanLocation, false);
         }

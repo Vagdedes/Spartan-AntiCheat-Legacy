@@ -78,7 +78,7 @@ public class Move extends PacketAdapter {
 
             if (!from.getWorld().equals(protocol.getLocation().getWorld())
                     || invalidTeleport(protocol.getLocation())) {
-                protocol.loaded = false;
+                protocol.spartanPlayer.resetTrackers();
             } else if (!protocol.loaded) {
                 protocol.loaded = true;
             } else {
@@ -104,7 +104,7 @@ public class Move extends PacketAdapter {
             }
             if (!from.getWorld().equals(location.getWorld())
                     || invalidTeleport(location)) {
-                protocol.loaded = false;
+                protocol.spartanPlayer.resetTrackers();
             } else if (!protocol.loaded) {
                 protocol.loaded = true;
             } else {
