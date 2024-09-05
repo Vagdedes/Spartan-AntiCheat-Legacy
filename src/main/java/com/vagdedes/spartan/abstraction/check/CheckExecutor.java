@@ -392,9 +392,8 @@ public abstract class CheckExecutor extends DetectionExecutor {
     // Notification
 
     private void notify(PlayerViolation playerViolation, String information) {
-        double certainty = PlayerEvidence.probabilityToCertainty(
-                player.protocol.getProfile().evidence.getProbability(hackType)
-        ) * 100.0;
+        double probability = player.protocol.getProfile().evidence.getProbability(hackType),
+                certainty = PlayerEvidence.probabilityToCertainty(probability) * 100.0;
         String notification = ConfigUtils.replaceWithSyntax(
                 player,
                 Config.messages.getColorfulString("detection_notification")
@@ -416,7 +415,15 @@ public abstract class CheckExecutor extends DetectionExecutor {
                 + "(Ping: " + player.protocol.getPing() + "ms), "
                 + "(W-XYZ: " + location.world.getName() + " " + location.getBlockX() + " " + location.getBlockY() + " " + location.getBlockZ() + "), "
                 + "[Information: " + information + "]";
-        AntiCheatLogs.logInfo(player, notification, information, true, null, hackType, playerViolation);
+        AntiCheatLogs.logInfo(
+                player,
+                notification,
+                information,
+                PlayerEvidence.surpassedProbability(probability, PlayerEvidence.notificationProbability),
+                null,
+                hackType,
+                playerViolation
+        );
 
         // Local Notifications
         String command = Config.settings.getString("Notifications.message_clickable_command")
