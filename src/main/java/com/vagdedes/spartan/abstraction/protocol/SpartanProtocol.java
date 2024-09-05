@@ -1,7 +1,9 @@
 package com.vagdedes.spartan.abstraction.protocol;
 
+import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
+import com.vagdedes.spartan.compatibility.necessary.BedrockCompatibility;
 import com.vagdedes.spartan.functionality.connection.Latency;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
@@ -20,6 +22,7 @@ public class SpartanProtocol {
     private final long time;
     public final Player player;
     public final SpartanPlayer spartanPlayer;
+    public final Check.DataType dataType;
     private boolean isOnGround, isOnGroundFrom, isSprinting, isSneaking;
     public int loaded;
     private Location location;
@@ -27,12 +30,14 @@ public class SpartanProtocol {
     private PlayerProfile profile;
     public List<TeleportData> teleportEngine;
     private boolean mutateTeleport;
-    public boolean needToLoadLocation;
+    public boolean needToLoadLocation, bedrockPlayer;
     public World lastWorld;
     public final MCClient mcClient;
 
     public SpartanProtocol(Player player) {
         this.time = System.currentTimeMillis();
+        this.bedrockPlayer = BedrockCompatibility.isPlayer(player);
+        this.dataType = bedrockPlayer ? Check.DataType.BEDROCK : Check.DataType.JAVA;
         this.mcClient = new MCClient(player);
         this.player = player;
         this.isOnGround = false;

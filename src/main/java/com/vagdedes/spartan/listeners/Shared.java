@@ -21,8 +21,8 @@ public class Shared {
         // Object
         if (!e.isCancelled()) {
             p.trackers.add(
-                    Trackers.TrackerType.ABSTRACT_VELOCITY,
-                    (int) (Math.ceil(e.getVelocity().length()) * TPS.maximum)
+                            Trackers.TrackerType.ABSTRACT_VELOCITY,
+                            (int) (Math.ceil(e.getVelocity().length()) * TPS.maximum)
             );
         }
 
@@ -44,7 +44,7 @@ public class Shared {
 
     public static void useEntity(PlayerAttackEvent e) {
         SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer.getExecutor(
-                Enums.HackType.KillAura
+                        Enums.HackType.KillAura
         ).handle(e.isCancelled(), e);
     }
 
@@ -57,31 +57,31 @@ public class Shared {
         }
         SpartanLocation vehicle = p.movement.getVehicleLocation();
         SpartanLocation
-                to = vehicle != null ? vehicle : new SpartanLocation(nto),
-                from = new SpartanLocation(e.getFrom());
+                        to = vehicle != null ? vehicle : new SpartanLocation(nto),
+                        from = new SpartanLocation(e.getFrom());
 
         // Values
         double xDiff = to.getX() - from.getX(),
-                zDiff = to.getZ() - from.getZ(),
-                preXZ = (xDiff * xDiff) + (zDiff * zDiff),
-                toY = to.getY(),
-                fromY = from.getY(),
-                dis = Math.sqrt(preXZ + AlgebraUtils.getSquare(toY, fromY)),
-                box = toY - to.getBlockY(),
-                ver = toY - fromY,
-                hor = Math.sqrt(preXZ);
+                        zDiff = to.getZ() - from.getZ(),
+                        preXZ = (xDiff * xDiff) + (zDiff * zDiff),
+                        toY = to.getY(),
+                        fromY = from.getY(),
+                        dis = Math.sqrt(preXZ + AlgebraUtils.getSquare(toY, fromY)),
+                        box = toY - to.getBlockY(),
+                        ver = toY - fromY,
+                        hor = Math.sqrt(preXZ);
 
         if (!p.movement.processLastMoveEvent(
-                nto,
-                vehicle,
-                to,
-                from,
-                dis,
-                hor,
-                ver,
-                xDiff,
-                zDiff,
-                box
+                        nto,
+                        vehicle,
+                        to,
+                        from,
+                        dis,
+                        hor,
+                        ver,
+                        xDiff,
+                        zDiff,
+                        box
         )) {
             return;
         }

@@ -96,7 +96,7 @@ public class SpartanBukkit {
     }
 
     public static boolean packetsEnabled(SpartanProtocol protocol) {
-        return packetsEnabled() && !protocol.spartanPlayer.bedrockPlayer;
+        return packetsEnabled() && !protocol.bedrockPlayer;
     }
 
     public static SpartanProtocol getProtocol(Player player) {
