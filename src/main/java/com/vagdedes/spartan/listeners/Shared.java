@@ -43,10 +43,9 @@ public class Shared {
     }
 
     public static void useEntity(PlayerAttackEvent e) {
-        SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer;
-        boolean cancelled = e.isCancelled();
-
-        p.getExecutor(Enums.HackType.KillAura).handle(cancelled, e);
+        SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer.getExecutor(
+                Enums.HackType.KillAura
+        ).handle(e.isCancelled(), e);
     }
 
     public static void movement(PlayerMoveEvent e) {

@@ -29,6 +29,10 @@ public class EntityAction extends PacketAdapter {
             return;
         }
         SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
+
+        if (protocol.spartanPlayer.bedrockPlayer) {
+            return;
+        }
         String typeString = event.getPacket().getModifier().getValues().get(1).toString();
         AbilitiesEnum type = getEnum(typeString);
 

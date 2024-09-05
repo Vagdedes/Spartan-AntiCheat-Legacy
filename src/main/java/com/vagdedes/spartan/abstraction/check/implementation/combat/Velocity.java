@@ -107,7 +107,7 @@ public class Velocity extends CheckExecutor {
 
     @Override
     protected boolean canRun() {
-        return SpartanBukkit.packetsEnabled()
+        return SpartanBukkit.packetsEnabled(player.protocol)
                 && CombatProcessing.canCheck(player)
                 && !player.isOutsideOfTheBorder(-1.0)
                 && !BlockPatternUtils.isBlockPattern(

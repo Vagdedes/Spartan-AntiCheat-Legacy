@@ -95,6 +95,10 @@ public class SpartanBukkit {
         return Compatibility.CompatibilityType.PROTOCOL_LIB.isFunctional();
     }
 
+    public static boolean packetsEnabled(SpartanProtocol protocol) {
+        return packetsEnabled() && !protocol.spartanPlayer.bedrockPlayer;
+    }
+
     public static SpartanProtocol getProtocol(Player player) {
         return playerProtocol.getOrDefault(
                 player.getUniqueId(),

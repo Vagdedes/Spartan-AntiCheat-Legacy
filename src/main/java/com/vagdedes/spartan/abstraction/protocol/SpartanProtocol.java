@@ -40,11 +40,11 @@ public class SpartanProtocol {
         this.lastOnLoadLocation = player.getLocation();
         this.isSprinting = false;
         this.isSneaking = false;
-        this.loaded = SpartanBukkit.packetsEnabled() ? 0 : (int) TPS.maximum;
         this.velocity = new Vector(0, 0, 0);
         this.spartanPlayer = new SpartanPlayer(this);
         this.teleportEngine = new LinkedList<>();
         this.mutateTeleport = false;
+        this.loaded = SpartanBukkit.packetsEnabled(this) ? 0 : (int) TPS.maximum;
         this.setProfile(ResearchEngine.getPlayerProfile(this, false));
         this.lastWorld = null;
         this.needToLoadLocation = false;
@@ -55,19 +55,19 @@ public class SpartanProtocol {
     }
 
     public boolean isOnGround() {
-        return SpartanBukkit.packetsEnabled()
+        return SpartanBukkit.packetsEnabled(this)
                 ? this.isOnGround
                 : this.player.isOnGround();
     }
 
     public boolean isOnGroundFrom() {
-        return SpartanBukkit.packetsEnabled()
+        return SpartanBukkit.packetsEnabled(this)
                 ? this.isOnGroundFrom
                 : this.player.isOnGround();
     }
 
     public boolean isSprinting() {
-        return SpartanBukkit.packetsEnabled()
+        return SpartanBukkit.packetsEnabled(this)
                 ? this.isSprinting
                 : this.player.isSprinting();
     }
@@ -79,7 +79,7 @@ public class SpartanProtocol {
     }
 
     public boolean isSneaking() {
-        return SpartanBukkit.packetsEnabled()
+        return SpartanBukkit.packetsEnabled(this)
                 ? this.isSneaking
                 : this.player.isSneaking();
     }
@@ -94,7 +94,7 @@ public class SpartanProtocol {
     }
 
     public Location getLocation() {
-        return SpartanBukkit.packetsEnabled()
+        return SpartanBukkit.packetsEnabled(this)
                 ? this.location
                 : this.player.getLocation();
     }

@@ -599,7 +599,7 @@ public class ResearchEngine {
                 if (check.isEnabled(null, null)
                         && !check.isSilent(null, null)) {
                     String message = AwarenessNotifications.getOptionalNotification(
-                            "Spartan does not support preventions when running on the packet level."
+                            "Spartan does not support Java player preventions when running on the packet level."
                                     + " This is due to problems risen from trying to implement this functionality with packets."
                     );
 

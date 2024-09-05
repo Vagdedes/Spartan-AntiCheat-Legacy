@@ -6,7 +6,9 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.vagdedes.spartan.Register;
+import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
+import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.listeners.Shared;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerVelocityEvent;
@@ -28,6 +30,11 @@ public class Velocity extends PacketAdapter {
         Player player = event.getPlayer();
 
         if (ProtocolLib.isTemporary(player)) {
+            return;
+        }
+        SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
+
+        if (protocol.spartanPlayer.bedrockPlayer) {
             return;
         }
         PacketContainer packet = event.getPacket();
