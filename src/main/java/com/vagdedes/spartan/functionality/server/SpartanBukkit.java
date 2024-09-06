@@ -5,6 +5,7 @@ import com.vagdedes.spartan.abstraction.check.Threads;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.connection.cloud.AutoUpdater;
 import com.vagdedes.spartan.functionality.npc.NPCManager;
 import com.vagdedes.spartan.functionality.performance.PlayerDetectionSlots;
@@ -46,10 +47,6 @@ public class SpartanBukkit {
 
     public static boolean hasPlayerCount() {
         return !playerProtocol.isEmpty();
-    }
-
-    public static Set<UUID> getUUIDs() {
-        return new HashSet<>(playerProtocol.keySet());
     }
 
     public static List<SpartanPlayer> getPlayers() {
@@ -143,21 +140,28 @@ public class SpartanBukkit {
 
     public static SpartanProtocol createProtocol(Player player) {
         SpartanProtocol protocol = new SpartanProtocol(player);
-        playerProtocol.put(
-                player.getUniqueId(),
-                protocol
-        );
-        PlayerDetectionSlots.add(protocol.spartanPlayer);
+
+        if (!ProtocolLib.isTemporary(player)) {
+            playerProtocol.put(
+                    player.getUniqueId(),
+                    protocol
+            );
+            PlayerDetectionSlots.add(protocol.spartanPlayer);
+        }
         return protocol;
     }
 
-    public static SpartanProtocol deleteProtocol(Player real) {
-        SpartanProtocol protocol = playerProtocol.remove(real.getUniqueId());
+    public static SpartanProtocol deleteProtocol(Player player) {
+        if (ProtocolLib.isTemporary(player)) {
+            return null;
+        } else {
+            SpartanProtocol protocol = playerProtocol.remove(player.getUniqueId());
 
-        if (protocol != null) {
-            PlayerDetectionSlots.remove(protocol.spartanPlayer);
+            if (protocol != null) {
+                PlayerDetectionSlots.remove(protocol.spartanPlayer);
+            }
+            return protocol;
         }
-        return protocol;
     }
 
     // Separator

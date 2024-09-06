@@ -238,8 +238,8 @@ public class PlayerInfo extends InventoryMenu {
                 InventoryView inventoryView = protocol.player.getOpenInventory();
 
                 if (inventoryView.getTitle().equals(PlayerInfo.menu + targetName)
-                        && cooldowns.canDo("player-info=" + protocol.player.getUniqueId())) {
-                    cooldowns.add("player-info=" + protocol.player.getUniqueId(), 1);
+                        && cooldowns.canDo("player-info=" + protocol.getUUID())) {
+                    cooldowns.add("player-info=" + protocol.getUUID(), 1);
                     InteractiveInventory.playerInfo.open(protocol.spartanPlayer, targetName);
                 }
             }

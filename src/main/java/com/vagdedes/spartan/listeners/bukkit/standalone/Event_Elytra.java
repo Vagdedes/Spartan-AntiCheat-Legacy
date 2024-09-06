@@ -1,7 +1,5 @@
 package com.vagdedes.spartan.listeners.bukkit.standalone;
 
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
-import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.Elytra;
 import org.bukkit.entity.Entity;
@@ -18,17 +16,7 @@ public class Event_Elytra implements Listener {
         Entity entity = e.getEntity();
 
         if (entity instanceof Player) {
-            Player n = (Player) entity;
-
-            if (ProtocolLib.isTemporary(n)) {
-                return;
-            }
-            SpartanPlayer p = SpartanBukkit.getProtocol(n).spartanPlayer;
-
-            if (p == null) {
-                return;
-            }
-            Elytra.judge(p);
+            Elytra.judge(SpartanBukkit.getProtocol((Player) entity).spartanPlayer);
         }
     }
 }

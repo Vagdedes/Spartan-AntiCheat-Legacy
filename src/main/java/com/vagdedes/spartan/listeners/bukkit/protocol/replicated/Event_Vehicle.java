@@ -2,7 +2,6 @@ package com.vagdedes.spartan.listeners.bukkit.protocol.replicated;
 
 import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
-import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import me.vagdedes.spartan.system.Enums;
@@ -54,16 +53,7 @@ public class Event_Vehicle implements Listener {
         Entity entity = e.getEntered();
 
         if (entity instanceof Player) {
-            Player n = (Player) entity;
-
-            if (ProtocolLib.isTemporary(n)) {
-                return;
-            }
-            SpartanPlayer p = SpartanBukkit.getProtocol(n).spartanPlayer;
-
-            if (p == null) {
-                return;
-            }
+            SpartanPlayer p = SpartanBukkit.getProtocol((Player) entity).spartanPlayer;
             p.trackers.add(Trackers.TrackerType.VEHICLE, "enter", 5);
         }
     }
@@ -73,16 +63,7 @@ public class Event_Vehicle implements Listener {
         Entity en = e.getExited();
 
         if (en instanceof Player) {
-            Player n = (Player) en;
-
-            if (ProtocolLib.isTemporary(n)) {
-                return;
-            }
-            SpartanPlayer p = SpartanBukkit.getProtocol(n).spartanPlayer;
-
-            if (p == null) {
-                return;
-            }
+            SpartanPlayer p = SpartanBukkit.getProtocol((Player) en).spartanPlayer;
             p.trackers.add(Trackers.TrackerType.VEHICLE, "exit", 5);
         }
     }

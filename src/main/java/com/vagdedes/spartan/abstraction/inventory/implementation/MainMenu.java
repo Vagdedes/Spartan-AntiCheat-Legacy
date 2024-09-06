@@ -59,7 +59,7 @@ public class MainMenu extends InventoryMenu {
     @Override
     public boolean internalOpen(SpartanPlayer player, boolean permissionMessage, Object object) {
         List<String> lore = new ArrayList<>(20);
-        UUID uuid = player.getInstance().getUniqueId();
+        UUID uuid = player.protocol.getUUID();
         int page = PlayerStateLists.getPage(uuid), previousPageSlot = 18, nextPageSlot = 26;
         setTitle(player, name + page + ")");
 
@@ -219,7 +219,7 @@ public class MainMenu extends InventoryMenu {
                 String number = split[1];
 
                 if (AlgebraUtils.validInteger(number)) {
-                    UUID uuid = player.getInstance().getUniqueId();
+                    UUID uuid = player.protocol.getUUID();
                     int itemPage = Integer.parseInt(number), currentPage = PlayerStateLists.getPage(uuid);
 
                     if (itemPage < currentPage) {

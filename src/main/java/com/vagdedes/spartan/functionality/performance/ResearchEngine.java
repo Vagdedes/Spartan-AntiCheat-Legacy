@@ -586,7 +586,7 @@ public class ResearchEngine {
 
                 if (!players.isEmpty()) {
                     for (SpartanPlayer p : players) {
-                        if (AwarenessNotifications.canSend(p.getInstance().getUniqueId(), "limited-data", 60 * 60)) {
+                        if (AwarenessNotifications.canSend(p.protocol.getUUID(), "limited-data", 60 * 60)) {
                             p.getInstance().sendMessage(message);
                         }
                     }
@@ -608,7 +608,7 @@ public class ResearchEngine {
 
                         if (!players.isEmpty()) {
                             for (SpartanPlayer p : players) {
-                                if (AwarenessNotifications.canSend(p.getInstance().getUniqueId(), "packet-preventions", 60 * 60)) {
+                                if (AwarenessNotifications.canSend(p.protocol.getUUID(), "packet-preventions", 60 * 60)) {
                                     p.getInstance().sendMessage(message);
                                 }
                             }

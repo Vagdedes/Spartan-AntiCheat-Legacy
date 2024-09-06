@@ -1,11 +1,9 @@
 package com.vagdedes.spartan.listeners.bukkit.protocol.replicated;
 
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
-import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -34,12 +32,7 @@ public class Event_Teleport implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Death(PlayerDeathEvent e) {
-        Player n = e.getEntity();
-
-        if (ProtocolLib.isTemporary(n)) {
-            return;
-        }
-        SpartanPlayer p = SpartanBukkit.getProtocol(n).spartanPlayer;
+        SpartanPlayer p = SpartanBukkit.getProtocol(e.getEntity()).spartanPlayer;
 
         // Detections
         p.getExecutor(Enums.HackType.AutoRespawn).handle(false, null);
@@ -53,12 +46,7 @@ public class Event_Teleport implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Respawn(PlayerRespawnEvent e) {
-        Player n = e.getPlayer();
-
-        if (ProtocolLib.isTemporary(n)) {
-            return;
-        }
-        SpartanPlayer p = SpartanBukkit.getProtocol(n).spartanPlayer;
+        SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer;
 
         // Objects
         p.resetTrackers();

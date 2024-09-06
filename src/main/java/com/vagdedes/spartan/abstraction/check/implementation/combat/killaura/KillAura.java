@@ -57,7 +57,7 @@ public class KillAura extends CheckExecutor {
             UUID entityUUID = entity.getUniqueId();
             boolean isPlayer = SpartanBukkit.isPlayer(entityUUID);
             return (isPlayer || !MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_10) || entity.hasAI())
-                    && !player.getInstance().getUniqueId().equals(entityUUID)
+                    && !player.protocol.getUUID().equals(entityUUID)
                     && hackType.getCheck().getBooleanOption("detection." + (isPlayer ? "players" : "entities"), true);
         }
         return false;

@@ -3,7 +3,6 @@ package com.vagdedes.spartan.listeners;
 import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
-import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
@@ -23,17 +22,10 @@ public class ReplicatedHandlers {
         Entity entity = e.getEntity();
 
         if (entity instanceof Player) {
-            Player n = (Player) entity;
+            SpartanPlayer p = SpartanBukkit.getProtocol((Player) entity).spartanPlayer;
 
-            if (!ProtocolLib.isTemporary(n)) {
-                SpartanPlayer p = SpartanBukkit.getProtocol(n).spartanPlayer;
-
-                if (p == null) {
-                    return;
-                }
-                // Objects
-                p.addReceivedDamage(e);
-            }
+            // Objects
+            p.addReceivedDamage(e);
         } else {
             Entity[] passengers = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
                     ? entity.getPassengers().toArray(new Entity[0])
@@ -42,15 +34,11 @@ public class ReplicatedHandlers {
             if (passengers.length > 0) {
                 for (Entity passenger : passengers) {
                     if (passenger instanceof Player) {
-                        Player n = (Player) passenger;
+                        SpartanPlayer p = SpartanBukkit.getProtocol((Player) passenger).spartanPlayer;
 
-                        if (!ProtocolLib.isTemporary(n)) {
-                            SpartanPlayer p = SpartanBukkit.getProtocol(n).spartanPlayer;
-
-                            if (p != null) {
-                                // Objects
-                                p.addReceivedDamage(e);
-                            }
+                        if (p != null) {
+                            // Objects
+                            p.addReceivedDamage(e);
                         }
                     }
                 }

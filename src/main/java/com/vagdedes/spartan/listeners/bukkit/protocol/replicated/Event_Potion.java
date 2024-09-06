@@ -1,7 +1,6 @@
 package com.vagdedes.spartan.listeners.bukkit.protocol.replicated;
 
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
-import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -18,10 +17,6 @@ public class Event_Potion implements Listener {
 
         if (entity instanceof Player) {
             Player n = (Player) entity;
-
-            if (ProtocolLib.isTemporary(n)) {
-                return;
-            }
             SpartanPlayer p = SpartanBukkit.getProtocol(n).spartanPlayer;
 
             // Objects

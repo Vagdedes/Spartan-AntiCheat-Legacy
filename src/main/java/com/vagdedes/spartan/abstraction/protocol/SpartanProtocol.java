@@ -2,6 +2,7 @@ package com.vagdedes.spartan.abstraction.protocol;
 
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
+import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.connection.Latency;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
@@ -11,6 +12,7 @@ import org.bukkit.entity.Player;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 public class SpartanProtocol {
 
@@ -42,6 +44,12 @@ public class SpartanProtocol {
         this.mcClient = new MCClient(player);
 
         this.setProfile(ResearchEngine.getPlayerProfile(this, false));
+    }
+
+    public UUID getUUID() {
+        return ProtocolLib.isTemporary(this.player)
+                ? UUID.randomUUID()
+                : this.player.getUniqueId();
     }
 
     public long timePassed() {

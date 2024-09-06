@@ -6,9 +6,7 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
-import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import org.bukkit.entity.Player;
 
 public class Packet_EntityAction extends PacketAdapter {
 
@@ -29,12 +27,7 @@ public class Packet_EntityAction extends PacketAdapter {
 
     @Override
     public void onPacketReceiving(PacketEvent event) {
-        Player player = event.getPlayer();
-
-        if (ProtocolLib.isTemporary(player)) {
-            return;
-        }
-        SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
+        SpartanProtocol protocol = SpartanBukkit.getProtocol(event.getPlayer());
 
         if (protocol.spartanPlayer.bedrockPlayer) {
             return;

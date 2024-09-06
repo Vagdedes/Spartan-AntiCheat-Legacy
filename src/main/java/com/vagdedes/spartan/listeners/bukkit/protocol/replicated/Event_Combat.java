@@ -2,7 +2,6 @@ package com.vagdedes.spartan.listeners.bukkit.protocol.replicated;
 
 import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
-import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.listeners.CustomHandlers;
@@ -32,67 +31,51 @@ public class Event_Combat implements Listener {
         boolean entityIsPlayer = entity instanceof Player;
 
         if (damager instanceof Player) {
-            Player n = (Player) damager;
+            boolean entityAttack = e.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK;
+            SpartanPlayer p = SpartanBukkit.getProtocol((Player) damager).spartanPlayer;
 
-            if (!ProtocolLib.isTemporary(n)) {
-                boolean entityAttack = e.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK;
-                SpartanPlayer p = SpartanBukkit.getProtocol(n).spartanPlayer;
+            if (p != null) {
+                // Object
+                p.addDealtDamage(e);
 
-                if (p != null) {
-                    // Object
-                    p.addDealtDamage(e);
+                // Detections
+                if (entityAttack) {
+                    p.calculateClicks(true);
 
-                    // Detections
-                    if (entityAttack) {
-                        p.calculateClicks(true);
-
-                        if (entityIsPlayer || entity instanceof LivingEntity) {
-                            for (Enums.HackType hackType : handledChecks) {
-                                if (p.getExecutor(hackType).prevent()) {
-                                    e.setCancelled(true);
-                                }
-                            }
-                            if (p.getExecutor(Enums.HackType.FastClicks).prevent()) {
+                    if (entityIsPlayer || entity instanceof LivingEntity) {
+                        for (Enums.HackType hackType : handledChecks) {
+                            if (p.getExecutor(hackType).prevent()) {
                                 e.setCancelled(true);
                             }
                         }
+                        if (p.getExecutor(Enums.HackType.FastClicks).prevent()) {
+                            e.setCancelled(true);
+                        }
                     }
                 }
-                if (entityAttack
-                        && (entityIsPlayer
-                        && !SpartanBukkit.getProtocol((Player) entity).packetsEnabled()
-                        || entity instanceof LivingEntity
-                        && !SpartanBukkit.packetsEnabled())) {
-                    Player player = (Player) damager;
-
-                    if (!ProtocolLib.isTemporary(player)) {
-                        CustomHandlers.attack(new PlayerAttackEvent(
-                                player,
-                                (LivingEntity) entity,
-                                e.isCancelled()
-                        ));
-                    }
-                }
+            }
+            if (entityAttack
+                    && (entityIsPlayer
+                    && !SpartanBukkit.getProtocol((Player) entity).packetsEnabled()
+                    || entity instanceof LivingEntity
+                    && !SpartanBukkit.packetsEnabled())) {
+                CustomHandlers.attack(new PlayerAttackEvent(
+                        (Player) damager,
+                        (LivingEntity) entity,
+                        e.isCancelled()
+                ));
             }
         }
 
         if (entityIsPlayer) {
-            Player n = (Player) entity;
+            SpartanPlayer p = SpartanBukkit.getProtocol((Player) entity).spartanPlayer;
+            boolean cancelled = e.isCancelled();
 
-            if (!ProtocolLib.isTemporary(n)) {
-                SpartanPlayer p = SpartanBukkit.getProtocol(n).spartanPlayer;
+            // Objects
+            p.addReceivedDamage(e);
 
-                if (p == null) {
-                    return;
-                }
-                boolean cancelled = e.isCancelled();
-
-                // Objects
-                p.addReceivedDamage(e);
-
-                // Detections
-                p.getExecutor(Enums.HackType.Speed).handle(cancelled, e);
-            }
+            // Detections
+            p.getExecutor(Enums.HackType.Speed).handle(cancelled, e);
         } else {
             Entity[] passengers = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
                     ? entity.getPassengers().toArray(new Entity[0])
@@ -101,16 +84,8 @@ public class Event_Combat implements Listener {
             if (passengers.length > 0) {
                 for (Entity passenger : passengers) {
                     if (passenger instanceof Player) {
-                        Player n = (Player) passenger;
-
-                        if (!ProtocolLib.isTemporary(n)) {
-                            SpartanPlayer p = SpartanBukkit.getProtocol(n).spartanPlayer;
-
-                            if (p != null) {
-                                // Objects
-                                p.addReceivedDamage(e);
-                            }
-                        }
+                        // Objects
+                        SpartanBukkit.getProtocol((Player) passenger).spartanPlayer.addReceivedDamage(e);
                     }
                 }
             }
@@ -122,17 +97,8 @@ public class Event_Combat implements Listener {
         Entity entity = e.getEntity();
 
         if (entity instanceof Player) {
-            Player n = (Player) entity;
-
-            if (!ProtocolLib.isTemporary(n)) {
-                SpartanPlayer p = SpartanBukkit.getProtocol(n).spartanPlayer;
-
-                if (p == null) {
-                    return;
-                }
-                // Objects
-                p.addReceivedDamage(e);
-            }
+            // Objects
+            SpartanBukkit.getProtocol((Player) entity).spartanPlayer.addReceivedDamage(e);
         } else {
             Entity[] passengers = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
                     ? entity.getPassengers().toArray(new Entity[0])
@@ -141,16 +107,8 @@ public class Event_Combat implements Listener {
             if (passengers.length > 0) {
                 for (Entity passenger : passengers) {
                     if (passenger instanceof Player) {
-                        Player n = (Player) passenger;
-
-                        if (!ProtocolLib.isTemporary(n)) {
-                            SpartanPlayer p = SpartanBukkit.getProtocol(n).spartanPlayer;
-
-                            if (p != null) {
-                                // Objects
-                                p.addReceivedDamage(e);
-                            }
-                        }
+                        // Objects
+                        SpartanBukkit.getProtocol((Player) passenger).spartanPlayer.addReceivedDamage(e);
                     }
                 }
             }

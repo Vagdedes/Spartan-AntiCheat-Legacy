@@ -54,7 +54,7 @@ public class ConfigUtils {
     }
 
     public static String replaceWithSyntax(SpartanPlayer p, String message, HackType hackType) {
-        UUID uuid = p.getInstance().getUniqueId();
+        UUID uuid = p.protocol.getUUID();
         SpartanLocation loc = p.movement.getLocation();
         String worldName = p.getWorld().getName();
         message = replace(message, "{player}", p.getInstance().getName());

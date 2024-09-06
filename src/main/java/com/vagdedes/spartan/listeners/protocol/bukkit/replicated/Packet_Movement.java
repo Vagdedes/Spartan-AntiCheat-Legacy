@@ -7,7 +7,6 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
-import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.listeners.ReplicatedHandlers;
 import com.vagdedes.spartan.utils.minecraft.protocol.ProtocolTools;
@@ -31,12 +30,7 @@ public class Packet_Movement extends PacketAdapter {
     @Override
     public void onPacketReceiving(PacketEvent event) {
         long time = System.currentTimeMillis();
-        Player player = event.getPlayer();
-
-        if (ProtocolLib.isTemporary(player)) {
-            return;
-        }
-        SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
+        SpartanProtocol protocol = SpartanBukkit.getProtocol(event.getPlayer());
 
         if (protocol.spartanPlayer.bedrockPlayer) {
             return;

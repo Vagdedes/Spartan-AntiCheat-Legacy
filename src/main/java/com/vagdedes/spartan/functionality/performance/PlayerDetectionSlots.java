@@ -95,7 +95,7 @@ public class PlayerDetectionSlots {
     }
 
     public static void remove(SpartanPlayer player) {
-        UUID uuid = player.getInstance().getUniqueId();
+        UUID uuid = player.protocol.getUUID();
 
         synchronized (priority) {
             synchronized (list) {
@@ -107,14 +107,14 @@ public class PlayerDetectionSlots {
 
     private static boolean add(SpartanPlayer player, int optionAmount) {
         synchronized (list) {
-            if (list.contains(player.getInstance().getUniqueId())) {
+            if (list.contains(player.protocol.getUUID())) {
                 return true;
             } else if (list.size() < optionAmount
                     && Config.isEnabled(player.dataType)) {
-                list.add(player.getInstance().getUniqueId());
+                list.add(player.protocol.getUUID());
 
                 synchronized (priority) {
-                    priority.remove(player.getInstance().getUniqueId());
+                    priority.remove(player.protocol.getUUID());
                 }
                 return true;
             } else {

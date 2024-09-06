@@ -2,7 +2,6 @@ package com.vagdedes.spartan.listeners.bukkit.standalone;
 
 import com.vagdedes.spartan.abstraction.inventory.InventoryMenu;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
-import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
@@ -22,12 +21,7 @@ public class Event_Inventory implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void ItemDrop(PlayerDropItemEvent e) {
-        Player n = e.getPlayer();
-
-        if (ProtocolLib.isTemporary(n)) {
-            return;
-        }
-        SpartanPlayer p = SpartanBukkit.getProtocol(n).spartanPlayer;
+        SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer;
 
         // Detections
         p.getExecutor(Enums.HackType.ItemDrops).run(e.isCancelled());
@@ -43,15 +37,7 @@ public class Event_Inventory implements Listener {
 
         if (BlockUtils.hasMaterial(item)) {
             Player n = (Player) e.getWhoClicked();
-
-            if (ProtocolLib.isTemporary(n)) {
-                return;
-            }
             SpartanPlayer p = SpartanBukkit.getProtocol(n).spartanPlayer;
-
-            if (p == null) {
-                return;
-            }
             boolean cancelled = e.isCancelled();
             ClickType click = e.getClick();
             String title = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? StringUtils.getClearColorString(n.getOpenInventory().getTitle()) : n.getOpenInventory().getTitle();

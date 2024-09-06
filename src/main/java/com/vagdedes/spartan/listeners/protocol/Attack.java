@@ -9,7 +9,6 @@ import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
-import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.listeners.CustomHandlers;
 import com.vagdedes.spartan.utils.java.OverflowMap;
@@ -35,12 +34,7 @@ public class Attack extends PacketAdapter {
     @Override
     public void onPacketReceiving(PacketEvent event) {
         if (event.getPacketType() == PacketType.Play.Client.USE_ENTITY) {
-            Player player = event.getPlayer();
-
-            if (ProtocolLib.isTemporary(player)) {
-                return;
-            }
-            SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
+            SpartanProtocol protocol = SpartanBukkit.getProtocol(event.getPlayer());
 
             if (protocol.spartanPlayer.bedrockPlayer) {
                 return;
@@ -52,12 +46,7 @@ public class Attack extends PacketAdapter {
     @Override
     public void onPacketSending(PacketEvent event) {
         if (event.getPacketType() == PacketType.Play.Server.DAMAGE_EVENT) {
-            Player player = event.getPlayer();
-
-            if (ProtocolLib.isTemporary(player)) {
-                return;
-            }
-            SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
+            SpartanProtocol protocol = SpartanBukkit.getProtocol(event.getPlayer());
 
             if (protocol.spartanPlayer.bedrockPlayer) {
                 return;

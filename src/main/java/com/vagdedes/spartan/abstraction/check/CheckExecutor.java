@@ -381,7 +381,7 @@ public abstract class CheckExecutor extends DetectionExecutor {
                     SpartanLocation location = player.movement.getLocation();
                     CloudConnections.executeDiscordWebhook(
                             "punishments",
-                            player.getInstance().getUniqueId(),
+                            player.protocol.getUUID(),
                             player.getInstance().getName(),
                             location.getBlockX(),
                             location.getBlockY(),

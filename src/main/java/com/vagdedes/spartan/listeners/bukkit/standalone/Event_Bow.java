@@ -1,7 +1,6 @@
 package com.vagdedes.spartan.listeners.bukkit.standalone;
 
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
-import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.entity.Entity;
@@ -18,20 +17,13 @@ public class Event_Bow implements Listener {
         Entity entity = e.getEntity();
 
         if (entity instanceof Player) {
-            Player n = (Player) entity;
+            SpartanPlayer p = SpartanBukkit.getProtocol((Player) entity).spartanPlayer;
 
-            if (!ProtocolLib.isTemporary(n)) {
-                SpartanPlayer p = SpartanBukkit.getProtocol(n).spartanPlayer;
+            // Detections
+            p.getExecutor(Enums.HackType.FastBow).handle(e.isCancelled(), e);
 
-                if (p == null) {
-                    return;
-                }
-                // Detections
-                p.getExecutor(Enums.HackType.FastBow).handle(e.isCancelled(), e);
-
-                if (p.getExecutor(Enums.HackType.FastBow).prevent()) {
-                    e.setCancelled(true);
-                }
+            if (p.getExecutor(Enums.HackType.FastBow).prevent()) {
+                e.setCancelled(true);
             }
         }
     }

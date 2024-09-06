@@ -3,13 +3,11 @@ package com.vagdedes.spartan.compatibility.manual.entity;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.data.Cooldowns;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
-import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.java.OverflowMap;
 import es.pollitoyeye.vehicles.enums.VehicleType;
 import es.pollitoyeye.vehicles.events.VehicleEnterEvent;
 import es.pollitoyeye.vehicles.events.VehicleExitEvent;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -29,12 +27,7 @@ public class Vehicles implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void Enter(VehicleEnterEvent e) {
         if (Compatibility.CompatibilityType.VEHICLES.isFunctional()) {
-            Player n = e.getPlayer();
-
-            if (ProtocolLib.isTemporary(n)) {
-                return;
-            }
-            SpartanPlayer p = SpartanBukkit.getProtocol(n).spartanPlayer;
+            SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer;
 
             if (p != null) {
                 VehicleType vehicleType = e.getVehicleType();
@@ -51,12 +44,7 @@ public class Vehicles implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void Exit(VehicleExitEvent e) {
         if (Compatibility.CompatibilityType.VEHICLES.isFunctional()) {
-            Player n = e.getPlayer();
-
-            if (ProtocolLib.isTemporary(n)) {
-                return;
-            }
-            SpartanPlayer p = SpartanBukkit.getProtocol(n).spartanPlayer;
+            SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer;
 
             if (p != null) {
                 cooldowns.clear(key);
@@ -65,11 +53,11 @@ public class Vehicles implements Listener {
     }
 
     private static void add(SpartanPlayer p, String type) {
-        cooldowns.add(p.getInstance().getUniqueId() + "=" + key + type, 20);
+        cooldowns.add(p.protocol.getUUID() + "=" + key + type, 20);
     }
 
     public static boolean has(SpartanPlayer p, String type) {
-        return !cooldowns.canDo(p.getInstance().getUniqueId() + "=" + key + type);
+        return !cooldowns.canDo(p.protocol.getUUID() + "=" + key + type);
     }
 
     public static boolean has(SpartanPlayer p, String[] types) {
