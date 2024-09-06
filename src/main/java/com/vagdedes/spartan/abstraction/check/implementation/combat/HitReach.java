@@ -5,7 +5,7 @@ import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
-import com.vagdedes.spartan.listeners.protocol.async.LagCompensation;
+import com.vagdedes.spartan.listeners.protocol.standalone.Packet_LagCompensation;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.GameMode;
@@ -37,8 +37,8 @@ public class HitReach extends CheckExecutor {
                 double bruteforceRayTrace = 14.88;
                 double value;
 
-                for (int i = 0; i < 3 + LagCompensation.getPlayerTicksDelay(playerId); i++) {
-                    Location locationWithRollback = LagCompensation.getLocationWithTickRollback(targetId, i);
+                for (int i = 0; i < 3 + Packet_LagCompensation.getPlayerTicksDelay(playerId); i++) {
+                    Location locationWithRollback = Packet_LagCompensation.getLocationWithTickRollback(targetId, i);
 
                     if (locationWithRollback != null) {
                         value = RayUtils.bruteforceRayTraceWithCustomLocation(

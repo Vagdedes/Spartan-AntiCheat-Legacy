@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.listeners.protocol.async;
+package com.vagdedes.spartan.listeners.protocol.standalone;
 
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.java.OverflowMap;
@@ -7,7 +7,7 @@ import org.bukkit.Location;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class LagCompensation {
+public class Packet_LagCompensation {
 
     private static final Map<Integer, LinkedList<Location>> cache =
             new OverflowMap<>(new ConcurrentHashMap<>(), 1_024);

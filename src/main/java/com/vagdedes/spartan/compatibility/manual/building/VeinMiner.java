@@ -16,7 +16,7 @@ import wtf.choco.veinminer.api.event.player.PlayerVeinMineEvent;
 public class VeinMiner implements Listener {
 
     public static void reload() {
-        Register.enable(new VeinMiner(), VeinMiner.class);
+        Register.enable(new VeinMiner());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)

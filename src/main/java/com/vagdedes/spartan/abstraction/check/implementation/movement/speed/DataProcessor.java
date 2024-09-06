@@ -15,7 +15,7 @@ import java.util.UUID;
 public class DataProcessor implements Listener {
 
     static {
-        Register.enable(new DataProcessor(), DataProcessor.class);
+        Register.enable(new DataProcessor());
     }
 
     static final Map<UUID, KeepSprint> keepSprint = new OverflowMap<>(new LinkedHashMap<>(), 1_024);

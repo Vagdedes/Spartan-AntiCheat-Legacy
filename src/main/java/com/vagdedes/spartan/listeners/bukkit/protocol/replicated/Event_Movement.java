@@ -1,33 +1,20 @@
-package com.vagdedes.spartan.listeners.bukkit;
+package com.vagdedes.spartan.listeners.bukkit.protocol.replicated;
 
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.listeners.Shared;
+import com.vagdedes.spartan.listeners.Handlers;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerVelocityEvent;
 
-public class Event_Shared implements Listener {
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    private void Velocity(PlayerVelocityEvent e) {
-        Player n = e.getPlayer();
-
-        if (ProtocolLib.isTemporary(n)) {
-            return;
-        }
-        if (!SpartanBukkit.getProtocol(n).packetsEnabled()) {
-            Shared.velocity(e);
-        }
-    }
+public class Event_Movement implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    private void Move(PlayerMoveEvent e) {
+    private void Event(PlayerMoveEvent e) {
         Player n = e.getPlayer();
 
         if (ProtocolLib.isTemporary(n)) {
@@ -36,7 +23,7 @@ public class Event_Shared implements Listener {
         SpartanProtocol protocol = SpartanBukkit.getProtocol(n);
 
         if (!protocol.packetsEnabled()) {
-            Shared.movement(e, false);
+            Handlers.playerMoveEvent(e, false);
         }
         protocol.spartanPlayer.getExecutor(
                 Enums.HackType.MorePackets

@@ -9,6 +9,7 @@ import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
+import com.vagdedes.spartan.utils.java.OverflowMap;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PotionEffectUtils;
@@ -24,15 +25,17 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ImpossibleActions extends CheckExecutor {
 
-    private final Buffer buffer;
+    private final Map<Integer, Buffer.IndividualBuffer> buffers;
 
     public ImpossibleActions(Enums.HackType hackType, SpartanPlayer player) {
         super(hackType, player, 0, false);
-        this.buffer = new Buffer();
+        this.buffers = new OverflowMap<>(new LinkedHashMap<>(), 124);
     }
 
     @Override
@@ -137,10 +140,13 @@ public class ImpossibleActions extends CheckExecutor {
                                     possiblePlacements += AlgebraUtils.integerCeil(deltaXZ / 0.25);
                                 }
                                 possiblePlacements = Math.max(possiblePlacements, 2);
-                                int hash = (block.getX() * SpartanBukkit.hashCodeMultiplier) + block.getZ();
+                                Buffer.IndividualBuffer buffer = this.buffers.computeIfAbsent(
+                                        (block.getX() * SpartanBukkit.hashCodeMultiplier) + block.getZ(),
+                                        k -> new Buffer.IndividualBuffer()
+                                );
 
-                                if (buffer.count("tower" + hash, motionTicks) > possiblePlacements) {
-                                    buffer.remove("tower" + hash);
+                                if (buffer.count(1, motionTicks) > possiblePlacements) {
+                                    buffer.reset();
                                     cancel(
                                             "type: tower"
                                                     + ", placements: " + possiblePlacements

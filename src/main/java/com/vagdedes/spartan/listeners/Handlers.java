@@ -13,9 +13,9 @@ import org.bukkit.Location;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerVelocityEvent;
 
-public class Shared {
+public class Handlers {
 
-    public static void velocity(PlayerVelocityEvent e) {
+    public static void playerVelocityEvent(PlayerVelocityEvent e) {
         SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer;
 
         // Object
@@ -48,7 +48,7 @@ public class Shared {
         ).handle(e.isCancelled(), e);
     }
 
-    public static void movement(PlayerMoveEvent e, boolean packets) {
+    public static void playerMoveEvent(PlayerMoveEvent e, boolean packets) {
         SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer;
         Location nto = e.getTo();
 

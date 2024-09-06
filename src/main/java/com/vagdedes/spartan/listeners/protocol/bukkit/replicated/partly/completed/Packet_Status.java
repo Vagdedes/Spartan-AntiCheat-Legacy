@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.listeners.protocol;
+package com.vagdedes.spartan.listeners.protocol.bukkit.replicated.partly.completed;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.ListenerPriority;
@@ -8,12 +8,12 @@ import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.listeners.protocol.async.LagCompensation;
+import com.vagdedes.spartan.listeners.protocol.standalone.Packet_LagCompensation;
 import org.bukkit.entity.Player;
 
-public class Join extends PacketAdapter {
+public class Packet_Status extends PacketAdapter {
 
-    public Join() {
+    public Packet_Status() {
         super(
                 Register.plugin,
                 ListenerPriority.HIGHEST,
@@ -33,7 +33,7 @@ public class Join extends PacketAdapter {
         if (protocol.spartanPlayer.bedrockPlayer) {
             return;
         }
-        LagCompensation.newPacket(player.getEntityId());
+        Packet_LagCompensation.newPacket(player.getEntityId());
     }
 
 }

@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.listeners.protocol;
+package com.vagdedes.spartan.listeners.protocol.bukkit.replicated;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.ListenerPriority;
@@ -9,15 +9,15 @@ import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.listeners.Shared;
+import com.vagdedes.spartan.listeners.Handlers;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.util.Vector;
 
-public class Velocity extends PacketAdapter {
+public class Packet_Velocity extends PacketAdapter {
 
 
-    public Velocity() {
+    public Packet_Velocity() {
         super(
                 Register.plugin,
                 ListenerPriority.NORMAL,
@@ -44,7 +44,7 @@ public class Velocity extends PacketAdapter {
             double x = packet.getIntegers().read(1).doubleValue() / 8000.0D,
                     y = packet.getIntegers().read(2).doubleValue() / 8000.0D,
                     z = packet.getIntegers().read(3).doubleValue() / 8000.0D;
-            Shared.velocity(new PlayerVelocityEvent(player, new Vector(x, y, z)));
+            Handlers.playerVelocityEvent(new PlayerVelocityEvent(player, new Vector(x, y, z)));
         }
     }
 

@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.listeners.bukkit;
+package com.vagdedes.spartan.listeners.bukkit.protocol.replicated;
 
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
@@ -11,9 +11,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
-import org.bukkit.event.player.PlayerAnimationEvent;
 
-public class Events_Player implements Listener {
+public class Event_Health implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Food(FoodLevelChangeEvent e) {
@@ -65,19 +64,6 @@ public class Events_Player implements Listener {
                 e.setCancelled(true);
             }
         }
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    private void Animation(PlayerAnimationEvent e) {
-        Player n = e.getPlayer();
-
-        if (ProtocolLib.isTemporary(n)) {
-            return;
-        }
-        SpartanPlayer p = SpartanBukkit.getProtocol(n).spartanPlayer;
-
-        // Detections
-        p.getExecutor(Enums.HackType.NoSwing).handle(e.isCancelled(), e);
     }
 
 }

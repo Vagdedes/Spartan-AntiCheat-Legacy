@@ -1,21 +1,38 @@
-package com.vagdedes.spartan.listeners.protocol;
+package com.vagdedes.spartan.listeners.protocol.bukkit.replicated.partly.completed;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
-import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.listeners.protocol.modules.TeleportData;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-public class ServerPosition extends PacketAdapter {
+public class Packet_Teleport extends PacketAdapter {
 
-    public ServerPosition() {
+    public static class TeleportData {
+
+        private final Location location;
+        private final boolean silent;
+
+        public TeleportData(Location location, boolean silent) {
+            this.location = location;
+            this.silent = silent;
+        }
+
+        public Location getLocation() {
+            return location;
+        }
+
+        public boolean isSilent() {
+            return silent;
+        }
+    }
+
+    public Packet_Teleport() {
         super(
                 Register.plugin,
                 ListenerPriority.HIGHEST,
@@ -37,30 +54,33 @@ public class ServerPosition extends PacketAdapter {
                 || protocol.isLoading()) {
             return;
         }
-        PacketContainer packetContainer = event.getPacket();
+        PacketType packetType = event.getPacket().getType();
 
-        if (packetContainer.getType().equals(PacketType.Play.Server.POSITION)) {
-            Location teleportLocation = add(protocol.getLocation().clone(), Move.readLocation(event));
+        if (packetType.equals(PacketType.Play.Server.POSITION)) {
+            Location teleportLocation = add(protocol.getLocation().clone(), Packet_Movement.readLocation(event));
             protocol.setLocation(teleportLocation);
-            if (protocol.isMutateTeleport()) {
+
+            if (protocol.mutateTeleport) {
                 protocol.teleportEngine.add(new TeleportData(teleportLocation, true));
-                protocol.setMutateTeleport(false);
+                protocol.mutateTeleport = false;
             } else {
                 protocol.teleportEngine.add(new TeleportData(teleportLocation, false));
             }
 
-        }
-        if (packetContainer.getType().equals(PacketType.Play.Server.RESPAWN)
-                || packetContainer.getType().equals(PacketType.Play.Server.MOUNT)) {
+        } else if (packetType.equals(PacketType.Play.Server.RESPAWN)
+                || packetType.equals(PacketType.Play.Server.MOUNT)) {
             protocol.setLocation(new Location(protocol.getLocation().getWorld(), 0, 0, 0));
-            protocol.setMutateTeleport(true);
+            protocol.mutateTeleport = true;
         }
-
     }
 
     public static Location add(Location f, Location t) {
-        return new Location(t.getWorld(), f.getX() + t.getX(),
-                f.getY() + t.getY(), f.getZ() + t.getZ());
+        return new Location(
+                t.getWorld(),
+                f.getX() + t.getX(),
+                f.getY() + t.getY(),
+                f.getZ() + t.getZ()
+        );
     }
 
 }

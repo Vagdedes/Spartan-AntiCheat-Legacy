@@ -1,7 +1,6 @@
 package com.vagdedes.spartan.abstraction.check;
 
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.profiling.PlayerEvidence;
 import com.vagdedes.spartan.abstraction.profiling.PlayerViolation;
@@ -25,12 +24,14 @@ import me.vagdedes.spartan.api.PlayerViolationCommandEvent;
 import me.vagdedes.spartan.api.PlayerViolationEvent;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 
 import java.util.Collection;
 import java.util.List;
 
 public abstract class CheckExecutor extends DetectionExecutor {
 
+    private static final boolean v1_8 = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8);
     public static final String
             violationLevelIdentifier = "Violations:",
             javaPlayerIdentifier = "Java:";
@@ -106,7 +107,7 @@ public abstract class CheckExecutor extends DetectionExecutor {
 
         if (function[0] != tick) {
             function[0] = tick;
-            function[1] = !player.trackers.has(Trackers.TrackerType.SPECTATOR)
+            function[1] = (!v1_8 || player.getInstance().getGameMode() != GameMode.SPECTATOR)
                     && !player.protocol.isLoading()
                     && player.getCancellableCompatibility() == null
                     && hackType.getCheck().isEnabled(player.dataType, player.getWorld().getName())

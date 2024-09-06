@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.listeners.bukkit.chunks;
+package com.vagdedes.spartan.listeners.bukkit.standalone.chunks;
 
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;

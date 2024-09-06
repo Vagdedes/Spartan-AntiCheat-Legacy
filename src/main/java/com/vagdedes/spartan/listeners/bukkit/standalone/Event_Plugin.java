@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.listeners.bukkit;
+package com.vagdedes.spartan.listeners.bukkit.standalone;
 
 import com.vagdedes.spartan.functionality.server.Config;
 import org.bukkit.event.EventHandler;

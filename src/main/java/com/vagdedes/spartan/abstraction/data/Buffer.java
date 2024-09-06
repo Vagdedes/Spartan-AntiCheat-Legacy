@@ -4,7 +4,6 @@ import com.vagdedes.spartan.functionality.server.TPS;
 
 import java.util.Iterator;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class Buffer {
 
@@ -56,8 +55,8 @@ public class Buffer {
 
     }
 
-    public Buffer() {
-        this.storage = new ConcurrentHashMap<>();
+    public Buffer(Map<String, IndividualBuffer> map) {
+        this.storage = map;
     }
 
     public int get(String name) {

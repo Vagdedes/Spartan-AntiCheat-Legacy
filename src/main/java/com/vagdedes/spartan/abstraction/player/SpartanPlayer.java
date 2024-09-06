@@ -4,7 +4,6 @@ import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
-import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.data.Clicks;
 import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
@@ -21,8 +20,8 @@ import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
-import com.vagdedes.spartan.listeners.bukkit.Event_World;
-import com.vagdedes.spartan.listeners.bukkit.chunks.Event_Chunks;
+import com.vagdedes.spartan.listeners.bukkit.protocol.replicated.Event_World;
+import com.vagdedes.spartan.listeners.bukkit.standalone.chunks.Event_Chunks;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
@@ -53,7 +52,6 @@ public class SpartanPlayer {
     public final Check.DataType dataType;
     public final SpartanPlayerMovement movement;
     public final SpartanPunishments punishments;
-    public final Buffer buffer;
     public final Trackers trackers;
     public final Clicks clicks;
 
@@ -124,7 +122,6 @@ public class SpartanPlayer {
             );
         }
 
-        this.buffer = new Buffer();
         this.executors = new CheckExecutor[hackTypes.length];
 
         for (Enums.HackType hackType : hackTypes) {

@@ -5,7 +5,7 @@ import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.listeners.Shared;
+import com.vagdedes.spartan.listeners.Handlers;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -27,7 +27,7 @@ public class Event_Combat implements Listener {
     };
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    private void Damage(EntityDamageByEntityEvent e) {
+    private void Deal(EntityDamageByEntityEvent e) {
         Entity damager = e.getDamager(),
                 entity = e.getEntity();
         boolean entityIsPlayer = entity instanceof Player;
@@ -67,7 +67,7 @@ public class Event_Combat implements Listener {
                     Player player = (Player) damager;
 
                     if (!ProtocolLib.isTemporary(player)) {
-                        Shared.attack(new PlayerAttackEvent(
+                        Handlers.attack(new PlayerAttackEvent(
                                 player,
                                 (LivingEntity) entity,
                                 e.isCancelled()
@@ -119,7 +119,7 @@ public class Event_Combat implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    private void Damage(EntityDamageEvent e) {
+    private void Receive(EntityDamageEvent e) {
         Entity entity = e.getEntity();
 
         if (entity instanceof Player) {

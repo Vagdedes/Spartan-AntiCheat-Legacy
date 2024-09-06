@@ -1,6 +1,5 @@
-package com.vagdedes.spartan.listeners.bukkit;
+package com.vagdedes.spartan.listeners.bukkit.protocol.replicated;
 
-import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
@@ -12,16 +11,12 @@ import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import me.vagdedes.spartan.system.Enums;
-import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
 
 public class Event_Status implements Listener {
 
@@ -75,61 +70,6 @@ public class Event_Status implements Listener {
 
         // Features
         DetectionNotifications.runOnLeave(p);
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    private void Death(PlayerDeathEvent e) {
-        Player n = e.getEntity();
-
-        if (ProtocolLib.isTemporary(n)) {
-            return;
-        }
-        SpartanPlayer p = SpartanBukkit.getProtocol(n).spartanPlayer;
-
-        // Detections
-        p.getExecutor(Enums.HackType.AutoRespawn).handle(false, null);
-        p.getExecutor(Enums.HackType.ImpossibleInventory).handle(false, null);
-        p.getExecutor(Enums.HackType.NoFall).handle(false, null);
-
-        // Objects
-        p.resetTrackers();
-        p.movement.setDetectionLocation();
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    private void Respawn(PlayerRespawnEvent e) {
-        Player n = e.getPlayer();
-
-        if (ProtocolLib.isTemporary(n)) {
-            return;
-        }
-        SpartanPlayer p = SpartanBukkit.getProtocol(n).spartanPlayer;
-
-        // Objects
-        p.resetTrackers();
-        p.movement.setDetectionLocation();
-
-        // Detections
-        p.getExecutor(Enums.HackType.NoFall).handle(false, null);
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    private void GameMode(PlayerGameModeChangeEvent e) {
-        if (v1_8) {
-            Player n = e.getPlayer();
-
-            if (ProtocolLib.isTemporary(n)) {
-                return;
-            }
-            SpartanPlayer p = SpartanBukkit.getProtocol(n).spartanPlayer;
-
-            // Objects
-            if (e.getNewGameMode() == GameMode.SPECTATOR) {
-                p.trackers.add(Trackers.TrackerType.SPECTATOR, Integer.MAX_VALUE);
-            } else {
-                p.trackers.remove(Trackers.TrackerType.SPECTATOR);
-            }
-        }
     }
 
 }

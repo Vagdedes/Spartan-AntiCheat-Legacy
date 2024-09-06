@@ -59,7 +59,7 @@ public class Vehicles implements Listener {
             SpartanPlayer p = SpartanBukkit.getProtocol(n).spartanPlayer;
 
             if (p != null) {
-                p.buffer.clear(key);
+                cooldowns.clear(key);
             }
         }
     }

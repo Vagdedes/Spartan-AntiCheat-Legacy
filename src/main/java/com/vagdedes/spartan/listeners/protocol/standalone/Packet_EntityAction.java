@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.listeners.protocol;
+package com.vagdedes.spartan.listeners.protocol.standalone;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.ListenerPriority;
@@ -8,12 +8,18 @@ import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.listeners.protocol.modules.AbilitiesEnum;
 import org.bukkit.entity.Player;
 
-public class EntityAction extends PacketAdapter {
+public class Packet_EntityAction extends PacketAdapter {
 
-    public EntityAction() {
+    private enum AbilitiesEnum {
+        START_SPRINTING,
+        STOP_SPRINTING,
+        PRESS_SHIFT_KEY,
+        RELEASE_SHIFT_KEY
+    }
+
+    public Packet_EntityAction() {
         super(
                 Register.plugin,
                 ListenerPriority.HIGHEST,
@@ -38,13 +44,13 @@ public class EntityAction extends PacketAdapter {
 
         if (typeString != null) {
             if (type == AbilitiesEnum.PRESS_SHIFT_KEY) {
-                protocol.setSneaking(true);
+                protocol.sneaking = true;
             } else if (type == AbilitiesEnum.RELEASE_SHIFT_KEY) {
-                protocol.setSneaking(false);
+                protocol.sneaking = false;
             } else if (type == AbilitiesEnum.START_SPRINTING) {
-                protocol.setSprinting(true);
+                protocol.sprinting = true;
             } else if (type == AbilitiesEnum.STOP_SPRINTING) {
-                protocol.setSprinting(false);
+                protocol.sprinting = false;
             }
         }
     }

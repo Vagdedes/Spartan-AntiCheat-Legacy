@@ -11,7 +11,7 @@ import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.listeners.Shared;
+import com.vagdedes.spartan.listeners.Handlers;
 import com.vagdedes.spartan.utils.java.OverflowMap;
 import org.bukkit.entity.Player;
 
@@ -76,7 +76,7 @@ public class Attack extends PacketAdapter {
                 EnumWrappers.EntityUseAction.ATTACK)) {
             Player player = event.getPlayer();
             pendingAttacks.put(player.getUniqueId(), entityId);
-            Shared.useEntity(
+            Handlers.useEntity(
                     new PlayerAttackEvent(
                             player,
                             SpartanBukkit.getProtocol(player).player,
@@ -101,7 +101,7 @@ public class Attack extends PacketAdapter {
                     SpartanProtocol protocol = SpartanBukkit.getProtocol(entityId);
 
                     if (protocol != null) {
-                        Shared.attack(
+                        Handlers.attack(
                                 new PlayerAttackEvent(
                                         attacker,
                                         protocol.player,

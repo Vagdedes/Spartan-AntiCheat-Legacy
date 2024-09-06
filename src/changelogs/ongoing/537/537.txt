@@ -2,6 +2,6 @@
 [-] Bedrock players will no longer be check on the packet level due to incompatibilities.
 [#] Made probabilities stricter to reduce the amount of notifications but also improve stability.
 [#] Fixed synchronization console error related to the violation history.
-[#] Improved the packets listeners so the movement checks can run better.
+[#] Improved the packets listeners so all checks can run better.
 [#] Fixed elytra & mobs collision false positives.
 [#] Fixed a Speed console error caused by specific-version materials.

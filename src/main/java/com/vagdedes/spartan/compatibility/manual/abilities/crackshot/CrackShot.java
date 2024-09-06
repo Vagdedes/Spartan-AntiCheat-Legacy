@@ -5,10 +5,12 @@ import com.shampaggon.crackshot.events.WeaponPreShootEvent;
 import com.shampaggon.crackshot.events.WeaponScopeEvent;
 import com.shampaggon.crackshot.events.WeaponShootEvent;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
+import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.utils.java.OverflowMap;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -18,7 +20,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 public class CrackShot implements Listener {
+
+    private static final Buffer buffers = new Buffer(
+            new OverflowMap<>(new ConcurrentHashMap<>(), 512)
+    );
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void WeaponScope(WeaponScopeEvent e) {
@@ -45,12 +53,12 @@ public class CrackShot implements Listener {
                 );
 
                 if (e.isZoomIn()) {
-                    p.buffer.set("crackshot=compatibility=scope", 1);
+                    buffers.set(p.getInstance().getUniqueId() + "=crackshot=compatibility=scope", 1);
                 } else {
-                    p.buffer.remove("crackshot=compatibility=scope");
+                    buffers.remove(p.getInstance().getUniqueId() + "=crackshot=compatibility=scope");
                 }
             } else {
-                p.buffer.remove("crackshot=compatibility=scope");
+                buffers.remove(p.getInstance().getUniqueId() + "=crackshot=compatibility=scope");
             }
         }
     }
@@ -191,7 +199,7 @@ public class CrackShot implements Listener {
 
     public static boolean isUsingScope(SpartanPlayer p) {
         return Compatibility.CompatibilityType.CRACK_SHOT.isFunctional()
-                && p.buffer.get("crackshot=compatibility=scope") != 0
+                && buffers.get(p.getInstance().getUniqueId() + "=crackshot=compatibility=scope") != 0
                 || CrackShotPlus.isUsingScope(p);
     }
 }

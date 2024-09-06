@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.listeners.protocol;
+package com.vagdedes.spartan.listeners.protocol.bukkit.replicated.partly.completed;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.ListenerPriority;
@@ -9,14 +9,14 @@ import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.listeners.Shared;
+import com.vagdedes.spartan.listeners.Handlers;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
 
-public class Move extends PacketAdapter {
+public class Packet_Movement extends PacketAdapter {
 
-    public Move() {
+    public Packet_Movement() {
         super(
                 Register.plugin,
                 ListenerPriority.LOWEST,
@@ -82,7 +82,7 @@ public class Move extends PacketAdapter {
             } else if (!protocol.loaded) {
                 protocol.loaded = true;
             } else {
-                Shared.movement(
+                Handlers.playerMoveEvent(
                         new PlayerMoveEvent(
                                 player,
                                 from,
@@ -111,7 +111,7 @@ public class Move extends PacketAdapter {
             } else if (!protocol.loaded) {
                 protocol.loaded = true;
             } else {
-                Shared.movement(
+                Handlers.playerMoveEvent(
                         new PlayerMoveEvent(
                                 player,
                                 from,
