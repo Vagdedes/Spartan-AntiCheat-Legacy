@@ -46,6 +46,21 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class SpartanPlayer {
 
+    private static final Set<Enums.HackType> resetChecks;
+
+    static {
+        Set<Enums.HackType> set = new HashSet<>();
+
+        for (Enums.HackType hackType : Enums.HackType.values()) {
+            if (hackType.category == Enums.HackCategoryType.COMBAT
+                    || hackType.category == Enums.HackCategoryType.MOVEMENT
+                    || hackType.category == Enums.HackCategoryType.WORLD) {
+                set.add(hackType);
+            }
+        }
+        resetChecks = set;
+    }
+
     public final SpartanProtocol protocol;
     public final boolean bedrockPlayer;
     private final Map<PotionEffectType, SpartanPotionEffect> potionEffects;
@@ -90,8 +105,6 @@ public class SpartanPlayer {
     // Object
 
     public SpartanPlayer(SpartanProtocol protocol) {
-        Enums.HackType[] hackTypes = Enums.HackType.values();
-
         this.protocol = protocol;
         this.bedrockPlayer = BedrockCompatibility.isPlayer(protocol.player);
         this.dataType = bedrockPlayer ? Check.DataType.BEDROCK : Check.DataType.JAVA;
@@ -122,14 +135,20 @@ public class SpartanPlayer {
             );
         }
 
-        this.executors = new CheckExecutor[hackTypes.length];
+        this.executors = new CheckExecutor[Enums.HackType.values().length];
+        this.registerExecutors(null);
+    }
 
-        for (Enums.HackType hackType : hackTypes) {
+    private void registerExecutors(Set<Enums.HackType> registry) {
+        for (Enums.HackType hackType : Enums.HackType.values()) {
             try {
                 CheckExecutor executor = (CheckExecutor) hackType.executor
                         .getConstructor(hackType.getClass(), this.getClass())
                         .newInstance(hackType, this);
-                this.executors[hackType.ordinal()] = executor;
+
+                if (registry == null || registry.contains(hackType)) {
+                    this.executors[hackType.ordinal()] = executor;
+                }
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -197,11 +216,14 @@ public class SpartanPlayer {
         return executors[hackType.ordinal()];
     }
 
-    public void resetTrackers() {
+    public void resetData(boolean checks) {
         this.protocol.loaded = false;
 
         for (Trackers.TrackerType handlerType : Trackers.TrackerType.values()) {
-            trackers.remove(handlerType);
+            this.trackers.remove(handlerType);
+        }
+        if (checks) {
+            this.registerExecutors(resetChecks);
         }
     }
 

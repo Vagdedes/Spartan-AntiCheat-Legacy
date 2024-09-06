@@ -2,6 +2,7 @@ package com.vagdedes.spartan.listeners;
 
 import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
@@ -18,14 +19,16 @@ import org.bukkit.event.player.PlayerVelocityEvent;
 
 public class ReplicatedHandlers {
 
-    public static void receiveDamage(EntityDamageEvent e) {
+    public static void receiveDamage(EntityDamageEvent e, boolean packets) {
         Entity entity = e.getEntity();
 
         if (entity instanceof Player) {
-            SpartanPlayer p = SpartanBukkit.getProtocol((Player) entity).spartanPlayer;
+            SpartanProtocol protocol = SpartanBukkit.getProtocol((Player) entity);
 
-            // Objects
-            p.addReceivedDamage(e);
+            if (packets == protocol.packetsEnabled()) {
+                // Objects
+                protocol.spartanPlayer.addReceivedDamage(e);
+            }
         } else {
             Entity[] passengers = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
                     ? entity.getPassengers().toArray(new Entity[0])
@@ -34,92 +37,98 @@ public class ReplicatedHandlers {
             if (passengers.length > 0) {
                 for (Entity passenger : passengers) {
                     if (passenger instanceof Player) {
-                        SpartanPlayer p = SpartanBukkit.getProtocol((Player) passenger).spartanPlayer;
+                        SpartanProtocol protocol = SpartanBukkit.getProtocol((Player) passenger);
 
-                        if (p != null) {
-                            // Objects
-                            p.addReceivedDamage(e);
-                        }
+                        // Objects
+                        p.addReceivedDamage(e);
                     }
                 }
             }
         }
     }
 
-    public static void velocity(PlayerVelocityEvent e) {
-        SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer;
+    public static void velocity(PlayerVelocityEvent e, boolean packets) {
+        SpartanProtocol protocol = SpartanBukkit.getProtocol(e.getPlayer());
 
-        // Object
-        if (!e.isCancelled()) {
-            p.trackers.add(
-                    Trackers.TrackerType.ABSTRACT_VELOCITY,
-                    (int) (Math.ceil(e.getVelocity().length()) * TPS.maximum)
-            );
+        if (packets == protocol.packetsEnabled()) {
+            SpartanPlayer p = protocol.spartanPlayer;
+
+            // Object
+            if (!e.isCancelled()) {
+                p.trackers.add(
+                        Trackers.TrackerType.ABSTRACT_VELOCITY,
+                        (int) (Math.ceil(e.getVelocity().length()) * TPS.maximum)
+                );
+            }
+
+            // Detections
+            boolean cancelled = e.isCancelled();
+            p.getExecutor(Enums.HackType.Speed).handle(cancelled, e);
+            p.getExecutor(Enums.HackType.Velocity).handle(cancelled, e);
+            p.getExecutor(Enums.HackType.Simulation).handle(cancelled, e);
+            p.getExecutor(Enums.HackType.NoFall).handle(false, null);
         }
-
-        // Detections
-        boolean cancelled = e.isCancelled();
-        p.getExecutor(Enums.HackType.Speed).handle(cancelled, e);
-        p.getExecutor(Enums.HackType.Velocity).handle(cancelled, e);
-        p.getExecutor(Enums.HackType.Simulation).handle(cancelled, e);
-        p.getExecutor(Enums.HackType.NoFall).handle(false, null);
     }
 
     public static void movement(PlayerMoveEvent e, boolean packets) {
-        SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer;
-        Location nto = e.getTo();
+        SpartanProtocol protocol = SpartanBukkit.getProtocol(e.getPlayer());
 
-        if (nto == null) {
-            p.movement.judgeGround();
-            return;
+        if (packets == protocol.packetsEnabled()) {
+            SpartanPlayer p = protocol.spartanPlayer;
+            Location nto = e.getTo();
+
+            if (nto == null) {
+                p.movement.judgeGround();
+                return;
+            }
+            SpartanLocation vehicle = p.movement.getVehicleLocation();
+            SpartanLocation
+                    to = vehicle != null ? vehicle : new SpartanLocation(nto),
+                    from = new SpartanLocation(e.getFrom());
+
+            if (!packets && !to.world.equals(from.world)) {
+                p.resetData(true);
+            }
+            // Values
+            double xDiff = to.getX() - from.getX(),
+                    zDiff = to.getZ() - from.getZ(),
+                    preXZ = (xDiff * xDiff) + (zDiff * zDiff),
+                    toY = to.getY(),
+                    fromY = from.getY(),
+                    dis = Math.sqrt(preXZ + AlgebraUtils.getSquare(toY, fromY)),
+                    box = toY - to.getBlockY(),
+                    ver = toY - fromY,
+                    hor = Math.sqrt(preXZ);
+
+            if (!p.movement.processLastMoveEvent(
+                    nto,
+                    vehicle,
+                    to,
+                    from,
+                    dis,
+                    hor,
+                    ver,
+                    xDiff,
+                    zDiff,
+                    box
+            )) {
+                p.movement.judgeGround();
+                return;
+            }
+            MovementProcessing.run(p, to, ver, box);
+
+            // Detections
+            boolean cancelled = e.isCancelled();
+            p.getExecutor(Enums.HackType.Exploits).handle(cancelled, null);
+            p.getExecutor(Enums.HackType.ImpossibleInventory).run(cancelled);
+            p.getExecutor(Enums.HackType.NoFall).run(cancelled);
+            p.getExecutor(Enums.HackType.IrregularMovements).run(cancelled);
+            p.getExecutor(Enums.HackType.Speed).handle(cancelled, e);
+            p.getExecutor(Enums.HackType.Velocity).handle(cancelled, e);
+            p.getExecutor(Enums.HackType.KillAura).handle(cancelled, e);
+            p.getExecutor(Enums.HackType.Criticals).handle(cancelled, e);
+            p.getExecutor(Enums.HackType.Simulation).handle(cancelled, e);
         }
-        SpartanLocation vehicle = p.movement.getVehicleLocation();
-        SpartanLocation
-                to = vehicle != null ? vehicle : new SpartanLocation(nto),
-                from = new SpartanLocation(e.getFrom());
-
-        if (!packets && !to.world.equals(from.world)) {
-            p.resetTrackers();
-        }
-        // Values
-        double xDiff = to.getX() - from.getX(),
-                zDiff = to.getZ() - from.getZ(),
-                preXZ = (xDiff * xDiff) + (zDiff * zDiff),
-                toY = to.getY(),
-                fromY = from.getY(),
-                dis = Math.sqrt(preXZ + AlgebraUtils.getSquare(toY, fromY)),
-                box = toY - to.getBlockY(),
-                ver = toY - fromY,
-                hor = Math.sqrt(preXZ);
-
-        if (!p.movement.processLastMoveEvent(
-                nto,
-                vehicle,
-                to,
-                from,
-                dis,
-                hor,
-                ver,
-                xDiff,
-                zDiff,
-                box
-        )) {
-            p.movement.judgeGround();
-            return;
-        }
-        MovementProcessing.run(p, to, ver, box);
-
-        // Detections
-        boolean cancelled = e.isCancelled();
-        p.getExecutor(Enums.HackType.Exploits).handle(cancelled, null);
-        p.getExecutor(Enums.HackType.ImpossibleInventory).run(cancelled);
-        p.getExecutor(Enums.HackType.NoFall).run(cancelled);
-        p.getExecutor(Enums.HackType.IrregularMovements).run(cancelled);
-        p.getExecutor(Enums.HackType.Speed).handle(cancelled, e);
-        p.getExecutor(Enums.HackType.Velocity).handle(cancelled, e);
-        p.getExecutor(Enums.HackType.KillAura).handle(cancelled, e);
-        p.getExecutor(Enums.HackType.Criticals).handle(cancelled, e);
-        p.getExecutor(Enums.HackType.Simulation).handle(cancelled, e);
     }
 
 }

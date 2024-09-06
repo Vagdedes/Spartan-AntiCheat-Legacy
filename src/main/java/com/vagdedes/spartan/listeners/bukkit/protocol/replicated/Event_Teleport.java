@@ -23,7 +23,7 @@ public class Event_Teleport implements Listener {
         SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer;
 
         // Object
-        p.resetTrackers();
+        p.resetData(false);
         p.movement.judgeGround();
 
         // Detections
@@ -40,7 +40,7 @@ public class Event_Teleport implements Listener {
         p.getExecutor(Enums.HackType.NoFall).handle(false, null);
 
         // Objects
-        p.resetTrackers();
+        p.resetData(true);
         p.movement.setDetectionLocation();
     }
 
@@ -49,7 +49,7 @@ public class Event_Teleport implements Listener {
         SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer;
 
         // Objects
-        p.resetTrackers();
+        p.resetData(true);
         p.movement.setDetectionLocation();
 
         // Detections

@@ -12,7 +12,7 @@ public class Event_Velocity implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Velocity(PlayerVelocityEvent e) {
         if (!SpartanBukkit.getProtocol(e.getPlayer()).packetsEnabled()) {
-            ReplicatedHandlers.velocity(e);
+            ReplicatedHandlers.velocity(e, false);
         }
     }
 
