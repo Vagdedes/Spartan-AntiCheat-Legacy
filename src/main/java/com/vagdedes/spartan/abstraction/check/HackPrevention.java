@@ -5,7 +5,6 @@ import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
-import me.vagdedes.spartan.system.Enums;
 
 public class HackPrevention {
 
@@ -25,7 +24,7 @@ public class HackPrevention {
         this.expiration = 0L;
     }
 
-    HackPrevention(SpartanPlayer player, Enums.HackType hackType,
+    HackPrevention(CheckExecutor executor,
                    String information, double violations,
                    SpartanLocation location, int cancelTicks, boolean groundTeleport,
                    double damage) {
@@ -38,7 +37,10 @@ public class HackPrevention {
         this.expiration = cancelTicks <= 1
                 ? Long.MIN_VALUE
                 : System.currentTimeMillis() + (cancelTicks * TPS.tickTime);
-        player.getExecutor(hackType).violate(this, information, violations, time);
+
+        if (!executor.justImplemented()) {
+            executor.violate(this, information, violations, time);
+        }
     }
 
     private boolean isOneTime() {

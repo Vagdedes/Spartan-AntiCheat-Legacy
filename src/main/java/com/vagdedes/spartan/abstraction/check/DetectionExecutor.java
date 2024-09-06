@@ -22,8 +22,7 @@ public abstract class DetectionExecutor {
                                 int cancelTicks, boolean groundTeleport, double damage) {
         if (executor.canFunction()) {
             new HackPrevention(
-                    player,
-                    hackType,
+                    this.executor,
                     information,
                     violations,
                     location,

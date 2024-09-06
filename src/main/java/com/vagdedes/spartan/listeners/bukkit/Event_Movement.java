@@ -21,6 +21,7 @@ public class Event_Movement implements Listener {
         SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer;
 
         // Object
+        p.resetTrackers();
         p.movement.judgeGround();
 
         // Detections

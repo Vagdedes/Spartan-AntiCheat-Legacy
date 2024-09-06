@@ -53,6 +53,7 @@ public class Shared {
         Location nto = e.getTo();
 
         if (nto == null) {
+            p.movement.judgeGround();
             return;
         }
         SpartanLocation vehicle = p.movement.getVehicleLocation();
@@ -86,6 +87,7 @@ public class Shared {
                 zDiff,
                 box
         )) {
+            p.movement.judgeGround();
             return;
         }
         MovementProcessing.run(p, to, ver, box);

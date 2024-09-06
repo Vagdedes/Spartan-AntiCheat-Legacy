@@ -68,6 +68,7 @@ public class Speed extends CheckExecutor {
     private RayLine tick1move = new RayLine(0, 0);
     private Location f = null;
     private boolean simulationFlag = false;
+
     public Speed(Enums.HackType hackType, SpartanPlayer player) {
         super(hackType, player, 0, true);
     }
@@ -76,17 +77,18 @@ public class Speed extends CheckExecutor {
     public void handleInternal(boolean cancelled, Object object) {
         if (object instanceof PlayerMoveEvent) {
             moveTick((PlayerMoveEvent) object);
-        }
-        if (object instanceof PlayerVelocityEvent) {
+        } else if (object instanceof PlayerVelocityEvent) {
             PlayerVelocityEvent e = (PlayerVelocityEvent) object;
             Vector v = e.getVelocity();
             double dx = v.getX();
             double dz = v.getZ();
             multiplyVelo = Math.sqrt(dx * dx + dz * dz) * 2;
             velocity = 2;
+        } else if (object.toString().equals("TRIDENT")) {
+            multiply = 4.0D;
+        } else if (object.toString().equals("RIPTIDE")) {
+            multiply = 10.0D;
         }
-        if (object.equals(Material.TRIDENT)) multiply = 4.0D;
-        if (object.equals(Enchantment.RIPTIDE)) multiply = 10.0D;
     }
 
     private void moveTick(PlayerMoveEvent e) {
@@ -101,7 +103,7 @@ public class Speed extends CheckExecutor {
         double multiply = updateStats();
         double speed = r(Math.sqrt(dx * dx + dz * dz));
         double speedLimit = r(((onGround || onAir > 17)
-                        ? BASIC_SPEED[16] : BASIC_SPEED[onAir - 1]) * multiply);
+                ? BASIC_SPEED[16] : BASIC_SPEED[onAir - 1]) * multiply);
         double radiYaw = Math.toRadians(location.getYaw());
         RayLine lookRay = new RayLine(-Math.sin(radiYaw), Math.cos(radiYaw));
         RayLine moveRay = new RayLine(dx, dz);
@@ -111,11 +113,11 @@ public class Speed extends CheckExecutor {
         }
         double rayDiff = RayUtils.calculateRayLines(lookRay, moveRay);
         SpartanPotionEffect glideEffect = PlayerUtils.slowFall
-                        ? player.getPotionEffect(PotionEffectType.SLOW_FALLING, 0)
-                        : null;
+                ? player.getPotionEffect(PotionEffectType.SLOW_FALLING, 0)
+                : null;
         SpartanPotionEffect levitationEffect = PlayerUtils.levitation
-                        ? player.getPotionEffect(PotionEffectType.LEVITATION, 0)
-                        : null;
+                ? player.getPotionEffect(PotionEffectType.LEVITATION, 0)
+                : null;
 
         if (speed > speedLimit) {
             this.multiplyViolation = speed / speedLimit;
@@ -123,7 +125,7 @@ public class Speed extends CheckExecutor {
             this.violation = "type: straight line speeding [" + speed + "/" + speedLimit + "], onGround: " + onGround;
         }
         if (velocity == 0 && !player.bedrockPlayer && levitationEffect == null
-                        && glideEffect == null && !player.movement.isSwimming()) {
+                && glideEffect == null && !player.movement.isSwimming()) {
             double localSpeedLimit = r((speedLimit / 1.35) + 0.01);
             double localSpeedLimit2 = r((speedLimit / 1.6) + 0.01);
             double[] allowedRots = new double[]{0.0, 45.0, -45.0};
@@ -138,17 +140,17 @@ public class Speed extends CheckExecutor {
                 }
             }
             if (((correction == 0 || rayDiff > 88) && onGround && speed > localSpeedLimit)
-                            || ((airDiff > 45) && !onGround && speed > localSpeedLimit)) {
+                    || ((airDiff > 45) && !onGround && speed > localSpeedLimit)) {
                 this.multiplyViolation = speed / localSpeedLimit;
                 this.vl += 25 * multiplyViolation;
                 this.violation = "type: strafe line speeding [" +
-                                speed + "/" + localSpeedLimit + "], onGround: " + onGround + ", diff: " + rayDiff;
+                        speed + "/" + localSpeedLimit + "], onGround: " + onGround + ", diff: " + rayDiff;
             }
             if (onAir == 1 && rayDiff > 47 && speed > localSpeedLimit2) {
                 this.multiplyViolation = speed / localSpeedLimit2;
                 this.vl += 75 * multiplyViolation;
                 this.violation = "type: strafe jump speeding [" +
-                                speed + "/" + localSpeedLimit2 + "], onGround: " + onGround + ", diff: " + rayDiff;
+                        speed + "/" + localSpeedLimit2 + "], onGround: " + onGround + ", diff: " + rayDiff;
             }
         }
 
@@ -186,15 +188,15 @@ public class Speed extends CheckExecutor {
         boolean solidBlockOnTop = RayUtils.onSolidBlock(player, to.clone().add(0, 2, 0));
         m += getMaxSpeedAmplifier();
         SpartanPotionEffect dolphinEffect = PlayerUtils.dolphinsGrace
-                        ? this.player.getPotionEffect(PotionEffectType.DOLPHINS_GRACE, 0)
-                        : null;
+                ? this.player.getPotionEffect(PotionEffectType.DOLPHINS_GRACE, 0)
+                : null;
         SpartanPotionEffect speedEffect = this.player.getPotionEffect(PotionEffectType.SPEED, 0);
         SpartanPotionEffect glideEffect = PlayerUtils.slowFall
-                        ? player.getPotionEffect(PotionEffectType.SLOW_FALLING, 0)
-                        : null;
+                ? player.getPotionEffect(PotionEffectType.SLOW_FALLING, 0)
+                : null;
         SpartanPotionEffect levitationEffect = PlayerUtils.levitation
-                        ? player.getPotionEffect(PotionEffectType.LEVITATION, 0)
-                        : null;
+                ? player.getPotionEffect(PotionEffectType.LEVITATION, 0)
+                : null;
         if (PlayerUtils.soulSpeed && inventory.getBoots() != null) {
             int e = inventory.getBoots().getEnchantmentLevel(Enchantment.SOUL_SPEED);
             double v = (e + 1) * 0.4;
@@ -235,9 +237,9 @@ public class Speed extends CheckExecutor {
         }
 
         m *= 1 + (((speedEffect != null ? (speedEffect.bukkitEffect.getAmplifier() + 1) * 0.4 : 0))
-                        + (this.onIce(player, this.player.movement.getLocation().clone()) ? 0.66 : 0)
-                        + multiply + multiplyVelo
-                        + ((this.player.protocol.isOnGround()) ? multiplyFriction : 0));
+                + (this.onIce(player, this.player.movement.getLocation().clone()) ? 0.66 : 0)
+                + multiply + multiplyVelo
+                + ((this.player.protocol.isOnGround()) ? multiplyFriction : 0));
         if (levitationEffect != null || glideEffect != null) m *= 1.3;
         SpartanBlock block = new SpartanLocation(this.player.protocol.getLocation()).getBlock();
         if (BlockUtils.areWebs(block.material)) {
@@ -264,6 +266,7 @@ public class Speed extends CheckExecutor {
         }
         return slime;
     }
+
     private boolean onIce(SpartanPlayer player, SpartanLocation location) {
         World world = player.getWorld();
         for (int x = location.getBlockX() - 1; x <= location.getBlockX() + 1; x++) {
@@ -287,6 +290,7 @@ public class Speed extends CheckExecutor {
         this.f = this.player.movement.getEventFromLocation().getBukkitLocation();
         this.simulationFlag = true;
     }
+
     private boolean allowedAngle(double angle) {
         double a = angle / 45;
         int wrapGoodMath = (int) Math.floor(a);
