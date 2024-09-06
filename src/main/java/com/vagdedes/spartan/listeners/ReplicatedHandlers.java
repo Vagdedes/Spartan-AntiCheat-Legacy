@@ -1,21 +1,64 @@
 package com.vagdedes.spartan.listeners;
 
 import com.vagdedes.spartan.abstraction.data.Trackers;
-import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
+import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
+import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Location;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerVelocityEvent;
 
-public class Handlers {
+public class ReplicatedHandlers {
 
-    public static void playerVelocityEvent(PlayerVelocityEvent e) {
+    public static void receiveDamage(EntityDamageEvent e) {
+        Entity entity = e.getEntity();
+
+        if (entity instanceof Player) {
+            Player n = (Player) entity;
+
+            if (!ProtocolLib.isTemporary(n)) {
+                SpartanPlayer p = SpartanBukkit.getProtocol(n).spartanPlayer;
+
+                if (p == null) {
+                    return;
+                }
+                // Objects
+                p.addReceivedDamage(e);
+            }
+        } else {
+            Entity[] passengers = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
+                    ? entity.getPassengers().toArray(new Entity[0])
+                    : new Entity[]{entity.getPassenger()};
+
+            if (passengers.length > 0) {
+                for (Entity passenger : passengers) {
+                    if (passenger instanceof Player) {
+                        Player n = (Player) passenger;
+
+                        if (!ProtocolLib.isTemporary(n)) {
+                            SpartanPlayer p = SpartanBukkit.getProtocol(n).spartanPlayer;
+
+                            if (p != null) {
+                                // Objects
+                                p.addReceivedDamage(e);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public static void velocity(PlayerVelocityEvent e) {
         SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer;
 
         // Object
@@ -34,21 +77,7 @@ public class Handlers {
         p.getExecutor(Enums.HackType.NoFall).handle(false, null);
     }
 
-    public static void attack(PlayerAttackEvent e) {
-        SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer;
-        boolean cancelled = e.isCancelled();
-
-        p.getExecutor(Enums.HackType.NoSwing).handle(cancelled, e);
-        p.getExecutor(Enums.HackType.HitReach).handle(cancelled, e);
-    }
-
-    public static void useEntity(PlayerAttackEvent e) {
-        SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer.getExecutor(
-                Enums.HackType.KillAura
-        ).handle(e.isCancelled(), e);
-    }
-
-    public static void playerMoveEvent(PlayerMoveEvent e, boolean packets) {
+    public static void movement(PlayerMoveEvent e, boolean packets) {
         SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer;
         Location nto = e.getTo();
 

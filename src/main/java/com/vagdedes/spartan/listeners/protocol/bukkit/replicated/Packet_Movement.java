@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.listeners.protocol.bukkit.replicated.partly.completed;
+package com.vagdedes.spartan.listeners.protocol.bukkit.replicated;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.ListenerPriority;
@@ -9,7 +9,8 @@ import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.listeners.Handlers;
+import com.vagdedes.spartan.listeners.ReplicatedHandlers;
+import com.vagdedes.spartan.utils.minecraft.protocol.ProtocolTools;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -50,7 +51,7 @@ public class Packet_Movement extends PacketAdapter {
     private static void movePacket(PacketEvent event, SpartanProtocol protocol) {
         PacketContainer packet = event.getPacket();
         PacketType type = event.getPacket().getType();
-        protocol.setOnGround(onGroundPacketLevel(event));
+        protocol.setOnGround(ProtocolTools.onGroundPacketLevel(event));
 
         /*if (!protocol.teleportEngine.isEmpty()) {
             for (TeleportData teleportData : protocol.teleportEngine) {
@@ -77,12 +78,12 @@ public class Packet_Movement extends PacketAdapter {
             protocol.getLocation().setWorld(player.getWorld());
 
             if (!from.getWorld().equals(protocol.getLocation().getWorld())
-                    || invalidTeleport(protocol.getLocation())) {
+                    || ProtocolTools.invalidTeleport(protocol.getLocation())) {
                 protocol.spartanPlayer.resetTrackers();
             } else if (!protocol.loaded) {
                 protocol.loaded = true;
             } else {
-                Handlers.playerMoveEvent(
+                ReplicatedHandlers.movement(
                         new PlayerMoveEvent(
                                 player,
                                 from,
@@ -95,7 +96,7 @@ public class Packet_Movement extends PacketAdapter {
                 || type.equals(PacketType.Play.Client.POSITION_LOOK)) {
             Player player = event.getPlayer();
             Location from = protocol.getLocation().clone(),
-                    location = readLocation(event);
+                    location = ProtocolTools.readLocation(event);
             protocol.getLocation().setX(location.getX());
             protocol.getLocation().setY(location.getY());
             protocol.getLocation().setZ(location.getZ());
@@ -106,12 +107,12 @@ public class Packet_Movement extends PacketAdapter {
                 protocol.getLocation().setPitch(packet.getFloat().read(1));
             }
             if (!from.getWorld().equals(location.getWorld())
-                    || invalidTeleport(location)) {
+                    || ProtocolTools.invalidTeleport(location)) {
                 protocol.spartanPlayer.resetTrackers();
             } else if (!protocol.loaded) {
                 protocol.loaded = true;
             } else {
-                Handlers.playerMoveEvent(
+                ReplicatedHandlers.movement(
                         new PlayerMoveEvent(
                                 player,
                                 from,
@@ -121,27 +122,6 @@ public class Packet_Movement extends PacketAdapter {
                 );
             }
         }
-    }
-
-    static Location readLocation(PacketEvent event) {
-        PacketContainer packet = event.getPacket();
-        return new Location(
-                event.getPlayer().getWorld(),
-                packet.getDoubles().read(0),
-                packet.getDoubles().read(1),
-                packet.getDoubles().read(2)
-        );
-    }
-
-    private static boolean onGroundPacketLevel(PacketEvent event) {
-        PacketContainer packet = event.getPacket();
-        return packet.getBooleans().read(0);
-    }
-
-    private static boolean invalidTeleport(Location location) {
-        return location.getX() == 8.5
-                || location.getZ() == 8.5
-                || location.getX() + location.getZ() == 0;
     }
 
 }

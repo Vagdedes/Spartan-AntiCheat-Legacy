@@ -63,7 +63,7 @@ public class Speed extends CheckExecutor {
     private int onAir = 0, onGround = 0, velocity = 0;
     private double multiply = 0, multiplyFriction = 0, multiplyVelo = 0, vl = 0, multiplyViolation;
     private double yaw1move = 0;
-    private String violation = "";
+    private String violation = null;
     private RayLine tick1move = new RayLine(0, 0);
     private Location f = null;
     private boolean simulationFlag = false;
@@ -121,7 +121,12 @@ public class Speed extends CheckExecutor {
         if (speed > speedLimit) {
             this.multiplyViolation = speed / speedLimit;
             this.vl += 35 * multiplyViolation;
-            this.violation = "type: straight line speeding [" + speed + "/" + speedLimit + "], onGround: " + onGround;
+
+            if (hackType.getCheck().getBooleanOption("straight_line_speeding", true)) {
+                this.violation = "type: straight line speeding [" + speed + "/" + speedLimit + "], onGround: " + onGround;
+            } else {
+                this.violation = null;
+            }
         }
         if (velocity == 0 && !player.bedrockPlayer && levitationEffect == null
                 && glideEffect == null && !player.movement.isSwimming()) {
@@ -142,21 +147,34 @@ public class Speed extends CheckExecutor {
                     || ((airDiff > 45) && !onGround && speed > localSpeedLimit)) {
                 this.multiplyViolation = speed / localSpeedLimit;
                 this.vl += 25 * multiplyViolation;
-                this.violation = "type: strafe line speeding [" +
-                        speed + "/" + localSpeedLimit + "], onGround: " + onGround + ", diff: " + rayDiff;
+
+                if (hackType.getCheck().getBooleanOption("strafe_line_speeding", true)) {
+                    this.violation = "type: strafe line speeding [" +
+                            speed + "/" + localSpeedLimit + "], onGround: " + onGround + ", diff: " + rayDiff;
+                } else {
+                    this.violation = null;
+                }
             }
             if (onAir == 1 && rayDiff > 47 && speed > localSpeedLimit2) {
                 this.multiplyViolation = speed / localSpeedLimit2;
                 this.vl += 75 * multiplyViolation;
-                this.violation = "type: strafe jump speeding [" +
-                        speed + "/" + localSpeedLimit2 + "], onGround: " + onGround + ", diff: " + rayDiff;
+
+                if (hackType.getCheck().getBooleanOption("strafe_jump_speeding", true)) {
+                    this.violation = "type: strafe jump speeding [" +
+                            speed + "/" + localSpeedLimit2 + "], onGround: " + onGround + ", diff: " + rayDiff;
+                } else {
+                    this.violation = null;
+                }
             }
         }
 
 
         if (this.vl > 125) {
             this.vl /= 2;
-            cancel(this.violation, this.multiplyViolation);
+
+            if (this.violation != null) {
+                cancel(this.violation, this.multiplyViolation);
+            }
             startSimulationFlag();
         }
 

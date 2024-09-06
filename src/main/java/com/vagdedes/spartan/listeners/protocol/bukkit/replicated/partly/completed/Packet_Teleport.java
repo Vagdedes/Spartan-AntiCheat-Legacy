@@ -8,6 +8,7 @@ import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.utils.minecraft.protocol.ProtocolTools;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -57,7 +58,10 @@ public class Packet_Teleport extends PacketAdapter {
         PacketType packetType = event.getPacket().getType();
 
         if (packetType.equals(PacketType.Play.Server.POSITION)) {
-            Location teleportLocation = add(protocol.getLocation().clone(), Packet_Movement.readLocation(event));
+            Location teleportLocation = add(
+                    protocol.getLocation().clone(),
+                    ProtocolTools.readLocation(event)
+            );
             protocol.setLocation(teleportLocation);
 
             if (protocol.mutateTeleport) {

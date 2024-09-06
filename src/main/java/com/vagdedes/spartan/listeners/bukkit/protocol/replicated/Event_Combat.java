@@ -1,11 +1,11 @@
-package com.vagdedes.spartan.listeners.bukkit;
+package com.vagdedes.spartan.listeners.bukkit.protocol.replicated;
 
 import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.listeners.Handlers;
+import com.vagdedes.spartan.listeners.CustomHandlers;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -15,7 +15,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityShootBowEvent;
 
 public class Event_Combat implements Listener {
 
@@ -67,7 +66,7 @@ public class Event_Combat implements Listener {
                     Player player = (Player) damager;
 
                     if (!ProtocolLib.isTemporary(player)) {
-                        Handlers.attack(new PlayerAttackEvent(
+                        CustomHandlers.attack(new PlayerAttackEvent(
                                 player,
                                 (LivingEntity) entity,
                                 e.isCancelled()
@@ -153,29 +152,6 @@ public class Event_Combat implements Listener {
                             }
                         }
                     }
-                }
-            }
-        }
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    private void BowShot(EntityShootBowEvent e) {
-        Entity entity = e.getEntity();
-
-        if (entity instanceof Player) {
-            Player n = (Player) entity;
-
-            if (!ProtocolLib.isTemporary(n)) {
-                SpartanPlayer p = SpartanBukkit.getProtocol(n).spartanPlayer;
-
-                if (p == null) {
-                    return;
-                }
-                // Detections
-                p.getExecutor(Enums.HackType.FastBow).handle(e.isCancelled(), e);
-
-                if (p.getExecutor(Enums.HackType.FastBow).prevent()) {
-                    e.setCancelled(true);
                 }
             }
         }

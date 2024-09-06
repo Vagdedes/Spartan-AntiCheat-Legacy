@@ -8,14 +8,8 @@ import com.vagdedes.spartan.functionality.npc.NPCManager;
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.listeners.bukkit.Event_Combat;
-import com.vagdedes.spartan.listeners.bukkit.Event_Potion;
-import com.vagdedes.spartan.listeners.bukkit.Event_Trident;
 import com.vagdedes.spartan.listeners.bukkit.protocol.replicated.*;
-import com.vagdedes.spartan.listeners.bukkit.standalone.Event_Chat;
-import com.vagdedes.spartan.listeners.bukkit.standalone.Event_Elytra;
-import com.vagdedes.spartan.listeners.bukkit.standalone.Event_Inventory;
-import com.vagdedes.spartan.listeners.bukkit.standalone.Event_Plugin;
+import com.vagdedes.spartan.listeners.bukkit.standalone.*;
 import com.vagdedes.spartan.listeners.bukkit.standalone.chunks.Event_Chunks;
 import com.vagdedes.spartan.utils.minecraft.server.ProxyUtils;
 import org.bukkit.Bukkit;
@@ -54,13 +48,15 @@ public class Register extends JavaPlugin {
         Config.settings.runOnLogin();
 
         // Listeners (More may be registered elsewhere)
-        enable(new Event_Status());
+        enable(new Event_Join());
+        enable(new Event_Leave());
         enable(new Event_Vehicle());
         enable(new Event_Chat());
         enable(new Event_Plugin());
         enable(new Event_World());
         enable(new Event_Inventory());
         enable(new Event_Combat());
+        enable(new Event_Bow());
         enable(new Event_Health());
         enable(new Event_Movement());
         enable(new Event_Teleport());

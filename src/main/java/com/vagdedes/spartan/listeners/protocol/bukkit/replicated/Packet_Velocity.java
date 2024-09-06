@@ -9,7 +9,7 @@ import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.listeners.Handlers;
+import com.vagdedes.spartan.listeners.ReplicatedHandlers;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.util.Vector;
@@ -44,7 +44,7 @@ public class Packet_Velocity extends PacketAdapter {
             double x = packet.getIntegers().read(1).doubleValue() / 8000.0D,
                     y = packet.getIntegers().read(2).doubleValue() / 8000.0D,
                     z = packet.getIntegers().read(3).doubleValue() / 8000.0D;
-            Handlers.playerVelocityEvent(new PlayerVelocityEvent(player, new Vector(x, y, z)));
+            ReplicatedHandlers.velocity(new PlayerVelocityEvent(player, new Vector(x, y, z)));
         }
     }
 

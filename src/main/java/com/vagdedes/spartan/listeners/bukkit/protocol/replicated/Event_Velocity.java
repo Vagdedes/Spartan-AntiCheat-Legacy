@@ -2,7 +2,7 @@ package com.vagdedes.spartan.listeners.bukkit.protocol.replicated;
 
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.listeners.Handlers;
+import com.vagdedes.spartan.listeners.ReplicatedHandlers;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -19,7 +19,7 @@ public class Event_Velocity implements Listener {
             return;
         }
         if (!SpartanBukkit.getProtocol(n).packetsEnabled()) {
-            Handlers.playerVelocityEvent(e);
+            ReplicatedHandlers.velocity(e);
         }
     }
 

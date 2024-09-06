@@ -8,7 +8,6 @@ import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.listeners.protocol.bukkit.replicated.partly.completed.Packet_Teleport;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.util.Vector;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -81,10 +80,6 @@ public class SpartanProtocol {
         return packetsEnabled()
                 ? this.location
                 : this.player.getLocation();
-    }
-
-    public Vector getVelocity() {
-        return this.velocity;
     }
 
     public int getPing() {

@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.listeners.bukkit;
+package com.vagdedes.spartan.listeners.bukkit.protocol.replicated;
 
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
