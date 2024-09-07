@@ -27,7 +27,7 @@ public class ProtocolLib {
     public static void run() {
         checkClass();
 
-        if (!protocol) {
+        if (!bukkit) {
             BackgroundProtocolLib.run();
             protocol = true;
         }
@@ -37,7 +37,7 @@ public class ProtocolLib {
         checkClass();
         Event_Chunks.clear();
 
-        if (!bukkit) {
+        if (!protocol) {
             Register.registerProtocolAlternatives();
             bukkit = true;
         }
