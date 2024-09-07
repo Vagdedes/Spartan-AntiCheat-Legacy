@@ -15,7 +15,11 @@ import org.bukkit.inventory.ItemStack;
 public class Packet_Trident extends PacketAdapter {
 
     public Packet_Trident() {
-        super(Register.plugin, ListenerPriority.LOWEST, PacketType.Play.Client.USE_ITEM);
+        super(
+                Register.plugin,
+                ListenerPriority.LOWEST,
+                PacketType.Play.Client.USE_ITEM
+        );
     }
 
     @Override

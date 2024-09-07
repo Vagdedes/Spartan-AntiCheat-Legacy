@@ -77,13 +77,13 @@ public class Packet_Movement extends PacketAdapter {
             } else if (!protocol.loaded) {
                 protocol.loaded = true;
             } else {
-                Event_Movement.event(
-                        new PlayerMoveEvent(
-                                player,
-                                from,
-                                protocol.getLocation()
-                        )
+                PlayerMoveEvent bukkitEvent = new PlayerMoveEvent(
+                        player,
+                        from,
+                        protocol.getLocation()
                 );
+                bukkitEvent.setCancelled(event.isCancelled());
+                Event_Movement.event(bukkitEvent);
             }
         } else if (type.equals(PacketType.Play.Client.POSITION)
                 || type.equals(PacketType.Play.Client.POSITION_LOOK)) {
@@ -105,13 +105,13 @@ public class Packet_Movement extends PacketAdapter {
             } else if (!protocol.loaded) {
                 protocol.loaded = true;
             } else {
-                Event_Movement.event(
-                        new PlayerMoveEvent(
-                                player,
-                                from,
-                                protocol.getLocation()
-                        )
+                PlayerMoveEvent bukkitEvent = new PlayerMoveEvent(
+                        player,
+                        from,
+                        protocol.getLocation()
                 );
+                bukkitEvent.setCancelled(event.isCancelled());
+                Event_Movement.event(bukkitEvent);
             }
         }
     }

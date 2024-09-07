@@ -14,9 +14,12 @@ import org.bukkit.entity.Player;
 public class Packet_Vehicle extends PacketAdapter {
 
     public Packet_Vehicle() {
-        super(Register.plugin, ListenerPriority.HIGHEST,
-                        PacketType.Play.Client.STEER_VEHICLE,
-                        PacketType.Play.Server.ATTACH_ENTITY);
+        super(
+                Register.plugin,
+                ListenerPriority.HIGHEST,
+                PacketType.Play.Client.STEER_VEHICLE,
+                PacketType.Play.Server.ATTACH_ENTITY
+        );
     }
 
     @Override

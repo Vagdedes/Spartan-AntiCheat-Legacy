@@ -16,9 +16,12 @@ import java.util.Collection;
 public class Packet_Potion extends PacketAdapter {
 
     public Packet_Potion() {
-        super(Register.plugin, ListenerPriority.HIGHEST,
-                        PacketType.Play.Server.ENTITY_EFFECT,
-                        PacketType.Play.Server.REMOVE_ENTITY_EFFECT);
+        super(
+                Register.plugin,
+                ListenerPriority.HIGHEST,
+                PacketType.Play.Server.ENTITY_EFFECT,
+                PacketType.Play.Server.REMOVE_ENTITY_EFFECT
+        );
     }
 
     @Override

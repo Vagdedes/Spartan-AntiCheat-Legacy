@@ -16,10 +16,13 @@ import org.bukkit.entity.Player;
 public class Packet_World extends PacketAdapter {
 
     public Packet_World() {
-        super(Register.plugin, ListenerPriority.HIGHEST,
-                        PacketType.Play.Client.BLOCK_DIG,
-                        PacketType.Play.Client.BLOCK_PLACE,
-                        PacketType.Play.Client.ARM_ANIMATION);
+        super(
+                Register.plugin,
+                ListenerPriority.HIGHEST,
+                PacketType.Play.Client.BLOCK_DIG,
+                PacketType.Play.Client.BLOCK_PLACE,
+                PacketType.Play.Client.ARM_ANIMATION
+        );
     }
 
     @Override
@@ -27,6 +30,7 @@ public class Packet_World extends PacketAdapter {
         Player player = event.getPlayer();
         SpartanPlayer spartanPlayer = SpartanBukkit.getProtocol(player).spartanPlayer;
         PacketType packetType = event.getPacketType();
+
         if (packetType.equals(PacketType.Play.Client.BLOCK_DIG)) {
             handleBlockBreak(event, spartanPlayer);
         } else if (packetType.equals(PacketType.Play.Client.BLOCK_PLACE)) {
