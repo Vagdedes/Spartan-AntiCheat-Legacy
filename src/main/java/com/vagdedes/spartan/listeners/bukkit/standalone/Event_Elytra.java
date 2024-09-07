@@ -12,7 +12,7 @@ import org.bukkit.event.entity.EntityToggleGlideEvent;
 public class Event_Elytra implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    private void GlideEvent(EntityToggleGlideEvent e) {
+    private void Event(EntityToggleGlideEvent e) {
         Entity entity = e.getEntity();
 
         if (entity instanceof Player) {

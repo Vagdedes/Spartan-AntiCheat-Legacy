@@ -11,7 +11,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 public class Event_Chat implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    private void Chat(AsyncPlayerChatEvent e) {
+    private void Event(AsyncPlayerChatEvent e) {
         SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer;
 
         // Detections

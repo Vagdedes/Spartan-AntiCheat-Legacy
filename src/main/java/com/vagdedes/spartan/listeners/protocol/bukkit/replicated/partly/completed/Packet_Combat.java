@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.listeners.protocol;
+package com.vagdedes.spartan.listeners.protocol.bukkit.replicated.partly.completed;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.ListenerPriority;
@@ -18,11 +18,11 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class Attack extends PacketAdapter {
+public class Packet_Combat extends PacketAdapter {
 
     private final Map<UUID, Integer> pendingAttacks = new OverflowMap<>(new ConcurrentHashMap<>(), 1_024);
 
-    public Attack() {
+    public Packet_Combat() {
         super(
                 Register.plugin,
                 ListenerPriority.HIGHEST,

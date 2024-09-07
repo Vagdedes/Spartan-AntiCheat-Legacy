@@ -52,11 +52,7 @@ public class Event_Combat implements Listener {
                     }
                 }
             }
-            if (entityAttack
-                    && (entityIsPlayer
-                    && !SpartanBukkit.getProtocol((Player) entity).packetsEnabled()
-                    || entity instanceof LivingEntity
-                    && !SpartanBukkit.packetsEnabled())) {
+            if (entityAttack && (entityIsPlayer || entity instanceof LivingEntity)) {
                 CustomHandlers.attack(new PlayerAttackEvent(
                         (Player) damager,
                         (LivingEntity) entity,
