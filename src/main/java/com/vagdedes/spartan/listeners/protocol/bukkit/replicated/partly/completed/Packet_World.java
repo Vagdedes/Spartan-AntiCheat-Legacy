@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.listeners.protocol.bukkit.replicated.not.implemented;
+package com.vagdedes.spartan.listeners.protocol.bukkit.replicated.partly.completed;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.ListenerPriority;

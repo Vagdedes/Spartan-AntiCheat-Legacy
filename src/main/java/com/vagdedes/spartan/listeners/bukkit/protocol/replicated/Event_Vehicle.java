@@ -16,29 +16,31 @@ import org.bukkit.event.vehicle.VehicleExitEvent;
 
 public class Event_Vehicle implements Listener {
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public static void death(EntityDeathEvent e) {
-        Entity entity = e.getEntity();
-        Entity[] passengers = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
-                ? entity.getPassengers().toArray(new Entity[0])
-                : new Entity[]{entity.getPassenger()};
+        if (!e.isCancelled()) {
+            Entity entity = e.getEntity();
+            Entity[] passengers = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
+                    ? entity.getPassengers().toArray(new Entity[0])
+                    : new Entity[]{entity.getPassenger()};
 
-        if (passengers.length > 0) {
-            Enums.HackType[] hackTypes = new Enums.HackType[]{
-                    Enums.HackType.NoFall,
-                    Enums.HackType.IrregularMovements,
-            };
+            if (passengers.length > 0) {
+                Enums.HackType[] hackTypes = new Enums.HackType[]{
+                        Enums.HackType.NoFall,
+                        Enums.HackType.IrregularMovements,
+                };
 
-            for (Entity passenger : passengers) {
-                if (passenger instanceof Player) {
-                    SpartanPlayer p = SpartanBukkit.getProtocol((Player) passenger).spartanPlayer;
+                for (Entity passenger : passengers) {
+                    if (passenger instanceof Player) {
+                        SpartanPlayer p = SpartanBukkit.getProtocol((Player) passenger).spartanPlayer;
 
-                    for (Enums.HackType hackType : hackTypes) {
-                        p.getExecutor(hackType).addDisableCause(
-                                hackType.toString(),
-                                null,
-                                1
-                        );
+                        for (Enums.HackType hackType : hackTypes) {
+                            p.getExecutor(hackType).addDisableCause(
+                                    hackType.toString(),
+                                    null,
+                                    1
+                            );
+                        }
                     }
                 }
             }
@@ -55,13 +57,15 @@ public class Event_Vehicle implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public static void exit(VehicleExitEvent e) {
-        Entity en = e.getExited();
+        if (!e.isCancelled()) {
+            Entity en = e.getExited();
 
-        if (en instanceof Player) {
-            SpartanPlayer p = SpartanBukkit.getProtocol((Player) en).spartanPlayer;
-            p.trackers.add(Trackers.TrackerType.VEHICLE, "exit", 5);
+            if (en instanceof Player) {
+                SpartanPlayer p = SpartanBukkit.getProtocol((Player) en).spartanPlayer;
+                p.trackers.add(Trackers.TrackerType.VEHICLE, "exit", 5);
+            }
         }
     }
 

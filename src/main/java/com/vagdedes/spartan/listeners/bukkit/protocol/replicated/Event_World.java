@@ -205,15 +205,19 @@ public class Event_World implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public static void piston(BlockPistonExtendEvent e) {
-        // Handlers
-        Piston.run(e.getBlock(), e.getBlocks());
+        if (!e.isCancelled()) {
+            // Handlers
+            Piston.run(e.getBlock(), e.getBlocks());
+        }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public static void entityExplosion(EntityExplodeEvent e) {
-        if (v1_21 && SpartanBukkit.getPlayerCount() > 0) {
+        if (v1_21
+                && !e.isCancelled()
+                && SpartanBukkit.getPlayerCount() > 0) {
             Location location = e.getLocation();
             Collection<Entity> entities = location.getNearbyEntities(
                     CombatUtils.maxHitDistance,
