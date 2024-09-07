@@ -12,7 +12,7 @@ import org.bukkit.event.entity.EntityPotionEffectEvent;
 public class Event_Potion implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    private void Event(EntityPotionEffectEvent e) {
+    public static void event(EntityPotionEffectEvent e) {
         Entity entity = e.getEntity();
 
         if (entity instanceof Player) {

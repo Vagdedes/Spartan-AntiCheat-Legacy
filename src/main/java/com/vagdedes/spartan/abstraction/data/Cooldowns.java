@@ -2,7 +2,6 @@ package com.vagdedes.spartan.abstraction.data;
 
 import com.vagdedes.spartan.functionality.server.TPS;
 
-import java.util.Iterator;
 import java.util.Map;
 
 public class Cooldowns {
@@ -45,18 +44,6 @@ public class Cooldowns {
     public void remove(String[] names) {
         for (String name : names) {
             storage.remove(name);
-        }
-    }
-
-    public void clear(String s) {
-        if (!storage.isEmpty()) {
-            Iterator<String> iterator = storage.keySet().iterator();
-
-            while (iterator.hasNext()) {
-                if (iterator.next().contains(s)) {
-                    iterator.remove();
-                }
-            }
         }
     }
 

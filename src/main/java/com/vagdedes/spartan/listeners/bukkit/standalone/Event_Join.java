@@ -34,10 +34,8 @@ public class Event_Join implements Listener {
         p.getExecutor(Enums.HackType.NoFall).handle(false, null);
 
         SpartanBukkit.runDelayedTask(p, () -> {
-            if (p != null) {
-                Config.settings.runOnLogin(p);
-                CloudBase.announce(p);
-            }
+            Config.settings.runOnLogin(p);
+            CloudBase.announce(p);
         }, 10L);
     }
 

@@ -36,11 +36,10 @@ public class ProjectKorra implements Listener {
             Entity entity = e.getEntity();
 
             if (entity instanceof Player) {
-                SpartanPlayer p = SpartanBukkit.getProtocol((Player) entity).spartanPlayer;
-
-                if (p != null) {
-                    evadeCombatFPs(p, 60);
-                }
+                evadeCombatFPs(
+                        SpartanBukkit.getProtocol((Player) entity).spartanPlayer,
+                        60
+                );
             }
         }
     }

@@ -8,7 +8,7 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.listeners.ReplicatedHandlers;
+import com.vagdedes.spartan.listeners.bukkit.protocol.replicated.Event_Movement;
 import com.vagdedes.spartan.utils.minecraft.protocol.ProtocolTools;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -77,13 +77,12 @@ public class Packet_Movement extends PacketAdapter {
             } else if (!protocol.loaded) {
                 protocol.loaded = true;
             } else {
-                ReplicatedHandlers.movement(
+                Event_Movement.event(
                         new PlayerMoveEvent(
                                 player,
                                 from,
                                 protocol.getLocation()
-                        ),
-                        true
+                        )
                 );
             }
         } else if (type.equals(PacketType.Play.Client.POSITION)
@@ -106,13 +105,12 @@ public class Packet_Movement extends PacketAdapter {
             } else if (!protocol.loaded) {
                 protocol.loaded = true;
             } else {
-                ReplicatedHandlers.movement(
+                Event_Movement.event(
                         new PlayerMoveEvent(
                                 player,
                                 from,
                                 protocol.getLocation()
-                        ),
-                        true
+                        )
                 );
             }
         }

@@ -14,7 +14,7 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 public class Event_Health implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    private void Food(FoodLevelChangeEvent e) {
+    public static void food(FoodLevelChangeEvent e) {
         Entity entity = e.getEntity();
 
         if (entity instanceof Player) {
@@ -32,7 +32,7 @@ public class Event_Health implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    private void Regen(EntityRegainHealthEvent e) {
+    public static void regen(EntityRegainHealthEvent e) {
         Entity entity = e.getEntity();
 
         if (entity instanceof Player) {

@@ -1,7 +1,6 @@
 package com.vagdedes.spartan.functionality.notifications;
 
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
@@ -28,11 +27,7 @@ public class DetectionNotifications {
             List<SpartanPlayer> list = new ArrayList<>(notifications.size());
 
             for (UUID uuid : notifications.keySet()) {
-                SpartanProtocol p = SpartanBukkit.getProtocol(uuid);
-
-                if (p != null) {
-                    list.add(p.spartanPlayer);
-                }
+                list.add(SpartanBukkit.getProtocol(uuid).spartanPlayer);
             }
             return list;
         }

@@ -23,20 +23,21 @@ public class Vehicles implements Listener {
     public static final String
             DRILL = "drill",
             TRACTOR = "tractor";
+    private static final String[] types = new String[]{
+            DRILL,
+            TRACTOR
+    };
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     private void Enter(VehicleEnterEvent e) {
         if (Compatibility.CompatibilityType.VEHICLES.isFunctional()) {
             SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer;
+            VehicleType vehicleType = e.getVehicleType();
 
-            if (p != null) {
-                VehicleType vehicleType = e.getVehicleType();
-
-                if (vehicleType == VehicleType.DRILL) {
-                    add(p, Vehicles.DRILL);
-                } else if (vehicleType == VehicleType.TRACTOR) {
-                    add(p, Vehicles.TRACTOR);
-                }
+            if (vehicleType == VehicleType.DRILL) {
+                add(p, Vehicles.DRILL);
+            } else if (vehicleType == VehicleType.TRACTOR) {
+                add(p, Vehicles.TRACTOR);
             }
         }
     }
@@ -46,18 +47,22 @@ public class Vehicles implements Listener {
         if (Compatibility.CompatibilityType.VEHICLES.isFunctional()) {
             SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer;
 
-            if (p != null) {
-                cooldowns.clear(key);
+            for (String type : types) {
+                cooldowns.remove(key(p, type));
             }
         }
     }
 
+    private static String key(SpartanPlayer p, String type) {
+        return p.protocol.getUUID() + "=" + key + type;
+    }
+
     private static void add(SpartanPlayer p, String type) {
-        cooldowns.add(p.protocol.getUUID() + "=" + key + type, 20);
+        cooldowns.add(key(p, type), 20);
     }
 
     public static boolean has(SpartanPlayer p, String type) {
-        return !cooldowns.canDo(p.protocol.getUUID() + "=" + key + type);
+        return !cooldowns.canDo(key(p, type));
     }
 
     public static boolean has(SpartanPlayer p, String[] types) {

@@ -91,10 +91,7 @@ public class FastEat extends CheckExecutor {
             if (lvl > player.getInstance().getFoodLevel()
                     && (checkDelay() || checkEating())) {
                 Player p = player.getInstance();
-
-                if (p != null) {
-                    p.setFoodLevel(player.getInstance().getFoodLevel() - (lvl - player.getInstance().getFoodLevel()));
-                }
+                p.setFoodLevel(p.getFoodLevel() - (lvl - p.getFoodLevel()));
             }
         } else if (!player.bedrockPlayer) {
             PlayerInteractEvent e = (PlayerInteractEvent) object;

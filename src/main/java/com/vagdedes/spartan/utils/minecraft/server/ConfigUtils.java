@@ -90,29 +90,23 @@ public class ConfigUtils {
 
         if (off.isOnline()) {
             SpartanPlayer p = SpartanBukkit.getProtocol((Player) off).spartanPlayer;
+            SpartanLocation loc = p.movement.getLocation();
+            String worldName = p.getWorld().getName();
+            message = replace(message, "{player:type}", p.dataType.toString().toLowerCase());
+            message = replace(message, "{ping}", String.valueOf(p.protocol.getPing()));
+            message = replace(message, "{world}", worldName);
+            message = replace(message, "{health}", String.valueOf(p.getInstance().getHealth()));
+            message = replace(message, "{gamemode}", p.getInstance().getGameMode().toString().toLowerCase());
+            message = replace(message, "{x}", String.valueOf(loc.getBlockX()));
+            message = replace(message, "{y}", String.valueOf(loc.getBlockY()));
+            message = replace(message, "{z}", String.valueOf(loc.getBlockZ()));
+            message = replace(message, "{yaw}", String.valueOf(AlgebraUtils.integerRound(loc.getYaw())));
+            message = replace(message, "{pitch}", String.valueOf(AlgebraUtils.integerRound(loc.getPitch())));
+            message = replace(message, "{cps}", String.valueOf(p.clicks.getCount()));
 
-            if (p != null) {
-                SpartanLocation loc = p.movement.getLocation();
-                String worldName = p.getWorld().getName();
-                message = replace(message, "{player:type}", p.dataType.toString().toLowerCase());
-                message = replace(message, "{ping}", String.valueOf(p.protocol.getPing()));
-                message = replace(message, "{world}", worldName);
-                message = replace(message, "{health}", String.valueOf(p.getInstance().getHealth()));
-                message = replace(message, "{gamemode}", p.getInstance().getGameMode().toString().toLowerCase());
-                message = replace(message, "{x}", String.valueOf(loc.getBlockX()));
-                message = replace(message, "{y}", String.valueOf(loc.getBlockY()));
-                message = replace(message, "{z}", String.valueOf(loc.getBlockZ()));
-                message = replace(message, "{yaw}", String.valueOf(AlgebraUtils.integerRound(loc.getYaw())));
-                message = replace(message, "{pitch}", String.valueOf(AlgebraUtils.integerRound(loc.getPitch())));
-                message = replace(message, "{cps}", String.valueOf(p.clicks.getCount()));
-
-                if (hasHackType) {
-                    message = replace(message, "{silent:detection}", String.valueOf(hackType.getCheck().isSilent(p.dataType, worldName)));
-                    message = replace(message, "{punish:detection}", String.valueOf(hackType.getCheck().canPunish(p.dataType)));
-                }
-            } else if (hasHackType) {
-                message = replace(message, "{silent:detection}", String.valueOf(hackType.getCheck().isSilent(null, null)));
-                message = replace(message, "{punish:detection}", String.valueOf(hackType.getCheck().canPunish(null)));
+            if (hasHackType) {
+                message = replace(message, "{silent:detection}", String.valueOf(hackType.getCheck().isSilent(p.dataType, worldName)));
+                message = replace(message, "{punish:detection}", String.valueOf(hackType.getCheck().canPunish(p.dataType)));
             }
         } else if (hasHackType) {
             message = replace(message, "{silent:detection}", String.valueOf(hackType.getCheck().isSilent(null, null)));

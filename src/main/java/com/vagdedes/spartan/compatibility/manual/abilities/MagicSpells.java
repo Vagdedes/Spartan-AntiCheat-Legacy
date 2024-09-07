@@ -23,17 +23,15 @@ public class MagicSpells implements Listener {
             if (caster instanceof Player) {
                 SpartanPlayer p = SpartanBukkit.getProtocol((Player) caster).spartanPlayer;
 
-                if (p != null) {
-                    Config.compatibility.evadeFalsePositives(
-                            p,
-                            Compatibility.CompatibilityType.MAGIC_SPELLS,
-                            new Enums.HackCategoryType[]{
-                                    Enums.HackCategoryType.MOVEMENT,
-                                    Enums.HackCategoryType.COMBAT
-                            },
-                            40
-                    );
-                }
+                Config.compatibility.evadeFalsePositives(
+                        p,
+                        Compatibility.CompatibilityType.MAGIC_SPELLS,
+                        new Enums.HackCategoryType[]{
+                                Enums.HackCategoryType.MOVEMENT,
+                                Enums.HackCategoryType.COMBAT
+                        },
+                        40
+                );
             }
         }
     }
@@ -46,17 +44,15 @@ public class MagicSpells implements Listener {
             if (caster instanceof Player) {
                 SpartanPlayer p = SpartanBukkit.getProtocol((Player) caster).spartanPlayer;
 
-                if (p != null) {
-                    Config.compatibility.evadeFalsePositives(
-                            p,
-                            Compatibility.CompatibilityType.MAGIC_SPELLS,
-                            new Enums.HackCategoryType[]{
-                                    Enums.HackCategoryType.MOVEMENT,
-                                    Enums.HackCategoryType.COMBAT
-                            },
-                            40
-                    );
-                }
+                Config.compatibility.evadeFalsePositives(
+                        p,
+                        Compatibility.CompatibilityType.MAGIC_SPELLS,
+                        new Enums.HackCategoryType[]{
+                                Enums.HackCategoryType.MOVEMENT,
+                                Enums.HackCategoryType.COMBAT
+                        },
+                        40
+                );
             }
         }
     }

@@ -25,7 +25,7 @@ public class Event_Combat implements Listener {
     };
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    private void Deal(EntityDamageByEntityEvent e) {
+    public static void deal(EntityDamageByEntityEvent e) {
         Entity damager = e.getDamager(),
                 entity = e.getEntity();
         boolean entityIsPlayer = entity instanceof Player;
@@ -34,23 +34,21 @@ public class Event_Combat implements Listener {
             boolean entityAttack = e.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK;
             SpartanPlayer p = SpartanBukkit.getProtocol((Player) damager).spartanPlayer;
 
-            if (p != null) {
-                // Object
-                p.addDealtDamage(e);
+            // Object
+            p.addDealtDamage(e);
 
-                // Detections
-                if (entityAttack) {
-                    p.calculateClicks(true);
+            // Detections
+            if (entityAttack) {
+                p.calculateClicks(true);
 
-                    if (entityIsPlayer || entity instanceof LivingEntity) {
-                        for (Enums.HackType hackType : handledChecks) {
-                            if (p.getExecutor(hackType).prevent()) {
-                                e.setCancelled(true);
-                            }
-                        }
-                        if (p.getExecutor(Enums.HackType.FastClicks).prevent()) {
+                if (entityIsPlayer || entity instanceof LivingEntity) {
+                    for (Enums.HackType hackType : handledChecks) {
+                        if (p.getExecutor(hackType).prevent()) {
                             e.setCancelled(true);
                         }
+                    }
+                    if (p.getExecutor(Enums.HackType.FastClicks).prevent()) {
+                        e.setCancelled(true);
                     }
                 }
             }
@@ -93,7 +91,7 @@ public class Event_Combat implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    private void Receive(EntityDamageEvent e) {
+    public static void receive(EntityDamageEvent e) {
         Entity entity = e.getEntity();
 
         if (entity instanceof Player) {

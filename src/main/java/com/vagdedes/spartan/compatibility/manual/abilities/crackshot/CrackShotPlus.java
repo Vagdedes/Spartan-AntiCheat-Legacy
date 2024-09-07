@@ -59,7 +59,7 @@ public class CrackShotPlus implements Listener {
             if (entity instanceof Player) {
                 SpartanPlayer p = SpartanBukkit.getProtocol((Player) entity).spartanPlayer;
 
-                if (p != null && isUsingScope(p)) {
+                if (isUsingScope(p)) {
                     Config.compatibility.evadeFalsePositives(
                             p,
                             Compatibility.CompatibilityType.CRACK_SHOT_PLUS,
@@ -82,7 +82,7 @@ public class CrackShotPlus implements Listener {
             if (entity instanceof Player) {
                 SpartanPlayer p = SpartanBukkit.getProtocol((Player) entity).spartanPlayer;
 
-                if (p != null && isUsingScope(p)) {
+                if (isUsingScope(p)) {
                     Config.compatibility.evadeFalsePositives(
                             p,
                             Compatibility.CompatibilityType.CRACK_SHOT_PLUS,

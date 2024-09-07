@@ -82,7 +82,7 @@ public class Event_World implements Listener {
     // Separator
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    private void BlockBreak(BlockBreakEvent e) {
+    public static void blockBreak(BlockBreakEvent e) {
         SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer;
         Block nb = e.getBlock();
         Event_Chunks.cache(nb.getChunk(), false);
@@ -112,7 +112,7 @@ public class Event_World implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    private void BlockPlace(BlockPlaceEvent e) {
+    public static void blockPlace(BlockPlaceEvent e) {
         SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer;
         Block nb = e.getBlock();
         Event_Chunks.cache(nb.getChunk(), false);
@@ -138,7 +138,7 @@ public class Event_World implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    private void Sign(SignChangeEvent e) {
+    public static void sign(SignChangeEvent e) {
         SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer;
 
         // Detections
@@ -150,7 +150,7 @@ public class Event_World implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    private void Animation(PlayerAnimationEvent e) {
+    public static void animation(PlayerAnimationEvent e) {
         SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer;
 
         // Detections
@@ -158,7 +158,7 @@ public class Event_World implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    private void Interact(PlayerInteractEvent e) {
+    public static void interact(PlayerInteractEvent e) {
         SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer;
         Block nb = e.getClickedBlock();
         Action action = e.getAction();
@@ -206,13 +206,13 @@ public class Event_World implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    private void Piston(BlockPistonExtendEvent e) {
+    public static void piston(BlockPistonExtendEvent e) {
         // Handlers
         Piston.run(e.getBlock(), e.getBlocks());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    private void EntityExplosion(EntityExplodeEvent e) {
+    public static void entityExplosion(EntityExplodeEvent e) {
         if (v1_21 && SpartanBukkit.getPlayerCount() > 0) {
             Location location = e.getLocation();
             Collection<Entity> entities = location.getNearbyEntities(

@@ -588,22 +588,18 @@ public class SpartanPlayer {
         if (this.getWorld().equals(location.world)) {
             Player p = getInstance();
 
-            if (p != null) {
-                if (SpartanBukkit.isSynchronised()) {
-                    p.leaveVehicle();
-                }
-                this.movement.removeLastLiquidTime();
-                this.trackers.removeMany(Trackers.TrackerFamily.VELOCITY);
-
-                if (MultiVersion.folia) {
-                    p.teleportAsync(location.getBukkitLocation());
-                } else {
-                    SpartanBukkit.transferTask(this, () -> p.teleport(location.getBukkitLocation()));
-                }
-                return true;
-            } else {
-                return false;
+            if (SpartanBukkit.isSynchronised()) {
+                p.leaveVehicle();
             }
+            this.movement.removeLastLiquidTime();
+            this.trackers.removeMany(Trackers.TrackerFamily.VELOCITY);
+
+            if (MultiVersion.folia) {
+                p.teleportAsync(location.getBukkitLocation());
+            } else {
+                SpartanBukkit.transferTask(this, () -> p.teleport(location.getBukkitLocation()));
+            }
+            return true;
         } else {
             return false;
         }
@@ -611,16 +607,9 @@ public class SpartanPlayer {
 
     // Separator
 
-    public boolean damage(double amount) {
-        Player p = getInstance();
-
-        if (p != null) {
-            trackers.disable(Trackers.TrackerType.ABSTRACT_VELOCITY, 3);
-            p.damage(amount);
-            return true;
-        } else {
-            return false;
-        }
+    public void damage(double amount) {
+        trackers.disable(Trackers.TrackerType.ABSTRACT_VELOCITY, 3);
+        this.getInstance().damage(amount);
     }
 
     // Separator

@@ -50,17 +50,10 @@ public class Register extends JavaPlugin {
         // Listeners (More may be registered elsewhere)
         enable(new Event_Join());
         enable(new Event_Leave());
-        enable(new Event_Vehicle());
         enable(new Event_Chat());
         enable(new Event_Plugin());
-        enable(new Event_World());
         enable(new Event_Inventory());
-        enable(new Event_Combat());
         enable(new Event_Bow());
-        enable(new Event_Health());
-        enable(new Event_Movement());
-        enable(new Event_Teleport());
-        enable(new Event_Velocity());
         enable(new Event_Chunks());
 
         if (NPCManager.supported) {
@@ -68,11 +61,6 @@ public class Register extends JavaPlugin {
         }
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
             enable(new Event_Elytra());
-
-            if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
-                enable(new Event_Trident());
-                enable(new Event_Potion());
-            }
         }
         ProxyUtils.register();
 
@@ -97,6 +85,21 @@ public class Register extends JavaPlugin {
     public static void enable(Listener l) {
         if (isPluginEnabled() && listeners.add(l.getClass())) {
             manager.registerEvents(l, plugin);
+        }
+    }
+
+    public static void registerProtocolAlternatives() {
+        enable(new Event_Combat());
+        enable(new Event_Health());
+        enable(new Event_Movement());
+        enable(new Event_Teleport());
+        enable(new Event_Vehicle());
+        enable(new Event_Velocity());
+        enable(new Event_World());
+
+        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
+            enable(new Event_Trident());
+            enable(new Event_Potion());
         }
     }
 
