@@ -49,11 +49,13 @@ public class Event_Vehicle implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public static void enter(VehicleEnterEvent e) {
-        Entity entity = e.getEntered();
+        if (!e.isCancelled()) {
+            Entity entity = e.getEntered();
 
-        if (entity instanceof Player) {
-            SpartanPlayer p = SpartanBukkit.getProtocol((Player) entity).spartanPlayer;
-            p.trackers.add(Trackers.TrackerType.VEHICLE, "enter", 5);
+            if (entity instanceof Player) {
+                SpartanPlayer p = SpartanBukkit.getProtocol((Player) entity).spartanPlayer;
+                p.trackers.add(Trackers.TrackerType.VEHICLE, "enter", 5);
+            }
         }
     }
 

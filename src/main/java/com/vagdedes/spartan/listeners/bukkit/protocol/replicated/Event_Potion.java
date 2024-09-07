@@ -13,14 +13,16 @@ public class Event_Potion implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public static void event(EntityPotionEffectEvent e) {
-        Entity entity = e.getEntity();
+        if (!e.isCancelled()) {
+            Entity entity = e.getEntity();
 
-        if (entity instanceof Player) {
-            Player n = (Player) entity;
-            SpartanPlayer p = SpartanBukkit.getProtocol(n).spartanPlayer;
+            if (entity instanceof Player) {
+                Player n = (Player) entity;
+                SpartanPlayer p = SpartanBukkit.getProtocol(n).spartanPlayer;
 
-            // Objects
-            p.setStoredPotionEffects(n.getActivePotionEffects());
+                // Objects
+                p.setStoredPotionEffects(n.getActivePotionEffects());
+            }
         }
     }
 

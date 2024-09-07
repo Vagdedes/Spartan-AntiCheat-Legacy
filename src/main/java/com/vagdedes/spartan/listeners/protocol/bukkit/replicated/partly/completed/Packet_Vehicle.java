@@ -5,11 +5,11 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.abstraction.data.Trackers;
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
-import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.listeners.bukkit.protocol.replicated.Event_Vehicle;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.vehicle.VehicleEnterEvent;
+import org.bukkit.event.vehicle.VehicleExitEvent;
 
 public class Packet_Vehicle extends PacketAdapter {
 
@@ -25,12 +25,15 @@ public class Packet_Vehicle extends PacketAdapter {
     @Override
     public void onPacketReceiving(PacketEvent event) {
         if (event.getPacketType() == PacketType.Play.Client.STEER_VEHICLE) {
-            Player player = event.getPlayer();
             boolean dismount = event.getPacket().getBooleans().read(1);  // The dismount flag
 
             if (dismount) {
-                SpartanPlayer spartanPlayer = SpartanBukkit.getProtocol(player).spartanPlayer;
-                spartanPlayer.trackers.add(Trackers.TrackerType.VEHICLE, "exit", 5);
+                VehicleExitEvent bukkitEvent = new VehicleExitEvent(
+                        null, // todo
+                        event.getPlayer()
+                );
+                bukkitEvent.setCancelled(event.isCancelled());
+                Event_Vehicle.exit(bukkitEvent);
             }
         }
     }
@@ -39,10 +42,16 @@ public class Packet_Vehicle extends PacketAdapter {
     public void onPacketSending(PacketEvent event) {
         if (event.getPacketType() == PacketType.Play.Server.ATTACH_ENTITY) {
             Entity entity = event.getPacket().getEntityModifier(event).read(1);
+
             if (entity instanceof Player) {
-                SpartanPlayer spartanPlayer = SpartanBukkit.getProtocol((Player) entity).spartanPlayer;
-                spartanPlayer.trackers.add(Trackers.TrackerType.VEHICLE, "enter", 5);
+                VehicleEnterEvent bukkitEvent = new VehicleEnterEvent(
+                        null, // todo
+                        event.getPlayer()
+                );
+                bukkitEvent.setCancelled(event.isCancelled());
+                Event_Vehicle.enter(bukkitEvent);
             }
         }
     }
+
 }

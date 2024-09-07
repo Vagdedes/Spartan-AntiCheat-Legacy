@@ -5,13 +5,10 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
-import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.listeners.bukkit.protocol.replicated.Event_Potion;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffect;
-
-import java.util.Collection;
+import org.bukkit.event.entity.EntityPotionEffectEvent;
 
 public class Packet_Potion extends PacketAdapter {
 
@@ -30,10 +27,16 @@ public class Packet_Potion extends PacketAdapter {
 
         if (entity instanceof Player) {
             Player player = (Player) entity;
-            SpartanPlayer spartanPlayer = SpartanBukkit.getProtocol(player).spartanPlayer;
-
-            Collection<PotionEffect> activeEffects = player.getActivePotionEffects();
-            spartanPlayer.setStoredPotionEffects(activeEffects);
+            EntityPotionEffectEvent bukkitEvent = new EntityPotionEffectEvent(
+                    player,
+                    null, // todo
+                    null, // todo
+                    null, // todo
+                    null, // todo
+                    true // todo
+            );
+            bukkitEvent.setCancelled(event.isCancelled());
+            Event_Potion.event(bukkitEvent);
         }
     }
 }
