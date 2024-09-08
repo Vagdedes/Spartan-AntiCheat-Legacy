@@ -16,7 +16,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 
 public class Event_Combat implements Listener {
 
-    public static final Enums.HackType[] handledChecks = new Enums.HackType[]{
+    private static final Enums.HackType[] handledChecks = new Enums.HackType[]{
             Enums.HackType.KillAura,
             Enums.HackType.HitReach,
             Enums.HackType.NoSwing,
@@ -24,7 +24,7 @@ public class Event_Combat implements Listener {
     };
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public static void deal(EntityDamageByEntityEvent e) {
+    private void Deal(EntityDamageByEntityEvent e) {
         Entity damager = e.getDamager(),
                 entity = e.getEntity();
         boolean entityIsPlayer = entity instanceof Player;

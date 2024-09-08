@@ -46,7 +46,7 @@ public class Packet_Health extends PacketAdapter {
                 EntityRegainHealthEvent bukkitEvent = new EntityRegainHealthEvent(
                         entity,
                         0,
-                        null // todo
+                        EntityRegainHealthEvent.RegainReason.CUSTOM
                 );
                 bukkitEvent.setCancelled(event.isCancelled());
                 Event_Health.regen(bukkitEvent);

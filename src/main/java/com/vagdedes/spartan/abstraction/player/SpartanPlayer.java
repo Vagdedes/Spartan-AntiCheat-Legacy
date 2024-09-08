@@ -32,7 +32,6 @@ import me.vagdedes.spartan.system.Enums;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -86,12 +85,7 @@ public class SpartanPlayer {
             if (!protocols.isEmpty()) {
                 for (SpartanProtocol protocol : protocols) {
                     if (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
-                        SpartanBukkit.runTask(
-                                protocol.spartanPlayer,
-                                () -> protocol.spartanPlayer.setStoredPotionEffects(
-                                        protocol.player.getActivePotionEffects()
-                                )
-                        );
+                        protocol.spartanPlayer.setStoredPotionEffects();
                     }
                     protocol.spartanPlayer.getExecutor(Enums.HackType.AutoRespawn).run(false);
                     protocol.spartanPlayer.getExecutor(Enums.HackType.MorePackets).run(false);
@@ -409,43 +403,19 @@ public class SpartanPlayer {
 
     // Separator
 
-    public boolean hasActivePotionEffects() {
-        Entity vehicle = this.getInstance().getVehicle();
-
-        if (vehicle != null) {
-            if (vehicle instanceof LivingEntity) {
-                return !((LivingEntity) vehicle).getActivePotionEffects().isEmpty();
-            } else {
-                return false;
-            }
-        } else {
-            return !this.potionEffects.isEmpty()
-                    && this.potionEffects.values().stream().anyMatch(SpartanPotionEffect::isActive);
-        }
-    }
-
-    public Collection<SpartanPotionEffect> getStoredPotionEffects() {
-        Entity vehicle = this.getInstance().getVehicle();
-
-        if (vehicle != null) {
-            if (vehicle instanceof LivingEntity) {
-                Collection<PotionEffect> collection = ((LivingEntity) vehicle).getActivePotionEffects();
-                return SpartanPotionEffect.listFromBukkit(new ArrayList<>(collection.size()), collection);
-            } else {
-                return new ArrayList<>(0);
-            }
-        } else {
-            return this.potionEffects.values();
-        }
-    }
-
-    public void setStoredPotionEffects(Collection<PotionEffect> effects) {
-        for (PotionEffect effect : effects) {
-            this.potionEffects.put(effect.getType(), new SpartanPotionEffect(effect));
-        }
+    private void setStoredPotionEffects() {
+        SpartanBukkit.runTask(
+                protocol.spartanPlayer,
+                () -> {
+                    for (PotionEffect effect : this.getInstance().getActivePotionEffects()) {
+                        this.potionEffects.put(effect.getType(), new SpartanPotionEffect(effect));
+                    }
+                }
+        );
     }
 
     public SpartanPotionEffect getPotionEffect(PotionEffectType type, long lastActive) {
+        this.setStoredPotionEffects();
         SpartanPotionEffect potionEffect = this.potionEffects.get(type);
 
         if (potionEffect != null
@@ -458,6 +428,7 @@ public class SpartanPlayer {
     }
 
     public boolean hasPotionEffect(PotionEffectType type, long lastActive) {
+        this.setStoredPotionEffects();
         SpartanPotionEffect potionEffect = this.potionEffects.get(type);
         return potionEffect != null
                 && potionEffect.timePassed() <= lastActive

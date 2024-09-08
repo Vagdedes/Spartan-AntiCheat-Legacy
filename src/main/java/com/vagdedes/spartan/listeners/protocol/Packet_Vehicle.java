@@ -30,9 +30,15 @@ public class Packet_Vehicle extends PacketAdapter {
             boolean dismount = event.getPacket().getBooleans().read(1);  // The dismount flag
 
             if (dismount) {
+                Player player = event.getPlayer();
+                SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
+
+                if (protocol.spartanPlayer.bedrockPlayer) {
+                    return;
+                }
                 VehicleExitEvent bukkitEvent = new VehicleExitEvent(
                         null, // todo
-                        event.getPlayer()
+                        player
                 );
                 bukkitEvent.setCancelled(event.isCancelled());
                 Event_Vehicle.exit(bukkitEvent);
@@ -54,7 +60,7 @@ public class Packet_Vehicle extends PacketAdapter {
                 }
                 VehicleEnterEvent bukkitEvent = new VehicleEnterEvent(
                         null, // todo
-                        event.getPlayer()
+                        player
                 );
                 bukkitEvent.setCancelled(event.isCancelled());
                 Event_Vehicle.enter(bukkitEvent);

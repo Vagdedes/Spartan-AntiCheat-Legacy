@@ -99,7 +99,6 @@ public class Register extends JavaPlugin {
 
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
             enable(new Event_Trident());
-            enable(new Event_Potion());
         }
     }
 
