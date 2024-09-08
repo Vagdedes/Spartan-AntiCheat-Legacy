@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.listeners.bukkit;
+package com.vagdedes.spartan.listeners.bukkit.standalone;
 
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
@@ -14,7 +14,7 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 public class Event_Health implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public static void food(FoodLevelChangeEvent e) {
+    private void Food(FoodLevelChangeEvent e) {
         Entity entity = e.getEntity();
 
         if (entity instanceof Player) {
@@ -32,7 +32,7 @@ public class Event_Health implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public static void regen(EntityRegainHealthEvent e) {
+    private void Regen(EntityRegainHealthEvent e) {
         Entity entity = e.getEntity();
 
         if (entity instanceof Player) {

@@ -55,6 +55,8 @@ public class Register extends JavaPlugin {
         enable(new Event_Inventory());
         enable(new Event_Bow());
         enable(new Event_Chunks());
+        enable(new Event_VehicleDeath());
+        enable(new Event_Health());
 
         if (NPCManager.supported) {
             enable(new NPCManager());
@@ -90,7 +92,6 @@ public class Register extends JavaPlugin {
 
     public static void registerProtocolAlternatives() {
         enable(new Event_Combat());
-        enable(new Event_Health());
         enable(new Event_Movement());
         enable(new Event_Teleport());
         enable(new Event_Vehicle());

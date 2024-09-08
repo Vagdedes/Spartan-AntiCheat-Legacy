@@ -14,7 +14,7 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 public class Event_Teleport implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public static void teleport(PlayerTeleportEvent e) {
+    public static void teleport(PlayerTeleportEvent e) { // todo call in protocol
         Location nto = e.getTo();
 
         if (nto == null) {
@@ -31,7 +31,7 @@ public class Event_Teleport implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public static void death(PlayerDeathEvent e) {
+    public static void death(PlayerDeathEvent e) { // todo call in protocol
         SpartanPlayer p = SpartanBukkit.getProtocol(e.getEntity()).spartanPlayer;
 
         // Detections
@@ -45,7 +45,7 @@ public class Event_Teleport implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public static void respawn(PlayerRespawnEvent e) {
+    public static void respawn(PlayerRespawnEvent e) { // todo call in protocol
         SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer;
 
         // Objects
