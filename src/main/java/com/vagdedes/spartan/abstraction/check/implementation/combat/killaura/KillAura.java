@@ -3,6 +3,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.combat.killaura;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.check.implementation.combat.killaura.movedirection.MoveDirection;
+import com.vagdedes.spartan.abstraction.event.EntityAttackPlayerEvent;
 import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
@@ -22,14 +23,12 @@ public class KillAura extends CheckExecutor {
     private final BlockRaytrace blockRaytrace;
     private final HitTime hitTime;
     private final HitDirection hitDirection;
-    private final HitDirectionML hitDirectionML;
     private final ResponseTime responseTime;
     private final MoveDirection moveDirection;
-    private final MoveDirectionML moveDirectionML;
     private final FightAnalysis analysis;
 
     public KillAura(Enums.HackType hackType, SpartanPlayer player) {
-        super(hackType, player, 10, false);
+        super(hackType, player, 8, false);
         this.addDetections(new DetectionExecutor[]{
                 irregular = new Irregular(this),
                 entityRaytrace = new EntityRaytrace(this),
@@ -38,9 +37,7 @@ public class KillAura extends CheckExecutor {
                 hitTime = new HitTime(this),
                 hitDirection = new HitDirection(this),
                 responseTime = new ResponseTime(this),
-                moveDirection = new MoveDirection(this),
-                hitDirectionML = new HitDirectionML(this),
-                moveDirectionML = new MoveDirectionML(this)
+                moveDirection = new MoveDirection(this)
         });
     }
 
@@ -68,10 +65,6 @@ public class KillAura extends CheckExecutor {
         runDetection(
                 "check_response_time",
                 responseTime::run
-        );
-        runDetection(
-                "check_move_direction_machine_learning",
-                moveDirectionML::runMove
         );
     }
 
@@ -112,14 +105,16 @@ public class KillAura extends CheckExecutor {
                         () -> hitDirection.runDamage(target)
                 );
                 runDetection(
-                        "check_hit_direction_machine_learning",
-                        hitDirectionML::runDamage
-                );
-                runDetection(
-                        "check_response_time",
-                        analysis::runDamage
+                        "check_fight_analysis",
+                        () -> analysis.runDealDamage(event)
                 );
             }
+        } else if (object instanceof EntityAttackPlayerEvent) {
+            EntityAttackPlayerEvent event = (EntityAttackPlayerEvent) object;
+            runDetection(
+                    "check_fight_analysis",
+                    () -> analysis.runReceiveDamage(event)
+            );
         }
     }
 

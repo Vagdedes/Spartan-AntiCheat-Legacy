@@ -7,14 +7,14 @@ import me.vagdedes.spartan.system.Enums;
 
 public class FastClicks extends CheckExecutor {
 
-    private final ClickPatternML clickPattern;
+    private final ClickPattern clickPattern;
     private final ClicksPerSecond clicksPerSecond;
 
     public FastClicks(Enums.HackType hackType, SpartanPlayer player) {
         super(hackType, player, 2, false);
         this.addDetections(
                 new DetectionExecutor[]{
-                        this.clickPattern = new ClickPatternML(this),
+                        this.clickPattern = new ClickPattern(this),
                         this.clicksPerSecond = new ClicksPerSecond(this)
                 }
         );

@@ -79,7 +79,7 @@ public class Packet_Combat extends PacketAdapter {
                     Player attacker = plugin.getServer().getPlayer(playerUUID);
 
                     if (attacker != null) {
-                        Event_Combat.attack(
+                        Event_Combat.deal(
                                 new PlayerAttackEvent(
                                         attacker,
                                         protocol.player,
