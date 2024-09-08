@@ -5,6 +5,7 @@ import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
+import com.vagdedes.spartan.utils.minecraft.protocol.SuperPositionPacket;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
@@ -72,6 +73,7 @@ public class Event_Movement implements Listener {
         // Detections
         boolean cancelled = e.isCancelled();
         p.getExecutor(Enums.HackType.Exploits).handle(cancelled, null);
+        p.getExecutor(Enums.HackType.Exploits).handle(cancelled, e);
         p.getExecutor(Enums.HackType.ImpossibleInventory).run(cancelled);
         p.getExecutor(Enums.HackType.NoFall).run(cancelled);
         p.getExecutor(Enums.HackType.IrregularMovements).run(cancelled);
@@ -80,6 +82,12 @@ public class Event_Movement implements Listener {
         p.getExecutor(Enums.HackType.KillAura).handle(cancelled, e);
         p.getExecutor(Enums.HackType.Criticals).handle(cancelled, e);
         p.getExecutor(Enums.HackType.Simulation).handle(cancelled, e);
+    }
+
+    public static void superPosition(SuperPositionPacket packet) {
+        SpartanPlayer p = SpartanBukkit.getProtocol(packet.getProtocol().player).spartanPlayer;
+        boolean cancelled = packet.getEvent().isCancelled();
+        p.getExecutor(Enums.HackType.Exploits).handle(cancelled, packet);
     }
 
 }

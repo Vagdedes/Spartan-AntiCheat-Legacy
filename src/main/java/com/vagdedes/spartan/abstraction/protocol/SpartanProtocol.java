@@ -2,7 +2,6 @@ package com.vagdedes.spartan.abstraction.protocol;
 
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
-import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.connection.Latency;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
@@ -46,12 +45,6 @@ public class SpartanProtocol {
         this.setProfile(ResearchEngine.getPlayerProfile(this, false));
     }
 
-    public UUID getUUID() {
-        return ProtocolLib.isTemporary(this.player)
-                ? UUID.randomUUID()
-                : this.player.getUniqueId();
-    }
-
     public long timePassed() {
         return System.currentTimeMillis() - this.time;
     }
@@ -92,6 +85,9 @@ public class SpartanProtocol {
 
     public int getPing() {
         return Latency.ping(this.player);
+    }
+    public UUID getUUID() {
+        return this.player.getUniqueId();
     }
 
     public PlayerProfile getProfile() {

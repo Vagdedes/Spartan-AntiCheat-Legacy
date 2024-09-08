@@ -10,6 +10,7 @@ import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.listeners.bukkit.protocol.replicated.Event_Movement;
 import com.vagdedes.spartan.utils.minecraft.protocol.ProtocolTools;
+import com.vagdedes.spartan.utils.minecraft.protocol.SuperPositionPacket;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -113,6 +114,8 @@ public class Packet_Movement extends PacketAdapter {
                 bukkitEvent.setCancelled(event.isCancelled());
                 Event_Movement.event(bukkitEvent);
             }
+        } else {
+            Event_Movement.superPosition(new SuperPositionPacket(protocol, event));
         }
     }
 
