@@ -19,12 +19,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.LinkedHashMap;
 
 public class CrackShot implements Listener {
 
     private static final Buffer buffers = new Buffer(
-            new OverflowMap<>(new ConcurrentHashMap<>(), 512)
+            new OverflowMap<>(new LinkedHashMap<>(), 512)
     );
 
     @EventHandler(priority = EventPriority.HIGHEST)

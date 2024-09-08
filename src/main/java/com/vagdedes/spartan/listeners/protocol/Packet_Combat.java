@@ -7,21 +7,23 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.listeners.bukkit.Event_Combat;
 import com.vagdedes.spartan.utils.java.OverflowMap;
-import me.vagdedes.spartan.system.Enums;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class Packet_Combat extends PacketAdapter {
 
-    private final Map<UUID, Integer> pendingAttacks = new OverflowMap<>(new ConcurrentHashMap<>(), 1_024);
+    private final Map<UUID, Integer> pendingAttacks = new OverflowMap<>(
+            new LinkedHashMap<>(),
+            1_024
+    );
 
     public Packet_Combat() {
         super(
@@ -35,7 +37,8 @@ public class Packet_Combat extends PacketAdapter {
     @Override
     public void onPacketReceiving(PacketEvent event) {
         if (event.getPacketType() == PacketType.Play.Client.USE_ENTITY) {
-            SpartanProtocol protocol = SpartanBukkit.getProtocol(event.getPlayer());
+            Player player = event.getPlayer();
+            SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
 
             if (protocol.spartanPlayer.bedrockPlayer) {
                 return;
@@ -47,15 +50,7 @@ public class Packet_Combat extends PacketAdapter {
                     packet.getEntityUseActions().read(0).equals(EnumWrappers.EntityUseAction.ATTACK)
                     : packet.getEnumEntityUseActions().read(0).getAction().equals(
                     EnumWrappers.EntityUseAction.ATTACK)) {
-                Player player = event.getPlayer();
                 pendingAttacks.put(player.getUniqueId(), entityId);
-                useEntity(
-                        new PlayerAttackEvent(
-                                player,
-                                SpartanBukkit.getProtocol(player).player,
-                                false
-                        )
-                );
             }
         }
     }
@@ -68,8 +63,7 @@ public class Packet_Combat extends PacketAdapter {
             if (protocol.spartanPlayer.bedrockPlayer) {
                 return;
             }
-            PacketContainer packet = event.getPacket();
-            int entityId = packet.getIntegers().read(0);
+            int entityId = event.getPacket().getIntegers().read(0);
 
             pendingAttacks.entrySet().removeIf(entry -> {
                 UUID playerUUID = entry.getKey();
@@ -79,11 +73,12 @@ public class Packet_Combat extends PacketAdapter {
                     Player attacker = plugin.getServer().getPlayer(playerUUID);
 
                     if (attacker != null) {
-                        Event_Combat.deal(
-                                new PlayerAttackEvent(
+                        Event_Combat.dealAndReceive(
+                                new EntityDamageByEntityEvent(
                                         attacker,
                                         protocol.player,
-                                        false
+                                        EntityDamageByEntityEvent.DamageCause.ENTITY_ATTACK,
+                                        0.0D
                                 ),
                                 true
                         );
@@ -93,12 +88,6 @@ public class Packet_Combat extends PacketAdapter {
                 return false;
             });
         }
-    }
-
-    private static void useEntity(PlayerAttackEvent e) {
-        SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer.getExecutor(
-                Enums.HackType.KillAura
-        ).handle(e.isCancelled(), e);
     }
 
 }

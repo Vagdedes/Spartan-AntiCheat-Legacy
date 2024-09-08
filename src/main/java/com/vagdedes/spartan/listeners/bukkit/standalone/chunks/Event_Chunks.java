@@ -19,14 +19,14 @@ import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class Event_Chunks implements Listener {
 
-    private static final Map<Long, Boolean> loaded = new ConcurrentHashMap<>();
-    static final Map<World, Map<Long, ChunkData>> map = new ConcurrentHashMap<>();
+    private static final Map<Long, Boolean> loaded = new LinkedHashMap<>();
+    static final Map<World, Map<Long, ChunkData>> map = new LinkedHashMap<>();
     public static final boolean heightSupport = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17);
 
     // Separator
@@ -154,7 +154,7 @@ public class Event_Chunks implements Listener {
         }
         Map<Long, ChunkData> subMap = map.computeIfAbsent(
                 world,
-                k -> new ConcurrentHashMap<>()
+                k -> new LinkedHashMap<>()
         );
         return subMap.computeIfAbsent(
                 hashCoordinates(chunk.getX(), chunk.getZ()),

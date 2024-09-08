@@ -10,12 +10,12 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.LinkedHashMap;
 
 public class AureliumSkills implements Listener {
 
     private static final Cooldowns cooldowns = new Cooldowns(
-            new OverflowMap<>(new ConcurrentHashMap<>(), 512)
+            new OverflowMap<>(new LinkedHashMap<>(), 512)
     );
 
     @EventHandler(priority = EventPriority.HIGHEST)

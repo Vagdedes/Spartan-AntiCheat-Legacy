@@ -20,7 +20,6 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.BoundingBox;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static org.bukkit.potion.PotionEffectType.*;
 
@@ -67,7 +66,7 @@ public class PlayerUtils {
             fallDamageAboveBlocks = 3;
 
     private static final Map<Byte, List<Double>> jumpsValues = new LinkedHashMap<>();
-    private static final Map<Integer, Integer> fallTicks = new ConcurrentHashMap<>();
+    private static final Map<Integer, Integer> fallTicks = new LinkedHashMap<>();
     private static final Map<PotionEffectType, Long> handledPotionEffects = new LinkedHashMap<>();
 
     static {

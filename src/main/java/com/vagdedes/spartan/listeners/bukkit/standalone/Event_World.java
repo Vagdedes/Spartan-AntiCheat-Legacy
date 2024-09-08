@@ -28,17 +28,13 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerAnimationEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Event_World implements Listener {
 
     private static final boolean v1_21 = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_21);
-    private static final Map<World, Map<Long, List<Entity>>> entities = new ConcurrentHashMap<>();
+    private static final Map<World, Map<Long, List<Entity>>> entities = new LinkedHashMap<>();
 
     static {
         SpartanBukkit.runRepeatingTask(() -> {
@@ -47,7 +43,7 @@ public class Event_World implements Listener {
                     List<World> worlds = Bukkit.getWorlds();
 
                     for (World world : worlds) {
-                        Map<Long, List<Entity>> perChunkEntities = new ConcurrentHashMap<>();
+                        Map<Long, List<Entity>> perChunkEntities = new LinkedHashMap<>();
 
                         for (Entity entity : world.getEntities()) {
                             Location location = entity.getLocation();

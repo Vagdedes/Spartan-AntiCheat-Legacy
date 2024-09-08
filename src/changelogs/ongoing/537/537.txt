@@ -7,3 +7,4 @@
 [#] Fixed a Speed console error caused by specific-version materials.
 [#] Rewrote the Exploits ground-spoof detection.
 [-] Removed the NoFall check and replaced it by the new Exploits ground-spoof detection.
+[+] Implemented a new KillAura detection which calculates the ratio of hits/damages for all entities.
