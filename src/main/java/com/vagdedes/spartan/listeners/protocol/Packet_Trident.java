@@ -47,7 +47,8 @@ public class Packet_Trident extends PacketAdapter {
                                     player,
                                     item,
                                     new Vector()
-                            )
+                            ),
+                            true
                     );
                 }
             }

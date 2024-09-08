@@ -84,7 +84,8 @@ public class Packet_Combat extends PacketAdapter {
                                         attacker,
                                         protocol.player,
                                         false
-                                )
+                                ),
+                                true
                         );
                     }
                     return true;

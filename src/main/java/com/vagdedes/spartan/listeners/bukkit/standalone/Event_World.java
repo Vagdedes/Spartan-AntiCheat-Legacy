@@ -1,7 +1,8 @@
-package com.vagdedes.spartan.listeners.bukkit;
+package com.vagdedes.spartan.listeners.bukkit.standalone;
 
 import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanBlock;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
@@ -82,7 +83,7 @@ public class Event_World implements Listener {
     // Separator
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public static void blockBreak(BlockBreakEvent e) {
+    private void BlockBreak(BlockBreakEvent e) {
         SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer;
         Block nb = e.getBlock();
         Event_Chunks.cache(nb.getChunk(), false);
@@ -112,7 +113,7 @@ public class Event_World implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public static void blockPlace(BlockPlaceEvent e) {
+    private void BlockPlace(BlockPlaceEvent e) {
         SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer;
         Block nb = e.getBlock();
         Event_Chunks.cache(nb.getChunk(), false);
@@ -138,7 +139,7 @@ public class Event_World implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public static void sign(SignChangeEvent e) {
+    private void Sign(SignChangeEvent e) {
         SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer;
 
         // Detections
@@ -150,15 +151,15 @@ public class Event_World implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public static void animation(PlayerAnimationEvent e) {
-        SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer;
+    private void Animation(PlayerAnimationEvent e) {
+        SpartanProtocol protocol = SpartanBukkit.getProtocol(e.getPlayer());
 
         // Detections
-        p.getExecutor(Enums.HackType.NoSwing).handle(e.isCancelled(), e);
+        protocol.spartanPlayer.getExecutor(Enums.HackType.NoSwing).handle(e.isCancelled(), e);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public static void interact(PlayerInteractEvent e) {
+    private void Interact(PlayerInteractEvent e) {
         SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer;
         Block nb = e.getClickedBlock();
         Action action = e.getAction();
@@ -206,7 +207,7 @@ public class Event_World implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public static void piston(BlockPistonExtendEvent e) {
+    private void Piston(BlockPistonExtendEvent e) {
         if (!e.isCancelled()) {
             // Handlers
             Piston.run(e.getBlock(), e.getBlocks());
@@ -214,7 +215,7 @@ public class Event_World implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public static void entityExplosion(EntityExplodeEvent e) {
+    private void EntityExplosion(EntityExplodeEvent e) {
         if (v1_21
                 && !e.isCancelled()
                 && SpartanBukkit.getPlayerCount() > 0) {

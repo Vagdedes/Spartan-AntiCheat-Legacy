@@ -41,7 +41,7 @@ public class Packet_Velocity extends PacketAdapter {
                     z = packet.getIntegers().read(3).doubleValue() / 8000.0D;
             PlayerVelocityEvent bukkitEvent = new PlayerVelocityEvent(player, new Vector(x, y, z));
             bukkitEvent.setCancelled(event.isCancelled());
-            Event_Velocity.event(bukkitEvent);
+            Event_Velocity.event(bukkitEvent, true);
         }
     }
 

@@ -92,9 +92,11 @@ public class SpartanProtocol {
     public int getPing() {
         return Latency.ping(this.player);
     }
+
     public UUID getUUID() {
         return this.player.getUniqueId();
     }
+
     public void startSimulationFlag() {
         this.spartanPlayer.teleport(this.spartanPlayer.movement.getEventFromLocation());
         this.simulationStartPoint = this.spartanPlayer.movement.getEventFromLocation().getBukkitLocation().clone();

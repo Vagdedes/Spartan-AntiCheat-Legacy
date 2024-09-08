@@ -7,6 +7,7 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.simulation.modules.engine.motion.MotionVector;
+import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.protocol.MCClient;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
@@ -15,6 +16,7 @@ import com.vagdedes.spartan.listeners.bukkit.Event_Movement;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import com.vagdedes.spartan.utils.minecraft.protocol.ProtocolTools;
 import com.vagdedes.spartan.utils.minecraft.protocol.SuperPositionPacket;
+import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -53,7 +55,7 @@ public class Packet_Movement extends PacketAdapter {
                 return;
             }
             if (protocol.teleported && (t.equals(PacketType.Play.Client.POSITION)
-                            || t.equals(PacketType.Play.Client.POSITION_LOOK))) {
+                    || t.equals(PacketType.Play.Client.POSITION_LOOK))) {
                 protocol.setLocation(ProtocolTools.readLocation(event));
                 protocol.teleported = false;
                 return;
@@ -70,15 +72,15 @@ public class Packet_Movement extends PacketAdapter {
             Location from = protocol.spartanPlayer.movement.getEventFromLocation().getBukkitLocation();
 
             double
-                            dx = RayUtils.scaleVal(to.getX() - from.getX(), 6),
-                            dy = RayUtils.scaleVal(to.getY() - from.getY(), 6),
-                            dz = RayUtils.scaleVal(to.getZ() - from.getZ(), 6);
+                    dx = RayUtils.scaleVal(to.getX() - from.getX(), 6),
+                    dy = RayUtils.scaleVal(to.getY() - from.getY(), 6),
+                    dz = RayUtils.scaleVal(to.getZ() - from.getZ(), 6);
 
             MCClient c = protocol.mcClient;
             MotionVector v = c.getNext(dx, dy, dz);
             Location finalLocation = protocol.simulationStartPoint.clone().add(v.x, v.y, v.z);
             if (RayUtils.isSaveToTeleport(protocol.player, finalLocation)
-                            && RayUtils.isSaveToTeleport(protocol.player, finalLocation.clone().add(0, 1, 0))) {
+                    && RayUtils.isSaveToTeleport(protocol.player, finalLocation.clone().add(0, 1, 0))) {
                 if (protocol.simulationDelayPerTP > 0) {
                     protocol.simulationDelayPerTP--;
                 } else {
@@ -133,7 +135,7 @@ public class Packet_Movement extends PacketAdapter {
                         protocol.getLocation()
                 );
                 bukkitEvent.setCancelled(event.isCancelled());
-                Event_Movement.event(bukkitEvent);
+                Event_Movement.event(bukkitEvent, true);
             }
         } else if (type.equals(PacketType.Play.Client.POSITION)
                 || type.equals(PacketType.Play.Client.POSITION_LOOK)) {
@@ -161,11 +163,17 @@ public class Packet_Movement extends PacketAdapter {
                         protocol.getLocation()
                 );
                 bukkitEvent.setCancelled(event.isCancelled());
-                Event_Movement.event(bukkitEvent);
+                Event_Movement.event(bukkitEvent, true);
             }
         } else {
-            Event_Movement.superPosition(new SuperPositionPacket(protocol, event));
+            superPosition(new SuperPositionPacket(protocol, event));
         }
+    }
+
+    private static void superPosition(SuperPositionPacket packet) {
+        SpartanPlayer p = SpartanBukkit.getProtocol(packet.getProtocol().player).spartanPlayer;
+        boolean cancelled = packet.getEvent().isCancelled();
+        p.getExecutor(Enums.HackType.Exploits).handle(cancelled, packet);
     }
 
 }

@@ -18,7 +18,6 @@ public class BackgroundProtocolLib {
         p.addPacketListener(new Packet_Teleport());
         p.addPacketListener(new Packet_Trident());
         p.addPacketListener(new Packet_Vehicle());
-        p.addPacketListener(new Packet_World());
     }
 
 }

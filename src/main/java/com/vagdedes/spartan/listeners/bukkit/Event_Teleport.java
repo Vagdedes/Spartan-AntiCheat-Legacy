@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.listeners.bukkit;
 
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Location;
@@ -14,39 +15,62 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 public class Event_Teleport implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public static void teleport(PlayerTeleportEvent e) { // todo call in protocol
+    private void Teleport(PlayerTeleportEvent e) {
+        teleport(e, false);
+    }
+
+    public static void teleport(PlayerTeleportEvent e, boolean packets) { // todo call in protocol
         Location nto = e.getTo();
 
         if (nto == null) {
             return;
         }
-        SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer;
+        SpartanProtocol protocol = SpartanBukkit.getProtocol(e.getPlayer());
 
-        // Object
-        p.resetData(false);
-        p.movement.judgeGround();
+        if (protocol.packetsEnabled() == packets) {
+            SpartanPlayer p = protocol.spartanPlayer;
+            // Object
+            p.resetData(false);
+            p.movement.judgeGround();
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public static void death(PlayerDeathEvent e) { // todo call in protocol
-        SpartanPlayer p = SpartanBukkit.getProtocol(e.getEntity()).spartanPlayer;
+    private void Death(PlayerDeathEvent e) {
+        death(e, false);
+    }
 
-        // Detections
-        p.getExecutor(Enums.HackType.AutoRespawn).handle(false, null);
-        p.getExecutor(Enums.HackType.ImpossibleInventory).handle(false, null);
+    public static void death(PlayerDeathEvent e, boolean packets) { // todo call in protocol
+        SpartanProtocol protocol = SpartanBukkit.getProtocol(e.getEntity());
 
-        // Objects
-        p.resetData(true);
-        p.movement.setDetectionLocation();
+        if (protocol.packetsEnabled() == packets) {
+            SpartanPlayer p = protocol.spartanPlayer;
+
+            // Detections
+            p.getExecutor(Enums.HackType.AutoRespawn).handle(false, null);
+            p.getExecutor(Enums.HackType.ImpossibleInventory).handle(false, null);
+
+            // Objects
+            p.resetData(true);
+            p.movement.setDetectionLocation();
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public static void respawn(PlayerRespawnEvent e) { // todo call in protocol
-        SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer;
+    private void Respawn(PlayerRespawnEvent e) {
+        respawn(e, false);
+    }
 
-        // Objects
-        p.resetData(true);
-        p.movement.setDetectionLocation();
+    public static void respawn(PlayerRespawnEvent e, boolean packets) { // todo call in protocol
+        SpartanProtocol protocol = SpartanBukkit.getProtocol(e.getPlayer());
+
+        if (protocol.packetsEnabled() == packets) {
+            SpartanPlayer p = protocol.spartanPlayer;
+
+            // Objects
+            p.resetData(true);
+            p.movement.setDetectionLocation();
+        }
     }
 
 }
