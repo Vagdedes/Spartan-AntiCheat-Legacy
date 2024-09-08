@@ -67,13 +67,9 @@ public class Event_Combat implements Listener {
 
         if (entityIsPlayer) {
             SpartanPlayer p = SpartanBukkit.getProtocol((Player) entity).spartanPlayer;
-            boolean cancelled = e.isCancelled();
 
             // Objects
             p.addReceivedDamage(e);
-
-            // Detections
-            p.getExecutor(Enums.HackType.Speed).handle(cancelled, e);
         } else {
             handlePassengers(entity, false, e);
         }

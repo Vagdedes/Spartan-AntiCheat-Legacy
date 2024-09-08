@@ -6,7 +6,6 @@ import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import me.vagdedes.spartan.system.Enums;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -28,9 +27,6 @@ public class Event_Join implements Listener {
             );
             p.getInstance().sendMessage("");
         }
-
-        // Detections
-        p.getExecutor(Enums.HackType.Speed).handle(false, e);
 
         SpartanBukkit.runDelayedTask(p, () -> {
             Config.settings.runOnLogin(p);

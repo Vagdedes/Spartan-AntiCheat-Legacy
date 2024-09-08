@@ -38,7 +38,7 @@ public class BlockRaytrace extends DetectionExecutor {
                 }
             }
             if (!valid) {
-                cancel("Attacking through block: " + block);
+                cancel("type: block-raytrace, attacking-through-block: " + block);
             }
         }
     }
