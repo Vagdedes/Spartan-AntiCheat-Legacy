@@ -51,6 +51,8 @@ public class Packet_Teleport extends PacketAdapter {
         PacketType packetType = event.getPacket().getType();
 
         if (packetType.equals(PacketType.Play.Server.POSITION)) {
+            protocol.teleported = true;
+            /*
             Location teleportLocation = add(
                     protocol.getLocation().clone(),
                     ProtocolTools.readLocation(event)
@@ -63,11 +65,15 @@ public class Packet_Teleport extends PacketAdapter {
             } else {
                 protocol.teleportEngine.add(new TeleportData(teleportLocation, false));
             }
+             */
 
         } else if (packetType.equals(PacketType.Play.Server.RESPAWN)
                 || packetType.equals(PacketType.Play.Server.MOUNT)) {
+            /*
             protocol.setLocation(new Location(protocol.getLocation().getWorld(), 0, 0, 0));
             protocol.mutateTeleport = true;
+             */
+            protocol.teleported = true;
         }
     }
 

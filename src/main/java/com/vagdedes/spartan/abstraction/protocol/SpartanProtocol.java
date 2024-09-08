@@ -20,11 +20,13 @@ public class SpartanProtocol {
     public final SpartanPlayer spartanPlayer;
     private boolean onGround, onGroundFrom;
     public boolean mutateTeleport, sprinting, sneaking;
-    public boolean loaded;
+    public boolean loaded, simulationFlag, teleported;
     private Location location;
+    public Location simulationStartPoint;
     private PlayerProfile profile;
     public List<Packet_Teleport.TeleportData> teleportEngine;
     public final MCClient mcClient;
+    public byte simulationDelayPerTP;
 
     public SpartanProtocol(Player player) {
         this.time = System.currentTimeMillis();
@@ -38,9 +40,13 @@ public class SpartanProtocol {
         this.loaded = false;
         this.location = player.getLocation();
         this.teleportEngine = new LinkedList<>();
+        this.simulationFlag = false;
 
         this.spartanPlayer = new SpartanPlayer(this);
         this.mcClient = new MCClient(player);
+        this.simulationStartPoint = this.location.clone();
+        this.simulationDelayPerTP = 1;
+        this.teleported = false;
 
         this.setProfile(ResearchEngine.getPlayerProfile(this, false));
     }
@@ -88,6 +94,16 @@ public class SpartanProtocol {
     }
     public UUID getUUID() {
         return this.player.getUniqueId();
+    }
+    public void startSimulationFlag() {
+        this.spartanPlayer.teleport(this.spartanPlayer.movement.getEventFromLocation());
+        this.simulationStartPoint = this.spartanPlayer.movement.getEventFromLocation().getBukkitLocation().clone();
+        this.simulationFlag = true;
+        this.simulationDelayPerTP = 1;
+    }
+
+    public void endSimulationFlag() {
+        this.simulationFlag = false;
     }
 
     public PlayerProfile getProfile() {

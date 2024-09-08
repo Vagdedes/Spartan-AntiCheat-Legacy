@@ -45,6 +45,9 @@ public class Packet_World extends PacketAdapter {
             Event_World.blockBreak(bukkitEvent);
         } else if (packetType.equals(PacketType.Play.Client.BLOCK_PLACE)) {
             boolean cancelled = event.isCancelled();
+
+            // invalid code
+            /*
             Block block = event.getPacket().getBlockPositionModifier().read(0).toLocation(
                     player.getWorld()
             ).getBlock();
@@ -59,6 +62,8 @@ public class Packet_World extends PacketAdapter {
             );
             bukkitEvent.setCancelled(event.isCancelled());
             Event_World.blockPlace(bukkitEvent);
+
+             */
         } else if (packetType.equals(PacketType.Play.Client.ARM_ANIMATION)) {
             PlayerAnimationEvent bukkitEvent = new PlayerAnimationEvent(
                     player,

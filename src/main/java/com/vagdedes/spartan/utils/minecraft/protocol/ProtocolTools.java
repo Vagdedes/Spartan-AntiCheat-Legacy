@@ -23,7 +23,6 @@ public class ProtocolTools {
 
     public static boolean invalidTeleport(Location location) {
         return location.getX() == 8.5
-                || location.getZ() == 8.5
-                || location.getX() + location.getZ() == 0;
+                || location.getZ() == 8.5;
     }
 }

@@ -11,6 +11,7 @@ import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.util.Vector;
 
@@ -454,5 +455,33 @@ public class RayUtils {
             f2 -= 0.08F;
         }
         return f2;
+    }
+
+    public static boolean isSaveToTeleport(Player player, Location location) {
+        double x = location.getX();
+        double y = location.getY();
+        double z = location.getZ();
+
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dy = -1; dy <= 1; dy++) {
+                for (int dz = -1; dz <= 1; dz++) {
+                    Block block = getBlockAsync(
+                                    new Location(player.getWorld(), x + (dx * 0.3), y + (dy * 0.3), z + (dz * 0.3)));
+                    Material material = block != null ? block.getType() : null;
+                    if (material == null) continue;
+                    if (!BlockUtils.areAir(material)) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+    public static Block getBlockAsync(final Location location) {
+        if (location.getWorld().isChunkLoaded(location.getBlockX() >> 4, location.getBlockZ() >> 4)) {
+            return location.getWorld().getBlockAt(location);
+        } else {
+            return null;
+        }
     }
 }

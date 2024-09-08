@@ -18,6 +18,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -100,6 +101,14 @@ public class MCClient {
             this.predicted.add(this.motion);
         }
         veloClaim = null;
+    }
+
+    public MotionVector getNext(double dx, double dy, double dz) {
+        this.predicted.clear();
+        preTick(new MotionVector(dx, dy, dz));
+        this.motion = this.verifiedMotion.cloneVector();
+        tick(new KeyBind(false, false, false, false), new MotionVector(dx, dy, dz));
+        return this.motion;
     }
 
     public SpartanProtocol p() {

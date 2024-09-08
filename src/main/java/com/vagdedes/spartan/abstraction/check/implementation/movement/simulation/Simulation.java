@@ -22,9 +22,6 @@ public class Simulation extends CheckExecutor {
 
     @Override
     public void handleInternal(boolean cancelled, Object object) {
-        if (true) {
-            return;
-        }
         MCClient client = player.protocol.mcClient;
 
         if (object instanceof PlayerMoveEvent) {
@@ -89,8 +86,11 @@ public class Simulation extends CheckExecutor {
                 client.verifiedMotion = predicted.get(predicted.size() - 1);
             }
 
+            /*
             player.getInstance().sendMessage("dx: " + dx + ", dy: " + dy + ", dz: " + dz + ", xMin: " + xMin + " / xMax: " + xMax + ", yMin: " + yMin + " / yMax: " + yMax + ", zMin: " + zMin + " / zMax: " + zMax);
             player.getInstance().sendMessage(isXValid + " " + isYValid + " "  + isZValid);
+
+             */
 
         }
         if (object instanceof PlayerVelocityEvent) {
