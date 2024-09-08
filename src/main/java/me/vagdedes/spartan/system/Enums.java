@@ -211,16 +211,6 @@ public class Enums {
                         "high amounts of movement packets."
                 }
         ),
-        NoFall(
-                HackCategoryType.MOVEMENT,
-                2_000L,
-                com.vagdedes.spartan.abstraction.check.implementation.movement.NoFall.class,
-                new String[]{
-                        "This check will prevent client modules",
-                        "that allow a player to decrease or",
-                        "eliminate falling damage."
-                }
-        ),
         Simulation(
                 HackCategoryType.MOVEMENT,
                 2_000L,

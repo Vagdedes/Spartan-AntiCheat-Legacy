@@ -29,7 +29,6 @@ public class Event_Velocity implements Listener {
         p.getExecutor(Enums.HackType.Speed).handle(cancelled, e);
         p.getExecutor(Enums.HackType.Velocity).handle(cancelled, e);
         p.getExecutor(Enums.HackType.Simulation).handle(cancelled, e);
-        p.getExecutor(Enums.HackType.NoFall).handle(false, null);
     }
 
 }

@@ -31,7 +31,6 @@ public class Event_Join implements Listener {
 
         // Detections
         p.getExecutor(Enums.HackType.Speed).handle(false, e);
-        p.getExecutor(Enums.HackType.NoFall).handle(false, null);
 
         SpartanBukkit.runDelayedTask(p, () -> {
             Config.settings.runOnLogin(p);

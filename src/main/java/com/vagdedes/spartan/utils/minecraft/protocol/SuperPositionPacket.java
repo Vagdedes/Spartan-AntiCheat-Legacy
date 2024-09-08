@@ -12,9 +12,11 @@ public class SuperPositionPacket {
         this.protocol = protocol;
         this.packetEvent = packetEvent;
     }
+
     public SpartanProtocol getProtocol() {
         return this.protocol;
     }
+
     public PacketEvent getEvent() {
         return this.packetEvent;
     }

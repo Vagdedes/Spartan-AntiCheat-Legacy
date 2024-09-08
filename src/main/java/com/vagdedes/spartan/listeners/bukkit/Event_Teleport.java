@@ -25,9 +25,6 @@ public class Event_Teleport implements Listener {
         // Object
         p.resetData(false);
         p.movement.judgeGround();
-
-        // Detections
-        p.getExecutor(Enums.HackType.NoFall).handle(false, null);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -37,7 +34,6 @@ public class Event_Teleport implements Listener {
         // Detections
         p.getExecutor(Enums.HackType.AutoRespawn).handle(false, null);
         p.getExecutor(Enums.HackType.ImpossibleInventory).handle(false, null);
-        p.getExecutor(Enums.HackType.NoFall).handle(false, null);
 
         // Objects
         p.resetData(true);
@@ -51,9 +47,6 @@ public class Event_Teleport implements Listener {
         // Objects
         p.resetData(true);
         p.movement.setDetectionLocation();
-
-        // Detections
-        p.getExecutor(Enums.HackType.NoFall).handle(false, null);
     }
 
 }
