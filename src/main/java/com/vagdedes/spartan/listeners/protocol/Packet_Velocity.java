@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.listeners.protocol.bukkit.replicated;
+package com.vagdedes.spartan.listeners.protocol;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.ListenerPriority;
@@ -8,7 +8,7 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.listeners.bukkit.protocol.replicated.Event_Velocity;
+import com.vagdedes.spartan.listeners.bukkit.Event_Velocity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.util.Vector;

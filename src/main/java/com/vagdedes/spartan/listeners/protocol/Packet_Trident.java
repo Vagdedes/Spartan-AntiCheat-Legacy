@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.listeners.protocol.bukkit.replicated.partly.completed;
+package com.vagdedes.spartan.listeners.protocol;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.ListenerPriority;
@@ -6,7 +6,9 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.listeners.bukkit.protocol.replicated.Event_Trident;
+import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.listeners.bukkit.Event_Trident;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerRiptideEvent;
@@ -27,8 +29,12 @@ public class Packet_Trident extends PacketAdapter {
     public void onPacketReceiving(PacketEvent event) {
         if (!event.isCancelled()) { // PlayerRiptideEvent does not implement cancellable
             Player player = event.getPlayer();
-            EnumWrappers.Hand hand = event.getPacket().getHands().read(0);
+            SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
 
+            if (protocol.spartanPlayer.bedrockPlayer) {
+                return;
+            }
+            EnumWrappers.Hand hand = event.getPacket().getHands().read(0);
             ItemStack item = player.getInventory().getItem(hand.ordinal());
 
             if (item != null && item.getType().equals(Material.TRIDENT)) {

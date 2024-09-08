@@ -2,9 +2,7 @@ package com.vagdedes.spartan.compatibility.necessary.protocollib;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
-import com.vagdedes.spartan.listeners.protocol.bukkit.replicated.Packet_Movement;
-import com.vagdedes.spartan.listeners.protocol.bukkit.replicated.Packet_Velocity;
-import com.vagdedes.spartan.listeners.protocol.bukkit.replicated.partly.completed.*;
+import com.vagdedes.spartan.listeners.protocol.*;
 import com.vagdedes.spartan.listeners.protocol.standalone.Packet_EntityAction;
 import com.vagdedes.spartan.listeners.protocol.standalone.Packet_Join;
 

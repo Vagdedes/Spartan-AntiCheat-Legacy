@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.listeners.protocol.bukkit.replicated;
+package com.vagdedes.spartan.listeners.protocol;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.ListenerPriority;
@@ -11,7 +11,7 @@ import com.vagdedes.spartan.abstraction.protocol.MCClient;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.listeners.bukkit.protocol.replicated.Event_Movement;
+import com.vagdedes.spartan.listeners.bukkit.Event_Movement;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import com.vagdedes.spartan.utils.minecraft.protocol.ProtocolTools;
 import com.vagdedes.spartan.utils.minecraft.protocol.SuperPositionPacket;
@@ -36,15 +36,18 @@ public class Packet_Movement extends PacketAdapter {
     public void onPacketReceiving(PacketEvent event) {
         long time = System.currentTimeMillis();
         SpartanProtocol protocol = SpartanBukkit.getProtocol(event.getPlayer());
+
+        if (protocol.spartanPlayer.bedrockPlayer) {
+            return;
+        }
         PacketContainer p = event.getPacket();
         PacketType t = p.getType();
 
         /*
         protocol.player.sendMessage(t.toString() + " " + ProtocolTools.readLocation(event).getX() + " " + ProtocolTools.readLocation(event).getZ());
         Register.plugin.getLogger().info(t.toString() + " " + ProtocolTools.readLocation(event).getX() + " " + ProtocolTools.readLocation(event).getZ());
+        */
 
-
-         */
         {
             if (ProtocolTools.invalidTeleport(ProtocolTools.readLocation(event))) {
                 return;
@@ -55,9 +58,6 @@ public class Packet_Movement extends PacketAdapter {
                 protocol.teleported = false;
                 return;
             }
-        }
-        if (protocol.spartanPlayer.bedrockPlayer) {
-            return;
         }
         if (System.currentTimeMillis() - protocol.mcClient.lastPacketTime > 4) {
             protocol.mcClient.verifiedPacket++;

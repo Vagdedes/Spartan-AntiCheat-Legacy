@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.listeners.bukkit.protocol.replicated;
+package com.vagdedes.spartan.listeners.bukkit;
 
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.TridentUse;

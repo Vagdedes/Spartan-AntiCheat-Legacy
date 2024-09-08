@@ -1,17 +1,16 @@
-package com.vagdedes.spartan.listeners.protocol.bukkit.replicated.partly.completed;
+package com.vagdedes.spartan.listeners.protocol;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.listeners.bukkit.protocol.replicated.Event_World;
+import com.vagdedes.spartan.listeners.bukkit.Event_World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerAnimationEvent;
 import org.bukkit.event.player.PlayerAnimationType;
 
@@ -30,7 +29,11 @@ public class Packet_World extends PacketAdapter {
     @Override
     public void onPacketReceiving(PacketEvent event) {
         Player player = event.getPlayer();
-        SpartanPlayer spartanPlayer = SpartanBukkit.getProtocol(player).spartanPlayer;
+        SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
+
+        if (protocol.spartanPlayer.bedrockPlayer) {
+            return;
+        }
         PacketType packetType = event.getPacketType();
 
         if (packetType.equals(PacketType.Play.Client.BLOCK_DIG)) {

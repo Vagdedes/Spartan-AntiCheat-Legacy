@@ -1,6 +1,5 @@
 package com.vagdedes.spartan.utils.minecraft.protocol;
 
-import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 

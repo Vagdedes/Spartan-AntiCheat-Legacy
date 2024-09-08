@@ -1,10 +1,9 @@
-package com.vagdedes.spartan.listeners.bukkit.protocol.replicated;
+package com.vagdedes.spartan.listeners.bukkit;
 
 import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.listeners.CustomHandlers;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -53,7 +52,7 @@ public class Event_Combat implements Listener {
                 }
             }
             if (entityAttack && (entityIsPlayer || entity instanceof LivingEntity)) {
-                CustomHandlers.attack(new PlayerAttackEvent(
+                attack(new PlayerAttackEvent(
                         (Player) damager,
                         (LivingEntity) entity,
                         e.isCancelled()
@@ -107,6 +106,14 @@ public class Event_Combat implements Listener {
                 }
             }
         }
+    }
+
+    public static void attack(PlayerAttackEvent e) {
+        SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer;
+        boolean cancelled = e.isCancelled();
+
+        p.getExecutor(Enums.HackType.NoSwing).handle(cancelled, e);
+        p.getExecutor(Enums.HackType.HitReach).handle(cancelled, e);
     }
 
 }

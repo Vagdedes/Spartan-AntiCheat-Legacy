@@ -5,7 +5,7 @@ import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.functionality.connection.Latency;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.listeners.protocol.bukkit.replicated.partly.completed.Packet_Teleport;
+import com.vagdedes.spartan.listeners.protocol.Packet_Teleport;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
