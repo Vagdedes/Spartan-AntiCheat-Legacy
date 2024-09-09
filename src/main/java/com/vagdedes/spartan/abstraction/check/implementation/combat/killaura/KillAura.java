@@ -49,8 +49,7 @@ public class KillAura extends CheckExecutor {
 
     boolean canRunEntity(LivingEntity entity) {
         if (entity.getVehicle() == null
-                && CombatProcessing.canCheck(player, entity)
-                && !CombatUtils.isEntityWide(CombatUtils.getWidthAndHeight(entity)[0])) {
+                && CombatProcessing.canCheck(player, entity)) {
             UUID entityUUID = entity.getUniqueId();
             boolean isPlayer = SpartanBukkit.isPlayer(entityUUID);
             return (isPlayer || !MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_10) || entity.hasAI())
@@ -102,7 +101,7 @@ public class KillAura extends CheckExecutor {
                 );
                 runDetection(
                         "check_hit_direction",
-                        () -> hitDirection.runDamage(target)
+                        () -> hitDirection.runDamage()
                 );
                 runDetection(
                         "check_fight_analysis",
