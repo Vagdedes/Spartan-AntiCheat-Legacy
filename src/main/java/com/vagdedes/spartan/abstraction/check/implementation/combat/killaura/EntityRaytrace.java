@@ -9,7 +9,7 @@ public class EntityRaytrace extends DetectionExecutor {
         super(executor, executor.hackType, executor.player);
     }
 
-    void runDamage() {
+    void run() {
         // todo
     }
 

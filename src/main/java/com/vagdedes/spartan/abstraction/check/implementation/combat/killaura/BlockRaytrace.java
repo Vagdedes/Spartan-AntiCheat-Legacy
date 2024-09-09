@@ -18,7 +18,7 @@ public class BlockRaytrace extends DetectionExecutor {
         super(executor, executor.hackType, executor.player);
     }
 
-    public void runDamage(Entity targetHandle) {
+    public void run(Entity targetHandle) {
         if (targetHandle instanceof Player) {
             SpartanProtocol player = SpartanBukkit.getProtocol(this.player.getInstance());
             SpartanProtocol target = SpartanBukkit.getProtocol((Player) targetHandle);
@@ -42,7 +42,8 @@ public class BlockRaytrace extends DetectionExecutor {
             }
         }
     }
-    public static Material intercept(SpartanProtocol iPlayer, Location location, Location targetLoc, double distToTarget) {
+
+    private static Material intercept(SpartanProtocol iPlayer, Location location, Location targetLoc, double distToTarget) {
         for (int x = location.getBlockX() - 2; x <= location.getBlockX() + 2; x++) {
             for (int y = location.getBlockY() - 2; y <= location.getBlockY() + 2; y++) {
                 for (int z = location.getBlockZ() - 2; z <= location.getBlockZ() + 2; z++) {

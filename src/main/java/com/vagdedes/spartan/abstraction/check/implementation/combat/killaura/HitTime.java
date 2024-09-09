@@ -22,7 +22,7 @@ public class HitTime extends DetectionExecutor {
             lastHitTime = 0,
             oldHitTiming = 0;
 
-    void runDamage() {
+    void run() {
         if (!player.protocol.packetsEnabled()) {
             return;
         }

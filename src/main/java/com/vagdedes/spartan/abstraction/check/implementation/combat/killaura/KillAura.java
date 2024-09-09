@@ -9,7 +9,6 @@ import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
-import com.vagdedes.spartan.utils.minecraft.entity.CombatUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -72,7 +71,7 @@ public class KillAura extends CheckExecutor {
         if (object instanceof PlayerMoveEvent) {
             runDetection(
                     "check_move_direction",
-                    moveDirection::runMove
+                    moveDirection::run
             );
         } else if (object instanceof PlayerAttackEvent) {
             PlayerAttackEvent event = (PlayerAttackEvent) object;
@@ -81,27 +80,27 @@ public class KillAura extends CheckExecutor {
             if (canRunEntity(target)) {
                 runDetection(
                         "check_irregular",
-                        irregular::runDamage
+                        irregular::run
                 );
                 runDetection(
                         "check_block_raytrace",
-                        () -> blockRaytrace.runDamage(target)
+                        () -> blockRaytrace.run(target)
                 );
                 runDetection(
                         "check_entity_raytrace",
-                        entityRaytrace::runDamage
+                        entityRaytrace::run
                 );
                 runDetection(
                         "check_move_direction",
-                        () -> moveDirection.runDamage(target)
+                        () -> moveDirection.run(target)
                 );
                 runDetection(
                         "check_hit_time",
-                        hitTime::runDamage
+                        hitTime::run
                 );
                 runDetection(
                         "check_hit_direction",
-                        () -> hitDirection.runDamage()
+                        hitDirection::run
                 );
                 runDetection(
                         "check_fight_analysis",
