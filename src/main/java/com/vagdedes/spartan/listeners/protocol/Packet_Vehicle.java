@@ -37,7 +37,7 @@ public class Packet_Vehicle extends PacketAdapter {
                     return;
                 }
                 VehicleExitEvent bukkitEvent = new VehicleExitEvent(
-                        null, // todo
+                        null, // todo put entity that represents vehicle
                         player
                 );
                 bukkitEvent.setCancelled(event.isCancelled());
@@ -59,7 +59,7 @@ public class Packet_Vehicle extends PacketAdapter {
                     return;
                 }
                 VehicleEnterEvent bukkitEvent = new VehicleEnterEvent(
-                        null, // todo
+                        null, // todo put entity that represents vehicle
                         player
                 );
                 bukkitEvent.setCancelled(event.isCancelled());

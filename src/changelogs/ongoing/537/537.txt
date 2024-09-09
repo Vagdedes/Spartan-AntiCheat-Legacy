@@ -8,3 +8,4 @@
 [#] Rewrote the Exploits ground-spoof detection.
 [-] Removed the NoFall check and replaced it by the new Exploits ground-spoof detection.
 [+] Implemented a new KillAura detection which calculates the ratio of hits/damages for all entities.
+[+] Implemented a new FastClicks detection which measures and compares patterns.

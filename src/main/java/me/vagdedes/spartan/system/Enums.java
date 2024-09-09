@@ -133,7 +133,7 @@ public class Enums {
         FastClicks(
                 HackCategoryType.COMBAT,
                 2_000L,
-                com.vagdedes.spartan.abstraction.check.implementation.combat.fastclicks.FastClicks.class,
+                com.vagdedes.spartan.abstraction.check.implementation.combat.FastClicks.class,
                 new String[]{
                         "This check will prevent client modules",
                         "that allow a player to click abnormally fast",
