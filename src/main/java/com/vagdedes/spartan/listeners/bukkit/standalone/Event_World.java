@@ -6,6 +6,7 @@ import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanBlock;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
+import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.AntiCheatLogs;
@@ -46,7 +47,7 @@ public class Event_World implements Listener {
                         Map<Long, List<Entity>> perChunkEntities = new LinkedHashMap<>();
 
                         for (Entity entity : world.getEntities()) {
-                            Location location = entity.getLocation();
+                            Location location = ProtocolLib.getLocation(entity);
                             long hash = Event_Chunks.hashCoordinates(
                                     SpartanLocation.getChunkPos(location.getBlockX()),
                                     SpartanLocation.getChunkPos(location.getBlockZ())
@@ -226,7 +227,8 @@ public class Event_World implements Listener {
                         SpartanBukkit.getProtocol((Player) entity).spartanPlayer.trackers.add(
                                 Trackers.TrackerType.ABSTRACT_VELOCITY,
                                 AlgebraUtils.integerCeil(
-                                        CombatUtils.maxHitDistance - entity.getLocation().distance(location)
+                                        CombatUtils.maxHitDistance
+                                                - ProtocolLib.getLocation((Player) entity).distance(location)
                                 ) * 5
                         );
                     }

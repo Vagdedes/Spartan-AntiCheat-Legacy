@@ -39,7 +39,11 @@ public class Packet_Trident extends PacketAdapter {
 
             if (item != null && item.getType().equals(Material.TRIDENT)) {
                 boolean inWater = player.isInWater(),
-                        inRain = player.getWorld().hasStorm() && player.getLocation().getBlockY() >= player.getWorld().getHighestBlockYAt(player.getLocation());
+                        inRain = protocol.spartanPlayer.getWorld().hasStorm()
+                                && protocol.spartanPlayer.movement.getLocation().getBlockY()
+                                >= protocol.spartanPlayer.getWorld().getHighestBlockYAt(
+                                        player.getLocation()
+                        );
 
                 if (inWater || inRain) {
                     double r = Math.toRadians(protocol.getLocation().getYaw());

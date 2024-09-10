@@ -29,7 +29,9 @@ public class PlayerUtils {
             slowFall = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13),
             dolphinsGrace = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13),
             soulSpeed = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_16),
-            levitation = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9);
+            levitation = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9),
+            elytra = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9),
+            trident = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13);
     private static final Material
             gold_sword = MaterialUtils.get("gold_sword"),
             wood_sword = MaterialUtils.get("wood_sword"),

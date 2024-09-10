@@ -89,7 +89,7 @@ public class SpartanProtocol {
     public Location getLocation() {
         return packetsEnabled()
                 ? this.location
-                : this.player.getLocation();
+                : ProtocolLib.getLocation(this.player);
     }
 
     public int getPing() {

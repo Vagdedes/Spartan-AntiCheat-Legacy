@@ -45,7 +45,7 @@ public class MoveDirection extends DetectionExecutor {
                 double predict = RayUtils.castTo360(
                         calculate(
                                 player.movement.getLocation().toVector3D(),
-                                new SpartanLocation(target.getLocation()).toVector3D()
+                                new SpartanLocation(ProtocolLib.getLocation(target)).toVector3D()
                         ).x
                 );
                 double yaw360 = RayUtils.castTo360(player.movement.getLocation().getYaw());

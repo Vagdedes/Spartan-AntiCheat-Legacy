@@ -11,6 +11,7 @@ import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.listeners.bukkit.*;
 import com.vagdedes.spartan.listeners.bukkit.standalone.*;
 import com.vagdedes.spartan.listeners.bukkit.standalone.chunks.Event_Chunks;
+import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import com.vagdedes.spartan.utils.minecraft.server.ProxyUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
@@ -69,10 +70,10 @@ public class Register extends JavaPlugin {
         if (NPCManager.supported) {
             enable(new NPCManager());
         }
-        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
+        if (PlayerUtils.elytra) {
             enable(new Event_Elytra());
 
-            if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
+            if (PlayerUtils.trident) {
                 enable(new Event_Trident());
             }
         }
