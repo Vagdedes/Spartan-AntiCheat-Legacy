@@ -34,7 +34,6 @@ public class MoveDirection extends DetectionExecutor {
     }
 
     public void run() {
-        // player.sendMessage(String.valueOf(handle));
         if (attackHandle.getTimeMillis() + 3000 > System.currentTimeMillis()) {
             // main
             Entity target = attackHandle.getTarget();
@@ -166,6 +165,7 @@ public class MoveDirection extends DetectionExecutor {
             );
             vl -= 10;
         }
+       //player.protocol.player.sendMessage("vl: " + vl);
         if (vl > 0) vl -= priorityData(priorityType()).getVlFader();
         if (vl > priorityData(priorityType()).getVlLimit()) vl -= 10;
         rayTraceAnalysis.clear();

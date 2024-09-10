@@ -42,11 +42,12 @@ public class Packet_Trident extends PacketAdapter {
                         inRain = player.getWorld().hasStorm() && player.getLocation().getBlockY() >= player.getWorld().getHighestBlockYAt(player.getLocation());
 
                 if (inWater || inRain) {
+                    double r = Math.toRadians(protocol.getLocation().getYaw());
                     Event_Trident.event(
                             new PlayerRiptideEvent(
                                     player,
                                     item,
-                                    new Vector()
+                                    new Vector(-Math.sin(r), protocol.getLocation().getPitch() / 90, Math.cos(r))
                             ),
                             true
                     );

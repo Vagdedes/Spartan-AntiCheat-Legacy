@@ -19,14 +19,14 @@ public class SpartanProtocol {
     public final Player player;
     public final SpartanPlayer spartanPlayer;
     private boolean onGround, onGroundFrom;
-    public boolean mutateTeleport, sprinting, sneaking;
+    public boolean mutateTeleport, sprinting, sneaking, vehicleStatus;
     public boolean loaded, simulationFlag, teleported;
     private Location location;
     public Location simulationStartPoint;
     private PlayerProfile profile;
     public List<Packet_Teleport.TeleportData> teleportEngine;
     public final MCClient mcClient;
-    public byte simulationDelayPerTP;
+    public byte simulationDelayPerTP, keepEntity;
 
     public SpartanProtocol(Player player) {
         this.time = System.currentTimeMillis();
@@ -47,6 +47,8 @@ public class SpartanProtocol {
         this.simulationStartPoint = this.location.clone();
         this.simulationDelayPerTP = 1;
         this.teleported = false;
+        this.vehicleStatus = true;
+        this.keepEntity = 0;
 
         this.setProfile(ResearchEngine.getPlayerProfile(this, false));
     }
