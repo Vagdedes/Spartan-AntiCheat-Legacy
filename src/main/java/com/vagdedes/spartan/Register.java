@@ -60,6 +60,7 @@ public class Register extends JavaPlugin {
         enable(new Event_Combat());
         enable(new Event_Movement());
         enable(new Event_Teleport());
+        enable(new Event_Death());
         enable(new Event_Vehicle());
         enable(new Event_Velocity());
         enable(new Event_World());
