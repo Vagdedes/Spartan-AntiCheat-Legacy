@@ -3,86 +3,48 @@ package com.vagdedes.spartan.listeners.protocol;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import org.bukkit.Location;
+import com.vagdedes.spartan.listeners.bukkit.Event_Teleport;
+import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerRespawnEvent;
 
 public class Packet_Teleport extends PacketAdapter {
 
-    public static class TeleportData {
-
-        private final Location location;
-        private final boolean silent;
-
-        public TeleportData(Location location, boolean silent) {
-            this.location = location;
-            this.silent = silent;
-        }
-
-        public Location getLocation() {
-            return location;
-        }
-
-        public boolean isSilent() {
-            return silent;
-        }
-    }
 
     public Packet_Teleport() {
         super(
                 Register.plugin,
-                ListenerPriority.HIGHEST,
-                PacketType.Play.Server.POSITION,
-                PacketType.Play.Server.RESPAWN
+                ListenerPriority.NORMAL,
+                PacketType.Play.Server.UPDATE_HEALTH,
+                PacketType.Play.Server.RESPAWN,
+                PacketType.Play.Server.POSITION
         );
     }
 
     @Override
     public void onPacketSending(PacketEvent event) {
-        SpartanProtocol protocol = SpartanBukkit.getProtocol(event.getPlayer());
+        Player player = event.getPlayer();
+        SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
 
-        if (protocol.spartanPlayer.bedrockPlayer
-                || protocol.isLoading()) {
+        if (protocol.spartanPlayer.bedrockPlayer) {
             return;
         }
-        PacketType packetType = event.getPacket().getType();
+        PacketContainer packet = event.getPacket();
+        PacketType type = packet.getType();
 
-        if (packetType.equals(PacketType.Play.Server.POSITION)) {
-            protocol.teleported = true;
-            /*
-            Location teleportLocation = add(
-                    protocol.getLocation().clone(),
-                    ProtocolTools.readLocation(event)
-            );
-            protocol.setLocation(teleportLocation);
-
-            if (protocol.mutateTeleport) {
-                protocol.teleportEngine.add(new TeleportData(teleportLocation, true));
-                protocol.mutateTeleport = false;
-            } else {
-                protocol.teleportEngine.add(new TeleportData(teleportLocation, false));
+        if (type.equals(PacketType.Play.Server.UPDATE_HEALTH)) {
+            if (packet.getFloat().read(0) <= 0.0F) {
+                Event_Teleport.death(event.getPlayer(), true);
             }
-             */
-
-        } else if (packetType.equals(PacketType.Play.Server.RESPAWN)
-                || packetType.equals(PacketType.Play.Server.MOUNT)) {
-            /*
-            protocol.setLocation(new Location(protocol.getLocation().getWorld(), 0, 0, 0));
-            protocol.mutateTeleport = true;
-             */
-            protocol.teleported = true;
+        } else if (type.equals(PacketType.Play.Server.RESPAWN)) {
+            Event_Teleport.respawn(event.getPlayer(), true);
+        } else if (type.equals(PacketType.Play.Server.POSITION)) {
+            Event_Teleport.teleport(event.getPlayer(), true);
         }
-    }
-
-    public static Location add(Location f, Location t) {
-        return new Location(
-                t.getWorld(),
-                f.getX() + t.getX(),
-                f.getY() + t.getY(),
-                f.getZ() + t.getZ()
-        );
     }
 
 }

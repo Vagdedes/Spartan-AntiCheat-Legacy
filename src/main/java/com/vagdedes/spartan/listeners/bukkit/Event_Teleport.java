@@ -58,11 +58,11 @@ public class Event_Teleport implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Respawn(PlayerRespawnEvent e) {
-        respawn(e, false);
+        respawn(e.getPlayer(), false);
     }
 
-    public static void respawn(PlayerRespawnEvent e, boolean packets) { // todo call in protocol
-        SpartanProtocol protocol = SpartanBukkit.getProtocol(e.getPlayer());
+    public static void respawn(Player player, boolean packets) {
+        SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
 
         if (protocol.packetsEnabled() == packets) {
             SpartanPlayer p = protocol.spartanPlayer;

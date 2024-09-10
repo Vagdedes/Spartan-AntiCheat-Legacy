@@ -6,7 +6,7 @@ import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.connection.Latency;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.listeners.protocol.Packet_Teleport;
+import com.vagdedes.spartan.listeners.protocol.standalone.Packet_TeleportData;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -25,7 +25,7 @@ public class SpartanProtocol {
     private Location location;
     public Location simulationStartPoint;
     private PlayerProfile profile;
-    public List<Packet_Teleport.TeleportData> teleportEngine;
+    public List<Packet_TeleportData.TeleportData> teleportEngine;
     public final MCClient mcClient;
     public byte simulationDelayPerTP, keepEntity;
 
