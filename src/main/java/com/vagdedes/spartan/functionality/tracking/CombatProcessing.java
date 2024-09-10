@@ -26,7 +26,7 @@ public class CombatProcessing {
     }
 
     public static boolean canCheck(SpartanPlayer player, LivingEntity entity) {
-        return !player.protocol.getUUID().equals(entity.getUniqueId())
+        return !player.getInstance().equals(entity)
                 && !MythicMobs.is(entity)
                 && !ItemsAdder.is(entity);
     }

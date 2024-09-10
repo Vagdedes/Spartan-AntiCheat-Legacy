@@ -49,9 +49,15 @@ public class MoveDirection extends DetectionExecutor {
                 );
                 double yaw360 = RayUtils.castTo360(player.movement.getLocation().getYaw());
                 rayTraceAnalysis.addLast(bruteforceRayTrace);
-                aimAnalysis.addLast(new AttackData(Math.abs(predict - yaw360),
-                        player.movement.getLocation().getYaw(),
-                        player.movement.getLocation().getPitch(), System.currentTimeMillis(), target.getUniqueId()));
+                aimAnalysis.addLast(
+                        new AttackData(
+                                Math.abs(predict - yaw360),
+                                player.movement.getLocation().getYaw(),
+                                player.movement.getLocation().getPitch(),
+                                System.currentTimeMillis(),
+                                target.getUniqueId()
+                        )
+                );
                 if (rayTraceAnalysis.size() >= 10) {
                     analyze(player.movement.getLocation());
                 }

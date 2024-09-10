@@ -37,10 +37,6 @@ public class SpartanBukkit {
                     + "org.bukkit.craftbukkit." + Bukkit.getServer().getClass().getPackage().getName().substring(23) + ".entity.CraftPlayer" // Version
     );
 
-    public static boolean isPlayer(UUID uuid) {
-        return playerProtocol.containsKey(uuid);
-    }
-
     public static int getPlayerCount() {
         return playerProtocol.size();
     }
