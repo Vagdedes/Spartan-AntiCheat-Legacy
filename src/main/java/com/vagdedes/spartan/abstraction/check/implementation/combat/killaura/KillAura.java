@@ -7,14 +7,11 @@ import com.vagdedes.spartan.abstraction.event.EntityAttackPlayerEvent;
 import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
-import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
-
-import java.util.UUID;
 
 public class KillAura extends CheckExecutor {
 
@@ -78,6 +75,7 @@ public class KillAura extends CheckExecutor {
             LivingEntity target = event.getTarget();
 
             if (canRunEntity(target)) {
+
                 runDetection(
                         "check_irregular",
                         irregular::run

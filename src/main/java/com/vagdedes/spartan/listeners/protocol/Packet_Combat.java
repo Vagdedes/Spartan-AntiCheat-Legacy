@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.listeners.protocol;
 
 import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
@@ -11,6 +12,7 @@ import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.listeners.bukkit.Event_Combat;
 import com.vagdedes.spartan.utils.java.OverflowMap;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
@@ -70,12 +72,13 @@ public class Packet_Combat extends PacketAdapter {
 
                 if (pendingEntityId == entityId) {
                     Player attacker = plugin.getServer().getPlayer(playerUUID);
-
-                    if (attacker != null) {
+                    Entity target = ProtocolLibrary.getProtocolManager().
+                                    getEntityFromID(event.getPlayer().getWorld(), entityId);
+                    if (attacker != null && target != null) {
                         Event_Combat.dealAndReceive(
                                 new EntityDamageByEntityEvent(
                                         attacker,
-                                        protocol.player,
+                                        target,
                                         EntityDamageByEntityEvent.DamageCause.ENTITY_ATTACK,
                                         0.0D
                                 ),
