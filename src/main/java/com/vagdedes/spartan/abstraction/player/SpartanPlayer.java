@@ -25,14 +25,15 @@ import com.vagdedes.spartan.listeners.bukkit.standalone.chunks.Event_Chunks;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
+import com.vagdedes.spartan.utils.minecraft.inventory.EnchantmentUtils;
 import com.vagdedes.spartan.utils.minecraft.server.PluginUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import com.vagdedes.spartan.utils.minecraft.world.GroundUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.Inventory;
@@ -68,15 +69,7 @@ public class SpartanPlayer {
     public final SpartanPunishments punishments;
     public final Trackers trackers;
     public final Clicks clicks;
-
-    private final Map<EntityDamageEvent.DamageCause, SpartanPlayerDamage>
-            damageReceived,
-            damageDealt;
     private final CheckExecutor[] executors;
-
-    private SpartanPlayerDamage
-            lastDamageReceived,
-            lastDamageDealt;
 
     static {
         SpartanBukkit.runRepeatingTask(() -> {
@@ -112,23 +105,6 @@ public class SpartanPlayer {
         this.clicks = new Clicks();
         this.movement = new SpartanPlayerMovement(this);
         this.punishments = new SpartanPunishments(this);
-        this.damageReceived = new ConcurrentHashMap<>();
-        this.damageDealt = new ConcurrentHashMap<>();
-        this.lastDamageReceived = new SpartanPlayerDamage(this);
-        this.lastDamageDealt = new SpartanPlayerDamage(this);
-
-        // Load them all to keep their order
-        for (EntityDamageEvent.DamageCause damageCause : EntityDamageEvent.DamageCause.values()) {
-            this.damageReceived.put(
-                    damageCause,
-                    new SpartanPlayerDamage(this)
-            );
-            this.damageDealt.put(
-                    damageCause,
-                    new SpartanPlayerDamage(this)
-            );
-        }
-
         this.executors = new CheckExecutor[Enums.HackType.values().length];
         this.registerExecutors(null);
     }
@@ -268,14 +244,6 @@ public class SpartanPlayer {
 
     // Separator
 
-    public boolean isOnFire() {
-        return !this.hasPotionEffect(PotionEffectType.FIRE_RESISTANCE, 0)
-                && (this.getDamageReceived(EntityDamageEvent.DamageCause.FIRE).timePassed() <= 5 * TPS.tickTime
-                || this.getDamageReceived(EntityDamageEvent.DamageCause.FIRE_TICK).timePassed() <= 5 * TPS.tickTime);
-    }
-
-    // Separator
-
     public Player getInstance() {
         return this.protocol.player;
     }
@@ -339,52 +307,66 @@ public class SpartanPlayer {
 
     // Separator
 
-    public SpartanPlayerDamage getLastDamageReceived() {
-        return this.lastDamageReceived;
-    }
+    public void handleReceivedDamage(EntityDamageEvent event) {
+        boolean abstractVelocity = false;
+        this.trackers.add(Trackers.TrackerType.DAMAGE, (int) TPS.maximum);
+        ItemStack activeItem;
 
-    public SpartanPlayerDamage getLastDamageDealt() {
-        return this.lastDamageDealt;
-    }
+        if (event instanceof EntityDamageByEntityEvent) {
+            EntityDamageByEntityEvent actualEvent = (EntityDamageByEntityEvent) event;
 
-    public Set<Map.Entry<EntityDamageEvent.DamageCause, SpartanPlayerDamage>> getRawReceivedDamages() {
-        return new HashSet<>(this.damageReceived.entrySet());
-    }
+            if (actualEvent.getDamager() instanceof Player) {
+                activeItem = ((Player) actualEvent.getDamager()).getInventory().getItemInHand();
+            } else if (actualEvent.getDamager() instanceof LivingEntity) {
+                activeItem = ((LivingEntity) actualEvent.getDamager()).getEquipment().getItemInHand();
+            } else if (actualEvent.getDamager() instanceof Projectile) {
+                Projectile projectile = (Projectile) actualEvent.getDamager();
 
-    public Collection<SpartanPlayerDamage> getReceivedDamages() {
-        return new ArrayList<>(this.damageReceived.values());
-    }
+                if (projectile.getShooter() instanceof LivingEntity) {
+                    LivingEntity shooter = (LivingEntity) projectile.getShooter();
+                    activeItem = shooter.getEquipment().getItemInHand();
 
-    public Set<Map.Entry<EntityDamageEvent.DamageCause, SpartanPlayerDamage>> getRawDealtDamages() {
-        return new HashSet<>(this.damageDealt.entrySet());
-    }
+                    if (activeItem != null
+                            && (activeItem.getType() == Material.BOW
+                            || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_14)
+                            && activeItem.getType() == Material.CROSSBOW)) {
+                        int level = activeItem.getEnchantmentLevel(EnchantmentUtils.ARROW_KNOCKBACK);
 
-    public Collection<SpartanPlayerDamage> getDealtDamages() {
-        return new ArrayList<>(this.damageDealt.values());
-    }
+                        if (level > 2) {
+                            this.trackers.add(
+                                    Trackers.TrackerType.ABSTRACT_VELOCITY,
+                                    AlgebraUtils.integerRound(Math.log(level) * TPS.maximum)
+                            );
+                            abstractVelocity = true;
+                        }
+                    }
+                } else {
+                    activeItem = null;
+                }
+            } else if (actualEvent.getDamager() instanceof Explosive) {
+                activeItem = null;
+            } else {
+                activeItem = null;
+            }
+        } else {
+            activeItem = null;
+        }
 
-    public SpartanPlayerDamage getDamageReceived(EntityDamageEvent.DamageCause cause) {
-        return this.damageReceived.get(cause);
-    }
+        if (activeItem != null) {
+            int level = activeItem.getEnchantmentLevel(Enchantment.KNOCKBACK);
 
-    public SpartanPlayerDamage getDamageDealt(EntityDamageEvent.DamageCause cause) {
-        return this.damageDealt.get(cause);
-    }
+            if (level > 2) {
+                this.trackers.add(
+                        Trackers.TrackerType.ABSTRACT_VELOCITY,
+                        AlgebraUtils.integerRound(Math.log(level) * TPS.maximum)
+                );
+                abstractVelocity = true;
+            }
+        }
 
-    public void addReceivedDamage(EntityDamageEvent event) {
-        this.lastDamageReceived = new SpartanPlayerDamage(this, event);
-        this.damageReceived.put(
-                event.getCause(),
-                this.lastDamageReceived
-        );
-    }
-
-    public void addDealtDamage(EntityDamageByEntityEvent event) {
-        this.lastDamageDealt = new SpartanPlayerDamage(this, event);
-        this.damageDealt.put(
-                event.getCause(),
-                this.lastDamageDealt
-        );
+        if (!abstractVelocity && !event.isCancelled()) {
+            this.trackers.disable(Trackers.TrackerType.ABSTRACT_VELOCITY, 2);
+        }
     }
 
     // Separator

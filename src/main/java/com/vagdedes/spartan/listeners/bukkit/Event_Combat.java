@@ -47,9 +47,6 @@ public class Event_Combat implements Listener {
             SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
 
             if (protocol.packetsEnabled() == packets) {
-                // Object
-                protocol.spartanPlayer.addDealtDamage(e);
-
                 // Detections
                 if (entityAttack) {
                     protocol.spartanPlayer.calculateClicks(true);
@@ -81,7 +78,7 @@ public class Event_Combat implements Listener {
 
             if (protocol.packetsEnabled() == packets) {
                 // Objects
-                protocol.spartanPlayer.addReceivedDamage(e);
+                protocol.spartanPlayer.handleReceivedDamage(e);
 
                 // Detections
                 if (entityAttack && (damagerIsPlayer || damager instanceof LivingEntity)) {
@@ -106,7 +103,7 @@ public class Event_Combat implements Listener {
             SpartanProtocol protocol = SpartanBukkit.getProtocol((Player) entity);
 
             if (protocol.packetsEnabled() == packets) {
-                protocol.spartanPlayer.addReceivedDamage(e);
+                protocol.spartanPlayer.handleReceivedDamage(e);
             }
         } else {
             handlePassengers(entity, packets, e);
@@ -125,7 +122,7 @@ public class Event_Combat implements Listener {
                     SpartanProtocol protocol = SpartanBukkit.getProtocol((Player) passenger);
 
                     if (protocol.packetsEnabled() == packets) {
-                        protocol.spartanPlayer.addReceivedDamage(e);
+                        protocol.spartanPlayer.handleReceivedDamage(e);
                     }
                 }
             }

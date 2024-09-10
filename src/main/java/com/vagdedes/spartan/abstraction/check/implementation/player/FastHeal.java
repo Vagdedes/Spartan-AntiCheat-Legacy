@@ -31,7 +31,7 @@ public class FastHeal extends CheckExecutor {
         long i = 0L;
 
         if (level > -1) {
-            if (!player.isOnFire()) {
+            if (player.getInstance().getFireTicks() <= 0) {
                 if (level <= 10) {
                     i = level == 0 ? 300L : 45L;
                 }

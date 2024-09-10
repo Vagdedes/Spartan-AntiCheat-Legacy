@@ -3,7 +3,6 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.irregular
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.data.Trackers;
-import com.vagdedes.spartan.abstraction.player.SpartanPlayerDamage;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.TPS;
@@ -14,10 +13,10 @@ import com.vagdedes.spartan.utils.minecraft.world.BlockPatternUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import com.vagdedes.spartan.utils.minecraft.world.GroundUtils;
 import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class IrregularMovementsGravity extends DetectionExecutor {
@@ -239,15 +238,11 @@ public class IrregularMovementsGravity extends DetectionExecutor {
 
     private boolean isUsingMace() {
         if (MACE != null) {
-            Collection<SpartanPlayerDamage> damages = player.getDealtDamages();
+            ItemStack[] contents = player.getInstance().getInventory().getContents();
 
-            if (!damages.isEmpty()) {
-                for (SpartanPlayerDamage damage : damages) {
-                    if (damage.timePassed() <= (TPS.tickTime * TPS.maximum * 3)
-                            && (player.getItemInHand().getType() == MACE
-                            || player.getInstance().getInventory().getItemInOffHand().getType() == MACE)) {
-                        return true;
-                    }
+            for (ItemStack item : contents) {
+                if (item != null && item.getType() == MACE) {
+                    return true;
                 }
             }
         }

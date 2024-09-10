@@ -165,8 +165,6 @@ public class Event_World implements Listener {
         // Object
         p.calculateClicks(
                 action == Action.LEFT_CLICK_AIR
-                        && (p.getLastDamageDealt().timePassed() <= 1_000
-                        || p.getLastDamageReceived().timePassed() <= 1_000)
                         && !p.getNearbyEntities(
                         CombatUtils.maxHitDistance,
                         CombatUtils.maxHitDistance,

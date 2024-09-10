@@ -9,6 +9,7 @@ import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.listeners.bukkit.Event_Teleport;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 
 public class Packet_Teleport extends PacketAdapter {
 
@@ -42,7 +43,8 @@ public class Packet_Teleport extends PacketAdapter {
 
     @Override
     public void onPacketSending(PacketEvent event) {
-        SpartanProtocol protocol = SpartanBukkit.getProtocol(event.getPlayer());
+        Player player = event.getPlayer();
+        SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
 
         if (protocol.spartanPlayer.bedrockPlayer
                 || protocol.isLoading()) {
@@ -52,7 +54,7 @@ public class Packet_Teleport extends PacketAdapter {
 
         if (packetType.equals(PacketType.Play.Server.POSITION)) {
             protocol.teleported = true;
-            Event_Teleport.teleport(event.getPlayer(), true);
+            Event_Teleport.teleport(player, true);
             /*
             Location teleportLocation = add(
                     protocol.getLocation().clone(),
@@ -77,7 +79,7 @@ public class Packet_Teleport extends PacketAdapter {
             protocol.teleported = true;
 
             if (packetType.equals(PacketType.Play.Server.RESPAWN)) {
-                Event_Teleport.respawn(event.getPlayer(), true);
+                Event_Teleport.respawn(player, true);
             }
         }
     }

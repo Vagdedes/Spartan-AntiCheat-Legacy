@@ -9,7 +9,6 @@ import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.listeners.bukkit.Event_Death;
-import org.bukkit.entity.Player;
 
 public class Packet_Death extends PacketAdapter {
 
@@ -24,8 +23,7 @@ public class Packet_Death extends PacketAdapter {
 
     @Override
     public void onPacketSending(PacketEvent event) {
-        Player player = event.getPlayer();
-        SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
+        SpartanProtocol protocol = SpartanBukkit.getProtocol(event.getPlayer());
 
         if (protocol.spartanPlayer.bedrockPlayer) {
             return;

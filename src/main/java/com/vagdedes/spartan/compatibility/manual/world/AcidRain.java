@@ -18,7 +18,7 @@ public class AcidRain implements Listener {
         if (Compatibility.CompatibilityType.ACID_RAIN.isFunctional()) {
             Player n = e.getPlayer();
             SpartanPlayer p = SpartanBukkit.getProtocol(n).spartanPlayer;
-            p.addReceivedDamage(new EntityDamageEvent(
+            p.handleReceivedDamage(new EntityDamageEvent(
                     n,
                     EntityDamageEvent.DamageCause.FALL,
                     Math.max(
@@ -35,7 +35,7 @@ public class AcidRain implements Listener {
             Player n = e.getPlayer();
             SpartanPlayer p = SpartanBukkit.getProtocol(n).spartanPlayer;
 
-            p.addReceivedDamage(new EntityDamageEvent(
+            p.handleReceivedDamage(new EntityDamageEvent(
                     n,
                     EntityDamageEvent.DamageCause.FALL,
                     Math.max(
