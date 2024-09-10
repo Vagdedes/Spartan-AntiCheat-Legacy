@@ -1,6 +1,9 @@
 package com.vagdedes.spartan.abstraction.check.implementation.movement.speed;
 
 import com.vagdedes.spartan.Register;
+import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.java.OverflowMap;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -27,7 +30,7 @@ public class DataProcessor implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Leave(PlayerQuitEvent event) {
-        keepSprint.remove(event.getPlayer().getUniqueId());
+        keepSprint.remove(SpartanBukkit.getProtocol(event.getPlayer()).getUUID());
     }
 
     static KeepSprint getKeepSprint(UUID uuid) {

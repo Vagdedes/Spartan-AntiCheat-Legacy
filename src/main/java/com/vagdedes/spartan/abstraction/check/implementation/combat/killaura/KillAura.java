@@ -11,6 +11,7 @@ import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
 
 import java.util.UUID;
@@ -49,10 +50,9 @@ public class KillAura extends CheckExecutor {
     boolean canRunEntity(LivingEntity entity) {
         if (entity.getVehicle() == null
                 && CombatProcessing.canCheck(player, entity)) {
-            UUID entityUUID = entity.getUniqueId();
-            boolean isPlayer = SpartanBukkit.isPlayer(entityUUID);
+            boolean isPlayer = entity instanceof Player;
             return (isPlayer || !MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_10) || entity.hasAI())
-                    && !player.protocol.getUUID().equals(entityUUID)
+                    && !player.getInstance().equals(entity)
                     && hackType.getCheck().getBooleanOption("detection." + (isPlayer ? "players" : "entities"), true);
         }
         return false;
