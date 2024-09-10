@@ -37,8 +37,7 @@ public class Packet_Combat extends PacketAdapter {
     @Override
     public void onPacketReceiving(PacketEvent event) {
         if (event.getPacketType() == PacketType.Play.Client.USE_ENTITY) {
-            Player player = event.getPlayer();
-            SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
+            SpartanProtocol protocol = SpartanBukkit.getProtocol(event.getPlayer());
 
             if (protocol.spartanPlayer.bedrockPlayer) {
                 return;
@@ -50,7 +49,7 @@ public class Packet_Combat extends PacketAdapter {
                     packet.getEntityUseActions().read(0).equals(EnumWrappers.EntityUseAction.ATTACK)
                     : packet.getEnumEntityUseActions().read(0).getAction().equals(
                     EnumWrappers.EntityUseAction.ATTACK)) {
-                pendingAttacks.put(player.getUniqueId(), entityId);
+                pendingAttacks.put(protocol.getUUID(), entityId);
             }
         }
     }

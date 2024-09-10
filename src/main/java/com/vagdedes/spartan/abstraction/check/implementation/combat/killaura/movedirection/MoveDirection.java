@@ -3,6 +3,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.combat.killaura.mo
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
+import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import com.vagdedes.spartan.utils.minecraft.vector.SpartanVector2F;
 import com.vagdedes.spartan.utils.minecraft.vector.SpartanVector3D;
@@ -55,7 +56,7 @@ public class MoveDirection extends DetectionExecutor {
                                 player.movement.getLocation().getYaw(),
                                 player.movement.getLocation().getPitch(),
                                 System.currentTimeMillis(),
-                                target.getUniqueId()
+                                SpartanBukkit.getUUID(target)
                         )
                 );
                 if (rayTraceAnalysis.size() >= 10) {
@@ -171,7 +172,7 @@ public class MoveDirection extends DetectionExecutor {
             );
             vl -= 10;
         }
-       //player.protocol.player.sendMessage("vl: " + vl);
+        //player.protocol.player.sendMessage("vl: " + vl);
         if (vl > 0) vl -= priorityData(priorityType()).getVlFader();
         if (vl > priorityData(priorityType()).getVlLimit()) vl -= 10;
         rayTraceAnalysis.clear();

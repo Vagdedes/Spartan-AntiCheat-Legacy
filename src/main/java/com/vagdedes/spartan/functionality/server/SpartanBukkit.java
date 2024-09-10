@@ -13,6 +13,7 @@ import com.vagdedes.spartan.utils.java.ReflectionUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import java.util.*;
@@ -86,6 +87,18 @@ public class SpartanBukkit {
 
     public static boolean packetsEnabled() {
         return Compatibility.CompatibilityType.PROTOCOL_LIB.isFunctional();
+    }
+
+    public static UUID getUUID(Entity entity) {
+        if (entity instanceof Player) {
+            if (ProtocolLib.isTemporary((Player) entity)) {
+                return UUID.randomUUID();
+            } else {
+                return entity.getUniqueId();
+            }
+        } else {
+            return entity.getUniqueId();
+        }
     }
 
     public static SpartanProtocol getProtocol(Player player) {
