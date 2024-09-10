@@ -5,6 +5,7 @@ import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -37,11 +38,11 @@ public class Event_Teleport implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Death(PlayerDeathEvent e) {
-        death(e, false);
+        death(e.getEntity(), false);
     }
 
-    public static void death(PlayerDeathEvent e, boolean packets) { // todo call in protocol
-        SpartanProtocol protocol = SpartanBukkit.getProtocol(e.getEntity());
+    public static void death(Player player, boolean packets) { // todo call in protocol
+        SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
 
         if (protocol.packetsEnabled() == packets) {
             SpartanPlayer p = protocol.spartanPlayer;
