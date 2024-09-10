@@ -93,10 +93,14 @@ public class SpartanBukkit {
     }
 
     public static SpartanProtocol getProtocol(Player player) {
-        return playerProtocol.getOrDefault(
-                player.getUniqueId(),
-                new SpartanProtocol(player)
-        );
+        if (ProtocolLib.isTemporary(player)) {
+            return new SpartanProtocol(player);
+        } else {
+            return playerProtocol.getOrDefault(
+                    player.getUniqueId(),
+                    new SpartanProtocol(player)
+            );
+        }
     }
 
     public static SpartanProtocol getProtocol(String name) {
