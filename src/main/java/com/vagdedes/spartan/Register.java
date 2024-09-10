@@ -64,6 +64,7 @@ public class Register extends JavaPlugin {
         enable(new Event_Vehicle());
         enable(new Event_Velocity());
         enable(new Event_World());
+        enable(new Event_Damaged());
 
         if (NPCManager.supported) {
             enable(new NPCManager());

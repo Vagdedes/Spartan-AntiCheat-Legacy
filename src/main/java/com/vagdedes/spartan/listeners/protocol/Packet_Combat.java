@@ -75,7 +75,7 @@ public class Packet_Combat extends PacketAdapter {
                     Entity target = ProtocolLibrary.getProtocolManager().
                                     getEntityFromID(event.getPlayer().getWorld(), entityId);
                     if (attacker != null && target != null) {
-                        Event_Combat.dealAndReceive(
+                        Event_Combat.event(
                                 new EntityDamageByEntityEvent(
                                         attacker,
                                         target,

@@ -3,8 +3,8 @@ package com.vagdedes.spartan.listeners.bukkit;
 import com.vagdedes.spartan.abstraction.event.EntityAttackPlayerEvent;
 import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
-import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.listeners.bukkit.standalone.Event_Damaged;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -26,16 +26,11 @@ public class Event_Combat implements Listener {
     };
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    private void DealAndReceive(EntityDamageByEntityEvent e) {
-        dealAndReceive(e, false);
+    private void Event(EntityDamageByEntityEvent e) {
+        event(e, false);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
-    private void Receive(EntityDamageEvent e) {
-        receive(e, false);
-    }
-
-    public static void dealAndReceive(EntityDamageByEntityEvent e, boolean packets) {
+    public static void event(EntityDamageByEntityEvent e, boolean packets) {
         Entity damager = e.getDamager(),
                 entity = e.getEntity();
         boolean damagerIsPlayer = damager instanceof Player,
@@ -92,40 +87,7 @@ public class Event_Combat implements Listener {
                 }
             }
         } else {
-            handlePassengers(entity, packets, e);
-        }
-    }
-
-    public static void receive(EntityDamageEvent e, boolean packets) { // todo call in protocol
-        Entity entity = e.getEntity();
-
-        if (entity instanceof Player) {
-            SpartanProtocol protocol = SpartanBukkit.getProtocol((Player) entity);
-
-            if (protocol.packetsEnabled() == packets) {
-                protocol.spartanPlayer.handleReceivedDamage(e);
-            }
-        } else {
-            handlePassengers(entity, packets, e);
-        }
-    }
-
-    private static void handlePassengers(Entity entity, boolean packets, EntityDamageEvent e) {
-        Entity[] passengers = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
-                ? entity.getPassengers().toArray(new Entity[0])
-                : new Entity[]{entity.getPassenger()};
-
-        if (passengers.length > 0) {
-            for (Entity passenger : passengers) {
-                if (passenger instanceof Player) {
-                    // Objects
-                    SpartanProtocol protocol = SpartanBukkit.getProtocol((Player) passenger);
-
-                    if (protocol.packetsEnabled() == packets) {
-                        protocol.spartanPlayer.handleReceivedDamage(e);
-                    }
-                }
-            }
+            Event_Damaged.handlePassengers(entity, packets, e);
         }
     }
 
