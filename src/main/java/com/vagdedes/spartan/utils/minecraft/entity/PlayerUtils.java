@@ -2,7 +2,6 @@ package com.vagdedes.spartan.utils.minecraft.entity;
 
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.player.SpartanPotionEffect;
-import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
@@ -13,11 +12,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.util.BoundingBox;
 
 import java.util.*;
 
@@ -312,39 +308,6 @@ public class PlayerUtils {
                 || type == Material.STONE_SWORD
                 || type == wood_sword
                 || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_16) && type == Material.NETHERITE_SWORD;
-    }
-
-    // Collisions
-
-    public static int getNearbyCollisions(SpartanPlayer player, SpartanLocation location) {
-        List<Entity> entities = player.getNearbyEntities(1.0, 1.0, 1.0);
-
-        if (!entities.isEmpty()) {
-            int count = 0;
-
-            for (Entity entity : entities) {
-                if (entity instanceof LivingEntity) {
-                    if (CombatUtils.getWidthAndHeight(entity)[0] >= location.distance(entity.getLocation())) {
-                        count++;
-                    }
-                } else if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_14)) {
-                    BoundingBox boundingBox = entity.getBoundingBox();
-                    double width = Math.max(
-                            boundingBox.getMaxX() - boundingBox.getMinX(),
-                            boundingBox.getMaxZ() - boundingBox.getMinZ()
-                    );
-
-                    if (width >= location.distance(entity.getLocation())) {
-                        count++;
-                    }
-                } else {
-                    count++;
-                }
-            }
-            return count;
-        } else {
-            return 0;
-        }
     }
 
     // Potion Effects

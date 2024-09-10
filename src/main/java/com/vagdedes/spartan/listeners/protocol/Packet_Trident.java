@@ -7,6 +7,7 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.listeners.bukkit.Event_Trident;
 import org.bukkit.Material;
@@ -41,9 +42,7 @@ public class Packet_Trident extends PacketAdapter {
                 boolean inWater = player.isInWater(),
                         inRain = protocol.spartanPlayer.getWorld().hasStorm()
                                 && protocol.spartanPlayer.movement.getLocation().getBlockY()
-                                >= protocol.spartanPlayer.getWorld().getHighestBlockYAt(
-                                        player.getLocation()
-                        );
+                                >= protocol.spartanPlayer.getWorld().getHighestBlockYAt(ProtocolLib.getLocation(player));
 
                 if (inWater || inRain) {
                     double r = Math.toRadians(protocol.getLocation().getYaw());

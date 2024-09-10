@@ -235,7 +235,9 @@ public class CombatUtils {
     public static boolean hasBlockBehind(SpartanPlayer p, LivingEntity entity) {
         SpartanLocation location = p.movement.getLocation().clone();
         location.setPitch(0.0f);
-        SpartanLocation multipliedLocation = new SpartanLocation(entity.getLocation().clone().add(location.getDirection().multiply(1.0)));
+        SpartanLocation multipliedLocation = new SpartanLocation(
+                ProtocolLib.getLocation(entity).clone().add(location.getDirection().multiply(1.0))
+        );
 
         if (BlockUtils.isSolid(multipliedLocation.getBlock().material)) {
             return true;
