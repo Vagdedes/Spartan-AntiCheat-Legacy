@@ -49,7 +49,6 @@ public class Event_Teleport implements Listener {
             // Detections
             p.getExecutor(Enums.HackType.AutoRespawn).handle(false, null);
             p.getExecutor(Enums.HackType.ImpossibleInventory).handle(false, null);
-
             // Objects
             p.resetData(true);
             p.movement.setDetectionLocation();
