@@ -41,7 +41,7 @@ public class Event_Teleport implements Listener {
         death(e.getEntity(), false);
     }
 
-    public static void death(Player player, boolean packets) { // todo call in protocol
+    public static void death(Player player, boolean packets) {
         SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
 
         if (protocol.packetsEnabled() == packets) {
