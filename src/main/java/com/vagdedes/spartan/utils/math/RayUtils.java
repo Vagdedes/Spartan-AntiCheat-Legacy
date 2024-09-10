@@ -3,6 +3,7 @@ package com.vagdedes.spartan.utils.math;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.world.SpartanBlock;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
+import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.minecraft.entity.AxisAlignedBB;
 import com.vagdedes.spartan.utils.minecraft.entity.MovingObjectPosition;
@@ -207,7 +208,7 @@ public class RayUtils {
     }
 
     private static float[] getRotation(Player player1, Entity entity2) {
-        Vector direction = entity2.getLocation().toVector().subtract(player1.getLocation().toVector());
+        Vector direction = ProtocolLib.getLocation(entity2).toVector().subtract(ProtocolLib.getLocation(player1).toVector());
         float yaw = (float) Math.toDegrees(Math.atan2(direction.getX(), direction.getZ())),
                 pitch = (float) Math.toDegrees(Math.asin(-direction.getY()));
         return new float[]{castTo360(yaw), pitch};
@@ -220,9 +221,10 @@ public class RayUtils {
         boolean exempt;
 
         if (target instanceof Player) {
-            double targetX = target.getLocation().getX();
-            double targetY = target.getLocation().getY();
-            double targetZ = target.getLocation().getZ();
+            Location playerLocation = ProtocolLib.getLocation((Player) target);
+            double targetX = playerLocation.getX();
+            double targetY = playerLocation.getY();
+            double targetZ = playerLocation.getZ();
 
             AxisAlignedBB boundingBox = new AxisAlignedBB(
                     targetX - size, targetY - 0.1F, targetZ - size,
@@ -250,13 +252,11 @@ public class RayUtils {
 
     public static boolean inHitbox(SpartanPlayer player, Location locationIn, Entity target, float size) {
         SpartanLocation location = player.movement.getRawLocation();
-        Location targetLocation = locationIn;
-
         boolean intersection = false;
         boolean exempt;
-        double targetX = targetLocation.getX();
-        double targetY = targetLocation.getY();
-        double targetZ = targetLocation.getZ();
+        double targetX = locationIn.getX();
+        double targetY = locationIn.getY();
+        double targetZ = locationIn.getZ();
 
         AxisAlignedBB boundingBox = new AxisAlignedBB(
                 targetX - size, targetY - 0.1F, targetZ - size,
@@ -270,12 +270,10 @@ public class RayUtils {
 
     public static boolean inHitbox(SpartanPlayer player, Location locationIn, float size) {
         SpartanLocation location = player.movement.getRawLocation();
-        Location targetLocation = locationIn;
-
         boolean intersection = false;
-        double targetX = targetLocation.getX();
-        double targetY = targetLocation.getY();
-        double targetZ = targetLocation.getZ();
+        double targetX = locationIn.getX();
+        double targetY = locationIn.getY();
+        double targetZ = locationIn.getZ();
 
         AxisAlignedBB boundingBox = new AxisAlignedBB(
                 targetX - size, targetY - size, targetZ - size,
@@ -289,12 +287,10 @@ public class RayUtils {
 
     public static boolean inHitbox(SpartanPlayer player, Location locationIn, float size, double dist) {
         SpartanLocation location = player.movement.getRawLocation();
-        Location targetLocation = locationIn;
-
         boolean intersection = false;
-        double targetX = targetLocation.getX();
-        double targetY = targetLocation.getY();
-        double targetZ = targetLocation.getZ();
+        double targetX = locationIn.getX();
+        double targetY = locationIn.getY();
+        double targetZ = locationIn.getZ();
 
         AxisAlignedBB boundingBox = new AxisAlignedBB(
                 targetX - size, targetY - size, targetZ - size,

@@ -39,7 +39,7 @@ public class SpartanProtocol {
         this.sneaking = false;
         this.mutateTeleport = false;
         this.loaded = false;
-        this.location = player.getLocation(); // todo fix
+        this.location = ProtocolLib.getLocation(player);
         this.teleportEngine = new LinkedList<>();
         this.simulationFlag = false;
 

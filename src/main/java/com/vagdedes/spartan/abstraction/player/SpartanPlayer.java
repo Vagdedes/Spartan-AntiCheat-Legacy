@@ -14,6 +14,7 @@ import com.vagdedes.spartan.compatibility.manual.building.MythicMobs;
 import com.vagdedes.spartan.compatibility.manual.enchants.CustomEnchantsPlus;
 import com.vagdedes.spartan.compatibility.manual.enchants.EcoEnchants;
 import com.vagdedes.spartan.compatibility.necessary.BedrockCompatibility;
+import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.connection.PlayerIP;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.functionality.server.Config;
@@ -439,9 +440,11 @@ public class SpartanPlayer {
 
                     if (list != null) {
                         for (Entity entity : list) {
-                            if (Math.abs(entity.getLocation().getX() - current.getX()) <= x
-                                    && Math.abs(entity.getLocation().getY() - current.getY()) <= y
-                                    && Math.abs(entity.getLocation().getZ() - current.getZ()) <= z) {
+                            Location entityLocation = ProtocolLib.getLocation(entity);
+
+                            if (Math.abs(entityLocation.getX() - current.getX()) <= x
+                                    && Math.abs(entityLocation.getY() - current.getY()) <= y
+                                    && Math.abs(entityLocation.getZ() - current.getZ()) <= z) {
                                 nearbyEntities.add(entity);
                             }
                         }
