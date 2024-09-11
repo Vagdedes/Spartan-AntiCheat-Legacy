@@ -60,7 +60,7 @@ public class HitReach extends CheckExecutor {
                         }
                     }
                 }
-                if (bruteforceRayTrace > hitbox + 0.1 && bruteforceRayTrace != 14.88) {
+                if (bruteforceRayTrace > hitbox + 0.03 && bruteforceRayTrace != 14.88) {
                     localVl += (int) (125 + ((bruteforceRayTrace - hitbox) * 100));
                     if (localVl > 300) {
                         cancel(
