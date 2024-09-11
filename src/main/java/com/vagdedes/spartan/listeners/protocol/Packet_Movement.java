@@ -7,6 +7,7 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.simulation.modules.engine.motion.MotionVector;
+import com.vagdedes.spartan.abstraction.event.PlayerTickEvent;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.protocol.MCClient;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
@@ -44,6 +45,11 @@ public class Packet_Movement extends PacketAdapter {
         }
         PacketContainer p = event.getPacket();
         PacketType t = p.getType();
+
+        PlayerTickEvent tickEvent = new PlayerTickEvent(protocol);
+        tickEvent.build();
+        Event_Movement.tick(tickEvent);
+
 
         if ((t.equals(PacketType.Play.Client.POSITION)
                         || t.equals(PacketType.Play.Client.POSITION_LOOK))) {

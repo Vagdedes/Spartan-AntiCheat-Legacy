@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.listeners.bukkit;
 
+import com.vagdedes.spartan.abstraction.event.PlayerTickEvent;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
@@ -85,6 +86,12 @@ public class Event_Movement implements Listener {
             p.getExecutor(Enums.HackType.Criticals).handle(cancelled, e);
             p.getExecutor(Enums.HackType.Simulation).handle(cancelled, e);
         }
+    }
+
+    public static void tick(PlayerTickEvent tickEvent) {
+        SpartanProtocol protocol = tickEvent.getProtocol();
+        SpartanPlayer p = protocol.spartanPlayer;
+        // TODO: new timer checks
     }
 
 }
