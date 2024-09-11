@@ -410,7 +410,7 @@ public class RayUtils {
         float bruteForceStart = 0.01F;
         boolean checked = false;
 
-        for (int i = 0; i < 60; i++) {
+        for (int i = 0; i < 100; i++) {
             if (inHitbox(spartanPlayer, location, target, bruteForceStart)) {
                 bruteForce = bruteForceStart;
                 checked = true;

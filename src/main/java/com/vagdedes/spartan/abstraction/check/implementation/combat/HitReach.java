@@ -1,10 +1,13 @@
 package com.vagdedes.spartan.abstraction.check.implementation.combat;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.check.implementation.movement.simulation.modules.engine.Attribute;
 import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
+import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
+import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
 import com.vagdedes.spartan.listeners.protocol.standalone.Packet_LagCompensation;
@@ -41,6 +44,9 @@ public class HitReach extends CheckExecutor {
                 double bruteforceRayTrace = 14.88;
                 double value;
 
+                boolean is1_8 = true;
+                double hitbox = (is1_8) ? 0.4 : 0.3;
+
                 for (Location targetLocation : targetProtocol.getLocations()) {
                     if (targetLocation != null) {
                         value = RayUtils.bruteforceRayTraceWithCustomLocation(
@@ -54,16 +60,16 @@ public class HitReach extends CheckExecutor {
                         }
                     }
                 }
-                if (bruteforceRayTrace > 0.4 && bruteforceRayTrace != 14.88) {
-                    localVl += 100;
+                if (bruteforceRayTrace > hitbox + 0.01 && bruteforceRayTrace != 14.88) {
+                    localVl += (int) (200 + ((bruteforceRayTrace - hitbox) * 100));
                     if (localVl > 300) {
                         cancel(
-                                "type: hitbox-raytrace, reach: " + (bruteforceRayTrace / 0.4) * 3,
+                                "type: hitbox-raytrace, reach: " + (bruteforceRayTrace - hitbox) + 3,
                                 vl / 100D,
                                 player.movement.getDetectionLocation()
                         );
                     }
-                    localVl -= 25;
+                    localVl -= 30;
                 } else if (localVl > 0) {
                     localVl -= 25;
                 }
