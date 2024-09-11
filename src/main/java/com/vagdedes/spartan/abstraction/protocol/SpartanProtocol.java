@@ -29,6 +29,7 @@ public class SpartanProtocol {
     public final MCClient mcClient;
     public byte simulationDelayPerTP, keepEntity;
     private LinkedList<Location> positionHistory;
+    public long tickTime;
 
     public SpartanProtocol(Player player) {
         this.time = System.currentTimeMillis();
@@ -51,6 +52,7 @@ public class SpartanProtocol {
         this.teleported = false;
         this.vehicleStatus = true;
         this.keepEntity = 0;
+        this.tickTime = System.currentTimeMillis();
 
         this.positionHistory = new LinkedList<>();
 

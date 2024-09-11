@@ -61,7 +61,7 @@ public class HitReach extends CheckExecutor {
                     }
                 }
                 if (bruteforceRayTrace > hitbox + 0.03 && bruteforceRayTrace != 14.88) {
-                    localVl += (int) (125 + ((bruteforceRayTrace - hitbox) * 100));
+                    localVl += (int) (100 + ((bruteforceRayTrace - hitbox) * 50));
                     if (localVl > 300) {
                         cancel(
                                 "type: hitbox-raytrace, reach: " + ((bruteforceRayTrace - hitbox) + 3),
@@ -69,9 +69,9 @@ public class HitReach extends CheckExecutor {
                                 player.movement.getDetectionLocation()
                         );
                     }
-                    localVl -= 30;
-                } else if (localVl > 0) {
                     localVl -= 25;
+                } else if (localVl > 0) {
+                    localVl -= 40;
                 }
 
 
