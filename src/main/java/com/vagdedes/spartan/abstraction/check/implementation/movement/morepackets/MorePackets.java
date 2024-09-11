@@ -1,10 +1,12 @@
-package com.vagdedes.spartan.abstraction.check.implementation.movement;
+package com.vagdedes.spartan.abstraction.check.implementation.movement.morepackets;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.event.PlayerTickEvent;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
+import com.vagdedes.spartan.utils.math.RayUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 
 import java.util.HashMap;
@@ -25,17 +27,40 @@ public class MorePackets extends CheckExecutor {
 
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
-        nmsMap.put(TPS.tick(), nmsMap.getOrDefault(TPS.tick(), 0) + 1);
 
-        if (nmsMap.size() > configuredTicks()) {
-            Iterator<Long> iterator = nmsMap.keySet().iterator();
-            iterator.next();
-            iterator.remove();
+        if (object instanceof PlayerTickEvent) {
+            if (player.bedrockPlayer) return;
+            calculate((PlayerTickEvent) object);
+        } else {
+            if (!player.bedrockPlayer) return;
+            nmsMap.put(TPS.tick(), nmsMap.getOrDefault(TPS.tick(), 0) + 1);
+
+            if (nmsMap.size() > configuredTicks()) {
+                Iterator<Long> iterator = nmsMap.keySet().iterator();
+                iterator.next();
+                iterator.remove();
+            }
+        }
+    }
+
+    private void calculate(PlayerTickEvent event) {
+        long delay = event.getDelay();
+        TimerBalancer timerBalancer = event.getProtocol().timerBalancer;
+        timerBalancer.pushDelay(delay);
+        if (timerBalancer.isNegativeTimer()) {
+            cancel("type: negative, multiply: " + RayUtils.scaleVal((double) 50 / delay, 2));
+        } else if (delay < 50 && timerBalancer.getResult() > 100) {
+            cancel("type: positive (balance), multiply: " + RayUtils.scaleVal((double) 50 / delay, 2));
+        } else if (delay < 50 && timerBalancer.getForced() > 8) {
+            cancel("type: positive (NET), multiply: " + RayUtils.scaleVal((double) 50 / delay, 2));
+        } else if (delay < 50 && timerBalancer.getLatency() > 30) {
+            cancel("type: positive (latency), multiply: " + RayUtils.scaleVal((double) 50 / delay, 2));
         }
     }
 
     @Override
     protected void runInternal(boolean cancelled) {
+        if (!player.bedrockPlayer) return;
         if (!nmsMap.isEmpty()) {
             long currentTick = TPS.tick(),
                     oldestTick = currentTick - configuredTicks();

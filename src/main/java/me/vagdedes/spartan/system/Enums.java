@@ -204,7 +204,7 @@ public class Enums {
         MorePackets(
                 HackCategoryType.MOVEMENT,
                 2_000L,
-                com.vagdedes.spartan.abstraction.check.implementation.movement.MorePackets.class,
+                com.vagdedes.spartan.abstraction.check.implementation.movement.morepackets.MorePackets.class,
                 new String[]{
                         "This check will prevent client modules",
                         "that allow a player to send abnormally",

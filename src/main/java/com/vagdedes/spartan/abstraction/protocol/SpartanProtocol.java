@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.abstraction.protocol;
 
+import com.vagdedes.spartan.abstraction.check.implementation.movement.morepackets.TimerBalancer;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
@@ -19,6 +20,7 @@ public class SpartanProtocol {
     private final long time;
     public final Player player;
     public final SpartanPlayer spartanPlayer;
+    public final TimerBalancer timerBalancer;
     private boolean onGround, onGroundFrom;
     public boolean mutateTeleport, sprinting, sneaking, vehicleStatus;
     public boolean loaded, simulationFlag, teleported;
@@ -46,6 +48,7 @@ public class SpartanProtocol {
         this.simulationFlag = false;
 
         this.spartanPlayer = new SpartanPlayer(this);
+        this.timerBalancer = new TimerBalancer();
         this.mcClient = new MCClient(player);
         this.simulationStartPoint = this.location.clone();
         this.simulationDelayPerTP = 1;
