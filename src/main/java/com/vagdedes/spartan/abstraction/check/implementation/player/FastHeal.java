@@ -31,10 +31,8 @@ public class FastHeal extends CheckExecutor {
         long i = 0L;
 
         if (level > -1) {
-            if (player.getInstance().getFireTicks() <= 0) {
-                if (level <= 10) {
-                    i = level == 0 ? 300L : 45L;
-                }
+            if (level <= 10) {
+                i = level == 0 ? 300L : 45L;
             }
         } else {
             i = !MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9) ? 3700L : 450L;
@@ -75,7 +73,8 @@ public class FastHeal extends CheckExecutor {
 
     @Override
     protected boolean canRun() {
-        if (player.getWorld().getDifficulty() != Difficulty.PEACEFUL) {
+        if (player.getWorld().getDifficulty() != Difficulty.PEACEFUL
+                && player.getInstance().getFireTicks() <= 0) {
             GameMode gameMode = player.getInstance().getGameMode();
             return gameMode == GameMode.ADVENTURE || gameMode == GameMode.SURVIVAL;
         } else {
