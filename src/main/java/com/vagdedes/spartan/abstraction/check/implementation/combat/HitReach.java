@@ -3,7 +3,9 @@ package com.vagdedes.spartan.abstraction.check.implementation.combat;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
+import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
 import com.vagdedes.spartan.listeners.protocol.standalone.Packet_LagCompensation;
 import com.vagdedes.spartan.utils.math.RayUtils;
@@ -34,16 +36,16 @@ public class HitReach extends CheckExecutor {
                     && !player.getInstance().getGameMode().equals(GameMode.CREATIVE)) {
                 int targetId = target.getEntityId();
                 int playerId = event.getPlayer().getEntityId();
+                SpartanProtocol targetProtocol = SpartanBukkit.getProtocol(event.getTarget().getUniqueId());
+                if (targetProtocol == null) return;
                 double bruteforceRayTrace = 14.88;
                 double value;
 
-                for (int i = 0; i < 3 + Packet_LagCompensation.getPlayerTicksDelay(playerId); i++) {
-                    Location locationWithRollback = Packet_LagCompensation.getLocationWithTickRollback(targetId, i);
-
-                    if (locationWithRollback != null) {
+                for (Location targetLocation : targetProtocol.getLocations()) {
+                    if (targetLocation != null) {
                         value = RayUtils.bruteforceRayTraceWithCustomLocation(
                                 player,
-                                locationWithRollback,
+                                targetLocation,
                                 target
                         );
 
@@ -52,7 +54,7 @@ public class HitReach extends CheckExecutor {
                         }
                     }
                 }
-                if (bruteforceRayTrace > 0.43 && bruteforceRayTrace != 14.88) {
+                if (bruteforceRayTrace > 0.4 && bruteforceRayTrace != 14.88) {
                     localVl += 100;
                     if (localVl > 300) {
                         cancel(
@@ -61,9 +63,9 @@ public class HitReach extends CheckExecutor {
                                 player.movement.getDetectionLocation()
                         );
                     }
-                    localVl -= 60;
+                    localVl -= 25;
                 } else if (localVl > 0) {
-                    localVl -= 60;
+                    localVl -= 25;
                 }
 
 

@@ -28,6 +28,7 @@ public class SpartanProtocol {
     public List<Packet_Teleport.TeleportData> teleportEngine;
     public final MCClient mcClient;
     public byte simulationDelayPerTP, keepEntity;
+    private LinkedList<Location> positionHistory;
 
     public SpartanProtocol(Player player) {
         this.time = System.currentTimeMillis();
@@ -51,11 +52,17 @@ public class SpartanProtocol {
         this.vehicleStatus = true;
         this.keepEntity = 0;
 
+        this.positionHistory = new LinkedList<>();
+
         this.setProfile(ResearchEngine.getPlayerProfile(this, false));
     }
 
     public long timePassed() {
         return System.currentTimeMillis() - this.time;
+    }
+
+    public LinkedList<Location> getLocations() {
+        return this.positionHistory;
     }
 
     public boolean isOnGround() {
@@ -130,6 +137,12 @@ public class SpartanProtocol {
 
     public void setLocation(Location location) {
         this.location = location;
+    }
+    public void addRawLocation(Location location) {
+        this.positionHistory.addLast(location.clone());
+        if (this.positionHistory.size() > 8) {
+            this.positionHistory.removeFirst();
+        }
     }
 
     public void setProfile(PlayerProfile profile) {

@@ -45,6 +45,12 @@ public class Packet_Movement extends PacketAdapter {
         PacketContainer p = event.getPacket();
         PacketType t = p.getType();
 
+        if ((t.equals(PacketType.Play.Client.POSITION)
+                        || t.equals(PacketType.Play.Client.POSITION_LOOK))) {
+            Location l = ProtocolTools.readLocation(event);
+            protocol.addRawLocation(l);
+        }
+
         /*
         protocol.player.sendMessage(t.toString() + " " + ProtocolTools.readLocation(event).getX() + " " + ProtocolTools.readLocation(event).getZ());
         Register.plugin.getLogger().info(t.toString() + " " + ProtocolTools.readLocation(event).getX() + " " + ProtocolTools.readLocation(event).getZ());
