@@ -46,7 +46,7 @@ public class HitReach extends CheckExecutor {
 
                 boolean is1_8 = true;
                 double hitbox = (is1_8) ? 0.4 : 0.3;
-
+                if (targetProtocol.getLocations() == null) return;
                 for (Location targetLocation : targetProtocol.getLocations()) {
                     if (targetLocation != null) {
                         value = RayUtils.bruteforceRayTraceWithCustomLocation(
@@ -64,7 +64,7 @@ public class HitReach extends CheckExecutor {
                     localVl += (int) (125 + ((bruteforceRayTrace - hitbox) * 100));
                     if (localVl > 300) {
                         cancel(
-                                "type: hitbox-raytrace, reach: " + (bruteforceRayTrace - hitbox) + 3,
+                                "type: hitbox-raytrace, reach: " + ((bruteforceRayTrace - hitbox) + 3),
                                 vl / 100D,
                                 player.movement.getDetectionLocation()
                         );
