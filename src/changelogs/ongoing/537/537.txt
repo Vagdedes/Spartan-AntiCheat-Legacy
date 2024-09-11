@@ -1,13 +1,16 @@
+[+] New Exploits ground-spoof checks (1:1).
+[+] New HitReach checks (0.1+ reach/hitbox detection).
+[#] Fixed many problems with combat checks.
+[#] Improved stability of many checks.
+[#] Removed the NoFall check and replaced it by the new Exploits ground-spoof detection.
+[#] Almost all listeners now on packet-level.
+[#] Improved Velocity processing instead of deprecated damage
+
 [+] Added certainty measurement that a player is hacking to be saved in the plugin's logs to help for many reasons.
-[-] Bedrock players will no longer be check on the packet level due to incompatibilities.
+[-] Bedrock players will no longer be checked on the packet level due to incompatibilities.
 [#] Made probabilities stricter to reduce the amount of notifications but also improve stability.
 [#] Fixed synchronization console error related to the violation history.
-[#] Improved the packets listeners so all checks can run better.
 [#] Fixed elytra & mobs collision false positives.
 [#] Fixed a Speed console error caused by specific-version materials.
-[#] Rewrote the Exploits ground-spoof detection.
-[#] Rewrote the HitReach detection.
-[#] Fixed the call of combat checks
-[-] Removed the NoFall check and replaced it by the new Exploits ground-spoof detection.
 [+] Implemented a new KillAura detection which calculates the ratio of hits/damages for all entities.
 [+] Implemented a new FastClicks detection which measures and compares patterns.
