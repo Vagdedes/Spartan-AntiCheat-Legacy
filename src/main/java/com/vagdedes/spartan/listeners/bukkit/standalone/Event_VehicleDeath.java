@@ -14,7 +14,7 @@ public class Event_VehicleDeath implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Event(EntityDeathEvent e) {
-        if (!e.isCancelled()) {
+        if (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9) || !e.isCancelled()) {
             Entity entity = e.getEntity();
             Entity[] passengers = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
                     ? entity.getPassengers().toArray(new Entity[0])

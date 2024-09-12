@@ -6,6 +6,7 @@ import com.vagdedes.spartan.abstraction.check.implementation.movement.simulation
 import com.vagdedes.spartan.abstraction.player.SpartanPotionEffect;
 import com.vagdedes.spartan.abstraction.world.SpartanBlock;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
+import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.math.MathHelper;
 import com.vagdedes.spartan.utils.math.RayUtils;
@@ -197,11 +198,14 @@ public class MCClient {
         double zM = Math.cos(yaw);
         if (!onGround) {
             { // air Y sim
-                SpartanPotionEffect levitation = this.p().spartanPlayer.getPotionEffect(PotionEffectType.LEVITATION, 0);
+                SpartanPotionEffect levitation = null;
+                if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
+                    levitation = this.p().spartanPlayer.getPotionEffect(PotionEffectType.LEVITATION, 0);
+                }
                 double d0 = 0.08D;
                 boolean flag = this.getMotion().y <= 0.0D;
 
-                if (flag && this.p().spartanPlayer.getPotionEffect(PotionEffectType.SLOW_FALLING, 0) != null) {
+                if (flag && MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) && this.p().spartanPlayer.getPotionEffect(PotionEffectType.SLOW_FALLING, 0) != null) {
                     d0 = 0.01D;
                 }
                 Location blockpos = this.p().getLocation().clone().add(0, -1, 0);
@@ -212,7 +216,7 @@ public class MCClient {
                     d2 += (0.05D * (double) (levitation.bukkitEffect.getAmplifier() + 1) - vector3d5.y) * 0.2D;
                     //this.fallDistance = 0.0F;
                 }
-                if (this.p().player.hasGravity()) {
+                if (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_10) || this.p().player.hasGravity()) {
                     d2 -= d0;
                 }
                 this.getMotion().y = d2 * (double) 0.98F;
@@ -441,10 +445,15 @@ public class MCClient {
 
     public void jump() {
         float f = this.getJumpUpwardsMotion();
-        PotionEffect jumpEffect = this.p().player.getPotionEffect(PotionEffectUtils.JUMP);
+        SpartanPotionEffect jumpEffect = null;
+        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
+            jumpEffect = this.p().spartanPlayer.getPotionEffect(PotionEffectType.JUMP_BOOST, 1L);
+        } else {
+            jumpEffect =this.p().spartanPlayer.getPotionEffect(PotionEffectType.getByName("JUMP"), 1L);
+        }
 
         if (jumpEffect != null) {
-            f += 0.1F * (float) (jumpEffect.getAmplifier() + 1);
+            f += 0.1F * (float) (jumpEffect.bukkitEffect.getAmplifier() + 1);
         }
 
         MotionVector vector3d = this.getMotion();

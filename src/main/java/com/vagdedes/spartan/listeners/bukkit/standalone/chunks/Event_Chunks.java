@@ -6,10 +6,8 @@ import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.listeners.bukkit.standalone.Event_World;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
-import org.bukkit.Chunk;
-import org.bukkit.ChunkSnapshot;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -126,7 +124,10 @@ public class Event_Chunks implements Listener {
         if (data == null || data.snapshot == null) {
             return null;
         }
-        return data.snapshot.getBlockType(x & 0xF, y, z & 0xF);
+        return (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_10))
+                        ? data.snapshot.getBlockType(x & 0xF, y, z & 0xF)
+                        : (getBlockAsync(new Location(world, x, y, z)) == null)
+                        ? Material.AIR : getBlockAsync(new Location(world, x, y, z)).getType();
     }
 
     private static boolean hasPlayers(World world, int x, int z) {
@@ -220,6 +221,18 @@ public class Event_Chunks implements Listener {
         }
         for (Chunk chunk : world.getLoadedChunks()) {
             loaded.remove(hash(world, chunk.getX(), chunk.getZ()));
+        }
+    }
+
+    public static Block getBlockAsync(final Location location) {
+        if (Event_Chunks.isLoaded(
+                        location.getWorld(),
+                        location.getBlockX() >> 4,
+                        location.getBlockZ() >> 4
+        )) {
+            return location.getWorld().getBlockAt(location);
+        } else {
+            return null;
         }
     }
 

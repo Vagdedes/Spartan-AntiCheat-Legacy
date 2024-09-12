@@ -47,6 +47,7 @@ public class MorePackets extends CheckExecutor {
         long delay = event.getDelay();
         TimerBalancer timerBalancer = event.getProtocol().timerBalancer;
         timerBalancer.pushDelay(delay);
+
         if (timerBalancer.isNegativeTimer()) {
             cancel("type: negative, multiply: " + RayUtils.scaleVal((double) 50 / delay, 2));
         } else if (delay < 50 && timerBalancer.getResult() > 100) {

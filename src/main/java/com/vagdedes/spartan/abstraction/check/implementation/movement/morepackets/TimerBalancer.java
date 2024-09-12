@@ -27,7 +27,7 @@ public class TimerBalancer {
                 balancer = 0;
             }
             negative = 0;
-        } else if (result > 0) {
+        } else if (result >= 0) {
             result /= 2L;
             balancer /= 2L;
             negative = 0;
@@ -39,6 +39,9 @@ public class TimerBalancer {
     }
     public int getLatency() {
         return this.latency;
+    }
+    public long getBalancer() {
+        return this.balancer;
     }
     public boolean isNegativeTimer() {
         return this.negative > 5;
