@@ -1,10 +1,13 @@
+Important:
 [+] New Exploits ground-spoof checks (1:1).
 [+] New HitReach checks (0.1+ reach/hitbox detection).
 [+] New Timer checks (lag compensation, almost instantaneous triggering, positive or negative timer detection)
 [#] Fixed many problems with combat checks.
 [#] Improved stability of many checks.
+[#] Fixed bug with DAMAGE_EVENT
 [#] Removed the NoFall check and replaced it by the new Exploits ground-spoof detection.
 [#] Almost all listeners now on packet-level.
+Other:
 [#] Improved Velocity processing instead of deprecated damage
 [+] Added certainty measurement that a player is hacking to be saved in the plugin's logs to help for many reasons.
 [-] Bedrock players will no longer be checked on the packet level due to incompatibilities.

@@ -35,8 +35,7 @@ public class Packet_Movement extends PacketAdapter {
         );
     }
 
-    @Override
-    public void onPacketReceiving(PacketEvent event) {
+    public static void receivePacket(PacketEvent event) {
         long time = System.currentTimeMillis();
         SpartanProtocol protocol = SpartanBukkit.getProtocol(event.getPlayer());
 
@@ -70,7 +69,7 @@ public class Packet_Movement extends PacketAdapter {
                 return;
             }
             if (protocol.teleported && (t.equals(PacketType.Play.Client.POSITION)
-                    || t.equals(PacketType.Play.Client.POSITION_LOOK))) {
+                            || t.equals(PacketType.Play.Client.POSITION_LOOK))) {
                 protocol.setLocation(ProtocolTools.readLocation(event));
                 protocol.teleported = false;
                 return;
@@ -87,15 +86,15 @@ public class Packet_Movement extends PacketAdapter {
             Location from = protocol.spartanPlayer.movement.getEventFromLocation().getBukkitLocation();
 
             double
-                    dx = RayUtils.scaleVal(to.getX() - from.getX(), 6),
-                    dy = RayUtils.scaleVal(to.getY() - from.getY(), 6),
-                    dz = RayUtils.scaleVal(to.getZ() - from.getZ(), 6);
+                            dx = RayUtils.scaleVal(to.getX() - from.getX(), 6),
+                            dy = RayUtils.scaleVal(to.getY() - from.getY(), 6),
+                            dz = RayUtils.scaleVal(to.getZ() - from.getZ(), 6);
 
             MCClient c = protocol.mcClient;
             MotionVector v = c.getNext(dx, dy, dz);
             Location finalLocation = protocol.simulationStartPoint.clone().add(v.x, v.y, v.z);
             if (RayUtils.isSaveToTeleport(protocol.player, finalLocation)
-                    && RayUtils.isSaveToTeleport(protocol.player, finalLocation.clone().add(0, 1, 0))) {
+                            && RayUtils.isSaveToTeleport(protocol.player, finalLocation.clone().add(0, 1, 0))) {
                 if (protocol.simulationDelayPerTP > 0) {
                     protocol.simulationDelayPerTP--;
                 } else {
@@ -107,6 +106,11 @@ public class Packet_Movement extends PacketAdapter {
                 protocol.endSimulationFlag();
             }
         }
+    }
+
+    @Override
+    public void onPacketReceiving(PacketEvent event) {
+        receivePacket(event);
     }
 
     private static void movePacket(PacketEvent event, SpartanProtocol protocol) {

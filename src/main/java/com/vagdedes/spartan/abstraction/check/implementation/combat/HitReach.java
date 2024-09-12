@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.abstraction.check.implementation.combat;
 
+import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.simulation.modules.engine.Attribute;
 import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
@@ -47,41 +48,36 @@ public class HitReach extends CheckExecutor {
                 boolean is1_8 = true;
                 double hitbox = (is1_8) ? 0.4 : 0.3;
                 if (targetProtocol.getLocations() == null) return;
-                for (Location targetLocation : targetProtocol.getLocations()) {
-                    if (targetLocation != null) {
-                        value = RayUtils.bruteforceRayTraceWithCustomLocation(
-                                player,
-                                targetLocation,
-                                target
-                        );
+                try {
+                    for (Location targetLocation : targetProtocol.getLocations()) {
+                        if (targetLocation != null) {
+                            value = RayUtils.bruteforceRayTraceWithCustomLocation(
+                                            player,
+                                            targetLocation,
+                                            target
+                            );
 
-                        if (value < bruteforceRayTrace) {
-                            bruteforceRayTrace = value;
+                            if (value < bruteforceRayTrace) {
+                                bruteforceRayTrace = value;
+                            }
                         }
                     }
-                }
-                if (bruteforceRayTrace > hitbox + 0.03 && bruteforceRayTrace != 14.88) {
-                    localVl += (int) (100 + ((bruteforceRayTrace - hitbox) * 50));
-                    if (localVl > 300) {
-                        cancel(
-                                "type: hitbox-raytrace, reach: " + ((bruteforceRayTrace - hitbox) + 3),
-                                vl / 100D,
-                                player.movement.getDetectionLocation()
-                        );
+                    if (bruteforceRayTrace > hitbox + 0.03 && bruteforceRayTrace != 14.88) {
+                        localVl += (int) (100 + ((bruteforceRayTrace - hitbox) * 50));
+                        if (localVl > 300) {
+                            cancel(
+                                            "type: hitbox-raytrace, reach: " + ((bruteforceRayTrace - hitbox) + 3),
+                                            vl / 100D,
+                                            player.movement.getDetectionLocation()
+                            );
+                        }
+                        localVl -= 25;
+                    } else if (localVl > 0) {
+                        localVl -= 40;
                     }
-                    localVl -= 25;
-                } else if (localVl > 0) {
-                    localVl -= 40;
+                } catch (Exception e) {
+                    Register.plugin.getLogger().warning("Failed to check RayTrace stack (" + player.protocol.player.getName() + ")");
                 }
-
-
-                /*
-
-                double d = RayUtils.hitBoxRay(
-                                player.getInstance(), player.movement.getEventToLocation().getBukkitLocation(),
-                                LagCompensation.getLocationWithTickRollback(targetId, 0), 0.8, player.movement.isSneaking());
-
-                 */
             }
         } else {
             if (CombatProcessing.canCheck(player, target)
