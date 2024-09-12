@@ -28,7 +28,7 @@ public class PlayerTickEvent {
             // Via Version :cry:
             if (this.delay > 1020 && this.delay < 1060) {
                 this.delay -= 1000;
-            } else {
+            } else if (this.delay > 950) {
                 this.delay -= 950;
             }
         }
