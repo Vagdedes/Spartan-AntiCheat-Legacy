@@ -446,10 +446,10 @@ public class MCClient {
     public void jump() {
         float f = this.getJumpUpwardsMotion();
         SpartanPotionEffect jumpEffect = null;
-        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
-            jumpEffect = this.p().spartanPlayer.getPotionEffect(PotionEffectType.JUMP_BOOST, 1L);
+        if (PotionEffectType.getByName("JUMP_BOOST") != null) {
+            jumpEffect = this.p().spartanPlayer.getPotionEffect(PotionEffectType.getByName("JUMP_BOOST"), 1L);
         } else {
-            jumpEffect =this.p().spartanPlayer.getPotionEffect(PotionEffectType.getByName("JUMP"), 1L);
+            jumpEffect = this.p().spartanPlayer.getPotionEffect(PotionEffectType.getByName("JUMP"), 1L);
         }
 
         if (jumpEffect != null) {

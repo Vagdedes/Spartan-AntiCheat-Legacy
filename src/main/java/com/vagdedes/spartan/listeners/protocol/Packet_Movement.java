@@ -7,6 +7,7 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.simulation.modules.engine.motion.MotionVector;
+import com.vagdedes.spartan.abstraction.event.CPlayerVelocityEvent;
 import com.vagdedes.spartan.abstraction.event.PlayerTickEvent;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.protocol.MCClient;
@@ -14,6 +15,7 @@ import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.listeners.bukkit.Event_Movement;
+import com.vagdedes.spartan.listeners.bukkit.Event_Velocity;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import com.vagdedes.spartan.utils.minecraft.protocol.ProtocolTools;
 import com.vagdedes.spartan.utils.minecraft.protocol.SuperPositionPacket;
@@ -68,11 +70,19 @@ public class Packet_Movement extends PacketAdapter {
             if (ProtocolTools.invalidTeleport(ProtocolTools.readLocation(event))) {
                 return;
             }
-            if (protocol.teleported && (t.equals(PacketType.Play.Client.POSITION)
+            if ((t.equals(PacketType.Play.Client.POSITION)
                             || t.equals(PacketType.Play.Client.POSITION_LOOK))) {
-                protocol.setLocation(ProtocolTools.readLocation(event));
-                protocol.teleported = false;
-                return;
+                if (protocol.claimedVelocity != null && RayUtils.scaleVal(
+                                ProtocolTools.readLocation(event).getY() - protocol.getLocation().getY(), 3)
+                                == RayUtils.scaleVal(protocol.claimedVelocity.getVelocity().getY(), 3)) {
+                    Event_Velocity.claim(new CPlayerVelocityEvent(protocol, protocol.claimedVelocity));
+                    protocol.claimedVelocity = null;
+                }
+                if (protocol.teleported) {
+                    protocol.setLocation(ProtocolTools.readLocation(event));
+                    protocol.teleported = false;
+                    return;
+                }
             }
         }
         if (System.currentTimeMillis() - protocol.mcClient.lastPacketTime > 4) {

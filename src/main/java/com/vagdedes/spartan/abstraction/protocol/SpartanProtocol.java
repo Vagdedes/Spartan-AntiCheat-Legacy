@@ -10,6 +10,7 @@ import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.listeners.protocol.Packet_Teleport;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerVelocityEvent;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -33,6 +34,7 @@ public class SpartanProtocol {
     public final MCClient mcClient;
     public byte simulationDelayPerTP, keepEntity;
     private LinkedList<Location> positionHistory;
+    public PlayerVelocityEvent claimedVelocity;
     public long tickTime;
 
     public SpartanProtocol(Player player) {
@@ -61,6 +63,7 @@ public class SpartanProtocol {
 
         this.positionHistory = new LinkedList<>();
         this.hashPosBuffer = 0;
+        this.claimedVelocity = null;
 
         this.setProfile(ResearchEngine.getPlayerProfile(this, false));
     }
