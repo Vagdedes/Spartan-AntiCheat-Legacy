@@ -6,6 +6,7 @@ import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.connection.Latency;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
+import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.listeners.protocol.Packet_Teleport;
 import org.bukkit.Location;
@@ -36,10 +37,12 @@ public class SpartanProtocol {
     private LinkedList<Location> positionHistory;
     public PlayerVelocityEvent claimedVelocity;
     public long tickTime;
+    private final MultiVersion.MCVersion version;
 
     public SpartanProtocol(Player player) {
         this.time = System.currentTimeMillis();
         this.player = player;
+        this.version = MultiVersion.MCVersion.OTHER; // todo
 
         this.onGround = false;
         this.onGroundFrom = false;
@@ -68,9 +71,18 @@ public class SpartanProtocol {
         this.setProfile(ResearchEngine.getPlayerProfile(this, false));
     }
 
+    public boolean isUsingVersion(MultiVersion.MCVersion trialVersion) {
+        return version.ordinal() == trialVersion.ordinal();
+    }
+
+    public boolean isUsingVersionOrGreater(MultiVersion.MCVersion trialVersion) {
+        return version.ordinal() >= trialVersion.ordinal();
+    }
+
     public void pushHashPosition(Location location) {
         this.hashPosBuffer = Objects.hashCode((location.getX() + location.getY() + location.getZ()));
     }
+
     public boolean isSameWithHash(Location location) {
         return this.hashPosBuffer == Objects.hashCode((location.getX() + location.getY() + location.getZ()));
     }
@@ -156,6 +168,7 @@ public class SpartanProtocol {
     public void setLocation(Location location) {
         this.location = location;
     }
+
     public void addRawLocation(Location location) {
         this.positionHistory.addLast(location.clone());
         if (this.positionHistory.size() > 8) {

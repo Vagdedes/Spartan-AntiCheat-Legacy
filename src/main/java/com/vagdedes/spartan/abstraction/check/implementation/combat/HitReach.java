@@ -7,6 +7,7 @@ import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
+import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
 import com.vagdedes.spartan.utils.math.RayUtils;
@@ -42,16 +43,16 @@ public class HitReach extends CheckExecutor {
                 double bruteforceRayTrace = 14.88;
                 double value;
 
-                boolean is1_8 = true;
+                boolean is1_8 = player.protocol.isUsingVersion(MultiVersion.MCVersion.V1_8);
                 double hitbox = (is1_8) ? 0.4 : 0.3;
                 if (targetProtocol.getLocations() == null) return;
                 try {
                     for (Location targetLocation : targetProtocol.getLocations()) {
                         if (targetLocation != null) {
                             value = RayUtils.bruteforceRayTraceWithCustomLocation(
-                                            player,
-                                            targetLocation,
-                                            target
+                                    player,
+                                    targetLocation,
+                                    target
                             );
 
                             if (value < bruteforceRayTrace) {
@@ -63,9 +64,9 @@ public class HitReach extends CheckExecutor {
                         localVl += (int) (100 + ((bruteforceRayTrace - hitbox) * 50));
                         if (localVl > 300) {
                             cancel(
-                                            "type: hitbox-raytrace, reach: " + ((bruteforceRayTrace - hitbox) + 3),
-                                            vl / 100D,
-                                            player.movement.getDetectionLocation()
+                                    "type: hitbox-raytrace, reach: " + ((bruteforceRayTrace - hitbox) + 3),
+                                    vl / 100D,
+                                    player.movement.getDetectionLocation()
                             );
                         }
                         localVl -= 25;
