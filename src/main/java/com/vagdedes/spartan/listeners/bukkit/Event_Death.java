@@ -19,6 +19,7 @@ public class Event_Death implements Listener {
 
     public static void event(Player player, boolean packets) {
         SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
+        protocol.timerBalancer.addBalance(50);
 
         if (protocol.packetsEnabled() == packets) {
             SpartanPlayer p = protocol.spartanPlayer;

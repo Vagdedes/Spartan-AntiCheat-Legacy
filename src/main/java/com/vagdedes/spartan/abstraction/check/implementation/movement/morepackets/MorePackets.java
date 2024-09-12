@@ -17,12 +17,13 @@ import java.util.Map;
 public class MorePackets extends CheckExecutor {
 
     private final Map<Long, Integer> nmsMap;
-    private int buffer;
+    private int buffer, vl;
 
     public MorePackets(HackType hackType, SpartanPlayer player) {
         super(hackType, player, 0, true);
         this.nmsMap = new LinkedHashMap<>((int) TPS.maximum + 1, 1.0f);
         this.buffer = 0;
+        this.vl = 0;
     }
 
     @Override
@@ -49,13 +50,23 @@ public class MorePackets extends CheckExecutor {
         timerBalancer.pushDelay(delay);
 
         if (timerBalancer.isNegativeTimer()) {
-            cancel("type: negative, multiply: " + RayUtils.scaleVal((double) 50 / delay, 2));
+            punish("type: negative, multiply: " + RayUtils.scaleVal((double) 50 / delay, 2));
         } else if (delay < 50 && timerBalancer.getResult() > 100) {
-            cancel("type: positive (balance), multiply: " + RayUtils.scaleVal((double) 50 / delay, 2));
+            punish("type: positive (balance), multiply: " + RayUtils.scaleVal((double) 50 / delay, 2));
         } else if (delay < 50 && timerBalancer.getForced() > 8) {
-            cancel("type: positive (NET), multiply: " + RayUtils.scaleVal((double) 50 / delay, 2));
+            punish("type: positive (NET), multiply: " + RayUtils.scaleVal((double) 50 / delay, 2));
         } else if (delay < 50 && timerBalancer.getLatency() > 40) {
-            cancel("type: positive (latency), multiply: " + RayUtils.scaleVal((double) 50 / delay, 2));
+            punish("type: positive (latency), multiply: " + RayUtils.scaleVal((double) 50 / delay, 2));
+        }
+    }
+
+    private void punish(String info) {
+        vl += 70;
+        if (vl > 100) {
+            cancel(info);
+            vl -= 10;
+        } else if (vl > 0) {
+            vl -= 1;
         }
     }
 
