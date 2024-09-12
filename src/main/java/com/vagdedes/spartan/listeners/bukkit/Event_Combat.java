@@ -2,10 +2,12 @@ package com.vagdedes.spartan.listeners.bukkit;
 
 import com.vagdedes.spartan.abstraction.event.EntityAttackPlayerEvent;
 import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
+import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.listeners.bukkit.standalone.Event_Damaged;
 import me.vagdedes.spartan.system.Enums;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -36,7 +38,6 @@ public class Event_Combat implements Listener {
         boolean damagerIsPlayer = damager instanceof Player,
                 entityIsPlayer = entity instanceof Player,
                 entityAttack = e.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK;
-
         if (damagerIsPlayer) {
             Player player = (Player) damager;
             SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
