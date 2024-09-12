@@ -2,16 +2,13 @@ package com.vagdedes.spartan.abstraction.check.implementation.combat;
 
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
-import com.vagdedes.spartan.abstraction.check.implementation.movement.simulation.modules.engine.Attribute;
 import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
-import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
-import com.vagdedes.spartan.functionality.server.MultiVersion;
+import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
-import com.vagdedes.spartan.listeners.protocol.standalone.Packet_LagCompensation;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.GameMode;
@@ -40,7 +37,7 @@ public class HitReach extends CheckExecutor {
                     && !player.getInstance().getGameMode().equals(GameMode.CREATIVE)) {
                 int targetId = target.getEntityId();
                 int playerId = event.getPlayer().getEntityId();
-                SpartanProtocol targetProtocol = SpartanBukkit.getProtocol(event.getTarget().getUniqueId());
+                SpartanProtocol targetProtocol = SpartanBukkit.getProtocol(ProtocolLib.getUUID(target));
                 if (targetProtocol == null) return;
                 double bruteforceRayTrace = 14.88;
                 double value;
