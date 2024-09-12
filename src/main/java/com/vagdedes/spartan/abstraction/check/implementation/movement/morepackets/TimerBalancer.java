@@ -46,4 +46,7 @@ public class TimerBalancer {
     public long getResult() {
         return this.result;
     }
+    public void addBalance(long balance) {
+        this.balancer += balance;
+    }
 }

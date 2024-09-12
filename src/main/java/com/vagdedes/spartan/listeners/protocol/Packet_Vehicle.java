@@ -49,6 +49,7 @@ public class Packet_Vehicle extends PacketAdapter {
         if (event.getPacketType().equals(PacketType.Play.Server.MOUNT)) {
             Player player = event.getPlayer();
             SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
+            protocol.timerBalancer.addBalance(50);
             if (protocol.vehicleStatus && protocol.keepEntity != 0) {
                 VehicleEnterEvent bukkitEvent = new VehicleEnterEvent((Vehicle) player.getVehicle(), player);
                 bukkitEvent.setCancelled(event.isCancelled());

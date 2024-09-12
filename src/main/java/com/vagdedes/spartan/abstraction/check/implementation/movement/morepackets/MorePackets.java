@@ -53,7 +53,7 @@ public class MorePackets extends CheckExecutor {
             cancel("type: positive (balance), multiply: " + RayUtils.scaleVal((double) 50 / delay, 2));
         } else if (delay < 50 && timerBalancer.getForced() > 8) {
             cancel("type: positive (NET), multiply: " + RayUtils.scaleVal((double) 50 / delay, 2));
-        } else if (delay < 50 && timerBalancer.getLatency() > 30) {
+        } else if (delay < 50 && timerBalancer.getLatency() > 40) {
             cancel("type: positive (latency), multiply: " + RayUtils.scaleVal((double) 50 / delay, 2));
         }
     }
