@@ -4,6 +4,7 @@ public class TimerBalancer {
 
     private long balancer, result;
     private int negative, forced, latency;
+
     public TimerBalancer() {
         balancer = 1000;
         result = 0;
@@ -37,18 +38,23 @@ public class TimerBalancer {
     public int getForced() {
         return this.forced;
     }
+
     public int getLatency() {
         return this.latency;
     }
+
     public long getBalancer() {
         return this.balancer;
     }
+
     public boolean isNegativeTimer() {
         return this.negative > 5;
     }
+
     public long getResult() {
         return this.result;
     }
+
     public void addBalance(long balance) {
         this.balancer += balance;
     }

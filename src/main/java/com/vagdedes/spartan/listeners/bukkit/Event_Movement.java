@@ -85,6 +85,7 @@ public class Event_Movement implements Listener {
             p.getExecutor(Enums.HackType.KillAura).handle(cancelled, e);
             p.getExecutor(Enums.HackType.Criticals).handle(cancelled, e);
             p.getExecutor(Enums.HackType.Simulation).handle(cancelled, e);
+            p.getExecutor(Enums.HackType.MorePackets).handle(cancelled, null);
         }
     }
 

@@ -16,28 +16,27 @@ import java.util.Map;
 
 public class MorePackets extends CheckExecutor {
 
-    private final Map<Long, Integer> nmsMap;
-    private int buffer, vl;
+    private final Map<Long, Integer> bukkitNmsMap;
+    private int bukkitBuffer, packetVL;
 
     public MorePackets(HackType hackType, SpartanPlayer player) {
         super(hackType, player, 0, true);
-        this.nmsMap = new LinkedHashMap<>((int) TPS.maximum + 1, 1.0f);
-        this.buffer = 0;
-        this.vl = 0;
+        this.bukkitNmsMap = new LinkedHashMap<>((int) TPS.maximum + 1, 1.0f);
+        this.bukkitBuffer = 0;
+        this.packetVL = 0;
     }
 
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
-
         if (object instanceof PlayerTickEvent) {
-            if (player.bedrockPlayer) return;
-            calculate((PlayerTickEvent) object);
-        } else {
-            if (!player.bedrockPlayer) return;
-            nmsMap.put(TPS.tick(), nmsMap.getOrDefault(TPS.tick(), 0) + 1);
+            if (!player.bedrockPlayer) {
+                calculate((PlayerTickEvent) object);
+            }
+        } else if (!player.protocol.packetsEnabled()) {
+            bukkitNmsMap.put(TPS.tick(), bukkitNmsMap.getOrDefault(TPS.tick(), 0) + 1);
 
-            if (nmsMap.size() > configuredTicks()) {
-                Iterator<Long> iterator = nmsMap.keySet().iterator();
+            if (bukkitNmsMap.size() > configuredTicks()) {
+                Iterator<Long> iterator = bukkitNmsMap.keySet().iterator();
                 iterator.next();
                 iterator.remove();
             }
@@ -52,28 +51,35 @@ public class MorePackets extends CheckExecutor {
         if (timerBalancer.isNegativeTimer()) {
             punish("type: negative, multiply: " + RayUtils.scaleVal((double) 50 / delay, 2));
         } else if (delay < 50 && timerBalancer.getResult() > 100) {
-            punish("type: positive (balance), multiply: " + RayUtils.scaleVal((double) 50 / delay, 2));
+            punish("type: positive(balance), multiply: " + RayUtils.scaleVal((double) 50 / delay, 2));
         } else if (delay < 50 && timerBalancer.getForced() > 8) {
-            punish("type: positive (NET), multiply: " + RayUtils.scaleVal((double) 50 / delay, 2));
+            punish("type: positive(NET), multiply: " + RayUtils.scaleVal((double) 50 / delay, 2));
         } else if (delay < 50 && timerBalancer.getLatency() > 40) {
-            punish("type: positive (latency), multiply: " + RayUtils.scaleVal((double) 50 / delay, 2));
+            punish("type: positive(latency), multiply: " + RayUtils.scaleVal((double) 50 / delay, 2));
         }
     }
 
     private void punish(String info) {
-        vl += 70;
-        if (vl > 100) {
-            cancel(info);
-            vl -= 10;
-        } else if (vl > 0) {
-            vl -= 1;
+        packetVL += 70;
+
+        if (packetVL > 100) {
+            cancel(
+                    info,
+                    1,
+                    player.movement.getDetectionLocation(),
+                    0,
+                    true
+            );
+            packetVL -= 10;
+        } else if (packetVL > 0) {
+            packetVL -= 1;
         }
     }
 
     @Override
     protected void runInternal(boolean cancelled) {
-        if (!player.bedrockPlayer) return;
-        if (!nmsMap.isEmpty()) {
+        if (!bukkitNmsMap.isEmpty()
+                && !player.protocol.packetsEnabled()) {
             long currentTick = TPS.tick(),
                     oldestTick = currentTick - configuredTicks();
             int period = 0, collections = 0;
@@ -83,7 +89,7 @@ public class MorePackets extends CheckExecutor {
             boolean change = false;
 
             for (long tick = oldestTick; tick < currentTick; tick++) {
-                int calls = nmsMap.getOrDefault(tick, 0);
+                int calls = bukkitNmsMap.getOrDefault(tick, 0);
 
                 if (calls > 0) {
                     if (change) {
@@ -108,10 +114,10 @@ public class MorePackets extends CheckExecutor {
                             negatives.put(period, negativeCount);
                             collections++;
                         } else {
-                            nmsMap.remove(tick);
+                            bukkitNmsMap.remove(tick);
                         }
                     } else {
-                        nmsMap.remove(tick);
+                        bukkitNmsMap.remove(tick);
                     }
                 }
             }
@@ -135,10 +141,10 @@ public class MorePackets extends CheckExecutor {
                 ratioSum /= collections;
 
                 if (collections >= 10 && ratioSum >= 1.1) {
-                    buffer++;
+                    bukkitBuffer++;
 
-                    if (buffer > 2) {
-                        buffer = 0;
+                    if (bukkitBuffer > 2) {
+                        bukkitBuffer = 0;
                         cancel(
                                 "type: timer"
                                         + ", sum: " + sum
@@ -151,13 +157,13 @@ public class MorePackets extends CheckExecutor {
                         );
                     }
                 } else {
-                    buffer = 0;
+                    bukkitBuffer = 0;
                 }
             } else {
-                buffer = 0;
+                bukkitBuffer = 0;
             }
         } else {
-            buffer = 0;
+            bukkitBuffer = 0;
         }
     }
 
@@ -174,6 +180,12 @@ public class MorePackets extends CheckExecutor {
 
     @Override
     protected boolean canRun() {
-        return MovementProcessing.canCheck(player, false, true, true, true);
+        return MovementProcessing.canCheck(
+                player,
+                player.protocol.packetsEnabled(),
+                true,
+                true,
+                true
+        );
     }
 }

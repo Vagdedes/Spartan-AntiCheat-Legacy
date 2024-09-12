@@ -48,14 +48,12 @@ public class Packet_Movement extends PacketAdapter {
         PacketType t = p.getType();
 
         boolean legacy = t.equals(PacketType.Play.Client.FLYING)
-                        || (t.equals(PacketType.Play.Client.POSITION)
-                        && protocol.isSameWithHash(ProtocolTools.readLocation(event)));
-        PlayerTickEvent tickEvent = new PlayerTickEvent(protocol, legacy);
-        tickEvent.build();
-        Event_Movement.tick(tickEvent);
+                || (t.equals(PacketType.Play.Client.POSITION)
+                && protocol.isSameWithHash(ProtocolTools.readLocation(event)));
+        Event_Movement.tick(new PlayerTickEvent(protocol, legacy).build());
 
-        if ((t.equals(PacketType.Play.Client.POSITION)
-                        || t.equals(PacketType.Play.Client.POSITION_LOOK))) {
+        if (t.equals(PacketType.Play.Client.POSITION)
+                || t.equals(PacketType.Play.Client.POSITION_LOOK)) {
             Location l = ProtocolTools.readLocation(event);
             protocol.pushHashPosition(l);
             protocol.addRawLocation(l);
@@ -66,23 +64,21 @@ public class Packet_Movement extends PacketAdapter {
         Register.plugin.getLogger().info(t.toString() + " " + ProtocolTools.readLocation(event).getX() + " " + ProtocolTools.readLocation(event).getZ());
         */
 
-        {
-            if (ProtocolTools.invalidTeleport(ProtocolTools.readLocation(event))) {
-                return;
+        if (ProtocolTools.invalidTeleport(ProtocolTools.readLocation(event))) {
+            return;
+        }
+        if (t.equals(PacketType.Play.Client.POSITION)
+                || t.equals(PacketType.Play.Client.POSITION_LOOK)) {
+            if (protocol.claimedVelocity != null && RayUtils.scaleVal(
+                    ProtocolTools.readLocation(event).getY() - protocol.getLocation().getY(), 3)
+                    == RayUtils.scaleVal(protocol.claimedVelocity.getVelocity().getY(), 3)) {
+                Event_Velocity.claim(new CPlayerVelocityEvent(protocol, protocol.claimedVelocity));
+                protocol.claimedVelocity = null;
             }
-            if ((t.equals(PacketType.Play.Client.POSITION)
-                            || t.equals(PacketType.Play.Client.POSITION_LOOK))) {
-                if (protocol.claimedVelocity != null && RayUtils.scaleVal(
-                                ProtocolTools.readLocation(event).getY() - protocol.getLocation().getY(), 3)
-                                == RayUtils.scaleVal(protocol.claimedVelocity.getVelocity().getY(), 3)) {
-                    Event_Velocity.claim(new CPlayerVelocityEvent(protocol, protocol.claimedVelocity));
-                    protocol.claimedVelocity = null;
-                }
-                if (protocol.teleported) {
-                    protocol.setLocation(ProtocolTools.readLocation(event));
-                    protocol.teleported = false;
-                    return;
-                }
+            if (protocol.teleported) {
+                protocol.setLocation(ProtocolTools.readLocation(event));
+                protocol.teleported = false;
+                return;
             }
         }
         if (System.currentTimeMillis() - protocol.mcClient.lastPacketTime > 4) {
@@ -94,17 +90,15 @@ public class Packet_Movement extends PacketAdapter {
         if (protocol.simulationFlag) {
             Location to = protocol.getLocation();
             Location from = protocol.spartanPlayer.movement.getEventFromLocation().getBukkitLocation();
-
-            double
-                            dx = RayUtils.scaleVal(to.getX() - from.getX(), 6),
-                            dy = RayUtils.scaleVal(to.getY() - from.getY(), 6),
-                            dz = RayUtils.scaleVal(to.getZ() - from.getZ(), 6);
-
+            double dx = RayUtils.scaleVal(to.getX() - from.getX(), 6),
+                    dy = RayUtils.scaleVal(to.getY() - from.getY(), 6),
+                    dz = RayUtils.scaleVal(to.getZ() - from.getZ(), 6);
             MCClient c = protocol.mcClient;
             MotionVector v = c.getNext(dx, dy, dz);
             Location finalLocation = protocol.simulationStartPoint.clone().add(v.x, v.y, v.z);
+
             if (RayUtils.isSaveToTeleport(protocol.player, finalLocation)
-                            && RayUtils.isSaveToTeleport(protocol.player, finalLocation.clone().add(0, 1, 0))) {
+                    && RayUtils.isSaveToTeleport(protocol.player, finalLocation.clone().add(0, 1, 0))) {
                 if (protocol.simulationDelayPerTP > 0) {
                     protocol.simulationDelayPerTP--;
                 } else {
