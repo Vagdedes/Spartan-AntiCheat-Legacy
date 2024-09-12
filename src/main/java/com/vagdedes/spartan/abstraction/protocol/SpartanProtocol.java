@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 public class SpartanProtocol {
@@ -22,6 +23,7 @@ public class SpartanProtocol {
     public final SpartanPlayer spartanPlayer;
     public final TimerBalancer timerBalancer;
     private boolean onGround, onGroundFrom;
+    private int hashPosBuffer;
     public boolean mutateTeleport, sprinting, sneaking, vehicleStatus;
     public boolean loaded, simulationFlag, teleported;
     private Location location;
@@ -58,8 +60,16 @@ public class SpartanProtocol {
         this.tickTime = System.currentTimeMillis();
 
         this.positionHistory = new LinkedList<>();
+        this.hashPosBuffer = 0;
 
         this.setProfile(ResearchEngine.getPlayerProfile(this, false));
+    }
+
+    public void pushHashPosition(Location location) {
+        this.hashPosBuffer = Objects.hashCode((location.getX() + location.getY() + location.getZ()));
+    }
+    public boolean isSameWithHash(Location location) {
+        return this.hashPosBuffer == Objects.hashCode((location.getX() + location.getY() + location.getZ()));
     }
 
     public long timePassed() {

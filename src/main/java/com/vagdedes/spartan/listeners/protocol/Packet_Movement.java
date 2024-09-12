@@ -46,14 +46,17 @@ public class Packet_Movement extends PacketAdapter {
         PacketContainer p = event.getPacket();
         PacketType t = p.getType();
 
-        PlayerTickEvent tickEvent = new PlayerTickEvent(protocol);
+        boolean legacy = t.equals(PacketType.Play.Client.FLYING)
+                        || (t.equals(PacketType.Play.Client.POSITION)
+                        && protocol.isSameWithHash(ProtocolTools.readLocation(event)));
+        PlayerTickEvent tickEvent = new PlayerTickEvent(protocol, legacy);
         tickEvent.build();
         Event_Movement.tick(tickEvent);
-
 
         if ((t.equals(PacketType.Play.Client.POSITION)
                         || t.equals(PacketType.Play.Client.POSITION_LOOK))) {
             Location l = ProtocolTools.readLocation(event);
+            protocol.pushHashPosition(l);
             protocol.addRawLocation(l);
         }
 
