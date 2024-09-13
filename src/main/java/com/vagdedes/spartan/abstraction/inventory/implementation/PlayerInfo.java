@@ -281,10 +281,10 @@ public class PlayerInfo extends InventoryMenu {
                         player.getInstance().sendMessage(Config.messages.getColorfulString("player_stored_data_delete_message").replace("{player}", name));
                     }
                 }
-                player.sendInventoryCloseMessage(null);
+                player.getInstance().closeInventory();
             }
         } else if (item.equals("Close")) {
-            player.sendInventoryCloseMessage(null);
+            player.getInstance().closeInventory();
         } else if (item.equals("Back")) {
             InteractiveInventory.mainMenu.open(player);
         } else {

@@ -157,9 +157,7 @@ public class MainMenu extends InventoryMenu {
                 item = (name.startsWith("§") ? name.substring(2) : name);
 
         if (item.equals("Auto Updater")) {
-            player.sendInventoryCloseMessage("");
-            player.getInstance().sendMessage("§6Discord Invite URL§8: §e§n" + DiscordMemberCount.discordURL);
-            player.getInstance().sendMessage("");
+            player.sendImportantMessage("§6Discord Invite URL§8: §e§n" + DiscordMemberCount.discordURL);
 
         } else if (item.equals("Compatibilities")) {
             if (!Permissions.has(player.getInstance(), Permission.MANAGE)) {
@@ -206,9 +204,7 @@ public class MainMenu extends InventoryMenu {
                 if (clickType == ClickType.LEFT) {
                     InteractiveInventory.manageChecks.open(player);
                 } else if (clickType == ClickType.RIGHT) {
-                    player.sendInventoryCloseMessage("");
-                    player.getInstance().sendMessage("§6Learn more about Detection Slots§8: §e§n" + SpartanEdition.patreonURL);
-                    player.getInstance().sendMessage("");
+                    player.sendImportantMessage("§6Learn more about Detection Slots§8: §e§n" + SpartanEdition.patreonURL);
                 }
             }
 
