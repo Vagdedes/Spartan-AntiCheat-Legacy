@@ -86,6 +86,7 @@ public class MoveDirection extends DetectionExecutor {
         int aggressivePatternD2 = 0;
         int robotizedAmount = 0;
         int aggressiveAim = 0;
+        int infinitives = 0;
         for (Double value : rayTraceAnalysis) {
             globalValue += value;
         }
@@ -107,6 +108,7 @@ public class MoveDirection extends DetectionExecutor {
             double switchYaw = Math.abs(yawChange - yawDiff);
             double switchPitch = Math.abs(pitchChange - pitchDiff);
             double switchDiffOnYaw = Math.abs(switchYaw - lastSwitchYaw);
+            double interpolation;
             if (switchDiffOnYaw > 26 && (aimAnalysis.get(i).getTime()
                     + 75 > attackHandle.getTimeMillis())) addNewPunish("heuristic(switch)", 35);
 
@@ -121,10 +123,12 @@ public class MoveDirection extends DetectionExecutor {
 
             if (rayTraceAnalysis.get(i) < 0.03 && yawChange > 1) lowHeuristic++;
 
+
             if (robotized < 0.99 && yawChange > 3) machineKnownMovement++;
             if (robotized < 0.02 && yawChange > 2) constantRotations++;
             if (robotized < 2 && yawChange > 3) aggressiveAim++;
-
+            interpolation = RayUtils.scaleVal(yawChange / robotized, 2);
+            if (Double.isInfinite(interpolation)) infinitives++;
             if (RayUtils.scaleVal(yawChange, 2) == 0.1 || RayUtils.scaleVal(pitchChange, 2) == 0.1) gcd++;
             if (RayUtils.scaleVal(yawChange, 2) == 0.01 || RayUtils.scaleVal(pitchChange, 2) == 0.01) gcd++;
             if ((diffBetweenYawChanges > 0.01 && diffBetweenYawChanges < 2)) aggressivePatternI++;
@@ -148,6 +152,7 @@ public class MoveDirection extends DetectionExecutor {
             if (machineKnownMovement > 4) addNewPunish("heuristic(aim)", 100);
             if (aggressiveAim > 8) addNewPunish("heuristic(aggressive)", 65);
             if (constantRotations > 2) addNewPunish("heuristic(constant)", 60);
+            if (infinitives > 1) addNewPunish("heuristic(interpolation)", (infinitives > 2) ? 150 : 55);
             if (gcd > 2) addNewPunish("pattern(gcd)", 210);
             if (aggressivePatternI > 3 && aggressivePatternD > 3) addNewPunish("pattern(random)", 40);
             if (aggressivePatternI2 > 3 && aggressivePatternD2 > 3

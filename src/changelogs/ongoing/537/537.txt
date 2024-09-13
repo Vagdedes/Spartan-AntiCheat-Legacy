@@ -2,6 +2,7 @@ Important:
 [+] New Exploits ground-spoof checks (1:1).
 [+] New HitReach checks (0.1+ reach/hitbox detection).
 [+] New Timer checks (lag compensation, almost instantaneous triggering, positive or negative timer detection)
+[+] Killaura MoveDirection "heuristic[interpolation]" check, designed for newest aura bypasses
 [#] Fixed many problems with combat checks.
 [#] Improved stability of many checks.
 [#] Fixed bug with DAMAGE_EVENT
