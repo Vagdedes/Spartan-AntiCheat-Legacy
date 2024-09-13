@@ -20,7 +20,6 @@ import java.util.UUID;
 
 public class SpartanProtocol {
 
-    private final long time;
     public final Player player;
     public final SpartanPlayer spartanPlayer;
     public final TimerBalancer timerBalancer;
@@ -40,7 +39,6 @@ public class SpartanProtocol {
     private final MultiVersion.MCVersion version;
 
     public SpartanProtocol(Player player) {
-        this.time = System.currentTimeMillis();
         this.player = player;
         this.version = MultiVersion.MCVersion.OTHER; // todo
 
@@ -85,10 +83,6 @@ public class SpartanProtocol {
 
     public boolean isSameWithHash(Location location) {
         return this.hashPosBuffer == Objects.hashCode((location.getX() + location.getY() + location.getZ()));
-    }
-
-    public long timePassed() {
-        return System.currentTimeMillis() - this.time;
     }
 
     public LinkedList<Location> getLocations() {

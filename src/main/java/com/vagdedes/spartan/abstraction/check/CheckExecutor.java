@@ -36,6 +36,7 @@ public abstract class CheckExecutor extends DetectionExecutor {
             violationLevelIdentifier = "Violations:",
             javaPlayerIdentifier = "Java:";
 
+    private final long creation;
     protected final DetectionExecutor[] detections;
     private final boolean scheduledPrevention;
     private final long[] function;
@@ -46,6 +47,7 @@ public abstract class CheckExecutor extends DetectionExecutor {
     public CheckExecutor(Enums.HackType hackType, SpartanPlayer player, int detections,
                          boolean scheduledPrevention) {
         super(null, hackType, player);
+        this.creation = System.currentTimeMillis();
         this.detections = new DetectionExecutor[detections];
         this.scheduledPrevention = scheduledPrevention;
         this.prevention = new HackPrevention();
@@ -127,7 +129,7 @@ public abstract class CheckExecutor extends DetectionExecutor {
     }
 
     boolean justImplemented() {
-        return player.protocol.timePassed() <= TPS.maximum * TPS.tickTime;
+        return (System.currentTimeMillis() - this.creation) <= TPS.maximum * TPS.tickTime;
     }
 
     final boolean canFunction() {
