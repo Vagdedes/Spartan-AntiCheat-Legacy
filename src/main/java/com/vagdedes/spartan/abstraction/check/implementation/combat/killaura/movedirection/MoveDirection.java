@@ -156,7 +156,7 @@ public class MoveDirection extends DetectionExecutor {
             if (machineKnownMovement > 4) addNewPunish("heuristic(aim)", 100);
             if (aggressiveAim > 8) addNewPunish("heuristic(aggressive)", 65);
             if (constantRotations > 2) addNewPunish("heuristic(constant)", 60);
-            if (infinitives > 1) addNewPunishL2("heuristic(interpolation)", (infinitives > 2) ? 145 : 70);
+            if (infinitives > 1) addNewPunishL2("heuristic(interpolation)", (infinitives > 2) ? 100 : 60);
             if (gcd > 2) addNewPunish("pattern(gcd)", 210);
             if (aggressivePatternI > 3 && aggressivePatternD > 3) addNewPunish("pattern(random)", 40);
             if (aggressivePatternI2 > 3 && aggressivePatternD2 > 3
