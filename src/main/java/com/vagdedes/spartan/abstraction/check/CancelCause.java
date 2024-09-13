@@ -1,11 +1,18 @@
 package com.vagdedes.spartan.abstraction.check;
 
+import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.functionality.server.TPS;
 
 public class CancelCause {
 
     private String reason, pointer;
     private long expiration;
+
+    CancelCause(Compatibility.CompatibilityType compatibilityType) {
+        this.reason = compatibilityType.toString();
+        this.pointer = " ";
+        this.expiration = 0L;
+    }
 
     CancelCause(String reason, String pointer, int ticks) {
         this.reason = reason;

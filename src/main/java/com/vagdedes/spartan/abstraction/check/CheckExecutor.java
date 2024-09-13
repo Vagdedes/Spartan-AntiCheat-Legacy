@@ -1,10 +1,15 @@
 package com.vagdedes.spartan.abstraction.check;
 
 import com.vagdedes.spartan.Register;
+import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.profiling.PlayerEvidence;
 import com.vagdedes.spartan.abstraction.profiling.PlayerViolation;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
+import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
+import com.vagdedes.spartan.compatibility.manual.building.MythicMobs;
+import com.vagdedes.spartan.compatibility.manual.enchants.CustomEnchantsPlus;
+import com.vagdedes.spartan.compatibility.manual.enchants.EcoEnchants;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudConnections;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
@@ -111,7 +116,6 @@ public abstract class CheckExecutor extends DetectionExecutor {
             function[0] = tick;
             function[1] = (!v1_8 || player.getInstance().getGameMode() != GameMode.SPECTATOR)
                     && !player.protocol.isLoading()
-                    && player.getCancellableCompatibility() == null
                     && hackType.getCheck().isEnabled(player.dataType, player.getWorld().getName())
                     && this.getDisableCause() == null
                     && !Permissions.isBypassing(player, hackType)
@@ -169,7 +173,19 @@ public abstract class CheckExecutor extends DetectionExecutor {
     // Causes
 
     public final CancelCause getDisableCause() {
-        return disableCause != null && disableCause.hasExpired() ? null : disableCause;
+        if (disableCause == null || disableCause.hasExpired()) {
+            return MythicMobs.is(player)
+                    ? new CancelCause(Compatibility.CompatibilityType.MYTHIC_MOBS)
+                    : ItemsAdder.is(player)
+                    ? new CancelCause(Compatibility.CompatibilityType.ITEMS_ADDER)
+                    : CustomEnchantsPlus.has(player)
+                    ? new CancelCause(Compatibility.CompatibilityType.CUSTOM_ENCHANTS_PLUS)
+                    : EcoEnchants.has(player)
+                    ? new CancelCause(Compatibility.CompatibilityType.ECO_ENCHANTS)
+                    : null;
+        } else {
+            return disableCause;
+        }
     }
 
     public final CancelCause getSilentCause() {

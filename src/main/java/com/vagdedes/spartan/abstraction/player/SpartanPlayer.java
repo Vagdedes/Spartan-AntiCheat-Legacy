@@ -9,10 +9,6 @@ import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanBlock;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
-import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
-import com.vagdedes.spartan.compatibility.manual.building.MythicMobs;
-import com.vagdedes.spartan.compatibility.manual.enchants.CustomEnchantsPlus;
-import com.vagdedes.spartan.compatibility.manual.enchants.EcoEnchants;
 import com.vagdedes.spartan.compatibility.necessary.BedrockCompatibility;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.connection.PlayerIP;
@@ -566,15 +562,6 @@ public class SpartanPlayer {
     public void damage(double amount) {
         trackers.disable(Trackers.TrackerType.ABSTRACT_VELOCITY, 3);
         this.getInstance().damage(amount);
-    }
-
-    // Separator
-
-    public String getCancellableCompatibility() {
-        return MythicMobs.is(this) ? Compatibility.CompatibilityType.MYTHIC_MOBS.toString() :
-                ItemsAdder.is(this) ? Compatibility.CompatibilityType.ITEMS_ADDER.toString() :
-                        CustomEnchantsPlus.has(this) ? Compatibility.CompatibilityType.CUSTOM_ENCHANTS_PLUS.toString() :
-                                EcoEnchants.has(this) ? Compatibility.CompatibilityType.ECO_ENCHANTS.toString() : null;
     }
 
     // Separator

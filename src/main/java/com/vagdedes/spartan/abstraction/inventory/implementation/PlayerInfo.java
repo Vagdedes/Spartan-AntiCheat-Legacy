@@ -181,7 +181,6 @@ public class PlayerInfo extends InventoryMenu {
         boolean notChecked = isOnline
                 && !PlayerDetectionSlots.isChecked(player)
                 && Config.isEnabled(player.dataType);
-        String cancellableCompatibility = isOnline ? player.getCancellableCompatibility() : null;
 
         for (HackType hackType : hackTypes) {
             if (hackType.category == checkType) {
@@ -190,7 +189,6 @@ public class PlayerInfo extends InventoryMenu {
                         player,
                         hackType,
                         dataType,
-                        cancellableCompatibility,
                         isOnline,
                         notChecked
                 );
@@ -207,7 +205,6 @@ public class PlayerInfo extends InventoryMenu {
     private String getDetectionState(SpartanPlayer player,
                                      HackType hackType,
                                      Check.DataType dataType,
-                                     String cancellableCompatibility,
                                      boolean hasPlayer,
                                      boolean notChecked) {
         if (!hasPlayer) {
@@ -224,10 +221,9 @@ public class PlayerInfo extends InventoryMenu {
         }
         CancelCause disabledCause = player.getExecutor(hackType).getDisableCause();
         return Permissions.isBypassing(player, hackType) ? "Permission Bypass" :
-                cancellableCompatibility != null ? cancellableCompatibility + " Compatibility" :
-                        notChecked ? "Temporarily Not Checked" :
-                                disabledCause != null ? "Cancelled (" + disabledCause.getReason() + ")" :
-                                        (check.isSilent(dataType, worldName) ? "Silent " : "") + "Checking";
+                notChecked ? "Temporarily Not Checked" :
+                        disabledCause != null ? "Cancelled (" + disabledCause.getReason() + ")" :
+                                (check.isSilent(dataType, worldName) ? "Silent " : "") + "Checking";
     }
 
     public void refresh(String targetName) {
