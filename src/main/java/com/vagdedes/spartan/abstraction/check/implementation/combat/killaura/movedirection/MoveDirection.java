@@ -19,8 +19,8 @@ import static java.lang.Math.PI;
 public class MoveDirection extends DetectionExecutor {
     private AttackHandle attackHandle;
     private final LinkedList<AttackData> aimAnalysis;
-    private float vl;
-    private String punish;
+    private float vl, vlL2;
+    private String punish, punishL2;
     private double lastSwitchYaw, lastSwitchPitch;
     private final List<UUID> targetsOnTheRow;
     private final LinkedList<Double> rayTraceAnalysis;
@@ -29,7 +29,11 @@ public class MoveDirection extends DetectionExecutor {
         super(executor, executor.hackType, executor.player);
         aimAnalysis = new LinkedList<>();
         attackHandle = new AttackHandle(null, System.currentTimeMillis());
+
+        this.vl = 0;
+        this.vlL2 = 0;
         this.punish = "";
+        this.punishL2 = "";
         this.targetsOnTheRow = new ArrayList<>();
         this.rayTraceAnalysis = new LinkedList<>();
     }
@@ -152,20 +156,19 @@ public class MoveDirection extends DetectionExecutor {
             if (machineKnownMovement > 4) addNewPunish("heuristic(aim)", 100);
             if (aggressiveAim > 8) addNewPunish("heuristic(aggressive)", 65);
             if (constantRotations > 2) addNewPunish("heuristic(constant)", 60);
-            if (infinitives > 1) addNewPunish("heuristic(interpolation)", (infinitives > 2) ? 150 : 55);
+            if (infinitives > 1) addNewPunishL2("heuristic(interpolation)", (infinitives > 2) ? 145 : 70);
             if (gcd > 2) addNewPunish("pattern(gcd)", 210);
             if (aggressivePatternI > 3 && aggressivePatternD > 3) addNewPunish("pattern(random)", 40);
             if (aggressivePatternI2 > 3 && aggressivePatternD2 > 3
-                    && (aggressivePatternI2 + aggressivePatternD2) > 8 && targetsOnTheRow.size() < 2) {
+                            && (aggressivePatternI2 + aggressivePatternD2) > 8 && targetsOnTheRow.size() < 2) {
                 addNewPunish("pattern(snap)", 40);
             }
         }
-        // player.sendMessage(aggressivePatternI + " " + aggressivePatternD);
 
         double punishValue = Math.floor(vl / 200);
         if (!punish.isEmpty() && vl > priorityData(priorityType()).getVlLimit()) {
             cancel(
-                    "type: " + punish + ", bH: " + basicHeuristic
+                    "(layer1) type: " + punish + ", bH: " + basicHeuristic
                             + ", lH: " + lowHeuristic + ", rA: "
                             + robotizedAmount + ", mKM: " + machineKnownMovement
                             + ", aA: " + aggressiveAim + ", cR: " + constantRotations
@@ -177,9 +180,19 @@ public class MoveDirection extends DetectionExecutor {
             );
             vl -= 10;
         }
+        if (!punishL2.isEmpty() && vlL2 > priorityData(priorityType()).getVlLimit() / 2) {
+            cancel(
+                            "(layer2) type: " + punishL2 + ", infs: " + infinitives,
+                            punishValue,
+                            to
+            );
+            vlL2 -= 10;
+        }
         //player.protocol.player.sendMessage("vl: " + vl);
         if (vl > 0) vl -= priorityData(priorityType()).getVlFader();
         if (vl > priorityData(priorityType()).getVlLimit()) vl -= 10;
+        if (vlL2 > 0) vlL2 -= (float) (priorityData(priorityType()).getVlFader() * 1.5);
+        if (vlL2 > priorityData(priorityType()).getVlLimit()) vlL2 -= 10;
         rayTraceAnalysis.clear();
         aimAnalysis.clear();
 
@@ -208,6 +221,15 @@ public class MoveDirection extends DetectionExecutor {
             punish = reason;
         } else {
             punish += ", " + reason;
+        }
+    }
+
+    private void addNewPunishL2(String reason, float vlAdd) {
+        vlL2 += vlAdd;
+        if (punishL2.isEmpty()) {
+            punishL2 = reason;
+        } else if (!punishL2.contains(reason)) {
+            punishL2 += ", " + reason;
         }
     }
 

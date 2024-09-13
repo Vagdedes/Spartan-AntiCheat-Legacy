@@ -48,7 +48,7 @@ public class TimerBalancer {
     }
 
     public boolean isNegativeTimer() {
-        return this.negative > 5;
+        return this.negative > 15;
     }
 
     public long getResult() {
