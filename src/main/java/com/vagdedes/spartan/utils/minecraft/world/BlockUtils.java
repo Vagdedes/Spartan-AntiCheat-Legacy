@@ -1453,6 +1453,10 @@ public class BlockUtils {
         return original ? climbableOriginal.contains(m) : climbable.contains(m);
     }
 
+    public static boolean isSensitive(Material m) {
+        return sensitive.contains(m);
+    }
+
     private static boolean isSensitive(Material m, long time) {
         return time >= 0L && time <= sensitiveBlockBreakTime || sensitive.contains(m);
     }

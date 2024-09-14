@@ -44,7 +44,8 @@ public class FastBreak extends CheckExecutor {
     }
 
     private void checkDelay(SpartanBlock block, int seconds) {
-        if (hackType.getCheck().getBooleanOption("check_delay", true)) {
+        if (hackType.getCheck().getBooleanOption("check_delay", true)
+                && !BlockUtils.isSensitive(block.material)) {
             GameMode gameMode = player.getInstance().getGameMode();
 
             if (gameMode == GameMode.SURVIVAL || gameMode == GameMode.ADVENTURE) {

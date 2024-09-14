@@ -22,3 +22,4 @@ Other:
 [+] Implemented a new KillAura detection which calculates the ratio of hits/damages for all entities.
 [+] Implemented a new FastClicks detection which measures and compares patterns.
 [#] Made notifications message in messages.yml not show the violation level by default because it is confusing.
+[#] Fixed a few FastBreak false positives with sensitive blocks.
