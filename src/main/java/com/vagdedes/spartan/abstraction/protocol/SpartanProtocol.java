@@ -36,7 +36,7 @@ public class SpartanProtocol {
     private LinkedList<Location> positionHistory;
     public PlayerVelocityEvent claimedVelocity;
     public long tickTime;
-    private final MultiVersion.MCVersion version;
+    public final MultiVersion.MCVersion version;
 
     public SpartanProtocol(Player player) {
         this.player = player;

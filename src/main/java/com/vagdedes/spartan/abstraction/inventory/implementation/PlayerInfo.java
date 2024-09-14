@@ -129,6 +129,7 @@ public class PlayerInfo extends InventoryMenu {
             }
 
             if (isOnline) {
+                lore.add("§7Version§8:§c " + MultiVersion.versionString(target.version));
                 lore.add("§7CPS (Clicks Per Second)§8:§c " + target.spartanPlayer.clicks.getCount());
                 lore.add("§7Latency§8:§c " + target.getPing() + "ms");
                 lore.add("§7Edition§8:§c " + target.spartanPlayer.dataType);

@@ -4,6 +4,8 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.utils.java.ReflectionUtils;
 import com.vagdedes.spartan.utils.minecraft.server.ConfigUtils;
+import com.vagdedes.spartan.utils.minecraft.server.PluginUtils;
+import com.viaversion.viaversion.api.Via;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -51,15 +53,19 @@ public class MultiVersion {
     }
 
     public static String versionString() {
-        return other
-                ? "Unknown"
-                : detectedVersion.toString().substring(1).replace("_", ".");
+        return other ? "Unknown" : versionString(detectedVersion);
+    }
+
+    public static String versionString(MCVersion version) {
+        return version.toString().substring(1).replace("_", ".");
     }
 
     public static MCVersion get(Player player) {
         int protocol;
 
-        if (paperClass) {
+        if (PluginUtils.exists("viaversion")) {
+            protocol = Via.getAPI().getPlayerVersion(player);
+        } else if (paperClass) {
             protocol = player.getProtocolVersion();
         } else if (SpartanBukkit.packetsEnabled()) {
             protocol = ProtocolLibrary.getProtocolManager().getProtocolVersion(player);
