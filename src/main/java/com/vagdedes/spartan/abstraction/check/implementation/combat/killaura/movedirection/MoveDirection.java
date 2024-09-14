@@ -180,7 +180,8 @@ public class MoveDirection extends DetectionExecutor {
             );
             vl -= 10;
         }
-        if (!punishL2.isEmpty() && vlL2 > priorityData(priorityType()).getVlLimit() / 2) {
+
+        if (!punishL2.isEmpty() && vlL2 > (priorityData(priorityType()).getVlLimit() / 2) + 50) {
             cancel(
                             "(layer2) type: " + punishL2 + ", infs: " + infinitives,
                             punishValue,
