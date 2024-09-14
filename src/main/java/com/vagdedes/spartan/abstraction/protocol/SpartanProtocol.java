@@ -69,10 +69,12 @@ public class SpartanProtocol {
         this.setProfile(ResearchEngine.getPlayerProfile(this, false));
     }
 
+    public MultiVersion.MCVersion getVersion() {
+        return this.version;
+    }
     public boolean isUsingVersion(MultiVersion.MCVersion trialVersion) {
         return version.ordinal() == trialVersion.ordinal();
     }
-
     public boolean isUsingVersionOrGreater(MultiVersion.MCVersion trialVersion) {
         return version.ordinal() >= trialVersion.ordinal();
     }
