@@ -3,10 +3,7 @@ package com.vagdedes.spartan.abstraction.profiling;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import me.vagdedes.spartan.system.Enums;
 
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 public class ViolationHistory {
 
@@ -31,7 +28,7 @@ public class ViolationHistory {
         int size = this.times.size();
 
         if (size > 1) {
-            double squareSum = 0L;
+            Map<Integer, double[]> squareSum = new LinkedHashMap<>();
 
             synchronized (this.times) {
                 Iterator<PlayerViolation> iterator = this.times.values().iterator();
@@ -45,10 +42,19 @@ public class ViolationHistory {
                     );
                     previous = violation.time;
                     difference /= violation.increase + (hackType.violationTimeWorth / difference);
-                    squareSum += difference * difference;
+                    double[] data = squareSum.getOrDefault(violation.hash, new double[]{0.0, 0.0});
+                    data[0] += difference * difference;
+                    data[1] += 1.0;
+                    squareSum.put(violation.hash, data);
                 }
             }
-            return Math.sqrt(squareSum / (size - 1.0));
+            double finalSquareSum = 0.0;
+
+            for (Map.Entry<Integer, double[]> entry : squareSum.entrySet()) {
+                double value = Math.sqrt(entry.getValue()[0] / entry.getValue()[1]);
+                finalSquareSum += value * value;
+            }
+            return Math.sqrt(finalSquareSum / (size - 1.0));
         } else {
             return null;
         }

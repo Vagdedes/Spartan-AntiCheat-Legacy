@@ -235,7 +235,8 @@ public abstract class CheckExecutor extends DetectionExecutor {
             PlayerViolation playerViolation = new PlayerViolation(
                     time,
                     this.getLevel(),
-                    increaseInt
+                    increaseInt,
+                    information
             );
             boolean event = Config.settings.getBoolean("Important.enable_developer_api");
 

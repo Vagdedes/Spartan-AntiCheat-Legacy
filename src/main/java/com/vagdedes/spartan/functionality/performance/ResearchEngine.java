@@ -439,7 +439,8 @@ public class ResearchEngine {
                                                         new PlayerViolation(
                                                                 sdf.parse(fullDate).getTime(),
                                                                 violation[0],
-                                                                violation[1]
+                                                                violation[1],
+                                                                detection
                                                         )
                                                 );
                                             }
