@@ -42,8 +42,7 @@ public class Event_Velocity implements Listener {
         }
     }
     public static void claim(CPlayerVelocityEvent e) {
-        SpartanProtocol protocol = SpartanBukkit.getProtocol(e.getProtocol().player);
-        // TODO: gravity
+        // gravity
     }
 
 }

@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.abstraction.protocol;
 
+import com.comphenix.protocol.ProtocolLibrary;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.morepackets.TimerBalancer;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
@@ -40,7 +41,41 @@ public class SpartanProtocol {
 
     public SpartanProtocol(Player player) {
         this.player = player;
-        this.version = MultiVersion.MCVersion.OTHER; // todo
+
+        if (SpartanBukkit.packetsEnabled()) {
+            this.version = MultiVersion.MCVersion.OTHER;
+        } else {
+            int v = ProtocolLibrary.getProtocolManager().getProtocolVersion(player);
+            this.version = v <= 5
+                    ? MultiVersion.MCVersion.V1_7
+                    : v <= 47
+                    ? MultiVersion.MCVersion.V1_8
+                    : v <= 110
+                    ? MultiVersion.MCVersion.V1_9
+                    : v <= 210
+                    ? MultiVersion.MCVersion.V1_10
+                    : v <= 316
+                    ? MultiVersion.MCVersion.V1_11
+                    : v <= 340
+                    ? MultiVersion.MCVersion.V1_12
+                    : v <= 404
+                    ? MultiVersion.MCVersion.V1_13
+                    : v <= 498
+                    ? MultiVersion.MCVersion.V1_14
+                    : v <= 578
+                    ? MultiVersion.MCVersion.V1_15
+                    : v <= 754
+                    ? MultiVersion.MCVersion.V1_16
+                    : v <= 756
+                    ? MultiVersion.MCVersion.V1_17
+                    : v <= 758
+                    ? MultiVersion.MCVersion.V1_18
+                    : v <= 762
+                    ? MultiVersion.MCVersion.V1_19
+                    : v <= 766
+                    ? MultiVersion.MCVersion.V1_20
+                    : MultiVersion.MCVersion.V1_21;
+        }
 
         this.onGround = false;
         this.onGroundFrom = false;
