@@ -73,6 +73,7 @@ public class MoveDirection extends DetectionExecutor {
     private void analyze(SpartanLocation to) {
         targetsOnTheRow.clear();
         punish = "";
+        punishL2 = "";
         double globalValue = 0;
         double changeYaw = 0;
         double oldYaw = aimAnalysis.getFirst().getYaw();
