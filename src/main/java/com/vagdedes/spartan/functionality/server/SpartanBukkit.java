@@ -8,7 +8,6 @@ import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.connection.cloud.AutoUpdater;
 import com.vagdedes.spartan.functionality.npc.NPCManager;
-import com.vagdedes.spartan.functionality.performance.PlayerDetectionSlots;
 import com.vagdedes.spartan.utils.java.ReflectionUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import org.bukkit.Bukkit;
@@ -146,7 +145,6 @@ public class SpartanBukkit {
                     player.getUniqueId(),
                     protocol
             );
-            PlayerDetectionSlots.add(protocol.spartanPlayer);
         }
         return protocol;
     }
@@ -155,12 +153,7 @@ public class SpartanBukkit {
         if (ProtocolLib.isTemporary(player)) {
             return null;
         } else {
-            SpartanProtocol protocol = playerProtocol.remove(player.getUniqueId());
-
-            if (protocol != null) {
-                PlayerDetectionSlots.remove(protocol.spartanPlayer);
-            }
-            return protocol;
+            return playerProtocol.remove(player.getUniqueId());
         }
     }
 

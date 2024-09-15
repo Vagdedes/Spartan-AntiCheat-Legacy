@@ -7,10 +7,11 @@ import java.util.*;
 
 public class ViolationHistory {
 
-    private final Map<Long, PlayerViolation> times;
+    private final Object lock = new Object();
+    private Map<Long, PlayerViolation> times;
 
     ViolationHistory() {
-        this.times = Collections.synchronizedMap(new TreeMap<>());
+        this.times = Collections.synchronizedMap(new LinkedHashMap<>());
     }
 
     public boolean isEmpty() {
@@ -18,10 +19,22 @@ public class ViolationHistory {
     }
 
     public void store(Enums.HackType hackType, PlayerViolation playerViolation) {
-        synchronized (this.times) {
+        synchronized (this.lock) {
             this.times.put(playerViolation.time, playerViolation);
         }
         ResearchEngine.queueToCache(hackType);
+    }
+
+    public void sort() {
+        if (!this.times.isEmpty()) {
+            synchronized (this.lock) {
+                this.times = Collections.synchronizedMap(
+                        new LinkedHashMap<>(
+                                new TreeMap<>(this.times)
+                        )
+                );
+            }
+        }
     }
 
     public Double getTimeDifference(Enums.HackType hackType) {
@@ -30,7 +43,7 @@ public class ViolationHistory {
         if (size > 1) {
             Map<Integer, double[]> squareSum = new LinkedHashMap<>();
 
-            synchronized (this.times) {
+            synchronized (this.lock) {
                 Iterator<PlayerViolation> iterator = this.times.values().iterator();
                 long previous = iterator.next().time;
 

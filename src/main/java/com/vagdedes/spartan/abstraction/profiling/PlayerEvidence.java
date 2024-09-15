@@ -1,10 +1,12 @@
 package com.vagdedes.spartan.abstraction.profiling;
 
-import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class PlayerEvidence {
@@ -33,30 +35,8 @@ public class PlayerEvidence {
                 : probability - min;
     }
 
-    private static int probabilityToPlayers(double probability) {
+    public static int probabilityToFactors(double probability) {
         return AlgebraUtils.integerCeil(1.0 / createProbability(probability));
-    }
-
-    public static int getRequiredPlayers(Enums.HackType hackType, double probability) {
-        List<PlayerProfile> profiles = ResearchEngine.getPlayerProfiles();
-        int requirement = probabilityToPlayers(probability);
-
-        if (profiles.size() >= requirement) {
-            int count = 0;
-
-            for (PlayerProfile profile : profiles) {
-                if (profile.hasData(hackType)) {
-                    count++;
-
-                    if (count >= requirement) {
-                        return 0;
-                    }
-                }
-            }
-            return requirement - count;
-        } else {
-            return requirement - profiles.size();
-        }
     }
 
     // Separator

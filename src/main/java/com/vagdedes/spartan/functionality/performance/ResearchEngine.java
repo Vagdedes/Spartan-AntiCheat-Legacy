@@ -35,6 +35,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ResearchEngine {
 
+    private static Map<Integer, Boolean> requiredPlayers = new ConcurrentHashMap<>();
     private static boolean firstLoad = false;
     public static Map<Enums.HackType, Boolean> violationFired = new ConcurrentHashMap<>();
     private static long schedulerTicks = 0L;
@@ -480,6 +481,13 @@ public class ResearchEngine {
 
                     }
                 }
+                for (PlayerProfile playerProfile : playerProfiles.values()) {
+                    for (Enums.HackType hackType : Enums.HackType.values()) {
+                        for (Check.DataType dataType : usableDataTypes) {
+                            playerProfile.getViolationHistory(dataType, hackType).sort();
+                        }
+                    }
+                }
                 updateCache(true);
                 MainMenu.refresh();
             }
@@ -570,7 +578,7 @@ public class ResearchEngine {
 
         for (Enums.HackType hackType : Enums.HackType.values()) {
             if (hackType.getCheck().isEnabled(null, null)) {
-                int result = PlayerEvidence.getRequiredPlayers(hackType, PlayerEvidence.punishmentProbability);
+                int result = getRequiredPlayers(hackType, PlayerEvidence.punishmentProbability);
                 squareSum += result * result;
                 count += result;
             }
@@ -623,6 +631,27 @@ public class ResearchEngine {
 
     public static void queueToCache(Enums.HackType hackType) {
         violationFired.put(hackType, true);
+    }
+
+    public static int getRequiredPlayers(Enums.HackType hackType, double probability) {
+        int requirement = PlayerEvidence.probabilityToFactors(probability);
+
+        if (playerProfiles.size() >= requirement) {
+            int count = 0;
+
+            for (PlayerProfile profile : playerProfiles.values()) {
+                if (profile.hasData(hackType)) {
+                    count++;
+
+                    if (count >= requirement) {
+                        return 0;
+                    }
+                }
+            }
+            return requirement - count;
+        } else {
+            return requirement - playerProfiles.size();
+        }
     }
 
 }

@@ -20,9 +20,8 @@ public class PlayerDetectionSlots {
 
             if (amount > 0) {
                 Set<Map.Entry<UUID, SpartanProtocol>> players = SpartanBukkit.getPlayerEntries();
-                int playerAmount = players.size();
 
-                if (playerAmount <= amount) {
+                if (players.size() <= amount) {
                     synchronized (priority) {
                         synchronized (list) {
                             priority.clear();
@@ -94,17 +93,6 @@ public class PlayerDetectionSlots {
         }, 1L, 1L);
     }
 
-    public static void remove(SpartanPlayer player) {
-        UUID uuid = player.protocol.getUUID();
-
-        synchronized (priority) {
-            synchronized (list) {
-                priority.remove(uuid);
-                list.remove(uuid);
-            }
-        }
-    }
-
     private static boolean add(SpartanPlayer player, int optionAmount) {
         synchronized (list) {
             if (list.contains(player.protocol.getUUID())) {
@@ -121,11 +109,6 @@ public class PlayerDetectionSlots {
                 return false;
             }
         }
-    }
-
-    public static boolean add(SpartanPlayer player) {
-        int amount = CloudBase.getDetectionSlots();
-        return amount > 0 && add(player, amount);
     }
 
     public static boolean isChecked(SpartanPlayer player) {
