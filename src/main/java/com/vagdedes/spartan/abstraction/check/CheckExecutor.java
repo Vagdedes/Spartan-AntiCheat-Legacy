@@ -95,7 +95,6 @@ public abstract class CheckExecutor extends DetectionExecutor {
                 && !player.protocol.isLoading()
                 && (!v1_8 || player.getInstance().getGameMode() != GameMode.SPECTATOR)
                 && hackType.getCheck().isEnabled(player.dataType, player.getWorld().getName())
-                && this.getDisableCause() == null
                 && canRun()
                 && !Permissions.isBypassing(player, hackType);
     }
