@@ -35,7 +35,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ResearchEngine {
 
-    private static Map<Integer, Boolean> requiredPlayers = new ConcurrentHashMap<>();
+    private static final Map<Integer, Integer> requiredPlayers = new ConcurrentHashMap<>();
     private static boolean firstLoad = false;
     public static Map<Enums.HackType, Boolean> violationFired = new ConcurrentHashMap<>();
     private static long schedulerTicks = 0L;
@@ -499,8 +499,6 @@ public class ResearchEngine {
             Collection<PlayerProfile> profiles = playerProfiles.values();
 
             if (force) {
-                violationFired.clear();
-
                 for (PlayerProfile profile : profiles) {
                     profile.evidence.clear();
                 }
@@ -571,7 +569,14 @@ public class ResearchEngine {
                         }
                     }
                 }
-                violationFired.clear();
+            }
+            violationFired.clear();
+            Iterator<Integer> iterator = requiredPlayers.values().iterator();
+
+            while (iterator.hasNext()) {
+                if (iterator.next() != 0) {
+                    iterator.remove();
+                }
             }
         }
         int squareSum = 0, count = 0;
@@ -634,23 +639,28 @@ public class ResearchEngine {
     }
 
     public static int getRequiredPlayers(Enums.HackType hackType, double probability) {
-        int requirement = PlayerEvidence.probabilityToFactors(probability);
-        int hash = hackType.hashCode() * SpartanBukkit.hashCodeMultiplier + requirement;
-        int count = 0;
+        int requirement = PlayerEvidence.probabilityToFactors(probability),
+                hash = hackType.hashCode() * SpartanBukkit.hashCodeMultiplier + requirement,
+                count = requiredPlayers.getOrDefault(hash, -1);
 
-        if (playerProfiles.size() >= requirement) {
-            for (PlayerProfile profile : playerProfiles.values()) {
-                if (profile.hasData(hackType)) {
-                    count++;
+        if (count == -1) {
+            count = 0;
 
-                    if (count >= requirement) {
-                        return 0;
+            if (playerProfiles.size() >= requirement) {
+                for (PlayerProfile profile : playerProfiles.values()) {
+                    if (profile.hasData(hackType)) {
+                        count++;
+
+                        if (count == requirement) {
+                            return 0;
+                        }
                     }
                 }
+                count = requirement - count;
+            } else {
+                count = requirement - playerProfiles.size();
             }
-            count = requirement - count;
-        } else {
-            count = requirement - playerProfiles.size();
+            requiredPlayers.put(hash, count);
         }
         return count;
     }
