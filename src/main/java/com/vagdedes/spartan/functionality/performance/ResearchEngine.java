@@ -125,6 +125,12 @@ public class ResearchEngine {
                     for (PlayerProfile playerProfile : playerProfiles.values()) {
                         playerProfile.evidence.remove(hackType);
                     }
+                    for (double probability : PlayerEvidence.probabilities) {
+                        requiredPlayers.remove(
+                                hackType.hashCode() * SpartanBukkit.hashCodeMultiplier
+                                        + PlayerEvidence.probabilityToFactors(probability)
+                        );
+                    }
                     updateCache(true);
                 }
 
@@ -479,13 +485,6 @@ public class ResearchEngine {
                         }
                     } catch (Exception ignored) {
 
-                    }
-                }
-                for (PlayerProfile playerProfile : playerProfiles.values()) {
-                    for (Enums.HackType hackType : Enums.HackType.values()) {
-                        for (Check.DataType dataType : usableDataTypes) {
-                            playerProfile.getViolationHistory(dataType, hackType).sort();
-                        }
                     }
                 }
                 updateCache(true);

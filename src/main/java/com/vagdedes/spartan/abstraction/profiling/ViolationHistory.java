@@ -3,48 +3,36 @@ package com.vagdedes.spartan.abstraction.profiling;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import me.vagdedes.spartan.system.Enums;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class ViolationHistory {
 
-    private final Object lock = new Object();
-    private Map<Long, PlayerViolation> times;
+    private final Map<Long, PlayerViolation> data;
 
     ViolationHistory() {
-        this.times = Collections.synchronizedMap(new LinkedHashMap<>());
+        this.data = new TreeMap<>();
     }
 
-    public boolean isEmpty() {
-        return this.times.size() > 1;
+    boolean isEmpty() {
+        return this.data.size() <= 1;
     }
 
     public void store(Enums.HackType hackType, PlayerViolation playerViolation) {
-        synchronized (this.lock) {
-            this.times.put(playerViolation.time, playerViolation);
+        synchronized (this.data) {
+            this.data.put(playerViolation.time, playerViolation);
         }
         ResearchEngine.queueToCache(hackType);
     }
 
-    public void sort() {
-        if (!this.times.isEmpty()) {
-            synchronized (this.lock) {
-                this.times = Collections.synchronizedMap(
-                        new LinkedHashMap<>(
-                                new TreeMap<>(this.times)
-                        )
-                );
-            }
-        }
-    }
-
     public Double getTimeDifference(Enums.HackType hackType) {
-        int size = this.times.size();
-
-        if (size > 1) {
+        if (!this.isEmpty()) {
             Map<Integer, double[]> squareSum = new LinkedHashMap<>();
 
-            synchronized (this.lock) {
-                Iterator<PlayerViolation> iterator = this.times.values().iterator();
+            synchronized (this.data) {
+                Iterator<PlayerViolation> iterator = this.data.values().iterator();
                 long previous = iterator.next().time;
 
                 while (iterator.hasNext()) {
@@ -54,7 +42,7 @@ public class ViolationHistory {
                             60_000L
                     );
                     previous = violation.time;
-                    difference /= violation.increase + (hackType.violationTimeWorth / difference);
+                    difference /= violation.increase * (hackType.violationTimeWorth / difference);
                     double[] data = squareSum.getOrDefault(violation.hash, new double[]{0.0, 0.0});
                     data[0] += difference * difference;
                     data[1] += 1.0;
@@ -67,7 +55,7 @@ public class ViolationHistory {
                 double value = Math.sqrt(entry.getValue()[0] / entry.getValue()[1]);
                 finalSquareSum += value * value;
             }
-            return Math.sqrt(finalSquareSum / (size - 1.0));
+            return Math.sqrt(finalSquareSum / (this.data.size() - 1.0));
         } else {
             return null;
         }
