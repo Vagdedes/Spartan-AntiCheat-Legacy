@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.abstraction.check.implementation.movement.speed;
+package com.vagdedes.spartan.abstraction.check.implementation.movement;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;

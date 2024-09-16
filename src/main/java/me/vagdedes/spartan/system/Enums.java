@@ -184,7 +184,7 @@ public class Enums {
         Speed(
                 HackCategoryType.MOVEMENT,
                 2_000L,
-                com.vagdedes.spartan.abstraction.check.implementation.movement.speed.Speed.class,
+                com.vagdedes.spartan.abstraction.check.implementation.movement.Speed.class,
                 new String[]{
                         "This check will prevent client modules",
                         "that allow a player to travel faster",
