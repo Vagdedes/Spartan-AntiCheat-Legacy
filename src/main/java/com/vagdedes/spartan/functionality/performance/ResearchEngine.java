@@ -635,10 +635,10 @@ public class ResearchEngine {
 
     public static int getRequiredPlayers(Enums.HackType hackType, double probability) {
         int requirement = PlayerEvidence.probabilityToFactors(probability);
+        int hash = hackType.hashCode() * SpartanBukkit.hashCodeMultiplier + requirement;
+        int count = 0;
 
         if (playerProfiles.size() >= requirement) {
-            int count = 0;
-
             for (PlayerProfile profile : playerProfiles.values()) {
                 if (profile.hasData(hackType)) {
                     count++;
@@ -648,10 +648,11 @@ public class ResearchEngine {
                     }
                 }
             }
-            return requirement - count;
+            count = requirement - count;
         } else {
-            return requirement - playerProfiles.size();
+            count = requirement - playerProfiles.size();
         }
+        return count;
     }
 
 }

@@ -20,7 +20,7 @@ public class MorePackets extends CheckExecutor {
     private int bukkitBuffer, packetVL;
 
     public MorePackets(HackType hackType, SpartanPlayer player) {
-        super(hackType, player, 0, true);
+        super(hackType, player, 0);
         this.bukkitNmsMap = new LinkedHashMap<>((int) TPS.maximum + 1, 1.0f);
         this.bukkitBuffer = 0;
         this.packetVL = 0;

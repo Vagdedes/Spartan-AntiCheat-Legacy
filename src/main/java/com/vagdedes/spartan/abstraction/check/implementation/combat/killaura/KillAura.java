@@ -25,7 +25,7 @@ public class KillAura extends CheckExecutor {
     private final FightAnalysis analysis;
 
     public KillAura(Enums.HackType hackType, SpartanPlayer player) {
-        super(hackType, player, 8, false);
+        super(hackType, player, 8);
         this.addDetections(new DetectionExecutor[]{
                 irregular = new Irregular(this),
                 entityRaytrace = new EntityRaytrace(this),

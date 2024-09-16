@@ -10,12 +10,10 @@ import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import com.vagdedes.spartan.compatibility.manual.building.MythicMobs;
 import com.vagdedes.spartan.compatibility.manual.enchants.CustomEnchantsPlus;
 import com.vagdedes.spartan.compatibility.manual.enchants.EcoEnchants;
-import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudConnections;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.notifications.clickable.ClickableMessage;
-import com.vagdedes.spartan.functionality.performance.PlayerDetectionSlots;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.*;
 import com.vagdedes.spartan.functionality.tracking.AntiCheatLogs;
@@ -43,20 +41,16 @@ public abstract class CheckExecutor extends DetectionExecutor {
 
     private final long creation;
     protected final DetectionExecutor[] detections;
-    private final boolean scheduledPrevention;
-    private final long[] function;
     private long level, notifications;
     private CancelCause disableCause, silentCause;
     private HackPrevention prevention;
+    private boolean cancelled;
 
-    public CheckExecutor(Enums.HackType hackType, SpartanPlayer player, int detections,
-                         boolean scheduledPrevention) {
+    public CheckExecutor(Enums.HackType hackType, SpartanPlayer player, int detections) {
         super(null, hackType, player);
         this.creation = System.currentTimeMillis();
         this.detections = new DetectionExecutor[detections];
-        this.scheduledPrevention = scheduledPrevention;
         this.prevention = new HackPrevention();
-        this.function = new long[2];
     }
 
     protected final void addDetections(DetectionExecutor[] detections) {
@@ -68,15 +62,8 @@ public abstract class CheckExecutor extends DetectionExecutor {
     // Run
 
     public final void run(boolean cancelled) {
-        if (canFunctionOrJustImplemented() && (!cancelled || hackType.getCheck().handleCancelledEvents)) {
-            runInternal(cancelled);
-        } else {
-            cannotRun(cancelled);
-        }
-    }
-
-    protected void cannotRun(boolean cancelled) {
-
+        this.cancelled = cancelled;
+        this.runInternal(cancelled);
     }
 
     protected void runInternal(boolean cancelled) {
@@ -86,15 +73,8 @@ public abstract class CheckExecutor extends DetectionExecutor {
     // Handle
 
     public final void handle(boolean cancelled, Object object) {
-        if (canFunctionOrJustImplemented() && (!cancelled || hackType.getCheck().handleCancelledEvents)) {
-            handleInternal(cancelled, object);
-        } else {
-            cannotHandle(cancelled, object);
-        }
-    }
-
-    protected void cannotHandle(boolean cancelled, Object object) {
-
+        this.cancelled = cancelled;
+        this.handleInternal(cancelled, object);
     }
 
     protected void handleInternal(boolean cancelled, Object object) {
@@ -109,36 +89,15 @@ public abstract class CheckExecutor extends DetectionExecutor {
 
     // Separator
 
-    private void loadFunction() {
-        long tick = TPS.tick();
-
-        if (function[0] != tick) {
-            function[0] = tick;
-            function[1] = (!v1_8 || player.getInstance().getGameMode() != GameMode.SPECTATOR)
-                    && !player.protocol.isLoading()
-                    && hackType.getCheck().isEnabled(player.dataType, player.getWorld().getName())
-                    && this.getDisableCause() == null
-                    && !Permissions.isBypassing(player, hackType)
-                    && canRun() ? 1L : 0L;
-        }
-    }
-
-    private boolean canFunctionOrJustImplemented() {
-        if (this.justImplemented()) {
-            return true;
-        } else {
-            loadFunction();
-            return function[1] == 1L;
-        }
-    }
-
-    boolean justImplemented() {
-        return (System.currentTimeMillis() - this.creation) <= TPS.maximum * TPS.tickTime;
-    }
-
     final boolean canFunction() {
-        loadFunction();
-        return function[1] == 1L;
+        return (System.currentTimeMillis() - this.creation) > TPS.maximum * TPS.tickTime
+                && (!cancelled || hackType.getCheck().handleCancelledEvents)
+                && !player.protocol.isLoading()
+                && (!v1_8 || player.getInstance().getGameMode() != GameMode.SPECTATOR)
+                && hackType.getCheck().isEnabled(player.dataType, player.getWorld().getName())
+                && this.getDisableCause() == null
+                && canRun()
+                && !Permissions.isBypassing(player, hackType);
     }
 
     // Level
@@ -223,61 +182,55 @@ public abstract class CheckExecutor extends DetectionExecutor {
     // Violation
 
     final void violate(HackPrevention newPrevention, String information, double increase, long time) {
-        if (executor.scheduledPrevention) {
-            executor.prevent();
-        }
-        if (PlayerDetectionSlots.isChecked(player)
-                && !CloudBase.isInformationCancelled(hackType, information)) {
-            CancelCause disableCause = this.getDisableCause();
+        CancelCause disableCause = this.getDisableCause();
 
-            if (disableCause == null
-                    || disableCause.hasExpired()
-                    || !disableCause.pointerMatches(information)) {
-                int increaseInt = Math.max(AlgebraUtils.integerRound(increase), 1);
-                PlayerViolation playerViolation = new PlayerViolation(
-                        time,
-                        this.getLevel(),
-                        increaseInt,
-                        information
-                );
-                boolean event = Config.settings.getBoolean("Important.enable_developer_api");
+        if (disableCause == null
+                || disableCause.hasExpired()
+                || !disableCause.pointerMatches(information)) {
+            int increaseInt = Math.max(AlgebraUtils.integerRound(increase), 1);
+            PlayerViolation playerViolation = new PlayerViolation(
+                    time,
+                    this.getLevel(),
+                    increaseInt,
+                    information
+            );
+            boolean event = Config.settings.getBoolean("Important.enable_developer_api");
 
-                Runnable runnable = () -> {
-                    if (event) {
-                        PlayerViolationEvent playerViolationEvent = new PlayerViolationEvent(
-                                player.getInstance(),
-                                hackType,
-                                playerViolation.sum(),
-                                information
-                        );
-                        Register.manager.callEvent(playerViolationEvent);
-
-                        if (playerViolationEvent.isCancelled()) {
-                            return;
-                        }
-                    }
-                    player.protocol.getProfile().getViolationHistory(player.dataType, hackType).store(
+            Runnable runnable = () -> {
+                if (event) {
+                    PlayerViolationEvent playerViolationEvent = new PlayerViolationEvent(
+                            player.getInstance(),
                             hackType,
-                            playerViolation
+                            playerViolation.sum(),
+                            information
                     );
-                    this.increaseLevel(increaseInt);
-                    this.notify(playerViolation, information);
-                    this.punish();
-                    this.prevention = newPrevention;
-                    this.prevention.canPrevent =
-                            !hackType.getCheck().isSilent(player.dataType, player.getWorld().getName())
-                                    && (silentCause == null
-                                    || silentCause.hasExpired()
-                                    || !silentCause.pointerMatches(information))
-                                    && ResearchEngine.getRequiredPlayers(hackType, PlayerEvidence.preventionProbability) == 0
-                                    && player.protocol.getProfile().evidence.surpassed(this.hackType, PlayerEvidence.preventionProbability);
-                };
+                    Register.manager.callEvent(playerViolationEvent);
 
-                if (!event || SpartanBukkit.isSynchronised()) {
-                    runnable.run();
-                } else {
-                    SpartanBukkit.transferTask(player, runnable);
+                    if (playerViolationEvent.isCancelled()) {
+                        return;
+                    }
                 }
+                player.protocol.getProfile().getViolationHistory(player.dataType, hackType).store(
+                        hackType,
+                        playerViolation
+                );
+                this.increaseLevel(increaseInt);
+                this.notify(playerViolation, information);
+                this.punish();
+                this.prevention = newPrevention;
+                this.prevention.canPrevent =
+                        !hackType.getCheck().isSilent(player.dataType, player.getWorld().getName())
+                                && (silentCause == null
+                                || silentCause.hasExpired()
+                                || !silentCause.pointerMatches(information))
+                                && ResearchEngine.getRequiredPlayers(hackType, PlayerEvidence.preventionProbability) == 0
+                                && player.protocol.getProfile().evidence.surpassed(this.hackType, PlayerEvidence.preventionProbability);
+            };
+
+            if (!event || SpartanBukkit.isSynchronised()) {
+                runnable.run();
+            } else {
+                SpartanBukkit.transferTask(player, runnable);
             }
         }
     }

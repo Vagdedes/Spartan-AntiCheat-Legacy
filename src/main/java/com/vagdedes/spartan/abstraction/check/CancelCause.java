@@ -17,7 +17,9 @@ public class CancelCause {
     CancelCause(String reason, String pointer, int ticks) {
         this.reason = reason;
         this.pointer = pointer;
-        this.expiration = ticks == 0 ? 0L : System.currentTimeMillis() + (ticks * TPS.tickTime);
+        this.expiration = ticks == 0
+                ? Long.MAX_VALUE
+                : System.currentTimeMillis() + (ticks * TPS.tickTime);
     }
 
     void merge(CancelCause other) {
@@ -26,12 +28,8 @@ public class CancelCause {
         this.expiration = other.expiration;
     }
 
-    private boolean hasExpiration() {
-        return expiration != 0L;
-    }
-
     boolean hasExpired() {
-        return hasExpiration() && expiration < System.currentTimeMillis();
+        return expiration < System.currentTimeMillis();
     }
 
     public String getReason() {

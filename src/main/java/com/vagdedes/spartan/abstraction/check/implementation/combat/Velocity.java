@@ -13,7 +13,7 @@ import org.bukkit.event.player.PlayerVelocityEvent;
 public class Velocity extends CheckExecutor {
 
     public Velocity(Enums.HackType hackType, SpartanPlayer player) {
-        super(hackType, player, 0, false);
+        super(hackType, player, 0);
     }
 
     private boolean veloV = false;
@@ -21,7 +21,6 @@ public class Velocity extends CheckExecutor {
     private double verticalSended = 0;
     private double xSended = 0;
     private double zSended = 0;
-    private int arrayH = 0;
     private int arrayV = 0;
     private float vl = 0;
 
@@ -32,7 +31,6 @@ public class Velocity extends CheckExecutor {
             veloV = true;
             veloH = true;
             arrayV = 0;
-            arrayH = 0;
             verticalSended = RayUtils.scaleVal(event.getVelocity().getY(), 2);
             xSended = RayUtils.scaleVal(Math.abs(event.getVelocity().getX()), 2);
             zSended = RayUtils.scaleVal(Math.abs(event.getVelocity().getZ()), 2);
@@ -91,18 +89,6 @@ public class Velocity extends CheckExecutor {
             }
         }
     }
-
-    @Override
-    protected void cannotHandle(boolean cancelled, Object object) {
-        veloV = false;
-        veloH = false;
-        arrayV = 0;
-        arrayH = 0;
-        verticalSended = 0;
-        xSended = 0;
-        zSended = 0;
-    }
-
 
     @Override
     protected boolean canRun() {

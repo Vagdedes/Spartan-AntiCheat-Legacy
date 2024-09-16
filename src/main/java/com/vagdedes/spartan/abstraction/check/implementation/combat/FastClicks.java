@@ -11,7 +11,7 @@ import java.util.Iterator;
 public class FastClicks extends CheckExecutor {
 
     public FastClicks(Enums.HackType hackType, SpartanPlayer player) {
-        super(hackType, player, 0, false);
+        super(hackType, player, 0);
     }
 
     @Override

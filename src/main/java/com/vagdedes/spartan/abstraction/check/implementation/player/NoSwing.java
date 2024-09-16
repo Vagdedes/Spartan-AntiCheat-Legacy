@@ -30,7 +30,7 @@ public class NoSwing extends CheckExecutor {
     private long checkDamage;
 
     public NoSwing(Enums.HackType hackType, SpartanPlayer player) {
-        super(hackType, player, 0, false);
+        super(hackType, player, 0);
         this.breakTime = Long.MAX_VALUE;
         this.animationTime = Long.MAX_VALUE;
         this.damageBuffer = new Buffer.IndividualBuffer();
@@ -98,25 +98,8 @@ public class NoSwing extends CheckExecutor {
         }
     }
 
-    @Override
-    protected void cannotHandle(boolean cancelled, Object object) {
-        if (object instanceof PlayerInteractEvent) {
-            PlayerInteractEvent e = (PlayerInteractEvent) object;
-
-            if (e.getAction() == Action.LEFT_CLICK_BLOCK) {
-                this.resetBreakData();
-            }
-        } else if (object instanceof PlayerAnimationEvent) {
-            this.resetAnimationData();
-        }
-    }
-
     private void resetAnimationData() {
         this.animationTime = Long.MAX_VALUE;
-    }
-
-    private void resetBreakData() {
-        this.breakTime = Long.MAX_VALUE;
     }
 
     @Override

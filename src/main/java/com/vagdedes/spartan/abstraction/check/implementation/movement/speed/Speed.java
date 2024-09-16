@@ -69,7 +69,7 @@ public class Speed extends CheckExecutor {
     private boolean simulationFlag = false;
 
     public Speed(Enums.HackType hackType, SpartanPlayer player) {
-        super(hackType, player, 0, true);
+        super(hackType, player, 0);
     }
 
     @Override

@@ -24,33 +24,19 @@ public class HackPrevention {
         this.expiration = 0L;
     }
 
-    HackPrevention(CheckExecutor executor,
-                   String information, double violations,
-                   SpartanLocation location, int cancelTicks, boolean groundTeleport,
-                   double damage) {
-        long time = System.currentTimeMillis();
+    HackPrevention(SpartanLocation location, int cancelTicks, boolean groundTeleport, double damage) {
         this.threadID = Thread.currentThread().getId();
         this.canPrevent = false;
         this.location = location;
         this.groundTeleport = groundTeleport;
         this.damage = damage;
         this.expiration = cancelTicks <= 1
-                ? Long.MIN_VALUE
+                ? Long.MAX_VALUE
                 : System.currentTimeMillis() + (cancelTicks * TPS.tickTime);
-
-        if (!executor.justImplemented()) {
-            executor.violate(this, information, violations, time);
-        }
-    }
-
-    private boolean isOneTime() {
-        return this.expiration == Long.MIN_VALUE;
     }
 
     boolean complete() {
-        return this.canPrevent
-                && (this.isOneTime()
-                || System.currentTimeMillis() <= this.expiration);
+        return this.canPrevent && System.currentTimeMillis() <= this.expiration;
     }
 
     void handle(SpartanPlayer player) {

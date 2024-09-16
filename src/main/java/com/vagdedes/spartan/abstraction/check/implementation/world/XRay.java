@@ -53,7 +53,7 @@ public class XRay extends CheckExecutor {
     // Separator
 
     public XRay(Enums.HackType hackType, SpartanPlayer player) {
-        super(hackType, player, 0, false);
+        super(hackType, player, 0);
     }
 
     @Override

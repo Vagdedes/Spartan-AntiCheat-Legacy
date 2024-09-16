@@ -24,7 +24,7 @@ public class FastEat extends CheckExecutor {
     private long delayTime, eatTime;
 
     public FastEat(HackType hackType, SpartanPlayer player) {
-        super(hackType, player, 0, false);
+        super(hackType, player, 0);
     }
 
     private long getDelay() {

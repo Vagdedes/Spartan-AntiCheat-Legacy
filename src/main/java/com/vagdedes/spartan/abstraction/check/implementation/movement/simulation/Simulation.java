@@ -17,7 +17,7 @@ public class Simulation extends CheckExecutor {
     public double diffVl = 0;
 
     public Simulation(HackType hackType, SpartanPlayer player) {
-        super(hackType, player, 0, false);
+        super(hackType, player, 0);
     }
 
     @Override
@@ -103,18 +103,8 @@ public class Simulation extends CheckExecutor {
     }
 
     @Override
-    public void cannotHandle(boolean cancelled, Object object) {
-
-    }
-
-    @Override
     public void runInternal(boolean cancelled) {
 
-    }
-
-    @Override
-    protected void cannotRun(boolean cancelled) {
-        this.handleInternal(cancelled, null);
     }
 
     @Override

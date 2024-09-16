@@ -37,7 +37,7 @@ public class FastBreak extends CheckExecutor {
             individualSurroundingsPerSecondBuffer;
 
     public FastBreak(HackType hackType, SpartanPlayer player) {
-        super(hackType, player, 0, false);
+        super(hackType, player, 0);
         this.interactTime = new LinkedHashMap<>();
         this.breaksPerSecondBuffer = new Buffer.IndividualBuffer();
         this.individualSurroundingsPerSecondBuffer = new Buffer.IndividualBuffer();
