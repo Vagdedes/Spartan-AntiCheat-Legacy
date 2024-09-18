@@ -13,6 +13,7 @@ public class mcMMO {
         if (Compatibility.CompatibilityType.MC_MMO.isFunctional()) {
             McMMOPlayer n = getMcMMOPlayer(p);
 
+            /*
             if (n != null) {
                 for (SuperAbilityType type : SuperAbilityType.values()) {
                     if (n.getAbilityMode(type)) {
@@ -20,17 +21,24 @@ public class mcMMO {
                     }
                 }
             }
+
+             */
+            return false;
         }
         return false;
     }
 
     public static boolean hasTreeFeller(SpartanPlayer p) {
+        /*
         if (Compatibility.CompatibilityType.MC_MMO.isFunctional()) {
             McMMOPlayer n = getMcMMOPlayer(p);
             return n != null && n.getAbilityMode(SuperAbilityType.TREE_FELLER);
         } else {
             return false;
         }
+
+         */
+        return false;
     }
 
     private static McMMOPlayer getMcMMOPlayer(SpartanPlayer p) {
