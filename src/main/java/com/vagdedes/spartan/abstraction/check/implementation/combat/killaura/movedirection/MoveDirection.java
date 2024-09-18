@@ -185,7 +185,7 @@ public class MoveDirection extends DetectionExecutor {
         if (!punishL2.isEmpty() && vlL2 > (priorityData(priorityType()).getVlLimit() / 2) + 50) {
             cancel(
                             "(layer2) type: " + punishL2 + ", infs: " + infinitives,
-                            punishValue + 0.05F,
+                            punishValue,
                             to
             );
             vlL2 -= 10;
