@@ -29,7 +29,7 @@ public class MorePackets extends CheckExecutor {
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
         if (object instanceof PlayerTickEvent) {
-            if (!player.bedrockPlayer) {
+            if (!player.isBedrockPlayer()) {
                 calculate((PlayerTickEvent) object);
             }
         } else if (!player.protocol.packetsEnabled()) {

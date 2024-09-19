@@ -76,7 +76,7 @@ public class BlockReach extends CheckExecutor {
                     double distance = to.distance(block),
                             ab_distance = to.distance(blockAgainst);
 
-                    if (!player.bedrockPlayer
+                    if (!player.isBedrockPlayer()
                             && BlockUtils.isFullSolid(block.material)
                             && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
                             || block.material != Material.BARRIER)

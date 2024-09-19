@@ -2,7 +2,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.irregular
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
-import com.vagdedes.spartan.abstraction.data.Trackers;
+import com.vagdedes.spartan.abstraction.player.PlayerTrackers;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.TPS;
@@ -172,7 +172,7 @@ public class IrregularMovementsGravity extends DetectionExecutor {
                 if (Math.abs(prediction) > PlayerUtils.optimizationY) {
                     double difference = Math.abs(vertical - prediction), product;
 
-                    if (player.bedrockPlayer) {
+                    if (player.isBedrockPlayer()) {
                         product = PlayerUtils.calculateTerminalVelocity(
                                 PlayerUtils.airDrag,
                                 player.movement.getAirAcceleration()
@@ -187,10 +187,10 @@ public class IrregularMovementsGravity extends DetectionExecutor {
                     }
                     double limit = Math.max(
                             this.sensitive ? product : product / (double) airTicks,
-                            player.trackers.has(Trackers.TrackerFamily.VELOCITY)
-                                    || player.trackers.has(Trackers.TrackerFamily.MOTION) ? GroundUtils.maxBoundingBox :
+                            player.trackers.has(PlayerTrackers.TrackerFamily.VELOCITY)
+                                    || player.trackers.has(PlayerTrackers.TrackerFamily.MOTION) ? GroundUtils.maxBoundingBox :
                                     liquid ? GroundUtils.maxPlayerStep :
-                                            player.bedrockPlayer || sensitive ? PlayerUtils.climbingDownDefault :
+                                            player.isBedrockPlayer() || sensitive ? PlayerUtils.climbingDownDefault :
                                                     GroundUtils.maxHeightLengthRatio
                     );
 

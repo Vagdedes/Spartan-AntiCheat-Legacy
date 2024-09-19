@@ -2,8 +2,8 @@ package com.vagdedes.spartan.abstraction.check.implementation.player;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
-import com.vagdedes.spartan.abstraction.data.Trackers;
 import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
+import com.vagdedes.spartan.abstraction.player.PlayerTrackers;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.world.SpartanBlock;
 import com.vagdedes.spartan.compatibility.manual.abilities.AureliumSkills;
@@ -68,8 +68,8 @@ public class NoSwing extends CheckExecutor {
             }
         } else if (object instanceof PlayerAttackEvent) {
             if (!hackType.getCheck().getBooleanOption("check_damage", true)
-                    || player.hasAttackCooldown()
-                    || player.trackers.has(Trackers.TrackerType.TRIDENT)) {
+                    || player.getAttackCooldown() != 1.0f
+                    || player.trackers.has(PlayerTrackers.TrackerType.TRIDENT)) {
                 return;
             }
             LivingEntity entity = ((PlayerAttackEvent) object).getTarget();

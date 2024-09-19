@@ -75,7 +75,7 @@ public class ImpossibleActions extends CheckExecutor {
                                                 + ", vector-distance: " + directionDistance
                                                 + ", block-distance: " + playerLocation.distance(blockAgainst.getLocation())
                                 );
-                            } else if (!player.bedrockPlayer) {
+                            } else if (!player.isBedrockPlayer()) {
                                 float pitch = playerLocation.getPitch();
 
                                 if (pitch <= 0.0) {

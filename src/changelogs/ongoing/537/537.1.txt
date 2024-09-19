@@ -1,5 +1,6 @@
 [#] Fixed a temporary-player console error related to protocol version.
 [#] Fixed a concurrent modification exception in the packet combat listeners.
-[#] Fixed a concurrent modification except in the player utilities.
+[#] Fixed a concurrent modification exception in the player utilities.
 [#] Decreased redundant code in player utils by using existing useful libraries.
 [#] Fixed a line of sight array growth error by limiting the distance checked for the GhostHand check.
+[#] Fixed a concurrent modification exception in the player object related to potion effects.

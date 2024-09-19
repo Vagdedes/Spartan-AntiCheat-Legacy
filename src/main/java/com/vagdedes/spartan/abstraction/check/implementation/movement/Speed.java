@@ -128,7 +128,7 @@ public class Speed extends CheckExecutor {
                 this.violation = null;
             }
         }
-        if (velocity == 0 && !player.bedrockPlayer && levitationEffect == null
+        if (velocity == 0 && !player.isBedrockPlayer() && levitationEffect == null
                 && glideEffect == null && !player.movement.isSwimming()) {
             double localSpeedLimit = r((speedLimit / 1.35) + 0.01);
             double localSpeedLimit2 = r((speedLimit / 1.6) + 0.01);

@@ -2,7 +2,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.irregular
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
-import com.vagdedes.spartan.abstraction.data.Trackers;
+import com.vagdedes.spartan.abstraction.player.PlayerTrackers;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -46,14 +46,14 @@ public class IrregularMovementsJump extends DetectionExecutor {
 
     void run(double vertical, double box) {
         if (hackType.getCheck().getBooleanOption("check_jump", true)
-                && player.trackers.has(Trackers.TrackerFamily.VELOCITY)
+                && player.trackers.has(PlayerTrackers.TrackerFamily.VELOCITY)
                 ? player.movement.justJumped(vertical)
                 : player.movement.isJumping(vertical)) {
             int jumpEffect = PlayerUtils.getPotionLevel(player, PotionEffectUtils.JUMP) + 1,
                     jumpTicks = PlayerUtils.getJumpTicks(jumpEffect);
             boolean contains = heights.get(jumpEffect).contains(AlgebraUtils.cut(box, MovementProcessing.heightPrecision));
 
-            if (!contains && player.bedrockPlayer) {
+            if (!contains && player.isBedrockPlayer()) {
                 for (double height : heightsBedrock.get(jumpEffect)) {
                     if (Math.abs(height - box) < MovementProcessing.heightPrecision) {
                         contains = true;

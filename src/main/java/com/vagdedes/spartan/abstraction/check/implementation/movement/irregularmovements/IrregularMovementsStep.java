@@ -2,7 +2,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.irregular
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
-import com.vagdedes.spartan.abstraction.data.Trackers;
+import com.vagdedes.spartan.abstraction.player.PlayerTrackers;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.java.ReflectionUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -83,9 +83,9 @@ public class IrregularMovementsStep extends DetectionExecutor {
 
                 if (vehicle == null) {
                     if (stepCombination.get(hash)) {
-                        double limit = (player.bedrockPlayer ? bedrockPlayerStepExtra : 0.0)
-                                + (player.trackers.has(Trackers.TrackerType.VEHICLE, "exit")
-                                || player.trackers.has(Trackers.TrackerFamily.VELOCITY) ? 1.0 : 0.0)
+                        double limit = (player.isBedrockPlayer() ? bedrockPlayerStepExtra : 0.0)
+                                + (player.trackers.has(PlayerTrackers.TrackerType.VEHICLE, "exit")
+                                || player.trackers.has(PlayerTrackers.TrackerFamily.VELOCITY) ? 1.0 : 0.0)
                                 + GroundUtils.maxPlayerStep;
 
                         if (vertical > limit) {
@@ -102,12 +102,12 @@ public class IrregularMovementsStep extends DetectionExecutor {
                             );
                         }
                     } else {
-                        double extra = player.bedrockPlayer ? bedrockPlayerStepExtra : 0.0,
+                        double extra = player.isBedrockPlayer() ? bedrockPlayerStepExtra : 0.0,
                                 downLimit = extra + player.movement.getAirAcceleration(),
                                 upLimit = extra + GroundUtils.maxPlayerStep;
 
-                        if (!player.trackers.has(Trackers.TrackerType.VEHICLE, "exit") && vertical < -downLimit
-                                || !player.trackers.has(Trackers.TrackerType.VEHICLE, "enter") && vertical > upLimit) {
+                        if (!player.trackers.has(PlayerTrackers.TrackerType.VEHICLE, "exit") && vertical < -downLimit
+                                || !player.trackers.has(PlayerTrackers.TrackerType.VEHICLE, "enter") && vertical > upLimit) {
                             cancel(
                                     "type: step(combination)"
                                             + ", box: " + box
@@ -138,8 +138,8 @@ public class IrregularMovementsStep extends DetectionExecutor {
                 if (vertical > 0.0) {
                     if (!player.movement.isJumping(vertical)
                             && !BlockUtils.isInteractiveAndPassable(player, player.movement.getLocation().getBlock().material)) {
-                        double limit = (player.bedrockPlayer ? bedrockPlayerStepExtra : 0.0)
-                                + (player.trackers.has(Trackers.TrackerFamily.VELOCITY) ? 1.0 : 0.0)
+                        double limit = (player.isBedrockPlayer() ? bedrockPlayerStepExtra : 0.0)
+                                + (player.trackers.has(PlayerTrackers.TrackerFamily.VELOCITY) ? 1.0 : 0.0)
                                 + PlayerUtils.getJumpMotion(
                                 PlayerUtils.getPotionLevel(player, PotionEffectUtils.JUMP) + 1,
                                 0
@@ -159,7 +159,7 @@ public class IrregularMovementsStep extends DetectionExecutor {
                             }
 
                             if (vehicleLimit > 0.0) {
-                                if (player.bedrockPlayer) {
+                                if (player.isBedrockPlayer()) {
                                     limit = Math.max(limit, vehicleLimit);
                                 } else {
                                     limit = vehicleLimit;
@@ -176,8 +176,8 @@ public class IrregularMovementsStep extends DetectionExecutor {
 
                             if ((predictedHeight != vertical
                                     || vertical > GroundUtils.maxPlayerStep)
-                                    && (!player.trackers.has(Trackers.TrackerType.BOUNCING_BLOCKS, "slime") || oldBox != 0.0)
-                                    && (!player.trackers.has(Trackers.TrackerType.BOUNCING_BLOCKS, "bed") || oldBox != 0.5625)) {
+                                    && (!player.trackers.has(PlayerTrackers.TrackerType.BOUNCING_BLOCKS, "slime") || oldBox != 0.0)
+                                    && (!player.trackers.has(PlayerTrackers.TrackerType.BOUNCING_BLOCKS, "bed") || oldBox != 0.5625)) {
                                 cancel(
                                         "type: step(abstract-up)"
                                                 + ", box: " + box
@@ -206,8 +206,8 @@ public class IrregularMovementsStep extends DetectionExecutor {
                                     true
                             );
                         }
-                    } else if (!player.trackers.has(Trackers.TrackerType.VEHICLE, "enter")
-                            && !player.trackers.has(Trackers.TrackerType.VEHICLE, "exit")) {
+                    } else if (!player.trackers.has(PlayerTrackers.TrackerType.VEHICLE, "enter")
+                            && !player.trackers.has(PlayerTrackers.TrackerType.VEHICLE, "exit")) {
                         if (knownBox) {
                             double verticalPrediction = oldBox - box,
                                     motionRemainder = 1.0 - AlgebraUtils.removeBase(vertical);
@@ -231,7 +231,7 @@ public class IrregularMovementsStep extends DetectionExecutor {
                             }
                         } else if (!player.isOnGround(player.movement.getLocation(), true)
                                 && !BlockUtils.isInteractiveAndPassable(player, player.movement.getLocation().getBlock().material)) {
-                            double limit = (player.bedrockPlayer ? bedrockPlayerStepExtra : 0.0)
+                            double limit = (player.isBedrockPlayer() ? bedrockPlayerStepExtra : 0.0)
                                     + player.movement.getAirAcceleration();
 
                             if (vertical <= -limit) {

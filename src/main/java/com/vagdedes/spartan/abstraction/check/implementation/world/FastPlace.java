@@ -67,7 +67,7 @@ public class FastPlace extends CheckExecutor {
                         if (timePassed <= 50L) {
                             String detection = "type: fast";
 
-                            if (!player.bedrockPlayer
+                            if (!player.isBedrockPlayer()
                                     && hackType.getCheck().getBooleanOption("check_fast", true)
                                     && !Compatibility.CompatibilityType.VEIN_MINER.isFunctional()
                                     && fastBuffer.count(1, ticks) >= 4) {

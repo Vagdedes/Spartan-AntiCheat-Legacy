@@ -93,7 +93,7 @@ public class FastEat extends CheckExecutor {
                 Player p = player.getInstance();
                 p.setFoodLevel(p.getFoodLevel() - (lvl - p.getFoodLevel()));
             }
-        } else if (!player.bedrockPlayer) {
+        } else if (!player.isBedrockPlayer()) {
             PlayerInteractEvent e = (PlayerInteractEvent) object;
 
             switch (e.getAction()) {

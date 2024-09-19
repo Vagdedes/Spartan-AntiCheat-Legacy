@@ -82,6 +82,6 @@ public class InventoryClicks extends CheckExecutor {
 
     @Override
     protected boolean canRun() {
-        return !player.bedrockPlayer;
+        return !player.isBedrockPlayer();
     }
 }
