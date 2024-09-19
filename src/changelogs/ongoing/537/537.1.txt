@@ -4,3 +4,4 @@
 [#] Decreased redundant code in player utils by using existing useful libraries.
 [#] Fixed a line of sight array growth error by limiting the distance checked for the GhostHand check.
 [#] Fixed a concurrent modification exception in the player object related to potion effects.
+[#] Fixed a library console error caused by the inventory utils on older server versions.
