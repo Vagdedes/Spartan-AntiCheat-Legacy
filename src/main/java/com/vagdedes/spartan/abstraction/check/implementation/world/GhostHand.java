@@ -7,6 +7,7 @@ import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.manual.abilities.mcMMO;
 import com.vagdedes.spartan.compatibility.manual.building.PrinterMode;
 import com.vagdedes.spartan.compatibility.manual.entity.Vehicles;
+import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.GameMode;
@@ -28,22 +29,25 @@ public class GhostHand extends CheckExecutor {
                     && hackType.getCheck().getBooleanOption("check_block_breaking", true)) {
                 SpartanLocation location = player.movement.getLocation();
                 double bDistance = location.distance(b);
-                SpartanBlock t = player.getTargetBlock(bDistance);
 
-                if (t != null) {
-                    double tDistance = location.distance(t);
+                if (bDistance <= PlayerUtils.chunk) {
+                    SpartanBlock t = player.getTargetBlock(bDistance);
 
-                    if (tDistance < bDistance) {
-                        cancel(
-                                "type: break"
-                                        + ", interacted-block: " + BlockUtils.blockToString(b)
-                                        + ", blocking-block: " + BlockUtils.blockToString(t)
-                                        + ", interacted-distance: " + bDistance
-                                        + ", blocking-distance: " + tDistance,
-                                1.0,
-                                null,
-                                1
-                        );
+                    if (t != null) {
+                        double tDistance = location.distance(t);
+
+                        if (tDistance < bDistance) {
+                            cancel(
+                                    "type: break"
+                                            + ", interacted-block: " + BlockUtils.blockToString(b)
+                                            + ", blocking-block: " + BlockUtils.blockToString(t)
+                                            + ", interacted-distance: " + bDistance
+                                            + ", blocking-distance: " + tDistance,
+                                    1.0,
+                                    null,
+                                    1
+                            );
+                        }
                     }
                 }
             }
@@ -58,22 +62,25 @@ public class GhostHand extends CheckExecutor {
                         && BlockUtils.isChangeable(b.material)) {
                     SpartanLocation location = player.movement.getLocation();
                     double bDistance = location.distance(b);
-                    SpartanBlock t = player.getTargetBlock(bDistance);
 
-                    if (t != null) {
-                        double tDistance = location.distance(t);
+                    if (bDistance <= PlayerUtils.chunk) {
+                        SpartanBlock t = player.getTargetBlock(bDistance);
 
-                        if (tDistance < bDistance) {
-                            cancel(
-                                    "type: interact"
-                                            + ", interacted-block: " + BlockUtils.blockToString(b)
-                                            + ", blocking-block: " + BlockUtils.blockToString(t)
-                                            + ", interacted-distance: " + bDistance
-                                            + ", blocking-distance: " + tDistance,
-                                    1.0,
-                                    null,
-                                    1
-                            );
+                        if (t != null) {
+                            double tDistance = location.distance(t);
+
+                            if (tDistance < bDistance) {
+                                cancel(
+                                        "type: interact"
+                                                + ", interacted-block: " + BlockUtils.blockToString(b)
+                                                + ", blocking-block: " + BlockUtils.blockToString(t)
+                                                + ", interacted-distance: " + bDistance
+                                                + ", blocking-distance: " + tDistance,
+                                        1.0,
+                                        null,
+                                        1
+                                );
+                            }
                         }
                     }
                 }
