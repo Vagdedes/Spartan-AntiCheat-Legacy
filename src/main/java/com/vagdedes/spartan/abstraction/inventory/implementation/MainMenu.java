@@ -14,6 +14,7 @@ import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.functionality.inventory.PlayerStateLists;
 import com.vagdedes.spartan.functionality.notifications.clickable.ClickableMessage;
+import com.vagdedes.spartan.functionality.performance.PlayerDetectionSlots;
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.Permissions;
@@ -75,8 +76,7 @@ public class MainMenu extends InventoryMenu {
         if (slots <= 0) {
             lore.add("§7Detection Slots§8: §aUnlimited");
         } else {
-            int players = SpartanBukkit.getPlayerCount();
-            lore.add("§7Detection Slots§8: §a" + slots + " (" + Math.max(slots - players, 0) + " remaining)");
+            lore.add("§7Detection Slots§8: §a" + slots + " (" + PlayerDetectionSlots.getRemaining() + " remaining)");
         }
         lore.add("§7Detections Available§8: "
                 + (SpartanEdition.hasDetectionsPurchased(Check.DataType.JAVA) ? "§a" : "§c") + Check.DataType.JAVA

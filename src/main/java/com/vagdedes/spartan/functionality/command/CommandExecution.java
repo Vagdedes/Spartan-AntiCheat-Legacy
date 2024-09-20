@@ -12,6 +12,7 @@ import com.vagdedes.spartan.functionality.moderation.Wave;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.notifications.clickable.ClickableMessage;
 import com.vagdedes.spartan.functionality.npc.NPCManager;
+import com.vagdedes.spartan.functionality.performance.PlayerDetectionSlots;
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
@@ -59,9 +60,8 @@ public class CommandExecution implements CommandExecutor {
             if (slots <= 0) {
                 command += "\n§8[ §eDetection Slots§7: §6Unlimited §8]";
             } else {
-                int players = SpartanBukkit.getPlayerCount();
                 command += "\n§8[ §4Detection Slots§7: §c" + slots
-                        + " (" + Math.max(slots - players, 0) + " remaining) §8]";
+                        + " (" + PlayerDetectionSlots.getRemaining() + " remaining) §8]";
             }
             ClickableMessage.sendURL(
                     sender,

@@ -3,6 +3,8 @@ package me.vagdedes.spartan.system;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.functionality.server.TPS;
+import com.vagdedes.spartan.utils.minecraft.inventory.MaterialUtils;
+import org.bukkit.Material;
 
 public class Enums {
 
@@ -300,11 +302,18 @@ public class Enums {
     }
 
     public enum HackCategoryType {
-        COMBAT, MOVEMENT, PLAYER, WORLD, INVENTORY;
+        COMBAT(Material.IRON_SWORD),
+        MOVEMENT(Material.FEATHER),
+        PLAYER(Material.STICK),
+        WORLD(Material.DIAMOND_PICKAXE),
+        INVENTORY(MaterialUtils.get("crafting_table"));
 
         private final String string;
+        public final Material material;
 
-        HackCategoryType() {
+        HackCategoryType(Material material) {
+            this.material = material;
+
             switch (this.ordinal()) {
                 case 0:
                     string = "Combat";

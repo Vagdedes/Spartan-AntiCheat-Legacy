@@ -89,6 +89,10 @@ public class API {
         return BackgroundAPI.getVL(p, HackType);
     }
 
+    public static double getCertainty(Player p, HackType HackType) {
+        return BackgroundAPI.getCertainty(p, HackType);
+    }
+
     @Deprecated
     public static double getDecimalVL(Player p, HackType HackType) {
         return BackgroundAPI.getDecimalVL(p, HackType);
