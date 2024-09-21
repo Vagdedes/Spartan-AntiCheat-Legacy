@@ -122,17 +122,24 @@ public class IrregularMovementsStep extends DetectionExecutor {
                             );
                         }
                     }
-                } else if (vertical > 1.0) {
-                    cancel(
-                            "type: step(entity)"
-                                    + ", box: " + box
-                                    + ", old-box: " + oldBox
-                                    + ", vertical: " + vertical,
-                            vertical - 1.0,
-                            player.movement.getDetectionLocation(),
-                            0,
-                            true
-                    );
+                } else {
+                    double limit = vertical % 1.0 != 0.0
+                            && GroundUtils.blockHeightExists(box)
+                            && GroundUtils.blockHeightExists(oldBox) ? 4.0 : 1.0;
+
+                    if (vertical > limit) {
+                        cancel(
+                                "type: step(entity)"
+                                        + ", box: " + box
+                                        + ", old-box: " + oldBox
+                                        + ", vertical: " + vertical
+                                        + ", limit: " + limit,
+                                vertical - 1.0,
+                                player.movement.getDetectionLocation(),
+                                0,
+                                true
+                        );
+                    }
                 }
             } else {
                 if (vertical > 0.0) {
@@ -206,7 +213,7 @@ public class IrregularMovementsStep extends DetectionExecutor {
                                     true
                             );
                         }
-                    } else if (!player.trackers.has(PlayerTrackers.TrackerType.VEHICLE, "enter")
+                    } else if (vehicle == null
                             && !player.trackers.has(PlayerTrackers.TrackerType.VEHICLE, "exit")) {
                         if (knownBox) {
                             double verticalPrediction = oldBox - box,
