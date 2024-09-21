@@ -30,24 +30,22 @@ public class GhostHand extends CheckExecutor {
                 SpartanLocation location = player.movement.getLocation();
                 double bDistance = location.distance(b);
 
-                if (bDistance <= PlayerUtils.chunk) {
-                    SpartanBlock t = player.getTargetBlock(bDistance);
+                SpartanBlock t = player.getTargetBlock(bDistance, PlayerUtils.chunk);
 
-                    if (t != null) {
-                        double tDistance = location.distance(t);
+                if (t != null) {
+                    double tDistance = location.distance(t);
 
-                        if (tDistance < bDistance) {
-                            cancel(
-                                    "type: break"
-                                            + ", interacted-block: " + BlockUtils.blockToString(b)
-                                            + ", blocking-block: " + BlockUtils.blockToString(t)
-                                            + ", interacted-distance: " + bDistance
-                                            + ", blocking-distance: " + tDistance,
-                                    1.0,
-                                    null,
-                                    1
-                            );
-                        }
+                    if (tDistance < bDistance) {
+                        cancel(
+                                "type: break"
+                                        + ", interacted-block: " + BlockUtils.blockToString(b)
+                                        + ", blocking-block: " + BlockUtils.blockToString(t)
+                                        + ", interacted-distance: " + bDistance
+                                        + ", blocking-distance: " + tDistance,
+                                1.0,
+                                null,
+                                1
+                        );
                     }
                 }
             }
@@ -63,24 +61,22 @@ public class GhostHand extends CheckExecutor {
                     SpartanLocation location = player.movement.getLocation();
                     double bDistance = location.distance(b);
 
-                    if (bDistance <= PlayerUtils.chunk) {
-                        SpartanBlock t = player.getTargetBlock(bDistance);
+                    SpartanBlock t = player.getTargetBlock(bDistance, PlayerUtils.chunk);
 
-                        if (t != null) {
-                            double tDistance = location.distance(t);
+                    if (t != null) {
+                        double tDistance = location.distance(t);
 
-                            if (tDistance < bDistance) {
-                                cancel(
-                                        "type: interact"
-                                                + ", interacted-block: " + BlockUtils.blockToString(b)
-                                                + ", blocking-block: " + BlockUtils.blockToString(t)
-                                                + ", interacted-distance: " + bDistance
-                                                + ", blocking-distance: " + tDistance,
-                                        1.0,
-                                        null,
-                                        1
-                                );
-                            }
+                        if (tDistance < bDistance) {
+                            cancel(
+                                    "type: interact"
+                                            + ", interacted-block: " + BlockUtils.blockToString(b)
+                                            + ", blocking-block: " + BlockUtils.blockToString(t)
+                                            + ", interacted-distance: " + bDistance
+                                            + ", blocking-distance: " + tDistance,
+                                    1.0,
+                                    null,
+                                    1
+                            );
                         }
                     }
                 }

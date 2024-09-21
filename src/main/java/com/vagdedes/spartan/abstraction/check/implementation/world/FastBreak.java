@@ -81,7 +81,7 @@ public class FastBreak extends CheckExecutor {
 
                         if (limit > (TPS.tickTime * 2L) && time < limit) {
                             boolean emptyItem = itemStack == null || itemStack.getType() == Material.AIR;
-                            Collection<PotionEffect> potionEffects = player.getInstance().getActivePotionEffects();
+                            Collection<PotionEffect> potionEffects = player.getActivePotionEffects();
                             Set<Map.Entry<Enchantment, Integer>> enchantments =
                                     !emptyItem && itemStack.hasItemMeta() && itemStack.getItemMeta().hasEnchants()
                                             ? itemStack.getEnchantments().entrySet()

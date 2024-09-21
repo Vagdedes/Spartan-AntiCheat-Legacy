@@ -269,10 +269,10 @@ public class SpartanPlayer {
 
     // Separator
 
-    public SpartanBlock getTargetBlock(double distance) {
+    public SpartanBlock getTargetBlock(double distance, double limit) {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)) {
             try {
-                List<Block> list = this.getInstance().getLineOfSight(null, (int) distance);
+                List<Block> list = this.getInstance().getLineOfSight(null, (int) Math.min(distance, limit));
 
                 if (!list.isEmpty()) {
                     for (Block block : list) {
@@ -374,14 +374,22 @@ public class SpartanPlayer {
     // Separator
 
     private void setStoredPotionEffects() {
-        SpartanBukkit.transferTask(
-                protocol.spartanPlayer,
-                () -> {
-                    for (PotionEffect effect : this.getInstance().getActivePotionEffects()) {
-                        this.potionEffects.put(effect.getType(), new SpartanPotionEffect(effect));
+        if (!ProtocolLib.isTemporary(this.getInstance())) {
+            SpartanBukkit.transferTask(
+                    protocol.spartanPlayer,
+                    () -> {
+                        for (PotionEffect effect : this.getInstance().getActivePotionEffects()) {
+                            this.potionEffects.put(effect.getType(), new SpartanPotionEffect(effect));
+                        }
                     }
-                }
-        );
+            );
+        }
+    }
+
+    public Collection<PotionEffect> getActivePotionEffects() {
+        return ProtocolLib.isTemporary(this.getInstance())
+                ? new ArrayList<>(0)
+                : this.getInstance().getActivePotionEffects();
     }
 
     public SpartanPotionEffect getPotionEffect(PotionEffectType type, long lastActive) {
