@@ -108,7 +108,8 @@ public class AntiCheatLogs {
                     event = null;
                 }
 
-                if (event == null || !event.isCancelled()) {
+                if ((event == null || !event.isCancelled())
+                        && Enums.HackType.XRay.getCheck().isEnabled(player.dataType, player.getWorld().getName())) {
                     AntiCheatLogs.logInfo(
                             player,
                             null,

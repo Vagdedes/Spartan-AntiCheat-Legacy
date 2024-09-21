@@ -56,72 +56,77 @@ public class FastBreak extends CheckExecutor {
 
                 if (time > 0L) {
                     time = System.currentTimeMillis() - time;
-                }
-                if (time > 0L) { // Make sure the plugin knows when the player started breaking the block
-                    ItemStack itemStack = player.getItemInHand();
-                    long originalLimit = MaterialUtils.getBlockBreakTime(player, itemStack, block.material),
-                            limit = originalLimit;
 
-                    if (limit > -1L) { // Make sure the limit can be calculated on this specific server
-                        limit -= (long) (Math.max(Latency.getDelay(player), 1.0) * TPS.tickTime);
+                    if (time > 0L) { // Make sure the plugin knows when the player started breaking the block
+                        ItemStack itemStack = player.getItemInHand();
+                        long originalLimit = MaterialUtils.getBlockBreakTime(player, itemStack, block.material),
+                                limit = originalLimit;
 
-                        if (player.isBedrockPlayer()) {
-                            if (limit * 0.8 < limit - BlockUtils.sensitiveBlockBreakTime) {
-                                limit = AlgebraUtils.integerRound(limit * 0.8);
-                            } else {
-                                limit -= BlockUtils.sensitiveBlockBreakTime;
-                            }
-                        } else {
-                            if (limit * 0.9 < limit - BlockUtils.sensitiveBlockBreakTime) {
-                                limit = AlgebraUtils.integerRound(limit * 0.9);
-                            } else {
-                                limit -= BlockUtils.sensitiveBlockBreakTime;
-                            }
-                        }
+                        if (limit > -1L) { // Make sure the limit can be calculated on this specific server
+                            limit -= (long) (Math.max(Latency.getDelay(player), 1.0) * TPS.tickTime);
 
-                        if (limit > (TPS.tickTime * 2L) && time < limit) {
-                            boolean emptyItem = itemStack == null || itemStack.getType() == Material.AIR;
-                            Collection<PotionEffect> potionEffects = player.getActivePotionEffects();
-                            Set<Map.Entry<Enchantment, Integer>> enchantments =
-                                    !emptyItem && itemStack.hasItemMeta() && itemStack.getItemMeta().hasEnchants()
-                                            ? itemStack.getEnchantments().entrySet()
-                                            : new HashSet<>();
-                            StringBuilder enchantmentsString = new StringBuilder(),
-                                    effectsString = new StringBuilder();
-
-                            if (!enchantments.isEmpty()) {
-                                for (Map.Entry<Enchantment, Integer> enchantment : enchantments) {
-                                    String name = enchantment.getKey().getName().toLowerCase().replace("_", "/");
-                                    enchantmentsString.append(name).append("-").append(enchantment.getValue()).append(", ");
+                            if (player.isBedrockPlayer()) {
+                                if (limit * 0.8 < limit - BlockUtils.sensitiveBlockBreakTime) {
+                                    limit = AlgebraUtils.integerRound(limit * 0.8);
+                                } else {
+                                    limit -= BlockUtils.sensitiveBlockBreakTime;
                                 }
-                                enchantmentsString = new StringBuilder(enchantmentsString.substring(0, enchantmentsString.length() - 2));
-                            }
-                            if (!potionEffects.isEmpty()) {
-                                for (PotionEffect effect : potionEffects) {
-                                    String name = effect.getType().getName().toLowerCase().replace("_", "/");
-                                    effectsString.append(name).append("-").append(effect.getAmplifier() + 1).append(", ");
+                            } else {
+                                if (limit * 0.9 < limit - BlockUtils.sensitiveBlockBreakTime) {
+                                    limit = AlgebraUtils.integerRound(limit * 0.9);
+                                } else {
+                                    limit -= BlockUtils.sensitiveBlockBreakTime;
                                 }
                             }
-                            int length = effectsString.length();
-                            boolean hasEffects;
-
-                            if (length > 0) {
-                                hasEffects = true;
-                                effectsString = new StringBuilder(effectsString.substring(0, length - 2));
-                            } else {
-                                hasEffects = false;
+                            if (AlgebraUtils.getHorizontalDistance(player.movement.getLocation(), block.location) <= 1.0
+                                    && player.movement.getLocation().getBlockY() >= block.getY()) { // Above block
+                                limit = AlgebraUtils.integerRound(limit / 4.0);
                             }
-                            String prevention = "type: delay"
-                                    + ", time: " + time
-                                    + ", seconds: " + (time / 1000.0)
-                                    + ", original-limit: " + originalLimit
-                                    + ", limit: " + limit
-                                    + ", difference: " + (limit - time)
-                                    + ", block: " + BlockUtils.materialToString(block.material)
-                                    + ", item: " + (emptyItem ? "none" : BlockUtils.materialToString(itemStack.getType()))
-                                    + ", enchantments: " + (!enchantments.isEmpty() ? "none" : "[" + enchantmentsString + "]")
-                                    + ", effects: " + (!hasEffects ? "none" : "[" + effectsString + "]");
-                            cancel(prevention, 1.0, null, seconds);
+
+                            if (limit > (TPS.tickTime * 2L) && time < limit) {
+                                boolean emptyItem = itemStack == null || itemStack.getType() == Material.AIR;
+                                Collection<PotionEffect> potionEffects = player.getActivePotionEffects();
+                                Set<Map.Entry<Enchantment, Integer>> enchantments =
+                                        !emptyItem && itemStack.hasItemMeta() && itemStack.getItemMeta().hasEnchants()
+                                                ? itemStack.getEnchantments().entrySet()
+                                                : new HashSet<>();
+                                StringBuilder enchantmentsString = new StringBuilder(),
+                                        effectsString = new StringBuilder();
+
+                                if (!enchantments.isEmpty()) {
+                                    for (Map.Entry<Enchantment, Integer> enchantment : enchantments) {
+                                        String name = enchantment.getKey().getName().toLowerCase().replace("_", "/");
+                                        enchantmentsString.append(name).append("-").append(enchantment.getValue()).append(", ");
+                                    }
+                                    enchantmentsString = new StringBuilder(enchantmentsString.substring(0, enchantmentsString.length() - 2));
+                                }
+                                if (!potionEffects.isEmpty()) {
+                                    for (PotionEffect effect : potionEffects) {
+                                        String name = effect.getType().getName().toLowerCase().replace("_", "/");
+                                        effectsString.append(name).append("-").append(effect.getAmplifier() + 1).append(", ");
+                                    }
+                                }
+                                int length = effectsString.length();
+                                boolean hasEffects;
+
+                                if (length > 0) {
+                                    hasEffects = true;
+                                    effectsString = new StringBuilder(effectsString.substring(0, length - 2));
+                                } else {
+                                    hasEffects = false;
+                                }
+                                String prevention = "type: delay"
+                                        + ", time: " + time
+                                        + ", seconds: " + (time / 1000.0)
+                                        + ", original-limit: " + originalLimit
+                                        + ", limit: " + limit
+                                        + ", difference: " + (limit - time)
+                                        + ", block: " + BlockUtils.materialToString(block.material)
+                                        + ", item: " + (emptyItem ? "none" : BlockUtils.materialToString(itemStack.getType()))
+                                        + ", enchantments: " + (!enchantments.isEmpty() ? "none" : "[" + enchantmentsString + "]")
+                                        + ", effects: " + (!hasEffects ? "none" : "[" + effectsString + "]");
+                                cancel(prevention, 1.0, null, seconds);
+                            }
                         }
                     }
                 }

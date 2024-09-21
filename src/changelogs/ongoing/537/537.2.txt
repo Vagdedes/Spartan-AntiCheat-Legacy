@@ -4,4 +4,7 @@
 [#] Fixed remaining Detection Slots not being calculated properly in all cases.
 [#] Limited the amount of violations stored per player to optimize the time of statistics.
 [#] Attempted to re-fix running out of memory due to Bukkit's method of getting the target block across a distance.
-[#] Fixed a temporay player active potion effects console error.
+[#] Fixed a temporary player active potion effects console error.
+[#] Fixed a FastBreak standing above block false positive.
+[#] Fixed an IrregularMovements bubble water soul-sand false positive.
+[#] Made the mining logs not take place once the XRay check is disabled.
