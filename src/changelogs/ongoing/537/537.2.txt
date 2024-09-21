@@ -8,3 +8,4 @@
 [#] Fixed a FastBreak standing above block false positive.
 [#] Fixed an IrregularMovements bubble water soul-sand false positive.
 [#] Made the mining logs not take place once the XRay check is disabled.
+[#] Fixed a Folia loading console error caused by enums not initialized properly.

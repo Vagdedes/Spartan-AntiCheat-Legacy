@@ -24,7 +24,7 @@ public class Check {
     // Static
 
     public enum DataType {
-        JAVA, BEDROCK, UNIVERSAL;
+        JAVA, BEDROCK;
 
         private final String string;
 
@@ -91,12 +91,12 @@ public class Check {
                 silents_config = getOption("silent_worlds", "exampleSilentWorld1, exampleSilentWorld2", false).toString();
 
         // Separator
-        this.enabled = new boolean[ResearchEngine.usableDataTypes.length];
-        this.silent = new boolean[ResearchEngine.usableDataTypes.length];
-        this.punish = new boolean[ResearchEngine.usableDataTypes.length];
+        this.enabled = new boolean[DataType.values().length];
+        this.silent = new boolean[DataType.values().length];
+        this.punish = new boolean[DataType.values().length];
         List<PlayerProfile> profiles = ResearchEngine.getPlayerProfiles();
 
-        for (Check.DataType dataType : ResearchEngine.usableDataTypes) {
+        for (Check.DataType dataType : DataType.values()) {
             Object optionValue = getOption(
                     "enabled." + dataType.toString().toLowerCase(),
                     true,
@@ -260,7 +260,7 @@ public class Check {
         if (dataType == null) {
             boolean enabled = false;
 
-            for (Check.DataType type : ResearchEngine.usableDataTypes) {
+            for (Check.DataType type : DataType.values()) {
                 if (this.enabled[type.ordinal()]) {
                     enabled = true;
                     break;
@@ -280,11 +280,11 @@ public class Check {
         Check.DataType[] dataTypes;
 
         if (dataType == null) {
-            dataTypes = ResearchEngine.usableDataTypes;
+            dataTypes = DataType.values();
         } else {
             dataTypes = null;
 
-            for (Check.DataType type : ResearchEngine.usableDataTypes) {
+            for (Check.DataType type : DataType.values()) {
                 if (type == dataType) {
                     dataTypes = new Check.DataType[]{dataType};
                     break;
@@ -530,7 +530,7 @@ public class Check {
             return false;
         }
         if (dataType == null) {
-            for (Check.DataType type : ResearchEngine.usableDataTypes) {
+            for (Check.DataType type : DataType.values()) {
                 if (this.punish[type.ordinal()]) {
                     return true;
                 }
@@ -551,7 +551,7 @@ public class Check {
         if (dataType == null) {
             boolean enabled = false;
 
-            for (Check.DataType type : ResearchEngine.usableDataTypes) {
+            for (Check.DataType type : DataType.values()) {
                 if (this.silent[type.ordinal()]) {
                     enabled = true;
                     break;
@@ -570,11 +570,11 @@ public class Check {
         Check.DataType[] dataTypes;
 
         if (dataType == null) {
-            dataTypes = ResearchEngine.usableDataTypes;
+            dataTypes = DataType.values();
         } else {
             dataTypes = null;
 
-            for (Check.DataType type : ResearchEngine.usableDataTypes) {
+            for (Check.DataType type : DataType.values()) {
                 if (type == dataType) {
                     dataTypes = new Check.DataType[]{dataType};
                     break;
@@ -614,11 +614,11 @@ public class Check {
         Check.DataType[] dataTypes;
 
         if (dataType == null) {
-            dataTypes = ResearchEngine.usableDataTypes;
+            dataTypes = DataType.values();
         } else {
             dataTypes = null;
 
-            for (Check.DataType type : ResearchEngine.usableDataTypes) {
+            for (Check.DataType type : DataType.values()) {
                 if (type == dataType) {
                     dataTypes = new Check.DataType[]{dataType};
                     break;

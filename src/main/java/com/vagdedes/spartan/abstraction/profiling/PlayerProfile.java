@@ -3,7 +3,6 @@ package com.vagdedes.spartan.abstraction.profiling;
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
-import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.minecraft.inventory.InventoryUtils;
 import me.vagdedes.spartan.system.Enums;
@@ -36,10 +35,10 @@ public class PlayerProfile {
         this.offlinePlayer = null;
 
         // Separator
-        this.violationHistory = new ViolationHistory[ResearchEngine.usableDataTypes.length][hackTypes.length];
+        this.violationHistory = new ViolationHistory[Check.DataType.values().length][hackTypes.length];
         this.miningHistory = new MiningHistory[MiningHistory.MiningOre.values().length];
 
-        for (Check.DataType dataType : ResearchEngine.usableDataTypes) {
+        for (Check.DataType dataType : Check.DataType.values()) {
             for (Enums.HackType hackType : hackTypes) {
                 this.violationHistory[dataType.ordinal()][hackType.ordinal()] = new ViolationHistory();
             }
@@ -57,10 +56,10 @@ public class PlayerProfile {
         this.evidence = new PlayerEvidence();
         this.skull = null;
 
-        this.violationHistory = new ViolationHistory[ResearchEngine.usableDataTypes.length][hackTypes.length];
+        this.violationHistory = new ViolationHistory[Check.DataType.values().length][hackTypes.length];
         this.miningHistory = new MiningHistory[MiningHistory.MiningOre.values().length];
 
-        for (Check.DataType dataType : ResearchEngine.usableDataTypes) {
+        for (Check.DataType dataType : Check.DataType.values()) {
             for (Enums.HackType hackType : hackTypes) {
                 this.violationHistory[dataType.ordinal()][hackType.ordinal()] = new ViolationHistory();
             }
@@ -150,7 +149,7 @@ public class PlayerProfile {
     }
 
     public boolean hasData(Enums.HackType hackType) {
-        for (Check.DataType dataType : ResearchEngine.usableDataTypes) {
+        for (Check.DataType dataType : Check.DataType.values()) {
             if (!violationHistory[dataType.ordinal()][hackType.ordinal()].isEmpty()) {
                 return true;
             }

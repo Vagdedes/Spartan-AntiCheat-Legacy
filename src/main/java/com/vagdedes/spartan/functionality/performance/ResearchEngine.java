@@ -39,10 +39,6 @@ public class ResearchEngine {
     private static boolean firstLoad = false;
     public static Map<Enums.HackType, Boolean> violationFired = new ConcurrentHashMap<>();
     private static long schedulerTicks = 0L;
-    public static final Check.DataType[] usableDataTypes = new Check.DataType[]{
-            Check.DataType.JAVA,
-            Check.DataType.BEDROCK
-    };
     private static final Map<String, PlayerProfile> playerProfiles = new ConcurrentHashMap<>();
 
     static {
@@ -278,7 +274,7 @@ public class ResearchEngine {
             index = s.indexOf(")");
             s = s.substring(0, index);
 
-            for (Check.DataType dataType : usableDataTypes) {
+            for (Check.DataType dataType : Check.DataType.values()) {
                 if (s.equals(dataType.toString())) {
                     return dataType;
                 }
@@ -503,7 +499,7 @@ public class ResearchEngine {
                 }
             }
 
-            for (Check.DataType dataType : usableDataTypes) {
+            for (Check.DataType dataType : Check.DataType.values()) {
                 for (Enums.HackType hackType : (force
                         ? Arrays.asList(Enums.HackType.values())
                         : violationFired.keySet())) {

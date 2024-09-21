@@ -84,21 +84,16 @@ public class SpartanEdition {
     // Product
 
     private static String getProductID(Check.DataType dataType) {
-        switch (dataType) {
-            case JAVA:
-                return "1";
-            case BEDROCK:
-                return "16";
-            default:
-                return "27";
-        }
+        return dataType == null || dataType == Check.DataType.JAVA
+                ? "1"
+                : "16";
     }
 
     public static String getProductID() {
         return getProductID(
                 currentVersion
                         ? currentType
-                        : (alternativeVersion ? oppositeType : Check.DataType.UNIVERSAL)
+                        : (alternativeVersion ? oppositeType : null)
         );
     }
 
@@ -129,7 +124,7 @@ public class SpartanEdition {
                         ? new Check.DataType[]{oppositeType}
                         : new Check.DataType[]{};
 
-        if (missingDetections.length == ResearchEngine.usableDataTypes.length) {
+        if (missingDetections.length == Check.DataType.values().length) {
             attemptVersionNotification(player, null);
             return;
         }
