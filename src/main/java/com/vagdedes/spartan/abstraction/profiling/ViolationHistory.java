@@ -22,6 +22,11 @@ public class ViolationHistory {
 
     public void store(Enums.HackType hackType, PlayerViolation playerViolation) {
         synchronized (this.data) {
+            if (this.data.size() == 1_000) {
+                Iterator<Long> iterator = this.data.keySet().iterator();
+                iterator.next();
+                iterator.remove();
+            }
             this.data.put(playerViolation.time, playerViolation);
         }
         ResearchEngine.queueToCache(hackType);

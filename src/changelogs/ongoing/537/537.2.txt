@@ -2,3 +2,4 @@
 [#] Removed violation information from the Player Info menu as it is not important.
 [+] Added method to the developer API to get violation certainty for a check.
 [#] Fixed remaining Detection Slots not being calculated properly in all cases.
+[#] Limited the amount of violations stored per player to optimize the time of statistics.
