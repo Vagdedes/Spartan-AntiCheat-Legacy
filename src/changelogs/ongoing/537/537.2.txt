@@ -10,3 +10,4 @@
 [#] Made the mining logs not take place once the XRay check is disabled.
 [#] Fixed a Folia loading console error caused by enums not initialized properly.
 [#] Fixed several IrregularMovements step false positives caused by ridding camels.
+[#] Fixed an EntityDeathEvent console error caused by missing method.
