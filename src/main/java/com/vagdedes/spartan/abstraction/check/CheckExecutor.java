@@ -157,6 +157,9 @@ public abstract class CheckExecutor extends DetectionExecutor {
         if (disableCause == null
                 || disableCause.hasExpired()
                 || !disableCause.pointerMatches(information)) {
+            if (increase < 1.0) {
+                increase = 1.0;
+            }
             PlayerViolation playerViolation = new PlayerViolation(
                     time,
                     increase,
