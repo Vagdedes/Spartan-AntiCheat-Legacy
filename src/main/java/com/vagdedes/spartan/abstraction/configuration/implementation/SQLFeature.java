@@ -299,7 +299,6 @@ public class SQLFeature extends ConfigurationBuilder {
                         "player_z INT(11), " +
 
                         "functionality VARCHAR(32), " +
-                        "violation_level INT(11), " +
                         "violation_increase INT(11), " +
 
                         "primary key (id));"
@@ -326,7 +325,7 @@ public class SQLFeature extends ConfigurationBuilder {
                             + ", server_name, plugin_version, server_version, online_players"
                             + ", type, notification, information"
                             + ", player_uuid, player_name, player_latency, player_x, player_y, player_z"
-                            + ", functionality, violation_level, violation_increase) "
+                            + ", functionality, violation_increase) "
                             + "VALUES (" + syntaxForColumn(DateTimeFormatter.ofPattern(AntiCheatLogs.dateFormat).format(LocalDateTime.now()))
                             + ", " + syntaxForColumn(CrossServerNotifications.getServerName())
                             + ", " + syntaxForColumn(API.getVersion())
@@ -342,7 +341,6 @@ public class SQLFeature extends ConfigurationBuilder {
                             + ", " + (hasPlayer ? syntaxForColumn(location.getBlockY()) : "NULL")
                             + ", " + (hasPlayer ? syntaxForColumn(location.getBlockZ()) : "NULL")
                             + ", " + (hasMaterial ? syntaxForColumn(material) : hasCheck ? syntaxForColumn(hackType) : "NULL")
-                            + ", " + (hasCheck ? syntaxForColumn(playerViolation.level) : "NULL")
                             + ", " + (hasCheck ? syntaxForColumn(playerViolation.increase) : "NULL")
                             + ");"
             ));

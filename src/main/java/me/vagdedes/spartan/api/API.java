@@ -85,6 +85,7 @@ public class API {
         return BackgroundAPI.isSilent(HackType);
     }
 
+    @Deprecated
     public static int getVL(Player p, HackType HackType) {
         return BackgroundAPI.getVL(p, HackType);
     }
@@ -98,6 +99,7 @@ public class API {
         return BackgroundAPI.getDecimalVL(p, HackType);
     }
 
+    @Deprecated
     public static int getVL(Player p) {
         return BackgroundAPI.getVL(p);
     }
@@ -176,10 +178,12 @@ public class API {
         BackgroundAPI.stopCheck(p, HackType);
     }
 
+    @Deprecated
     public static void resetVL() {
         BackgroundAPI.resetVL();
     }
 
+    @Deprecated
     public static void resetVL(Player p) {
         BackgroundAPI.resetVL(p);
     }

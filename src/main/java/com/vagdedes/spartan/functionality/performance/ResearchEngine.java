@@ -173,10 +173,6 @@ public class ResearchEngine {
 
             if (foundPlayer) {
                 profile = p.getProfile();
-
-                for (Enums.HackType hackType : Enums.HackType.values()) {
-                    p.spartanPlayer.getExecutor(hackType).resetLevel();
-                }
             } else {
                 profile = getPlayerProfile(playerName, true);
             }
@@ -234,7 +230,7 @@ public class ResearchEngine {
                 : null;
     }
 
-    private static int[] getDetectionViolationLevel(String s) {
+    private static Double getDetectionViolationLevel(String s) {
         String search = "(" + CheckExecutor.violationLevelIdentifier + " ";
         int index1 = s.indexOf(search);
 
@@ -247,18 +243,12 @@ public class ResearchEngine {
                 String[] split = number.split("\\+", 3);
 
                 if (split.length == 2) {
-                    if (AlgebraUtils.validInteger(split[0])
-                            && AlgebraUtils.validInteger(split[1])) {
-                        return new int[]{
-                                Integer.parseInt(split[0]),
-                                Integer.parseInt(split[1])
-                        };
+                    if (AlgebraUtils.validInteger(split[1])) { // Old
+                        return Double.parseDouble(split[1]);
                     }
-                } else if (AlgebraUtils.validInteger(number)) {
-                    return new int[]{
-                            Integer.parseInt(number),
-                            1
-                    };
+                } else if (AlgebraUtils.validDecimal(number) // New
+                        || AlgebraUtils.validInteger(number)) { // Oldest
+                    return Double.parseDouble(number);
                 }
             }
         }
@@ -433,16 +423,15 @@ public class ResearchEngine {
                                         String detection = getDetectionInformation(data);
 
                                         if (detection != null) {
-                                            int[] violation = getDetectionViolationLevel(data);
+                                            Double violationIncrease = getDetectionViolationLevel(data);
 
-                                            if (violation != null) {
+                                            if (violationIncrease != null) {
                                                 SimpleDateFormat sdf = new SimpleDateFormat(AntiCheatLogs.dateFormat);
                                                 getPlayerProfile(split[0], true).getViolationHistory(getDataType(data), hackType).store(
                                                         hackType,
                                                         new PlayerViolation(
                                                                 sdf.parse(fullDate).getTime(),
-                                                                violation[0],
-                                                                violation[1],
+                                                                violationIncrease,
                                                                 detection
                                                         )
                                                 );

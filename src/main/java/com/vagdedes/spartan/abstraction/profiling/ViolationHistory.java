@@ -43,11 +43,10 @@ public class ViolationHistory {
                 while (iterator.hasNext()) {
                     PlayerViolation violation = iterator.next();
                     double difference = Math.min(
-                            violation.time - previous,
+                            (violation.time - previous) / violation.increase,
                             60_000L
                     );
                     previous = violation.time;
-                    difference /= violation.increase * (hackType.violationTimeWorth / difference);
                     double[] data = squareSum.getOrDefault(violation.hash, new double[]{0.0, 0.0});
                     data[0] += difference * difference;
                     data[1] += 1.0;

@@ -2,11 +2,9 @@ package com.vagdedes.spartan.abstraction.check;
 
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.Config;
-import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.server.ConfigUtils;
 import me.vagdedes.spartan.api.CheckPunishmentToggleEvent;
@@ -313,11 +311,6 @@ public class Check {
 
                 synchronized (options) {
                     options.clear();
-                }
-                if (!b) {
-                    for (SpartanProtocol protocol : SpartanBukkit.getProtocols()) {
-                        protocol.spartanPlayer.getExecutor(hackType).resetLevel();
-                    }
                 }
                 if (!profiles.isEmpty()) {
                     for (PlayerProfile playerProfile : profiles) {

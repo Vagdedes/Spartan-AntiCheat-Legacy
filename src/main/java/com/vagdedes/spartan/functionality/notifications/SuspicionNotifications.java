@@ -53,8 +53,7 @@ public class SuspicionNotifications {
                 StringBuilder evidence = new StringBuilder();
 
                 for (Enums.HackType hackType : list) {
-                    if (ResearchEngine.getRequiredPlayers(hackType, PlayerEvidence.notificationProbability) == 0
-                            && player.getExecutor(hackType).hasLevel()) {
+                    if (ResearchEngine.getRequiredPlayers(hackType, PlayerEvidence.notificationProbability) == 0) {
                         evidence.append(hackType.getCheck().getName()).append(comma);
                     }
                 }
