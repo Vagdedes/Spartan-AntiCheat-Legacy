@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.abstraction.check.implementation.movement;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.player.PlayerTrackers;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.player.SpartanPotionEffect;
 import com.vagdedes.spartan.abstraction.world.SpartanBlock;
@@ -321,10 +322,8 @@ public class Speed extends CheckExecutor {
 
     @Override
     protected boolean canRun() {
-        // Check will no longer run when someone uses server flying
-        // Do not change as there is a protection for it via the IrregularMovements check
-        // The flying method should still be considered in the code, in case anything ever changes
-        return MovementProcessing.canCheck(player, true, true, true, true);
+        return MovementProcessing.canCheck(player, true, true, false, true)
+                && !player.trackers.has(PlayerTrackers.TrackerType.PISTON);
     }
 
 }

@@ -96,8 +96,7 @@ public class Event_World implements Listener {
             p.getExecutor(Enums.HackType.GhostHand).handle(cancelled, b);
         }
         p.getExecutor(Enums.HackType.Exploits).handle(cancelled, e);
-
-        // Detections
+        p.getExecutor(Enums.HackType.FastClicks).handle(cancelled, null);
         AntiCheatLogs.logMining(p, b, cancelled);
 
         if (p.getExecutor(Enums.HackType.NoSwing).prevent()

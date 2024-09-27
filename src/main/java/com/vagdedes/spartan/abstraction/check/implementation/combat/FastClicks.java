@@ -74,4 +74,13 @@ public class FastClicks extends CheckExecutor {
         }
     }
 
+    @Override
+    protected void handleInternal(boolean cancelled, Object object) {
+        this.addDisableCause(
+                this.hackType.toString(),
+                null,
+                (int) TPS.maximum
+        );
+    }
+
 }

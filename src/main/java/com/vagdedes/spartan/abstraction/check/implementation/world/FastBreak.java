@@ -87,9 +87,7 @@ public class FastBreak extends CheckExecutor {
                                 boolean emptyItem = itemStack == null || itemStack.getType() == Material.AIR;
                                 Collection<PotionEffect> potionEffects = player.getActivePotionEffects();
                                 Set<Map.Entry<Enchantment, Integer>> enchantments =
-                                        !emptyItem && itemStack.hasItemMeta() && itemStack.getItemMeta().hasEnchants()
-                                                ? itemStack.getEnchantments().entrySet()
-                                                : new HashSet<>();
+                                        !emptyItem ? itemStack.getEnchantments().entrySet() : new HashSet<>();
                                 StringBuilder enchantmentsString = new StringBuilder(),
                                         effectsString = new StringBuilder();
 
