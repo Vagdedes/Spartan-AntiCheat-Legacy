@@ -329,7 +329,7 @@ public class SQLFeature extends ConfigurationBuilder {
                             + "VALUES (" + syntaxForColumn(DateTimeFormatter.ofPattern(AntiCheatLogs.dateFormat).format(LocalDateTime.now()))
                             + ", " + syntaxForColumn(CrossServerNotifications.getServerName())
                             + ", " + syntaxForColumn(API.getVersion())
-                            + ", " + syntaxForColumn(MultiVersion.versionString())
+                            + ", " + syntaxForColumn(MultiVersion.serverVersion.toString())
                             + ", " + syntaxForColumn(SpartanBukkit.getPlayerCount())
                             + ", " + syntaxForColumn(hasMaterial ? "mining" : hasCheck ? "violation" : "other")
                             + ", " + (notification != null ? syntaxForColumn(notification) : "NULL")

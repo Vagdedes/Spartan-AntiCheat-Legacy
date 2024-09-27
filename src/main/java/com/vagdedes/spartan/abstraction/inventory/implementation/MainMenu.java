@@ -84,7 +84,7 @@ public class MainMenu extends InventoryMenu {
                 + (SpartanEdition.hasDetectionsPurchased(Check.DataType.BEDROCK) ? "§a" : "§c") + Check.DataType.BEDROCK);
         Runtime runtime = Runtime.getRuntime();
 
-        lore.add("§7Server Version§8: §a" + MultiVersion.versionString());
+        lore.add("§7Server Version§8: §a" + MultiVersion.serverVersion.toString());
         long maxMemory = runtime.maxMemory();
         lore.add("§7Server Memory Usage§8: §a" + AlgebraUtils.cut(((maxMemory - runtime.freeMemory()) / ((double) maxMemory)) * 100.0, 2) + "%");
         lore.add("");

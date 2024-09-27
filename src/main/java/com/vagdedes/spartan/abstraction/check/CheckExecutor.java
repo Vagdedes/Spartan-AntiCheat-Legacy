@@ -361,7 +361,7 @@ public abstract class CheckExecutor extends DetectionExecutor {
         SpartanLocation location = player.movement.getLocation();
         information = player.getInstance().getName() + " failed " + hackType
                 + " (" + violationLevelIdentifier + " " + playerViolation.increase + "), "
-                + "(Server-Version: " + MultiVersion.versionString() + "), "
+                + "(Server-Version: " + MultiVersion.serverVersion.toString() + "), "
                 + "(Certainty: " + AlgebraUtils.cut(certainty, 2) + "), "
                 + "(Plugin-Version: " + API.getVersion() + "), "
                 + "(Silent: " + hackType.getCheck().isSilent(player.dataType, player.getWorld().getName()) + "), "

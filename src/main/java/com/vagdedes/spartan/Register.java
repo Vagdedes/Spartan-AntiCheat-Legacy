@@ -36,7 +36,7 @@ public class Register extends JavaPlugin {
         Config.create();
 
         // Version
-        if (MultiVersion.other) {
+        if (MultiVersion.serverVersion == MultiVersion.MCVersion.OTHER) {
             AwarenessNotifications.forcefullySend(
                     "The server's version or type is not supported. "
                             + "Please contact the plugin's developer if you think this is an error."
