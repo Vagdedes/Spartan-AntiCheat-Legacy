@@ -3,3 +3,4 @@
 [#] Fixed several FastBreak no enchantment accounting false positives.
 [#] Fixed several Speed server flight related false positives.
 [#] Attempted to create certain IrregularMovements jump(ticks) cross-version false positives.
+[#] Fixed an Exploits ground-spoof cancelled building false positive.
