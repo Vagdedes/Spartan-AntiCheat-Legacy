@@ -18,21 +18,27 @@ public class SpartanBlock {
             return ((Block) this.block).getType();
         } else if (this.block instanceof Material) {
             return (Material) this.block;
-        } else {
+        } else if (BlockUtils.blockDataExists) {
             return ((BlockData) this.block).getMaterial();
+        } else {
+            return Material.AIR;
         }
     }
 
     public boolean isWaterLogged() {
         return this.block instanceof Block
                 ? BlockUtils.isWaterLogged((Block) this.block)
-                : this.block instanceof BlockData && BlockUtils.isWaterLogged((BlockData) this.block);
+                : BlockUtils.blockDataExists
+                && this.block instanceof BlockData
+                && BlockUtils.isWaterLogged((BlockData) this.block);
     }
 
     public boolean isLiquidOrWaterLogged(boolean lava) {
         return this.block instanceof Block
                 ? BlockUtils.isLiquidOrWaterLogged((Block) this.block, lava)
-                : this.block instanceof BlockData && BlockUtils.isLiquidOrWaterLogged((BlockData) this.block, lava);
+                : BlockUtils.blockDataExists
+                && this.block instanceof BlockData
+                && BlockUtils.isLiquidOrWaterLogged((BlockData) this.block, lava);
     }
 
     public boolean isLiquid(Material target) {
@@ -44,8 +50,10 @@ public class SpartanBlock {
 
             if (this.block instanceof Material) {
                 material = (Material) this.block;
-            } else {
+            } else if (BlockUtils.blockDataExists) {
                 material = ((BlockData) this.block).getMaterial();
+            } else {
+                return false;
             }
             return BlockUtils.isLiquid(material) && material == target;
         }
