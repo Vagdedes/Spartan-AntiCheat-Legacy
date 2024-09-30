@@ -23,7 +23,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.*;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPistonExtendEvent;
+import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerAnimationEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -102,32 +105,6 @@ public class Event_World implements Listener {
                 || p.getExecutor(Enums.HackType.FastBreak).prevent()
                 || p.getExecutor(Enums.HackType.GhostHand).prevent()
                 || p.getExecutor(Enums.HackType.XRay).prevent()) {
-            e.setCancelled(true);
-        }
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    private void BlockPlace(BlockPlaceEvent e) {
-        SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer;
-        Block nb = e.getBlock();
-        Event_Chunks.cache(nb.getChunk(), false);
-        p.movement.judgeGround();
-
-        if (p.getWorld() != nb.getWorld()) {
-            return;
-        }
-        boolean cancelled = e.isCancelled();
-
-        // Detections
-        if (!ItemsAdder.is(nb)) {
-            p.getExecutor(Enums.HackType.ImpossibleActions).handle(cancelled, e);
-            p.getExecutor(Enums.HackType.BlockReach).handle(cancelled, e);
-            p.getExecutor(Enums.HackType.FastPlace).handle(cancelled, e);
-        }
-
-        if (p.getExecutor(Enums.HackType.FastPlace).prevent()
-                || p.getExecutor(Enums.HackType.BlockReach).prevent()
-                || p.getExecutor(Enums.HackType.ImpossibleActions).prevent()) {
             e.setCancelled(true);
         }
     }

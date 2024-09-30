@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.listeners.protocol;
+package com.vagdedes.spartan.listeners.protocol.standalone;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.ListenerPriority;
