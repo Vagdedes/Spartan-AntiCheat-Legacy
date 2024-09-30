@@ -11,7 +11,6 @@ import com.vagdedes.spartan.compatibility.manual.building.MineBomb;
 import com.vagdedes.spartan.compatibility.manual.building.TreeFeller;
 import com.vagdedes.spartan.compatibility.manual.entity.Vehicles;
 import com.vagdedes.spartan.functionality.server.TPS;
-import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
 import com.vagdedes.spartan.utils.minecraft.entity.CombatUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import me.vagdedes.spartan.system.Enums;
@@ -74,7 +73,7 @@ public class NoSwing extends CheckExecutor {
             }
             LivingEntity entity = ((PlayerAttackEvent) object).target;
 
-            if (!CombatProcessing.canCheck(player, entity)) {
+            if (!CombatUtils.canCheck(player, entity)) {
                 return;
             }
             long time = System.currentTimeMillis();

@@ -9,8 +9,8 @@ import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
 import com.vagdedes.spartan.utils.math.RayUtils;
+import com.vagdedes.spartan.utils.minecraft.entity.CombatUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -34,7 +34,7 @@ public class HitReach extends CheckExecutor {
         LivingEntity target = event.target;
 
         if (player.protocol.packetsEnabled()) {
-            if (CombatProcessing.canCheck(player, target)
+            if (CombatUtils.canCheck(player, target)
                     && !player.getInstance().getGameMode().equals(GameMode.CREATIVE)) {
                 int targetId = target.getEntityId();
                 int playerId = event.player.getEntityId();
@@ -78,7 +78,7 @@ public class HitReach extends CheckExecutor {
                 }
             }
         } else {
-            if (CombatProcessing.canCheck(player, target)
+            if (CombatUtils.canCheck(player, target)
                     && !player.getInstance().getGameMode().equals(GameMode.CREATIVE)) {
                 double bruteforceRayTrace = RayUtils.bruteforceRayTrace(player, target),
                         diff = bruteforceRayTrace - 0.4;
@@ -119,6 +119,6 @@ public class HitReach extends CheckExecutor {
 
     @Override
     protected boolean canRun() {
-        return CombatProcessing.canCheck(player);
+        return CombatUtils.canCheck(player);
     }
 }

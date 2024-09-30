@@ -28,8 +28,8 @@ public class RayUtils {
     }
 
     public static boolean validRayLines(RayLine a, RayLine b, double radi) {
-        double angleA = Math.atan2(a.z(), a.x());
-        double angleB = Math.atan2(b.z(), b.x());
+        double angleA = Math.atan2(a.z, a.x);
+        double angleB = Math.atan2(b.z, b.x);
 
         double angleDiff = Math.abs(angleA - angleB);
 
@@ -41,8 +41,8 @@ public class RayUtils {
     }
 
     public static double calculateRayLines(RayLine a, RayLine b) {
-        double angleA = Math.atan2(a.z(), a.x());
-        double angleB = Math.atan2(b.z(), b.x());
+        double angleA = Math.atan2(a.z, a.x);
+        double angleB = Math.atan2(b.z, b.x);
 
         double angleDiff = Math.abs(angleA - angleB);
 
@@ -54,7 +54,7 @@ public class RayUtils {
     }
 
     public static double calculateRayLine(RayLine a) {
-        return Math.atan2(a.z(), a.x());
+        return Math.atan2(a.z, a.x);
     }
 
     public static float masterCast(float num) {
@@ -431,9 +431,9 @@ public class RayUtils {
         double eyeHeight = getEyeHeight(sneak, instance);
 
         for (int i = 0; i < maxSteps; i++) {
-            double newX = player.getX() + ray.x() * d;
+            double newX = player.getX() + ray.x * d;
             double newY = player.getY() + eyeHeight - 1;
-            double newZ = player.getZ() + ray.z() * d;
+            double newZ = player.getZ() + ray.z * d;
             Location newLocation = new Location(instance.getWorld(), newX, newY, newZ);
             if (onBound(newLocation, target, size, 2, size)) {
                 return d;

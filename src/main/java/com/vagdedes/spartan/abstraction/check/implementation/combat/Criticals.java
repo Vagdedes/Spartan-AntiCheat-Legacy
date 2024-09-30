@@ -2,8 +2,8 @@ package com.vagdedes.spartan.abstraction.check.implementation.combat;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
-import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
 import com.vagdedes.spartan.utils.math.RayUtils;
+import com.vagdedes.spartan.utils.minecraft.entity.CombatUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.potion.PotionEffectType;
@@ -31,7 +31,7 @@ public class Criticals extends CheckExecutor {
 
     @Override
     protected boolean canRun() {
-        return CombatProcessing.canCheck(player)
+        return CombatUtils.canCheck(player)
                 && !player.movement.isInLiquids()
                 && !player.hasPotionEffect(PotionEffectType.BLINDNESS, 0);
     }

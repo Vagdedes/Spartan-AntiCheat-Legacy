@@ -7,7 +7,7 @@ import com.vagdedes.spartan.abstraction.event.EntityAttackPlayerEvent;
 import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
-import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
+import com.vagdedes.spartan.utils.minecraft.entity.CombatUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -46,7 +46,7 @@ public class KillAura extends CheckExecutor {
 
     boolean canRunEntity(LivingEntity entity) {
         if (entity.getVehicle() == null
-                && CombatProcessing.canCheck(player, entity)) {
+                && CombatUtils.canCheck(player, entity)) {
             boolean isPlayer = entity instanceof Player;
             return (isPlayer || !MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_10) || entity.hasAI())
                     && !player.getInstance().equals(entity)
@@ -116,6 +116,6 @@ public class KillAura extends CheckExecutor {
 
     @Override
     protected boolean canRun() {
-        return CombatProcessing.canCheck(player);
+        return CombatUtils.canCheck(player);
     }
 }
