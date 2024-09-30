@@ -67,7 +67,7 @@ public class PlayerInfo extends InventoryMenu {
             );
             return false;
         } else {
-            setTitle(player, menu + (isOnline ? target.player.getName() : profile.getName()));
+            setTitle(player, menu + (isOnline ? target.player.getName() : profile.name));
             Set<Map.Entry<HackType, Double>> evidenceDetails = profile.evidence.getKnowledgeEntries(
                     0.0
             );
@@ -137,9 +137,9 @@ public class PlayerInfo extends InventoryMenu {
             }
             lore.add("§cClick to delete the player's stored data.");
             add(
-                    "§c" + profile.getName(),
+                    "§c" + profile.name,
                     lore,
-                    profile.getSkull(true),
+                    profile.getSkull(),
                     4
             );
             SpartanPlayer sp = isOnline ? target.spartanPlayer : null;

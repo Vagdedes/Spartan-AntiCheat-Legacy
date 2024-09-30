@@ -1,9 +1,7 @@
 package com.vagdedes.spartan.abstraction.check;
 
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
-import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.server.ConfigUtils;
@@ -92,7 +90,6 @@ public class Check {
         this.enabled = new boolean[DataType.values().length];
         this.silent = new boolean[DataType.values().length];
         this.punish = new boolean[DataType.values().length];
-        List<PlayerProfile> profiles = ResearchEngine.getPlayerProfiles();
 
         for (Check.DataType dataType : DataType.values()) {
             Object optionValue = getOption(
@@ -106,13 +103,6 @@ public class Check {
                                     Boolean.parseBoolean(optionValue.toString().toLowerCase());
             this.enabled[dataType.ordinal()] = enabled;
 
-            if (!enabled && !profiles.isEmpty()) {
-                for (PlayerProfile playerProfile : profiles) {
-                    if (playerProfile.hasData(dataType)) {
-                        playerProfile.evidence.remove(hackType);
-                    }
-                }
-            }
             optionValue = getOption(
                     "silent." + dataType.toString().toLowerCase(),
                     false,
@@ -293,8 +283,6 @@ public class Check {
                 return;
             }
         }
-        List<PlayerProfile> profiles = ResearchEngine.getPlayerProfiles();
-
         for (Check.DataType type : dataTypes) {
             CheckToggleEvent event;
 
@@ -311,13 +299,6 @@ public class Check {
 
                 synchronized (options) {
                     options.clear();
-                }
-                if (!profiles.isEmpty()) {
-                    for (PlayerProfile playerProfile : profiles) {
-                        if (playerProfile.hasData(type)) {
-                            playerProfile.evidence.remove(hackType);
-                        }
-                    }
                 }
             }
         }
