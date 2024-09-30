@@ -240,7 +240,7 @@ public class Speed extends CheckExecutor {
             if (multiply < 0.35) multiply = 0.35;
         }
         if (this.player.movement.isGliding() || vehicle != null) {
-            if (multiply < 10.0) multiply = 10.0;
+            if (multiply < 18.0) multiply = 18.0;
         }
         if (this.player.movement.isFlying()) {
             multiply = 25.0;
