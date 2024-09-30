@@ -4,7 +4,6 @@ import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
-import com.vagdedes.spartan.abstraction.world.SpartanBlock;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
@@ -42,7 +41,7 @@ public class ImpossibleActions extends CheckExecutor {
     protected void handleInternal(boolean cancelled, Object object) {
         if (object instanceof BlockPlaceEvent) {
             BlockPlaceEvent event = (BlockPlaceEvent) object;
-            SpartanBlock block = new SpartanBlock(event.getBlock());
+            Block block = event.getBlock();
             SpartanLocation playerLocation = player.movement.getLocation();
             int playerY = playerLocation.getBlockY(),
                     blockY = event.getBlock().getY();
@@ -121,7 +120,7 @@ public class ImpossibleActions extends CheckExecutor {
                         case UP:
                             if (AlgebraUtils.getHorizontalDistance(
                                     playerLocation.getBlockLocation(),
-                                    block.location
+                                    block.getLocation()
                             ) <= 1.0) {
                                 ItemStack handItem = player.getItemInHand();
                                 int jumpLevel = PlayerUtils.getPotionLevel(player, PotionEffectUtils.JUMP) + 1,

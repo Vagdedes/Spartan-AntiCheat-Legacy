@@ -3,7 +3,6 @@ package com.vagdedes.spartan.listeners.bukkit.standalone;
 import com.vagdedes.spartan.abstraction.player.PlayerTrackers;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
-import com.vagdedes.spartan.abstraction.world.SpartanBlock;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
@@ -84,7 +83,6 @@ public class Event_World implements Listener {
         SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer;
         Block nb = e.getBlock();
         Event_Chunks.cache(nb.getChunk(), false);
-        SpartanBlock b = new SpartanBlock(nb);
         boolean cancelled = e.isCancelled();
         p.movement.judgeGround();
 
@@ -93,11 +91,11 @@ public class Event_World implements Listener {
             p.getExecutor(Enums.HackType.NoSwing).handle(cancelled, e);
             p.getExecutor(Enums.HackType.BlockReach).handle(cancelled, e);
             p.getExecutor(Enums.HackType.FastBreak).handle(cancelled, e);
-            p.getExecutor(Enums.HackType.GhostHand).handle(cancelled, b);
+            p.getExecutor(Enums.HackType.GhostHand).handle(cancelled, nb);
         }
         p.getExecutor(Enums.HackType.Exploits).handle(cancelled, e);
         p.getExecutor(Enums.HackType.FastClicks).handle(cancelled, null);
-        AntiCheatLogs.logMining(p, b, cancelled);
+        AntiCheatLogs.logMining(p, nb, cancelled);
 
         if (p.getExecutor(Enums.HackType.NoSwing).prevent()
                 || p.getExecutor(Enums.HackType.BlockReach).prevent()

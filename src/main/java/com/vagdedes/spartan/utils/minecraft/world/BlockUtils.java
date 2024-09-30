@@ -1288,13 +1288,40 @@ public class BlockUtils {
         return isLiquid(block.getType()) || block.isLiquid();
     }
 
-    public static boolean isWaterLogged(BlockData blockData) {
-        return MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
-                && blockData instanceof Waterlogged && ((Waterlogged) blockData).isWaterlogged();
-    }
-
     public static boolean isLiquid(Material m) {
         return liquid.contains(m);
+    }
+
+    public static boolean isWaterLogged(BlockData blockData) {
+        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
+            return blockData instanceof Waterlogged
+                    && ((Waterlogged) blockData).isWaterlogged();
+        }
+        return false;
+    }
+
+    public static boolean isWaterLogged(Block block) {
+        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
+            BlockData blockData = block.getBlockData();
+            return blockData instanceof Waterlogged
+                    && ((Waterlogged) blockData).isWaterlogged();
+        }
+        return false;
+    }
+
+    public static boolean isLiquidOrWaterLogged(Block block, boolean lava) {
+        return (isLiquid(block) || isWaterLogged(block))
+                && (lava || block.getType() != MaterialUtils.get("lava"));
+    }
+
+    public static boolean isLiquidOrWaterLogged(BlockData blockData, boolean lava) {
+        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
+            return blockData instanceof Waterlogged
+                    && ((Waterlogged) blockData).isWaterlogged()
+                    && (lava || blockData.getMaterial() != MaterialUtils.get("lava"));
+        }
+        return isLiquid(blockData.getMaterial())
+                && (lava || blockData.getMaterial() != MaterialUtils.get("lava"));
     }
 
     public static boolean areStairs(Material m) {
@@ -1502,11 +1529,11 @@ public class BlockUtils {
     }
 
     public static String blockToString(Block b) {
-        return toString(new SpartanBlock(b).material.toString());
+        return toString(b.getType().toString());
     }
 
     public static String blockToString(SpartanBlock b) {
-        return toString(b.material.toString());
+        return toString(b.getType().toString());
     }
 
     public static String materialToString(Material m) {
@@ -1522,15 +1549,15 @@ public class BlockUtils {
     public static boolean isSlime(SpartanPlayer p, SpartanLocation loc, int blocks) {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)) {
             if (p.isOnGround(false)) {
-                return loc.getBlock().material == Material.SLIME_BLOCK;
+                return loc.getBlock().getType() == Material.SLIME_BLOCK;
             } else {
                 SpartanLocation loopLocation = loc.clone();
 
-                if (!isSolid(loopLocation.getBlock().material)) {
+                if (!isSolid(loopLocation.getBlock().getType())) {
                     int y = loc.getBlockY();
 
                     for (int i = y; i > Math.max(getMinHeight(p.getWorld()), y - blocks); i--) {
-                        Material m = loopLocation.add(0, -1, 0).getBlock().material;
+                        Material m = loopLocation.add(0, -1, 0).getBlock().getType();
 
                         if (m == Material.SLIME_BLOCK) {
                             return true;
@@ -1553,15 +1580,15 @@ public class BlockUtils {
     public static boolean isBed(SpartanPlayer p, SpartanLocation loc, int blocks) {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_12)) {
             if (p.isOnGround(false)) {
-                return areBeds(loc.getBlock().material);
+                return areBeds(loc.getBlock().getType());
             } else {
                 SpartanLocation loopLocation = loc.clone();
 
-                if (!isSolid(loopLocation.getBlock().material)) {
+                if (!isSolid(loopLocation.getBlock().getType())) {
                     int y = loc.getBlockY();
 
                     for (int i = y; i > Math.max(getMinHeight(p.getWorld()), y - blocks); i--) {
-                        Material m = loopLocation.add(0, -1, 0).getBlock().material;
+                        Material m = loopLocation.add(0, -1, 0).getBlock().getType();
 
                         if (areBeds(m)) {
                             return true;

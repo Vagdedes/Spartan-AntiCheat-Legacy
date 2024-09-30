@@ -4,7 +4,6 @@ import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
-import com.vagdedes.spartan.abstraction.world.SpartanBlock;
 import com.vagdedes.spartan.compatibility.manual.abilities.AureliumSkills;
 import com.vagdedes.spartan.compatibility.manual.abilities.mcMMO;
 import com.vagdedes.spartan.compatibility.manual.building.MineBomb;
@@ -19,6 +18,7 @@ import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -30,7 +30,7 @@ import java.util.*;
 
 public class FastBreak extends CheckExecutor {
 
-    private SpartanBlock lastBlock = null;
+    private Block lastBlock = null;
     private final Map<Integer, Long> interactTime;
     private final Buffer.IndividualBuffer
             breaksPerSecondBuffer,
@@ -43,14 +43,14 @@ public class FastBreak extends CheckExecutor {
         this.individualSurroundingsPerSecondBuffer = new Buffer.IndividualBuffer();
     }
 
-    private void checkDelay(SpartanBlock block, int seconds) {
+    private void checkDelay(Block block, int seconds) {
         if (hackType.getCheck().getBooleanOption("check_delay", true)
-                && !BlockUtils.isSensitive(block.material)) {
+                && !BlockUtils.isSensitive(block.getType())) {
             GameMode gameMode = player.getInstance().getGameMode();
 
             if (gameMode == GameMode.SURVIVAL || gameMode == GameMode.ADVENTURE) {
                 long time = interactTime.getOrDefault(
-                        Objects.hash(block.getWorld().getName(), block.material, block.getX(), block.getY(), block.getZ()),
+                        Objects.hash(block.getWorld().getName(), block.getType(), block.getX(), block.getY(), block.getZ()),
                         0L
                 );
 
@@ -59,7 +59,7 @@ public class FastBreak extends CheckExecutor {
 
                     if (time > 0L) { // Make sure the plugin knows when the player started breaking the block
                         ItemStack itemStack = player.getItemInHand();
-                        long originalLimit = MaterialUtils.getBlockBreakTime(player, itemStack, block.material),
+                        long originalLimit = MaterialUtils.getBlockBreakTime(player, itemStack, block.getType()),
                                 limit = originalLimit;
 
                         if (limit > -1L) { // Make sure the limit can be calculated on this specific server
@@ -78,7 +78,7 @@ public class FastBreak extends CheckExecutor {
                                     limit -= BlockUtils.sensitiveBlockBreakTime;
                                 }
                             }
-                            if (AlgebraUtils.getHorizontalDistance(player.movement.getLocation(), block.location) <= 1.0
+                            if (AlgebraUtils.getHorizontalDistance(player.movement.getLocation(), block.getLocation()) <= 1.0
                                     && player.movement.getLocation().getBlockY() >= block.getY()) { // Above block
                                 limit = AlgebraUtils.integerRound(limit / 4.0);
                             }
@@ -119,7 +119,7 @@ public class FastBreak extends CheckExecutor {
                                         + ", original-limit: " + originalLimit
                                         + ", limit: " + limit
                                         + ", difference: " + (limit - time)
-                                        + ", block: " + BlockUtils.materialToString(block.material)
+                                        + ", block: " + BlockUtils.materialToString(block.getType())
                                         + ", item: " + (emptyItem ? "none" : BlockUtils.materialToString(itemStack.getType()))
                                         + ", enchantments: " + (!enchantments.isEmpty() ? "none" : "[" + enchantmentsString + "]")
                                         + ", effects: " + (!hasEffects ? "none" : "[" + effectsString + "]");
@@ -132,7 +132,7 @@ public class FastBreak extends CheckExecutor {
         }
     }
 
-    private void checkBreaksPerSecond(int seconds, SpartanBlock block) {
+    private void checkBreaksPerSecond(int seconds, Block block) {
         GameMode gameMode = player.getInstance().getGameMode();
 
         if (gameMode == GameMode.CREATIVE) {
@@ -152,11 +152,11 @@ public class FastBreak extends CheckExecutor {
         }
     }
 
-    private void checkIndirectSurroundingsPerSecond(int seconds, SpartanBlock block) {
+    private void checkIndirectSurroundingsPerSecond(int seconds, Block block) {
         GameMode gameMode = player.getInstance().getGameMode();
 
         if ((gameMode == GameMode.SURVIVAL || gameMode == GameMode.ADVENTURE)
-                && !BlockUtils.isSensitive(player, block.material)) {
+                && !BlockUtils.isSensitive(player, block.getType())) {
             int bufferTicks = (int) TPS.maximum,
                     limit = hackType.getCheck().getNumericalOption(
                             "indirect_surroundings_per_second",
@@ -205,17 +205,17 @@ public class FastBreak extends CheckExecutor {
             PlayerInteractEvent event = (PlayerInteractEvent) object;
 
             if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
-                SpartanBlock b = new SpartanBlock(event.getClickedBlock());
+                Block b = event.getClickedBlock();
 
                 if (interactTime.size() == TPS.maximum) {
                     Iterator<Integer> iterator = interactTime.keySet().iterator();
                     iterator.next();
                     iterator.remove();
                 }
-                interactTime.put(Objects.hash(b.getWorld().getName(), b.material, b.getX(), b.getY(), b.getZ()), System.currentTimeMillis());
+                interactTime.put(Objects.hash(b.getWorld().getName(), b.getType(), b.getX(), b.getY(), b.getZ()), System.currentTimeMillis());
             }
         } else {
-            SpartanBlock b = new SpartanBlock(((BlockBreakEvent) object).getBlock());
+            Block b = ((BlockBreakEvent) object).getBlock();
 
             if (!TreeFeller.canCancel(this.player, b)) {
                 int seconds = (int) TPS.maximum;

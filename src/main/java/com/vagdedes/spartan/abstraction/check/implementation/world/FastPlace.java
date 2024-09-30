@@ -4,13 +4,13 @@ import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
-import com.vagdedes.spartan.abstraction.world.SpartanBlock;
 import com.vagdedes.spartan.compatibility.manual.building.PrinterMode;
 import com.vagdedes.spartan.compatibility.manual.entity.Vehicles;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 public class FastPlace extends CheckExecutor {
@@ -27,10 +27,10 @@ public class FastPlace extends CheckExecutor {
 
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
-        SpartanBlock b = new SpartanBlock(((BlockPlaceEvent) object).getBlock());
+        Block b = ((BlockPlaceEvent) object).getBlock();
 
-        if (!BlockUtils.isScaffoldingBlock(b.material)) {
-            Material material = b.material;
+        if (!BlockUtils.isScaffoldingBlock(b.getType())) {
+            Material material = b.getType();
 
             if (material != Material.FIRE
                     && material != Material.AIR

@@ -5,7 +5,6 @@ import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
-import com.vagdedes.spartan.abstraction.world.SpartanBlock;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.necessary.BedrockCompatibility;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
@@ -269,7 +268,7 @@ public class SpartanPlayer {
 
     // Separator
 
-    public SpartanBlock getTargetBlock(double distance, double limit) {
+    public Block getTargetBlock(double distance, double limit) {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)) {
             try {
                 List<Block> list = this.getInstance().getLineOfSight(null, (int) Math.min(distance, limit));
@@ -277,7 +276,7 @@ public class SpartanPlayer {
                 if (!list.isEmpty()) {
                     for (Block block : list) {
                         if (BlockUtils.isFullSolid(block.getType())) {
-                            return new SpartanBlock(block);
+                            return block;
                         }
                     }
                 }
@@ -489,9 +488,9 @@ public class SpartanPlayer {
         }
         SpartanLocation locationP1 = location.clone().add(0, 1, 0);
 
-        if (BlockUtils.isSolid(locationP1.getBlock().material)
-                && !(BlockUtils.areWalls(locationP1.getBlock().material)
-                || BlockUtils.canClimb(locationP1.getBlock().material, false))) {
+        if (BlockUtils.isSolid(locationP1.getBlock().getType())
+                && !(BlockUtils.areWalls(locationP1.getBlock().getType())
+                || BlockUtils.canClimb(locationP1.getBlock().getType(), false))) {
             return;
         }
         World world = getWorld();
@@ -505,7 +504,7 @@ public class SpartanPlayer {
 
         for (double progressiveY = startY; startY > BlockUtils.getMinHeight(world); progressiveY--) {
             SpartanLocation loopLocation = location.clone().add(0.0, -(startY - progressiveY), 0.0);
-            Material material = loopLocation.getBlock().material;
+            Material material = loopLocation.getBlock().getType();
 
             if (iterations != PlayerUtils.chunk
                     && (BlockUtils.canClimb(material, false)

@@ -501,7 +501,7 @@ public class ResearchEngine {
                         Double timeDifference = profile.getViolationHistory(
                                 dataType,
                                 hackType
-                        ).getTimeDifference(hackType);
+                        ).getTimeDifference();
 
                         if (timeDifference != null) {
                             wave.put(

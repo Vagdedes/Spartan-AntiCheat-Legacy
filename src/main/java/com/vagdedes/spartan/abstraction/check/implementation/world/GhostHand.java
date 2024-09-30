@@ -2,7 +2,6 @@ package com.vagdedes.spartan.abstraction.check.implementation.world;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
-import com.vagdedes.spartan.abstraction.world.SpartanBlock;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.manual.abilities.mcMMO;
 import com.vagdedes.spartan.compatibility.manual.building.PrinterMode;
@@ -11,6 +10,7 @@ import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.GameMode;
+import org.bukkit.block.Block;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
@@ -22,15 +22,14 @@ public class GhostHand extends CheckExecutor {
 
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
-        if (object instanceof SpartanBlock) {
-            SpartanBlock b = (SpartanBlock) object;
+        if (object instanceof Block) {
+            Block b = (Block) object;
 
             if (canDo(b)
                     && hackType.getCheck().getBooleanOption("check_block_breaking", true)) {
                 SpartanLocation location = player.movement.getLocation();
                 double bDistance = location.distance(b);
-
-                SpartanBlock t = player.getTargetBlock(bDistance, PlayerUtils.chunk);
+                Block t = player.getTargetBlock(bDistance, PlayerUtils.chunk);
 
                 if (t != null) {
                     double tDistance = location.distance(t);
@@ -53,15 +52,14 @@ public class GhostHand extends CheckExecutor {
             PlayerInteractEvent event = (PlayerInteractEvent) object;
 
             if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-                SpartanBlock b = new SpartanBlock(event.getClickedBlock());
+                Block b = event.getClickedBlock();
 
                 if (canDo(b)
                         && hackType.getCheck().getBooleanOption("check_block_interactions", true)
-                        && BlockUtils.isChangeable(b.material)) {
+                        && BlockUtils.isChangeable(b.getType())) {
                     SpartanLocation location = player.movement.getLocation();
                     double bDistance = location.distance(b);
-
-                    SpartanBlock t = player.getTargetBlock(bDistance, PlayerUtils.chunk);
+                    Block t = player.getTargetBlock(bDistance, PlayerUtils.chunk);
 
                     if (t != null) {
                         double tDistance = location.distance(t);
@@ -84,7 +82,7 @@ public class GhostHand extends CheckExecutor {
         }
     }
 
-    private boolean canDo(SpartanBlock b) {
+    private boolean canDo(Block b) {
         return b.getWorld() == player.getWorld();
     }
 

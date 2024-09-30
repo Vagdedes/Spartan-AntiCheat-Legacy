@@ -9,13 +9,11 @@ import com.vagdedes.spartan.utils.minecraft.entity.CombatUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import com.vagdedes.spartan.utils.minecraft.vector.SpartanVector3D;
 import com.vagdedes.spartan.utils.minecraft.vector.SpartanVector3F;
-import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.data.BlockData;
 import org.bukkit.util.Vector;
 
 import java.util.*;
@@ -211,57 +209,18 @@ public class SpartanLocation implements Cloneable {
     }
 
     private SpartanBlock setBlock() {
-        Block block = this.world.getBlockAt(getBlockX(), getBlockY(), getBlockZ());
-
-        if (block != null) {
-            if (SpartanLocation.v_1_13) {
-                BlockData blockData = block.getBlockData();
-                return new SpartanBlock(
-                        this,
-                        blockData.getMaterial(),
-                        BlockUtils.isLiquid(block),
-                        BlockUtils.isWaterLogged(blockData)
-                );
-            } else {
-                return new SpartanBlock(
-                        this,
-                        block.getType(),
-                        BlockUtils.isLiquid(block),
-                        false
-                );
-            }
-        } else {
-            return new SpartanBlock(this, Material.AIR, false, false);
-        }
+        return new SpartanBlock(this.world.getBlockAt(getBlockX(), getBlockY(), getBlockZ()));
     }
 
     private SpartanBlock setAsyncBlock() {
         if (SpartanLocation.v_1_13) {
-            BlockData data = Event_Chunks_v1_13.getBlockData(this.world, this.getBlockX(), this.getBlockY(), this.getBlockZ());
-
-            if (data != null) {
-                return new SpartanBlock(
-                        this,
-                        data.getMaterial(),
-                        BlockUtils.isLiquid(data.getMaterial()),
-                        BlockUtils.isWaterLogged(data)
-                );
-            } else {
-                return new SpartanBlock(this, Material.AIR, false, false);
-            }
+            return new SpartanBlock(
+                    Event_Chunks_v1_13.getBlockData(this.world, this.getBlockX(), this.getBlockY(), this.getBlockZ())
+            );
         } else {
-            Material type = Event_Chunks.getBlockType(this.world, this.getBlockX(), this.getBlockY(), this.getBlockZ());
-
-            if (type != null) {
-                return new SpartanBlock(
-                        this,
-                        type,
-                        BlockUtils.isLiquid(type),
-                        false
-                );
-            } else {
-                return new SpartanBlock(this, Material.AIR, false, false);
-            }
+            return new SpartanBlock(
+                    Event_Chunks.getBlockType(this.world, this.getBlockX(), this.getBlockY(), this.getBlockZ())
+            );
         }
     }
 
@@ -301,7 +260,7 @@ public class SpartanLocation implements Cloneable {
                             try {
                                 thread.wait();
                             } catch (Exception ex) {
-                                block[0] = new SpartanBlock(this, Material.AIR, false, false);
+                                block[0] = new SpartanBlock(Material.AIR);
                                 SpartanBukkit.transferTask(this.world, x, z, () -> block[0] = setBlock());
                             }
                         }
@@ -310,7 +269,7 @@ public class SpartanLocation implements Cloneable {
                 }
             }
         } else {
-            return new SpartanBlock(this, Material.AIR, false, false);
+            return new SpartanBlock(Material.AIR);
         }
     }
 
@@ -334,7 +293,7 @@ public class SpartanLocation implements Cloneable {
         return AlgebraUtils.getDistance(this.x, loc.getX(), this.y, loc.getY(), this.z, loc.getZ());
     }
 
-    public double distance(SpartanBlock block) {
+    public double distance(Block block) {
         return AlgebraUtils.getDistance(this.x, block.getX(), this.y, block.getY(), this.z, block.getZ());
     }
 

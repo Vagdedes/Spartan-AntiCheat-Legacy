@@ -97,7 +97,7 @@ public class RayUtils {
                     SpartanBlock block = new SpartanLocation(world, x, y, z, 0.0f, 0.0f).getBlock();
 
                     for (Set<Material> set : sets) {
-                        if (set.contains(block.material)) {
+                        if (set.contains(block.getType())) {
                             return true;
                         }
                     }
@@ -118,7 +118,7 @@ public class RayUtils {
                 for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
                     SpartanBlock block = new SpartanLocation(world, x, y, z, 0.0f, 0.0f).getBlock();
 
-                    if (set.contains(block.material)) {
+                    if (set.contains(block.getType())) {
                         return true;
                     }
                 }
@@ -138,7 +138,7 @@ public class RayUtils {
                 for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
                     SpartanBlock block = new SpartanLocation(world, x, y, z, 0.0f, 0.0f).getBlock();
 
-                    if (block.material == material) {
+                    if (block.getType() == material) {
                         return true;
                     }
                 }
@@ -158,7 +158,7 @@ public class RayUtils {
                 for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
                     SpartanBlock block = new SpartanLocation(world, x, y, z, 0.0f, 0.0f).getBlock();
 
-                    if (block.material.isSolid()) {
+                    if (block.getType().isSolid()) {
                         return true;
                     }
                 }
@@ -178,7 +178,7 @@ public class RayUtils {
                 for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
                     SpartanBlock block = new SpartanLocation(world, x, y, z, 0.0f, 0.0f).getBlock();
 
-                    if (block.material.isSolid()) {
+                    if (block.getType().isSolid()) {
                         return true;
                     }
                 }
@@ -198,7 +198,7 @@ public class RayUtils {
                 for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
                     SpartanBlock block = new SpartanLocation(world, x, y, z, 0.0f, 0.0f).getBlock();
 
-                    if (BlockUtils.isSolid(block.material)) {
+                    if (BlockUtils.isSolid(block.getType())) {
                         return true;
                     }
                 }

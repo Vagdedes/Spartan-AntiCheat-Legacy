@@ -260,7 +260,7 @@ public class Speed extends CheckExecutor {
                 + ((this.player.protocol.isOnGround()) ? multiplyFriction : 0));
         if (levitationEffect != null || glideEffect != null) m *= 1.3;
         SpartanBlock block = new SpartanLocation(this.player.protocol.getLocation()).getBlock();
-        if (BlockUtils.areWebs(block.material)) {
+        if (BlockUtils.areWebs(block.getType())) {
             m /= 4.0;
         }
 
@@ -276,7 +276,7 @@ public class Speed extends CheckExecutor {
             for (int y2 = location.getBlockY() - 1; y2 <= location.getBlockY() + 1; y2++) {
                 for (int z = location.getBlockZ() - 1; z <= location.getBlockZ() + 1; z++) {
                     SpartanBlock block = new SpartanLocation(world, x, y2, z, 0.0f, 0.0f).getBlock();
-                    if (BlockUtils.areSlimeBlocks(block.material)) {
+                    if (BlockUtils.areSlimeBlocks(block.getType())) {
                         slime = true;
                     }
                 }
@@ -291,7 +291,7 @@ public class Speed extends CheckExecutor {
             for (int y2 = location.getBlockY() - 2; y2 <= location.getBlockY() + 1; y2++) {
                 for (int z = location.getBlockZ() - 1; z <= location.getBlockZ() + 1; z++) {
                     SpartanBlock block = new SpartanLocation(world, x, y2, z, 0.0f, 0.0f).getBlock();
-                    if (BlockUtils.areSlimeBlocks(block.material) || BlockUtils.areIceBlocks(block.material)) {
+                    if (BlockUtils.areSlimeBlocks(block.getType()) || BlockUtils.areIceBlocks(block.getType())) {
                         return true;
                     }
                 }

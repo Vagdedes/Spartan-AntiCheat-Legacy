@@ -5,7 +5,6 @@ import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
 import com.vagdedes.spartan.abstraction.player.PlayerTrackers;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
-import com.vagdedes.spartan.abstraction.world.SpartanBlock;
 import com.vagdedes.spartan.compatibility.manual.abilities.AureliumSkills;
 import com.vagdedes.spartan.compatibility.manual.abilities.mcMMO;
 import com.vagdedes.spartan.compatibility.manual.building.MineBomb;
@@ -16,6 +15,7 @@ import com.vagdedes.spartan.functionality.tracking.CombatProcessing;
 import com.vagdedes.spartan.utils.minecraft.entity.CombatUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import me.vagdedes.spartan.system.Enums;
+import org.bukkit.block.Block;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -52,9 +52,9 @@ public class NoSwing extends CheckExecutor {
                     || AureliumSkills.isUsing(player)) {
                 return;
             }
-            SpartanBlock block = new SpartanBlock(((BlockBreakEvent) object).getBlock());
+            Block block = ((BlockBreakEvent) object).getBlock();
 
-            if (!BlockUtils.isSensitive(player, block.material)
+            if (!BlockUtils.isSensitive(player, block.getType())
                     && !TreeFeller.canCancel(player, block)
                     && System.currentTimeMillis() - breakTime > TPS.tickTime) {
                 if (this.animationTime == Long.MAX_VALUE) {

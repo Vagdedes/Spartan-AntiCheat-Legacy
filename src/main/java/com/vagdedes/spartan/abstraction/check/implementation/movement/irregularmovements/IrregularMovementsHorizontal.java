@@ -19,8 +19,8 @@ public class IrregularMovementsHorizontal extends DetectionExecutor {
             int airTicks = player.movement.getTicksOnAir();
 
             if (airTicks > 0
-                    && !BlockUtils.canClimb(player.movement.getLocation().getBlock().material, false)
-                    && !BlockUtils.canClimb(player.movement.getEventFromLocation().getBlock().material, false)) {
+                    && !BlockUtils.canClimb(player.movement.getLocation().getBlock().getType(), false)
+                    && !BlockUtils.canClimb(player.movement.getEventFromLocation().getBlock().getType(), false)) {
                 if (knownBox || knownOldBox) {
                     int limit = PlayerUtils.getJumpTicks(0) * (player.isBedrockPlayer() ? PlayerUtils.getJumpTicks(0) : 1);
 

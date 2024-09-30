@@ -229,11 +229,11 @@ public class IrregularMovementsGravity extends DetectionExecutor {
     }
 
     private boolean canClimb(SpartanLocation location) {
-        Material material = location.getBlock().material;
+        Material material = location.getBlock().getType();
         return BlockUtils.canClimb(material, false)
                 || BlockUtils.areTrapdoors(material)
-                && (BlockUtils.canClimb(location.clone().add(0, 1, 0).getBlock().material, false)
-                || BlockUtils.canClimb(location.clone().add(0, -1, 0).getBlock().material, false));
+                && (BlockUtils.canClimb(location.clone().add(0, 1, 0).getBlock().getType(), false)
+                || BlockUtils.canClimb(location.clone().add(0, -1, 0).getBlock().getType(), false));
     }
 
     private boolean isUsingMace() {

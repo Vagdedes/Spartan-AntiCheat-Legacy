@@ -32,7 +32,7 @@ public class ViolationHistory {
         ResearchEngine.queueToCache(hackType);
     }
 
-    public Double getTimeDifference(Enums.HackType hackType) {
+    public Double getTimeDifference() {
         if (!this.isEmpty()) {
             Map<Integer, double[]> squareSum = new LinkedHashMap<>();
 

@@ -239,7 +239,7 @@ public class CombatUtils {
                 ProtocolLib.getLocation(entity).clone().add(location.getDirection().multiply(1.0))
         );
 
-        if (BlockUtils.isSolid(multipliedLocation.getBlock().material)) {
+        if (BlockUtils.isSolid(multipliedLocation.getBlock().getType())) {
             return true;
         }
         double height = getWidthAndHeight(entity)[1];
@@ -247,7 +247,7 @@ public class CombatUtils {
         if (height > 1.0) {
             for (int position = 1; position < AlgebraUtils.integerCeil(height); position++) {
                 // We add one instead of the position because we no longer clone the location
-                if (BlockUtils.isSolid(multipliedLocation.add(0, 1, 0).getBlock().material)) {
+                if (BlockUtils.isSolid(multipliedLocation.add(0, 1, 0).getBlock().getType())) {
                     return true;
                 }
             }
