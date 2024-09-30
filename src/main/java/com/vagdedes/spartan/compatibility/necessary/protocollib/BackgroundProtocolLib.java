@@ -25,6 +25,7 @@ public class BackgroundProtocolLib {
         p.addPacketListener(new Packet_Teleport());
         p.addPacketListener(new Packet_Vehicle());
         p.addPacketListener(new Packet_Death());
+        p.addPacketListener(new Packet_BlockPlaceP());
 
         if (PlayerUtils.trident) {
             p.addPacketListener(new Packet_Trident());
