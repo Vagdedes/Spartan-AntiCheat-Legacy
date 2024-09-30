@@ -31,7 +31,7 @@ public class FightAnalysis extends DetectionExecutor {
     }
 
     void runDealDamage(PlayerAttackEvent e) {
-        LivingEntity target = e.getTarget();
+        LivingEntity target = e.target;
         int identifier;
 
         if (target instanceof Player) {
@@ -57,7 +57,7 @@ public class FightAnalysis extends DetectionExecutor {
     }
 
     void runReceiveDamage(EntityAttackPlayerEvent e) {
-        LivingEntity damager = e.getDamager();
+        LivingEntity damager = e.damager;
         int identifier;
 
         if (damager instanceof Player) {

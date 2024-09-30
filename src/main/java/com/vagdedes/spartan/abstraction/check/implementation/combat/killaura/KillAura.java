@@ -72,7 +72,7 @@ public class KillAura extends CheckExecutor {
             );
         } else if (object instanceof PlayerAttackEvent) {
             PlayerAttackEvent event = (PlayerAttackEvent) object;
-            LivingEntity target = event.getTarget();
+            LivingEntity target = event.target;
 
             if (canRunEntity(target)) {
 

@@ -39,9 +39,9 @@ public class MoveDirection extends DetectionExecutor {
     }
 
     public void run() {
-        if (attackHandle.getTimeMillis() + 3000 > System.currentTimeMillis()) {
+        if (attackHandle.time + 3000 > System.currentTimeMillis()) {
             // main
-            Entity target = attackHandle.getTarget();
+            Entity target = attackHandle.target;
 
             if (target != null) {
                 double bruteforceRayTrace = RayUtils.bruteforceRayTrace(player, target);
@@ -76,10 +76,10 @@ public class MoveDirection extends DetectionExecutor {
         punishL2 = "";
         double globalValue = 0;
         double changeYaw = 0;
-        double oldYaw = aimAnalysis.getFirst().getYaw();
-        double oldYawResult = aimAnalysis.getFirst().getYaw();
-        double oldPitchResult = aimAnalysis.getFirst().getPitch();
-        double yawChangeFirst = Math.abs(aimAnalysis.get(0).getYaw() - aimAnalysis.get(1).getYaw());
+        double oldYaw = aimAnalysis.getFirst().pitch;
+        double oldYawResult = aimAnalysis.getFirst().yaw;
+        double oldPitchResult = aimAnalysis.getFirst().pitch;
+        double yawChangeFirst = Math.abs(aimAnalysis.get(0).yaw - aimAnalysis.get(1).yaw);
         int basicHeuristic = 0;
         int lowHeuristic = 0;
         int machineKnownMovement = 0;
@@ -96,16 +96,16 @@ public class MoveDirection extends DetectionExecutor {
             globalValue += value;
         }
         for (AttackData value : aimAnalysis) {
-            changeYaw += Math.abs(value.getYaw() - oldYaw);
-            oldYaw = value.getYaw();
+            changeYaw += Math.abs(value.yaw - oldYaw);
+            oldYaw = value.yaw;
         }
-        double oldYawChange = Math.abs(aimAnalysis.get(0).getYaw() - oldYawResult);
-        double oldPitchChange = Math.abs(aimAnalysis.get(0).getPitch() - oldPitchResult);
+        double oldYawChange = Math.abs(aimAnalysis.get(0).yaw - oldYawResult);
+        double oldPitchChange = Math.abs(aimAnalysis.get(0).pitch - oldPitchResult);
         for (int i = 0; i < aimAnalysis.size(); i++) {
-            if (!targetsOnTheRow.contains(aimAnalysis.get(i).getTarget()))
-                targetsOnTheRow.add(aimAnalysis.get(i).getTarget());
-            double yawChange = Math.abs(aimAnalysis.get(i).getYaw() - oldYawResult);
-            double pitchChange = Math.abs(aimAnalysis.get(i).getPitch() - oldPitchResult);
+            if (!targetsOnTheRow.contains(aimAnalysis.get(i).target))
+                targetsOnTheRow.add(aimAnalysis.get(i).target);
+            double yawChange = Math.abs(aimAnalysis.get(i).yaw - oldYawResult);
+            double pitchChange = Math.abs(aimAnalysis.get(i).pitch - oldPitchResult);
             double expectedYaw = yawChange * 1.073742f + (float) (yawChange + 0.15);
             double expectedPitch = pitchChange * 1.073742f - (float) (pitchChange - 0.15);
             double yawDiff = Math.abs(yawChange - expectedYaw);
@@ -114,15 +114,15 @@ public class MoveDirection extends DetectionExecutor {
             double switchPitch = Math.abs(pitchChange - pitchDiff);
             double switchDiffOnYaw = Math.abs(switchYaw - lastSwitchYaw);
             double interpolation;
-            if (switchDiffOnYaw > 26 && (aimAnalysis.get(i).getTime()
-                    + 75 > attackHandle.getTimeMillis())) addNewPunish("heuristic(switch)", 35);
+            if (switchDiffOnYaw > 26 && (aimAnalysis.get(i).time
+                    + 75 > attackHandle.time)) addNewPunish("heuristic(switch)", 35);
 
             double robotized = Math.abs(yawChange - yawChangeFirst);
             double diffBetweenYawChanges = yawChange - oldYawChange;
             double diffBetweenPitchChanges = pitchChange - oldPitchChange;
 
             if (robotized < 2 && yawChange > 2.5
-                    && aimAnalysis.get(i).getAccuracy() < 10) robotizedAmount += 1;
+                    && aimAnalysis.get(i).accuracy < 10) robotizedAmount += 1;
 
             if (rayTraceAnalysis.get(i) < 0.1 && yawChange > 5) basicHeuristic++;
 
@@ -140,8 +140,8 @@ public class MoveDirection extends DetectionExecutor {
             if ((diffBetweenYawChanges < -0.01 && diffBetweenYawChanges > -2)) aggressivePatternD++;
             if (diffBetweenYawChanges > 2) aggressivePatternI2++;
             if (diffBetweenYawChanges < -2) aggressivePatternD2++;
-            oldYawResult = aimAnalysis.get(i).getYaw();
-            oldPitchResult = aimAnalysis.get(i).getPitch();
+            oldYawResult = aimAnalysis.get(i).yaw;
+            oldPitchResult = aimAnalysis.get(i).pitch;
             oldYawChange = yawChange;
             oldPitchChange = pitchChange;
             lastSwitchYaw = switchYaw;
@@ -161,13 +161,13 @@ public class MoveDirection extends DetectionExecutor {
             if (gcd > 2) addNewPunish("pattern(gcd)", 210);
             if (aggressivePatternI > 3 && aggressivePatternD > 3) addNewPunish("pattern(random)", 40);
             if (aggressivePatternI2 > 3 && aggressivePatternD2 > 3
-                            && (aggressivePatternI2 + aggressivePatternD2) > 8 && targetsOnTheRow.size() < 2) {
+                    && (aggressivePatternI2 + aggressivePatternD2) > 8 && targetsOnTheRow.size() < 2) {
                 addNewPunish("pattern(snap)", 40);
             }
         }
 
         double punishValue = Math.floor(vl / 200);
-        if (!punish.isEmpty() && vl > priorityData(priorityType()).getVlLimit()) {
+        if (!punish.isEmpty() && vl > priorityData(priorityType()).vlLimit) {
             cancel(
                     "(layer1) type: " + punish + ", bH: " + basicHeuristic
                             + ", lH: " + lowHeuristic + ", rA: "
@@ -182,19 +182,19 @@ public class MoveDirection extends DetectionExecutor {
             vl -= 10;
         }
 
-        if (!punishL2.isEmpty() && vlL2 > (priorityData(priorityType()).getVlLimit() / 2) + 50) {
+        if (!punishL2.isEmpty() && vlL2 > (priorityData(priorityType()).vlLimit / 2) + 50) {
             cancel(
-                            "(layer2) type: " + punishL2 + ", infs: " + infinitives,
-                            punishValue,
-                            to
+                    "(layer2) type: " + punishL2 + ", infs: " + infinitives,
+                    punishValue,
+                    to
             );
             vlL2 -= 10;
         }
         //player.protocol.player.sendMessage("vl: " + vl);
-        if (vl > 0) vl -= priorityData(priorityType()).getVlFader();
-        if (vl > priorityData(priorityType()).getVlLimit()) vl -= 10;
-        if (vlL2 > 0) vlL2 -= (float) (priorityData(priorityType()).getVlFader() * 1.5);
-        if (vlL2 > priorityData(priorityType()).getVlLimit()) vlL2 -= 10;
+        if (vl > 0) vl -= priorityData(priorityType()).vlFader;
+        if (vl > priorityData(priorityType()).vlLimit) vl -= 10;
+        if (vlL2 > 0) vlL2 -= (float) (priorityData(priorityType()).vlFader * 1.5);
+        if (vlL2 > priorityData(priorityType()).vlLimit) vlL2 -= 10;
         rayTraceAnalysis.clear();
         aimAnalysis.clear();
 

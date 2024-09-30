@@ -72,7 +72,7 @@ public class NoSwing extends CheckExecutor {
                     || player.trackers.has(PlayerTrackers.TrackerType.TRIDENT)) {
                 return;
             }
-            LivingEntity entity = ((PlayerAttackEvent) object).getTarget();
+            LivingEntity entity = ((PlayerAttackEvent) object).target;
 
             if (!CombatProcessing.canCheck(player, entity)) {
                 return;

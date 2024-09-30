@@ -31,13 +31,13 @@ public class HitReach extends CheckExecutor {
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
         PlayerAttackEvent event = (PlayerAttackEvent) object;
-        LivingEntity target = event.getTarget();
+        LivingEntity target = event.target;
 
         if (player.protocol.packetsEnabled()) {
             if (CombatProcessing.canCheck(player, target)
                     && !player.getInstance().getGameMode().equals(GameMode.CREATIVE)) {
                 int targetId = target.getEntityId();
-                int playerId = event.getPlayer().getEntityId();
+                int playerId = event.player.getEntityId();
                 SpartanProtocol targetProtocol = SpartanBukkit.getProtocol(ProtocolLib.getUUID(target));
                 if (targetProtocol == null) return;
                 double bruteforceRayTrace = 14.88;

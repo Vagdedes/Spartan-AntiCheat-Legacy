@@ -4,19 +4,12 @@ import org.bukkit.entity.Entity;
 
 public class AttackHandle {
 
-    private final Entity target;
-    private final long timeMillis;
+    final Entity target;
+    final long time;
 
     AttackHandle(Entity target, long timeMillis) {
-        this.timeMillis = timeMillis;
+        this.time = timeMillis;
         this.target = target;
     }
 
-    Entity getTarget() {
-        return target;
-    }
-
-    long getTimeMillis() {
-        return timeMillis;
-    }
 }
