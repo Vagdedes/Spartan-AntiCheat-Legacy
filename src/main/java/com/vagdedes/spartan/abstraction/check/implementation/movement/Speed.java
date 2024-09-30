@@ -84,10 +84,8 @@ public class Speed extends CheckExecutor {
             double dz = v.getZ();
             multiplyVelo = Math.sqrt(dx * dx + dz * dz) * 2;
             velocity = 2;
-        } else if (object.toString().equals("TRIDENT")) {
-            multiply = 4.0D;
-        } else if (object.toString().equals("RIPTIDE")) {
-            multiply = 10.0D;
+        } else if (object instanceof Integer) {
+            multiply = ((Integer) object) * 5;
         }
     }
 

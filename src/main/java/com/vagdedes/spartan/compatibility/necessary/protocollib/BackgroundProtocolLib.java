@@ -29,6 +29,9 @@ public class BackgroundProtocolLib {
         if (PlayerUtils.trident) {
             p.addPacketListener(new Packet_Trident());
         }
+        if (false) {
+            p.addPacketListener(new Packet_Debug());
+        }
     }
 
 }
