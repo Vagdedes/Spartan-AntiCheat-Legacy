@@ -10,24 +10,6 @@ import java.util.Map;
 
 public class SpartanPotionEffect {
 
-    static Map<PotionEffectType, SpartanPotionEffect> mapFromBukkit(Map<PotionEffectType, SpartanPotionEffect> map,
-                                                                    Collection<PotionEffect> collection) {
-        for (PotionEffect effect : collection) {
-            map.put(effect.getType(), new SpartanPotionEffect(effect));
-        }
-        return map;
-    }
-
-    static List<SpartanPotionEffect> listFromBukkit(List<SpartanPotionEffect> list,
-                                                    Collection<PotionEffect> collection) {
-        for (PotionEffect effect : collection) {
-            list.add(new SpartanPotionEffect(effect));
-        }
-        return list;
-    }
-
-    // Separator
-
     public final PotionEffect bukkitEffect;
     private final long expiration;
 

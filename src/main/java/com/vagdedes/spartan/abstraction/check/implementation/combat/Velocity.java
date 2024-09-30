@@ -37,7 +37,7 @@ public class Velocity extends CheckExecutor {
         }
         if (object instanceof PlayerMoveEvent) {
             double x = RayUtils.scaleVal(Math.abs(player.movement.getEventXDiff()), 2);
-            double z = RayUtils.scaleVal(Math.abs(player.movement.getEventXDiff()), 2);
+            double z = RayUtils.scaleVal(Math.abs(player.movement.getEventZDiff()), 2);
             boolean blockOnTop = RayUtils.onSolidBlock(player, player.movement.getLocation().clone().add(0, 2, 0));
             double vertical = RayUtils.scaleVal(player.movement.getEventVertical(), 2);
             // vertical check
