@@ -349,7 +349,7 @@ public abstract class CheckExecutor extends DetectionExecutor {
                 player,
                 Config.messages.getColorfulString("detection_notification")
                         .replace("{info}", information)
-                        .replace("{vls:detection}", String.valueOf(playerViolation.increase))
+                        .replace("{vls:detection}", String.valueOf(AlgebraUtils.cut(playerViolation.increase, 2)))
                         .replace("{vls:percentage}",
                                 hasSufficientData
                                         ? (AlgebraUtils.integerRound(certainty) + "%%")
