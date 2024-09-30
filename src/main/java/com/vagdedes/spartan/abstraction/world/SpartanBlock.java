@@ -10,7 +10,7 @@ public class SpartanBlock {
     public final Object block;
 
     SpartanBlock(Object block) {
-        this.block = block;
+        this.block = block == null ? Material.AIR : block;
     }
 
     public Material getType() {
