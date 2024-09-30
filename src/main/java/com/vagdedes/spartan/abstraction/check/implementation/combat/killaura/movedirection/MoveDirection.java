@@ -6,8 +6,8 @@ import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import com.vagdedes.spartan.utils.minecraft.vector.SpartanVector2F;
-import com.vagdedes.spartan.utils.minecraft.vector.SpartanVector3D;
 import org.bukkit.entity.*;
+import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -48,8 +48,8 @@ public class MoveDirection extends DetectionExecutor {
                 double diff = bruteforceRayTrace - 0.4;
                 double predict = RayUtils.castTo360(
                         calculate(
-                                player.movement.getLocation().toVector3D(),
-                                new SpartanLocation(ProtocolLib.getLocation(target)).toVector3D()
+                                player.movement.getLocation().toVector(),
+                                new SpartanLocation(ProtocolLib.getLocation(target)).toVector()
                         ).x
                 );
                 double yaw360 = RayUtils.castTo360(player.movement.getLocation().getYaw());
@@ -209,11 +209,11 @@ public class MoveDirection extends DetectionExecutor {
         }
     }
 
-    private static SpartanVector2F calculate(final SpartanVector3D from, final SpartanVector3D to) {
-        SpartanVector3D diff = to.sub(from);
-        double distance = Math.hypot(diff.x, diff.z);
-        float yaw = (float) (Math.atan2(diff.z, diff.x) * 180.0F / PI) - 90.0F,
-                pitch = (float) (-(Math.atan2(diff.y, distance) * 180.0F / PI));
+    private static SpartanVector2F calculate(final Vector from, final Vector to) {
+        Vector diff = to.subtract(from);
+        double distance = Math.hypot(diff.getX(), diff.getZ());
+        float yaw = (float) (Math.atan2(diff.getZ(), diff.getX()) * 180.0F / PI) - 90.0F,
+                pitch = (float) (-(Math.atan2(diff.getY(), distance) * 180.0F / PI));
         return new SpartanVector2F(yaw, pitch);
     }
 
