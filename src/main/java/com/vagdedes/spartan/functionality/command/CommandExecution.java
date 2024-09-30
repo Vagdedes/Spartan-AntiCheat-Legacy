@@ -154,6 +154,14 @@ public class CommandExecution implements CommandExecutor {
                                     "/" + command + " manage-checks"
                             );
                         }
+                        if (Permissions.has(player.getInstance(), Permission.USE_BYPASS)) {
+                            ClickableMessage.sendCommand(
+                                    sender,
+                                    "§cPlayer Bypass §7(Click)",
+                                    "Click this command to give check bypass to a player.",
+                                    "/" + command + " bypass *"
+                            );
+                        }
                     } else {
                         ClickableMessage.sendCommand(
                                 sender,
@@ -183,15 +191,6 @@ public class CommandExecution implements CommandExecutor {
                                 sender,
                                 ChatColor.RED, "/" + command + " reload",
                                 "Click this command to reload the plugin's cache."
-                        );
-                    }
-                    if (!isPlayer
-                            || Permissions.has(player.getInstance(), Permission.USE_BYPASS)) {
-                        ClickableMessage.sendCommand(
-                                sender,
-                                "§cPlayer Bypass §7(Click)",
-                                "Click this command to give check bypass to a player.",
-                                "/" + command + " bypass *"
                         );
                     }
                     if (!isPlayer
