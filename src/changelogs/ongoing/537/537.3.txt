@@ -6,3 +6,4 @@
 [#] Fixed an Exploits ground-spoof cancelled building false positive.
 [#] Optimised the Player Profile object with fewer & faster methods and less memory used.
 [#] Potentially fixed a Folia loading console error.
+[#] Fixed a mathematical mistake in the Velocity check.
