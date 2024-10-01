@@ -182,13 +182,6 @@ public class MainMenu extends InventoryMenu {
                             DiscordMemberCount.discordURL
                     );
                 }
-            } else {
-                player.sendInventoryCloseMessage(
-                        "§7You need §aFileGUI §7to access this feature§8:\n§2"
-                                + (IDs.isBuiltByBit() ? "https://builtbybit.com/resources/13185"
-                                : IDs.isPolymart() ? "https://polymart.org/resource/984"
-                                : "https://www.spigotmc.org/resources/73893")
-                );
             }
 
         } else if (item.equals("Management")) {
