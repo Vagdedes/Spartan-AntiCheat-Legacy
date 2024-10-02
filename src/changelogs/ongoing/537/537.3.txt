@@ -9,3 +9,4 @@
 [#] Fixed a mathematical mistake in the Velocity check.
 [#] Fixed several Speed elytra related false positives.
 [#] Fixed several Speed trident related false positives.
+[#] Fixed a Vehicle console error caused by wrong object casting.
