@@ -3,3 +3,4 @@ Pawsashatoy's main responsibility is the checks of the plugin.
 When we are working on a hot-fix/partial update we make small changes that improve stability.
 When we are working on a full update we make big changes that introduce new functionality.
 When code is unfinished we commit it to a non-main branch so progress can be tracked.
+We do not introduce setters/getters to abstractions/implementations unless necessary.
