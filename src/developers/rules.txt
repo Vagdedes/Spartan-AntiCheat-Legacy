@@ -4,3 +4,4 @@ When we are working on a hot-fix/partial update we make small changes that impro
 When we are working on a full update we make big changes that introduce new functionality.
 When code is unfinished we commit it to a non-main branch so progress can be tracked.
 We do not introduce setters/getters to abstractions/implementations unless necessary.
+We notify the other developer when we change something of their code, before and after.
