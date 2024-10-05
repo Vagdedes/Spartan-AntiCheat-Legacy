@@ -12,6 +12,7 @@ import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.listeners.bukkit.Event_BlockPlace;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -53,12 +54,18 @@ public class Packet_BlockPlace extends PacketAdapter {
                 l.add(BlockFace.valueOf(direction.name()).getDirection());
                 World world = player.getWorld();
                 Block block = world.getBlockAt((int) l.getX(), (int) l.getY(), (int) l.getZ());
-                BlockPlaceEvent blockPlaceEvent =
-                                new BlockPlaceEvent(
-                                block,
-                                block.getState(), player.getLocation().getBlock(),
-                                player.getInventory().getItemInMainHand(), player, true);
-                Event_BlockPlace.event(blockPlaceEvent);
+                if (player.getInventory().getItemInMainHand() instanceof Block
+                                && !isInPlayer(protocol.getLocation(), block.getLocation())) {
+                    BlockPlaceEvent blockPlaceEvent =
+                                    new BlockPlaceEvent(
+                                                    block,
+                                                    block.getState(), player.getLocation().getBlock(),
+                                                    player.getInventory().getItemInMainHand(), player, true);
+                    Event_BlockPlace.event(blockPlaceEvent);
+                    protocol.rightClickCounter = 0;
+                } else {
+                    protocol.rightClickCounter++;
+                }
             }
         } else {
             protocol.rightClickCounter++;
@@ -80,5 +87,30 @@ public class Packet_BlockPlace extends PacketAdapter {
                             && packet.getHands().read(0).equals(EnumWrappers.Hand.MAIN_HAND));
         }
     }
+
+    public boolean isInPlayer(Location player, Location block) {
+        double playerX = player.getX();
+        double playerY = player.getY();
+        double playerZ = player.getZ();
+
+        double playerWidth = 1.0;
+        double playerHeight = 2.0;
+
+        double minX = playerX - (playerWidth / 2);
+        double maxX = playerX + (playerWidth / 2);
+        double minY = playerY;
+        double maxY = playerY + playerHeight;
+        double minZ = playerZ - (playerWidth / 2);
+        double maxZ = playerZ + (playerWidth / 2);
+
+        double blockX = block.getX();
+        double blockY = block.getY();
+        double blockZ = block.getZ();
+
+        return (blockX >= minX && blockX <= maxX) &&
+                        (blockY >= minY && blockY <= maxY) &&
+                        (blockZ >= minZ && blockZ <= maxZ);
+    }
+
 
 }
