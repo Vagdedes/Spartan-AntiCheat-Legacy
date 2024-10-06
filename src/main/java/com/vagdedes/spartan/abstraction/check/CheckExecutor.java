@@ -32,7 +32,7 @@ import org.bukkit.GameMode;
 import java.util.Collection;
 import java.util.List;
 
-public abstract class CheckExecutor extends DetectionExecutor {
+public abstract class CheckExecutor extends CheckDetection {
 
     private static final boolean v1_8 = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8);
     public static final String
@@ -46,7 +46,7 @@ public abstract class CheckExecutor extends DetectionExecutor {
     private boolean cancelled;
 
     public CheckExecutor(Enums.HackType hackType, SpartanPlayer player) {
-        super(null, hackType, player);
+        super(hackType, player);
         this.creation = System.currentTimeMillis();
         this.prevention = new HackPrevention();
     }

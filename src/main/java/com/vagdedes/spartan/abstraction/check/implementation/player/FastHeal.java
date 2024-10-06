@@ -1,6 +1,8 @@
 package com.vagdedes.spartan.abstraction.check.implementation.player;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
@@ -16,12 +18,14 @@ import org.bukkit.potion.PotionEffectType;
 
 public class FastHeal extends CheckExecutor {
 
+    private final DetectionExecutor detection;
     private double previousHealth;
     private long time;
     private final Buffer.IndividualBuffer buffer;
 
     public FastHeal(HackType hackType, SpartanPlayer player) {
         super(hackType, player);
+        this.detection = new ImplementedDetectionExecutor(this, null, true);
         this.previousHealth = player.getInstance().getHealth();
         this.buffer = new Buffer.IndividualBuffer();
     }
@@ -58,7 +62,7 @@ public class FastHeal extends CheckExecutor {
                         if (timePassed < limit
                                 && buffer.count(1, 10) == 3) {
                             buffer.reset();
-                            cancel("type: default, ms: " + timePassed + ", limit: " + limit);
+                            this.detection.cancel("type: default, ms: " + timePassed + ", limit: " + limit);
                         }
                     }
                 }

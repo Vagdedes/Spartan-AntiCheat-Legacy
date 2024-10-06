@@ -2,6 +2,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.combat.killaura.mo
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.utils.math.RayUtils;
@@ -17,6 +18,8 @@ import java.util.UUID;
 import static java.lang.Math.PI;
 
 public class MoveDirection extends DetectionExecutor {
+
+    private final DetectionExecutor layer1, layer2;
     private AttackHandle attackHandle;
     private final LinkedList<AttackData> aimAnalysis;
     private float vl, vlL2;
@@ -26,7 +29,9 @@ public class MoveDirection extends DetectionExecutor {
     private final LinkedList<Double> rayTraceAnalysis;
 
     public MoveDirection(CheckExecutor executor) {
-        super(executor);
+        super(executor, null, true);
+        this.layer1 = new ImplementedDetectionExecutor(executor, "move_direction_1", true);
+        this.layer2 = new ImplementedDetectionExecutor(executor, "move_direction_2", true);
         aimAnalysis = new LinkedList<>();
         attackHandle = new AttackHandle(null, System.currentTimeMillis());
 
@@ -168,7 +173,7 @@ public class MoveDirection extends DetectionExecutor {
 
         double punishValue = Math.floor(vl / 200);
         if (!punish.isEmpty() && vl > priorityData(priorityType()).vlLimit) {
-            cancel(
+            this.layer1.cancel(
                     "(layer1) type: " + punish + ", bH: " + basicHeuristic
                             + ", lH: " + lowHeuristic + ", rA: "
                             + robotizedAmount + ", mKM: " + machineKnownMovement
@@ -183,7 +188,7 @@ public class MoveDirection extends DetectionExecutor {
         }
 
         if (!punishL2.isEmpty() && vlL2 > (priorityData(priorityType()).vlLimit / 2) + 50) {
-            cancel(
+            this.layer2.cancel(
                     "(layer2) type: " + punishL2 + ", infs: " + infinitives,
                     punishValue,
                     to

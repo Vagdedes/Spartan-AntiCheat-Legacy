@@ -1,6 +1,8 @@
 package com.vagdedes.spartan.abstraction.check.implementation.player;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.minecraft.inventory.MaterialUtils;
@@ -16,6 +18,7 @@ import org.bukkit.potion.PotionEffectType;
 
 public class FastEat extends CheckExecutor {
 
+    private final DetectionExecutor interact, eat;
     private static final Material cake = MaterialUtils.get("cake");
     private static final long
             delay = 1_000L,
@@ -25,6 +28,8 @@ public class FastEat extends CheckExecutor {
 
     public FastEat(HackType hackType, SpartanPlayer player) {
         super(hackType, player);
+        this.interact = new ImplementedDetectionExecutor(this, "interact", true);
+        this.eat = new ImplementedDetectionExecutor(this, "eat", true);
     }
 
     private long getDelay() {
@@ -64,7 +69,7 @@ public class FastEat extends CheckExecutor {
         long delay = getDelay();
 
         if (delay > 0L && time <= delay) {
-            cancel("type: eat, ms: " + time);
+            this.eat.cancel("type: eat, ms: " + time);
             bool = true;
         } else {
             bool = false;
@@ -77,7 +82,7 @@ public class FastEat extends CheckExecutor {
                 delay = getDelay();
 
         if (delay > 0L && time <= delay) {
-            cancel("type: interact, ms: " + time + ", delay: " + delay);
+            this.interact.cancel("type: interact, ms: " + time + ", delay: " + delay);
             return true;
         }
         return false;

@@ -35,12 +35,6 @@ public class KillAura extends CheckExecutor {
         moveDirection = new MoveDirection(this);
     }
 
-    private void runDetection(String option, Runnable runnable) {
-        if (hackType.getCheck().getBooleanOption(option, true)) {
-            runnable.run();
-        }
-    }
-
     boolean canRunEntity(LivingEntity entity) {
         if (entity.getVehicle() == null
                 && CombatUtils.canCheck(player, entity)) {
@@ -54,60 +48,30 @@ public class KillAura extends CheckExecutor {
 
     @Override
     protected void runInternal(boolean cancelled) {
-        runDetection(
-                "check_response_time",
-                responseTime::run
-        );
+        responseTime.run();
     }
 
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
         if (object instanceof PlayerMoveEvent) {
-            runDetection(
-                    "check_move_direction",
-                    moveDirection::run
-            );
+            moveDirection.run();
         } else if (object instanceof PlayerAttackEvent) {
             PlayerAttackEvent event = (PlayerAttackEvent) object;
             LivingEntity target = event.target;
 
             if (canRunEntity(target)) {
 
-                runDetection(
-                        "check_irregular",
-                        irregular::run
-                );
-                runDetection(
-                        "check_block_raytrace",
-                        () -> blockRaytrace.run(target)
-                );
-                runDetection(
-                        "check_entity_raytrace",
-                        entityRaytrace::run
-                );
-                runDetection(
-                        "check_move_direction",
-                        () -> moveDirection.run(target)
-                );
-                runDetection(
-                        "check_hit_time",
-                        hitTime::run
-                );
-                runDetection(
-                        "check_hit_direction",
-                        hitDirection::run
-                );
-                runDetection(
-                        "check_fight_analysis",
-                        () -> analysis.runDealDamage(event)
-                );
+                irregular.run();
+                blockRaytrace.run(target);
+                entityRaytrace.run();
+                moveDirection.run(target);
+                hitTime.run();
+                hitDirection.run();
+                analysis.runDealDamage(event);
             }
         } else if (object instanceof EntityAttackPlayerEvent) {
             EntityAttackPlayerEvent event = (EntityAttackPlayerEvent) object;
-            runDetection(
-                    "check_fight_analysis",
-                    () -> analysis.runReceiveDamage(event)
-            );
+            analysis.runReceiveDamage(event);
         }
     }
 

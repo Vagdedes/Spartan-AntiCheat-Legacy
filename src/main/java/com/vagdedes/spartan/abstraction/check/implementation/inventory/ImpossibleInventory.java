@@ -2,6 +2,8 @@ package com.vagdedes.spartan.abstraction.check.implementation.inventory;
 
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
@@ -18,6 +20,11 @@ import org.bukkit.inventory.ItemStack;
 
 public class ImpossibleInventory extends CheckExecutor {
 
+    private final DetectionExecutor
+            autoTotemDetection,
+            closedInventoryDetection,
+            portalInventoryDetection,
+            cursorUsageDetection;
     private static final Material
             nether_portal = MaterialUtils.get("nether_portal"),
             totem_of_undying = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_11)
@@ -32,6 +39,10 @@ public class ImpossibleInventory extends CheckExecutor {
 
     public ImpossibleInventory(Enums.HackType hackType, SpartanPlayer player) {
         super(hackType, player);
+        this.autoTotemDetection = new ImplementedDetectionExecutor(this, "auto_totem", true);
+        this.closedInventoryDetection = new ImplementedDetectionExecutor(this, "closed_inventory", true);
+        this.portalInventoryDetection = new ImplementedDetectionExecutor(this, "portal_inventory", true);
+        this.cursorUsageDetection = new ImplementedDetectionExecutor(this, "cursor_usage", true);
     }
 
     @Override
@@ -40,7 +51,7 @@ public class ImpossibleInventory extends CheckExecutor {
             long ticks = this.autoTotem - System.currentTimeMillis();
 
             if (ticks > 0L) {
-                cancel("type: auto-totem, remaining-ticks: " + ticks);
+                this.autoTotemDetection.cancel("type: auto-totem, remaining-ticks: " + ticks);
             }
         } else {
             InventoryClickEvent e = (InventoryClickEvent) object;
@@ -60,7 +71,7 @@ public class ImpossibleInventory extends CheckExecutor {
                 int cases = getActionCase();
 
                 if (cases != 0) {
-                    cancel(
+                    this.cursorUsageDetection.cancel(
                             "type: cursor-usage, case: " + cases,
                             1.0,
                             player.movement.getDetectionLocation(),
@@ -94,7 +105,7 @@ public class ImpossibleInventory extends CheckExecutor {
                 player.movement.getLocation(),
                 true,
                 BlockUtils.ice, BlockUtils.blue_ice)) {
-            cancel("type: closed-inventory, case: " + cases);
+            this.closedInventoryDetection.cancel("type: closed-inventory, case: " + cases);
         }
     }
 
@@ -104,7 +115,7 @@ public class ImpossibleInventory extends CheckExecutor {
 
             if (loc.getBlock().getType() == nether_portal
                     || loc.clone().add(0, 1, 0).getBlock().getType() == nether_portal) {
-                cancel("type: portal-inventory");
+                this.portalInventoryDetection.cancel("type: portal-inventory");
             }
         }
     }

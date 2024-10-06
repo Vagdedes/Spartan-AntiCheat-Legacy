@@ -1,6 +1,8 @@
 package com.vagdedes.spartan.abstraction.check.implementation.combat;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.TPS;
 import me.vagdedes.spartan.system.Enums;
@@ -10,8 +12,14 @@ import java.util.Iterator;
 
 public class FastClicks extends CheckExecutor {
 
+    private final DetectionExecutor
+            clicksPerSecond,
+            clicksPattern;
+
     public FastClicks(Enums.HackType hackType, SpartanPlayer player) {
         super(hackType, player);
+        this.clicksPerSecond = new ImplementedDetectionExecutor(this, null, true);
+        this.clicksPattern = new ImplementedDetectionExecutor(this, "click_pattern", true);
     }
 
     @Override
@@ -21,10 +29,7 @@ public class FastClicks extends CheckExecutor {
                 15
         );
         boolean checkLimit = limit > 1,
-                checkPattern = hackType.getCheck().getBooleanOption(
-                        "check_click_pattern",
-                        true
-                );
+                checkPattern = this.clicksPattern.isEnabled();
 
         if (checkLimit || checkPattern) {
             Collection<Long> data = player.clicks.getData();
@@ -48,7 +53,7 @@ public class FastClicks extends CheckExecutor {
 
                 if (deviation > 10.0) { // Used for latency to judge when many packets are sent in a short period of time
                     if (checkLimit) {
-                        cancel(
+                        this.clicksPerSecond.cancel(
                                 "type: clicks-per-second"
                                         + ", count: " + count
                                         + ", limit: " + limit
@@ -61,7 +66,7 @@ public class FastClicks extends CheckExecutor {
                         double absolute = Math.abs(difference - deviation);
 
                         if (absolute < TPS.tickTime) {
-                            cancel(
+                            this.clicksPattern.cancel(
                                     "type: clicks-pattern"
                                             + ", count: " + count
                                             + ", difference: " + absolute

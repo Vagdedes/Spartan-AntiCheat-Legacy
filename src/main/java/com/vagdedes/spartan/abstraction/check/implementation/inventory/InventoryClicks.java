@@ -1,6 +1,8 @@
 package com.vagdedes.spartan.abstraction.check.implementation.inventory;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
@@ -13,6 +15,11 @@ import org.bukkit.inventory.ItemStack;
 
 public class InventoryClicks extends CheckExecutor {
 
+    private final DetectionExecutor
+            shift,
+            slow,
+            medium,
+            fast;
     private long time;
     private int oldHash;
     private final Buffer.IndividualBuffer
@@ -23,6 +30,10 @@ public class InventoryClicks extends CheckExecutor {
 
     public InventoryClicks(Enums.HackType hackType, SpartanPlayer player) {
         super(hackType, player);
+        this.shift = new ImplementedDetectionExecutor(this, "shift", true);
+        this.slow = new ImplementedDetectionExecutor(this, "slow", true);
+        this.medium = new ImplementedDetectionExecutor(this, "medium", true);
+        this.fast = new ImplementedDetectionExecutor(this, "fast", true);
         this.slowBuffer = new Buffer.IndividualBuffer();
         this.mediumBuffer = new Buffer.IndividualBuffer();
         this.fastBuffer = new Buffer.IndividualBuffer();
@@ -55,7 +66,7 @@ public class InventoryClicks extends CheckExecutor {
                         && !BlockUtils.hasMaterial(player.getInstance().getOpenInventory().getCursor())
                         && shiftBuffer.count(1, 5) == 4) { // Inventory
                     shiftBuffer.reset();
-                    cancel("type: shift, item: " + type);
+                    this.shift.cancel("type: shift, item: " + type);
                 } else {
                     long timePassed = System.currentTimeMillis() - time;
                     time = System.currentTimeMillis();
@@ -63,14 +74,14 @@ public class InventoryClicks extends CheckExecutor {
                     if ((!shift && !quick || newHash != oldHash)) {
                         if (timePassed < 150L) {
                             if (slowBuffer.count(1, 10) >= 8) {
-                                cancel("type: slow, ms: " + timePassed + ", item: " + type);
+                                this.slow.cancel("type: slow, ms: " + timePassed + ", item: " + type);
                             }
                             if (timePassed < 100L) {
                                 if (mediumBuffer.count(1, 5) >= 4) {
-                                    cancel("type: medium, ms: " + timePassed + ", item: " + type);
+                                    this.medium.cancel("type: medium, ms: " + timePassed + ", item: " + type);
                                 }
                                 if (timePassed < 50L && fastBuffer.count(1, 5) >= 4) {
-                                    cancel("type: fast, ms: " + timePassed + ", item: " + type);
+                                    this.fast.cancel("type: fast, ms: " + timePassed + ", item: " + type);
                                 }
                             }
                         }

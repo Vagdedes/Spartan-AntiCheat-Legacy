@@ -1,6 +1,8 @@
 package com.vagdedes.spartan.abstraction.check.implementation.movement;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
 import com.vagdedes.spartan.abstraction.player.PlayerTrackers;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.player.SpartanPotionEffect;
@@ -61,16 +63,24 @@ public class Speed extends CheckExecutor {
             -2.92, -2.94, -2.96, -2.98, -3.0
     };
 
+    private final DetectionExecutor
+            strafeLineSpeeding,
+            strafeJumpSpeeding,
+            straightLineSpeeding;
+
     private int onAir = 0, onGround = 0, velocity = 0;
     private double multiply = 0, multiplyFriction = 0, multiplyVelo = 0, vl = 0, multiplyViolation;
     private double yaw1move = 0;
-    private String violation = null;
+    private Object[] violation = null;
     private RayLine tick1move = new RayLine(0, 0);
     private Location f = null;
     private boolean simulationFlag = false;
 
     public Speed(Enums.HackType hackType, SpartanPlayer player) {
         super(hackType, player);
+        this.strafeLineSpeeding = new ImplementedDetectionExecutor(this, "strafe_line_speeding", true);
+        this.strafeJumpSpeeding = new ImplementedDetectionExecutor(this, "strafe_jump_speeding", true);
+        this.straightLineSpeeding = new ImplementedDetectionExecutor(this, "straight_line_speeding", true);
     }
 
     @Override
@@ -120,12 +130,10 @@ public class Speed extends CheckExecutor {
         if (speed > speedLimit) {
             this.multiplyViolation = speed / speedLimit;
             this.vl += 35 * multiplyViolation;
-
-            if (hackType.getCheck().getBooleanOption("straight_line_speeding", true)) {
-                this.violation = "type: straight line speeding [" + speed + "/" + speedLimit + "], onGround: " + onGround;
-            } else {
-                this.violation = null;
-            }
+            this.violation = new Object[]{
+                    "type: straight line speeding [" + speed + "/" + speedLimit + "], onGround: " + onGround,
+                    this.straightLineSpeeding
+            };
         }
         if (velocity == 0 && !player.isBedrockPlayer() && levitationEffect == null
                 && glideEffect == null && !player.movement.isSwimming()) {
@@ -146,24 +154,20 @@ public class Speed extends CheckExecutor {
                     || ((airDiff > 45) && !onGround && speed > localSpeedLimit)) {
                 this.multiplyViolation = speed / localSpeedLimit;
                 this.vl += 25 * multiplyViolation;
-
-                if (hackType.getCheck().getBooleanOption("strafe_line_speeding", true)) {
-                    this.violation = "type: strafe line speeding [" +
-                            speed + "/" + localSpeedLimit + "], onGround: " + onGround + ", diff: " + rayDiff;
-                } else {
-                    this.violation = null;
-                }
+                this.violation = new Object[]{
+                        "type: strafe line speeding [" +
+                                speed + "/" + localSpeedLimit + "], onGround: " + onGround + ", diff: " + rayDiff,
+                        this.strafeLineSpeeding
+                };
             }
             if (onAir == 1 && rayDiff > 47 && speed > localSpeedLimit2) {
                 this.multiplyViolation = speed / localSpeedLimit2;
                 this.vl += 75 * multiplyViolation;
-
-                if (hackType.getCheck().getBooleanOption("strafe_jump_speeding", true)) {
-                    this.violation = "type: strafe jump speeding [" +
-                            speed + "/" + localSpeedLimit2 + "], onGround: " + onGround + ", diff: " + rayDiff;
-                } else {
-                    this.violation = null;
-                }
+                this.violation = new Object[]{
+                        "type: strafe jump speeding [" +
+                                speed + "/" + localSpeedLimit2 + "], onGround: " + onGround + ", diff: " + rayDiff,
+                        this.strafeJumpSpeeding
+                };
             }
         }
 
@@ -172,7 +176,10 @@ public class Speed extends CheckExecutor {
             this.vl /= 2;
 
             if (this.violation != null) {
-                cancel(this.violation, this.multiplyViolation);
+                ((DetectionExecutor) this.violation[1]).cancel(
+                        (String) this.violation[0],
+                        this.multiplyViolation
+                );
             }
             startSimulationFlag();
         }

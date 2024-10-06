@@ -28,12 +28,11 @@ public class IrregularMovementsGravity extends DetectionExecutor {
     private boolean ignore, sensitive;
 
     IrregularMovementsGravity(CheckExecutor executor) {
-        super(executor);
+        super(executor, "gravity", true);
     }
 
     void run(double vertical, double oldVertical, double box, double oldBox) {
-        if (hackType.getCheck().getBooleanOption("check_gravity", true)
-                && !isUsingMace()) {
+        if (!isUsingMace()) {
             int airTicks = player.movement.getTicksOnAir();
             SpartanLocation to = player.movement.getLocation(),
                     from = player.movement.getEventFromLocation();

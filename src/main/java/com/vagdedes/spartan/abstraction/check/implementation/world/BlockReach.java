@@ -1,6 +1,8 @@
 package com.vagdedes.spartan.abstraction.check.implementation.world;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
@@ -20,8 +22,18 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 public class BlockReach extends CheckExecutor {
 
+    private final DetectionExecutor
+            breaking,
+            interact,
+            place,
+            unusual;
+
     public BlockReach(HackType hackType, SpartanPlayer player) {
         super(hackType, player);
+        this.breaking = new ImplementedDetectionExecutor(this, "breaking", true);
+        this.interact = new ImplementedDetectionExecutor(this, "interact", true);
+        this.place = new ImplementedDetectionExecutor(this, "place", true);
+        this.unusual = new ImplementedDetectionExecutor(this, "unusual", true);
     }
 
     private boolean canDo(Block b) {
@@ -47,7 +59,7 @@ public class BlockReach extends CheckExecutor {
                         limit = getLimit();
 
                 if (distance >= limit) {
-                    cancel("type: break, distance: " + distance + ", limit: " + limit + ", block: " + BlockUtils.blockToString(block));
+                    this.breaking.cancel("type: breaking, distance: " + distance + ", limit: " + limit + ", block: " + BlockUtils.blockToString(block));
                 }
             }
         } else if (object instanceof PlayerInteractEvent) {
@@ -59,7 +71,7 @@ public class BlockReach extends CheckExecutor {
                         limit = getLimit();
 
                 if (distance >= limit) {
-                    cancel("type: interact, distance: " + distance + ", limit: " + limit + ", block: " + BlockUtils.blockToString(block));
+                    this.interact.cancel("type: interact, distance: " + distance + ", limit: " + limit + ", block: " + BlockUtils.blockToString(block));
                 }
             }
         } else {
@@ -82,12 +94,12 @@ public class BlockReach extends CheckExecutor {
                             || block.getType() != Material.BARRIER)
                             && player.getInstance().getVehicle() == null
                             && distance > (ab_distance + GroundUtils.boundingBox + 0.1)) {
-                        cancel("type: unusual, distance: " + distance + ", block-against-distance: " + ab_distance + ", block: " + BlockUtils.blockToString(block));
+                        this.unusual.cancel("type: unusual, distance: " + distance + ", block-against-distance: " + ab_distance + ", block: " + BlockUtils.blockToString(block));
                     } else {
                         double limit = getLimit();
 
                         if (distance >= limit) {
-                            cancel("type: place, distance: " + distance + ", limit: " + limit + ", block: " + BlockUtils.blockToString(block));
+                            this.place.cancel("type: place, distance: " + distance + ", limit: " + limit + ", block: " + BlockUtils.blockToString(block));
                         }
                     }
                 }

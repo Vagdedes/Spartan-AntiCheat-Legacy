@@ -10,13 +10,12 @@ public class IrregularMovementsFoodSprint extends DetectionExecutor {
     private final Buffer.IndividualBuffer buffer;
 
     IrregularMovementsFoodSprint(CheckExecutor executor) {
-        super(executor);
+        super(executor, "sprint", true);
         this.buffer = new Buffer.IndividualBuffer();
     }
 
     void run() {
-        if (hackType.getCheck().getBooleanOption("check_sprint", true)
-                && player.protocol.isSprinting()) {
+        if (player.protocol.isSprinting()) {
             GameMode gameMode = player.getInstance().getGameMode();
             int food = player.getInstance().getFoodLevel();
 

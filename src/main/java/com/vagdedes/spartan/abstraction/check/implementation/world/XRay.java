@@ -1,6 +1,8 @@
 package com.vagdedes.spartan.abstraction.check.implementation.world;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.profiling.MiningHistory;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
@@ -52,8 +54,11 @@ public class XRay extends CheckExecutor {
 
     // Separator
 
+    private final DetectionExecutor detection;
+
     public XRay(Enums.HackType hackType, SpartanPlayer player) {
         super(hackType, player);
+        this.detection = new ImplementedDetectionExecutor(this, null, true);
     }
 
     @Override
@@ -70,7 +75,7 @@ public class XRay extends CheckExecutor {
                 double points = AlgebraUtils.cut(minesDeviation - averageDeviation, 2);
 
                 if (points > 0.0) {
-                    cancel(
+                    this.detection.cancel(
                             "Unfair gathering of " + objects[3] + ", surpassed others by " + points + " " + (points == 1.0 ? "point" : "points")
                     );
                 }

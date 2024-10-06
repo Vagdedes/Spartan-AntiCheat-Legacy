@@ -6,7 +6,7 @@ import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 public class EntityRaytrace extends DetectionExecutor {
 
     EntityRaytrace(CheckExecutor executor) {
-        super(executor);
+        super(executor, "entity_raytrace", true);
     }
 
     void run() {

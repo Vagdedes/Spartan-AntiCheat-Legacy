@@ -1,6 +1,8 @@
 package com.vagdedes.spartan.abstraction.check.implementation.world;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
@@ -15,11 +17,15 @@ import org.bukkit.event.block.BlockPlaceEvent;
 
 public class FastPlace extends CheckExecutor {
 
+    private final DetectionExecutor fast, medium, slow;
     private long time;
     private final Buffer.IndividualBuffer fastBuffer, mediumBuffer, slowBuffer;
 
     public FastPlace(HackType hackType, SpartanPlayer player) {
         super(hackType, player);
+        this.fast = new ImplementedDetectionExecutor(this, "fast", true);
+        this.medium = new ImplementedDetectionExecutor(this, "medium", true);
+        this.slow = new ImplementedDetectionExecutor(this, "slow", true);
         this.fastBuffer = new Buffer.IndividualBuffer();
         this.mediumBuffer = new Buffer.IndividualBuffer();
         this.slowBuffer = new Buffer.IndividualBuffer();
@@ -44,7 +50,7 @@ public class FastPlace extends CheckExecutor {
 
                 if (timePassed <= 150L) {
                     if (slowBuffer.count(1, ticks) >= 8) {
-                        cancel(
+                        this.slow.cancel(
                                 "type: slow"
                                         + ", ms: " + timePassed
                                         + ", block: " + BlockUtils.materialToString(material),
@@ -55,7 +61,7 @@ public class FastPlace extends CheckExecutor {
                     }
                     if (timePassed <= 100L) {
                         if (mediumBuffer.count(1, ticks) >= 7) {
-                            cancel(
+                            this.medium.cancel(
                                     "type: medium"
                                             + ", ms: " + timePassed
                                             + ", block: " + BlockUtils.materialToString(material),
@@ -64,22 +70,18 @@ public class FastPlace extends CheckExecutor {
                                     ticks
                             );
                         }
-                        if (timePassed <= 50L) {
-                            String detection = "type: fast";
-
-                            if (!player.isBedrockPlayer()
-                                    && hackType.getCheck().getBooleanOption("check_fast", true)
-                                    && !Compatibility.CompatibilityType.VEIN_MINER.isFunctional()
-                                    && fastBuffer.count(1, ticks) >= 4) {
-                                cancel(
-                                        detection
-                                                + ", ms: " + timePassed
-                                                + ", block: " + BlockUtils.materialToString(material),
-                                        1.0,
-                                        null,
-                                        ticks
-                                );
-                            }
+                        if (timePassed <= 50L
+                                && !player.isBedrockPlayer()
+                                && !Compatibility.CompatibilityType.VEIN_MINER.isFunctional()
+                                && fastBuffer.count(1, ticks) >= 4) {
+                            this.fast.cancel(
+                                    "type: fast"
+                                            + ", ms: " + timePassed
+                                            + ", block: " + BlockUtils.materialToString(material),
+                                    1.0,
+                                    null,
+                                    ticks
+                            );
                         }
                     }
                 }

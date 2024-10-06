@@ -1,6 +1,8 @@
 package com.vagdedes.spartan.abstraction.check.implementation.player;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
 import com.vagdedes.spartan.abstraction.player.PlayerTrackers;
@@ -23,6 +25,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 public class NoSwing extends CheckExecutor {
 
+    private final DetectionExecutor breaking, damage;
     private static final int refreshTime = 30 * 20;
     private long breakTime, animationTime;
     private final Buffer.IndividualBuffer damageBuffer;
@@ -33,6 +36,8 @@ public class NoSwing extends CheckExecutor {
         this.breakTime = Long.MAX_VALUE;
         this.animationTime = Long.MAX_VALUE;
         this.damageBuffer = new Buffer.IndividualBuffer();
+        this.breaking = new ImplementedDetectionExecutor(this, "breaking", true);
+        this.damage = new ImplementedDetectionExecutor(this, "damage", true);
     }
 
     @Override
@@ -46,8 +51,7 @@ public class NoSwing extends CheckExecutor {
         } else if (object instanceof PlayerAnimationEvent) {
             this.animationTime = System.currentTimeMillis();
         } else if (object instanceof BlockBreakEvent) {
-            if (!hackType.getCheck().getBooleanOption("check_breaking", true)
-                    || MineBomb.isUsing(player)
+            if (MineBomb.isUsing(player)
                     || AureliumSkills.isUsing(player)) {
                 return;
             }
@@ -57,8 +61,8 @@ public class NoSwing extends CheckExecutor {
                     && !TreeFeller.canCancel(player, block)
                     && System.currentTimeMillis() - breakTime > TPS.tickTime) {
                 if (this.animationTime == Long.MAX_VALUE) {
-                    cancel(
-                            "type: break"
+                    this.breaking.cancel(
+                            "type: breaking"
                                     + ", block: " + BlockUtils.blockToString(block)
                                     + ", item: " + BlockUtils.materialToString(player.getItemInHand().getType()));
                 } else {
@@ -66,8 +70,7 @@ public class NoSwing extends CheckExecutor {
                 }
             }
         } else if (object instanceof PlayerAttackEvent) {
-            if (!hackType.getCheck().getBooleanOption("check_damage", true)
-                    || player.getAttackCooldown() != 1.0f
+            if (player.getAttackCooldown() != 1.0f
                     || player.trackers.has(PlayerTrackers.TrackerType.TRIDENT)) {
                 return;
             }
@@ -84,7 +87,7 @@ public class NoSwing extends CheckExecutor {
                 if (this.animationTime == Long.MAX_VALUE) {
                     if (damageBuffer.count(1, refreshTime) >= 3) {
                         damageBuffer.reset();
-                        cancel(
+                        this.damage.cancel(
                                 "type: damage"
                                         + ", entity: " + CombatUtils.entityToString(entity)
                                         + ", item: " + BlockUtils.materialToString(player.getItemInHand().getType())

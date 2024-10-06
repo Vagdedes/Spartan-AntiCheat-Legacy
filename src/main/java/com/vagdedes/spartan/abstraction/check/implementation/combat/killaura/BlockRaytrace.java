@@ -20,7 +20,7 @@ import java.util.Set;
 public class BlockRaytrace extends DetectionExecutor {
 
     BlockRaytrace(CheckExecutor executor) {
-        super(executor);
+        super(executor, "block_raytrace", true);
     }
 
     public void run(Entity targetHandle) {

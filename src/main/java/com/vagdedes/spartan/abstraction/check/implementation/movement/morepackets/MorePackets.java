@@ -1,6 +1,8 @@
 package com.vagdedes.spartan.abstraction.check.implementation.movement.morepackets;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
 import com.vagdedes.spartan.abstraction.event.PlayerTickEvent;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.TPS;
@@ -18,12 +20,43 @@ public class MorePackets extends CheckExecutor {
 
     private final Map<Long, Integer> bukkitNmsMap;
     private int bukkitBuffer, packetVL;
+    private final ImplementedDetectionExecutor
+            timer,
+            positive_net,
+            positive_latency,
+            positive_balance,
+            negative;
 
     public MorePackets(HackType hackType, SpartanPlayer player) {
         super(hackType, player);
         this.bukkitNmsMap = new LinkedHashMap<>((int) TPS.maximum + 1, 1.0f);
         this.bukkitBuffer = 0;
         this.packetVL = 0;
+        this.timer = new ImplementedDetectionExecutor(
+                this,
+                "timer",
+                true
+        );
+        this.positive_net = new ImplementedDetectionExecutor(
+                this,
+                "positive_net",
+                true
+        );
+        this.positive_latency = new ImplementedDetectionExecutor(
+                this,
+                "positive_latency",
+                true
+        );
+        this.positive_balance = new ImplementedDetectionExecutor(
+                this,
+                "positive_balance",
+                true
+        );
+        this.negative = new ImplementedDetectionExecutor(
+                this,
+                "negative",
+                true
+        );
     }
 
     @Override
@@ -48,21 +81,32 @@ public class MorePackets extends CheckExecutor {
         TimerBalancer timerBalancer = event.protocol.timerBalancer;
         timerBalancer.pushDelay(delay);
         if (timerBalancer.isNegativeTimer() && delay > 50) {
-            punish("type: negative, multiply: " + RayUtils.scaleVal((double) 50 / delay, 2));
+            punish(this.negative,
+                    "type: negative, multiply: " + RayUtils.scaleVal((double) 50 / delay, 2)
+            );
         } else if (delay < 50 && timerBalancer.getResult() > 100) {
-            punish("type: positive(balance), multiply: " + RayUtils.scaleVal((double) 50 / delay, 2));
+            punish(
+                    this.positive_balance,
+                    "type: positive(balance), multiply: " + RayUtils.scaleVal((double) 50 / delay, 2)
+            );
         } else if (delay < 50 && timerBalancer.getForced() > 8) {
-            punish("type: positive(NET), multiply: " + RayUtils.scaleVal((double) 50 / delay, 2));
+            punish(
+                    this.positive_net,
+                    "type: positive(NET), multiply: " + RayUtils.scaleVal((double) 50 / delay, 2)
+            );
         } else if (delay < 50 && timerBalancer.getLatency() > 40) {
-            punish("type: positive(latency), multiply: " + RayUtils.scaleVal((double) 50 / delay, 2));
+            punish(
+                    this.positive_latency,
+                    "type: positive(latency), multiply: " + RayUtils.scaleVal((double) 50 / delay, 2)
+            );
         }
     }
 
-    private void punish(String info) {
+    private void punish(DetectionExecutor executor, String info) {
         packetVL += 70;
 
         if (packetVL > 100) {
-            cancel(
+            executor.cancel(
                     info,
                     1,
                     player.movement.getDetectionLocation(),
@@ -144,7 +188,7 @@ public class MorePackets extends CheckExecutor {
 
                     if (bukkitBuffer > 2) {
                         bukkitBuffer = 0;
-                        cancel(
+                        this.timer.cancel(
                                 "type: timer"
                                         + ", sum: " + sum
                                         + ", collections: " + collections

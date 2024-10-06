@@ -7,7 +7,7 @@ import com.vagdedes.spartan.listeners.protocol.standalone.Packet_LagCompensation
 public class HitTime extends DetectionExecutor {
 
     HitTime(CheckExecutor executor) {
-        super(executor);
+        super(executor, "hit_time", true);
     }
 
     private int

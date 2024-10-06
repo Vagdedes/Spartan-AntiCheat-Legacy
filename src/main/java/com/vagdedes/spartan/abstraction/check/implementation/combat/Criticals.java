@@ -1,6 +1,8 @@
 package com.vagdedes.spartan.abstraction.check.implementation.combat;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.CombatUtils;
@@ -10,8 +12,11 @@ import org.bukkit.potion.PotionEffectType;
 
 public class Criticals extends CheckExecutor {
 
+    private final DetectionExecutor detection;
+
     public Criticals(HackType hackType, SpartanPlayer player) {
         super(hackType, player);
+        this.detection = new ImplementedDetectionExecutor(this, null, true);
     }
 
     @Override
@@ -25,7 +30,7 @@ public class Criticals extends CheckExecutor {
                 && player.movement.getTicksOnAir() == 1
                         && !player.movement.getLocation().getBlock().getType().isBlock()
                 && !RayUtils.onSolidBlock(player, player.movement.getLocation().clone().add(0, 2, 0))) {
-            cancel("type: packet", 1);
+            this.detection.cancel("type: packet", 1);
         }
     }
 

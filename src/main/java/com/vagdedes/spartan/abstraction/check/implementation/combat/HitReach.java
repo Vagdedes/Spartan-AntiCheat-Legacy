@@ -2,6 +2,8 @@ package com.vagdedes.spartan.abstraction.check.implementation.combat;
 
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
 import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
@@ -20,12 +22,17 @@ import java.util.LinkedList;
 
 public class HitReach extends CheckExecutor {
 
+    private final DetectionExecutor
+            hitboxRaytrace,
+            simple;
     private final LinkedList<Double> rayTraceAnalysis = new LinkedList<>();
     private int vl = 0;
     private int localVl = 0;
 
     public HitReach(HackType hackType, SpartanPlayer player) {
         super(hackType, player);
+        hitboxRaytrace = new ImplementedDetectionExecutor(this, "hitbox_raytrace", true);
+        simple = new ImplementedDetectionExecutor(this, "simple", true);
     }
 
     @Override
@@ -63,7 +70,7 @@ public class HitReach extends CheckExecutor {
                     if (bruteforceRayTrace > hitbox + 0.03 && bruteforceRayTrace != 14.88) {
                         localVl += (int) (100 + ((bruteforceRayTrace - hitbox) * 50));
                         if (localVl > 300) {
-                            cancel(
+                            this.hitboxRaytrace.cancel(
                                     "type: hitbox-raytrace, reach: " + ((bruteforceRayTrace - hitbox) + 3),
                                     vl / 100D,
                                     player.movement.getDetectionLocation()
@@ -103,7 +110,7 @@ public class HitReach extends CheckExecutor {
         int percent = (int) ((result / 0.4) * 100);
         if (punish != null) {
             vl += 100;
-            cancel(
+            this.simple.cancel( // ATTENTION: Add more detections to the check if you write more definitions for the 'punish' String field
                     "type: " + punish + ", hitbox-size-analysis: "
                             + result + ", hitbox-size-last: " + bruteForce + ", percent-of-deviance: "
                             + percent + "%, reach: " + RayUtils.scaleVal((result / 0.4) * 3, 2) + " blocks",

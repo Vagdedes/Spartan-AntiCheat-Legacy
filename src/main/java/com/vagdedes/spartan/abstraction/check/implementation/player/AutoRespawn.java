@@ -1,6 +1,8 @@
 package com.vagdedes.spartan.abstraction.check.implementation.player;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.TPS;
@@ -10,10 +12,12 @@ import org.bukkit.GameRule;
 
 public class AutoRespawn extends CheckExecutor {
 
+    private final DetectionExecutor detection;
     private long memory;
 
     public AutoRespawn(HackType hackType, SpartanPlayer player) {
         super(hackType, player);
+        this.detection = new ImplementedDetectionExecutor(this, null, true);
     }
 
     @Override
@@ -28,7 +32,7 @@ public class AutoRespawn extends CheckExecutor {
 
         if (time <= limit && !player.getInstance().isDead()) {
             memory = 0L;
-            cancel(
+            this.detection.cancel(
                     "type: default, ms: " + time,
                     (limit - time) / TPS.tickTimeDecimal,
                     player.movement.getDetectionLocation(),

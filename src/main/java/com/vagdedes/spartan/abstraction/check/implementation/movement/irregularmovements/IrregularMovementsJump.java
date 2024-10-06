@@ -42,12 +42,11 @@ public class IrregularMovementsJump extends DetectionExecutor {
     }
 
     IrregularMovementsJump(CheckExecutor executor) {
-        super(executor);
+        super(executor, "jump", true);
     }
 
     void run(double vertical, double box) {
-        if (hackType.getCheck().getBooleanOption("check_jump", true)
-                && player.trackers.has(PlayerTrackers.TrackerFamily.VELOCITY)
+        if (player.trackers.has(PlayerTrackers.TrackerFamily.VELOCITY)
                 ? player.movement.justJumped(vertical)
                 : player.movement.isJumping(vertical)) {
             int jumpEffect = PlayerUtils.getPotionLevel(player, PotionEffectUtils.JUMP) + 1,

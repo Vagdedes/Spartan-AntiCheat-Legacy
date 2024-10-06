@@ -1,6 +1,8 @@
 package com.vagdedes.spartan.abstraction.check.implementation.world;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
@@ -30,10 +32,21 @@ import java.util.Map;
 
 public class ImpossibleActions extends CheckExecutor {
 
+    private DetectionExecutor
+            scaffoldDirection,
+            scaffoldUp,
+            scaffoldYaw,
+            tower,
+            actions;
     private final Map<Integer, Buffer.IndividualBuffer> buffers;
 
     public ImpossibleActions(Enums.HackType hackType, SpartanPlayer player) {
         super(hackType, player);
+        this.scaffoldDirection = new ImplementedDetectionExecutor(this, "scaffold_direction", true);
+        this.scaffoldUp = new ImplementedDetectionExecutor(this, "scaffold_up", true);
+        this.scaffoldYaw = new ImplementedDetectionExecutor(this, "scaffold_yaw", true);
+        this.tower = new ImplementedDetectionExecutor(this, "tower", true);
+        this.actions = new ImplementedDetectionExecutor(this, "actions", true);
         this.buffers = new OverflowMap<>(new LinkedHashMap<>(), 124);
     }
 
@@ -69,7 +82,7 @@ public class ImpossibleActions extends CheckExecutor {
                                     : Double.MAX_VALUE;
 
                             if (directionDistance <= 1.35) {
-                                cancel(
+                                this.scaffoldDirection.cancel(
                                         "type: scaffold(direction)"
                                                 + ", vector-distance: " + directionDistance
                                                 + ", block-distance: " + playerLocation.distance(blockAgainst.getLocation())
@@ -78,7 +91,7 @@ public class ImpossibleActions extends CheckExecutor {
                                 float pitch = playerLocation.getPitch();
 
                                 if (pitch <= 0.0) {
-                                    cancel(
+                                    this.scaffoldUp.cancel(
                                             "type: scaffold(up)"
                                                     + ", pitch: " + pitch
                                                     + ", block-distance: " + playerLocation.distance(blockAgainst.getLocation())
@@ -107,7 +120,7 @@ public class ImpossibleActions extends CheckExecutor {
                                         yawDeviation = Math.sqrt(yawDeviation / ((double) requiredComparisons));
 
                                         if (yawDeviation >= 270.0) {
-                                            cancel(
+                                            this.scaffoldYaw.cancel(
                                                     "type: scaffold(yaw)"
                                                             + ", deviation: " + yawDeviation
                                                             + ", block-distance: " + playerLocation.distance(blockAgainst.getLocation())
@@ -146,7 +159,7 @@ public class ImpossibleActions extends CheckExecutor {
 
                                 if (buffer.count(1, motionTicks) > possiblePlacements) {
                                     buffer.reset();
-                                    cancel(
+                                    this.tower.cancel(
                                             "type: tower"
                                                     + ", placements: " + possiblePlacements
                                                     + ", horizontal: " + deltaXZ
@@ -172,7 +185,6 @@ public class ImpossibleActions extends CheckExecutor {
                     || action == Action.LEFT_CLICK_BLOCK
                     || action == Action.RIGHT_CLICK_AIR
                     || action == Action.RIGHT_CLICK_BLOCK)
-                    && hackType.getCheck().getBooleanOption("check_actions", true)
                     && !Compatibility.CompatibilityType.MC_MMO.isFunctional()) {
                 int cases;
 
@@ -191,9 +203,9 @@ public class ImpossibleActions extends CheckExecutor {
                     Block b = event.getClickedBlock();
 
                     if (b == null) {
-                        cancel("type: actions, action: " + action_string + ", case: " + cases);
+                        this.actions.cancel("type: actions, action: " + action_string + ", case: " + cases);
                     } else {
-                        cancel("type: actions, action: " + action_string + ", case: " + cases + ", block: " + BlockUtils.blockToString(b));
+                        this.actions.cancel("type: actions, action: " + action_string + ", case: " + cases + ", block: " + BlockUtils.blockToString(b));
                     }
                 }
             }

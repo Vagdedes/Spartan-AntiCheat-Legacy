@@ -1,6 +1,8 @@
 package com.vagdedes.spartan.abstraction.check.implementation.world;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
@@ -30,6 +32,10 @@ import java.util.*;
 
 public class FastBreak extends CheckExecutor {
 
+    private final DetectionExecutor
+            delay,
+            breaksPerSecond,
+            indirectSurroundingsPerSecond;
     private Block lastBlock = null;
     private final Map<Integer, Long> interactTime;
     private final Buffer.IndividualBuffer
@@ -38,14 +44,16 @@ public class FastBreak extends CheckExecutor {
 
     public FastBreak(HackType hackType, SpartanPlayer player) {
         super(hackType, player);
+        this.delay = new ImplementedDetectionExecutor(this, "delay", true);
+        this.breaksPerSecond = new ImplementedDetectionExecutor(this, null, true);
+        this.indirectSurroundingsPerSecond = new ImplementedDetectionExecutor(this, null, true);
         this.interactTime = new LinkedHashMap<>();
         this.breaksPerSecondBuffer = new Buffer.IndividualBuffer();
         this.individualSurroundingsPerSecondBuffer = new Buffer.IndividualBuffer();
     }
 
     private void checkDelay(Block block, int seconds) {
-        if (hackType.getCheck().getBooleanOption("check_delay", true)
-                && !BlockUtils.isSensitive(block.getType())) {
+        if (!BlockUtils.isSensitive(block.getType())) {
             GameMode gameMode = player.getInstance().getGameMode();
 
             if (gameMode == GameMode.SURVIVAL || gameMode == GameMode.ADVENTURE) {
@@ -123,7 +131,7 @@ public class FastBreak extends CheckExecutor {
                                         + ", item: " + (emptyItem ? "none" : BlockUtils.materialToString(itemStack.getType()))
                                         + ", enchantments: " + (!enchantments.isEmpty() ? "none" : "[" + enchantmentsString + "]")
                                         + ", effects: " + (!hasEffects ? "none" : "[" + effectsString + "]");
-                                cancel(prevention, 1.0, null, seconds);
+                                this.delay.cancel(prevention, 1.0, null, seconds);
                             }
                         }
                     }
@@ -140,7 +148,7 @@ public class FastBreak extends CheckExecutor {
 
             if (limit > 0 && breaksPerSecondBuffer.count(1, 20) == limit) {
                 breaksPerSecondBuffer.reset();
-                cancel(
+                this.breaksPerSecond.cancel(
                         "type: breaks-per-second"
                                 + ", type: " + BlockUtils.blockToString(block)
                                 + ", limit: " + limit,
@@ -192,7 +200,7 @@ public class FastBreak extends CheckExecutor {
                     String prevention = "type: indirect-surroundings-per-second"
                             + ", type: " + BlockUtils.blockToString(block)
                             + ", limit: " + limit;
-                    cancel(prevention, 1.0, null, seconds);
+                    this.indirectSurroundingsPerSecond.cancel(prevention, 1.0, null, seconds);
                 }
                 lastBlock = block;
             }

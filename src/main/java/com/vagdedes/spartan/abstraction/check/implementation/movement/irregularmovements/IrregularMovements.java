@@ -1,6 +1,8 @@
 package com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.minecraft.world.GroundUtils;
@@ -8,7 +10,7 @@ import me.vagdedes.spartan.system.Enums.HackType;
 
 public class IrregularMovements extends CheckExecutor {
 
-    // Base
+    public final DetectionExecutor limitServerFlying;
     private final IrregularMovementsStep step;
     private final IrregularMovementsGravity gravity;
     private final IrregularMovementsJump jump;
@@ -18,6 +20,7 @@ public class IrregularMovements extends CheckExecutor {
 
     public IrregularMovements(HackType hackType, SpartanPlayer player) {
         super(hackType, player);
+        limitServerFlying = new ImplementedDetectionExecutor(this, "limit_server_flying", false);
         step = new IrregularMovementsStep(this);
         gravity = new IrregularMovementsGravity(this);
         jump = new IrregularMovementsJump(this);

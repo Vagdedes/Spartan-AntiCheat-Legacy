@@ -1,6 +1,8 @@
 package com.vagdedes.spartan.abstraction.check.implementation.combat;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.CombatUtils;
@@ -12,8 +14,12 @@ import org.bukkit.event.player.PlayerVelocityEvent;
 
 public class Velocity extends CheckExecutor {
 
+    private final DetectionExecutor vertical, horizontal;
+
     public Velocity(Enums.HackType hackType, SpartanPlayer player) {
         super(hackType, player);
+        this.vertical = new ImplementedDetectionExecutor(this, "vertical", true);
+        this.horizontal = new ImplementedDetectionExecutor(this, "horizontal", true);
     }
 
     private boolean veloV = false;
@@ -52,7 +58,7 @@ public class Velocity extends CheckExecutor {
                         vl += 100;
                         veloV = false;
                         if (vl > 300) {
-                            cancel(
+                            this.vertical.cancel(
                                     "type: vertical, speed-vertical: "
                                             + vertical + ", sended-vertical: " + verticalSended,
                                     1,
@@ -75,7 +81,7 @@ public class Velocity extends CheckExecutor {
                 if (x < xSended / decreace && z < zSended / decreace) {
                     vl += 100;
                     if (vl > 300) {
-                        cancel(
+                        this.horizontal.cancel(
                                 "type: horizontal, x: " + x + ", z: " + z
                                         + ", sended-x: " + xSended + ", sended-z: " + zSended,
                                 1,

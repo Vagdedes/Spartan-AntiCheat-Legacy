@@ -1,6 +1,8 @@
 package com.vagdedes.spartan.abstraction.check.implementation.combat;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import me.vagdedes.spartan.system.Enums.HackType;
@@ -12,11 +14,16 @@ import org.bukkit.inventory.PlayerInventory;
 
 public class FastBow extends CheckExecutor {
 
+    private final DetectionExecutor
+            bowForceDetection,
+            bowShotsDetection;
     private long interactTime;
     private final Buffer.IndividualBuffer bowForce, bowShots;
 
     public FastBow(HackType hackType, SpartanPlayer player) {
         super(hackType, player);
+        this.bowForceDetection = new ImplementedDetectionExecutor(this, "bow_force", true);
+        this.bowShotsDetection = new ImplementedDetectionExecutor(this, "bow_shots", true);
         this.bowForce = new Buffer.IndividualBuffer();
         this.bowShots = new Buffer.IndividualBuffer();
     }
@@ -39,24 +46,24 @@ public class FastBow extends CheckExecutor {
     }
 
     private void checkBowForce(float force) {
+        if (force != 1.0f) {
+            return;
+        }
         long timePassed = System.currentTimeMillis() - interactTime;
 
-        if (!hackType.getCheck().getBooleanOption("check_bow_force", true)
-                || force != 1.0f
-                || timePassed > 500L) {
+        if (timePassed > 500L) {
             return;
         }
         if (bowForce.count(1, 20) == 2) {
             bowForce.reset();
-            cancel("type: bow-force, ms: " + timePassed);
+            this.bowForceDetection.cancel("type: bow-force, ms: " + timePassed);
         }
     }
 
     private void checkBowShots() {
-        if (hackType.getCheck().getBooleanOption("check_bow_shots", true)
-                && bowShots.count(1, 10) == 7) {
+        if (bowShots.count(1, 10) == 7) {
             bowShots.reset();
-            cancel("type: bow-shots");
+            this.bowShotsDetection.cancel("type: bow-shots");
         }
     }
 

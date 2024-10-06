@@ -10,12 +10,11 @@ import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 public class IrregularMovementsHorizontal extends DetectionExecutor {
 
     IrregularMovementsHorizontal(CheckExecutor executor) {
-        super(executor);
+        super(executor, "horizontal", true);
     }
 
     void run(boolean knownBox, boolean knownOldBox, double box, double oldBox, double vertical) {
-        if (hackType.getCheck().getBooleanOption("check_horizontal", true)
-                && !player.trackers.has(PlayerTrackers.TrackerType.BUBBLE_WATER, "soul-sand")) {
+        if (!player.trackers.has(PlayerTrackers.TrackerType.BUBBLE_WATER, "soul-sand")) {
             int airTicks = player.movement.getTicksOnAir();
 
             if (airTicks > 0

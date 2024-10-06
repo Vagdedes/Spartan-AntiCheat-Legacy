@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.abstraction.check.implementation.inventory;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.TPS;
@@ -11,12 +12,14 @@ import java.util.List;
 
 public class ItemDrops extends CheckExecutor {
 
+    private final ImplementedDetectionExecutor detection;
     private long time;
     private final Buffer.IndividualBuffer buffer;
     private final List<Long> times;
 
     public ItemDrops(Enums.HackType hackType, SpartanPlayer player) {
         super(hackType, player);
+        this.detection = new ImplementedDetectionExecutor(this, null, true);
         this.buffer = new Buffer.IndividualBuffer();
         this.times = new LinkedList<>();
     }
@@ -38,7 +41,7 @@ public class ItemDrops extends CheckExecutor {
                 if (count >= 7) {
                     for (long timePassedStored : this.times) {
                         if (timePassedStored > 0L) {
-                            cancel(
+                            this.detection.cancel(
                                     "type: default",
                                     1.0,
                                     null,
