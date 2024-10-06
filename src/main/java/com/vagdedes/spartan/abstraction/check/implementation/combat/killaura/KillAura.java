@@ -1,7 +1,6 @@
 package com.vagdedes.spartan.abstraction.check.implementation.combat.killaura;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
-import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.check.implementation.combat.killaura.movedirection.MoveDirection;
 import com.vagdedes.spartan.abstraction.event.EntityAttackPlayerEvent;
 import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
@@ -25,17 +24,15 @@ public class KillAura extends CheckExecutor {
     private final FightAnalysis analysis;
 
     public KillAura(Enums.HackType hackType, SpartanPlayer player) {
-        super(hackType, player, 8);
-        this.addDetections(new DetectionExecutor[]{
-                irregular = new Irregular(this),
-                entityRaytrace = new EntityRaytrace(this),
-                blockRaytrace = new BlockRaytrace(this),
-                analysis = new FightAnalysis(this),
-                hitTime = new HitTime(this),
-                hitDirection = new HitDirection(this),
-                responseTime = new ResponseTime(this),
-                moveDirection = new MoveDirection(this)
-        });
+        super(hackType, player);
+        irregular = new Irregular(this);
+        entityRaytrace = new EntityRaytrace(this);
+        blockRaytrace = new BlockRaytrace(this);
+        analysis = new FightAnalysis(this);
+        hitTime = new HitTime(this);
+        hitDirection = new HitDirection(this);
+        responseTime = new ResponseTime(this);
+        moveDirection = new MoveDirection(this);
     }
 
     private void runDetection(String option, Runnable runnable) {

@@ -31,7 +31,7 @@ public class ImpossibleInventory extends CheckExecutor {
     private long autoTotem;
 
     public ImpossibleInventory(Enums.HackType hackType, SpartanPlayer player) {
-        super(hackType, player, 0);
+        super(hackType, player);
     }
 
     @Override

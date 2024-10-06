@@ -19,7 +19,7 @@ public class FastPlace extends CheckExecutor {
     private final Buffer.IndividualBuffer fastBuffer, mediumBuffer, slowBuffer;
 
     public FastPlace(HackType hackType, SpartanPlayer player) {
-        super(hackType, player, 0);
+        super(hackType, player);
         this.fastBuffer = new Buffer.IndividualBuffer();
         this.mediumBuffer = new Buffer.IndividualBuffer();
         this.slowBuffer = new Buffer.IndividualBuffer();

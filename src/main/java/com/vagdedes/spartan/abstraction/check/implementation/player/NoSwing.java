@@ -29,7 +29,7 @@ public class NoSwing extends CheckExecutor {
     private long checkDamage;
 
     public NoSwing(Enums.HackType hackType, SpartanPlayer player) {
-        super(hackType, player, 0);
+        super(hackType, player);
         this.breakTime = Long.MAX_VALUE;
         this.animationTime = Long.MAX_VALUE;
         this.damageBuffer = new Buffer.IndividualBuffer();

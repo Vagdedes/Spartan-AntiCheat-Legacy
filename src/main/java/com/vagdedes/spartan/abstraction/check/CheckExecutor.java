@@ -40,23 +40,15 @@ public abstract class CheckExecutor extends DetectionExecutor {
             javaPlayerIdentifier = "Java:";
 
     private final long creation;
-    protected final DetectionExecutor[] detections;
     private long notifications;
     private CancelCause disableCause, silentCause;
     private HackPrevention prevention;
     private boolean cancelled;
 
-    public CheckExecutor(Enums.HackType hackType, SpartanPlayer player, int detections) {
+    public CheckExecutor(Enums.HackType hackType, SpartanPlayer player) {
         super(null, hackType, player);
         this.creation = System.currentTimeMillis();
-        this.detections = new DetectionExecutor[detections];
         this.prevention = new HackPrevention();
-    }
-
-    protected final void addDetections(DetectionExecutor[] detections) {
-        for (int i = 0; i < detections.length; i++) {
-            this.detections[i] = detections[i];
-        }
     }
 
     // Run

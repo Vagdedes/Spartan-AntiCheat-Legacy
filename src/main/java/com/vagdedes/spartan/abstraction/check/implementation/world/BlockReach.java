@@ -21,7 +21,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 public class BlockReach extends CheckExecutor {
 
     public BlockReach(HackType hackType, SpartanPlayer player) {
-        super(hackType, player, 0);
+        super(hackType, player);
     }
 
     private boolean canDo(Block b) {

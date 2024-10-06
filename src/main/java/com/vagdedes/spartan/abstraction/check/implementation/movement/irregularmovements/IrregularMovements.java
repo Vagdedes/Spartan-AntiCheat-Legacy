@@ -1,7 +1,6 @@
 package com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
-import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.minecraft.world.GroundUtils;
@@ -18,15 +17,13 @@ public class IrregularMovements extends CheckExecutor {
     private final IrregularMovementsMoveLength moveLength;
 
     public IrregularMovements(HackType hackType, SpartanPlayer player) {
-        super(hackType, player, 6);
-        this.addDetections(new DetectionExecutor[]{
-                step = new IrregularMovementsStep(this),
-                gravity = new IrregularMovementsGravity(this),
-                jump = new IrregularMovementsJump(this),
-                horizontal = new IrregularMovementsHorizontal(this),
-                foodSprint = new IrregularMovementsFoodSprint(this),
-                moveLength = new IrregularMovementsMoveLength(this)
-        });
+        super(hackType, player);
+        step = new IrregularMovementsStep(this);
+        gravity = new IrregularMovementsGravity(this);
+        jump = new IrregularMovementsJump(this);
+        horizontal = new IrregularMovementsHorizontal(this);
+        foodSprint = new IrregularMovementsFoodSprint(this);
+        moveLength = new IrregularMovementsMoveLength(this);
     }
 
     @Override

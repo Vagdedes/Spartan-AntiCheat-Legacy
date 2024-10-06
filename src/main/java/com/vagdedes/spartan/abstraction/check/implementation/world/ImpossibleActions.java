@@ -33,7 +33,7 @@ public class ImpossibleActions extends CheckExecutor {
     private final Map<Integer, Buffer.IndividualBuffer> buffers;
 
     public ImpossibleActions(Enums.HackType hackType, SpartanPlayer player) {
-        super(hackType, player, 0);
+        super(hackType, player);
         this.buffers = new OverflowMap<>(new LinkedHashMap<>(), 124);
     }
 

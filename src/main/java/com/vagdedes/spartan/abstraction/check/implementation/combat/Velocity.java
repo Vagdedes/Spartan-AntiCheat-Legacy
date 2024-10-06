@@ -13,7 +13,7 @@ import org.bukkit.event.player.PlayerVelocityEvent;
 public class Velocity extends CheckExecutor {
 
     public Velocity(Enums.HackType hackType, SpartanPlayer player) {
-        super(hackType, player, 0);
+        super(hackType, player);
     }
 
     private boolean veloV = false;
