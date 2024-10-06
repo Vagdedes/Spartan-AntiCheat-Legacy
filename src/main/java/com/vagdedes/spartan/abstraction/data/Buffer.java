@@ -10,7 +10,7 @@ public class Buffer {
 
     public static class IndividualBuffer {
 
-        private int count;
+        public int count;
         private long start;
 
         public IndividualBuffer() {

@@ -13,6 +13,7 @@ import com.vagdedes.spartan.listeners.protocol.Packet_Teleport;
 import com.vagdedes.spartan.utils.minecraft.entity.AxisAlignedBB;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerVelocityEvent;
 
 import java.util.*;
@@ -40,12 +41,16 @@ public class SpartanProtocol {
 
     private Set<AxisAlignedBB> axisMatrixCache;
     private CheckBoundData checkBoundData;
+    public long placeTime, placeHash;
+    public BlockPlaceEvent oldBlockEvent;
 
 
     public SpartanProtocol(Player player) {
         this.player = player;
         this.version = MultiVersion.get(player);
 
+        this.placeTime = System.currentTimeMillis();
+        this.placeHash = 0;
         this.onGround = false;
         this.onGroundFrom = false;
         this.sprinting = false;
@@ -73,6 +78,7 @@ public class SpartanProtocol {
 
         this.axisMatrixCache = new HashSet<>();
         this.checkBoundData = null;
+        this.oldBlockEvent = null;
 
 
         this.setProfile(ResearchEngine.getPlayerProfile(this, false));

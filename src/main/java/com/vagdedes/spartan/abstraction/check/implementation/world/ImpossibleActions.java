@@ -3,6 +3,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.world;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.implementation.world.scaffold.ScaffoldAnalysis;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
@@ -36,6 +37,7 @@ public class ImpossibleActions extends CheckExecutor {
             scaffoldDirection,
             scaffoldUp,
             scaffoldYaw,
+            scaffoldAnalysis,
             tower,
             actions;
     private final Map<Integer, Buffer.IndividualBuffer> buffers;
@@ -46,6 +48,7 @@ public class ImpossibleActions extends CheckExecutor {
         this.scaffoldUp = new ImplementedDetectionExecutor(this, "scaffold_up", true);
         this.scaffoldYaw = new ImplementedDetectionExecutor(this, "scaffold_yaw", true);
         this.tower = new ImplementedDetectionExecutor(this, "tower", true);
+        this.scaffoldAnalysis = new ImplementedDetectionExecutor(this, "scaffold_analysis", true);
         this.actions = new ImplementedDetectionExecutor(this, "actions", true);
         this.buffers = new OverflowMap<>(new LinkedHashMap<>(), 124);
     }
@@ -56,6 +59,7 @@ public class ImpossibleActions extends CheckExecutor {
             BlockPlaceEvent event = (BlockPlaceEvent) object;
             Block block = event.getBlock();
             SpartanLocation playerLocation = player.movement.getLocation();
+            ScaffoldAnalysis.run(this.scaffoldAnalysis, event, buffers);
             int playerY = playerLocation.getBlockY(),
                     blockY = event.getBlock().getY();
 
