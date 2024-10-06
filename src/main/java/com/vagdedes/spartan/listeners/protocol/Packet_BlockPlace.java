@@ -17,6 +17,8 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
 public class Packet_BlockPlace extends PacketAdapter {
 
@@ -46,14 +48,19 @@ public class Packet_BlockPlace extends PacketAdapter {
                 }
                 if (!packet.getBlockPositionModifier().getValues().isEmpty()) {
                     blockPosition = packet.getBlockPositionModifier().read(0);
-                    direction = packet.getDirections().read(0);
+                    if (packet.getDirections().getValues().isEmpty()) {
+                        int directionInt = packet.getIntegers().read(0);
+                        direction = EnumWrappers.Direction.values()[directionInt];
+                    } else {
+                        direction = packet.getDirections().read(0);
+                    }
                 }
 
                 Location l = new Location(player.getWorld(), blockPosition.toVector().getBlockX(), blockPosition.toVector().getBlockY(),  blockPosition.toVector().getBlockZ());
-                l.add(BlockFace.valueOf(direction.name()).getDirection());
+                l.add(getDirection(BlockFace.valueOf(direction.name())));
                 World world = player.getWorld();
                 Block block = world.getBlockAt((int) l.getX(), (int) l.getY(), (int) l.getZ());
-                if (player.getInventory().getItemInMainHand() instanceof Block
+                if (player.getInventory().getItemInHand() instanceof Block
                                 && !isInPlayer(protocol.getLocation(), block.getLocation())) {
                     BlockPlaceEvent blockPlaceEvent =
                                     new BlockPlaceEvent(
@@ -109,6 +116,15 @@ public class Packet_BlockPlace extends PacketAdapter {
         return (blockX >= minX && blockX <= maxX) &&
                         (blockY >= minY && blockY <= maxY) &&
                         (blockZ >= minZ && blockZ <= maxZ);
+    }
+
+    public Vector getDirection(BlockFace face) {
+        Vector direction = new Vector(face.getModX(), face.getModY(), face.getModZ());
+        if (face.getModX() != 0 || face.getModY() != 0 || face.getModZ() != 0) {
+            direction.normalize();
+        }
+
+        return direction;
     }
 
 

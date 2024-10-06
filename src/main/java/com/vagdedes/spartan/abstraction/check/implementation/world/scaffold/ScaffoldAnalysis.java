@@ -3,11 +3,13 @@ package com.vagdedes.spartan.abstraction.check.implementation.world.scaffold;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.util.Vector;
 
 import java.util.Arrays;
 import java.util.List;
@@ -24,6 +26,7 @@ public class ScaffoldAnalysis {
         }
         Location l = p.getLocation();
         Location lB = new Location(l.getWorld(), (long) l.getX(), (long) l.getY(), (long) l.getZ());
+        Location lB8 = new Location(l.getWorld(), (long) l.getX() + 1, (long) l.getY(), (long) l.getZ());
         long placeHash = (long) ((lB.getX() * 31) + lB.getZ());
         Buffer.IndividualBuffer buffer = bufferMap.computeIfAbsent(
                         101, k -> new Buffer.IndividualBuffer());
@@ -48,7 +51,19 @@ public class ScaffoldAnalysis {
                                 (long) (((bL.getX() - 0.3) * 31) + (bL.getZ() - 0.3))   // -0.3 X, -0.3 Z
                 );
                 for (Long v : hashList) {
-                    if (v == placeHash) {
+                    if (p.isOnGround()) {
+                        if (v == placeHash) {
+                            checkHash = true;
+                            break;
+                        } else if (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
+                            Vector v2 = lB.toVector().clone();
+                            Vector v1 = bL.toVector().clone();
+                            if (v1.getX() == v2.getX() - 1 && v1.getZ() == v2.getZ()) {
+                                checkHash = true;
+                                break;
+                            }
+                        }
+                    } else if (bL.distance(l) < 2.35){
                         checkHash = true;
                         break;
                     }
@@ -61,6 +76,12 @@ public class ScaffoldAnalysis {
                 p.rightClickCounter = 0;
                 p.placeTime = System.currentTimeMillis();
                 p.oldBlockEvent = e;
+                /*
+                p.player.sendMessage("c 1 " + (delay < 5)
+                                + " " + (placeHash == p.placeHash) + " "
+                                + ((long) p.getLocation().getY() <= bL.getY())
+                                + " " + p.player.isFlying() + " " + !checkHash);
+                 */
                 return;
             } else if (bL.getY() != oldB.getLocation().getY()
                       || !downB.getType().name().equals("AIR")) {
