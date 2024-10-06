@@ -12,10 +12,14 @@ public abstract class DetectionExecutor {
     public final Enums.HackType hackType;
     public final SpartanPlayer player;
 
-    public DetectionExecutor(CheckExecutor executor, Enums.HackType hackType, SpartanPlayer player) {
+    DetectionExecutor(CheckExecutor executor, Enums.HackType hackType, SpartanPlayer player) {
         this.executor = this instanceof CheckExecutor ? (CheckExecutor) this : executor;
         this.hackType = hackType;
         this.player = player;
+    }
+
+    public DetectionExecutor(CheckExecutor executor) {
+        this(executor, executor.hackType, executor.player);
     }
 
     // Separator

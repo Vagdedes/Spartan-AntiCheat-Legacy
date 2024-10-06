@@ -71,7 +71,7 @@ public class IrregularMovementsStep extends DetectionExecutor {
     }
 
     IrregularMovementsStep(CheckExecutor executor) {
-        super(executor, executor.hackType, executor.player);
+        super(executor);
     }
 
     void run(boolean knownBox, boolean knownOldBox, double box, double oldBox, double vertical) {

@@ -27,7 +27,7 @@ public class FightAnalysis extends DetectionExecutor {
     );
 
     FightAnalysis(CheckExecutor executor) {
-        super(executor, executor.hackType, executor.player);
+        super(executor);
     }
 
     void runDealDamage(PlayerAttackEvent e) {

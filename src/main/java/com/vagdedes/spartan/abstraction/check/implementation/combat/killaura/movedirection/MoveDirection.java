@@ -26,7 +26,7 @@ public class MoveDirection extends DetectionExecutor {
     private final LinkedList<Double> rayTraceAnalysis;
 
     public MoveDirection(CheckExecutor executor) {
-        super(executor, executor.hackType, executor.player);
+        super(executor);
         aimAnalysis = new LinkedList<>();
         attackHandle = new AttackHandle(null, System.currentTimeMillis());
 

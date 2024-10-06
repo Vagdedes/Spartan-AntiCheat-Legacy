@@ -6,7 +6,7 @@ import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 public class HitDirection extends DetectionExecutor {
 
     HitDirection(CheckExecutor executor) {
-        super(executor, executor.hackType, executor.player);
+        super(executor);
     }
 
     void run() {

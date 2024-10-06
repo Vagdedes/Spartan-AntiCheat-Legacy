@@ -10,7 +10,7 @@ import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 public class IrregularMovementsHorizontal extends DetectionExecutor {
 
     IrregularMovementsHorizontal(CheckExecutor executor) {
-        super(executor, executor.hackType, executor.player);
+        super(executor);
     }
 
     void run(boolean knownBox, boolean knownOldBox, double box, double oldBox, double vertical) {

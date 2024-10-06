@@ -9,7 +9,7 @@ import org.bukkit.inventory.InventoryView;
 public class Irregular extends DetectionExecutor {
 
     Irregular(CheckExecutor executor) {
-        super(executor, executor.hackType, executor.player);
+        super(executor);
     }
 
     void run() {

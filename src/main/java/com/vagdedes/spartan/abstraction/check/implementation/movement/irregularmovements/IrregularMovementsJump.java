@@ -42,7 +42,7 @@ public class IrregularMovementsJump extends DetectionExecutor {
     }
 
     IrregularMovementsJump(CheckExecutor executor) {
-        super(executor, executor.hackType, executor.player);
+        super(executor);
     }
 
     void run(double vertical, double box) {

@@ -28,7 +28,7 @@ public class IrregularMovementsGravity extends DetectionExecutor {
     private boolean ignore, sensitive;
 
     IrregularMovementsGravity(CheckExecutor executor) {
-        super(executor, executor.hackType, executor.player);
+        super(executor);
     }
 
     void run(double vertical, double oldVertical, double box, double oldBox) {

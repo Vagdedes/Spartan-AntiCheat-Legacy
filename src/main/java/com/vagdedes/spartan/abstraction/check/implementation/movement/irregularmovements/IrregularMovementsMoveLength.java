@@ -20,7 +20,7 @@ public class IrregularMovementsMoveLength extends DetectionExecutor {
     private final Buffer.IndividualBuffer buffer, safeBuffer;
 
     IrregularMovementsMoveLength(CheckExecutor executor) {
-        super(executor, executor.hackType, executor.player);
+        super(executor);
         previousPitch = executor.player.movement.getEventFromLocation().getPitch();
         previousPitchDifference = 0.0f;
         this.buffer = new Buffer.IndividualBuffer();

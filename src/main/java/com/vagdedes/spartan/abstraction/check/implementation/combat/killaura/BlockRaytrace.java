@@ -20,7 +20,7 @@ import java.util.Set;
 public class BlockRaytrace extends DetectionExecutor {
 
     BlockRaytrace(CheckExecutor executor) {
-        super(executor, executor.hackType, executor.player);
+        super(executor);
     }
 
     public void run(Entity targetHandle) {
