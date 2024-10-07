@@ -565,7 +565,7 @@ public class SpartanPlayer {
     // Separator
 
     public World getWorld() {
-        return movement.getLocation().world;
+        return movement.getRawLocation().world;
     }
 
     public boolean isOutsideOfTheBorder(double deviation) {
