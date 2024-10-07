@@ -158,7 +158,7 @@ public class RayUtils {
                 for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
                     SpartanBlock block = new SpartanLocation(world, x, y, z, 0.0f, 0.0f).getBlock();
 
-                    if (block.getType().isSolid()) {
+                    if (block.getType().isSolid() || BlockUtils.isSemiSolid(block.getType())) {
                         return true;
                     }
                 }

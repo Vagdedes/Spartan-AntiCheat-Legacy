@@ -235,7 +235,7 @@ public class Speed extends CheckExecutor {
             if (this.multiply < 0.7) multiply = 0.7;
         }
         if (solidBlockOnTop) {
-            if (this.multiply < 0.4) this.multiply = 0.4D;
+            if (this.multiply < 0.6) this.multiply = 0.6D;
         }
         if (RayUtils.onBlock(player, to, BlockUtils.honey_block)) {
             if (multiply < 0.2) multiply = 0.2;
