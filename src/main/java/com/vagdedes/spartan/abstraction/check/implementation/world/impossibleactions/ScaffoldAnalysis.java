@@ -5,24 +5,29 @@ import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
+import com.vagdedes.spartan.utils.java.OverflowMap;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.util.Vector;
 
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 public class ScaffoldAnalysis extends DetectionExecutor {
 
-    public ScaffoldAnalysis(CheckExecutor executor) {
+    private final Map<Integer, Buffer.IndividualSimpleBuffer> buffers;
+
+    ScaffoldAnalysis(CheckExecutor executor) {
         super(executor, "scaffold_analysis", true);
+        this.buffers = new OverflowMap<>(new LinkedHashMap<>(), 124);
     }
 
-    void run(BlockPlaceEvent e,
-             Map<Integer, Buffer.IndividualBuffer> bufferMap) {
+    void run(BlockPlaceEvent e) {
         SpartanProtocol p = this.player.protocol;
+
         if (p.oldBlockEvent == null) {
             p.oldBlockEvent = e;
             return;
@@ -31,8 +36,8 @@ public class ScaffoldAnalysis extends DetectionExecutor {
         Location lB = new Location(l.getWorld(), (long) l.getX(), (long) l.getY(), (long) l.getZ());
         Location lB8 = new Location(l.getWorld(), (long) l.getX() + 1, (long) l.getY(), (long) l.getZ());
         long placeHash = (long) ((lB.getX() * 31) + lB.getZ());
-        Buffer.IndividualBuffer buffer = bufferMap.computeIfAbsent(
-                101, k -> new Buffer.IndividualBuffer());
+        Buffer.IndividualSimpleBuffer buffer = buffers.computeIfAbsent(
+                101, k -> new Buffer.IndividualSimpleBuffer());
         Block b = e.getBlock();
         Location bL = b.getLocation();
         Block oldB = p.oldBlockEvent.getBlock();

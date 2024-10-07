@@ -8,9 +8,19 @@ public class Buffer {
 
     private final Map<String, IndividualBuffer> storage;
 
-    public static class IndividualBuffer {
+    public static class IndividualSimpleBuffer {
 
         public int count;
+
+        public IndividualSimpleBuffer() {
+
+        }
+
+    }
+
+    public static class IndividualBuffer {
+
+        private int count;
         private long start;
 
         public IndividualBuffer() {

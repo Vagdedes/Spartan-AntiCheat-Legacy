@@ -36,20 +36,18 @@ public class ImpossibleActions extends CheckExecutor {
             scaffoldDirection,
             scaffoldUp,
             scaffoldYaw,
-            tower,
             actions;
+    private final Tower tower;
     private final ScaffoldAnalysis scaffoldAnalysis;
-    private final Map<Integer, Buffer.IndividualBuffer> buffers;
 
     public ImpossibleActions(Enums.HackType hackType, SpartanPlayer player) {
         super(hackType, player);
         this.scaffoldDirection = new ImplementedDetectionExecutor(this, "scaffold_direction", true);
         this.scaffoldUp = new ImplementedDetectionExecutor(this, "scaffold_up", true);
         this.scaffoldYaw = new ImplementedDetectionExecutor(this, "scaffold_yaw", true);
-        this.tower = new ImplementedDetectionExecutor(this, "tower", true);
         this.actions = new ImplementedDetectionExecutor(this, "actions", true);
+        this.tower = new Tower(this);
         this.scaffoldAnalysis = new ScaffoldAnalysis(this);
-        this.buffers = new OverflowMap<>(new LinkedHashMap<>(), 124);
     }
 
     @Override
@@ -60,7 +58,7 @@ public class ImpossibleActions extends CheckExecutor {
             SpartanLocation playerLocation = player.movement.getLocation();
             int playerY = playerLocation.getBlockY(),
                     blockY = event.getBlock().getY();
-            this.scaffoldAnalysis.run(event, buffers);
+            this.scaffoldAnalysis.run(event);
 
             if (blockY < playerY) {
                 Block blockAgainst = event.getBlockAgainst();
@@ -134,46 +132,7 @@ public class ImpossibleActions extends CheckExecutor {
                             }
                             break;
                         case UP:
-                            if (AlgebraUtils.getHorizontalDistance(
-                                    playerLocation.getBlockLocation(),
-                                    block.getLocation()
-                            ) <= 1.0) {
-                                ItemStack handItem = player.getItemInHand();
-                                int jumpLevel = PlayerUtils.getPotionLevel(player, PotionEffectUtils.JUMP) + 1,
-                                        motionTicks = PlayerUtils.getJumpTicks(jumpLevel);
-                                double motionSum = PlayerUtils.getJumpMotionSum(jumpLevel),
-                                        blockHeight = GroundUtils.getMinHeight(
-                                                handItem == null ? Material.AIR : handItem.getType()
-                                        ),
-                                        deltaXZ = player.movement.getEventHorizontal();
-                                int deltaYMinus1 = playerY - blockY,
-                                        possiblePlacements = AlgebraUtils.integerFloor(
-                                                motionSum / (blockHeight == 0.0 ? 1.0 : blockHeight)
-                                        ) + deltaYMinus1;
-
-                                if (deltaXZ > 0.1) {
-                                    possiblePlacements += AlgebraUtils.integerCeil(deltaXZ / 0.25);
-                                }
-                                possiblePlacements = Math.max(possiblePlacements, 2);
-                                Buffer.IndividualBuffer buffer = this.buffers.computeIfAbsent(
-                                        (block.getX() * SpartanBukkit.hashCodeMultiplier) + block.getZ(),
-                                        k -> new Buffer.IndividualBuffer()
-                                );
-
-                                if (buffer.count(1, motionTicks) > possiblePlacements) {
-                                    buffer.reset();
-                                    this.tower.cancel(
-                                            "type: tower"
-                                                    + ", placements: " + possiblePlacements
-                                                    + ", horizontal: " + deltaXZ
-                                                    + ", vertical: " + deltaYMinus1,
-                                            1.0,
-                                            player.movement.getDetectionLocation(),
-                                            0,
-                                            true
-                                    );
-                                }
-                            }
+                            this.tower.run(block, playerLocation, playerY, blockY);
                             break;
                         default:
                             break;
