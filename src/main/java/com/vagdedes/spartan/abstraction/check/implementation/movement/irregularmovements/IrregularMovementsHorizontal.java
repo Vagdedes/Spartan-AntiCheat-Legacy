@@ -2,6 +2,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.irregular
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
 import com.vagdedes.spartan.abstraction.player.PlayerTrackers;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
@@ -9,8 +10,12 @@ import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 
 public class IrregularMovementsHorizontal extends DetectionExecutor {
 
+    private final DetectionExecutor horizontal_known, horizontal_abstract;
+
     IrregularMovementsHorizontal(CheckExecutor executor) {
-        super(executor, "horizontal", true);
+        super(executor, null, true);
+        this.horizontal_known = new ImplementedDetectionExecutor(this, "horizontal_known", true);
+        this.horizontal_abstract = new ImplementedDetectionExecutor(this, "horizontal_abstract", true);
     }
 
     void run(boolean knownBox, boolean knownOldBox, double box, double oldBox, double vertical) {
@@ -25,7 +30,7 @@ public class IrregularMovementsHorizontal extends DetectionExecutor {
 
                     if (airTicks > limit
                             && !player.isOnGround(true)) {
-                        cancel(
+                        this.horizontal_known.cancel(
                                 "type: horizontal(known)"
                                         + ", box: " + box
                                         + ", old-box: " + oldBox
@@ -39,7 +44,7 @@ public class IrregularMovementsHorizontal extends DetectionExecutor {
                         );
                     }
                 } else {
-                    cancel(
+                    this.horizontal_abstract.cancel(
                             "type: horizontal(abstract)"
                                     + ", box: " + box
                                     + ", old-box: " + oldBox

@@ -6,4 +6,8 @@ public class ImplementedDetectionExecutor extends DetectionExecutor {
         super(executor, name, def);
     }
 
+    public ImplementedDetectionExecutor(DetectionExecutor executor, String name, boolean def) {
+        super(executor, name, def);
+    }
+
 }

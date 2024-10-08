@@ -2,6 +2,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.irregular
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
 import com.vagdedes.spartan.abstraction.player.PlayerTrackers;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
@@ -25,10 +26,17 @@ public class IrregularMovementsGravity extends DetectionExecutor {
             ? MaterialUtils.findMaterial("MACE")
             : null;
 
+    // Separator
+
+    private final DetectionExecutor
+            gravity_climb_stable,
+            gravity_prediction;
     private boolean ignore, sensitive;
 
     IrregularMovementsGravity(CheckExecutor executor) {
-        super(executor, "gravity", true);
+        super(executor, null, true);
+        this.gravity_climb_stable = new ImplementedDetectionExecutor(executor, "climb_stable", true);
+        this.gravity_prediction = new ImplementedDetectionExecutor(executor, "climb_prediction", true);
     }
 
     void run(double vertical, double oldVertical, double box, double oldBox) {
@@ -134,7 +142,7 @@ public class IrregularMovementsGravity extends DetectionExecutor {
                             true,
                             BlockUtils.solid, BlockUtils.semi_solid
                     )) {
-                        cancel(
+                        this.gravity_climb_stable.cancel(
                                 "type: gravity(climb-stable)"
                                         + ", vertical: " + vertical
                                         + ", old-vertical: " + oldVertical
@@ -215,7 +223,7 @@ public class IrregularMovementsGravity extends DetectionExecutor {
                 if (ignore) {
                     ignore = false;
                 } else {
-                    cancel(
+                    this.gravity_prediction.cancel(
                             violation,
                             sensitive ? 1.0 : airTicks / TPS.maximum,
                             player.movement.getDetectionLocation(),

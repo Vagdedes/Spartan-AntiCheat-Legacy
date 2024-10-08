@@ -2,6 +2,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.irregular
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
 import com.vagdedes.spartan.abstraction.player.PlayerTrackers;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.java.ReflectionUtils;
@@ -70,8 +71,26 @@ public class IrregularMovementsStep extends DetectionExecutor {
                 + Double.hashCode(after);
     }
 
+    // Separator
+
+    private final DetectionExecutor
+            step_high,
+            step_combination,
+            step_entity,
+            step_abstract_up,
+            step_high_first_fall,
+            step_landing,
+            step_abstract_down;
+
     IrregularMovementsStep(CheckExecutor executor) {
-        super(executor, "step", true);
+        super(executor, null, true);
+        this.step_high = new ImplementedDetectionExecutor(this, "step_high", true);
+        this.step_combination = new ImplementedDetectionExecutor(this, "step_combination", true);
+        this.step_entity = new ImplementedDetectionExecutor(this, "step_entity", true);
+        this.step_abstract_up = new ImplementedDetectionExecutor(this, "step_abstract_up", true);
+        this.step_high_first_fall = new ImplementedDetectionExecutor(this, "step_high_first_fall", true);
+        this.step_landing = new ImplementedDetectionExecutor(this, "step_landing", true);
+        this.step_abstract_down = new ImplementedDetectionExecutor(this, "step_abstract_down", true);
     }
 
     void run(boolean knownBox, boolean knownOldBox, double box, double oldBox, double vertical) {
@@ -88,7 +107,7 @@ public class IrregularMovementsStep extends DetectionExecutor {
                             + GroundUtils.maxPlayerStep;
 
                     if (vertical > limit) {
-                        cancel(
+                        this.step_high.cancel(
                                 "type: step(high)"
                                         + ", box: " + box
                                         + ", old-box: " + oldBox
@@ -107,7 +126,7 @@ public class IrregularMovementsStep extends DetectionExecutor {
 
                     if (!player.trackers.has(PlayerTrackers.TrackerType.VEHICLE, "exit") && vertical < -downLimit
                             || !player.trackers.has(PlayerTrackers.TrackerType.VEHICLE, "enter") && vertical > upLimit) {
-                        cancel(
+                        this.step_combination.cancel(
                                 "type: step(combination)"
                                         + ", box: " + box
                                         + ", old-box: " + oldBox
@@ -127,7 +146,7 @@ public class IrregularMovementsStep extends DetectionExecutor {
                         && GroundUtils.blockHeightExists(oldBox) ? 4.0 : 1.0;
 
                 if (vertical > limit) {
-                    cancel(
+                    this.step_entity.cancel(
                             "type: step(entity)"
                                     + ", box: " + box
                                     + ", old-box: " + oldBox
@@ -184,7 +203,7 @@ public class IrregularMovementsStep extends DetectionExecutor {
                                 || vertical > GroundUtils.maxPlayerStep)
                                 && (!player.trackers.has(PlayerTrackers.TrackerType.BOUNCING_BLOCKS, "slime") || oldBox != 0.0)
                                 && (!player.trackers.has(PlayerTrackers.TrackerType.BOUNCING_BLOCKS, "bed") || oldBox != 0.5625)) {
-                            cancel(
+                            this.step_abstract_up.cancel(
                                     "type: step(abstract-up)"
                                             + ", box: " + box
                                             + ", old-box: " + oldBox
@@ -201,7 +220,7 @@ public class IrregularMovementsStep extends DetectionExecutor {
             } else {
                 if (firstFallingBox.contains(AlgebraUtils.cut(box, GroundUtils.maxHeightLength))) {
                     if (vertical < -player.movement.getAirAcceleration()) {
-                        cancel(
+                        this.step_high_first_fall.cancel(
                                 "type: step(high-first-fall)"
                                         + ", box: " + box
                                         + ", old-box: " + oldBox
@@ -222,7 +241,7 @@ public class IrregularMovementsStep extends DetectionExecutor {
                             verticalPrediction += 1.0;
                         }
                         if (verticalPrediction != motionRemainder) {
-                            cancel(
+                            this.step_landing.cancel(
                                     "type: step(landing)"
                                             + ", box: " + box
                                             + ", old-box: " + oldBox
@@ -241,7 +260,7 @@ public class IrregularMovementsStep extends DetectionExecutor {
                                 + player.movement.getAirAcceleration();
 
                         if (vertical <= -limit) {
-                            cancel(
+                            this.step_abstract_down.cancel(
                                     "type: step(abstract-down)"
                                             + ", box: " + box
                                             + ", old-box: " + oldBox

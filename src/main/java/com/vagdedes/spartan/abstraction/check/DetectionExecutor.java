@@ -16,6 +16,13 @@ public abstract class DetectionExecutor extends CheckDetection {
         this.isEnabled();
     }
 
+    public DetectionExecutor(DetectionExecutor executor, String name, boolean def) {
+        super(executor.executor);
+        this.name = name;
+        this.def = def;
+        this.isEnabled();
+    }
+
     // Separator
 
     public boolean isEnabled() {

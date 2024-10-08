@@ -10,7 +10,7 @@ public class IrregularMovementsFoodSprint extends DetectionExecutor {
     private final Buffer.IndividualBuffer buffer;
 
     IrregularMovementsFoodSprint(CheckExecutor executor) {
-        super(executor, "sprint", true);
+        super(executor, "food_sprint", true);
         this.buffer = new Buffer.IndividualBuffer();
     }
 

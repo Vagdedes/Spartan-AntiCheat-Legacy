@@ -2,6 +2,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.irregular
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
 import com.vagdedes.spartan.abstraction.player.PlayerTrackers;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.TPS;
@@ -41,8 +42,16 @@ public class IrregularMovementsJump extends DetectionExecutor {
         }
     }
 
+    // Separator
+
+    private final DetectionExecutor
+            jump_ticks,
+            jump_height;
+
     IrregularMovementsJump(CheckExecutor executor) {
-        super(executor, "jump", true);
+        super(executor, null, true);
+        this.jump_ticks = new ImplementedDetectionExecutor(this, "jump_ticks", true);
+        this.jump_height = new ImplementedDetectionExecutor(this, "jump_height", true);
     }
 
     void run(double vertical, double box) {
@@ -81,7 +90,7 @@ public class IrregularMovementsJump extends DetectionExecutor {
                             true,
                             GroundUtils.abstractMaterials
                     )) {
-                        cancel("type: jump(height)"
+                        this.jump_height.cancel("type: jump(height)"
                                         + ", box: " + box
                                         + ", vertical: " + vertical
                                         + ", jump-effect: " + jumpEffect
@@ -103,7 +112,7 @@ public class IrregularMovementsJump extends DetectionExecutor {
                     int airTicks = player.movement.getTicksOnAir();
 
                     if (airTicks > limit) {
-                        cancel(
+                        this.jump_ticks.cancel(
                                 "type: jump(ticks)"
                                         + ", box: " + box
                                         + ", vertical: " + vertical
