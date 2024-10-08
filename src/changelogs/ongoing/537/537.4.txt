@@ -5,3 +5,4 @@
 [#] Fixed several Speed random false positives.
 [#] Added more detection options in the checks.yml configuration.
 [#] Potentially fixed a Folia fork unloaded world entity removal error.
+[#] Fixed several IrregularMovements liquid block false positives.

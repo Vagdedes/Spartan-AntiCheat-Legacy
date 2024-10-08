@@ -419,9 +419,9 @@ public abstract class CheckExecutor extends CheckDetection {
     }
 
     public final boolean canSendNotification(Object detected) {
-        long tick = TPS.tick();
+        long time = System.currentTimeMillis();
 
-        if (this.notifications <= tick) {
+        if (this.notifications <= time) {
             boolean player = detected instanceof SpartanPlayer;
             int ticks = this.getNotificationTicksCooldown(
                     player ? (SpartanPlayer) detected : null
@@ -431,7 +431,7 @@ public abstract class CheckExecutor extends CheckDetection {
                 if (player
                         ? ((SpartanPlayer) detected).protocol.getProfile().evidence.surpassed(this.hackType, PlayerEvidence.notificationProbability)
                         : ResearchEngine.getPlayerProfile(detected.toString(), true).evidence.surpassed(this.hackType, PlayerEvidence.notificationProbability)) {
-                    this.notifications = tick + ticks;
+                    this.notifications = time + (ticks * TPS.tickTime);
                     return true;
                 }
             } else {
