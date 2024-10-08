@@ -174,7 +174,6 @@ public class IrregularMovementsGravity extends DetectionExecutor {
             this.ignore |= sensitive && !this.sensitive;
             this.sensitive = sensitive;
             String violation = null;
-            player.debug(true, false, false, liquid, sensitive, predictions.size());
 
             for (double prediction : predictions) {
                 if (Math.abs(prediction) > PlayerUtils.optimizationY) {
