@@ -60,7 +60,7 @@ public class ScaffoldAnalysis extends DetectionExecutor {
                 );
                 for (Long v : hashList) {
                     if (p.isOnGround()) {
-                        if (v == placeHash) {
+                        if (v == placeHash || bL.distance(l) < 1.2) {
                             checkHash = true;
                             break;
                         } else if (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
