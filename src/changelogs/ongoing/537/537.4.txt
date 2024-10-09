@@ -8,3 +8,4 @@
 [#] Fixed several IrregularMovements liquid block false positives.
 [#] The plugin will now totally measure time in more accurate terms allowing for higher accuracy.
 [#] Fixed several MorePackets teleportation due to action false positives.
+[#] Fixed several Exploits, Velocity & IrregularMovements bouncing block false positives.

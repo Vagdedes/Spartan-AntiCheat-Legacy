@@ -12,6 +12,7 @@ import me.vagdedes.spartan.system.Enums.HackType;
 
 public class IrregularMovements extends CheckExecutor {
 
+    private long teleport;
     public final DetectionExecutor limitServerFlying;
     private final IrregularMovementsStep step;
     private final IrregularMovementsGravity gravity;
@@ -50,24 +51,28 @@ public class IrregularMovements extends CheckExecutor {
             return;
         }
         boolean knownBox = GroundUtils.blockHeightExists(box),
-                knownOldBox = GroundUtils.blockHeightExists(oldBox);
+                knownOldBox = GroundUtils.blockHeightExists(oldBox),
+                teleported = teleport >= System.currentTimeMillis();
 
         if (knownBox || knownOldBox) {
             if (vertical == 0.0) {
                 this.horizontal.run(knownBox, knownOldBox, box, oldBox, vertical);
             } else {
-                this.step.run(knownBox, knownOldBox, box, oldBox, vertical);
+                this.step.run(knownBox, knownOldBox, box, oldBox, vertical, teleported);
             }
         } else {
             this.gravity.run(vertical, oldVertical, box, oldBox);
         }
-        jump.run(vertical, box);
+        if (!teleported) {
+            jump.run(vertical, box);
+        }
         moveLength.run();
     }
 
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
-        this.addDisableCause(null, "step", AlgebraUtils.integerCeil(TPS.maximum / 2.0));
+        this.teleport = System.currentTimeMillis()
+                + (AlgebraUtils.integerCeil(TPS.maximum / 2.0) * TPS.tickTime);
     }
 
     @Override

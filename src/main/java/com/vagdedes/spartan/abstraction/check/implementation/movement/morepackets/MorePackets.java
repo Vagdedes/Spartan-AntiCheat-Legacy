@@ -69,7 +69,7 @@ public class MorePackets extends CheckExecutor {
             if (!player.isBedrockPlayer()) {
                 calculate((PlayerTickEvent) object);
             }
-        } else if (object.equals(TELEPORT)) {
+        } else if (object instanceof Byte && object.equals(TELEPORT)) {
             this.addDisableCause(null, null, AlgebraUtils.integerCeil(TPS.maximum) * 3);
         } else if (!player.protocol.packetsEnabled()) {
             bukkitNmsMap.put(TPS.tick(), bukkitNmsMap.getOrDefault(TPS.tick(), 0) + 1);

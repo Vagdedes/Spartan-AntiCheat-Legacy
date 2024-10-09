@@ -3,6 +3,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.combat;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
+import com.vagdedes.spartan.abstraction.player.PlayerTrackers;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.CombatUtils;
@@ -99,6 +100,7 @@ public class Velocity extends CheckExecutor {
     @Override
     protected boolean canRun() {
         return player.protocol.packetsEnabled()
+                && !player.trackers.has(PlayerTrackers.TrackerType.BOUNCING_BLOCKS)
                 && CombatUtils.canCheck(player)
                 && !player.isOutsideOfTheBorder(-1.0)
                 && !BlockPatternUtils.isBlockPattern(

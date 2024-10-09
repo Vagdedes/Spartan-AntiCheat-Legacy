@@ -93,7 +93,9 @@ public class IrregularMovementsStep extends DetectionExecutor {
         this.step_abstract_down = new ImplementedDetectionExecutor(this, "step_abstract_down", true);
     }
 
-    void run(boolean knownBox, boolean knownOldBox, double box, double oldBox, double vertical) {
+    void run(boolean knownBox, boolean knownOldBox,
+             double box, double oldBox,
+             double vertical, boolean teleported) {
         Entity vehicle = player.getInstance().getVehicle();
 
         if (knownBox && knownOldBox) {
@@ -192,7 +194,7 @@ public class IrregularMovementsStep extends DetectionExecutor {
                         }
                     }
 
-                    if (vertical > limit) {
+                    if (!teleported && vertical > limit) {
                         double predictedHeight = box - oldBox;
 
                         if (predictedHeight < 0.0) {

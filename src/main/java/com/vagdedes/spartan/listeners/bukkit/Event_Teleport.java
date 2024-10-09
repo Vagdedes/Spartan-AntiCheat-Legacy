@@ -27,7 +27,6 @@ public class Event_Teleport implements Listener {
 
             // Object
             p.resetData(false);
-            p.movement.judgeGround();
 
             // Detections
             p.getExecutor(Enums.HackType.MorePackets).handle(false, MorePackets.TELEPORT);
