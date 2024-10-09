@@ -10,6 +10,7 @@ import com.vagdedes.spartan.compatibility.manual.building.MythicMobs;
 import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.TPS;
+import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.CombatUtils;
 import com.vagdedes.spartan.utils.minecraft.inventory.MaterialUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
@@ -132,12 +133,12 @@ public class MovementProcessing {
                         Material type = block.getType();
 
                         if (type == Material.SOUL_SAND) {
-                            player.trackers.add(PlayerTrackers.TrackerType.BUBBLE_WATER, (int) TPS.maximum);
-                            player.trackers.add(PlayerTrackers.TrackerType.BUBBLE_WATER, "soul-sand", (int) TPS.maximum);
+                            player.trackers.add(PlayerTrackers.TrackerType.BUBBLE_WATER, AlgebraUtils.integerCeil(TPS.maximum));
+                            player.trackers.add(PlayerTrackers.TrackerType.BUBBLE_WATER, "soul-sand", AlgebraUtils.integerCeil(TPS.maximum));
                             break;
                         } else if (type == MAGMA_BLOCK) {
-                            player.trackers.add(PlayerTrackers.TrackerType.BUBBLE_WATER, (int) TPS.maximum);
-                            player.trackers.add(PlayerTrackers.TrackerType.BUBBLE_WATER, "magma-block", (int) TPS.maximum);
+                            player.trackers.add(PlayerTrackers.TrackerType.BUBBLE_WATER, AlgebraUtils.integerCeil(TPS.maximum));
+                            player.trackers.add(PlayerTrackers.TrackerType.BUBBLE_WATER, "magma-block", AlgebraUtils.integerCeil(TPS.maximum));
                             break;
                         } else if (BlockUtils.isSolid(type) && !block.isWaterLogged()) {
                             nonLiquid++;

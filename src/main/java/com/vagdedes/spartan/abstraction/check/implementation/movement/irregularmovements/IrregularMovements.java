@@ -4,7 +4,9 @@ import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
+import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.world.GroundUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 
@@ -61,6 +63,11 @@ public class IrregularMovements extends CheckExecutor {
         }
         jump.run(vertical, box);
         moveLength.run();
+    }
+
+    @Override
+    protected void handleInternal(boolean cancelled, Object object) {
+        this.addDisableCause(null, "step", AlgebraUtils.integerCeil(TPS.maximum / 2.0));
     }
 
     @Override

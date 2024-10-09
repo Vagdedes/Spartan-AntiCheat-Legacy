@@ -5,6 +5,7 @@ import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.TPS;
+import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
 
 import java.util.Collection;
@@ -82,9 +83,9 @@ public class FastClicks extends CheckExecutor {
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
         this.addDisableCause(
-                this.hackType.toString(),
                 null,
-                (int) TPS.maximum
+                null,
+                AlgebraUtils.integerCeil(TPS.maximum)
         );
     }
 

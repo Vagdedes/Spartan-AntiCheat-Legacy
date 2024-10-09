@@ -114,6 +114,9 @@ public abstract class CheckExecutor extends CheckDetection {
     }
 
     public final void addDisableCause(String reason, String pointer, int ticks) {
+        if (reason == null) {
+            reason = this.hackType.getCheck().getName();
+        }
         if (disableCause != null) {
             disableCause.merge(new CancelCause(reason, pointer, ticks));
         } else {
@@ -414,7 +417,7 @@ public abstract class CheckExecutor extends CheckDetection {
                 && detected.movement.getLocation().distance(this.player.movement.getLocation()) <= PlayerUtils.chunk)) {
             return AlgebraUtils.integerRound(Math.sqrt(TPS.maximum));
         } else {
-            return (int) TPS.maximum;
+            return AlgebraUtils.integerCeil(TPS.maximum);
         }
     }
 

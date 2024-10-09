@@ -165,7 +165,7 @@ public class FastBreak extends CheckExecutor {
 
         if ((gameMode == GameMode.SURVIVAL || gameMode == GameMode.ADVENTURE)
                 && !BlockUtils.isSensitive(player, block.getType())) {
-            int bufferTicks = (int) TPS.maximum,
+            int bufferTicks = AlgebraUtils.integerCeil(TPS.maximum),
                     limit = hackType.getCheck().getNumericalOption(
                             "indirect_surroundings_per_second",
                             AlgebraUtils.integerRound(bufferTicks * 0.75)
@@ -226,7 +226,7 @@ public class FastBreak extends CheckExecutor {
             Block b = ((BlockBreakEvent) object).getBlock();
 
             if (!TreeFeller.canCancel(this.player, b)) {
-                int seconds = (int) TPS.maximum;
+                int seconds = AlgebraUtils.integerCeil(TPS.maximum);
                 checkDelay(b, seconds);
                 checkBreaksPerSecond(seconds, b);
                 checkIndirectSurroundingsPerSecond(seconds, b);

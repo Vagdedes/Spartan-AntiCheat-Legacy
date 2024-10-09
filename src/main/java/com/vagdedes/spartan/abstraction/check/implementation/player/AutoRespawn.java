@@ -6,6 +6,7 @@ import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.TPS;
+import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.server.PluginUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.GameRule;
@@ -36,7 +37,7 @@ public class AutoRespawn extends CheckExecutor {
                     "type: default, ms: " + time,
                     (limit - time) / TPS.tickTimeDecimal,
                     player.movement.getDetectionLocation(),
-                    (int) TPS.maximum
+                    AlgebraUtils.integerCeil(TPS.maximum)
             );
         }
     }

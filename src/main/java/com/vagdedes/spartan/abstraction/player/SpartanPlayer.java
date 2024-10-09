@@ -300,7 +300,7 @@ public class SpartanPlayer {
 
     public void handleReceivedDamage(EntityDamageEvent event) {
         boolean abstractVelocity = false;
-        this.trackers.add(PlayerTrackers.TrackerType.DAMAGE, (int) TPS.maximum);
+        this.trackers.add(PlayerTrackers.TrackerType.DAMAGE, AlgebraUtils.integerCeil(TPS.maximum));
         ItemStack activeItem;
 
         if (event instanceof EntityDamageByEntityEvent) {

@@ -18,6 +18,10 @@ import java.util.Map;
 
 public class MorePackets extends CheckExecutor {
 
+    public static final byte TELEPORT = 0;
+
+    // Separator
+
     private final Map<Long, Integer> bukkitNmsMap;
     private int bukkitBuffer, packetVL;
     private final ImplementedDetectionExecutor
@@ -29,7 +33,7 @@ public class MorePackets extends CheckExecutor {
 
     public MorePackets(HackType hackType, SpartanPlayer player) {
         super(hackType, player);
-        this.bukkitNmsMap = new LinkedHashMap<>((int) TPS.maximum + 1, 1.0f);
+        this.bukkitNmsMap = new LinkedHashMap<>(AlgebraUtils.integerCeil(TPS.maximum) + 1, 1.0f);
         this.bukkitBuffer = 0;
         this.packetVL = 0;
         this.timer = new ImplementedDetectionExecutor(
@@ -65,6 +69,8 @@ public class MorePackets extends CheckExecutor {
             if (!player.isBedrockPlayer()) {
                 calculate((PlayerTickEvent) object);
             }
+        } else if (object.equals(TELEPORT)) {
+            this.addDisableCause(null, null, AlgebraUtils.integerCeil(TPS.maximum) * 3);
         } else if (!player.protocol.packetsEnabled()) {
             bukkitNmsMap.put(TPS.tick(), bukkitNmsMap.getOrDefault(TPS.tick(), 0) + 1);
 

@@ -56,7 +56,7 @@ public class IrregularMovementsMoveLength extends DetectionExecutor {
                                 + ", limit: " + minimumGCD,
                                 1.0,
                                 null,
-                                (int) TPS.maximum
+                                AlgebraUtils.integerCeil(TPS.maximum)
                         );
                     }
                 } else { // Some players may false this due to their client, so this helps prevent it
