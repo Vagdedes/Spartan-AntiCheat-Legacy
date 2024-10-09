@@ -231,11 +231,13 @@ public class Speed extends CheckExecutor {
         if (slimeBlockCause(this.player, new SpartanLocation(this.player.protocol.getLocation()))) {
             if (this.multiply < 3) this.multiply = 3D;
         }
-        if ((this.onIce(player, this.player.movement.getLocation().clone()))) {
-            if (this.multiply < 0.7) multiply = 0.7;
-        }
         if (solidBlockOnTop) {
             if (this.multiply < 0.6) this.multiply = 0.6D;
+        }
+        if ((this.onIce(player, this.player.movement.getLocation().clone()))) {
+            double m1 = (solidBlockOnTop) ? 1.5 : 0.7;
+            if (this.multiply < m1) multiply = m1;
+
         }
         if (RayUtils.onBlock(player, to, BlockUtils.honey_block)) {
             if (multiply < 0.2) multiply = 0.2;
