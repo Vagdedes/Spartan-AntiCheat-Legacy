@@ -1,5 +1,5 @@
 [+] Implemented a new ImpossibleActions scaffold detection that contains deep analysis.
-[+] New Scaffold analysis checks
+[+] New Baritone checks
 [#] Optimized the collection of entities on Folia fork & packet-based Spartan.
 [#] Fundamentally changed how Spartan implements detections for more productive development.
 [#] Options in the checks.yml file will now all be loaded the moment a player joins the server.
