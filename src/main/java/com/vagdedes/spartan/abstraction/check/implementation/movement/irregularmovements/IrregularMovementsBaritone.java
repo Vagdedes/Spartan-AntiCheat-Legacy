@@ -27,7 +27,7 @@ public class IrregularMovementsBaritone extends DetectionExecutor {
         float jiffDeltaYaw = (float) RayUtils.scaleVal(Math.abs(deltaYaw - oldDeltaMap.x), 3);
         float jiffDeltaPitch = (float) RayUtils.scaleVal(Math.abs(deltaPitch - oldDeltaMap.y), 3);
         {
-            yawMoved += (deltaPitch == 0.0F) ? deltaYaw : -yawMoved;
+            yawMoved += (Math.abs(l.getPitch()) > 89) ? 0 : (deltaPitch == 0.0F) ? deltaYaw : -yawMoved;
             yawMoved = (float) RayUtils.scaleVal(yawMoved, 2);
             if (yawMoved > 45) {
                 punish(3, "type: baritone[rotation], euler-y-total: " + yawMoved);
