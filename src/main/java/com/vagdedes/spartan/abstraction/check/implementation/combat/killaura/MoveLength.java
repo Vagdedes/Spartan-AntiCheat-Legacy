@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements;
+package com.vagdedes.spartan.abstraction.check.implementation.combat.killaura;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
@@ -6,7 +6,7 @@ import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 
-public class IrregularMovementsMoveLength extends DetectionExecutor {
+public class MoveLength extends DetectionExecutor {
 
     private static final double
             gcdMultiplier = Math.pow(2, 24), // 16777216
@@ -18,8 +18,9 @@ public class IrregularMovementsMoveLength extends DetectionExecutor {
             previousPitch,
             previousPitchDifference;
     private final Buffer.IndividualBuffer buffer, safeBuffer;
+    private long hit, hitBy;
 
-    IrregularMovementsMoveLength(CheckExecutor executor) {
+    MoveLength(CheckExecutor executor) {
         super(executor, "move_length", true);
         previousPitch = executor.player.movement.getEventFromLocation().getPitch();
         previousPitchDifference = 0.0f;
@@ -28,7 +29,9 @@ public class IrregularMovementsMoveLength extends DetectionExecutor {
     }
 
     void run() {
-        if (!player.isBedrockPlayer()) {
+        if (!player.isBedrockPlayer()
+                && this.hit - System.currentTimeMillis() <= 2_000L
+                && this.hitBy - System.currentTimeMillis() <= 1_000L) {
             float pitch = player.movement.getLocation().getPitch(),
                     pitchDifference = Math.abs(pitch - previousPitch);
 
@@ -48,12 +51,12 @@ public class IrregularMovementsMoveLength extends DetectionExecutor {
                         buffer.reset();
                         cancel(
                                 "type: move-length"
-                                + ", pitch: " + pitch
-                                + ", previous-pitch: " + previousPitch
-                                + ", pitch-difference: " + pitchDifference
-                                + ", previous-pitch-difference: " + this.previousPitchDifference
-                                + ", greatest-common-divisor: " + gcd
-                                + ", limit: " + minimumGCD,
+                                        + ", pitch: " + pitch
+                                        + ", previous-pitch: " + previousPitch
+                                        + ", pitch-difference: " + pitchDifference
+                                        + ", previous-pitch-difference: " + this.previousPitchDifference
+                                        + ", greatest-common-divisor: " + gcd
+                                        + ", limit: " + minimumGCD,
                                 1.0,
                                 null,
                                 AlgebraUtils.integerCeil(TPS.maximum)
@@ -66,6 +69,14 @@ public class IrregularMovementsMoveLength extends DetectionExecutor {
             previousPitchDifference = pitchDifference;
             previousPitch = pitch;
         }
+    }
+
+    public void runHit() {
+        this.hit = System.currentTimeMillis();
+    }
+
+    public void runHitBy() {
+        this.hitBy = System.currentTimeMillis();
     }
 
 }

@@ -19,7 +19,6 @@ public class IrregularMovements extends CheckExecutor {
     private final IrregularMovementsJump jump;
     private final IrregularMovementsHorizontal horizontal;
     private final IrregularMovementsFoodSprint foodSprint;
-    private final IrregularMovementsMoveLength moveLength;
     private final IrregularMovementsBaritone baritone;
 
     public IrregularMovements(HackType hackType, SpartanPlayer player) {
@@ -30,7 +29,6 @@ public class IrregularMovements extends CheckExecutor {
         jump = new IrregularMovementsJump(this);
         horizontal = new IrregularMovementsHorizontal(this);
         foodSprint = new IrregularMovementsFoodSprint(this);
-        moveLength = new IrregularMovementsMoveLength(this);
         baritone = new IrregularMovementsBaritone(this);
     }
 
@@ -68,7 +66,6 @@ public class IrregularMovements extends CheckExecutor {
         if (!teleported) {
             jump.run(vertical, box);
         }
-        moveLength.run();
         baritone.run();
     }
 

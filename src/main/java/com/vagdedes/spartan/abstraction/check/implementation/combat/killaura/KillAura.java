@@ -22,6 +22,7 @@ public class KillAura extends CheckExecutor {
     private final ResponseTime responseTime;
     private final MoveDirection moveDirection;
     private final FightAnalysis analysis;
+    private final MoveLength moveLength;
 
     public KillAura(Enums.HackType hackType, SpartanPlayer player) {
         super(hackType, player);
@@ -33,6 +34,7 @@ public class KillAura extends CheckExecutor {
         hitDirection = new HitDirection(this);
         responseTime = new ResponseTime(this);
         moveDirection = new MoveDirection(this);
+        moveLength = new MoveLength(this);
     }
 
     boolean canRunEntity(LivingEntity entity) {
@@ -55,12 +57,12 @@ public class KillAura extends CheckExecutor {
     protected void handleInternal(boolean cancelled, Object object) {
         if (object instanceof PlayerMoveEvent) {
             moveDirection.run();
+            moveLength.run();
         } else if (object instanceof PlayerAttackEvent) {
             PlayerAttackEvent event = (PlayerAttackEvent) object;
             LivingEntity target = event.target;
 
             if (canRunEntity(target)) {
-
                 irregular.run();
                 blockRaytrace.run(target);
                 entityRaytrace.run();
@@ -68,10 +70,12 @@ public class KillAura extends CheckExecutor {
                 hitTime.run();
                 hitDirection.run();
                 analysis.runDealDamage(event);
+                moveLength.runHit();
             }
         } else if (object instanceof EntityAttackPlayerEvent) {
             EntityAttackPlayerEvent event = (EntityAttackPlayerEvent) object;
             analysis.runReceiveDamage(event);
+            moveLength.runHitBy();
         }
     }
 
