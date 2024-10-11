@@ -1,2 +1,3 @@
-[#] Fixed Baritone false positives
-[#] Fixed GroundSpoof false positives
+[#] Fixed Baritone false positives.
+[#] Fixed GroundSpoof false positives.
+[#] Fixed KillAura block raytrace detection console error.
