@@ -234,6 +234,7 @@ public class MorePackets extends CheckExecutor {
                 player.protocol.packetsEnabled(),
                 true,
                 true,
+                true,
                 true
         );
     }

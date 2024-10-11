@@ -4,6 +4,7 @@ import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.minecraft.inventory.MaterialUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
@@ -121,6 +122,7 @@ public class FastEat extends CheckExecutor {
     @Override
     protected boolean canRun() {
         return player.getWorld().getDifficulty() != Difficulty.PEACEFUL
-                && !player.hasPotionEffect(PotionEffectType.SATURATION, 0);
+                && !player.hasPotionEffect(PotionEffectType.SATURATION, 0)
+                && Attributes.getAmount(player, Attributes.GENERIC_MAX_ABSORPTION) == 0.0;
     }
 }

@@ -10,6 +10,7 @@ import com.vagdedes.spartan.compatibility.manual.abilities.AureliumSkills;
 import com.vagdedes.spartan.compatibility.manual.building.MineBomb;
 import com.vagdedes.spartan.compatibility.manual.building.PrinterMode;
 import com.vagdedes.spartan.compatibility.manual.building.TreeFeller;
+import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import com.vagdedes.spartan.utils.minecraft.world.GroundUtils;
@@ -113,6 +114,7 @@ public class BlockReach extends CheckExecutor {
                 && !Compatibility.CompatibilityType.CRAFT_BOOK.isFunctional()
                 && !PrinterMode.isUsing(player)
                 && !AureliumSkills.isUsing(player)
-                && !MineBomb.isUsing(player);
+                && !MineBomb.isUsing(player)
+                && Attributes.getAmount(player, Attributes.PLAYER_BLOCK_INTERACTION_RANGE) == 0.0;
     }
 }

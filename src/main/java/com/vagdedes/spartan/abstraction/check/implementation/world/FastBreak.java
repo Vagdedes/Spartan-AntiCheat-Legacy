@@ -12,6 +12,7 @@ import com.vagdedes.spartan.compatibility.manual.building.MineBomb;
 import com.vagdedes.spartan.compatibility.manual.building.SuperPickaxe;
 import com.vagdedes.spartan.compatibility.manual.building.TreeFeller;
 import com.vagdedes.spartan.compatibility.manual.entity.Vehicles;
+import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
 import com.vagdedes.spartan.functionality.connection.Latency;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -241,7 +242,8 @@ public class FastBreak extends CheckExecutor {
                 && !SuperPickaxe.isUsing(player)
                 && !AureliumSkills.isUsing(player)
                 && !mcMMO.hasGeneralAbility(player)
-                && !Compatibility.CompatibilityType.CRAFT_BOOK.isFunctional();
+                && !Compatibility.CompatibilityType.CRAFT_BOOK.isFunctional()
+                && Attributes.getAmount(player, Attributes.PLAYER_BLOCK_BREAK_SPEED) == 0.0;
     }
 
 }

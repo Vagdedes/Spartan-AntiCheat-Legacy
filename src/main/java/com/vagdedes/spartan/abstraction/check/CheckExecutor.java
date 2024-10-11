@@ -10,6 +10,7 @@ import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import com.vagdedes.spartan.compatibility.manual.building.MythicMobs;
 import com.vagdedes.spartan.compatibility.manual.enchants.CustomEnchantsPlus;
 import com.vagdedes.spartan.compatibility.manual.enchants.EcoEnchants;
+import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudConnections;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
@@ -87,6 +88,7 @@ public abstract class CheckExecutor extends CheckDetection {
                 && !player.protocol.isLoading()
                 && (!v1_8 || player.getInstance().getGameMode() != GameMode.SPECTATOR)
                 && hackType.getCheck().isEnabled(player.dataType, player.getWorld().getName())
+                && Attributes.getAmount(player, Attributes.GENERIC_SCALE) == 0.0
                 && canRun()
                 && !Permissions.isBypassing(player, hackType);
     }

@@ -5,6 +5,7 @@ import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
@@ -78,7 +79,8 @@ public class FastHeal extends CheckExecutor {
     @Override
     protected boolean canRun() {
         if (player.getWorld().getDifficulty() != Difficulty.PEACEFUL
-                && player.getInstance().getFireTicks() <= 0) {
+                && player.getInstance().getFireTicks() <= 0
+                && Attributes.getAmount(player, Attributes.GENERIC_MAX_ABSORPTION) == 0.0) {
             GameMode gameMode = player.getInstance().getGameMode();
             return gameMode == GameMode.ADVENTURE || gameMode == GameMode.SURVIVAL;
         } else {

@@ -170,11 +170,21 @@ public class MovementProcessing {
 
     public static boolean canCheck(SpartanPlayer player,
                                    boolean elytra, boolean velocity,
-                                   boolean flight, boolean attributes) {
+                                   boolean flight,
+                                   boolean playerAttributes,
+                                   boolean environmentalAttributes) {
         if ((elytra || !player.movement.isGliding())
                 && (flight || !player.movement.wasFlying())
                 && (velocity || !player.trackers.has(PlayerTrackers.TrackerType.ABSTRACT_VELOCITY))
-                && (attributes || Attributes.getAmount(player, Attributes.GENERIC_MOVEMENT_SPEED) == 0.0)) {
+
+                && (playerAttributes
+                || Attributes.getAmount(player, Attributes.GENERIC_MOVEMENT_SPEED) == 0.0
+                && Attributes.getAmount(player, Attributes.GENERIC_JUMP_STRENGTH) == 0.0)
+
+                && (environmentalAttributes
+                || Attributes.getAmount(player, Attributes.GENERIC_STEP_HEIGHT) == 0.0
+                && Attributes.getAmount(player, Attributes.GENERIC_GRAVITY) == 0.0
+                && Attributes.getAmount(player, Attributes.GENERIC_STEP_HEIGHT) == 0.0)) {
             if (Compatibility.CompatibilityType.MYTHIC_MOBS.isFunctional()
                     || Compatibility.CompatibilityType.ITEMS_ADDER.isFunctional()) {
                 List<Entity> entities = player.getNearbyEntities(

@@ -8,6 +8,7 @@ import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.manual.abilities.mcMMO;
 import com.vagdedes.spartan.compatibility.manual.building.PrinterMode;
 import com.vagdedes.spartan.compatibility.manual.entity.Vehicles;
+import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
@@ -94,7 +95,8 @@ public class GhostHand extends CheckExecutor {
         if (!player.movement.isFlying()
                 && !Vehicles.has(player, Vehicles.DRILL)
                 && !PrinterMode.isUsing(player)
-                && !mcMMO.hasGeneralAbility(player)) {
+                && !mcMMO.hasGeneralAbility(player)
+                && Attributes.getAmount(player, Attributes.PLAYER_BLOCK_INTERACTION_RANGE) == 0.0) {
             GameMode gameMode = player.getInstance().getGameMode();
             return gameMode == GameMode.SURVIVAL
                     || gameMode == GameMode.ADVENTURE;

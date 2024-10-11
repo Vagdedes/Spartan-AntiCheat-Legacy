@@ -6,3 +6,4 @@
 [#] Moved the IrregularMovements move-length detection to the KillAura check and fixed non-combat false positives.
 [#] Potentially fixed several movement water and water-logged block false positives.
 [#] Fixed bubble water being identified even if block was blocking the falling path.
+[#] Improved the support for attributes introduced in recent updates but earlier too.

@@ -329,8 +329,14 @@ public class Speed extends CheckExecutor {
 
     @Override
     protected boolean canRun() {
-        return MovementProcessing.canCheck(player, true, true, false, true)
-                && !player.trackers.has(PlayerTrackers.TrackerType.PISTON);
+        return MovementProcessing.canCheck(
+                player,
+                true,
+                true,
+                false,
+                true,
+                false
+        ) && !player.trackers.has(PlayerTrackers.TrackerType.PISTON);
     }
 
 }
