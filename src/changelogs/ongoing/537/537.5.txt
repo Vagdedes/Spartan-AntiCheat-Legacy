@@ -1,5 +1,5 @@
 [#] Fixed IrregularMovements new baritone detection false positives.
-[#] Fixed Exploits ground-spoof detection false positives.
+[#] Fixed several Exploits ground-spoof detection false positives.
 [#] Fixed KillAura block-raytrace detection console error.
 [#] Fixed IrregularMovements teleportation by breaking blocks false positives.
 [#] Fixed MorePackets teleportation by breaking blocks false positives.
@@ -7,3 +7,4 @@
 [#] Potentially fixed several movement water and water-logged block false positives.
 [#] Fixed bubble water being identified even if block was blocking the falling path.
 [#] Improved the support for attributes introduced in recent updates but earlier too.
+[#] Fixed several movement liquid false positives caused by broken utility method.

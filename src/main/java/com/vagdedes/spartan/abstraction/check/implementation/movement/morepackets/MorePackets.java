@@ -30,6 +30,7 @@ public class MorePackets extends CheckExecutor {
             positive_latency,
             positive_balance,
             negative;
+    private long teleported;
 
     public MorePackets(HackType hackType, SpartanPlayer player) {
         super(hackType, player);
@@ -70,7 +71,8 @@ public class MorePackets extends CheckExecutor {
                 calculate((PlayerTickEvent) object);
             }
         } else if (object instanceof Byte && object.equals(TELEPORT)) {
-            this.addDisableCause(null, null, AlgebraUtils.integerCeil(TPS.maximum) * 4);
+            this.teleported = System.currentTimeMillis()
+                    + (AlgebraUtils.integerCeil(TPS.maximum) * TPS.tickTime * 4L);
         } else if (!player.protocol.packetsEnabled()) {
             bukkitNmsMap.put(TPS.tick(), bukkitNmsMap.getOrDefault(TPS.tick(), 0) + 1);
 
@@ -86,6 +88,7 @@ public class MorePackets extends CheckExecutor {
         long delay = event.getDelay();
         TimerBalancer timerBalancer = event.protocol.timerBalancer;
         timerBalancer.pushDelay(delay);
+
         if (timerBalancer.isNegativeTimer() && delay > 50) {
             punish(this.negative,
                     "type: negative, multiply: " + RayUtils.scaleVal((double) 50 / delay, 2)
@@ -229,7 +232,8 @@ public class MorePackets extends CheckExecutor {
 
     @Override
     protected boolean canRun() {
-        return MovementProcessing.canCheck(
+        return this.teleported < System.currentTimeMillis()
+                && MovementProcessing.canCheck(
                 player,
                 player.protocol.packetsEnabled(),
                 true,

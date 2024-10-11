@@ -187,7 +187,9 @@ public class SpartanPlayer {
         for (PlayerTrackers.TrackerType handlerType : PlayerTrackers.TrackerType.values()) {
             this.trackers.remove(handlerType);
         }
-        this.movement.resetAirTicks();
+        if (!this.movement.judgeGround()) {
+            this.movement.resetAirTicks();
+        }
 
         if (checks) {
             this.registerExecutors(resetChecks);
