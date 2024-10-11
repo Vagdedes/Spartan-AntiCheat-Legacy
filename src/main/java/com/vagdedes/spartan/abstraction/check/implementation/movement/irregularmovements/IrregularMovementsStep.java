@@ -236,25 +236,27 @@ public class IrregularMovementsStep extends DetectionExecutor {
                 } else if (vehicle == null
                         && !player.trackers.has(PlayerTrackers.TrackerType.VEHICLE, "exit")) {
                     if (knownBox) {
-                        double verticalPrediction = oldBox - box,
-                                motionRemainder = 1.0 - AlgebraUtils.removeBase(vertical);
+                        if (!teleported) {
+                            double verticalPrediction = oldBox - box,
+                                    motionRemainder = 1.0 - AlgebraUtils.removeBase(vertical);
 
-                        if (verticalPrediction < 0.0) {
-                            verticalPrediction += 1.0;
-                        }
-                        if (verticalPrediction != motionRemainder) {
-                            this.step_landing.cancel(
-                                    "type: step(landing)"
-                                            + ", box: " + box
-                                            + ", old-box: " + oldBox
-                                            + ", vertical: " + vertical
-                                            + ", vertical-prediction: " + verticalPrediction
-                                            + ", motion-remainder: " + motionRemainder,
-                                    1.0,
-                                    player.movement.getDetectionLocation(),
-                                    0,
-                                    true
-                            );
+                            if (verticalPrediction < 0.0) {
+                                verticalPrediction += 1.0;
+                            }
+                            if (verticalPrediction != motionRemainder) {
+                                this.step_landing.cancel(
+                                        "type: step(landing)"
+                                                + ", box: " + box
+                                                + ", old-box: " + oldBox
+                                                + ", vertical: " + vertical
+                                                + ", vertical-prediction: " + verticalPrediction
+                                                + ", motion-remainder: " + motionRemainder,
+                                        1.0,
+                                        player.movement.getDetectionLocation(),
+                                        0,
+                                        true
+                                );
+                            }
                         }
                     } else if (!player.isOnGround(player.movement.getLocation(), true)
                             && !BlockUtils.isInteractiveAndPassable(player, player.movement.getLocation().getBlock().getType())) {

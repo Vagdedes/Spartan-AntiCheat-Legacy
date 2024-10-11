@@ -70,7 +70,7 @@ public class MorePackets extends CheckExecutor {
                 calculate((PlayerTickEvent) object);
             }
         } else if (object instanceof Byte && object.equals(TELEPORT)) {
-            this.addDisableCause(null, null, AlgebraUtils.integerCeil(TPS.maximum) * 3);
+            this.addDisableCause(null, null, AlgebraUtils.integerCeil(TPS.maximum) * 4);
         } else if (!player.protocol.packetsEnabled()) {
             bukkitNmsMap.put(TPS.tick(), bukkitNmsMap.getOrDefault(TPS.tick(), 0) + 1);
 
