@@ -4,3 +4,4 @@
 [#] Fixed IrregularMovements teleportation by breaking blocks false positives.
 [#] Fixed MorePackets teleportation by breaking blocks false positives.
 [#] Moved the IrregularMovements move-length detection to the KillAura check and fixed non-combat false positives.
+[#] Potentially fixed several movement water and water-logged block false positives.

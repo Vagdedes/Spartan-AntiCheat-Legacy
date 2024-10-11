@@ -96,7 +96,7 @@ public class MovementProcessing {
             player.movement.setLastLiquid(LAVA);
             return true;
         } else {
-            for (double i = 0.0; i < player.getInstance().getEyeHeight(); i++) {
+            for (double i = 0.0; i < Math.ceil(player.getInstance().getEyeHeight()); i++) {
                 for (SpartanLocation locationModified : location.getSurroundingLocations(GroundUtils.boundingBox, i, GroundUtils.boundingBox)) {
                     if (locationModified.getBlock().isLiquidOrWaterLogged(false)) {
                         player.movement.setLastLiquid(WATER);
