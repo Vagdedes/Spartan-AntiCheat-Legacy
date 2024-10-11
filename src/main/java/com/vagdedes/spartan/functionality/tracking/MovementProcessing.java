@@ -19,7 +19,9 @@ import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class MovementProcessing {
 
@@ -123,9 +125,12 @@ public class MovementProcessing {
 
             if (blockY > minY) {
                 SpartanLocation locationModified = location.clone();
+                int max = (blockY - minY),
+                        playerHeight = AlgebraUtils.integerCeil(player.getInstance().getEyeHeight());
+                Set<Integer> emptyNonLiquid = new HashSet<>(max),
+                        fullNonLiquid = new HashSet<>(max);
 
-                for (int i = 0; i <= (blockY - minY); i++) {
-                    int nonLiquid = 0;
+                for (int i = 0; i <= max; i++) {
                     Collection<SpartanLocation> locations = locationModified.clone().add(0, -i, 0).getSurroundingLocations(GroundUtils.boundingBox, 0, GroundUtils.boundingBox);
 
                     for (SpartanLocation loc : locations) {
@@ -135,16 +140,24 @@ public class MovementProcessing {
                         if (type == Material.SOUL_SAND) {
                             player.trackers.add(PlayerTrackers.TrackerType.BUBBLE_WATER, AlgebraUtils.integerCeil(TPS.maximum));
                             player.trackers.add(PlayerTrackers.TrackerType.BUBBLE_WATER, "soul-sand", AlgebraUtils.integerCeil(TPS.maximum));
-                            break;
+                            return;
                         } else if (type == MAGMA_BLOCK) {
                             player.trackers.add(PlayerTrackers.TrackerType.BUBBLE_WATER, AlgebraUtils.integerCeil(TPS.maximum));
                             player.trackers.add(PlayerTrackers.TrackerType.BUBBLE_WATER, "magma-block", AlgebraUtils.integerCeil(TPS.maximum));
-                            break;
-                        } else if (BlockUtils.isSolid(type) && !block.isWaterLogged()) {
-                            nonLiquid++;
+                            return;
+                        } else if (BlockUtils.isSolid(type)) {
+                            if (!block.isWaterLogged()) {
+                                fullNonLiquid.add(i);
 
-                            if (nonLiquid == locations.size()) {
-                                break;
+                                if (fullNonLiquid.size() == playerHeight) {
+                                    return;
+                                }
+                            }
+                        } else if (!block.isWaterLogged()) {
+                            emptyNonLiquid.add(i);
+
+                            if (emptyNonLiquid.size() == 8) {
+                                return;
                             }
                         }
                     }
