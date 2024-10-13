@@ -3,6 +3,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.irregular
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.gravity.IrregularMovementsGravityNew;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
@@ -15,7 +16,8 @@ public class IrregularMovements extends CheckExecutor {
     private long teleport;
     public final DetectionExecutor limitServerFlying;
     private final IrregularMovementsStep step;
-    private final IrregularMovementsGravity gravity;
+    private final IrregularMovementsGravity gravityOld;
+    private final IrregularMovementsGravityNew gravity;
     private final IrregularMovementsJump jump;
     private final IrregularMovementsHorizontal horizontal;
     private final IrregularMovementsFoodSprint foodSprint;
@@ -25,7 +27,8 @@ public class IrregularMovements extends CheckExecutor {
         super(hackType, player);
         limitServerFlying = new ImplementedDetectionExecutor(this, "limit_server_flying", false);
         step = new IrregularMovementsStep(this);
-        gravity = new IrregularMovementsGravity(this);
+        gravityOld = new IrregularMovementsGravity(this);
+        gravity = new IrregularMovementsGravityNew(this);
         jump = new IrregularMovementsJump(this);
         horizontal = new IrregularMovementsHorizontal(this);
         foodSprint = new IrregularMovementsFoodSprint(this);
@@ -58,15 +61,16 @@ public class IrregularMovements extends CheckExecutor {
             if (vertical == 0.0) {
                 this.horizontal.run(knownBox, knownOldBox, box, oldBox, vertical);
             } else {
-                this.step.run(knownBox, knownOldBox, box, oldBox, vertical, teleported);
+                step.run(knownBox, knownOldBox, box, oldBox, vertical, teleported);
             }
         } else {
-            this.gravity.run(vertical, oldVertical, box, oldBox);
+            gravityOld.run(vertical, oldVertical, box, oldBox);
         }
         if (!teleported) {
             jump.run(vertical, box);
         }
         baritone.run();
+        gravity.run();
     }
 
     @Override

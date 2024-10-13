@@ -35,8 +35,8 @@ public class IrregularMovementsGravity extends DetectionExecutor {
 
     IrregularMovementsGravity(CheckExecutor executor) {
         super(executor, null, true);
-        this.gravity_climb_stable = new ImplementedDetectionExecutor(executor, "climb_stable", true);
-        this.gravity_prediction = new ImplementedDetectionExecutor(executor, "climb_prediction", true);
+        this.gravity_climb_stable = new ImplementedDetectionExecutor(executor, "climb", true);
+        this.gravity_prediction = new ImplementedDetectionExecutor(executor, "gravity", true);
     }
 
     void run(double vertical, double oldVertical, double box, double oldBox) {
