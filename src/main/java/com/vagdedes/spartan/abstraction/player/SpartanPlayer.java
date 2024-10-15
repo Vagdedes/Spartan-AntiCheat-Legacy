@@ -376,6 +376,20 @@ public class SpartanPlayer {
 
     // Separator
 
+    public double getHealth() {
+        return ProtocolLib.isTemporary(this.getInstance())
+                ? 0.0
+                : this.getInstance().getHealth();
+    }
+
+    public int getEntityId() {
+        return ProtocolLib.isTemporary(this.getInstance())
+                ? new Random().nextInt()
+                : this.getInstance().getEntityId();
+    }
+
+    // Separator
+
     private void setStoredPotionEffects() {
         if (!ProtocolLib.isTemporary(this.getInstance())) {
             SpartanBukkit.transferTask(

@@ -43,8 +43,6 @@ public class HitReach extends CheckExecutor {
         if (player.protocol.packetsEnabled()) {
             if (CombatUtils.canCheck(player, target)
                     && !player.getInstance().getGameMode().equals(GameMode.CREATIVE)) {
-                int targetId = target.getEntityId();
-                int playerId = event.player.getEntityId();
                 SpartanProtocol targetProtocol = SpartanBukkit.getProtocol(ProtocolLib.getUUID(target));
                 if (targetProtocol == null) return;
                 double bruteforceRayTrace = 14.88;

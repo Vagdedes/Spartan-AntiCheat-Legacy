@@ -46,7 +46,7 @@ public class HitTime extends DetectionExecutor {
                 cancel("type: switch", (vl - 200) / 100D, player.movement.getDetectionLocation());
             }
         }
-        if (packets >= 5 && Packet_LagCompensation.getPlayerTicksDelay(player.getInstance().getEntityId()) < 2) {
+        if (packets >= 5 && Packet_LagCompensation.getPlayerTicksDelay(player.getEntityId()) < 2) {
             if (devianceTotal < 35) {
                 vlAnalysis += (devianceTotal < 10) ? 150 : 75;
                 if (vlAnalysis >= 300) {

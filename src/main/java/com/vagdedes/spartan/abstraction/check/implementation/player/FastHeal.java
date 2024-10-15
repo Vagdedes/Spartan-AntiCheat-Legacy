@@ -27,7 +27,7 @@ public class FastHeal extends CheckExecutor {
     public FastHeal(HackType hackType, SpartanPlayer player) {
         super(hackType, player);
         this.detection = new ImplementedDetectionExecutor(this, null, true);
-        this.previousHealth = player.getInstance().getHealth();
+        this.previousHealth = player.getHealth();
         this.buffer = new Buffer.IndividualBuffer();
     }
 
@@ -52,7 +52,7 @@ public class FastHeal extends CheckExecutor {
 
             if (reason != RegainReason.CUSTOM
                     && reason != RegainReason.MAGIC) {
-                double health = player.getInstance().getHealth();
+                double health = player.getHealth();
                 long timePassed = System.currentTimeMillis() - time;
                 time = System.currentTimeMillis();
 
