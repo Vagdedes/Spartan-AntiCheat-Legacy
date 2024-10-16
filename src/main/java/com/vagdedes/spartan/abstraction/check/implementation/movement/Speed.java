@@ -3,6 +3,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
+import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.player.PlayerTrackers;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.player.SpartanPotionEffect;
@@ -93,6 +94,9 @@ public class Speed extends CheckExecutor {
             double dx = v.getX();
             double dz = v.getZ();
             multiplyVelo = Math.sqrt(dx * dx + dz * dz) * 2;
+            if (Compatibility.CompatibilityType.OLD_COMBAT_MECHANICS.isFunctional()) {
+                multiplyVelo += 0.2; multiplyVelo *= 1.5;
+            }
             velocity = 2;
         } else if (object instanceof Integer) {
             multiply = ((Integer) object) * 5;
