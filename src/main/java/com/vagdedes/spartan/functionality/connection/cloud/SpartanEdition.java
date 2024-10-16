@@ -15,7 +15,7 @@ import java.util.List;
 public class SpartanEdition {
 
     private static final Check.DataType
-            currentType = Check.DataType.JAVA,
+            currentType = Check.DataType.BEDROCK,
             oppositeType = currentType == Check.DataType.JAVA
                     ? Check.DataType.BEDROCK
                     : Check.DataType.JAVA;
@@ -67,6 +67,11 @@ public class SpartanEdition {
                     getProductID(oppositeType)
             )) {
                 alternativeVersion = true;
+            }
+            if (currentVersion
+                    && alternativeVersion
+                    && !CloudConnections.ownsProduct("26")) {
+                alternativeVersion = false;
             }
             hasAccount = !JarVerification.isValid(false) || CloudConnections.hasAccount();
         });
