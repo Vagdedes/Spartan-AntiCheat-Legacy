@@ -9,3 +9,5 @@
 [#] Improved the support for attributes introduced in recent updates but earlier too.
 [#] Fixed several movement liquid false positives caused by broken utility method.
 [#] Fixed several console errors caused by ProtocolLib temporary players in relation to floodgate bedrock players.
+[#] Fixed an OldCombatMechanics compatibility Speed check false positive.
+[-] Removed the Detection Slots, more on this on the announcement on Discord.
