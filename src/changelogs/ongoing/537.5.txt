@@ -11,3 +11,4 @@
 [#] Fixed several console errors caused by ProtocolLib temporary players in relation to floodgate bedrock players.
 [#] Fixed an OldCombatMechanics compatibility Speed check false positive.
 [-] Removed the Detection Slots, more on this on the announcement on Discord.
+[#] Added additional information to the Manage Checks inventory menu/gui.
