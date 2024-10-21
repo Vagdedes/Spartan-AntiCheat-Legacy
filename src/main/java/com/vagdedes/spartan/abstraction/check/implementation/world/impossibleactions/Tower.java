@@ -30,6 +30,11 @@ public class Tower extends DetectionExecutor {
              SpartanLocation playerLocation,
              int playerY,
              int blockY) {
+        Double deltaXZ = player.movement.getEventHorizontal();
+
+        if (deltaXZ == null) {
+            return;
+        }
         if (AlgebraUtils.getHorizontalDistance(
                 playerLocation.getBlockLocation(),
                 block.getLocation()
@@ -40,8 +45,7 @@ public class Tower extends DetectionExecutor {
             double motionSum = PlayerUtils.getJumpMotionSum(jumpLevel),
                     blockHeight = GroundUtils.getMinHeight(
                             handItem == null ? Material.AIR : handItem.getType()
-                    ),
-                    deltaXZ = player.movement.getEventHorizontal();
+                    );
             int deltaYMinus1 = playerY - blockY,
                     possiblePlacements = AlgebraUtils.integerFloor(
                             motionSum / (blockHeight == 0.0 ? 1.0 : blockHeight)
