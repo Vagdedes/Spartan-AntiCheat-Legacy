@@ -378,7 +378,8 @@ public abstract class CheckExecutor extends CheckDetection {
                 ),
                 null,
                 hackType,
-                playerViolation
+                playerViolation,
+                !hasSufficientData
         );
 
         // Local Notifications
