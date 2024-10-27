@@ -67,9 +67,7 @@ public class MorePackets extends CheckExecutor {
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
         if (object instanceof PlayerTickEvent) {
-            if (!player.isBedrockPlayer()) {
-                calculate((PlayerTickEvent) object);
-            }
+            calculate((PlayerTickEvent) object);
         } else if (object instanceof Byte && object.equals(TELEPORT)) {
             this.teleported = System.currentTimeMillis()
                     + (AlgebraUtils.integerCeil(TPS.maximum) * TPS.tickTime * 4L);
@@ -232,7 +230,8 @@ public class MorePackets extends CheckExecutor {
 
     @Override
     protected boolean canRun() {
-        return this.teleported < System.currentTimeMillis()
+        return !player.isBedrockPlayer()
+                && this.teleported < System.currentTimeMillis()
                 && MovementProcessing.canCheck(
                 player,
                 player.protocol.packetsEnabled(),

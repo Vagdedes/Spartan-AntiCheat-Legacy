@@ -4,3 +4,4 @@
 [#] Corrected a color typo in the Manage Checks inventory menu.
 [#] Rewrote how the plugin deals with detection hashing to improve and optimize statistics.
 [#} Fixed IrregularMovements baritone false positives for bedrock players.
+[#} Fixed MorePackets bukkit detection false positives for bedrock players.
