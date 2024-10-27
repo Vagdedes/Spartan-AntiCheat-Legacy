@@ -201,8 +201,8 @@ public class ManageChecks extends InventoryMenu {
                 || punish && punishmentsOff) {
             lore.add("");
             lore.add("§eYellow text in preventions & punishments");
-            lore.add("§7indicate the check is still collecting");
-            lore.add("§7data and will fully enable in the future.");
+            lore.add("§eindicate the check is still collecting");
+            lore.add("§edata and will fully enable in the future.");
         }
         if (enabled && silent) {
             item.addUnsafeEnchantment(EnchantmentUtils.DURABILITY, 1);
