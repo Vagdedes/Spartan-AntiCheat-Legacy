@@ -4,7 +4,6 @@ import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.profiling.PlayerEvidence;
-import com.vagdedes.spartan.abstraction.profiling.PlayerViolation;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import com.vagdedes.spartan.compatibility.manual.building.MythicMobs;
@@ -14,18 +13,14 @@ import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudConnections;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
-import com.vagdedes.spartan.functionality.notifications.clickable.ClickableMessage;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.*;
-import com.vagdedes.spartan.functionality.tracking.AntiCheatLogs;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import com.vagdedes.spartan.utils.minecraft.server.ConfigUtils;
-import me.vagdedes.spartan.api.API;
 import me.vagdedes.spartan.api.CheckCancelEvent;
 import me.vagdedes.spartan.api.PlayerViolationCommandEvent;
-import me.vagdedes.spartan.api.PlayerViolationEvent;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -38,12 +33,13 @@ public abstract class CheckExecutor extends CheckDetection {
     private static final boolean v1_8 = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8);
     public static final String
             violationLevelIdentifier = "Violations:",
-            javaPlayerIdentifier = "Java:";
+            javaPlayerIdentifier = "Java:",
+            detectionIdentifier = "Detection:";
 
     private final long creation;
     private long notifications;
     private CancelCause disableCause, silentCause;
-    private HackPrevention prevention;
+    HackPrevention prevention;
     private boolean cancelled;
 
     public CheckExecutor(Enums.HackType hackType, SpartanPlayer player) {
@@ -146,62 +142,6 @@ public abstract class CheckExecutor extends CheckDetection {
         InteractiveInventory.playerInfo.refresh(player.getInstance().getName());
     }
 
-    // Violation
-
-    final void violate(HackPrevention newPrevention, String information, double increase, long time) {
-        CancelCause disableCause = this.getDisableCause();
-
-        if (disableCause == null
-                || disableCause.hasExpired()
-                || !disableCause.pointerMatches(information)) {
-            if (increase < 1.0) {
-                increase = 1.0;
-            }
-            PlayerViolation playerViolation = new PlayerViolation(
-                    time,
-                    increase,
-                    information
-            );
-            boolean event = Config.settings.getBoolean("Important.enable_developer_api");
-
-            Runnable runnable = () -> {
-                if (event) {
-                    PlayerViolationEvent playerViolationEvent = new PlayerViolationEvent(
-                            player.getInstance(),
-                            hackType,
-                            playerViolation.increase,
-                            information
-                    );
-                    Register.manager.callEvent(playerViolationEvent);
-
-                    if (playerViolationEvent.isCancelled()) {
-                        return;
-                    }
-                }
-                player.protocol.getProfile().getViolationHistory(player.dataType, hackType).store(
-                        hackType,
-                        playerViolation
-                );
-                this.notify(playerViolation, information);
-                this.punish();
-                this.prevention = newPrevention;
-                this.prevention.canPrevent =
-                        !hackType.getCheck().isSilent(player.dataType, player.getWorld().getName())
-                                && (silentCause == null
-                                || silentCause.hasExpired()
-                                || !silentCause.pointerMatches(information))
-                                && ResearchEngine.getRequiredPlayers(hackType, PlayerEvidence.preventionProbability) == 0
-                                && player.protocol.getProfile().evidence.surpassed(this.hackType, PlayerEvidence.preventionProbability);
-            };
-
-            if (!event || SpartanBukkit.isSynchronised()) {
-                runnable.run();
-            } else {
-                SpartanBukkit.transferTask(player, runnable);
-            }
-        }
-    }
-
     // Prevention
 
     public final boolean prevent() {
@@ -264,7 +204,7 @@ public abstract class CheckExecutor extends CheckDetection {
 
     // Punishment
 
-    private void punish() {
+    void punish() {
         Check check = hackType.getCheck();
 
         if (check.canPunish(player.dataType)) {
@@ -337,76 +277,6 @@ public abstract class CheckExecutor extends CheckDetection {
     }
 
     // Notification
-
-    private void notify(PlayerViolation playerViolation, String information) {
-        boolean hasSufficientData = ResearchEngine.getRequiredPlayers(hackType, PlayerEvidence.notificationProbability) == 0;
-        double probability = player.protocol.getProfile().evidence.getProbability(hackType),
-                certainty = PlayerEvidence.probabilityToCertainty(probability) * 100.0;
-        String notification = ConfigUtils.replaceWithSyntax(
-                player,
-                Config.messages.getColorfulString("detection_notification")
-                        .replace("{info}", information)
-                        .replace("{vls:detection}", String.valueOf(AlgebraUtils.cut(playerViolation.increase, 2)))
-                        .replace("{vls:percentage}",
-                                hasSufficientData
-                                        ? (AlgebraUtils.integerRound(certainty) + "%%")
-                                        : "unlikely"
-                        ),
-                hackType
-        );
-
-        SpartanLocation location = player.movement.getLocation();
-        information = player.getInstance().getName() + " failed " + hackType
-                + " (" + violationLevelIdentifier + " " + playerViolation.increase + "), "
-                + "(Server-Version: " + MultiVersion.serverVersion.toString() + "), "
-                + "(Certainty: " + AlgebraUtils.cut(certainty, 2) + "), "
-                + "(Plugin-Version: " + API.getVersion() + "), "
-                + "(Silent: " + hackType.getCheck().isSilent(player.dataType, player.getWorld().getName()) + "), "
-                + "(" + javaPlayerIdentifier + " " + (!player.isBedrockPlayer()) + ")" + ", "
-                + "(Packets: " + player.protocol.packetsEnabled() + "), "
-                + "(Ping: " + player.protocol.getPing() + "ms), "
-                + "(W-XYZ: " + location.world.getName() + " " + location.getBlockX() + " " + location.getBlockY() + " " + location.getBlockZ() + "), "
-                + "[Information: " + information + "]";
-        AntiCheatLogs.logInfo(
-                player,
-                notification,
-                information,
-                hasSufficientData
-                        && PlayerEvidence.surpassedProbability(
-                        probability,
-                        PlayerEvidence.notificationProbability
-                ),
-                null,
-                hackType,
-                playerViolation,
-                !hasSufficientData
-        );
-
-        // Local Notifications
-        String command = Config.settings.getString("Notifications.message_clickable_command")
-                .replace("{player}", player.getInstance().getName());
-
-        if (Config.settings.getBoolean("Notifications.individual_only_notifications")) {
-            if (DetectionNotifications.isEnabled(player)) { // Attention
-                ClickableMessage.sendCommand(player.getInstance(), notification, command, command);
-            }
-        } else {
-            List<SpartanPlayer> notificationPlayers = DetectionNotifications.getPlayers();
-
-            if (!notificationPlayers.isEmpty()) {
-                for (SpartanPlayer staff : notificationPlayers) {
-                    if (staff.getExecutor(this.hackType).canSendNotification(this.player)) {
-                        ClickableMessage.sendCommand(
-                                staff.getInstance(),
-                                notification,
-                                command,
-                                command
-                        );
-                    }
-                }
-            }
-        }
-    }
 
     private int getNotificationTicksCooldown(SpartanPlayer detected) {
         Integer frequency = DetectionNotifications.getFrequency(this.player);

@@ -2,3 +2,4 @@
 [#] Spartan will no longer send unlikely notifications to the console.
 [#] Fixed a null pointer console error related to the ImpossibleActions tower detection.
 [#] Corrected a color typo in the Manage Checks inventory menu.
+[#] Rewrote how the plugin deals with detection hashing to improve and optimize statistics.

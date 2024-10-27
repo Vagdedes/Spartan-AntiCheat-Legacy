@@ -224,10 +224,15 @@ public class ResearchEngine {
     // Separator
 
     private static String getDetectionInformation(String s) {
-        int index = s.indexOf("[");
-        return index > -1
-                ? s.substring(index + 1, s.length() - 1)
-                : null;
+        String find = "(" + CheckExecutor.detectionIdentifier + " ";
+        int index = s.indexOf(find);
+
+        if (index > -1) {
+            s = s.substring(index + find.length());
+            index = s.indexOf(")");
+            return s.substring(0, index);
+        }
+        return null;
     }
 
     private static Double getDetectionViolationLevel(String s) {
@@ -422,20 +427,21 @@ public class ResearchEngine {
                                     if (hackTypeString.equals(hackType.toString())) {
                                         String detection = getDetectionInformation(data);
 
-                                        if (detection != null) {
-                                            Double violationIncrease = getDetectionViolationLevel(data);
+                                        if (detection == null) {
+                                            detection = hackType.toString();
+                                        }
+                                        Double violationIncrease = getDetectionViolationLevel(data);
 
-                                            if (violationIncrease != null) {
-                                                SimpleDateFormat sdf = new SimpleDateFormat(AntiCheatLogs.dateFormat);
-                                                getPlayerProfile(split[0], true).getViolationHistory(getDataType(data), hackType).store(
-                                                        hackType,
-                                                        new PlayerViolation(
-                                                                sdf.parse(fullDate).getTime(),
-                                                                violationIncrease,
-                                                                detection
-                                                        )
-                                                );
-                                            }
+                                        if (violationIncrease != null) {
+                                            SimpleDateFormat sdf = new SimpleDateFormat(AntiCheatLogs.dateFormat);
+                                            getPlayerProfile(split[0], true).getViolationHistory(getDataType(data), hackType).store(
+                                                    hackType,
+                                                    new PlayerViolation(
+                                                            sdf.parse(fullDate).getTime(),
+                                                            violationIncrease,
+                                                            detection
+                                                    )
+                                            );
                                         }
                                         break;
                                     }
