@@ -109,18 +109,17 @@ public abstract class DetectionExecutor extends CheckDetection {
     // Notification
 
     final void notify(PlayerViolation playerViolation, String information) {
-        boolean hasSufficientData = ResearchEngine.getRequiredPlayers(hackType, PlayerEvidence.notificationProbability) == 0;
         double probability = player.protocol.getProfile().evidence.getProbability(hackType),
                 certainty = PlayerEvidence.probabilityToCertainty(probability) * 100.0;
+        int roundedCertainty = AlgebraUtils.integerRound(certainty);
+        boolean hasSufficientData = ResearchEngine.getRequiredPlayers(hackType, PlayerEvidence.notificationProbability) == 0;
         String notification = ConfigUtils.replaceWithSyntax(
                 player,
                 Config.messages.getColorfulString("detection_notification")
                         .replace("{info}", information)
                         .replace("{vls:detection}", String.valueOf(AlgebraUtils.cut(playerViolation.increase, 2)))
                         .replace("{vls:percentage}",
-                                hasSufficientData
-                                        ? (AlgebraUtils.integerRound(certainty) + "%%")
-                                        : "unlikely"
+                                hasSufficientData && roundedCertainty > 0 ? (roundedCertainty + "%%") : "unlikely"
                         ),
                 hackType
         );

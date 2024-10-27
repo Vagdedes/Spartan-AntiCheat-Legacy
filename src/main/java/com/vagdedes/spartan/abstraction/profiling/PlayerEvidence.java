@@ -16,7 +16,8 @@ public class PlayerEvidence {
     public static final double
             notificationProbability = createProbability(0.45),
             preventionProbability = createProbability(0.3),
-            punishmentProbability = createProbability(0.1);
+            punishmentProbability = createProbability(0.1),
+            emptyProbability = createProbability(1.0);
     public static final double[] probabilities = new double[]{
             notificationProbability,
             preventionProbability,
