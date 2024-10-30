@@ -165,8 +165,6 @@ public class PlayerInfo extends InventoryMenu {
         // Separator
 
         Check.DataType dataType = isOnline ? player.dataType : null;
-        boolean notChecked = isOnline
-                && Config.isEnabled(player.dataType);
 
         for (HackType hackType : Enums.HackType.values()) {
             if (hackType.category == checkType) {
@@ -174,8 +172,7 @@ public class PlayerInfo extends InventoryMenu {
                         player,
                         hackType,
                         dataType,
-                        isOnline,
-                        notChecked
+                        isOnline
                 );
                 lore.add(
                         "§7" + hackType.getCheck().getName() + "§8:§e " + state
@@ -188,8 +185,7 @@ public class PlayerInfo extends InventoryMenu {
     private String getDetectionState(SpartanPlayer player,
                                      HackType hackType,
                                      Check.DataType dataType,
-                                     boolean hasPlayer,
-                                     boolean notChecked) {
+                                     boolean hasPlayer) {
         if (!hasPlayer) {
             return "Offline";
         }
@@ -204,9 +200,8 @@ public class PlayerInfo extends InventoryMenu {
         }
         CancelCause disabledCause = player.getExecutor(hackType).getDisableCause();
         return Permissions.isBypassing(player, hackType) ? "Permission Bypass" :
-                notChecked ? "Temporarily Not Checked" :
-                        disabledCause != null ? "Cancelled (" + disabledCause.getReason() + ")" :
-                                (check.isSilent(dataType, worldName) ? "Silent " : "") + "Checking";
+                disabledCause != null ? "Cancelled (" + disabledCause.getReason() + ")" :
+                        (check.isSilent(dataType, worldName) ? "Silent " : "") + "Checking";
     }
 
     public void refresh(String targetName) {
