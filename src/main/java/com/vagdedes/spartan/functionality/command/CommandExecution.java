@@ -203,7 +203,7 @@ public class CommandExecution implements CommandExecutor {
                 if (spartanMessage(sender, isPlayer, true)) {
                     boolean permission = false;
 
-                    if (isPlayer && DetectionNotifications.hasPermission(player)) {
+                    if (isPlayer && DetectionNotifications.hasPermission(player.protocol)) {
                         ClickableMessage.sendCommand(
                                 sender,
                                 ChatColor.RED + "/" + command + " notifications [ticks-frequency]",
@@ -387,7 +387,7 @@ public class CommandExecution implements CommandExecutor {
                     InteractiveInventory.playerInfo.open(player, sender.getName());
 
                 } else if (isPlayer && args[0].equalsIgnoreCase("Notifications")) {
-                    if (!DetectionNotifications.hasPermission(player)) {
+                    if (!DetectionNotifications.hasPermission(player.protocol)) {
                         ClickableMessage.sendURL(
                                 sender,
                                 Config.messages.getColorfulString("no_permission"),
@@ -396,7 +396,7 @@ public class CommandExecution implements CommandExecutor {
                         );
                         return true;
                     }
-                    DetectionNotifications.set(player, DetectionNotifications.defaultFrequency);
+                    DetectionNotifications.set(player.protocol, DetectionNotifications.defaultFrequency);
 
                 } else {
                     completeMessage(sender, "default");
@@ -647,7 +647,7 @@ public class CommandExecution implements CommandExecutor {
                             }
 
                         } else if (isPlayer && args[0].equalsIgnoreCase("Notifications")) {
-                            if (!DetectionNotifications.hasPermission(player)) {
+                            if (!DetectionNotifications.hasPermission(player.protocol)) {
                                 ClickableMessage.sendURL(
                                         sender,
                                         Config.messages.getColorfulString("no_permission"),
@@ -662,7 +662,7 @@ public class CommandExecution implements CommandExecutor {
                                 int frequency = Integer.parseInt(divisorString);
 
                                 if (frequency >= 0) {
-                                    DetectionNotifications.set(player, frequency);
+                                    DetectionNotifications.set(player.protocol, frequency);
                                 } else {
                                     ClickableMessage.sendURL(
                                             sender,

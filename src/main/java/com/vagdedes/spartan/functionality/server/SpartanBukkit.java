@@ -154,7 +154,12 @@ public class SpartanBukkit {
         if (ProtocolLib.isTemporary(player)) {
             return null;
         } else {
-            return playerProtocol.remove(player.getUniqueId());
+            SpartanProtocol protocol = playerProtocol.remove(player.getUniqueId());
+
+            if (protocol != null) {
+                protocol.getProfile().updateOnlinePlayer(null);
+            }
+            return protocol;
         }
     }
 

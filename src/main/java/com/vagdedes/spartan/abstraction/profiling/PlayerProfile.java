@@ -53,8 +53,6 @@ public class PlayerProfile {
 
     public void updateOnlinePlayer(SpartanProtocol protocol) {
         if (protocol == null) {
-            this.offlinePlayer = null;
-
             for (CheckExecutor executor : executors) {
                 executor.player = null;
 

@@ -4,24 +4,26 @@ import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
+import com.vagdedes.spartan.functionality.connection.cloud.CloudConnections;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.notifications.clickable.ClickableMessage;
-import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.AntiCheatLogs;
 import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
+import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
+import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.server.ConfigUtils;
 import me.vagdedes.spartan.api.API;
+import me.vagdedes.spartan.api.PlayerViolationCommandEvent;
 import me.vagdedes.spartan.api.PlayerViolationEvent;
+import me.vagdedes.spartan.system.Enums;
+import org.bukkit.Bukkit;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 public abstract class DetectionExecutor extends CheckDetection {
 
@@ -56,7 +58,7 @@ public abstract class DetectionExecutor extends CheckDetection {
 
     @Override
     public int hashCode() {
-        return this.name.hashCode();
+        return this.hackType.hashCode() * SpartanBukkit.hashCodeMultiplier + this.name.hashCode();
     }
 
     // Check
@@ -166,14 +168,14 @@ public abstract class DetectionExecutor extends CheckDetection {
                 }
                 this.store(playerViolation);
                 this.notify(playerViolation, information);
-                this.executor.punish();
+                this.punish();
                 this.executor.prevention = newPrevention;
                 this.executor.prevention.canPrevent =
                         !hackType.getCheck().isSilent(player.dataType, player.getWorld().getName())
                                 && (silentCause == null
                                 || silentCause.hasExpired()
                                 || !silentCause.pointerMatches(information))
-                                && ResearchEngine.getRequiredPlayers(hackType, PlayerEvidence.preventionProbability) == 0
+                                && ResearchEngine.getRequiredPlayers(hackType, name, PlayerEvidence.preventionProbability) == 0
                                 && this.surpassedProbability(PlayerEvidence.preventionProbability);
             };
 
@@ -210,10 +212,10 @@ public abstract class DetectionExecutor extends CheckDetection {
         return false;
     }
 
-    final void notify(PlayerViolation playerViolation, String information) {
+    private void notify(PlayerViolation playerViolation, String information) {
         double certainty = PlayerEvidence.probabilityToCertainty(this.getProbability()) * 100.0;
         int roundedCertainty = AlgebraUtils.integerRound(certainty);
-        boolean hasSufficientData = ResearchEngine.getRequiredPlayers(hackType, PlayerEvidence.notificationProbability) == 0;
+        boolean hasSufficientData = ResearchEngine.getRequiredPlayers(hackType, name, PlayerEvidence.notificationProbability) == 0;
         String notification = ConfigUtils.replaceWithSyntax(
                 player,
                 Config.messages.getColorfulString("detection_notification")
@@ -258,7 +260,7 @@ public abstract class DetectionExecutor extends CheckDetection {
                 .replace("{player}", player.getInstance().getName());
 
         if (Config.settings.getBoolean("Notifications.individual_only_notifications")) {
-            if (DetectionNotifications.isEnabled(player)) { // Attention
+            if (DetectionNotifications.isEnabled(player.protocol)) { // Attention
                 ClickableMessage.sendCommand(player.getInstance(), notification, command, command);
             }
         } else {
@@ -274,6 +276,80 @@ public abstract class DetectionExecutor extends CheckDetection {
                                 command
                         );
                     }
+                }
+            }
+        }
+    }
+
+    // Punishment
+
+    private void punish() {
+        Check check = hackType.getCheck();
+
+        if (check.canPunish(player.dataType)) {
+            List<String> commands = check.getPunishmentCommands();
+
+            if (!commands.isEmpty()
+                    && ResearchEngine.getRequiredPlayers(hackType, name, PlayerEvidence.punishmentProbability) == 0) {
+                Collection<Enums.HackType> detectedHacks = player.protocol.getProfile().getEvidenceList(
+                        PlayerEvidence.punishmentProbability
+                );
+                detectedHacks.removeIf(loopHackType -> !loopHackType.getCheck().canPunish(player.dataType));
+
+                if (!detectedHacks.isEmpty()
+                        && detectedHacks.contains(hackType)) {
+                    int index = 0;
+                    boolean enabledDeveloperAPI = Config.settings.getBoolean("Important.enable_developer_api");
+                    StringBuilder stringBuilder = new StringBuilder();
+
+                    for (Enums.HackType detectedHack : detectedHacks) {
+                        stringBuilder.append(detectedHack.getCheck().getName()).append(", ");
+                    }
+                    String detections = stringBuilder.substring(0, stringBuilder.length() - 2);
+
+                    for (String command : commands) {
+                        String modifiedCommand = ConfigUtils.replaceWithSyntax(
+                                player,
+                                command.replaceAll("\\{detections}|\\{detection}", detections),
+                                null
+                        );
+                        commands.set(index++, modifiedCommand);
+
+                        if (enabledDeveloperAPI) {
+                            Runnable runnable = () -> {
+                                PlayerViolationCommandEvent event = new PlayerViolationCommandEvent(
+                                        player.getInstance(),
+                                        hackType,
+                                        detectedHacks,
+                                        modifiedCommand
+                                );
+                                Register.manager.callEvent(event);
+
+                                if (!event.isCancelled()) {
+                                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), modifiedCommand);
+                                }
+                            };
+
+                            if (SpartanBukkit.isSynchronised()) {
+                                runnable.run();
+                            } else {
+                                SpartanBukkit.transferTask(player, runnable);
+                            }
+                        } else {
+                            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), modifiedCommand);
+                        }
+                    }
+                    SpartanLocation location = player.movement.getLocation();
+                    CloudConnections.executeDiscordWebhook(
+                            "punishments",
+                            player.protocol.getUUID(),
+                            player.getInstance().getName(),
+                            location.getBlockX(),
+                            location.getBlockY(),
+                            location.getBlockZ(),
+                            "Punishment",
+                            StringUtils.toString(commands, "\n")
+                    );
                 }
             }
         }

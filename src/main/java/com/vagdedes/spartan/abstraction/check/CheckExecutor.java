@@ -3,30 +3,22 @@ package com.vagdedes.spartan.abstraction.check;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
-import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import com.vagdedes.spartan.compatibility.manual.building.MythicMobs;
 import com.vagdedes.spartan.compatibility.manual.enchants.CustomEnchantsPlus;
 import com.vagdedes.spartan.compatibility.manual.enchants.EcoEnchants;
 import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
-import com.vagdedes.spartan.functionality.connection.cloud.CloudConnections;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
-import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.*;
 import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
-import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
-import com.vagdedes.spartan.utils.minecraft.server.ConfigUtils;
 import me.vagdedes.spartan.api.CheckCancelEvent;
-import me.vagdedes.spartan.api.PlayerViolationCommandEvent;
 import me.vagdedes.spartan.system.Enums;
-import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -231,80 +223,6 @@ public abstract class CheckExecutor extends CheckDetection {
             }
         } else {
             return false;
-        }
-    }
-
-    // Punishment
-
-    void punish() {
-        Check check = hackType.getCheck();
-
-        if (check.canPunish(player.dataType)) {
-            List<String> commands = check.getPunishmentCommands();
-
-            if (!commands.isEmpty()
-                    && ResearchEngine.getRequiredPlayers(hackType, PlayerEvidence.punishmentProbability) == 0) {
-                Collection<Enums.HackType> detectedHacks = player.protocol.getProfile().getEvidenceList(
-                        PlayerEvidence.punishmentProbability
-                );
-                detectedHacks.removeIf(loopHackType -> !loopHackType.getCheck().canPunish(player.dataType));
-
-                if (!detectedHacks.isEmpty()
-                        && detectedHacks.contains(hackType)) {
-                    int index = 0;
-                    boolean enabledDeveloperAPI = Config.settings.getBoolean("Important.enable_developer_api");
-                    StringBuilder stringBuilder = new StringBuilder();
-
-                    for (Enums.HackType detectedHack : detectedHacks) {
-                        stringBuilder.append(detectedHack.getCheck().getName()).append(", ");
-                    }
-                    String detections = stringBuilder.substring(0, stringBuilder.length() - 2);
-
-                    for (String command : commands) {
-                        String modifiedCommand = ConfigUtils.replaceWithSyntax(
-                                player,
-                                command.replaceAll("\\{detections}|\\{detection}", detections),
-                                null
-                        );
-                        commands.set(index++, modifiedCommand);
-
-                        if (enabledDeveloperAPI) {
-                            Runnable runnable = () -> {
-                                PlayerViolationCommandEvent event = new PlayerViolationCommandEvent(
-                                        player.getInstance(),
-                                        hackType,
-                                        detectedHacks,
-                                        modifiedCommand
-                                );
-                                Register.manager.callEvent(event);
-
-                                if (!event.isCancelled()) {
-                                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), modifiedCommand);
-                                }
-                            };
-
-                            if (SpartanBukkit.isSynchronised()) {
-                                runnable.run();
-                            } else {
-                                SpartanBukkit.transferTask(player, runnable);
-                            }
-                        } else {
-                            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), modifiedCommand);
-                        }
-                    }
-                    SpartanLocation location = player.movement.getLocation();
-                    CloudConnections.executeDiscordWebhook(
-                            "punishments",
-                            player.protocol.getUUID(),
-                            player.getInstance().getName(),
-                            location.getBlockX(),
-                            location.getBlockY(),
-                            location.getBlockZ(),
-                            "Punishment",
-                            StringUtils.toString(commands, "\n")
-                    );
-                }
-            }
         }
     }
 

@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.functionality.performance;
+package com.vagdedes.spartan.functionality.tracking;
 
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.Check;
@@ -18,8 +18,6 @@ import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
-import com.vagdedes.spartan.functionality.tracking.AntiCheatLogs;
-import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
 import com.vagdedes.spartan.utils.java.TimeUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.math.statistics.StatisticsMath;
@@ -648,6 +646,34 @@ public class ResearchEngine {
             if (playerProfiles.size() >= requirement) {
                 for (PlayerProfile profile : playerProfiles.values()) {
                     if (profile.hasData(hackType)) {
+                        count++;
+
+                        if (count == requirement) {
+                            return 0;
+                        }
+                    }
+                }
+                count = requirement - count;
+            } else {
+                count = requirement - playerProfiles.size();
+            }
+            requiredPlayers.put(hash, count);
+        }
+        return count;
+    }
+
+    public static int getRequiredPlayers(Enums.HackType hackType, String detection, double probability) {
+        int requirement = PlayerEvidence.probabilityToFactors(probability),
+                hash = detection.hashCode() * SpartanBukkit.hashCodeMultiplier + requirement,
+                count = requiredPlayers.getOrDefault(hash, -1);
+        hash = hash * SpartanBukkit.hashCodeMultiplier + hackType.hashCode();
+
+        if (count == -1) {
+            count = 0;
+
+            if (playerProfiles.size() >= requirement) {
+                for (PlayerProfile profile : playerProfiles.values()) {
+                    if (profile.getExecutor(hackType).getDetection(detection).hasDataToCompare()) {
                         count++;
 
                         if (count == requirement) {
