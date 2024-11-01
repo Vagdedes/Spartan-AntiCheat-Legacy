@@ -40,10 +40,7 @@ public abstract class DetectionExecutor extends CheckDetection {
         this.probability = PlayerEvidence.emptyProbability;
         this.data = new TreeMap<>();
         this.isEnabled();
-
-        if (this.name != null) {
-            executor.detections.putIfAbsent(name, this);
-        }
+        executor.detections.putIfAbsent(this.name == null ? "" : this.name, this);
     }
 
     public DetectionExecutor(DetectionExecutor executor, String name, boolean def) {
@@ -53,15 +50,13 @@ public abstract class DetectionExecutor extends CheckDetection {
         this.probability = PlayerEvidence.emptyProbability;
         this.data = new TreeMap<>();
         this.isEnabled();
-
-        if (this.name != null) {
-            executor.executor.detections.putIfAbsent(name, this);
-        }
+        executor.executor.detections.putIfAbsent(this.name == null ? "" : this.name, this);
     }
 
     @Override
     public int hashCode() {
-        return this.hackType.hashCode() * SpartanBukkit.hashCodeMultiplier + this.name.hashCode();
+        return this.hackType.hashCode() * SpartanBukkit.hashCodeMultiplier
+                + (this.name == null ? 0 : this.name.hashCode());
     }
 
     // Check
