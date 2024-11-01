@@ -40,7 +40,7 @@ public abstract class DetectionExecutor extends CheckDetection {
         this.probability = PlayerEvidence.emptyProbability;
         this.data = new TreeMap<>();
         this.isEnabled();
-        executor.detections.putIfAbsent(this.name == null ? "" : this.name, this);
+        this.storeDetection(executor, this.name);
     }
 
     public DetectionExecutor(DetectionExecutor executor, String name, boolean def) {
@@ -50,7 +50,21 @@ public abstract class DetectionExecutor extends CheckDetection {
         this.probability = PlayerEvidence.emptyProbability;
         this.data = new TreeMap<>();
         this.isEnabled();
-        executor.executor.detections.putIfAbsent(this.name == null ? "" : this.name, this);
+        this.storeDetection(executor.executor, this.name);
+    }
+
+    private void storeDetection(CheckExecutor executor, String name) {
+        if (this.name == null) {
+            while (true) {
+                if (executor.detections.putIfAbsent(Integer.toString(new Random().nextInt()), this) == null) {
+                    break;
+                }
+            }
+        } else if (executor.detections.putIfAbsent(this.name, this) != null) {
+            throw new IllegalArgumentException(
+                    "Detection '" + this.name + "' already exists for enum '" + executor.hackType.toString() + "'."
+            );
+        }
     }
 
     @Override

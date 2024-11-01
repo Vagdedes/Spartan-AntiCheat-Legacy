@@ -75,8 +75,10 @@ public abstract class CheckExecutor extends CheckDetection {
     // Run
 
     public final void run(boolean cancelled) {
-        this.cancelled = cancelled;
-        this.runInternal(cancelled);
+        if (this.player != null) {
+            this.cancelled = cancelled;
+            this.runInternal(cancelled);
+        }
     }
 
     protected void runInternal(boolean cancelled) {
@@ -86,8 +88,10 @@ public abstract class CheckExecutor extends CheckDetection {
     // Handle
 
     public final void handle(boolean cancelled, Object object) {
-        this.cancelled = cancelled;
-        this.handleInternal(cancelled, object);
+        if (this.player != null) {
+            this.cancelled = cancelled;
+            this.handleInternal(cancelled, object);
+        }
     }
 
     protected void handleInternal(boolean cancelled, Object object) {
@@ -103,7 +107,8 @@ public abstract class CheckExecutor extends CheckDetection {
     // Separator
 
     final boolean canFunction() {
-        return (System.currentTimeMillis() - this.creation) > TPS.maximum * TPS.tickTime
+        return this.player != null
+                && (System.currentTimeMillis() - this.creation) > TPS.maximum * TPS.tickTime
                 && (!cancelled || hackType.getCheck().handleCancelledEvents)
                 && !player.protocol.isLoading()
                 && (!v1_8 || player.getInstance().getGameMode() != GameMode.SPECTATOR)
@@ -117,15 +122,19 @@ public abstract class CheckExecutor extends CheckDetection {
 
     public final CancelCause getDisableCause() {
         if (disableCause == null || disableCause.hasExpired()) {
-            return MythicMobs.is(player)
-                    ? new CancelCause(Compatibility.CompatibilityType.MYTHIC_MOBS)
-                    : ItemsAdder.is(player)
-                    ? new CancelCause(Compatibility.CompatibilityType.ITEMS_ADDER)
-                    : CustomEnchantsPlus.has(player)
-                    ? new CancelCause(Compatibility.CompatibilityType.CUSTOM_ENCHANTS_PLUS)
-                    : EcoEnchants.has(player)
-                    ? new CancelCause(Compatibility.CompatibilityType.ECO_ENCHANTS)
-                    : null;
+            if (this.player != null) {
+                return MythicMobs.is(player)
+                        ? new CancelCause(Compatibility.CompatibilityType.MYTHIC_MOBS)
+                        : ItemsAdder.is(player)
+                        ? new CancelCause(Compatibility.CompatibilityType.ITEMS_ADDER)
+                        : CustomEnchantsPlus.has(player)
+                        ? new CancelCause(Compatibility.CompatibilityType.CUSTOM_ENCHANTS_PLUS)
+                        : EcoEnchants.has(player)
+                        ? new CancelCause(Compatibility.CompatibilityType.ECO_ENCHANTS)
+                        : null;
+            } else {
+                return null;
+            }
         } else {
             return disableCause;
         }
@@ -144,7 +153,9 @@ public abstract class CheckExecutor extends CheckDetection {
         } else {
             disableCause = new CancelCause(reason, pointer, ticks);
         }
-        InteractiveInventory.playerInfo.refresh(player.getInstance().getName());
+        if (this.player != null) {
+            InteractiveInventory.playerInfo.refresh(player.getInstance().getName());
+        }
     }
 
     public final void addSilentCause(String reason, String pointer, int ticks) {
@@ -153,17 +164,25 @@ public abstract class CheckExecutor extends CheckDetection {
         } else {
             silentCause = new CancelCause(reason, pointer, ticks);
         }
-        InteractiveInventory.playerInfo.refresh(player.getInstance().getName());
+        if (this.player != null) {
+            InteractiveInventory.playerInfo.refresh(player.getInstance().getName());
+        }
     }
 
     public final void removeDisableCause() {
         this.disableCause = null;
-        InteractiveInventory.playerInfo.refresh(player.getInstance().getName());
+
+        if (this.player != null) {
+            InteractiveInventory.playerInfo.refresh(player.getInstance().getName());
+        }
     }
 
     public final void removeSilentCause() {
         this.silentCause = null;
-        InteractiveInventory.playerInfo.refresh(player.getInstance().getName());
+
+        if (this.player != null) {
+            InteractiveInventory.playerInfo.refresh(player.getInstance().getName());
+        }
     }
 
     // Prevention
