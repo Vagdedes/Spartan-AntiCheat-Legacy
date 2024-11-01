@@ -15,7 +15,7 @@ import java.util.List;
 public class SpartanEdition {
 
     private static final Check.DataType
-            currentType = Check.DataType.BEDROCK,
+            currentType = Check.DataType.JAVA,
             oppositeType = currentType == Check.DataType.JAVA
                     ? Check.DataType.BEDROCK
                     : Check.DataType.JAVA;
