@@ -13,7 +13,7 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
     private int air = 0;
 
     public IrregularMovementsGravityNew(CheckExecutor executor) {
-        super(executor, "gravity", true);
+        super(executor, "gravity_new", true);
     }
 
     public void run() {

@@ -42,7 +42,7 @@ public abstract class DetectionExecutor extends CheckDetection {
         this.isEnabled();
 
         if (this.name != null) {
-            executor.detections.put(name, this);
+            executor.detections.putIfAbsent(name, this);
         }
     }
 
@@ -53,7 +53,10 @@ public abstract class DetectionExecutor extends CheckDetection {
         this.probability = PlayerEvidence.emptyProbability;
         this.data = new TreeMap<>();
         this.isEnabled();
-        executor.executor.detections.put(name, this);
+
+        if (this.name != null) {
+            executor.executor.detections.putIfAbsent(name, this);
+        }
     }
 
     @Override
