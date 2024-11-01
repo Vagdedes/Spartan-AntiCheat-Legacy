@@ -22,7 +22,7 @@ public class MoveLength extends DetectionExecutor {
 
     MoveLength(CheckExecutor executor) {
         super(executor, "move_length", true);
-        previousPitch = executor.player.movement.getEventFromLocation().getPitch();
+        previousPitch = 0.0f;
         previousPitchDifference = 0.0f;
         this.buffer = new Buffer.IndividualBuffer();
         this.safeBuffer = new Buffer.IndividualBuffer();

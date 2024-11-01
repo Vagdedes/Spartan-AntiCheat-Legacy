@@ -16,6 +16,7 @@ import java.util.*;
 
 public class PlayerProfile {
 
+    private static final Set<Enums.HackType> emptySet = new HashSet<>(0);
     public final String name;
     private final MiningHistory[] miningHistory;
     private ItemStack skull;
@@ -34,7 +35,7 @@ public class PlayerProfile {
         for (MiningHistory.MiningOre ore : MiningHistory.MiningOre.values()) {
             this.miningHistory[ore.ordinal()] = new MiningHistory(ore);
         }
-        this.registerExecutors(null);
+        this.registerExecutors(emptySet);
     }
 
     public PlayerProfile(SpartanProtocol protocol) {
@@ -47,7 +48,7 @@ public class PlayerProfile {
         for (MiningHistory.MiningOre ore : MiningHistory.MiningOre.values()) {
             this.miningHistory[ore.ordinal()] = new MiningHistory(ore);
         }
-        this.registerExecutors(null);
+        this.registerExecutors(emptySet);
     }
 
     public void updateOnlinePlayer(SpartanProtocol protocol) {
@@ -62,6 +63,7 @@ public class PlayerProfile {
                 }
             }
         } else {
+            this.registerExecutors(emptySet);
             this.offlinePlayer = protocol.player;
 
             for (CheckExecutor executor : executors) {
@@ -91,7 +93,8 @@ public class PlayerProfile {
                         .getConstructor(hackType.getClass(), SpartanPlayer.class)
                         .newInstance(hackType, this.getSpartanPlayer());
 
-                if (registry == null || registry.contains(hackType)) {
+                if (registry.contains(hackType)
+                        || this.executors[hackType.ordinal()] == null) {
                     this.executors[hackType.ordinal()] = executor;
                 }
             } catch (Exception ex) {

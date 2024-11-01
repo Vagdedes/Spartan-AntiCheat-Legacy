@@ -513,13 +513,17 @@ public class ResearchEngine {
 
                 for (PlayerProfile profile : profiles) {
                     for (DetectionExecutor detectionExecutor : profile.getExecutor(hackType).getDetections()) {
-                        wave.computeIfAbsent(
-                                detectionExecutor.name,
-                                k -> new LinkedHashMap<>()
-                        ).put(
-                                detectionExecutor,
-                                detectionExecutor.getTimeDifferences()
-                        );
+                        Double timeDifference = detectionExecutor.getTimeDifference();
+
+                        if (timeDifference != null) {
+                            wave.computeIfAbsent(
+                                    detectionExecutor.name,
+                                    k -> new LinkedHashMap<>()
+                            ).put(
+                                    detectionExecutor,
+                                    timeDifference
+                            );
+                        }
                     }
                 }
 

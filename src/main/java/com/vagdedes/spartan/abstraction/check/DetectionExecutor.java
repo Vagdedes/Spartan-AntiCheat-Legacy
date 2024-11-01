@@ -62,7 +62,10 @@ public abstract class DetectionExecutor extends CheckDetection {
     // Check
 
     public final boolean isEnabled() {
-        return this.hackType.getCheck().isEnabled(this.player.dataType, this.player.getWorld().getName())
+        return this.hackType.getCheck().isEnabled(
+                this.player == null ? null : this.player.dataType,
+                this.player == null ? null : this.player.getWorld().getName()
+        )
                 && (this.name == null
                 || this.hackType.getCheck().getBooleanOption("check_" + this.name, this.def));
     }
@@ -85,7 +88,7 @@ public abstract class DetectionExecutor extends CheckDetection {
         ResearchEngine.queueToCache(this.hackType);
     }
 
-    public final Double getTimeDifferences() {
+    public final Double getTimeDifference() {
         if (this.hasDataToCompare()) {
             double squareSum = 0.0;
 
