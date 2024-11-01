@@ -98,6 +98,7 @@ public class ResearchEngine {
             playerProfile = playerProfiles.get(protocol.player.getName().toLowerCase());
 
             if (playerProfile != null) {
+                playerProfile.updateOfflinePlayer(protocol);
                 return playerProfile;
             }
         }

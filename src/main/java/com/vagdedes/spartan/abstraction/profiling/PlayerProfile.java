@@ -51,6 +51,12 @@ public class PlayerProfile {
         this.registerExecutors(emptySet);
     }
 
+    // Separator
+
+    public void updateOfflinePlayer(SpartanProtocol protocol) {
+        this.offlinePlayer = protocol.player;
+    }
+
     public void updateOnlinePlayer(SpartanProtocol protocol) {
         if (protocol == null) {
             for (CheckExecutor executor : executors) {
@@ -61,7 +67,7 @@ public class PlayerProfile {
                 }
             }
         } else {
-            this.offlinePlayer = protocol.player;
+            this.updateOfflinePlayer(protocol);
 
             for (CheckExecutor executor : executors) {
                 executor.player = protocol.spartanPlayer;
@@ -110,7 +116,7 @@ public class PlayerProfile {
                 if (protocol == null) {
                     return InventoryUtils.getSkull(null, name, false);
                 } else {
-                    this.updateOnlinePlayer(SpartanBukkit.getProtocol(protocol.player));
+                    this.updateOfflinePlayer(SpartanBukkit.getProtocol(protocol.player));
                     this.skull = InventoryUtils.getSkull(protocol.player, name, false);
                 }
             } else {
@@ -127,7 +133,7 @@ public class PlayerProfile {
             protocol = SpartanBukkit.getProtocol(name);
 
             if (protocol != null) {
-                this.updateOnlinePlayer(protocol);
+                this.updateOfflinePlayer(protocol);
                 return protocol.spartanPlayer;
             } else {
                 return null;
