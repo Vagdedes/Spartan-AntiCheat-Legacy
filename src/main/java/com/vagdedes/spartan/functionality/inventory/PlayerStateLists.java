@@ -86,11 +86,18 @@ public class PlayerStateLists {
 
             for (PlayerProfile playerProfile : playerProfiles) {
                 for (CheckExecutor checkExecutor : playerProfile.getExecutors()) {
+                    boolean breakLoop = false;
+
                     for (DetectionExecutor detectionExecutor : checkExecutor.getDetections()) {
                         if (detectionExecutor.surpassedProbability(PlayerEvidence.preventionProbability)) {
                             list.add(playerProfile);
+                            breakLoop = true;
                             break;
                         }
+                    }
+
+                    if (breakLoop) {
+                        break;
                     }
                 }
             }
@@ -177,7 +184,8 @@ public class PlayerStateLists {
 
     private static <E> List<E> subList(List<E> list, int startIndex, int toIndex) {
         int size = list.size();
-        return startIndex > size ? new ArrayList<>(0) :
-                list.subList(startIndex, Math.min(toIndex, size));
+        return startIndex > size
+                ? new ArrayList<>(0)
+                : list.subList(startIndex, Math.min(toIndex, size));
     }
 }

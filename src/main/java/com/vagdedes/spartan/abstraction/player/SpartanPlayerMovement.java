@@ -402,7 +402,8 @@ public class SpartanPlayerMovement {
             if (d < 4e-8) {
                 return false;
             }
-        }if (vehicle == null) {
+        }
+        if (vehicle == null) {
             this.refreshLocation(originalTo);
         }
         this.eventFrom = from;

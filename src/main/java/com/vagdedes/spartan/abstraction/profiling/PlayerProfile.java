@@ -176,11 +176,11 @@ public class PlayerProfile {
     public Collection<Enums.HackType> getEvidenceList(double threshold) {
         List<Enums.HackType> set = new ArrayList<>();
 
-        for (Enums.HackType hackType : Enums.HackType.values()) {
-            double probability = this.getExecutor(hackType).getExtremeProbability();
+        for (CheckExecutor executor : executors) {
+            double probability = executor.getExtremeProbability();
 
             if (PlayerEvidence.surpassedProbability(probability, threshold)) {
-                set.add(hackType);
+                set.add(executor.hackType);
             }
         }
         return set;
@@ -189,11 +189,11 @@ public class PlayerProfile {
     public Set<Map.Entry<Enums.HackType, Double>> getEvidenceEntries(double threshold) {
         Map<Enums.HackType, Double> set = new HashMap<>();
 
-        for (Enums.HackType hackType : Enums.HackType.values()) {
-            double probability = this.getExecutor(hackType).getExtremeProbability();
+        for (CheckExecutor executor : executors) {
+            double probability = executor.getExtremeProbability();
 
             if (PlayerEvidence.surpassedProbability(probability, threshold)) {
-                set.put(hackType, probability);
+                set.put(executor.hackType, probability);
             }
         }
         return set.entrySet();
