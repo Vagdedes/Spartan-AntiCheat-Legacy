@@ -63,7 +63,6 @@ public class PlayerProfile {
                 }
             }
         } else {
-            this.registerExecutors(emptySet);
             this.offlinePlayer = protocol.player;
 
             for (CheckExecutor executor : executors) {

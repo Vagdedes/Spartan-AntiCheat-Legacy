@@ -118,10 +118,13 @@ public class PlayerInfo extends InventoryMenu {
                         );
                     } else {
                         probability = PlayerEvidence.probabilityToCertainty(probability);
-                        lore.add(
-                                "§3" + hackType.getCheck().getName()
-                                        + "§8: §b" + AlgebraUtils.integerRound(probability * 100.0) + "%"
-                        );
+                        int showProbability = AlgebraUtils.integerRound(probability * 100.0);
+
+                        if (showProbability > 0) {
+                            lore.add(
+                                    "§3" + hackType.getCheck().getName() + "§8: §b" + showProbability + "%"
+                            );
+                        }
                     }
                 }
                 lore.add("");

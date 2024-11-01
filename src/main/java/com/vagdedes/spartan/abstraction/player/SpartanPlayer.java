@@ -173,7 +173,7 @@ public class SpartanPlayer {
         }
 
         if (checks) {
-            this.protocol.getProfile().registerExecutors(resetChecks);
+            this.protocol.getProfile().registerExecutors(resetChecks); // todo
         }
     }
 

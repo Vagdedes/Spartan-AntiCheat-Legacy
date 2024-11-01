@@ -80,7 +80,6 @@ public class SpartanProtocol {
         this.checkBoundData = null;
         this.oldBlockEvent = null;
 
-
         this.setProfile(ResearchEngine.getPlayerProfile(this, false));
     }
 
@@ -187,6 +186,7 @@ public class SpartanProtocol {
 
     public void setProfile(PlayerProfile profile) {
         this.profile = profile;
+        this.profile.updateOnlinePlayer(this);
     }
 
     public boolean packetsEnabled() {

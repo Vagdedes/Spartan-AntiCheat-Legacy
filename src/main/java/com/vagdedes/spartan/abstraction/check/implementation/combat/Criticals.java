@@ -21,16 +21,18 @@ public class Criticals extends CheckExecutor {
 
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
-        double verticalMaxAccuracy = player.movement.getEventVertical();
+        Double verticalMaxAccuracy = player.movement.getEventVertical();
 
-        if (RayUtils.onBlock(player, player.movement.getLocation(), BlockUtils.web)) return;
+        if (verticalMaxAccuracy != null) {
+            if (RayUtils.onBlock(player, player.movement.getLocation(), BlockUtils.web)) return;
 
-        if ((verticalMaxAccuracy < 0.079 || Math.abs(verticalMaxAccuracy) == 0.0625)
-                && verticalMaxAccuracy > 0
-                && player.movement.getTicksOnAir() == 1
-                        && !player.movement.getLocation().getBlock().getType().isBlock()
-                && !RayUtils.onSolidBlock(player, player.movement.getLocation().clone().add(0, 2, 0))) {
-            this.detection.cancel("type: packet", 1);
+            if ((verticalMaxAccuracy < 0.079 || Math.abs(verticalMaxAccuracy) == 0.0625)
+                    && verticalMaxAccuracy > 0
+                    && player.movement.getTicksOnAir() == 1
+                    && !player.movement.getLocation().getBlock().getType().isBlock()
+                    && !RayUtils.onSolidBlock(player, player.movement.getLocation().clone().add(0, 2, 0))) {
+                this.detection.cancel("type: packet", 1);
+            }
         }
     }
 
