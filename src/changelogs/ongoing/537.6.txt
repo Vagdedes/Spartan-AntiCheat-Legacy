@@ -9,3 +9,5 @@
 [#] Removed not needed information from the Player Info inventory menu.
 [#] Heavily rewrote the part of the base of the plugin to improve violation analysis.
 [#] Added more examples and improved current ones in the Spartan GitHub repository.
+[#] Fixed several MorePackets false positives caused by low multipliers.
+[#] Fixed a location reading console error on ProtocolLib packets functionality.
