@@ -577,34 +577,7 @@ public class ResearchEngine {
                 }
             }
         }
-        int squareSum = 0, count = 0;
-
-        for (Enums.HackType hackType : Enums.HackType.values()) {
-            if (hackType.getCheck().isEnabled(null, null)) {
-                int result = getRequiredPlayers(hackType, PlayerEvidence.punishmentProbability);
-                squareSum += result * result;
-                count += result;
-            }
-        }
-        if (squareSum > 0) {
-            squareSum = AlgebraUtils.integerCeil(Math.sqrt(squareSum / (double) count));
-            String message = AwarenessNotifications.getOptionalNotification(
-                    "The plugin needs data from " + squareSum + " more player/s to enable preventions & punishments for all checks."
-                            + " This is normal and will be resolved as more players join your server."
-            );
-
-            if (message != null) {
-                List<SpartanPlayer> players = Permissions.getStaff();
-
-                if (!players.isEmpty()) {
-                    for (SpartanPlayer p : players) {
-                        if (AwarenessNotifications.canSend(p.protocol.getUUID(), "limited-data", 60 * 60)) {
-                            p.getInstance().sendMessage(message);
-                        }
-                    }
-                }
-            }
-        } else if (SpartanBukkit.packetsEnabled()) {
+        if (SpartanBukkit.packetsEnabled()) {
             for (Enums.HackType hackType : Enums.HackType.values()) {
                 Check check = hackType.getCheck();
 
