@@ -86,26 +86,35 @@ public class MorePackets extends CheckExecutor {
         long delay = event.getDelay();
         TimerBalancer timerBalancer = event.protocol.timerBalancer;
         timerBalancer.pushDelay(delay);
+        double multiply = RayUtils.scaleVal((double) TPS.tickTime / delay, 2);
 
         if (timerBalancer.isNegativeTimer() && delay > 50) {
-            punish(this.negative,
-                    "type: negative, multiply: " + RayUtils.scaleVal((double) 50 / delay, 2)
-            );
+            if (multiply >= 1.1) {
+                punish(this.negative,
+                        "type: negative, multiply: " + multiply
+                );
+            }
         } else if (delay < 50 && timerBalancer.getResult() > 100) {
-            punish(
-                    this.positive_balance,
-                    "type: positive(balance), multiply: " + RayUtils.scaleVal((double) 50 / delay, 2)
-            );
+            if (multiply >= 1.1) {
+                punish(
+                        this.positive_balance,
+                        "type: positive(balance), multiply: " + multiply
+                );
+            }
         } else if (delay < 50 && timerBalancer.getForced() > 8) {
-            punish(
-                    this.positive_net,
-                    "type: positive(NET), multiply: " + RayUtils.scaleVal((double) 50 / delay, 2)
-            );
+            if (multiply >= 1.1) {
+                punish(
+                        this.positive_net,
+                        "type: positive(NET), multiply: " + multiply
+                );
+            }
         } else if (delay < 50 && timerBalancer.getLatency() > 40) {
-            punish(
-                    this.positive_latency,
-                    "type: positive(latency), multiply: " + RayUtils.scaleVal((double) 50 / delay, 2)
-            );
+            if (multiply >= 1.1) {
+                punish(
+                        this.positive_latency,
+                        "type: positive(latency), multiply: " + multiply
+                );
+            }
         }
     }
 
