@@ -7,3 +7,4 @@
 [#] Fixed MorePackets bukkit detection false positives for bedrock players.
 [#] Fixed a console error caused in byte conversion related to jumping calculation.
 [#] Removed not needed information from the Player Info inventory menu.
+[#] Heavily rewrote the part of the base of the plugin to improve violation analysis.

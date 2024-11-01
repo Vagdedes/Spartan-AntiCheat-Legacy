@@ -3,13 +3,13 @@ package com.vagdedes.spartan.functionality.performance;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.PlayerViolation;
 import com.vagdedes.spartan.abstraction.inventory.implementation.MainMenu;
 import com.vagdedes.spartan.abstraction.pattern.Pattern;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.profiling.MiningHistory;
-import com.vagdedes.spartan.abstraction.profiling.PlayerEvidence;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
-import com.vagdedes.spartan.abstraction.profiling.PlayerViolation;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
@@ -19,6 +19,7 @@ import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.AntiCheatLogs;
+import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
 import com.vagdedes.spartan.utils.java.TimeUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.math.statistics.StatisticsMath;
@@ -99,7 +100,7 @@ public class ResearchEngine {
             playerProfile = playerProfiles.get(protocol.player.getName().toLowerCase());
 
             if (playerProfile != null) {
-                playerProfile.update(protocol);
+                playerProfile.updateOnlinePlayer(protocol);
                 return playerProfile;
             }
         }
@@ -119,7 +120,9 @@ public class ResearchEngine {
 
                 if (!playerProfiles.isEmpty()) {
                     for (PlayerProfile playerProfile : playerProfiles.values()) {
-                        playerProfile.evidence.remove(hackType);
+                        for (DetectionExecutor detectionExecutor : playerProfile.getExecutor(hackType).getDetections()) {
+                            detectionExecutor.clearProbability();
+                        }
                     }
                     for (double probability : PlayerEvidence.probabilities) {
                         requiredPlayers.remove(
@@ -427,23 +430,25 @@ public class ResearchEngine {
                                     if (hackTypeString.equals(hackType.toString())) {
                                         String detection = getDetectionInformation(data);
 
-                                        if (detection == null) {
-                                            detection = hackType.toString();
-                                        }
-                                        Double violationIncrease = getDetectionViolationLevel(data);
+                                        if (detection != null) {
+                                            Double violationIncrease = getDetectionViolationLevel(data);
 
-                                        if (violationIncrease != null) {
-                                            SimpleDateFormat sdf = new SimpleDateFormat(AntiCheatLogs.dateFormat);
-                                            getPlayerProfile(split[0], true).getViolationHistory(getDataType(data), hackType).store(
-                                                    hackType,
-                                                    new PlayerViolation(
-                                                            sdf.parse(fullDate).getTime(),
-                                                            violationIncrease,
-                                                            detection
-                                                    )
-                                            );
+                                            if (violationIncrease != null) {
+                                                PlayerProfile profile = getPlayerProfile(split[0], true);
+                                                DetectionExecutor detectionExecutor = profile.getExecutor(hackType).getDetection(detection);
+
+                                                if (detectionExecutor != null) {
+                                                    SimpleDateFormat sdf = new SimpleDateFormat(AntiCheatLogs.dateFormat);
+                                                    detectionExecutor.store(
+                                                            new PlayerViolation(
+                                                                    sdf.parse(fullDate).getTime(),
+                                                                    violationIncrease
+                                                            )
+                                                    );
+                                                }
+                                            }
+                                            break;
                                         }
-                                        break;
                                     }
                                 }
                             }
@@ -490,40 +495,42 @@ public class ResearchEngine {
 
             if (force) {
                 for (PlayerProfile profile : profiles) {
-                    profile.evidence.clear();
+                    for (CheckExecutor executor : profile.getExecutors()) {
+                        for (DetectionExecutor detectionExecutor : executor.getDetections()) {
+                            detectionExecutor.clearProbability();
+                        }
+                    }
                 }
             }
 
-            for (Check.DataType dataType : Check.DataType.values()) {
-                for (Enums.HackType hackType : (force
-                        ? Arrays.asList(Enums.HackType.values())
-                        : violationFired.keySet())) {
-                    if (!hackType.getCheck().isEnabled(dataType, null)) {
-                        continue;
+            for (Enums.HackType hackType : (force
+                    ? Arrays.asList(Enums.HackType.values())
+                    : violationFired.keySet())) {
+                if (!hackType.getCheck().isEnabled(null, null)) {
+                    continue;
+                }
+                Map<String, Map<DetectionExecutor, Double>> wave = new LinkedHashMap<>();
+
+                for (PlayerProfile profile : profiles) {
+                    for (DetectionExecutor detectionExecutor : profile.getExecutor(hackType).getDetections()) {
+                        wave.computeIfAbsent(
+                                detectionExecutor.name,
+                                k -> new LinkedHashMap<>()
+                        ).put(
+                                detectionExecutor,
+                                detectionExecutor.getTimeDifferences()
+                        );
                     }
-                    Map<PlayerProfile, Double> wave = new LinkedHashMap<>();
+                }
 
-                    for (PlayerProfile profile : profiles) {
-                        Double timeDifference = profile.getViolationHistory(
-                                dataType,
-                                hackType
-                        ).getTimeDifference();
-
-                        if (timeDifference != null) {
-                            wave.put(
-                                    profile,
-                                    timeDifference
-                            );
-                        }
-                    }
-
-                    if (!wave.isEmpty()) {
+                if (!wave.isEmpty()) {
+                    for (Map<DetectionExecutor, Double> map : wave.values()) {
                         double sum = 0,
                                 squareSum = 0,
                                 min = Double.MAX_VALUE,
                                 max = Double.MIN_VALUE;
 
-                        for (double value : wave.values()) {
+                        for (double value : map.values()) {
                             sum += value;
                             squareSum += value * value;
                         }
@@ -531,11 +538,11 @@ public class ResearchEngine {
                                 mean = sum / divisor,
                                 deviation = Math.sqrt(squareSum / divisor);
 
-                        for (Map.Entry<PlayerProfile, Double> entryChild : wave.entrySet()) {
+                        for (Map.Entry<DetectionExecutor, Double> entry : map.entrySet()) {
                             double probability = StatisticsMath.getCumulativeProbability(
-                                    (entryChild.getValue() - mean) / deviation
+                                    (entry.getValue() - mean) / deviation
                             );
-                            entryChild.setValue(probability);
+                            entry.setValue(probability);
 
                             if (probability > max) {
                                 max = probability;
@@ -547,11 +554,10 @@ public class ResearchEngine {
                         max = 1.0 - max;
                         double distributionDifference = Math.abs(max - min);
 
-                        for (Map.Entry<PlayerProfile, Double> entryChild : wave.entrySet()) {
-                            entryChild.getKey().evidence.add(
-                                    hackType,
+                        for (Map.Entry<DetectionExecutor, Double> entry : map.entrySet()) {
+                            entry.getKey().setProbability(
                                     PlayerEvidence.modifyProbability(
-                                            entryChild.getValue(),
+                                            entry.getValue(),
                                             Math.max(min - distributionDifference, 0.0),
                                             Math.max(max - distributionDifference, 0.0)
                                     )

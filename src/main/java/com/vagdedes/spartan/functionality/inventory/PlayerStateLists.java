@@ -1,9 +1,11 @@
 package com.vagdedes.spartan.functionality.inventory;
 
-import com.vagdedes.spartan.abstraction.profiling.PlayerEvidence;
+import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
 import com.vagdedes.spartan.utils.minecraft.inventory.InventoryUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.inventory.Inventory;
@@ -83,10 +85,13 @@ public class PlayerStateLists {
             List<PlayerProfile> list = new ArrayList<>(playerProfiles.size());
 
             for (PlayerProfile playerProfile : playerProfiles) {
-                if (playerProfile.evidence.has(
-                        PlayerEvidence.preventionProbability
-                )) {
-                    list.add(playerProfile);
+                for (CheckExecutor checkExecutor : playerProfile.getExecutors()) {
+                    for (DetectionExecutor detectionExecutor : checkExecutor.getDetections()) {
+                        if (detectionExecutor.surpassedProbability(PlayerEvidence.preventionProbability)) {
+                            list.add(playerProfile);
+                            break;
+                        }
+                    }
                 }
             }
             return list;
@@ -109,7 +114,7 @@ public class PlayerStateLists {
 
         if (listSize > 0) {
             for (PlayerProfile playerProfile : playerProfiles) {
-                Collection<Enums.HackType> evidenceDetails = playerProfile.evidence.getKnowledgeList(
+                Collection<Enums.HackType> evidenceDetails = playerProfile.getEvidenceList(
                         PlayerEvidence.preventionProbability
                 );
 

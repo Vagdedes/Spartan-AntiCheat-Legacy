@@ -2,8 +2,6 @@ package com.vagdedes.spartan.abstraction.check;
 
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
-import com.vagdedes.spartan.abstraction.profiling.PlayerEvidence;
-import com.vagdedes.spartan.abstraction.profiling.PlayerViolation;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
@@ -12,41 +10,123 @@ import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.AntiCheatLogs;
+import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.server.ConfigUtils;
 import me.vagdedes.spartan.api.API;
 import me.vagdedes.spartan.api.PlayerViolationEvent;
 
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 public abstract class DetectionExecutor extends CheckDetection {
 
-    private final String name;
+    public final String name;
     private final boolean def;
+    private long notifications;
+    private double probability;
+    private final Map<Long, PlayerViolation> data;
 
     public DetectionExecutor(CheckExecutor executor, String name, boolean def) {
         super(executor);
         this.name = name;
         this.def = def;
+        this.probability = PlayerEvidence.emptyProbability;
+        this.data = new TreeMap<>();
         this.isEnabled();
+
+        if (this.name != null) {
+            executor.detections.put(name, this);
+        }
     }
 
     public DetectionExecutor(DetectionExecutor executor, String name, boolean def) {
         super(executor.executor);
         this.name = name;
         this.def = def;
+        this.probability = PlayerEvidence.emptyProbability;
+        this.data = new TreeMap<>();
         this.isEnabled();
+        executor.executor.detections.put(name, this);
     }
 
-    // Separator
+    @Override
+    public int hashCode() {
+        return this.name.hashCode();
+    }
 
-    public boolean isEnabled() {
-        return this.name == null
-                || this.hackType.getCheck().getBooleanOption(
-                "check_" + this.name,
-                this.def
-        );
+    // Check
+
+    public final boolean isEnabled() {
+        return this.hackType.getCheck().isEnabled(this.player.dataType, this.player.getWorld().getName())
+                && (this.name == null
+                || this.hackType.getCheck().getBooleanOption("check_" + this.name, this.def));
+    }
+
+    // Data
+
+    public final boolean hasDataToCompare() {
+        return data.size() > 1;
+    }
+
+    public final void store(PlayerViolation playerViolation) {
+        synchronized (this.data) {
+            if (this.data.size() == 1_000) {
+                Iterator<Long> iterator = this.data.keySet().iterator();
+                iterator.next();
+                iterator.remove();
+            }
+            this.data.put(playerViolation.time, playerViolation);
+        }
+        ResearchEngine.queueToCache(this.hackType);
+    }
+
+    public final Double getTimeDifferences() {
+        if (this.hasDataToCompare()) {
+            double squareSum = 0.0;
+
+            synchronized (this.data) {
+                Iterator<PlayerViolation> iterator = this.data.values().iterator();
+                long previous = iterator.next().time;
+
+                while (iterator.hasNext()) {
+                    PlayerViolation violation = iterator.next();
+                    double difference = Math.min(
+                            (violation.time - previous) / violation.increase,
+                            60_000L
+                    );
+                    previous = violation.time;
+                    squareSum += difference * difference;
+                }
+            }
+            return Math.sqrt(squareSum / (this.data.size() - 1.0));
+        } else {
+            return null;
+        }
+    }
+
+    // Probability
+
+    public final boolean surpassedProbability(double threshold) {
+        return PlayerEvidence.surpassedProbability(this.getProbability(), threshold);
+    }
+
+    public final void clearProbability() {
+        this.probability = PlayerEvidence.emptyProbability;
+    }
+
+    public final void setProbability(double probability) {
+        this.probability = probability;
+    }
+
+    public final double getProbability() {
+        return isEnabled()
+                ? this.probability
+                : PlayerEvidence.emptyProbability;
     }
 
     // Violation
@@ -62,8 +142,7 @@ public abstract class DetectionExecutor extends CheckDetection {
             }
             PlayerViolation playerViolation = new PlayerViolation(
                     time,
-                    increase,
-                    this.name
+                    increase
             );
             boolean event = Config.settings.getBoolean("Important.enable_developer_api");
             CancelCause silentCause = this.executor.getSilentCause();
@@ -82,10 +161,7 @@ public abstract class DetectionExecutor extends CheckDetection {
                         return;
                     }
                 }
-                player.protocol.getProfile().getViolationHistory(player.dataType, hackType).store(
-                        hackType,
-                        playerViolation
-                );
+                this.store(playerViolation);
                 this.notify(playerViolation, information);
                 this.executor.punish();
                 this.executor.prevention = newPrevention;
@@ -95,7 +171,7 @@ public abstract class DetectionExecutor extends CheckDetection {
                                 || silentCause.hasExpired()
                                 || !silentCause.pointerMatches(information))
                                 && ResearchEngine.getRequiredPlayers(hackType, PlayerEvidence.preventionProbability) == 0
-                                && player.protocol.getProfile().evidence.surpassed(this.hackType, PlayerEvidence.preventionProbability);
+                                && this.surpassedProbability(PlayerEvidence.preventionProbability);
             };
 
             if (!event || SpartanBukkit.isSynchronised()) {
@@ -108,9 +184,31 @@ public abstract class DetectionExecutor extends CheckDetection {
 
     // Notification
 
+    public final boolean canSendNotification(Object detected) {
+        long time = System.currentTimeMillis();
+
+        if (this.notifications <= time) {
+            boolean player = detected instanceof SpartanPlayer;
+            int ticks = this.executor.getNotificationTicksCooldown(
+                    player ? (SpartanPlayer) detected : null
+            );
+
+            if (ticks > 0) {
+                if (player
+                        ? ((SpartanPlayer) detected).getExecutor(hackType).getDetection(this.name).surpassedProbability(PlayerEvidence.notificationProbability)
+                        : ResearchEngine.getPlayerProfile(detected.toString(), true).getExecutor(hackType).getDetection(this.name).surpassedProbability(PlayerEvidence.notificationProbability)) {
+                    this.notifications = time + (ticks * TPS.tickTime);
+                    return true;
+                }
+            } else {
+                return true;
+            }
+        }
+        return false;
+    }
+
     final void notify(PlayerViolation playerViolation, String information) {
-        double probability = player.protocol.getProfile().evidence.getProbability(hackType),
-                certainty = PlayerEvidence.probabilityToCertainty(probability) * 100.0;
+        double certainty = PlayerEvidence.probabilityToCertainty(this.getProbability()) * 100.0;
         int roundedCertainty = AlgebraUtils.integerRound(certainty);
         boolean hasSufficientData = ResearchEngine.getRequiredPlayers(hackType, PlayerEvidence.notificationProbability) == 0;
         String notification = ConfigUtils.replaceWithSyntax(
@@ -165,7 +263,7 @@ public abstract class DetectionExecutor extends CheckDetection {
 
             if (!notificationPlayers.isEmpty()) {
                 for (SpartanPlayer staff : notificationPlayers) {
-                    if (staff.getExecutor(this.hackType).canSendNotification(this.player)) {
+                    if (staff.getExecutor(this.hackType).getDetection(this.name).canSendNotification(this.player)) {
                         ClickableMessage.sendCommand(
                                 staff.getInstance(),
                                 notification,
@@ -178,7 +276,7 @@ public abstract class DetectionExecutor extends CheckDetection {
         }
     }
 
-    // Separator
+    // Prevention
 
     public final void cancel(String information, double violations, SpartanLocation location,
                              int cancelTicks, boolean groundTeleport, double damage) {

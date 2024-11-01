@@ -3,7 +3,6 @@ package com.vagdedes.spartan.abstraction.check;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
-import com.vagdedes.spartan.abstraction.profiling.PlayerEvidence;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import com.vagdedes.spartan.compatibility.manual.building.MythicMobs;
@@ -15,6 +14,7 @@ import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.performance.ResearchEngine;
 import com.vagdedes.spartan.functionality.server.*;
+import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
@@ -27,6 +27,8 @@ import org.bukkit.GameMode;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class CheckExecutor extends CheckDetection {
 
@@ -37,15 +39,45 @@ public abstract class CheckExecutor extends CheckDetection {
             detectionIdentifier = "Detection:";
 
     private final long creation;
-    private long notifications;
     private CancelCause disableCause, silentCause;
     HackPrevention prevention;
     private boolean cancelled;
+    final Map<String, DetectionExecutor> detections;
 
     public CheckExecutor(Enums.HackType hackType, SpartanPlayer player) {
         super(hackType, player);
         this.creation = System.currentTimeMillis();
         this.prevention = new HackPrevention();
+        this.detections = new ConcurrentHashMap<>(2);
+    }
+
+    // Probability
+
+    public double getExtremeProbability() {
+        double num = PlayerEvidence.emptyProbability;
+
+        for (DetectionExecutor detectionExecutor : this.detections.values()) {
+            if (PlayerEvidence.POSITIVE) {
+                num = Math.max(num, detectionExecutor.getProbability());
+            } else {
+                num = Math.min(num, detectionExecutor.getProbability());
+            }
+        }
+        return num;
+    }
+
+    // Detections
+
+    public final DetectionExecutor getDetection(String detection) {
+        return this.detections.get(detection);
+    }
+
+    public final DetectionExecutor getDetection() {
+        return this.detections.values().iterator().next();
+    }
+
+    public final Collection<DetectionExecutor> getDetections() {
+        return this.detections.values();
     }
 
     // Run
@@ -212,7 +244,7 @@ public abstract class CheckExecutor extends CheckDetection {
 
             if (!commands.isEmpty()
                     && ResearchEngine.getRequiredPlayers(hackType, PlayerEvidence.punishmentProbability) == 0) {
-                Collection<Enums.HackType> detectedHacks = player.protocol.getProfile().evidence.getKnowledgeList(
+                Collection<Enums.HackType> detectedHacks = player.protocol.getProfile().getEvidenceList(
                         PlayerEvidence.punishmentProbability
                 );
                 detectedHacks.removeIf(loopHackType -> !loopHackType.getCheck().canPunish(player.dataType));
@@ -278,7 +310,7 @@ public abstract class CheckExecutor extends CheckDetection {
 
     // Notification
 
-    private int getNotificationTicksCooldown(SpartanPlayer detected) {
+    final int getNotificationTicksCooldown(SpartanPlayer detected) {
         Integer frequency = DetectionNotifications.getFrequency(this.player);
 
         if (frequency != null
@@ -292,29 +324,6 @@ public abstract class CheckExecutor extends CheckDetection {
         } else {
             return AlgebraUtils.integerCeil(TPS.maximum);
         }
-    }
-
-    public final boolean canSendNotification(Object detected) {
-        long time = System.currentTimeMillis();
-
-        if (this.notifications <= time) {
-            boolean player = detected instanceof SpartanPlayer;
-            int ticks = this.getNotificationTicksCooldown(
-                    player ? (SpartanPlayer) detected : null
-            );
-
-            if (ticks > 0) {
-                if (player
-                        ? ((SpartanPlayer) detected).protocol.getProfile().evidence.surpassed(this.hackType, PlayerEvidence.notificationProbability)
-                        : ResearchEngine.getPlayerProfile(detected.toString(), true).evidence.surpassed(this.hackType, PlayerEvidence.notificationProbability)) {
-                    this.notifications = time + (ticks * TPS.tickTime);
-                    return true;
-                }
-            } else {
-                return true;
-            }
-        }
-        return false;
     }
 
 }

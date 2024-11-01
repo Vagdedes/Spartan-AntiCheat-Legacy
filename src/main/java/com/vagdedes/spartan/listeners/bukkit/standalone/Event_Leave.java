@@ -22,6 +22,9 @@ public class Event_Leave implements Listener {
 
         // Features
         DetectionNotifications.runOnLeave(p);
+
+        // Object
+        p.protocol.getProfile().updateOnlinePlayer(null);
     }
 
 }
