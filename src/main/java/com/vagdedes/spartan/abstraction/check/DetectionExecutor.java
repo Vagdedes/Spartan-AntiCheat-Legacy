@@ -234,7 +234,7 @@ public abstract class DetectionExecutor extends CheckDetection {
                         .replace("{info}", information)
                         .replace("{vls:detection}", String.valueOf(AlgebraUtils.cut(playerViolation.increase, 2)))
                         .replace("{vls:percentage}",
-                                hasSufficientData && roundedCertainty > 0 ? (roundedCertainty + "%%") : "unlikely"
+                                hasSufficientData && roundedCertainty > 0 ? (roundedCertainty + "%") : "unlikely"
                         ),
                 hackType
         );
