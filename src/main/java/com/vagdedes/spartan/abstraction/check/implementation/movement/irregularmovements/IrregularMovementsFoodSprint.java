@@ -17,9 +17,10 @@ public class IrregularMovementsFoodSprint extends DetectionExecutor {
     void run() {
         if (player.protocol.isSprinting()) {
             GameMode gameMode = player.getInstance().getGameMode();
-            int food = player.getInstance().getFoodLevel();
+            int food = player.getInstance().getFoodLevel(),
+                    threshold = 6;
 
-            if (food <= 6
+            if (food <= threshold
                     && (gameMode == GameMode.SURVIVAL
                     || gameMode == GameMode.ADVENTURE)
                     && buffer.count(1, 10) == 4) {
@@ -28,7 +29,7 @@ public class IrregularMovementsFoodSprint extends DetectionExecutor {
                         "type: food-sprint"
                                 + ", game-mode: " + gameMode.toString().toLowerCase().replace("_", "-")
                                 + ", food: " + food,
-                        1.0,
+                        threshold / (double) food,
                         player.movement.getDetectionLocation(),
                         0,
                         true

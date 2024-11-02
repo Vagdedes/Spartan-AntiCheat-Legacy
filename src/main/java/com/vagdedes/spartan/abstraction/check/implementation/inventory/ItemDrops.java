@@ -30,6 +30,7 @@ public class ItemDrops extends CheckExecutor {
         this.time = System.currentTimeMillis();
 
         if (timePassed <= (TPS.tickTime * 0.8)) {
+            double threshold = 7;
             int count = buffer.count(1, 10);
 
             if (count == 1) {
@@ -38,12 +39,12 @@ public class ItemDrops extends CheckExecutor {
             } else {
                 this.times.add(timePassed);
 
-                if (count >= 7) {
+                if (count >= threshold) {
                     for (long timePassedStored : this.times) {
                         if (timePassedStored > 0L) {
                             this.detection.cancel(
                                     "type: default",
-                                    1.0,
+                                    count / threshold,
                                     null,
                                     10
                             );

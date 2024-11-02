@@ -37,7 +37,7 @@ public class IrregularMovementsHorizontal extends DetectionExecutor {
                                         + ", vertical: " + vertical
                                         + ", air-ticks: " + airTicks
                                         + ", limit: " + limit,
-                                airTicks / TPS.maximum,
+                                airTicks / (double) limit,
                                 player.movement.getDetectionLocation(),
                                 0,
                                 true

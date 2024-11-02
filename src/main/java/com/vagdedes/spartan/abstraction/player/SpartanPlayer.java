@@ -518,7 +518,9 @@ public class SpartanPlayer {
                 } else {
                     loopLocation.setY(Math.floor(progressiveY) + Math.max(blockBox, box));
                 }
-                teleport(loopLocation);
+                if (this.protocol.packetsEnabled()) {
+                    teleport(loopLocation);
+                }
                 break;
             }
         }

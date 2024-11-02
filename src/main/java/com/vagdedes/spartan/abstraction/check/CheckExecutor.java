@@ -190,27 +190,23 @@ public abstract class CheckExecutor extends CheckDetection {
     public final boolean prevent() {
         if (this.prevention.complete()) {
             if (SpartanBukkit.isSynchronised()) {
-                if (player.protocol.packetsEnabled()) {
-                    return false;
+                CheckCancelEvent checkCancelEvent;
+
+                if (Config.settings.getBoolean("Important.enable_developer_api")) {
+                    checkCancelEvent = new CheckCancelEvent(player.getInstance(), hackType);
+                    Register.manager.callEvent(checkCancelEvent);
                 } else {
-                    CheckCancelEvent checkCancelEvent;
-
-                    if (Config.settings.getBoolean("Important.enable_developer_api")) {
-                        checkCancelEvent = new CheckCancelEvent(player.getInstance(), hackType);
-                        Register.manager.callEvent(checkCancelEvent);
-                    } else {
-                        checkCancelEvent = null;
-                    }
-
-                    if (checkCancelEvent == null
-                            || !checkCancelEvent.isCancelled()) {
-                        this.prevention.handle(player);
-                        return true;
-                    } else {
-                        return false;
-                    }
+                    checkCancelEvent = null;
                 }
-            } else if (!player.protocol.packetsEnabled()) {
+
+                if (checkCancelEvent == null
+                        || !checkCancelEvent.isCancelled()) {
+                    this.prevention.handle(player);
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
                 Thread thread = Thread.currentThread();
                 Boolean[] cancelled = new Boolean[1];
 
@@ -237,8 +233,6 @@ public abstract class CheckExecutor extends CheckDetection {
                 } else {
                     return false;
                 }
-            } else {
-                return false;
             }
         } else {
             return false;

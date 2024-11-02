@@ -154,7 +154,7 @@ public class IrregularMovementsStep extends DetectionExecutor {
                                     + ", old-box: " + oldBox
                                     + ", vertical: " + vertical
                                     + ", limit: " + limit,
-                            vertical - 1.0,
+                            vertical / limit,
                             player.movement.getDetectionLocation(),
                             0,
                             true

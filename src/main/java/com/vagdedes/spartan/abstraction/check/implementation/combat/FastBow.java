@@ -54,16 +54,26 @@ public class FastBow extends CheckExecutor {
         if (timePassed > 500L) {
             return;
         }
-        if (bowForce.count(1, 20) == 2) {
+        int buffer = bowForce.count(1, 20),
+                threshold = 2;
+
+        if (buffer >= threshold) {
             bowForce.reset();
-            this.bowForceDetection.cancel("type: bow-force, ms: " + timePassed);
+            this.bowForceDetection.cancel(
+                    "type: bow-force, ms: " + timePassed,
+                    buffer / (double) threshold
+            );
         }
     }
 
     private void checkBowShots() {
-        if (bowShots.count(1, 10) == 7) {
-            bowShots.reset();
-            this.bowShotsDetection.cancel("type: bow-shots");
+        int buffer = bowShots.count(1, 10),
+                threshold = 7;
+        if (buffer >= threshold) {
+            this.bowShotsDetection.cancel(
+                    "type: bow-shots",
+                    buffer / (double) threshold
+            );
         }
     }
 

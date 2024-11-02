@@ -6,7 +6,6 @@ import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
 import com.vagdedes.spartan.abstraction.player.PlayerTrackers;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
-import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PotionEffectUtils;
 import com.vagdedes.spartan.utils.minecraft.inventory.MaterialUtils;
@@ -225,7 +224,7 @@ public class IrregularMovementsGravity extends DetectionExecutor {
                 } else {
                     this.gravity_prediction.cancel(
                             violation,
-                            sensitive ? 1.0 : airTicks / TPS.maximum,
+                            sensitive ? 1.0 : Math.max(airTicks, 1.0),
                             player.movement.getDetectionLocation(),
                             0,
                             true

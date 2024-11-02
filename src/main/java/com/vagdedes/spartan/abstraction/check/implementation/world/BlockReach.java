@@ -60,7 +60,12 @@ public class BlockReach extends CheckExecutor {
                         limit = getLimit();
 
                 if (distance >= limit) {
-                    this.breaking.cancel("type: breaking, distance: " + distance + ", limit: " + limit + ", block: " + BlockUtils.blockToString(block));
+                    this.breaking.cancel(
+                            "type: breaking, distance: " + distance
+                                    + ", limit: " + limit
+                                    + ", block: " + BlockUtils.blockToString(block),
+                            distance / limit
+                    );
                 }
             }
         } else if (object instanceof PlayerInteractEvent) {
@@ -72,7 +77,12 @@ public class BlockReach extends CheckExecutor {
                         limit = getLimit();
 
                 if (distance >= limit) {
-                    this.interact.cancel("type: interact, distance: " + distance + ", limit: " + limit + ", block: " + BlockUtils.blockToString(block));
+                    this.interact.cancel(
+                            "type: interact, distance: " + distance
+                                    + ", limit: " + limit
+                                    + ", block: " + BlockUtils.blockToString(block),
+                            distance / limit
+                    );
                 }
             }
         } else {
@@ -95,12 +105,22 @@ public class BlockReach extends CheckExecutor {
                             || block.getType() != Material.BARRIER)
                             && player.getInstance().getVehicle() == null
                             && distance > (ab_distance + GroundUtils.boundingBox + 0.1)) {
-                        this.unusual.cancel("type: unusual, distance: " + distance + ", block-against-distance: " + ab_distance + ", block: " + BlockUtils.blockToString(block));
+                        this.unusual.cancel(
+                                "type: unusual, distance: " + distance
+                                        + ", block-against-distance: " + ab_distance
+                                        + ", block: " + BlockUtils.blockToString(block),
+                                distance / ab_distance
+                        );
                     } else {
                         double limit = getLimit();
 
                         if (distance >= limit) {
-                            this.place.cancel("type: place, distance: " + distance + ", limit: " + limit + ", block: " + BlockUtils.blockToString(block));
+                            this.place.cancel(
+                                    "type: place, distance: " + distance
+                                            + ", limit: " + limit
+                                            + ", block: " + BlockUtils.blockToString(block),
+                                    distance / limit
+                            );
                         }
                     }
                 }

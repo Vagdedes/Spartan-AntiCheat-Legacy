@@ -62,7 +62,10 @@ public class FastHeal extends CheckExecutor {
                         if (timePassed < limit
                                 && buffer.count(1, 10) == 3) {
                             buffer.reset();
-                            this.detection.cancel("type: default, ms: " + timePassed + ", limit: " + limit);
+                            this.detection.cancel(
+                                    "type: default, ms: " + timePassed + ", limit: " + limit,
+                                    limit / (double) timePassed
+                            );
                         }
                     }
                 }

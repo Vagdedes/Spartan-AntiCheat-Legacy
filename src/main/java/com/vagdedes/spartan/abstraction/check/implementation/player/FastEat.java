@@ -70,7 +70,10 @@ public class FastEat extends CheckExecutor {
         long delay = getDelay();
 
         if (delay > 0L && time <= delay) {
-            this.eat.cancel("type: eat, ms: " + time);
+            this.eat.cancel(
+                    "type: eat, ms: " + time,
+                    delay / (double) time
+            );
             bool = true;
         } else {
             bool = false;
@@ -83,7 +86,10 @@ public class FastEat extends CheckExecutor {
                 delay = getDelay();
 
         if (delay > 0L && time <= delay) {
-            this.interact.cancel("type: interact, ms: " + time + ", delay: " + delay);
+            this.interact.cancel(
+                    "type: interact, ms: " + time + ", delay: " + delay,
+                    delay / (double) time
+            );
             return true;
         }
         return false;

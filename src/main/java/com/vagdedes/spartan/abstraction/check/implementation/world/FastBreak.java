@@ -132,7 +132,12 @@ public class FastBreak extends CheckExecutor {
                                         + ", item: " + (emptyItem ? "none" : BlockUtils.materialToString(itemStack.getType()))
                                         + ", enchantments: " + (!enchantments.isEmpty() ? "none" : "[" + enchantmentsString + "]")
                                         + ", effects: " + (!hasEffects ? "none" : "[" + effectsString + "]");
-                                this.delay.cancel(prevention, 1.0, null, seconds);
+                                this.delay.cancel(
+                                        prevention,
+                                        limit / (double) time,
+                                        null,
+                                        seconds
+                                );
                             }
                         }
                     }
@@ -147,16 +152,19 @@ public class FastBreak extends CheckExecutor {
         if (gameMode == GameMode.CREATIVE) {
             int limit = hackType.getCheck().getNumericalOption("max_breaks_per_second", 40);
 
-            if (limit > 0 && breaksPerSecondBuffer.count(1, 20) == limit) {
-                breaksPerSecondBuffer.reset();
-                this.breaksPerSecond.cancel(
-                        "type: breaks-per-second"
-                                + ", type: " + BlockUtils.blockToString(block)
-                                + ", limit: " + limit,
-                        1.0,
-                        null,
-                        seconds
-                );
+            if (limit > 0) {
+                int buffer = breaksPerSecondBuffer.count(1, 20);
+
+                if (buffer >= limit) {
+                    this.breaksPerSecond.cancel(
+                            "type: breaks-per-second"
+                                    + ", type: " + BlockUtils.blockToString(block)
+                                    + ", limit: " + limit,
+                            buffer / (double) limit,
+                            null,
+                            seconds
+                    );
+                }
             }
         }
     }
@@ -196,12 +204,16 @@ public class FastBreak extends CheckExecutor {
                     bufferThreshold = individualSurroundingsPerSecondBuffer.count(1, bufferTicks);
                 }
 
-                if (bufferThreshold == limit) {
-                    individualSurroundingsPerSecondBuffer.reset();
+                if (bufferThreshold >= limit) {
                     String prevention = "type: indirect-surroundings-per-second"
                             + ", type: " + BlockUtils.blockToString(block)
                             + ", limit: " + limit;
-                    this.indirectSurroundingsPerSecond.cancel(prevention, 1.0, null, seconds);
+                    this.indirectSurroundingsPerSecond.cancel(
+                            prevention,
+                            bufferThreshold / (double) limit,
+                            null,
+                            seconds
+                    );
                 }
                 lastBlock = block;
             }

@@ -91,34 +91,38 @@ public class MorePackets extends CheckExecutor {
         if (timerBalancer.isNegativeTimer() && delay > 50) {
             if (multiply >= 1.1) {
                 punish(this.negative,
-                        "type: negative, multiply: " + multiply
+                        "type: negative, multiply: " + multiply,
+                        multiply
                 );
             }
         } else if (delay < 50 && timerBalancer.getResult() > 100) {
             if (multiply >= 1.1) {
                 punish(
                         this.positive_balance,
-                        "type: positive(balance), multiply: " + multiply
+                        "type: positive(balance), multiply: " + multiply,
+                        multiply
                 );
             }
         } else if (delay < 50 && timerBalancer.getForced() > 8) {
             if (multiply >= 1.1) {
                 punish(
                         this.positive_net,
-                        "type: positive(NET), multiply: " + multiply
+                        "type: positive(NET), multiply: " + multiply,
+                        multiply
                 );
             }
         } else if (delay < 50 && timerBalancer.getLatency() > 40) {
             if (multiply >= 1.1) {
                 punish(
                         this.positive_latency,
-                        "type: positive(latency), multiply: " + multiply
+                        "type: positive(latency), multiply: " + multiply,
+                        multiply
                 );
             }
         }
     }
 
-    private void punish(DetectionExecutor executor, String info) {
+    private void punish(DetectionExecutor executor, String info, double multiplier) {
         packetVL += 70;
 
         if (packetVL > 100) {

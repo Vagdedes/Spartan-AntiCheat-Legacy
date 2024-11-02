@@ -57,7 +57,7 @@ public class MoveLength extends DetectionExecutor {
                                         + ", previous-pitch-difference: " + this.previousPitchDifference
                                         + ", greatest-common-divisor: " + gcd
                                         + ", limit: " + minimumGCD,
-                                1.0,
+                                minimumGCD / gcd,
                                 null,
                                 AlgebraUtils.integerCeil(TPS.maximum)
                         );
