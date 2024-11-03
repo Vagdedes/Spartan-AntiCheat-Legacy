@@ -24,6 +24,7 @@ public class BlockRaytrace extends DetectionExecutor {
     }
 
     public void run(Entity targetHandle) {
+        if (true) return;
         if (targetHandle instanceof Player) {
             SpartanProtocol target = SpartanBukkit.getProtocol(targetHandle.getUniqueId());
 
