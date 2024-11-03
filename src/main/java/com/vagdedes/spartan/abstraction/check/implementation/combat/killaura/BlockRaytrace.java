@@ -29,13 +29,13 @@ public class BlockRaytrace extends DetectionExecutor {
             SpartanProtocol target = SpartanBukkit.getProtocol(targetHandle.getUniqueId());
 
             if (target != null) {
-                Location playerLocation = this.player.protocol.getLocation();
-                worldInit(this.player.protocol, playerLocation);
-                this.player.protocol.setCheckBoundData(new CheckBoundData(this.player.protocol, target));
-                Vector result = isBoundThrough(this.player.protocol.getCheckBoundData());
+                Location playerLocation = this.protocol.spartanPlayer.protocol.getLocation();
+                worldInit(this.protocol.spartanPlayer.protocol, playerLocation);
+                this.protocol.spartanPlayer.protocol.setCheckBoundData(new CheckBoundData(this.protocol.spartanPlayer.protocol, target));
+                Vector result = isBoundThrough(this.protocol.spartanPlayer.protocol.getCheckBoundData());
                 if (result != null) {
                     cancel("attack through block at " + result, 0.5F);
-                    this.player.protocol.setCheckBoundData(null);
+                    this.protocol.spartanPlayer.protocol.setCheckBoundData(null);
                 }
             }
         }

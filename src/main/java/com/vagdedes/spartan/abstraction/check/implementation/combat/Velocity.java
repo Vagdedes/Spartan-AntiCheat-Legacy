@@ -43,9 +43,9 @@ public class Velocity extends CheckExecutor {
             zSended = RayUtils.scaleVal(Math.abs(event.getVelocity().getZ()), 2);
         }
         if (object instanceof PlayerMoveEvent) {
-            Double eventXDiff = player.movement.getEventXDiff(),
-                    eventZDiff = player.movement.getEventZDiff(),
-                    vertical = player.movement.getEventVertical();
+            Double eventXDiff = protocol.spartanPlayer.movement.getEventXDiff(),
+                    eventZDiff = protocol.spartanPlayer.movement.getEventZDiff(),
+                    vertical = protocol.spartanPlayer.movement.getEventVertical();
 
             if (eventXDiff == null
                     || eventZDiff == null
@@ -54,7 +54,7 @@ public class Velocity extends CheckExecutor {
             }
             double x = RayUtils.scaleVal(Math.abs(eventXDiff), 2);
             double z = RayUtils.scaleVal(Math.abs(eventZDiff), 2);
-            boolean blockOnTop = RayUtils.onSolidBlock(player, player.movement.getLocation().clone().add(0, 2, 0));
+            boolean blockOnTop = RayUtils.onSolidBlock(protocol.spartanPlayer, protocol.spartanPlayer.movement.getLocation().clone().add(0, 2, 0));
             vertical = RayUtils.scaleVal(vertical, 2);
             // vertical check
             if (veloV) {
@@ -72,7 +72,7 @@ public class Velocity extends CheckExecutor {
                                     "type: vertical, speed-vertical: "
                                             + vertical + ", sended-vertical: " + verticalSended,
                                     1,
-                                    player.movement.getDetectionLocation()
+                                    protocol.spartanPlayer.movement.getDetectionLocation()
                             );
                         }
                     }
@@ -87,7 +87,7 @@ public class Velocity extends CheckExecutor {
                     veloH = false;
                     return;
                 }
-                double decreace = player.protocol.isSprinting() ? 2.5 : 1.5;
+                double decreace = protocol.spartanPlayer.protocol.isSprinting() ? 2.5 : 1.5;
                 if (x < xSended / decreace && z < zSended / decreace) {
                     vl += 100;
                     if (vl > 300) {
@@ -95,7 +95,7 @@ public class Velocity extends CheckExecutor {
                                 "type: horizontal, x: " + x + ", z: " + z
                                         + ", sended-x: " + xSended + ", sended-z: " + zSended,
                                 1,
-                                player.movement.getDetectionLocation()
+                                protocol.spartanPlayer.movement.getDetectionLocation()
                         );
                     }
                 } else {
@@ -108,17 +108,17 @@ public class Velocity extends CheckExecutor {
 
     @Override
     protected boolean canRun() {
-        return player.protocol.packetsEnabled()
-                && !player.trackers.has(PlayerTrackers.TrackerType.BOUNCING_BLOCKS)
-                && CombatUtils.canCheck(player)
-                && !player.isOutsideOfTheBorder(-1.0)
+        return protocol.spartanPlayer.protocol.packetsEnabled()
+                && !protocol.spartanPlayer.trackers.has(PlayerTrackers.TrackerType.BOUNCING_BLOCKS)
+                && CombatUtils.canCheck(protocol.spartanPlayer)
+                && !protocol.spartanPlayer.isOutsideOfTheBorder(-1.0)
                 && !BlockPatternUtils.isBlockPattern(
                 new double[][]{
                         {1, 0, 1},
                         {1, 1, 1},
-                        {1, player.getInstance().getEyeHeight(), 1}
+                        {1, protocol.spartanPlayer.getInstance().getEyeHeight(), 1}
                 },
-                player.movement.getLocation(),
+                protocol.spartanPlayer.movement.getLocation(),
                 true,
                 BlockUtils.solid, BlockUtils.semi_solid
         );

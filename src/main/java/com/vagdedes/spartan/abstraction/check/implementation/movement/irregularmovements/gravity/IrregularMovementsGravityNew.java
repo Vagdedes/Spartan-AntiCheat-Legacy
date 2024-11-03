@@ -16,26 +16,26 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
     }
 
     public void run() {
-        if (player == null) return;
-        SpartanProtocol p = player.protocol;
+        if (protocol.spartanPlayer == null) return;
+        SpartanProtocol p = protocol.spartanPlayer.protocol;
         boolean isOnGround = p.isOnGround();
         Location to = p.getLocation();
-        Location from = player.movement.getEventFromLocation().getBukkitLocation();
+        Location from = protocol.spartanPlayer.movement.getEventFromLocation().getBukkitLocation();
         double motion = to.getY() - from.getY();
         double f = 0.0784;
         this.air = (isOnGround) ? 0 : air + 1;
 
         {
             if (isOnGround) {
-                player.movement.motionY = 0;
+                protocol.spartanPlayer.movement.motionY = 0;
             } else  if (air == 1) {
                 if (motion > 0) {
-                    player.movement.motionY = jumpMotion();
+                    protocol.spartanPlayer.movement.motionY = jumpMotion();
                 } else {
-                    player.movement.motionY = -f;
+                    protocol.spartanPlayer.movement.motionY = -f;
                 }
             } else {
-                player.movement.motionY -= f;
+                protocol.spartanPlayer.movement.motionY -= f;
             }
         }
 
@@ -47,9 +47,9 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
         double f = 0.42;
         SpartanPotionEffect jumpEffect = null;
         if (PotionEffectType.getByName("JUMP_BOOST") != null) {
-            jumpEffect = player.getPotionEffect(PotionEffectType.getByName("JUMP_BOOST"), 1L);
+            jumpEffect = protocol.spartanPlayer.getPotionEffect(PotionEffectType.getByName("JUMP_BOOST"), 1L);
         } else {
-            jumpEffect = player.getPotionEffect(PotionEffectType.getByName("JUMP"), 1L);
+            jumpEffect = protocol.spartanPlayer.getPotionEffect(PotionEffectType.getByName("JUMP"), 1L);
         }
 
         if (jumpEffect != null) {

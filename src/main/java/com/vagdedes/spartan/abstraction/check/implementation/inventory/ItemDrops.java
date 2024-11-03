@@ -58,6 +58,6 @@ public class ItemDrops extends CheckExecutor {
 
     @Override
     protected boolean canRun() {
-        return !player.getInstance().isDead();
+        return !protocol.spartanPlayer.getInstance().isDead();
     }
 }

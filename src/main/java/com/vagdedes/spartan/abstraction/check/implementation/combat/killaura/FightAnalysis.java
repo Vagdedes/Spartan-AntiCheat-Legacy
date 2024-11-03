@@ -40,7 +40,7 @@ public class FightAnalysis extends DetectionExecutor {
             identifier = target.getType().toString().hashCode();
         }
         Map<Integer, int[]> subData = data.computeIfAbsent(
-                player.protocol.getUUID(),
+                protocol.spartanPlayer.protocol.getUUID(),
                 k -> new HashMap<>(2)
         );
         int[] hitsDamages = subData.getOrDefault(identifier, new int[2]);
@@ -66,7 +66,7 @@ public class FightAnalysis extends DetectionExecutor {
             identifier = damager.getType().toString().hashCode();
         }
         Map<Integer, int[]> subData = data.computeIfAbsent(
-                player.protocol.getUUID(),
+                protocol.spartanPlayer.protocol.getUUID(),
                 k -> new OverflowMap<>(
                         new HashMap<>(2),
                         EntityType.values().length

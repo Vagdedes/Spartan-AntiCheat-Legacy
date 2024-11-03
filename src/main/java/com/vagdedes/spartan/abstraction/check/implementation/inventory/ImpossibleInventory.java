@@ -64,8 +64,8 @@ public class ImpossibleInventory extends CheckExecutor {
 
     @Override
     protected void runInternal(boolean cancelled) {
-        if (!player.movement.isSwimming() && player.getInstance().getVehicle() == null) {
-            ItemStack cursor = player.getInstance().getOpenInventory().getCursor();
+        if (!protocol.spartanPlayer.movement.isSwimming() && protocol.spartanPlayer.getInstance().getVehicle() == null) {
+            ItemStack cursor = protocol.spartanPlayer.getInstance().getOpenInventory().getCursor();
 
             if (BlockUtils.hasMaterial(cursor)) {
                 int cases = getActionCase();
@@ -74,7 +74,7 @@ public class ImpossibleInventory extends CheckExecutor {
                     this.cursorUsageDetection.cancel(
                             "type: cursor-usage, case: " + cases,
                             1.0,
-                            player.movement.getDetectionLocation(),
+                            protocol.spartanPlayer.movement.getDetectionLocation(),
                             0,
                             false
                     );
@@ -97,12 +97,12 @@ public class ImpossibleInventory extends CheckExecutor {
         if (cases != 0
                 && !click.isCreativeAction()
                 && !click.isKeyboardClick()
-                && !player.movement.isSwimming()
-                && player.getInstance().getVehicle() == null
-                && player.getInstance().getOpenInventory().countSlots() > PlayerUtils.playerInventorySlots
+                && !protocol.spartanPlayer.movement.isSwimming()
+                && protocol.spartanPlayer.getInstance().getVehicle() == null
+                && protocol.spartanPlayer.getInstance().getOpenInventory().countSlots() > PlayerUtils.playerInventorySlots
                 && !BlockPatternUtils.isBlockPattern(
                 belowBlocks,
-                player.movement.getLocation(),
+                protocol.spartanPlayer.movement.getLocation(),
                 true,
                 BlockUtils.ice, BlockUtils.blue_ice)) {
             this.closedInventoryDetection.cancel("type: closed-inventory, case: " + cases);
@@ -111,7 +111,7 @@ public class ImpossibleInventory extends CheckExecutor {
 
     private void runPortalInventory(ItemStack item) {
         if (BlockUtils.hasMaterial(item)) {
-            SpartanLocation loc = player.movement.getLocation();
+            SpartanLocation loc = protocol.spartanPlayer.movement.getLocation();
 
             if (loc.getBlock().getType() == nether_portal
                     || loc.clone().add(0, 1, 0).getBlock().getType() == nether_portal) {
@@ -121,26 +121,26 @@ public class ImpossibleInventory extends CheckExecutor {
     }
 
     private int getActionCase() {
-        if (player.movement.isFlying()
-                || player.movement.isLowEyeHeight()) {
+        if (protocol.spartanPlayer.movement.isFlying()
+                || protocol.spartanPlayer.movement.isLowEyeHeight()) {
             return 0;
         } else {
             Check check = hackType.getCheck();
             return check.getBooleanOption("check_sneaking", true)
-                    && player.protocol.isSneaking() ? 1
+                    && protocol.spartanPlayer.protocol.isSneaking() ? 1
                     : !MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_15)
                     && check.getBooleanOption("check_sprinting", true)
-                    && player.protocol.isSprinting() ? 2
+                    && protocol.spartanPlayer.protocol.isSprinting() ? 2
                     : check.getBooleanOption("check_sleeping", true)
-                    && player.getInstance().isSleeping() ? 3
+                    && protocol.spartanPlayer.getInstance().isSleeping() ? 3
                     : check.getBooleanOption("check_dead", true)
-                    && player.getInstance().isDead() ? 5
+                    && protocol.spartanPlayer.getInstance().isDead() ? 5
                     : check.getBooleanOption("check_sprint_jumping", true)
-                    && player.movement.isSprintJumping(player.movement.getValueOrDefault(player.movement.getEventVertical(), 0.0)) ? 6
+                    && protocol.spartanPlayer.movement.isSprintJumping(protocol.spartanPlayer.movement.getValueOrDefault(protocol.spartanPlayer.movement.getEventVertical(), 0.0)) ? 6
                     : check.getBooleanOption("check_walk_jumping", true)
-                    && player.movement.isWalkJumping(player.movement.getValueOrDefault(player.movement.getEventVertical(), 0.0)) ? 7
+                    && protocol.spartanPlayer.movement.isWalkJumping(protocol.spartanPlayer.movement.getValueOrDefault(protocol.spartanPlayer.movement.getEventVertical(), 0.0)) ? 7
                     : check.getBooleanOption("check_jumping", true)
-                    && player.movement.isJumping(player.movement.getValueOrDefault(player.movement.getEventVertical(), 0.0)) ? 8
+                    && protocol.spartanPlayer.movement.isJumping(protocol.spartanPlayer.movement.getValueOrDefault(protocol.spartanPlayer.movement.getEventVertical(), 0.0)) ? 8
                     : 0;
         }
     }

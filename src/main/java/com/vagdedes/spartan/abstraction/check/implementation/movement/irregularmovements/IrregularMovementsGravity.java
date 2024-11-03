@@ -40,22 +40,22 @@ public class IrregularMovementsGravity extends DetectionExecutor {
 
     void run(double vertical, double oldVertical, double box, double oldBox) {
         if (!isUsingMace()) {
-            int airTicks = player.movement.getTicksOnAir();
-            SpartanLocation to = player.movement.getLocation(),
-                    from = player.movement.getEventFromLocation();
+            int airTicks = protocol.spartanPlayer.movement.getTicksOnAir();
+            SpartanLocation to = protocol.spartanPlayer.movement.getLocation(),
+                    from = protocol.spartanPlayer.movement.getEventFromLocation();
             int levitationLevel = PlayerUtils.levitation
-                    ? PlayerUtils.getPotionLevel(player, PotionEffectType.LEVITATION)
+                    ? PlayerUtils.getPotionLevel(protocol.spartanPlayer, PotionEffectType.LEVITATION)
                     : -1;
             List<Double> predictions = new ArrayList<>(5);
             boolean levitation = levitationLevel != -1,
-                    slowFall = PlayerUtils.slowFall && player.hasPotionEffect(PotionEffectType.SLOW_FALLING, 0),
-                    liquid = player.movement.isInLiquids(),
-                    climb = player.isFrozen() || canClimb(to) || canClimb(from),
+                    slowFall = PlayerUtils.slowFall && protocol.spartanPlayer.hasPotionEffect(PotionEffectType.SLOW_FALLING, 0),
+                    liquid = protocol.spartanPlayer.movement.isInLiquids(),
+                    climb = protocol.spartanPlayer.isFrozen() || canClimb(to) || canClimb(from),
                     web = BlockPatternUtils.isBlockPattern(
                             new double[][]{
                                     {GroundUtils.contactBoundingBox, 0.0, GroundUtils.contactBoundingBox},
                                     {GroundUtils.contactBoundingBox, 1.0, GroundUtils.contactBoundingBox},
-                                    {GroundUtils.contactBoundingBox, Math.ceil(player.getInstance().getEyeHeight()), GroundUtils.contactBoundingBox}
+                                    {GroundUtils.contactBoundingBox, Math.ceil(protocol.spartanPlayer.getInstance().getEyeHeight()), GroundUtils.contactBoundingBox}
                             },
                             to,
                             true,
@@ -64,7 +64,7 @@ public class IrregularMovementsGravity extends DetectionExecutor {
                             new double[][]{
                                     {GroundUtils.contactBoundingBox, 0.0, GroundUtils.contactBoundingBox},
                                     {GroundUtils.contactBoundingBox, 1.0, GroundUtils.contactBoundingBox},
-                                    {GroundUtils.contactBoundingBox, Math.ceil(player.getInstance().getEyeHeight()), GroundUtils.contactBoundingBox}
+                                    {GroundUtils.contactBoundingBox, Math.ceil(protocol.spartanPlayer.getInstance().getEyeHeight()), GroundUtils.contactBoundingBox}
                             },
                             from,
                             true,
@@ -96,7 +96,7 @@ public class IrregularMovementsGravity extends DetectionExecutor {
             predictions.add( // Always second
                     PlayerUtils.calculateNextFallMotion(
                             oldVertical,
-                            -player.movement.getAirAcceleration(),
+                            -protocol.spartanPlayer.movement.getAirAcceleration(),
                             PlayerUtils.airDrag
                     )
             );
@@ -111,7 +111,7 @@ public class IrregularMovementsGravity extends DetectionExecutor {
                 double calculation = PlayerUtils.calculateNextFallMotion(
                         oldVertical,
                         -PlayerUtils.liquidAcceleration,
-                        player.movement.getLastLiquidMaterial() == Material.LAVA
+                        protocol.spartanPlayer.movement.getLastLiquidMaterial() == Material.LAVA
                                 ? PlayerUtils.lavaDrag
                                 : PlayerUtils.waterDrag
                 );
@@ -128,13 +128,13 @@ public class IrregularMovementsGravity extends DetectionExecutor {
             }
             if (climb) {
                 if (vertical == 0.0 && oldVertical == 0.0) {
-                    if (!player.isOnGround(to, true)
-                            && !player.protocol.isSneaking()
-                            && player.getNearbyEntities(1.0, 1.0, 1.0).isEmpty()
+                    if (!protocol.spartanPlayer.isOnGround(to, true)
+                            && !protocol.spartanPlayer.protocol.isSneaking()
+                            && protocol.spartanPlayer.getNearbyEntities(1.0, 1.0, 1.0).isEmpty()
                             && !BlockPatternUtils.isBlockPattern(
                             new double[]{
                                     GroundUtils.boundingBox,
-                                    Math.ceil(player.getInstance().getEyeHeight()),
+                                    Math.ceil(protocol.spartanPlayer.getInstance().getEyeHeight()),
                                     GroundUtils.boundingBox
                             },
                             to,
@@ -149,7 +149,7 @@ public class IrregularMovementsGravity extends DetectionExecutor {
                                         + ", old-box: " + oldBox
                                         + ", air-ticks: " + airTicks,
                                 1.0,
-                                player.movement.getDetectionLocation(),
+                                protocol.spartanPlayer.movement.getDetectionLocation(),
                                 0,
                                 true
                         );
@@ -178,25 +178,25 @@ public class IrregularMovementsGravity extends DetectionExecutor {
                 if (Math.abs(prediction) > PlayerUtils.optimizationY) {
                     double difference = Math.abs(vertical - prediction), product;
 
-                    if (player.isBedrockPlayer()) {
+                    if (protocol.spartanPlayer.isBedrockPlayer()) {
                         product = PlayerUtils.calculateTerminalVelocity(
                                 PlayerUtils.airDrag,
-                                player.movement.getAirAcceleration()
+                                protocol.spartanPlayer.movement.getAirAcceleration()
                         ) * 2;
                     } else {
                         product = !sensitive
-                                && !player.movement.isJumping(vertical) && !player.movement.isJumping(oldVertical)
-                                && !player.movement.isFalling(vertical, -player.movement.getAirAcceleration(), PlayerUtils.airDrag, GroundUtils.maxHeightLengthRatio)
-                                && !player.movement.isFalling(oldVertical, -player.movement.getAirAcceleration(), PlayerUtils.airDrag, GroundUtils.maxHeightLengthRatio)
+                                && !protocol.spartanPlayer.movement.isJumping(vertical) && !protocol.spartanPlayer.movement.isJumping(oldVertical)
+                                && !protocol.spartanPlayer.movement.isFalling(vertical, -protocol.spartanPlayer.movement.getAirAcceleration(), PlayerUtils.airDrag, GroundUtils.maxHeightLengthRatio)
+                                && !protocol.spartanPlayer.movement.isFalling(oldVertical, -protocol.spartanPlayer.movement.getAirAcceleration(), PlayerUtils.airDrag, GroundUtils.maxHeightLengthRatio)
                                 ? GroundUtils.maxPlayerStep
-                                : PlayerUtils.getJumpTicks(PlayerUtils.getPotionLevel(player, PotionEffectUtils.JUMP) + 1);
+                                : PlayerUtils.getJumpTicks(PlayerUtils.getPotionLevel(protocol.spartanPlayer, PotionEffectUtils.JUMP) + 1);
                     }
                     double limit = Math.max(
                             this.sensitive ? product : product / (double) airTicks,
-                            player.trackers.has(PlayerTrackers.TrackerFamily.VELOCITY)
-                                    || player.trackers.has(PlayerTrackers.TrackerFamily.MOTION) ? (GroundUtils.maxBoundingBox * 2.0) :
+                            protocol.spartanPlayer.trackers.has(PlayerTrackers.TrackerFamily.VELOCITY)
+                                    || protocol.spartanPlayer.trackers.has(PlayerTrackers.TrackerFamily.MOTION) ? (GroundUtils.maxBoundingBox * 2.0) :
                                     liquid ? GroundUtils.maxPlayerStep :
-                                            player.isBedrockPlayer() || sensitive ? PlayerUtils.climbingDownDefault :
+                                            protocol.spartanPlayer.isBedrockPlayer() || sensitive ? PlayerUtils.climbingDownDefault :
                                                     GroundUtils.maxHeightLengthRatio
                     );
 
@@ -225,7 +225,7 @@ public class IrregularMovementsGravity extends DetectionExecutor {
                     this.gravity_prediction.cancel(
                             violation,
                             sensitive ? 1.0 : Math.max(airTicks, 1.0),
-                            player.movement.getDetectionLocation(),
+                            protocol.spartanPlayer.movement.getDetectionLocation(),
                             0,
                             true
                     );
@@ -244,7 +244,7 @@ public class IrregularMovementsGravity extends DetectionExecutor {
 
     private boolean isUsingMace() {
         if (MACE != null) {
-            ItemStack[] contents = player.getInstance().getInventory().getContents();
+            ItemStack[] contents = protocol.spartanPlayer.getInstance().getInventory().getContents();
 
             for (ItemStack item : contents) {
                 if (item != null && item.getType() == MACE) {

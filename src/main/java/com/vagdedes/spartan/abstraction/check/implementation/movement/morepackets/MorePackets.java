@@ -71,7 +71,7 @@ public class MorePackets extends CheckExecutor {
         } else if (object instanceof Byte && object.equals(TELEPORT)) {
             this.teleported = System.currentTimeMillis()
                     + (AlgebraUtils.integerCeil(TPS.maximum) * TPS.tickTime * 4L);
-        } else if (!player.protocol.packetsEnabled()) {
+        } else if (!protocol.spartanPlayer.protocol.packetsEnabled()) {
             bukkitNmsMap.put(TPS.tick(), bukkitNmsMap.getOrDefault(TPS.tick(), 0) + 1);
 
             if (bukkitNmsMap.size() > configuredTicks()) {
@@ -129,7 +129,7 @@ public class MorePackets extends CheckExecutor {
             executor.cancel(
                     info,
                     1,
-                    player.movement.getDetectionLocation(),
+                    protocol.spartanPlayer.movement.getDetectionLocation(),
                     0,
                     true
             );
@@ -142,7 +142,7 @@ public class MorePackets extends CheckExecutor {
     @Override
     protected void runInternal(boolean cancelled) {
         if (!bukkitNmsMap.isEmpty()
-                && !player.protocol.packetsEnabled()) {
+                && !protocol.spartanPlayer.protocol.packetsEnabled()) {
             long currentTick = TPS.tick(),
                     oldestTick = currentTick - configuredTicks();
             int period = 0, collections = 0;
@@ -214,7 +214,7 @@ public class MorePackets extends CheckExecutor {
                                         + ", collections: " + collections
                                         + ", ratio: " + ratioSum,
                                 ratioSum,
-                                player.movement.getDetectionLocation(),
+                                protocol.spartanPlayer.movement.getDetectionLocation(),
                                 0,
                                 true
                         );
@@ -243,11 +243,11 @@ public class MorePackets extends CheckExecutor {
 
     @Override
     protected boolean canRun() {
-        return !player.isBedrockPlayer()
+        return !protocol.spartanPlayer.isBedrockPlayer()
                 && this.teleported < System.currentTimeMillis()
                 && MovementProcessing.canCheck(
-                player,
-                player.protocol.packetsEnabled(),
+                protocol.spartanPlayer,
+                protocol.spartanPlayer.protocol.packetsEnabled(),
                 true,
                 true,
                 true,

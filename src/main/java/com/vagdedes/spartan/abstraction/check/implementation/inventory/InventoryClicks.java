@@ -52,8 +52,8 @@ public class InventoryClicks extends CheckExecutor {
                 && item.getItemMeta() != null) {
             Material material = item.getType();
 
-            if (!BlockUtils.isSensitive(player, material)) {
-                boolean quick = player.getInstance().getOpenInventory().countSlots() <= PlayerUtils.playerInventorySlots,
+            if (!BlockUtils.isSensitive(protocol.spartanPlayer, material)) {
+                boolean quick = protocol.spartanPlayer.getInstance().getOpenInventory().countSlots() <= PlayerUtils.playerInventorySlots,
                         shift = click.isShiftClick();
                 String type = BlockUtils.materialToString(material);
 
@@ -63,7 +63,7 @@ public class InventoryClicks extends CheckExecutor {
 
                 if (shift
                         && !quick
-                        && !BlockUtils.hasMaterial(player.getInstance().getOpenInventory().getCursor())
+                        && !BlockUtils.hasMaterial(protocol.spartanPlayer.getInstance().getOpenInventory().getCursor())
                         && shiftBuffer.count(1, 5) == 4) { // Inventory
                     shiftBuffer.reset();
                     this.shift.cancel("type: shift, item: " + type);
@@ -93,6 +93,6 @@ public class InventoryClicks extends CheckExecutor {
 
     @Override
     protected boolean canRun() {
-        return !player.isBedrockPlayer();
+        return !protocol.spartanPlayer.isBedrockPlayer();
     }
 }

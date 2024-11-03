@@ -49,27 +49,27 @@ public class MoveDirection extends DetectionExecutor {
             Entity target = attackHandle.target;
 
             if (target != null) {
-                double bruteforceRayTrace = RayUtils.bruteforceRayTrace(player, target);
+                double bruteforceRayTrace = RayUtils.bruteforceRayTrace(protocol.spartanPlayer, target);
                 double diff = bruteforceRayTrace - 0.4;
                 double predict = RayUtils.castTo360(
                         calculate(
-                                player.movement.getLocation().toVector(),
+                                protocol.spartanPlayer.movement.getLocation().toVector(),
                                 new SpartanLocation(ProtocolLib.getLocation(target)).toVector()
                         ).x
                 );
-                double yaw360 = RayUtils.castTo360(player.movement.getLocation().getYaw());
+                double yaw360 = RayUtils.castTo360(protocol.spartanPlayer.movement.getLocation().getYaw());
                 rayTraceAnalysis.addLast(bruteforceRayTrace);
                 aimAnalysis.addLast(
                         new AttackData(
                                 Math.abs(predict - yaw360),
-                                player.movement.getLocation().getYaw(),
-                                player.movement.getLocation().getPitch(),
+                                protocol.spartanPlayer.movement.getLocation().getYaw(),
+                                protocol.spartanPlayer.movement.getLocation().getPitch(),
                                 System.currentTimeMillis(),
                                 ProtocolLib.getUUID(target)
                         )
                 );
                 if (rayTraceAnalysis.size() >= 10) {
-                    analyze(player.movement.getLocation());
+                    analyze(protocol.spartanPlayer.movement.getLocation());
                 }
             }
         }

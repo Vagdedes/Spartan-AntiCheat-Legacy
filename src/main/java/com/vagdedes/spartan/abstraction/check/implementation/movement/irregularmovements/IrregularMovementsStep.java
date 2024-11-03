@@ -96,16 +96,16 @@ public class IrregularMovementsStep extends DetectionExecutor {
     void run(boolean knownBox, boolean knownOldBox,
              double box, double oldBox,
              double vertical, boolean teleported) {
-        Entity vehicle = player.getInstance().getVehicle();
+        Entity vehicle = protocol.spartanPlayer.getInstance().getVehicle();
 
         if (knownBox && knownOldBox) {
             int hash = hash(oldBox, box);
 
             if (vehicle == null) {
                 if (stepCombination.get(hash)) {
-                    double limit = (player.isBedrockPlayer() ? bedrockPlayerStepExtra : 0.0)
-                            + (player.trackers.has(PlayerTrackers.TrackerType.VEHICLE, "exit")
-                            || player.trackers.has(PlayerTrackers.TrackerFamily.VELOCITY) ? 1.0 : 0.0)
+                    double limit = (protocol.spartanPlayer.isBedrockPlayer() ? bedrockPlayerStepExtra : 0.0)
+                            + (protocol.spartanPlayer.trackers.has(PlayerTrackers.TrackerType.VEHICLE, "exit")
+                            || protocol.spartanPlayer.trackers.has(PlayerTrackers.TrackerFamily.VELOCITY) ? 1.0 : 0.0)
                             + GroundUtils.maxPlayerStep;
 
                     if (vertical > limit) {
@@ -116,18 +116,18 @@ public class IrregularMovementsStep extends DetectionExecutor {
                                         + ", vertical: " + vertical
                                         + ", limit: " + limit,
                                 vertical,
-                                player.movement.getDetectionLocation(),
+                                protocol.spartanPlayer.movement.getDetectionLocation(),
                                 0,
                                 true
                         );
                     }
                 } else {
-                    double extra = player.isBedrockPlayer() ? bedrockPlayerStepExtra : 0.0,
-                            downLimit = extra + player.movement.getAirAcceleration(),
+                    double extra = protocol.spartanPlayer.isBedrockPlayer() ? bedrockPlayerStepExtra : 0.0,
+                            downLimit = extra + protocol.spartanPlayer.movement.getAirAcceleration(),
                             upLimit = extra + GroundUtils.maxPlayerStep;
 
-                    if (!player.trackers.has(PlayerTrackers.TrackerType.VEHICLE, "exit") && vertical < -downLimit
-                            || !player.trackers.has(PlayerTrackers.TrackerType.VEHICLE, "enter") && vertical > upLimit) {
+                    if (!protocol.spartanPlayer.trackers.has(PlayerTrackers.TrackerType.VEHICLE, "exit") && vertical < -downLimit
+                            || !protocol.spartanPlayer.trackers.has(PlayerTrackers.TrackerType.VEHICLE, "enter") && vertical > upLimit) {
                         this.step_combination.cancel(
                                 "type: step(combination)"
                                         + ", box: " + box
@@ -136,7 +136,7 @@ public class IrregularMovementsStep extends DetectionExecutor {
                                         + ", down-limit: " + downLimit
                                         + ", up-limit: " + upLimit,
                                 Math.abs(vertical),
-                                player.movement.getDetectionLocation(),
+                                protocol.spartanPlayer.movement.getDetectionLocation(),
                                 0,
                                 true
                         );
@@ -155,7 +155,7 @@ public class IrregularMovementsStep extends DetectionExecutor {
                                     + ", vertical: " + vertical
                                     + ", limit: " + limit,
                             vertical / limit,
-                            player.movement.getDetectionLocation(),
+                            protocol.spartanPlayer.movement.getDetectionLocation(),
                             0,
                             true
                     );
@@ -163,12 +163,12 @@ public class IrregularMovementsStep extends DetectionExecutor {
             }
         } else {
             if (vertical > 0.0) {
-                if (!player.movement.isJumping(vertical)
-                        && !BlockUtils.isInteractiveAndPassable(player, player.movement.getLocation().getBlock().getType())) {
-                    double limit = (player.isBedrockPlayer() ? bedrockPlayerStepExtra : 0.0)
-                            + (player.trackers.has(PlayerTrackers.TrackerFamily.VELOCITY) ? 1.0 : 0.0)
+                if (!protocol.spartanPlayer.movement.isJumping(vertical)
+                        && !BlockUtils.isInteractiveAndPassable(protocol.spartanPlayer, protocol.spartanPlayer.movement.getLocation().getBlock().getType())) {
+                    double limit = (protocol.spartanPlayer.isBedrockPlayer() ? bedrockPlayerStepExtra : 0.0)
+                            + (protocol.spartanPlayer.trackers.has(PlayerTrackers.TrackerFamily.VELOCITY) ? 1.0 : 0.0)
                             + PlayerUtils.getJumpMotion(
-                            PlayerUtils.getPotionLevel(player, PotionEffectUtils.JUMP) + 1,
+                            PlayerUtils.getPotionLevel(protocol.spartanPlayer, PotionEffectUtils.JUMP) + 1,
                             0
                     );
 
@@ -186,7 +186,7 @@ public class IrregularMovementsStep extends DetectionExecutor {
                         }
 
                         if (vehicleLimit > 0.0) {
-                            if (player.isBedrockPlayer()) {
+                            if (protocol.spartanPlayer.isBedrockPlayer()) {
                                 limit = Math.max(limit, vehicleLimit);
                             } else {
                                 limit = vehicleLimit;
@@ -203,8 +203,8 @@ public class IrregularMovementsStep extends DetectionExecutor {
 
                         if ((predictedHeight != vertical
                                 || vertical > GroundUtils.maxPlayerStep)
-                                && (!player.trackers.has(PlayerTrackers.TrackerType.BOUNCING_BLOCKS, "slime") || oldBox != 0.0)
-                                && (!player.trackers.has(PlayerTrackers.TrackerType.BOUNCING_BLOCKS, "bed") || oldBox != 0.5625)) {
+                                && (!protocol.spartanPlayer.trackers.has(PlayerTrackers.TrackerType.BOUNCING_BLOCKS, "slime") || oldBox != 0.0)
+                                && (!protocol.spartanPlayer.trackers.has(PlayerTrackers.TrackerType.BOUNCING_BLOCKS, "bed") || oldBox != 0.5625)) {
                             this.step_abstract_up.cancel(
                                     "type: step(abstract-up)"
                                             + ", box: " + box
@@ -212,7 +212,7 @@ public class IrregularMovementsStep extends DetectionExecutor {
                                             + ", vertical: " + vertical
                                             + ", limit: " + limit,
                                     vertical / limit,
-                                    player.movement.getDetectionLocation(),
+                                    protocol.spartanPlayer.movement.getDetectionLocation(),
                                     0,
                                     true
                             );
@@ -221,20 +221,20 @@ public class IrregularMovementsStep extends DetectionExecutor {
                 }
             } else {
                 if (firstFallingBox.contains(AlgebraUtils.cut(box, GroundUtils.maxHeightLength))) {
-                    if (vertical < -player.movement.getAirAcceleration()) {
+                    if (vertical < -protocol.spartanPlayer.movement.getAirAcceleration()) {
                         this.step_high_first_fall.cancel(
                                 "type: step(high-first-fall)"
                                         + ", box: " + box
                                         + ", old-box: " + oldBox
                                         + ", vertical: " + vertical,
                                 0.0d - vertical,
-                                player.movement.getDetectionLocation(),
+                                protocol.spartanPlayer.movement.getDetectionLocation(),
                                 0,
                                 true
                         );
                     }
                 } else if (vehicle == null
-                        && !player.trackers.has(PlayerTrackers.TrackerType.VEHICLE, "exit")) {
+                        && !protocol.spartanPlayer.trackers.has(PlayerTrackers.TrackerType.VEHICLE, "exit")) {
                     if (knownBox) {
                         if (!teleported) {
                             double verticalPrediction = oldBox - box,
@@ -252,16 +252,16 @@ public class IrregularMovementsStep extends DetectionExecutor {
                                                 + ", vertical-prediction: " + verticalPrediction
                                                 + ", motion-remainder: " + motionRemainder,
                                         1.0,
-                                        player.movement.getDetectionLocation(),
+                                        protocol.spartanPlayer.movement.getDetectionLocation(),
                                         0,
                                         true
                                 );
                             }
                         }
-                    } else if (!player.isOnGround(player.movement.getLocation(), true)
-                            && !BlockUtils.isInteractiveAndPassable(player, player.movement.getLocation().getBlock().getType())) {
-                        double limit = (player.isBedrockPlayer() ? bedrockPlayerStepExtra : 0.0)
-                                + player.movement.getAirAcceleration();
+                    } else if (!protocol.spartanPlayer.isOnGround(protocol.spartanPlayer.movement.getLocation(), true)
+                            && !BlockUtils.isInteractiveAndPassable(protocol.spartanPlayer, protocol.spartanPlayer.movement.getLocation().getBlock().getType())) {
+                        double limit = (protocol.spartanPlayer.isBedrockPlayer() ? bedrockPlayerStepExtra : 0.0)
+                                + protocol.spartanPlayer.movement.getAirAcceleration();
 
                         if (vertical <= -limit) {
                             this.step_abstract_down.cancel(
@@ -271,7 +271,7 @@ public class IrregularMovementsStep extends DetectionExecutor {
                                             + ", vertical: " + vertical
                                             + ", limit: " + limit,
                                     0.0d - vertical,
-                                    player.movement.getDetectionLocation(),
+                                    protocol.spartanPlayer.movement.getDetectionLocation(),
                                     0,
                                     true
                             );

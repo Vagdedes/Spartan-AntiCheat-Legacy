@@ -68,11 +68,9 @@ public class PlayerProfile {
     public void update(SpartanProtocol protocol) {
         if (protocol == null) {
             for (CheckExecutor executor : executors) {
-                executor.player = null;
                 executor.protocol = null;
 
                 for (DetectionExecutor detectionExecutor : executor.getDetections()) {
-                    detectionExecutor.player = null;
                     detectionExecutor.protocol = null;
                 }
             }
@@ -81,11 +79,9 @@ public class PlayerProfile {
             this.lastDataType = protocol.spartanPlayer.dataType;
 
             for (CheckExecutor executor : executors) {
-                executor.player = protocol.spartanPlayer;
                 executor.protocol = protocol;
 
                 for (DetectionExecutor detectionExecutor : executor.getDetections()) {
-                    detectionExecutor.player = protocol.spartanPlayer;
                     detectionExecutor.protocol = protocol;
                 }
             }
@@ -173,8 +169,8 @@ public class PlayerProfile {
         for (CheckExecutor checkExecutor : this.getExecutors()) {
             for (DetectionExecutor detectionExecutor : checkExecutor.getDetections()) {
                 if (detectionExecutor.hasDataToCompare(dataType)) {
-                    return detectionExecutor.player != null
-                            && detectionExecutor.player.dataType == dataType;
+                    return detectionExecutor.protocol.spartanPlayer != null
+                            && detectionExecutor.protocol.spartanPlayer.dataType == dataType;
                 }
             }
         }

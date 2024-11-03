@@ -31,7 +31,7 @@ public class FastHeal extends CheckExecutor {
     }
 
     private long calculate() {
-        int level = PlayerUtils.getPotionLevel(player, PotionEffectType.REGENERATION);
+        int level = PlayerUtils.getPotionLevel(protocol.spartanPlayer, PotionEffectType.REGENERATION);
         long i = 0L;
 
         if (level > -1) {
@@ -51,7 +51,7 @@ public class FastHeal extends CheckExecutor {
 
             if (reason != RegainReason.CUSTOM
                     && reason != RegainReason.MAGIC) {
-                double health = player.getHealth();
+                double health = protocol.spartanPlayer.getHealth();
                 long timePassed = System.currentTimeMillis() - time;
                 time = System.currentTimeMillis();
 
@@ -71,19 +71,19 @@ public class FastHeal extends CheckExecutor {
                 }
                 previousHealth = health;
             }
-        } else if (((FoodLevelChangeEvent) object).getFoodLevel() > player.getInstance().getFoodLevel()
+        } else if (((FoodLevelChangeEvent) object).getFoodLevel() > protocol.spartanPlayer.getInstance().getFoodLevel()
                 && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
-                || player.getItemInHand().getType() != Material.DRIED_KELP)) {
-            player.getExecutor(hackType).addDisableCause(null, null, 10);
+                || protocol.spartanPlayer.getItemInHand().getType() != Material.DRIED_KELP)) {
+            protocol.spartanPlayer.getExecutor(hackType).addDisableCause(null, null, 10);
         }
     }
 
     @Override
     protected boolean canRun() {
-        if (player.getWorld().getDifficulty() != Difficulty.PEACEFUL
-                && player.getInstance().getFireTicks() <= 0
-                && Attributes.getAmount(player, Attributes.GENERIC_MAX_ABSORPTION) == 0.0) {
-            GameMode gameMode = player.getInstance().getGameMode();
+        if (protocol.spartanPlayer.getWorld().getDifficulty() != Difficulty.PEACEFUL
+                && protocol.spartanPlayer.getInstance().getFireTicks() <= 0
+                && Attributes.getAmount(protocol.spartanPlayer, Attributes.GENERIC_MAX_ABSORPTION) == 0.0) {
+            GameMode gameMode = protocol.spartanPlayer.getInstance().getGameMode();
             return gameMode == GameMode.ADVENTURE || gameMode == GameMode.SURVIVAL;
         } else {
             return false;

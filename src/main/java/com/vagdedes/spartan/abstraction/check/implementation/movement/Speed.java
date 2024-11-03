@@ -105,11 +105,11 @@ public class Speed extends CheckExecutor {
     }
 
     private void moveTick(PlayerMoveEvent e) {
-        Location location = this.player.protocol.getLocation().clone();
+        Location location = this.protocol.spartanPlayer.protocol.getLocation().clone();
         if (f == null) f = location.clone();
         Location from = e.getFrom();
         Location to = e.getTo();
-        boolean onGround = this.player.protocol.isOnGround();
+        boolean onGround = this.protocol.spartanPlayer.protocol.isOnGround();
         double dx = to.getX() - from.getX();
         double dz = to.getZ() - from.getZ();
 
@@ -126,10 +126,10 @@ public class Speed extends CheckExecutor {
         }
         double rayDiff = RayUtils.calculateRayLines(lookRay, moveRay);
         SpartanPotionEffect glideEffect = PlayerUtils.slowFall
-                ? player.getPotionEffect(PotionEffectType.SLOW_FALLING, 0)
+                ? protocol.spartanPlayer.getPotionEffect(PotionEffectType.SLOW_FALLING, 0)
                 : null;
         SpartanPotionEffect levitationEffect = PlayerUtils.levitation
-                ? player.getPotionEffect(PotionEffectType.LEVITATION, 0)
+                ? protocol.spartanPlayer.getPotionEffect(PotionEffectType.LEVITATION, 0)
                 : null;
 
         if (speed > speedLimit) {
@@ -140,8 +140,8 @@ public class Speed extends CheckExecutor {
                     this.straightLineSpeeding
             };
         }
-        if (velocity == 0 && !player.isBedrockPlayer() && levitationEffect == null
-                && glideEffect == null && !player.movement.isSwimming()) {
+        if (velocity == 0 && !protocol.spartanPlayer.isBedrockPlayer() && levitationEffect == null
+                && glideEffect == null && !protocol.spartanPlayer.movement.isSwimming()) {
             double localSpeedLimit = r((speedLimit / 1.35) + 0.01);
             double localSpeedLimit2 = r((speedLimit / 1.6) + 0.01);
             double[] allowedRots = new double[]{0.0, 45.0, -45.0};
@@ -201,29 +201,29 @@ public class Speed extends CheckExecutor {
     }
 
     private double updateStats() {
-        if (!this.player.protocol.isOnGround()) {
+        if (!this.protocol.spartanPlayer.protocol.isOnGround()) {
             onAir++;
             onGround = 0;
         } else {
             onGround++;
             onAir = 0;
         }
-        SpartanLocation to = new SpartanLocation(this.player.protocol.getLocation().clone());
-        PlayerInventory inventory = player.getInstance().getInventory();
-        Entity vehicle = this.player.getInstance().getVehicle();
+        SpartanLocation to = new SpartanLocation(this.protocol.spartanPlayer.protocol.getLocation().clone());
+        PlayerInventory inventory = protocol.spartanPlayer.getInstance().getInventory();
+        Entity vehicle = this.protocol.spartanPlayer.getInstance().getVehicle();
         if (onGround == 1) this.multiplyFriction = 0.26;
-        double m = (this.player.getInstance().getWalkSpeed() * 5);
-        boolean solidBlockOnTop = RayUtils.onSolidBlock(player, to.clone().add(0, 2, 0));
+        double m = (this.protocol.spartanPlayer.getInstance().getWalkSpeed() * 5);
+        boolean solidBlockOnTop = RayUtils.onSolidBlock(protocol.spartanPlayer, to.clone().add(0, 2, 0));
         m += getMaxSpeedAmplifier();
         SpartanPotionEffect dolphinEffect = PlayerUtils.dolphinsGrace
-                ? this.player.getPotionEffect(PotionEffectType.DOLPHINS_GRACE, 0)
+                ? this.protocol.spartanPlayer.getPotionEffect(PotionEffectType.DOLPHINS_GRACE, 0)
                 : null;
-        SpartanPotionEffect speedEffect = this.player.getPotionEffect(PotionEffectType.SPEED, 0);
+        SpartanPotionEffect speedEffect = this.protocol.spartanPlayer.getPotionEffect(PotionEffectType.SPEED, 0);
         SpartanPotionEffect glideEffect = PlayerUtils.slowFall
-                ? player.getPotionEffect(PotionEffectType.SLOW_FALLING, 0)
+                ? protocol.spartanPlayer.getPotionEffect(PotionEffectType.SLOW_FALLING, 0)
                 : null;
         SpartanPotionEffect levitationEffect = PlayerUtils.levitation
-                ? player.getPotionEffect(PotionEffectType.LEVITATION, 0)
+                ? protocol.spartanPlayer.getPotionEffect(PotionEffectType.LEVITATION, 0)
                 : null;
         if (PlayerUtils.soulSpeed && inventory.getBoots() != null) {
             int e = inventory.getBoots().getEnchantmentLevel(Enchantment.SOUL_SPEED);
@@ -233,33 +233,33 @@ public class Speed extends CheckExecutor {
             }
         }
         if (dolphinEffect != null) if (this.multiply < 5.0D) this.multiply = 5.0D;
-        if (slimeBlockCause(this.player, new SpartanLocation(this.player.protocol.getLocation()))) {
+        if (slimeBlockCause(this.protocol.spartanPlayer, new SpartanLocation(this.protocol.spartanPlayer.protocol.getLocation()))) {
             if (this.multiply < 3) this.multiply = 3D;
         }
         if (solidBlockOnTop) {
             if (this.multiply < 0.6) this.multiply = 0.6D;
         }
-        if ((this.onIce(player, this.player.movement.getLocation().clone()))) {
+        if ((this.onIce(protocol.spartanPlayer, this.protocol.spartanPlayer.movement.getLocation().clone()))) {
             double m1 = (solidBlockOnTop) ? 1.5 : 0.7;
             if (this.multiply < m1) multiply = m1;
 
         }
-        if (RayUtils.onBlock(player, to, BlockUtils.honey_block)) {
+        if (RayUtils.onBlock(protocol.spartanPlayer, to, BlockUtils.honey_block)) {
             if (multiply < 0.2) multiply = 0.2;
         }
-        if (RayUtils.onBlock(player, to, BlockUtils.climbableOriginal)) {
+        if (RayUtils.onBlock(protocol.spartanPlayer, to, BlockUtils.climbableOriginal)) {
             if (multiply < 0.3) multiply = 0.3;
         }
-        if (RayUtils.onBlock(player, to, BlockUtils.stairs)) {
+        if (RayUtils.onBlock(protocol.spartanPlayer, to, BlockUtils.stairs)) {
             if (multiply < 0.35) multiply = 0.35;
         }
-        if (this.player.movement.isGliding() || vehicle != null) {
+        if (this.protocol.spartanPlayer.movement.isGliding() || vehicle != null) {
             if (multiply < 18.0) multiply = 18.0;
         }
-        if (this.player.movement.isFlying()) {
+        if (this.protocol.spartanPlayer.movement.isFlying()) {
             multiply = 25.0;
         }
-        for (Entity e : player.getNearbyEntities(2, 2, 2)) {
+        for (Entity e : protocol.spartanPlayer.getNearbyEntities(2, 2, 2)) {
             if (multiply < 0.4 && !(e instanceof Player)) {
                 multiply = 0.4;
                 break;
@@ -267,11 +267,11 @@ public class Speed extends CheckExecutor {
         }
 
         m *= 1 + (((speedEffect != null ? (speedEffect.bukkitEffect.getAmplifier() + 1) * 0.4 : 0))
-                + (this.onIce(player, this.player.movement.getLocation().clone()) ? 0.66 : 0)
+                + (this.onIce(protocol.spartanPlayer, this.protocol.spartanPlayer.movement.getLocation().clone()) ? 0.66 : 0)
                 + multiply + multiplyVelo
-                + ((this.player.protocol.isOnGround()) ? multiplyFriction : 0));
+                + ((this.protocol.spartanPlayer.protocol.isOnGround()) ? multiplyFriction : 0));
         if (levitationEffect != null || glideEffect != null) m *= 1.3;
-        SpartanBlock block = new SpartanLocation(this.player.protocol.getLocation()).getBlock();
+        SpartanBlock block = new SpartanLocation(this.protocol.spartanPlayer.protocol.getLocation()).getBlock();
         if (BlockUtils.areWebs(block.getType())) {
             m /= 4.0;
         }
@@ -313,11 +313,11 @@ public class Speed extends CheckExecutor {
     }
 
     private double getMaxSpeedAmplifier() {
-        return Attributes.getAmount(this.player, Attributes.GENERIC_MOVEMENT_SPEED);
+        return Attributes.getAmount(this.protocol.spartanPlayer, Attributes.GENERIC_MOVEMENT_SPEED);
     }
 
     private void startSimulationFlag() {
-        this.f = this.player.movement.getEventFromLocation().getBukkitLocation();
+        this.f = this.protocol.spartanPlayer.movement.getEventFromLocation().getBukkitLocation();
         this.simulationFlag = true;
     }
 
@@ -335,13 +335,13 @@ public class Speed extends CheckExecutor {
     @Override
     protected boolean canRun() {
         return MovementProcessing.canCheck(
-                player,
+                protocol.spartanPlayer,
                 true,
                 true,
                 false,
                 true,
                 false
-        ) && !player.trackers.has(PlayerTrackers.TrackerType.PISTON);
+        ) && !protocol.spartanPlayer.trackers.has(PlayerTrackers.TrackerType.PISTON);
     }
 
 }

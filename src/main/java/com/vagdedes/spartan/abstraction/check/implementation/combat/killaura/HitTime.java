@@ -23,7 +23,7 @@ public class HitTime extends DetectionExecutor {
             oldHitTiming = 0;
 
     void run() {
-        if (!player.protocol.packetsEnabled()) {
+        if (!protocol.spartanPlayer.protocol.packetsEnabled()) {
             return;
         }
         long hitTime = System.currentTimeMillis() - lastHitTime;
@@ -31,7 +31,7 @@ public class HitTime extends DetectionExecutor {
         devianceTotal += deviance;
         packets += 1;
 
-        if (player.protocol.getPing() > 1_000) {
+        if (protocol.spartanPlayer.protocol.getPing() > 1_000) {
             return;
         }
         if (deviance < 5 && deviance != 0) {
@@ -43,24 +43,24 @@ public class HitTime extends DetectionExecutor {
         if (nullPacket > 1) {
             vl += 55;
             if (vl >= 300) {
-                cancel("type: switch", (vl - 200) / 100D, player.movement.getDetectionLocation());
+                cancel("type: switch", (vl - 200) / 100D, protocol.spartanPlayer.movement.getDetectionLocation());
             }
         }
-        if (packets >= 5 && Packet_LagCompensation.getPlayerTicksDelay(player.getEntityId()) < 2) {
+        if (packets >= 5 && Packet_LagCompensation.getPlayerTicksDelay(protocol.spartanPlayer.getEntityId()) < 2) {
             if (devianceTotal < 35) {
                 vlAnalysis += (devianceTotal < 10) ? 150 : 75;
                 if (vlAnalysis >= 300) {
-                    cancel("type: post(linear-analysis)", (vl - 200) / 100D, player.movement.getDetectionLocation());
+                    cancel("type: post(linear-analysis)", (vl - 200) / 100D, protocol.spartanPlayer.movement.getDetectionLocation());
                 }
             } else if (devianceTotal > 45 && devianceTotal < 55) {
                 vlAnalysis += 150;
                 if (vlAnalysis >= 300) {
-                    cancel("type: post(default)", (vl - 200) / 100D, player.movement.getDetectionLocation());
+                    cancel("type: post(default)", (vl - 200) / 100D, protocol.spartanPlayer.movement.getDetectionLocation());
                 }
             } else if (lowPackets >= 3) {
                 vlAnalysis += 100;
                 if (vlAnalysis >= 300) {
-                    cancel("type: post(low)", (vl - 200) / 100D, player.movement.getDetectionLocation());
+                    cancel("type: post(low)", (vl - 200) / 100D, protocol.spartanPlayer.movement.getDetectionLocation());
                 }
             } else {
                 if (vlAnalysis > 0) vlAnalysis -= 50;

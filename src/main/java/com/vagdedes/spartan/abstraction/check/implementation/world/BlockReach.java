@@ -38,7 +38,7 @@ public class BlockReach extends CheckExecutor {
     }
 
     private boolean canDo(Block b) {
-        return player.getWorld().equals(b.getWorld());
+        return protocol.spartanPlayer.getWorld().equals(b.getWorld());
     }
 
     private double getLimit() {
@@ -55,8 +55,8 @@ public class BlockReach extends CheckExecutor {
             Block block = ((BlockBreakEvent) object).getBlock();
 
             if (canDo(block)
-                    && !TreeFeller.canCancel(player, block)) {
-                double distance = player.movement.getLocation().distance(block),
+                    && !TreeFeller.canCancel(protocol.spartanPlayer, block)) {
+                double distance = protocol.spartanPlayer.movement.getLocation().distance(block),
                         limit = getLimit();
 
                 if (distance >= limit) {
@@ -73,7 +73,7 @@ public class BlockReach extends CheckExecutor {
 
             if (canDo(block)
                     && BlockUtils.isChangeable(block.getType())) {
-                double distance = player.movement.getLocation().distance(block),
+                double distance = protocol.spartanPlayer.movement.getLocation().distance(block),
                         limit = getLimit();
 
                 if (distance >= limit) {
@@ -95,15 +95,15 @@ public class BlockReach extends CheckExecutor {
                 if (canDo(block)
                         && BlockUtils.isSolid(block.getType())
                         && !BlockUtils.isScaffoldingBlock(block.getType())) {
-                    SpartanLocation to = player.movement.getLocation();
+                    SpartanLocation to = protocol.spartanPlayer.movement.getLocation();
                     double distance = to.distance(block),
                             ab_distance = to.distance(blockAgainst);
 
-                    if (!player.isBedrockPlayer()
+                    if (!protocol.spartanPlayer.isBedrockPlayer()
                             && BlockUtils.isFullSolid(block.getType())
                             && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
                             || block.getType() != Material.BARRIER)
-                            && player.getInstance().getVehicle() == null
+                            && protocol.spartanPlayer.getInstance().getVehicle() == null
                             && distance > (ab_distance + GroundUtils.boundingBox + 0.1)) {
                         this.unusual.cancel(
                                 "type: unusual, distance: " + distance
@@ -132,9 +132,9 @@ public class BlockReach extends CheckExecutor {
     protected boolean canRun() {
         return !Compatibility.CompatibilityType.MC_MMO.isFunctional()
                 && !Compatibility.CompatibilityType.CRAFT_BOOK.isFunctional()
-                && !PrinterMode.isUsing(player)
-                && !AureliumSkills.isUsing(player)
-                && !MineBomb.isUsing(player)
-                && Attributes.getAmount(player, Attributes.PLAYER_BLOCK_INTERACTION_RANGE) == 0.0;
+                && !PrinterMode.isUsing(protocol.spartanPlayer)
+                && !AureliumSkills.isUsing(protocol.spartanPlayer)
+                && !MineBomb.isUsing(protocol.spartanPlayer)
+                && Attributes.getAmount(protocol.spartanPlayer, Attributes.PLAYER_BLOCK_INTERACTION_RANGE) == 0.0;
     }
 }

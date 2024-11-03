@@ -44,7 +44,7 @@ public class ImpossibleActions extends CheckExecutor {
         if (object instanceof BlockPlaceEvent) {
             BlockPlaceEvent event = (BlockPlaceEvent) object;
             Block block = event.getBlock();
-            SpartanLocation playerLocation = player.movement.getLocation();
+            SpartanLocation playerLocation = protocol.spartanPlayer.movement.getLocation();
             int playerY = playerLocation.getBlockY(),
                     blockY = event.getBlock().getY();
             this.scaffoldAnalysis.run(event);
@@ -77,7 +77,7 @@ public class ImpossibleActions extends CheckExecutor {
                                                 + ", vector-distance: " + directionDistance
                                                 + ", block-distance: " + playerLocation.distance(blockAgainst.getLocation())
                                 );
-                            } else if (!player.isBedrockPlayer()) {
+                            } else if (!protocol.spartanPlayer.isBedrockPlayer()) {
                                 float pitch = playerLocation.getPitch();
 
                                 if (pitch <= 0.0) {
@@ -87,7 +87,7 @@ public class ImpossibleActions extends CheckExecutor {
                                                     + ", block-distance: " + playerLocation.distance(blockAgainst.getLocation())
                                     );
                                 } else {
-                                    List<SpartanLocation> fromLocations = player.movement.getLocations();
+                                    List<SpartanLocation> fromLocations = protocol.spartanPlayer.movement.getLocations();
                                     int requiredComparisons = 5, requiredSize = requiredComparisons + 1;
 
                                     if (fromLocations.size() >= requiredSize) { // 6-1 comparisons = 5
@@ -139,11 +139,11 @@ public class ImpossibleActions extends CheckExecutor {
                     && !Compatibility.CompatibilityType.MC_MMO.isFunctional()) {
                 int cases;
 
-                if (player.getInstance().isSleeping()) {
+                if (protocol.spartanPlayer.getInstance().isSleeping()) {
                     cases = 1;
-                } else if (player.getInstance().isDead()) {
+                } else if (protocol.spartanPlayer.getInstance().isDead()) {
                     cases = 2;
-                } else if (BlockUtils.hasMaterial(player.getInstance().getOpenInventory().getCursor())) {
+                } else if (BlockUtils.hasMaterial(protocol.spartanPlayer.getInstance().getOpenInventory().getCursor())) {
                     cases = 3;
                 } else {
                     cases = 0;

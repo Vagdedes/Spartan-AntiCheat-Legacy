@@ -21,16 +21,16 @@ public class Criticals extends CheckExecutor {
 
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
-        Double verticalMaxAccuracy = player.movement.getEventVertical();
+        Double verticalMaxAccuracy = protocol.spartanPlayer.movement.getEventVertical();
 
         if (verticalMaxAccuracy != null) {
-            if (RayUtils.onBlock(player, player.movement.getLocation(), BlockUtils.web)) return;
+            if (RayUtils.onBlock(protocol.spartanPlayer, protocol.spartanPlayer.movement.getLocation(), BlockUtils.web)) return;
 
             if ((verticalMaxAccuracy < 0.079 || Math.abs(verticalMaxAccuracy) == 0.0625)
                     && verticalMaxAccuracy > 0
-                    && player.movement.getTicksOnAir() == 1
-                    && !player.movement.getLocation().getBlock().getType().isBlock()
-                    && !RayUtils.onSolidBlock(player, player.movement.getLocation().clone().add(0, 2, 0))) {
+                    && protocol.spartanPlayer.movement.getTicksOnAir() == 1
+                    && !protocol.spartanPlayer.movement.getLocation().getBlock().getType().isBlock()
+                    && !RayUtils.onSolidBlock(protocol.spartanPlayer, protocol.spartanPlayer.movement.getLocation().clone().add(0, 2, 0))) {
                 this.detection.cancel("type: packet", 1);
             }
         }
@@ -38,8 +38,8 @@ public class Criticals extends CheckExecutor {
 
     @Override
     protected boolean canRun() {
-        return CombatUtils.canCheck(player)
-                && !player.movement.isInLiquids()
-                && !player.hasPotionEffect(PotionEffectType.BLINDNESS, 0);
+        return CombatUtils.canCheck(protocol.spartanPlayer)
+                && !protocol.spartanPlayer.movement.isInLiquids()
+                && !protocol.spartanPlayer.hasPotionEffect(PotionEffectType.BLINDNESS, 0);
     }
 }

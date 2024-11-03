@@ -55,7 +55,7 @@ public class FastBreak extends CheckExecutor {
 
     private void checkDelay(Block block, int seconds) {
         if (!BlockUtils.isSensitive(block.getType())) {
-            GameMode gameMode = player.getInstance().getGameMode();
+            GameMode gameMode = protocol.spartanPlayer.getInstance().getGameMode();
 
             if (gameMode == GameMode.SURVIVAL || gameMode == GameMode.ADVENTURE) {
                 long time = interactTime.getOrDefault(
@@ -67,14 +67,14 @@ public class FastBreak extends CheckExecutor {
                     time = System.currentTimeMillis() - time;
 
                     if (time > 0L) { // Make sure the plugin knows when the player started breaking the block
-                        ItemStack itemStack = player.getItemInHand();
-                        long originalLimit = MaterialUtils.getBlockBreakTime(player, itemStack, block.getType()),
+                        ItemStack itemStack = protocol.spartanPlayer.getItemInHand();
+                        long originalLimit = MaterialUtils.getBlockBreakTime(protocol.spartanPlayer, itemStack, block.getType()),
                                 limit = originalLimit;
 
                         if (limit > -1L) { // Make sure the limit can be calculated on this specific server
-                            limit -= (long) (Math.max(Latency.getDelay(player), 1.0) * TPS.tickTime);
+                            limit -= (long) (Math.max(Latency.getDelay(protocol.spartanPlayer), 1.0) * TPS.tickTime);
 
-                            if (player.isBedrockPlayer()) {
+                            if (protocol.spartanPlayer.isBedrockPlayer()) {
                                 if (limit * 0.8 < limit - BlockUtils.sensitiveBlockBreakTime) {
                                     limit = AlgebraUtils.integerRound(limit * 0.8);
                                 } else {
@@ -87,14 +87,14 @@ public class FastBreak extends CheckExecutor {
                                     limit -= BlockUtils.sensitiveBlockBreakTime;
                                 }
                             }
-                            if (AlgebraUtils.getHorizontalDistance(player.movement.getLocation(), block.getLocation()) <= 1.0
-                                    && player.movement.getLocation().getBlockY() >= block.getY()) { // Above block
+                            if (AlgebraUtils.getHorizontalDistance(protocol.spartanPlayer.movement.getLocation(), block.getLocation()) <= 1.0
+                                    && protocol.spartanPlayer.movement.getLocation().getBlockY() >= block.getY()) { // Above block
                                 limit = AlgebraUtils.integerRound(limit / 4.0);
                             }
 
                             if (limit > (TPS.tickTime * 2L) && time < limit) {
                                 boolean emptyItem = itemStack == null || itemStack.getType() == Material.AIR;
-                                Collection<PotionEffect> potionEffects = player.getActivePotionEffects();
+                                Collection<PotionEffect> potionEffects = protocol.spartanPlayer.getActivePotionEffects();
                                 Set<Map.Entry<Enchantment, Integer>> enchantments =
                                         !emptyItem ? itemStack.getEnchantments().entrySet() : new HashSet<>();
                                 StringBuilder enchantmentsString = new StringBuilder(),
@@ -147,7 +147,7 @@ public class FastBreak extends CheckExecutor {
     }
 
     private void checkBreaksPerSecond(int seconds, Block block) {
-        GameMode gameMode = player.getInstance().getGameMode();
+        GameMode gameMode = protocol.spartanPlayer.getInstance().getGameMode();
 
         if (gameMode == GameMode.CREATIVE) {
             int limit = hackType.getCheck().getNumericalOption("max_breaks_per_second", 40);
@@ -170,10 +170,10 @@ public class FastBreak extends CheckExecutor {
     }
 
     private void checkIndirectSurroundingsPerSecond(int seconds, Block block) {
-        GameMode gameMode = player.getInstance().getGameMode();
+        GameMode gameMode = protocol.spartanPlayer.getInstance().getGameMode();
 
         if ((gameMode == GameMode.SURVIVAL || gameMode == GameMode.ADVENTURE)
-                && !BlockUtils.isSensitive(player, block.getType())) {
+                && !BlockUtils.isSensitive(protocol.spartanPlayer, block.getType())) {
             int bufferTicks = AlgebraUtils.integerCeil(TPS.maximum),
                     limit = hackType.getCheck().getNumericalOption(
                             "indirect_surroundings_per_second",
@@ -238,7 +238,7 @@ public class FastBreak extends CheckExecutor {
         } else {
             Block b = ((BlockBreakEvent) object).getBlock();
 
-            if (!TreeFeller.canCancel(this.player, b)) {
+            if (!TreeFeller.canCancel(this.protocol.spartanPlayer, b)) {
                 int seconds = AlgebraUtils.integerCeil(TPS.maximum);
                 checkDelay(b, seconds);
                 checkBreaksPerSecond(seconds, b);
@@ -249,13 +249,13 @@ public class FastBreak extends CheckExecutor {
 
     @Override
     protected boolean canRun() {
-        return !MineBomb.isUsing(player)
-                && !Vehicles.has(player, Vehicles.DRILL)
-                && !SuperPickaxe.isUsing(player)
-                && !AureliumSkills.isUsing(player)
-                && !mcMMO.hasGeneralAbility(player)
+        return !MineBomb.isUsing(protocol.spartanPlayer)
+                && !Vehicles.has(protocol.spartanPlayer, Vehicles.DRILL)
+                && !SuperPickaxe.isUsing(protocol.spartanPlayer)
+                && !AureliumSkills.isUsing(protocol.spartanPlayer)
+                && !mcMMO.hasGeneralAbility(protocol.spartanPlayer)
                 && !Compatibility.CompatibilityType.CRAFT_BOOK.isFunctional()
-                && Attributes.getAmount(player, Attributes.PLAYER_BLOCK_BREAK_SPEED) == 0.0;
+                && Attributes.getAmount(protocol.spartanPlayer, Attributes.PLAYER_BLOCK_BREAK_SPEED) == 0.0;
     }
 
 }
