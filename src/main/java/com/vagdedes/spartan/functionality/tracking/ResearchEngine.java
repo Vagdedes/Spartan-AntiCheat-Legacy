@@ -217,7 +217,7 @@ public class ResearchEngine {
 
     // Separator
 
-    private static String getDetectionInformation(String s) {
+    public static String getDetectionInformation(String s) {
         String find = "(" + CheckExecutor.detectionIdentifier + " ";
         int index = s.indexOf(find);
 
@@ -229,7 +229,7 @@ public class ResearchEngine {
         return null;
     }
 
-    private static Double getDetectionViolationLevel(String s) {
+    private static Double getViolationIncrease(String s) {
         String search = "(" + CheckExecutor.violationLevelIdentifier + " ";
         int index1 = s.indexOf(search);
 
@@ -239,14 +239,8 @@ public class ResearchEngine {
 
             if (index2 != -1) {
                 String number = s.substring(0, index2);
-                String[] split = number.split("\\+", 3);
 
-                if (split.length == 2) {
-                    if (AlgebraUtils.validInteger(split[1])) { // Old
-                        return Double.parseDouble(split[1]);
-                    }
-                } else if (AlgebraUtils.validDecimal(number) // New
-                        || AlgebraUtils.validInteger(number)) { // Oldest
+                if (AlgebraUtils.validDecimal(number)) {
                     return Double.parseDouble(number);
                 }
             }
@@ -422,7 +416,7 @@ public class ResearchEngine {
                                         String detection = getDetectionInformation(data);
 
                                         if (detection != null) {
-                                            Double violationIncrease = getDetectionViolationLevel(data);
+                                            Double violationIncrease = getViolationIncrease(data);
 
                                             if (violationIncrease != null) {
                                                 PlayerProfile profile = getPlayerProfile(split[0], true);

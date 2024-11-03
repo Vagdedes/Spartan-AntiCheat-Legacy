@@ -2,3 +2,4 @@
 [#] Added back-track detections to the Exploits check.
 [#] Fixed a no detection stored check executor object console error.
 [#] Fixed a stack overflow error caused by the player profile object.
+[#] Improved the identification of detection in cross server notifications.
