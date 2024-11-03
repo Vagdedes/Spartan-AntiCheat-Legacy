@@ -36,7 +36,7 @@ public class PlayerProfile {
         for (MiningHistory.MiningOre ore : MiningHistory.MiningOre.values()) {
             this.miningHistory[ore.ordinal()] = new MiningHistory(ore);
         }
-        this.registerExecutors(emptySet);
+        this.registerExecutors(this.getSpartanPlayer(), emptySet);
     }
 
     public PlayerProfile(SpartanProtocol protocol) {
@@ -49,7 +49,7 @@ public class PlayerProfile {
         for (MiningHistory.MiningOre ore : MiningHistory.MiningOre.values()) {
             this.miningHistory[ore.ordinal()] = new MiningHistory(ore);
         }
-        this.registerExecutors(emptySet);
+        this.registerExecutors(protocol.spartanPlayer, emptySet);
     }
 
     // Separator
@@ -90,12 +90,12 @@ public class PlayerProfile {
         return executors;
     }
 
-    public void registerExecutors(Set<Enums.HackType> registry) {
+    public void registerExecutors(SpartanPlayer player, Set<Enums.HackType> registry) {
         for (Enums.HackType hackType : Enums.HackType.values()) {
             try {
                 CheckExecutor executor = (CheckExecutor) hackType.executor
                         .getConstructor(hackType.getClass(), SpartanPlayer.class)
-                        .newInstance(hackType, this.getSpartanPlayer());
+                        .newInstance(hackType, player);
 
                 if (registry.contains(hackType)
                         || this.executors[hackType.ordinal()] == null) {

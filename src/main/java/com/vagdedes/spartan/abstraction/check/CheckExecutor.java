@@ -61,10 +61,15 @@ public abstract class CheckExecutor extends CheckDetection {
     // Detections
 
     public final DetectionExecutor getDetection(String detection) {
-        return this.detections.get(detection);
+        return detection == null
+                ? this.getDetection()
+                : this.detections.get(detection);
     }
 
     public final DetectionExecutor getDetection() {
+        if (this.detections.isEmpty()) {
+            new ImplementedDetectionExecutor(this, null, false);
+        }
         return this.detections.values().iterator().next();
     }
 
