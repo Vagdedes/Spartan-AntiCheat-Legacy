@@ -18,25 +18,30 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
 
     public void run() {
         if (player == null) return;
-        if (true) return;
         SpartanProtocol p = player.protocol;
         boolean isOnGround = p.isOnGround();
         Location to = p.getLocation();
         Location from = player.movement.getEventFromLocation().getBukkitLocation();
         double motion = to.getY() - from.getY();
+        double f = 0.0784;
         this.air = (isOnGround) ? 0 : air + 1;
 
-        player.movement.motionY -= PlayerUtils.airDrag * PlayerUtils.airAcceleration;
-
         {
-            if (air == 1) {
+            if (isOnGround) {
+                player.movement.motionY = 0;
+            } else  if (air == 1) {
                 if (motion > 0) {
                     player.movement.motionY = jumpMotion();
                 } else {
-
+                    player.movement.motionY = -f;
                 }
+            } else {
+                player.movement.motionY -= f;
             }
         }
+
+        //player.getInstance().sendMessage("m: " + motion + " " + "p: " + player.movement.motionY);
+
     }
 
     public double jumpMotion() {
