@@ -4,7 +4,7 @@ import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
@@ -24,8 +24,8 @@ public class FastHeal extends CheckExecutor {
     private long time;
     private final Buffer.IndividualBuffer buffer;
 
-    public FastHeal(HackType hackType, SpartanPlayer player) {
-        super(hackType, player);
+    public FastHeal(HackType hackType, SpartanProtocol protocol) {
+        super(hackType, protocol);
         this.detection = new ImplementedDetectionExecutor(this, null, true);
         this.buffer = new Buffer.IndividualBuffer();
     }

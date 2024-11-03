@@ -1,9 +1,9 @@
 package com.vagdedes.spartan.listeners.protocol;
 
 import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.events.ListenerPriority;
 import com.vagdedes.spartan.Register;
 import org.bukkit.entity.Player;
 

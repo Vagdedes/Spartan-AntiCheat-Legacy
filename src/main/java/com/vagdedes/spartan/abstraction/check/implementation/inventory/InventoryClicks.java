@@ -4,7 +4,7 @@ import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import me.vagdedes.spartan.system.Enums;
@@ -28,8 +28,8 @@ public class InventoryClicks extends CheckExecutor {
             fastBuffer,
             shiftBuffer;
 
-    public InventoryClicks(Enums.HackType hackType, SpartanPlayer player) {
-        super(hackType, player);
+    public InventoryClicks(Enums.HackType hackType, SpartanProtocol protocol) {
+        super(hackType, protocol);
         this.shift = new ImplementedDetectionExecutor(this, "shift", true);
         this.slow = new ImplementedDetectionExecutor(this, "slow", true);
         this.medium = new ImplementedDetectionExecutor(this, "medium", true);

@@ -5,7 +5,6 @@ import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
 import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
@@ -29,8 +28,8 @@ public class HitReach extends CheckExecutor {
     private int vl = 0;
     private int localVl = 0;
 
-    public HitReach(HackType hackType, SpartanPlayer player) {
-        super(hackType, player);
+    public HitReach(HackType hackType, SpartanProtocol protocol) {
+        super(hackType, protocol);
         hitboxRaytrace = new ImplementedDetectionExecutor(this, "hitbox_raytrace", true);
         simple = new ImplementedDetectionExecutor(this, "simple", true);
     }

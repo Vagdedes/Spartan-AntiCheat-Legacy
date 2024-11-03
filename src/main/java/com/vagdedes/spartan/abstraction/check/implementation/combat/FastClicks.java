@@ -3,7 +3,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.combat;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
@@ -17,8 +17,8 @@ public class FastClicks extends CheckExecutor {
             clicksPerSecond,
             clicksPattern;
 
-    public FastClicks(Enums.HackType hackType, SpartanPlayer player) {
-        super(hackType, player);
+    public FastClicks(Enums.HackType hackType, SpartanProtocol protocol) {
+        super(hackType, protocol);
         this.clicksPerSecond = new ImplementedDetectionExecutor(this, null, true);
         this.clicksPattern = new ImplementedDetectionExecutor(this, "click_pattern", true);
     }

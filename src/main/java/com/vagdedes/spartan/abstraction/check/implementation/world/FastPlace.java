@@ -5,7 +5,7 @@ import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.data.Buffer;
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.compatibility.manual.building.PrinterMode;
 import com.vagdedes.spartan.compatibility.manual.entity.Vehicles;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
@@ -21,8 +21,8 @@ public class FastPlace extends CheckExecutor {
     private long time;
     private final Buffer.IndividualBuffer fastBuffer, mediumBuffer, slowBuffer;
 
-    public FastPlace(HackType hackType, SpartanPlayer player) {
-        super(hackType, player);
+    public FastPlace(HackType hackType, SpartanProtocol protocol) {
+        super(hackType, protocol);
         this.fast = new ImplementedDetectionExecutor(this, "fast", true);
         this.medium = new ImplementedDetectionExecutor(this, "medium", true);
         this.slow = new ImplementedDetectionExecutor(this, "slow", true);

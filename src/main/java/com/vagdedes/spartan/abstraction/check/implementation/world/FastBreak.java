@@ -5,7 +5,7 @@ import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.data.Buffer;
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.compatibility.manual.abilities.AureliumSkills;
 import com.vagdedes.spartan.compatibility.manual.abilities.mcMMO;
 import com.vagdedes.spartan.compatibility.manual.building.MineBomb;
@@ -43,8 +43,8 @@ public class FastBreak extends CheckExecutor {
             breaksPerSecondBuffer,
             individualSurroundingsPerSecondBuffer;
 
-    public FastBreak(HackType hackType, SpartanPlayer player) {
-        super(hackType, player);
+    public FastBreak(HackType hackType, SpartanProtocol protocol) {
+        super(hackType, protocol);
         this.delay = new ImplementedDetectionExecutor(this, "delay", true);
         this.breaksPerSecond = new ImplementedDetectionExecutor(this, null, true);
         this.indirectSurroundingsPerSecond = new ImplementedDetectionExecutor(this, null, true);

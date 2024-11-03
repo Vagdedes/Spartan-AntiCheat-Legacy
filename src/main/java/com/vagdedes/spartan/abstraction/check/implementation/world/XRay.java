@@ -3,9 +3,9 @@ package com.vagdedes.spartan.abstraction.check.implementation.world;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.profiling.MiningHistory;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
+import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -56,8 +56,8 @@ public class XRay extends CheckExecutor {
 
     private final DetectionExecutor detection;
 
-    public XRay(Enums.HackType hackType, SpartanPlayer player) {
-        super(hackType, player);
+    public XRay(Enums.HackType hackType, SpartanProtocol protocol) {
+        super(hackType, protocol);
         this.detection = new ImplementedDetectionExecutor(this, null, true);
     }
 

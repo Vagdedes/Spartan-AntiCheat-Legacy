@@ -4,7 +4,7 @@ import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.TPS;
@@ -29,8 +29,8 @@ public class ImpossibleActions extends CheckExecutor {
     private final Tower tower;
     private final ScaffoldAnalysis scaffoldAnalysis;
 
-    public ImpossibleActions(Enums.HackType hackType, SpartanPlayer player) {
-        super(hackType, player);
+    public ImpossibleActions(Enums.HackType hackType, SpartanProtocol protocol) {
+        super(hackType, protocol);
         this.scaffoldDirection = new ImplementedDetectionExecutor(this, "scaffold_direction", true);
         this.scaffoldUp = new ImplementedDetectionExecutor(this, "scaffold_up", true);
         this.scaffoldYaw = new ImplementedDetectionExecutor(this, "scaffold_yaw", true);

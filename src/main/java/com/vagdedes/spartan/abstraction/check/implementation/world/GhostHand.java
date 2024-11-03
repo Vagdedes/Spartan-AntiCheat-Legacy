@@ -3,7 +3,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.world;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.manual.abilities.mcMMO;
 import com.vagdedes.spartan.compatibility.manual.building.PrinterMode;
@@ -21,8 +21,8 @@ public class GhostHand extends CheckExecutor {
 
     private final DetectionExecutor breaking, interact;
 
-    public GhostHand(HackType hackType, SpartanPlayer player) {
-        super(hackType, player);
+    public GhostHand(HackType hackType, SpartanProtocol protocol) {
+        super(hackType, protocol);
         this.breaking = new ImplementedDetectionExecutor(this, "breaking", true);
         this.interact = new ImplementedDetectionExecutor(this, "interact", true);
     }

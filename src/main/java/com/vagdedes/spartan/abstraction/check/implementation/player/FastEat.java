@@ -3,7 +3,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.player;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.minecraft.inventory.MaterialUtils;
@@ -27,8 +27,8 @@ public class FastEat extends CheckExecutor {
 
     private long delayTime, eatTime;
 
-    public FastEat(HackType hackType, SpartanPlayer player) {
-        super(hackType, player);
+    public FastEat(HackType hackType, SpartanProtocol protocol) {
+        super(hackType, protocol);
         this.interact = new ImplementedDetectionExecutor(this, "interact", true);
         this.eat = new ImplementedDetectionExecutor(this, "eat", true);
     }

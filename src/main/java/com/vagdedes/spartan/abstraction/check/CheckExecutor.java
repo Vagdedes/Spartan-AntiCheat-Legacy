@@ -3,6 +3,7 @@ package com.vagdedes.spartan.abstraction.check;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import com.vagdedes.spartan.compatibility.manual.building.MythicMobs;
 import com.vagdedes.spartan.compatibility.manual.enchants.CustomEnchantsPlus;
@@ -36,8 +37,8 @@ public abstract class CheckExecutor extends CheckDetection {
     private boolean cancelled;
     final Map<String, DetectionExecutor> detections;
 
-    public CheckExecutor(Enums.HackType hackType, SpartanPlayer player) {
-        super(hackType, player);
+    public CheckExecutor(Enums.HackType hackType, SpartanProtocol protocol) {
+        super(hackType, protocol);
         this.creation = System.currentTimeMillis();
         this.prevention = new HackPrevention();
         this.detections = new ConcurrentHashMap<>(2);
@@ -45,14 +46,14 @@ public abstract class CheckExecutor extends CheckDetection {
 
     // Probability
 
-    public double getExtremeProbability() {
+    public double getExtremeProbability(Check.DataType dataType) {
         double num = PlayerEvidence.emptyProbability;
 
         for (DetectionExecutor detectionExecutor : this.detections.values()) {
             if (PlayerEvidence.POSITIVE) {
-                num = Math.max(num, detectionExecutor.getProbability());
+                num = Math.max(num, detectionExecutor.getProbability(dataType));
             } else {
-                num = Math.min(num, detectionExecutor.getProbability());
+                num = Math.min(num, detectionExecutor.getProbability(dataType));
             }
         }
         return num;

@@ -3,7 +3,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.combat;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.CombatUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
@@ -14,8 +14,8 @@ public class Criticals extends CheckExecutor {
 
     private final DetectionExecutor detection;
 
-    public Criticals(HackType hackType, SpartanPlayer player) {
-        super(hackType, player);
+    public Criticals(HackType hackType, SpartanProtocol protocol) {
+        super(hackType, protocol);
         this.detection = new ImplementedDetectionExecutor(this, null, true);
     }
 

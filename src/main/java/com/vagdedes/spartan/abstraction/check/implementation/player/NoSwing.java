@@ -6,7 +6,7 @@ import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
 import com.vagdedes.spartan.abstraction.player.PlayerTrackers;
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.compatibility.manual.abilities.AureliumSkills;
 import com.vagdedes.spartan.compatibility.manual.abilities.mcMMO;
 import com.vagdedes.spartan.compatibility.manual.building.MineBomb;
@@ -31,8 +31,8 @@ public class NoSwing extends CheckExecutor {
     private final Buffer.IndividualBuffer damageBuffer;
     private long checkDamage;
 
-    public NoSwing(Enums.HackType hackType, SpartanPlayer player) {
-        super(hackType, player);
+    public NoSwing(Enums.HackType hackType, SpartanProtocol protocol) {
+        super(hackType, protocol);
         this.breakTime = Long.MAX_VALUE;
         this.animationTime = Long.MAX_VALUE;
         this.damageBuffer = new Buffer.IndividualBuffer();

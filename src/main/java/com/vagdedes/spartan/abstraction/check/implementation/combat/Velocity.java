@@ -4,7 +4,7 @@ import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
 import com.vagdedes.spartan.abstraction.player.PlayerTrackers;
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.CombatUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockPatternUtils;
@@ -17,8 +17,8 @@ public class Velocity extends CheckExecutor {
 
     private final DetectionExecutor vertical, horizontal;
 
-    public Velocity(Enums.HackType hackType, SpartanPlayer player) {
-        super(hackType, player);
+    public Velocity(Enums.HackType hackType, SpartanProtocol protocol) {
+        super(hackType, protocol);
         this.vertical = new ImplementedDetectionExecutor(this, "vertical", true);
         this.horizontal = new ImplementedDetectionExecutor(this, "horizontal", true);
     }

@@ -2,8 +2,8 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.simulatio
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.simulation.modules.engine.motion.MotionVector;
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.protocol.MCClient;
+import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.Location;
@@ -16,8 +16,8 @@ public class Simulation extends CheckExecutor {
 
     public double diffVl = 0;
 
-    public Simulation(HackType hackType, SpartanPlayer player) {
-        super(hackType, player);
+    public Simulation(HackType hackType, SpartanProtocol protocol) {
+        super(hackType, protocol);
     }
 
     @Override

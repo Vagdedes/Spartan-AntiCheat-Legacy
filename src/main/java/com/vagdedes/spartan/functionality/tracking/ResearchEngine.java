@@ -118,7 +118,9 @@ public class ResearchEngine {
                 if (!playerProfiles.isEmpty()) {
                     for (PlayerProfile playerProfile : playerProfiles.values()) {
                         for (DetectionExecutor detectionExecutor : playerProfile.getExecutor(hackType).getDetections()) {
-                            detectionExecutor.clearProbability();
+                            for (Check.DataType dataType : Check.DataType.values()) {
+                                detectionExecutor.clearProbability(dataType);
+                            }
                         }
                     }
                     updateCache(true);
@@ -425,6 +427,7 @@ public class ResearchEngine {
                                                 if (detectionExecutor != null) {
                                                     SimpleDateFormat sdf = new SimpleDateFormat(AntiCheatLogs.dateFormat);
                                                     detectionExecutor.store(
+                                                            getDataType(data),
                                                             new PlayerViolation(
                                                                     sdf.parse(fullDate).getTime(),
                                                                     violationIncrease
@@ -482,7 +485,9 @@ public class ResearchEngine {
                 for (PlayerProfile profile : profiles) {
                     for (CheckExecutor executor : profile.getExecutors()) {
                         for (DetectionExecutor detectionExecutor : executor.getDetections()) {
-                            detectionExecutor.clearProbability();
+                            for (Check.DataType dataType : Check.DataType.values()) {
+                                detectionExecutor.clearProbability(dataType);
+                            }
                         }
                     }
                 }
@@ -491,66 +496,69 @@ public class ResearchEngine {
             for (Enums.HackType hackType : (force
                     ? Arrays.asList(Enums.HackType.values())
                     : violationFired.keySet())) {
-                if (!hackType.getCheck().isEnabled(null, null)) {
-                    continue;
-                }
-                Map<String, Map<DetectionExecutor, Double>> wave = new LinkedHashMap<>();
+                for (Check.DataType dataType : Check.DataType.values()) {
+                    if (!hackType.getCheck().isEnabled(dataType, null)) {
+                        continue;
+                    }
+                    Map<String, Map<DetectionExecutor, Double>> wave = new LinkedHashMap<>();
 
-                for (PlayerProfile profile : profiles) {
-                    for (DetectionExecutor detectionExecutor : profile.getExecutor(hackType).getDetections()) {
-                        Double timeDifference = detectionExecutor.getTimeDifference();
+                    for (PlayerProfile profile : profiles) {
+                        for (DetectionExecutor detectionExecutor : profile.getExecutor(hackType).getDetections()) {
+                            Double timeDifference = detectionExecutor.getTimeDifference(dataType);
 
-                        if (timeDifference != null) {
-                            wave.computeIfAbsent(
-                                    detectionExecutor.name,
-                                    k -> new LinkedHashMap<>()
-                            ).put(
-                                    detectionExecutor,
-                                    timeDifference
-                            );
+                            if (timeDifference != null) {
+                                wave.computeIfAbsent(
+                                        detectionExecutor.name,
+                                        k -> new LinkedHashMap<>()
+                                ).put(
+                                        detectionExecutor,
+                                        timeDifference
+                                );
+                            }
                         }
                     }
-                }
 
-                if (!wave.isEmpty()) {
-                    for (Map<DetectionExecutor, Double> map : wave.values()) {
-                        double sum = 0,
-                                squareSum = 0,
-                                min = Double.MAX_VALUE,
-                                max = Double.MIN_VALUE;
+                    if (!wave.isEmpty()) {
+                        for (Map<DetectionExecutor, Double> map : wave.values()) {
+                            double sum = 0,
+                                    squareSum = 0,
+                                    min = Double.MAX_VALUE,
+                                    max = Double.MIN_VALUE;
 
-                        for (double value : map.values()) {
-                            sum += value;
-                            squareSum += value * value;
-                        }
-                        double divisor = wave.size(),
-                                mean = sum / divisor,
-                                deviation = Math.sqrt(squareSum / divisor);
-
-                        for (Map.Entry<DetectionExecutor, Double> entry : map.entrySet()) {
-                            double probability = StatisticsMath.getCumulativeProbability(
-                                    (entry.getValue() - mean) / deviation
-                            );
-                            entry.setValue(probability);
-
-                            if (probability > max) {
-                                max = probability;
+                            for (double value : map.values()) {
+                                sum += value;
+                                squareSum += value * value;
                             }
-                            if (probability < min) {
-                                min = probability;
-                            }
-                        }
-                        max = 1.0 - max;
-                        double distributionDifference = Math.abs(max - min);
+                            double divisor = wave.size(),
+                                    mean = sum / divisor,
+                                    deviation = Math.sqrt(squareSum / divisor);
 
-                        for (Map.Entry<DetectionExecutor, Double> entry : map.entrySet()) {
-                            entry.getKey().setProbability(
-                                    PlayerEvidence.modifyProbability(
-                                            entry.getValue(),
-                                            Math.max(min - distributionDifference, 0.0),
-                                            Math.max(max - distributionDifference, 0.0)
-                                    )
-                            );
+                            for (Map.Entry<DetectionExecutor, Double> entry : map.entrySet()) {
+                                double probability = StatisticsMath.getCumulativeProbability(
+                                        (entry.getValue() - mean) / deviation
+                                );
+                                entry.setValue(probability);
+
+                                if (probability > max) {
+                                    max = probability;
+                                }
+                                if (probability < min) {
+                                    min = probability;
+                                }
+                            }
+                            max = 1.0 - max;
+                            double distributionDifference = Math.abs(max - min);
+
+                            for (Map.Entry<DetectionExecutor, Double> entry : map.entrySet()) {
+                                entry.getKey().setProbability(
+                                        dataType,
+                                        PlayerEvidence.modifyProbability(
+                                                entry.getValue(),
+                                                Math.max(min - distributionDifference, 0.0),
+                                                Math.max(max - distributionDifference, 0.0)
+                                        )
+                                );
+                            }
                         }
                     }
                 }
@@ -610,13 +618,13 @@ public class ResearchEngine {
         return count;
     }
 
-    public static int getRequiredPlayers(Enums.HackType hackType, String detection, double probability) {
+    public static int getRequiredPlayers(Enums.HackType hackType, Check.DataType dataType, String detection, double probability) {
         int requirement = PlayerEvidence.probabilityToFactors(probability),
                 count = 0;
 
         if (playerProfiles.size() >= requirement) {
             for (PlayerProfile profile : playerProfiles.values()) {
-                if (profile.getExecutor(hackType).getDetection(detection).hasDataToCompare()) {
+                if (profile.getExecutor(hackType).getDetection(detection).hasDataToCompare(dataType)) {
                     count++;
 
                     if (count == requirement) {

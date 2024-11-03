@@ -4,7 +4,7 @@ import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.TPS;
@@ -37,8 +37,8 @@ public class ImpossibleInventory extends CheckExecutor {
 
     private long autoTotem;
 
-    public ImpossibleInventory(Enums.HackType hackType, SpartanPlayer player) {
-        super(hackType, player);
+    public ImpossibleInventory(Enums.HackType hackType, SpartanProtocol protocol) {
+        super(hackType, protocol);
         this.autoTotemDetection = new ImplementedDetectionExecutor(this, "auto_totem", true);
         this.closedInventoryDetection = new ImplementedDetectionExecutor(this, "closed_inventory", true);
         this.portalInventoryDetection = new ImplementedDetectionExecutor(this, "portal_inventory", true);

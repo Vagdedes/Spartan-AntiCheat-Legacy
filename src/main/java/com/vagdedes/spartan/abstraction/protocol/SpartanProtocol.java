@@ -186,7 +186,7 @@ public class SpartanProtocol {
 
     public void setProfile(PlayerProfile profile) {
         this.profile = profile;
-        this.profile.updateOnlinePlayer(this);
+        this.profile.update(this);
     }
 
     public boolean packetsEnabled() {

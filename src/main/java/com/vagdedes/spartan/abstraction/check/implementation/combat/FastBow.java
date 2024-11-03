@@ -4,7 +4,7 @@ import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.Material;
 import org.bukkit.event.block.Action;
@@ -20,8 +20,8 @@ public class FastBow extends CheckExecutor {
     private long interactTime;
     private final Buffer.IndividualBuffer bowForce, bowShots;
 
-    public FastBow(HackType hackType, SpartanPlayer player) {
-        super(hackType, player);
+    public FastBow(HackType hackType, SpartanProtocol protocol) {
+        super(hackType, protocol);
         this.bowForceDetection = new ImplementedDetectionExecutor(this, "bow_force", true);
         this.bowShotsDetection = new ImplementedDetectionExecutor(this, "bow_shots", true);
         this.bowForce = new Buffer.IndividualBuffer();

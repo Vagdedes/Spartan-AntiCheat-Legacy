@@ -7,6 +7,7 @@ import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibili
 import com.vagdedes.spartan.abstraction.player.PlayerTrackers;
 import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.player.SpartanPotionEffect;
+import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanBlock;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
@@ -77,8 +78,8 @@ public class Speed extends CheckExecutor {
     private Location f = null;
     private boolean simulationFlag = false;
 
-    public Speed(Enums.HackType hackType, SpartanPlayer player) {
-        super(hackType, player);
+    public Speed(Enums.HackType hackType, SpartanProtocol protocol) {
+        super(hackType, protocol);
         this.strafeLineSpeeding = new ImplementedDetectionExecutor(this, "strafe_line_speeding", true);
         this.strafeJumpSpeeding = new ImplementedDetectionExecutor(this, "strafe_jump_speeding", true);
         this.straightLineSpeeding = new ImplementedDetectionExecutor(this, "straight_line_speeding", true);

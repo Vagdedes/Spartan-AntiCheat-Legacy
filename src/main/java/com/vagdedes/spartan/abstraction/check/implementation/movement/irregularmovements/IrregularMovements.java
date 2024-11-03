@@ -4,7 +4,7 @@ import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.gravity.IrregularMovementsGravityNew;
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -23,8 +23,8 @@ public class IrregularMovements extends CheckExecutor {
     private final IrregularMovementsFoodSprint foodSprint;
     private final IrregularMovementsBaritone baritone;
 
-    public IrregularMovements(HackType hackType, SpartanPlayer player) {
-        super(hackType, player);
+    public IrregularMovements(HackType hackType, SpartanProtocol protocol) {
+        super(hackType, protocol);
         limitServerFlying = new ImplementedDetectionExecutor(this, "limit_server_flying", false);
         step = new IrregularMovementsStep(this);
         gravityOld = new IrregularMovementsGravity(this);

@@ -4,7 +4,6 @@ import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.player.SpartanPotionEffect;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
-import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import org.bukkit.Location;
 import org.bukkit.potion.PotionEffectType;
 

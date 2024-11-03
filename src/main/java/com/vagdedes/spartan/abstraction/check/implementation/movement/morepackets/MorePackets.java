@@ -4,7 +4,7 @@ import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
 import com.vagdedes.spartan.abstraction.event.PlayerTickEvent;
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -32,8 +32,8 @@ public class MorePackets extends CheckExecutor {
             negative;
     private long teleported;
 
-    public MorePackets(HackType hackType, SpartanPlayer player) {
-        super(hackType, player);
+    public MorePackets(HackType hackType, SpartanProtocol protocol) {
+        super(hackType, protocol);
         this.bukkitNmsMap = new LinkedHashMap<>(AlgebraUtils.integerCeil(TPS.maximum) + 1, 1.0f);
         this.bukkitBuffer = 0;
         this.packetVL = 0;
