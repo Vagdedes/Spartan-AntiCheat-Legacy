@@ -66,24 +66,16 @@ public class PlayerProfile {
     }
 
     public void update(SpartanProtocol protocol) {
-        if (protocol == null) {
-            for (CheckExecutor executor : executors) {
-                executor.protocol = null;
-
-                for (DetectionExecutor detectionExecutor : executor.getDetections()) {
-                    detectionExecutor.protocol = null;
-                }
-            }
-        } else {
+        if (protocol != null) {
             this.updateOfflinePlayer(protocol);
-            this.lastDataType = protocol.spartanPlayer.dataType;
+        }
+        this.lastDataType = protocol.spartanPlayer.dataType;
 
-            for (CheckExecutor executor : executors) {
-                executor.protocol = protocol;
+        for (CheckExecutor executor : executors) {
+            executor.setProtocol(protocol);
 
-                for (DetectionExecutor detectionExecutor : executor.getDetections()) {
-                    detectionExecutor.protocol = protocol;
-                }
+            for (DetectionExecutor detectionExecutor : executor.getDetections()) {
+                detectionExecutor.setProtocol(protocol);
             }
         }
     }
@@ -169,8 +161,8 @@ public class PlayerProfile {
         for (CheckExecutor checkExecutor : this.getExecutors()) {
             for (DetectionExecutor detectionExecutor : checkExecutor.getDetections()) {
                 if (detectionExecutor.hasDataToCompare(dataType)) {
-                    return detectionExecutor.protocol.spartanPlayer != null
-                            && detectionExecutor.protocol.spartanPlayer.dataType == dataType;
+                    return detectionExecutor.protocol().spartanPlayer != null
+                            && detectionExecutor.protocol().spartanPlayer.dataType == dataType;
                 }
             }
         }

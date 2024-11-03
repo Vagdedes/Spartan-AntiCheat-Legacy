@@ -55,14 +55,14 @@ public class IrregularMovementsJump extends DetectionExecutor {
     }
 
     void run(double vertical, double box) {
-        if (protocol.spartanPlayer.trackers.has(PlayerTrackers.TrackerFamily.VELOCITY)
-                ? protocol.spartanPlayer.movement.justJumped(vertical)
-                : protocol.spartanPlayer.movement.isJumping(vertical)) {
-            int jumpEffect = PlayerUtils.getPotionLevel(protocol.spartanPlayer, PotionEffectUtils.JUMP) + 1,
+        if (this.protocol().spartanPlayer.trackers.has(PlayerTrackers.TrackerFamily.VELOCITY)
+                ? this.protocol().spartanPlayer.movement.justJumped(vertical)
+                : this.protocol().spartanPlayer.movement.isJumping(vertical)) {
+            int jumpEffect = PlayerUtils.getPotionLevel(this.protocol().spartanPlayer, PotionEffectUtils.JUMP) + 1,
                     jumpTicks = PlayerUtils.getJumpTicks(jumpEffect);
             boolean contains = heights.get(jumpEffect).contains(AlgebraUtils.cut(box, MovementProcessing.heightPrecision));
 
-            if (!contains && protocol.spartanPlayer.isBedrockPlayer()) {
+            if (!contains && this.protocol().spartanPlayer.isBedrockPlayer()) {
                 for (double height : heightsBedrock.get(jumpEffect)) {
                     if (Math.abs(height - box) < MovementProcessing.heightPrecision) {
                         contains = true;
@@ -72,7 +72,7 @@ public class IrregularMovementsJump extends DetectionExecutor {
             }
 
             if (!contains) {
-                int airTicks = protocol.spartanPlayer.movement.getTicksOnAir();
+                int airTicks = this.protocol().spartanPlayer.movement.getTicksOnAir();
 
                 if (airTicks > jumpTicks) {
                     int blocks = AlgebraUtils.integerCeil(PlayerUtils.getJumpMotionSum(jumpEffect));
@@ -86,7 +86,7 @@ public class IrregularMovementsJump extends DetectionExecutor {
                     }
                     if (!BlockPatternUtils.isBlockPattern(
                             patterns,
-                            protocol.spartanPlayer.movement.getLocation(),
+                            this.protocol().spartanPlayer.movement.getLocation(),
                             true,
                             GroundUtils.abstractMaterials
                     )) {
@@ -96,20 +96,20 @@ public class IrregularMovementsJump extends DetectionExecutor {
                                         + ", jump-effect: " + jumpEffect
                                         + ", air-ticks: " + airTicks,
                                 airTicks / TPS.tickTimeDecimal,
-                                protocol.spartanPlayer.movement.getDetectionLocation(),
+                                this.protocol().spartanPlayer.movement.getDetectionLocation(),
                                 0,
                                 true
                         );
                     }
                 }
-            } else if (protocol.spartanPlayer.protocol.version == MultiVersion.MCVersion.OTHER
-                    || protocol.spartanPlayer.protocol.isUsingVersionOrGreater(MultiVersion.serverVersion)) {
+            } else if (this.protocol().spartanPlayer.protocol.version == MultiVersion.MCVersion.OTHER
+                    || this.protocol().spartanPlayer.protocol.isUsingVersionOrGreater(MultiVersion.serverVersion)) {
                 int limit = Math.max(jumpTicks, AlgebraUtils.integerCeil(TPS.maximum));
 
-                if (!protocol.spartanPlayer.isOnGround(protocol.spartanPlayer.movement.getLocation(), true)
-                        && !protocol.spartanPlayer.isOnGround(protocol.spartanPlayer.movement.getEventFromLocation(), false)
-                        && !protocol.spartanPlayer.movement.isInLiquids()) {
-                    int airTicks = protocol.spartanPlayer.movement.getTicksOnAir();
+                if (!this.protocol().spartanPlayer.isOnGround(this.protocol().spartanPlayer.movement.getLocation(), true)
+                        && !this.protocol().spartanPlayer.isOnGround(this.protocol().spartanPlayer.movement.getEventFromLocation(), false)
+                        && !this.protocol().spartanPlayer.movement.isInLiquids()) {
+                    int airTicks = this.protocol().spartanPlayer.movement.getTicksOnAir();
 
                     if (airTicks > limit) {
                         this.jump_ticks.cancel(
@@ -120,7 +120,7 @@ public class IrregularMovementsJump extends DetectionExecutor {
                                         + ", air-ticks: " + airTicks
                                         + ", limit: " + limit,
                                 airTicks / (double) limit,
-                                protocol.spartanPlayer.movement.getDetectionLocation(),
+                                this.protocol().spartanPlayer.movement.getDetectionLocation(),
                                 0,
                                 true
                         );

@@ -49,27 +49,27 @@ public class MoveDirection extends DetectionExecutor {
             Entity target = attackHandle.target;
 
             if (target != null) {
-                double bruteforceRayTrace = RayUtils.bruteforceRayTrace(protocol.spartanPlayer, target);
+                double bruteforceRayTrace = RayUtils.bruteforceRayTrace(this.protocol().spartanPlayer, target);
                 double diff = bruteforceRayTrace - 0.4;
                 double predict = RayUtils.castTo360(
                         calculate(
-                                protocol.spartanPlayer.movement.getLocation().toVector(),
+                                this.protocol().spartanPlayer.movement.getLocation().toVector(),
                                 new SpartanLocation(ProtocolLib.getLocation(target)).toVector()
                         ).x
                 );
-                double yaw360 = RayUtils.castTo360(protocol.spartanPlayer.movement.getLocation().getYaw());
+                double yaw360 = RayUtils.castTo360(this.protocol().spartanPlayer.movement.getLocation().getYaw());
                 rayTraceAnalysis.addLast(bruteforceRayTrace);
                 aimAnalysis.addLast(
                         new AttackData(
                                 Math.abs(predict - yaw360),
-                                protocol.spartanPlayer.movement.getLocation().getYaw(),
-                                protocol.spartanPlayer.movement.getLocation().getPitch(),
+                                this.protocol().spartanPlayer.movement.getLocation().getYaw(),
+                                this.protocol().spartanPlayer.movement.getLocation().getPitch(),
                                 System.currentTimeMillis(),
                                 ProtocolLib.getUUID(target)
                         )
                 );
                 if (rayTraceAnalysis.size() >= 10) {
-                    analyze(protocol.spartanPlayer.movement.getLocation());
+                    analyze(this.protocol().spartanPlayer.movement.getLocation());
                 }
             }
         }

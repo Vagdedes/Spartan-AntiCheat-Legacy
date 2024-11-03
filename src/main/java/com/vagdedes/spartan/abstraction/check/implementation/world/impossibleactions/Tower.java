@@ -30,7 +30,7 @@ public class Tower extends DetectionExecutor {
              SpartanLocation playerLocation,
              int playerY,
              int blockY) {
-        Double deltaXZ = protocol.spartanPlayer.movement.getEventHorizontal();
+        Double deltaXZ = this.protocol().spartanPlayer.movement.getEventHorizontal();
 
         if (deltaXZ == null) {
             return;
@@ -39,8 +39,8 @@ public class Tower extends DetectionExecutor {
                 playerLocation.getBlockLocation(),
                 block.getLocation()
         ) <= 1.0) {
-            ItemStack handItem = protocol.spartanPlayer.getItemInHand();
-            int jumpLevel = PlayerUtils.getPotionLevel(protocol.spartanPlayer, PotionEffectUtils.JUMP) + 1,
+            ItemStack handItem = this.protocol().spartanPlayer.getItemInHand();
+            int jumpLevel = PlayerUtils.getPotionLevel(this.protocol().spartanPlayer, PotionEffectUtils.JUMP) + 1,
                     motionTicks = PlayerUtils.getJumpTicks(jumpLevel);
             double motionSum = PlayerUtils.getJumpMotionSum(jumpLevel),
                     blockHeight = GroundUtils.getMinHeight(
@@ -68,7 +68,7 @@ public class Tower extends DetectionExecutor {
                                 + ", horizontal: " + deltaXZ
                                 + ", vertical: " + deltaYMinus1,
                         1.0,
-                        protocol.spartanPlayer.movement.getDetectionLocation(),
+                        this.protocol().spartanPlayer.movement.getDetectionLocation(),
                         0,
                         true
                 );

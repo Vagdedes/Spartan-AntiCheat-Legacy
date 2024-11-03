@@ -71,7 +71,7 @@ public class MorePackets extends CheckExecutor {
         } else if (object instanceof Byte && object.equals(TELEPORT)) {
             this.teleported = System.currentTimeMillis()
                     + (AlgebraUtils.integerCeil(TPS.maximum) * TPS.tickTime * 4L);
-        } else if (!protocol.spartanPlayer.protocol.packetsEnabled()) {
+        } else if (!this.protocol().spartanPlayer.protocol.packetsEnabled()) {
             bukkitNmsMap.put(TPS.tick(), bukkitNmsMap.getOrDefault(TPS.tick(), 0) + 1);
 
             if (bukkitNmsMap.size() > configuredTicks()) {
@@ -129,7 +129,7 @@ public class MorePackets extends CheckExecutor {
             executor.cancel(
                     info,
                     1,
-                    protocol.spartanPlayer.movement.getDetectionLocation(),
+                    this.protocol().spartanPlayer.movement.getDetectionLocation(),
                     0,
                     true
             );
@@ -142,7 +142,7 @@ public class MorePackets extends CheckExecutor {
     @Override
     protected void runInternal(boolean cancelled) {
         if (!bukkitNmsMap.isEmpty()
-                && !protocol.spartanPlayer.protocol.packetsEnabled()) {
+                && !this.protocol().spartanPlayer.protocol.packetsEnabled()) {
             long currentTick = TPS.tick(),
                     oldestTick = currentTick - configuredTicks();
             int period = 0, collections = 0;
@@ -214,7 +214,7 @@ public class MorePackets extends CheckExecutor {
                                         + ", collections: " + collections
                                         + ", ratio: " + ratioSum,
                                 ratioSum,
-                                protocol.spartanPlayer.movement.getDetectionLocation(),
+                                this.protocol().spartanPlayer.movement.getDetectionLocation(),
                                 0,
                                 true
                         );
@@ -243,11 +243,11 @@ public class MorePackets extends CheckExecutor {
 
     @Override
     protected boolean canRun() {
-        return !protocol.spartanPlayer.isBedrockPlayer()
+        return !this.protocol().spartanPlayer.isBedrockPlayer()
                 && this.teleported < System.currentTimeMillis()
                 && MovementProcessing.canCheck(
-                protocol.spartanPlayer,
-                protocol.spartanPlayer.protocol.packetsEnabled(),
+                this.protocol().spartanPlayer,
+                this.protocol().spartanPlayer.protocol.packetsEnabled(),
                 true,
                 true,
                 true,

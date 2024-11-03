@@ -7,7 +7,7 @@ public abstract class CheckDetection {
 
     public final CheckExecutor executor;
     public final Enums.HackType hackType;
-    public SpartanProtocol protocol;
+    SpartanProtocol protocol;
 
     // Check
     protected CheckDetection(Enums.HackType hackType, SpartanProtocol protocol) {
@@ -21,6 +21,14 @@ public abstract class CheckDetection {
         this.executor = executor;
         this.hackType = executor.hackType;
         this.protocol = executor.protocol;
+    }
+
+    public final SpartanProtocol protocol() {
+        return this.protocol;
+    }
+
+    public final void setProtocol(SpartanProtocol protocol) {
+        this.protocol = protocol;
     }
 
 }

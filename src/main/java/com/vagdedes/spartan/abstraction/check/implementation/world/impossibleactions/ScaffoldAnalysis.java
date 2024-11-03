@@ -26,7 +26,7 @@ public class ScaffoldAnalysis extends DetectionExecutor {
     }
 
     void run(BlockPlaceEvent e) {
-        SpartanProtocol p = this.protocol.spartanPlayer.protocol;
+        SpartanProtocol p = this.protocol().spartanPlayer.protocol;
 
         if (p.oldBlockEvent == null) {
             p.oldBlockEvent = e;

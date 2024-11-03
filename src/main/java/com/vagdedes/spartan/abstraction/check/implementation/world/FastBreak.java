@@ -55,7 +55,7 @@ public class FastBreak extends CheckExecutor {
 
     private void checkDelay(Block block, int seconds) {
         if (!BlockUtils.isSensitive(block.getType())) {
-            GameMode gameMode = protocol.spartanPlayer.getInstance().getGameMode();
+            GameMode gameMode = this.protocol().spartanPlayer.getInstance().getGameMode();
 
             if (gameMode == GameMode.SURVIVAL || gameMode == GameMode.ADVENTURE) {
                 long time = interactTime.getOrDefault(
@@ -67,14 +67,14 @@ public class FastBreak extends CheckExecutor {
                     time = System.currentTimeMillis() - time;
 
                     if (time > 0L) { // Make sure the plugin knows when the player started breaking the block
-                        ItemStack itemStack = protocol.spartanPlayer.getItemInHand();
-                        long originalLimit = MaterialUtils.getBlockBreakTime(protocol.spartanPlayer, itemStack, block.getType()),
+                        ItemStack itemStack = this.protocol().spartanPlayer.getItemInHand();
+                        long originalLimit = MaterialUtils.getBlockBreakTime(this.protocol().spartanPlayer, itemStack, block.getType()),
                                 limit = originalLimit;
 
                         if (limit > -1L) { // Make sure the limit can be calculated on this specific server
-                            limit -= (long) (Math.max(Latency.getDelay(protocol.spartanPlayer), 1.0) * TPS.tickTime);
+                            limit -= (long) (Math.max(Latency.getDelay(this.protocol().spartanPlayer), 1.0) * TPS.tickTime);
 
-                            if (protocol.spartanPlayer.isBedrockPlayer()) {
+                            if (this.protocol().spartanPlayer.isBedrockPlayer()) {
                                 if (limit * 0.8 < limit - BlockUtils.sensitiveBlockBreakTime) {
                                     limit = AlgebraUtils.integerRound(limit * 0.8);
                                 } else {
@@ -87,14 +87,14 @@ public class FastBreak extends CheckExecutor {
                                     limit -= BlockUtils.sensitiveBlockBreakTime;
                                 }
                             }
-                            if (AlgebraUtils.getHorizontalDistance(protocol.spartanPlayer.movement.getLocation(), block.getLocation()) <= 1.0
-                                    && protocol.spartanPlayer.movement.getLocation().getBlockY() >= block.getY()) { // Above block
+                            if (AlgebraUtils.getHorizontalDistance(this.protocol().spartanPlayer.movement.getLocation(), block.getLocation()) <= 1.0
+                                    && this.protocol().spartanPlayer.movement.getLocation().getBlockY() >= block.getY()) { // Above block
                                 limit = AlgebraUtils.integerRound(limit / 4.0);
                             }
 
                             if (limit > (TPS.tickTime * 2L) && time < limit) {
                                 boolean emptyItem = itemStack == null || itemStack.getType() == Material.AIR;
-                                Collection<PotionEffect> potionEffects = protocol.spartanPlayer.getActivePotionEffects();
+                                Collection<PotionEffect> potionEffects = this.protocol().spartanPlayer.getActivePotionEffects();
                                 Set<Map.Entry<Enchantment, Integer>> enchantments =
                                         !emptyItem ? itemStack.getEnchantments().entrySet() : new HashSet<>();
                                 StringBuilder enchantmentsString = new StringBuilder(),
@@ -147,7 +147,7 @@ public class FastBreak extends CheckExecutor {
     }
 
     private void checkBreaksPerSecond(int seconds, Block block) {
-        GameMode gameMode = protocol.spartanPlayer.getInstance().getGameMode();
+        GameMode gameMode = this.protocol().spartanPlayer.getInstance().getGameMode();
 
         if (gameMode == GameMode.CREATIVE) {
             int limit = hackType.getCheck().getNumericalOption("max_breaks_per_second", 40);
@@ -170,10 +170,10 @@ public class FastBreak extends CheckExecutor {
     }
 
     private void checkIndirectSurroundingsPerSecond(int seconds, Block block) {
-        GameMode gameMode = protocol.spartanPlayer.getInstance().getGameMode();
+        GameMode gameMode = this.protocol().spartanPlayer.getInstance().getGameMode();
 
         if ((gameMode == GameMode.SURVIVAL || gameMode == GameMode.ADVENTURE)
-                && !BlockUtils.isSensitive(protocol.spartanPlayer, block.getType())) {
+                && !BlockUtils.isSensitive(this.protocol().spartanPlayer, block.getType())) {
             int bufferTicks = AlgebraUtils.integerCeil(TPS.maximum),
                     limit = hackType.getCheck().getNumericalOption(
                             "indirect_surroundings_per_second",
@@ -238,7 +238,7 @@ public class FastBreak extends CheckExecutor {
         } else {
             Block b = ((BlockBreakEvent) object).getBlock();
 
-            if (!TreeFeller.canCancel(this.protocol.spartanPlayer, b)) {
+            if (!TreeFeller.canCancel(this.protocol().spartanPlayer, b)) {
                 int seconds = AlgebraUtils.integerCeil(TPS.maximum);
                 checkDelay(b, seconds);
                 checkBreaksPerSecond(seconds, b);
@@ -249,13 +249,13 @@ public class FastBreak extends CheckExecutor {
 
     @Override
     protected boolean canRun() {
-        return !MineBomb.isUsing(protocol.spartanPlayer)
-                && !Vehicles.has(protocol.spartanPlayer, Vehicles.DRILL)
-                && !SuperPickaxe.isUsing(protocol.spartanPlayer)
-                && !AureliumSkills.isUsing(protocol.spartanPlayer)
-                && !mcMMO.hasGeneralAbility(protocol.spartanPlayer)
+        return !MineBomb.isUsing(this.protocol().spartanPlayer)
+                && !Vehicles.has(this.protocol().spartanPlayer, Vehicles.DRILL)
+                && !SuperPickaxe.isUsing(this.protocol().spartanPlayer)
+                && !AureliumSkills.isUsing(this.protocol().spartanPlayer)
+                && !mcMMO.hasGeneralAbility(this.protocol().spartanPlayer)
                 && !Compatibility.CompatibilityType.CRAFT_BOOK.isFunctional()
-                && Attributes.getAmount(protocol.spartanPlayer, Attributes.PLAYER_BLOCK_BREAK_SPEED) == 0.0;
+                && Attributes.getAmount(this.protocol().spartanPlayer, Attributes.PLAYER_BLOCK_BREAK_SPEED) == 0.0;
     }
 
 }
