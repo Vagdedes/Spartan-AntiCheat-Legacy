@@ -253,13 +253,11 @@ public class BackgroundAPI {
     }
 
     static boolean isBypassing(Player p) {
-        SpartanPlayer player = SpartanBukkit.getProtocol(p).spartanPlayer;
-        return Permissions.isBypassing(player, null);
+        return Permissions.isBypassing(p, null);
     }
 
     static boolean isBypassing(Player p, HackType HackType) {
-        SpartanPlayer player = SpartanBukkit.getProtocol(p).spartanPlayer;
-        return Permissions.isBypassing(player, HackType);
+        return Permissions.isBypassing(p, HackType);
     }
 
     @Deprecated

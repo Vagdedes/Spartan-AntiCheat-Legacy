@@ -203,7 +203,7 @@ public class PlayerInfo extends InventoryMenu {
             return "Disabled";
         }
         CancelCause disabledCause = player.getExecutor(hackType).getDisableCause();
-        return Permissions.isBypassing(player, hackType) ? "Permission Bypass" :
+        return Permissions.isBypassing(player.getInstance(), hackType) ? "Permission Bypass" :
                 disabledCause != null ? "Cancelled (" + disabledCause.getReason() + ")" :
                         (check.isSilent(dataType, worldName) ? "Silent " : "") + "Checking";
     }

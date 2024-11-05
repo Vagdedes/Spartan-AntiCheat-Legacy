@@ -121,7 +121,7 @@ public abstract class CheckExecutor extends CheckDetection {
                 && hackType.getCheck().isEnabled(this.protocol().spartanPlayer.dataType, this.protocol().spartanPlayer.getWorld().getName())
                 && Attributes.getAmount(this.protocol().spartanPlayer, Attributes.GENERIC_SCALE) == 0.0
                 && canRun()
-                && !Permissions.isBypassing(this.protocol().spartanPlayer, hackType);
+                && !Permissions.isBypassing(this.protocol().player, hackType);
     }
 
     // Causes
