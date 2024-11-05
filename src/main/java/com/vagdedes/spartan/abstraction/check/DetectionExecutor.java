@@ -29,7 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class DetectionExecutor extends CheckDetection {
 
-    public final String name;
+    public final String name, random;
     private final boolean def;
     private long notifications;
     private final Map<Check.DataType, Double> probability;
@@ -44,7 +44,7 @@ public abstract class DetectionExecutor extends CheckDetection {
                 new LinkedHashMap<>(Check.DataType.values().length)
         );
         this.isEnabled();
-        this.storeDetection(executor);
+        this.random = this.storeDetection(executor);
     }
 
     public DetectionExecutor(DetectionExecutor executor, String name, boolean def) {
@@ -56,20 +56,25 @@ public abstract class DetectionExecutor extends CheckDetection {
                 new LinkedHashMap<>(Check.DataType.values().length)
         );
         this.isEnabled();
-        this.storeDetection(executor.executor);
+        this.random = this.storeDetection(executor.executor);
     }
 
-    private void storeDetection(CheckExecutor executor) {
+    private String storeDetection(CheckExecutor executor) {
         if (this.name == null) {
             while (true) {
-                if (executor.detections.putIfAbsent(Integer.toString(new Random().nextInt()), this) == null) {
-                    break;
+                String random = Integer.toString(new Random().nextInt());
+
+                if (executor.detections.putIfAbsent(random, this) == null) {
+                    return random;
                 }
             }
-        } else if (executor.detections.putIfAbsent(this.name, this) != null) {
-            throw new IllegalArgumentException(
-                    "Detection '" + this.name + "' already exists for enum '" + executor.hackType.toString() + "'."
-            );
+        } else {
+            if (executor.detections.putIfAbsent(this.name, this) != null) {
+                throw new IllegalArgumentException(
+                        "Detection '" + this.name + "' already exists for enum '" + executor.hackType.toString() + "'."
+                );
+            }
+            return this.name;
         }
     }
 
