@@ -118,7 +118,7 @@ public abstract class DetectionExecutor extends CheckDetection {
         ResearchEngine.queueToCache(this.hackType);
     }
 
-    public final double getTimeDifference(Check.DataType dataType) {
+    public final Double getTimeDifference(Check.DataType dataType) {
         if (this.hasDataToCompare(dataType)) {
             double squareSum = 0.0;
             int size;
@@ -141,7 +141,7 @@ public abstract class DetectionExecutor extends CheckDetection {
             }
             return Math.sqrt(squareSum / (size - 1.0));
         } else {
-            return 0.0;
+            return null;
         }
     }
 
