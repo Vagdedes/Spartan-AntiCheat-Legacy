@@ -50,11 +50,11 @@ public class PlayerInfo extends InventoryMenu {
     @Override
     public boolean internalOpen(SpartanPlayer player, boolean permissionMessage, Object object) {
         boolean back = !permissionMessage;
-        SpartanProtocol target = SpartanBukkit.getProtocol(object.toString());
+        SpartanProtocol target = SpartanBukkit.getAnyCaseProtocol(object.toString());
         boolean isOnline = target != null;
         PlayerProfile profile = isOnline
                 ? target.getProfile()
-                : ResearchEngine.getPlayerProfile(object.toString(), false);
+                : ResearchEngine.getAnyCasePlayerProfile(object.toString());
 
         if (profile == null) {
             player.getInstance().closeInventory();

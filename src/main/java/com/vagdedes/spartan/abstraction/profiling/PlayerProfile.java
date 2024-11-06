@@ -4,7 +4,6 @@ import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
-import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
 import com.vagdedes.spartan.utils.minecraft.inventory.InventoryUtils;
@@ -28,7 +27,6 @@ public class PlayerProfile {
     public PlayerProfile(String name) {
         this.name = name;
         this.skull = null;
-        this.offlinePlayer = null;
         this.executors = new CheckExecutor[Enums.HackType.values().length];
         this.miningHistory = new MiningHistory[MiningHistory.MiningOre.values().length];
         this.lastDataType = Check.DataType.JAVA;
@@ -36,7 +34,18 @@ public class PlayerProfile {
         for (MiningHistory.MiningOre ore : MiningHistory.MiningOre.values()) {
             this.miningHistory[ore.ordinal()] = new MiningHistory(ore);
         }
-        this.registerExecutors(this.getProtocol());
+
+        // Separator
+
+        SpartanProtocol protocol = SpartanBukkit.getProtocol(name);
+
+        if (protocol != null) {
+            this.offlinePlayer = protocol.player;
+            this.registerExecutors(protocol, false);
+        } else {
+            this.offlinePlayer = null;
+            this.registerExecutors(SpartanProtocol.DEFAULT, true);
+        }
     }
 
     public PlayerProfile(SpartanProtocol protocol) {
@@ -50,7 +59,7 @@ public class PlayerProfile {
         for (MiningHistory.MiningOre ore : MiningHistory.MiningOre.values()) {
             this.miningHistory[ore.ordinal()] = new MiningHistory(ore);
         }
-        this.registerExecutors(protocol);
+        this.registerExecutors(protocol, false);
     }
 
     // Separator
@@ -61,13 +70,22 @@ public class PlayerProfile {
 
     // Separator
 
-    public void update(SpartanProtocol protocol) {
-        if (protocol != null) {
-            this.offlinePlayer = protocol.player;
-            this.lastDataType = protocol.spartanPlayer.dataType;
-        }
+    public void clear() {
+        for (CheckExecutor executor : this.getExecutors()) {
+            executor.setProtocol(null);
 
-        for (CheckExecutor executor : executors) {
+            for (DetectionExecutor detectionExecutor : executor.getDetections()) {
+                detectionExecutor.setProtocol(null);
+            }
+        }
+    }
+
+    public void update(SpartanProtocol protocol) {
+        this.offlinePlayer = protocol.player;
+        this.lastDataType = protocol.spartanPlayer.dataType;
+        this.registerExecutors(protocol, false);
+
+        for (CheckExecutor executor : this.getExecutors()) {
             executor.setProtocol(protocol);
 
             for (DetectionExecutor detectionExecutor : executor.getDetections()) {
@@ -79,22 +97,38 @@ public class PlayerProfile {
     // Separator
 
     public CheckExecutor getExecutor(Enums.HackType hackType) {
-        return executors[hackType.ordinal()];
+        int ordinal = hackType.ordinal();
+
+        synchronized (this.executors) {
+            return this.executors[ordinal];
+        }
     }
 
     public CheckExecutor[] getExecutors() {
-        return executors;
+        synchronized (this.executors) {
+            return this.executors;
+        }
     }
 
-    private void registerExecutors(SpartanProtocol protocol) {
-        for (Enums.HackType hackType : Enums.HackType.values()) {
-            try {
-                CheckExecutor executor = (CheckExecutor) hackType.executor
-                        .getConstructor(hackType.getClass(), SpartanProtocol.class)
-                        .newInstance(hackType, protocol);
-                this.executors[hackType.ordinal()] = executor;
-            } catch (Exception ex) {
-                ex.printStackTrace();
+    private void registerExecutors(SpartanProtocol protocol, boolean clear) {
+        synchronized (this.executors) {
+            for (Enums.HackType hackType : Enums.HackType.values()) {
+                try {
+                    CheckExecutor executor = (CheckExecutor) hackType.executor
+                            .getConstructor(hackType.getClass(), SpartanProtocol.class)
+                            .newInstance(hackType, protocol);
+                    this.executors[hackType.ordinal()] = executor;
+
+                    if (clear) {
+                        executor.setProtocol(null);
+
+                        for (DetectionExecutor detectionExecutor : executor.getDetections()) {
+                            detectionExecutor.setProtocol(null);
+                        }
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
             }
         }
     }
@@ -104,36 +138,12 @@ public class PlayerProfile {
     public ItemStack getSkull() {
         if (this.skull == null) {
             if (this.offlinePlayer == null) {
-                SpartanProtocol protocol = SpartanBukkit.getProtocol(name);
-
-                if (protocol == null) {
-                    return InventoryUtils.getSkull(null, name, false);
-                } else {
-                    this.offlinePlayer = protocol.player;
-                    this.skull = InventoryUtils.getSkull(protocol.player, name, false);
-                }
+                return InventoryUtils.getSkull(null, name, false);
             } else {
                 this.skull = InventoryUtils.getSkull(offlinePlayer, name, false);
             }
         }
         return this.skull;
-    }
-
-    private SpartanProtocol getProtocol() {
-        if (this.offlinePlayer == null) {
-            SpartanProtocol protocol = SpartanBukkit.getProtocol(name);
-
-            if (protocol != null) {
-                this.offlinePlayer = protocol.player;
-                return protocol;
-            } else {
-                return null;
-            }
-        } else if (!ProtocolLib.isTemporary(this.offlinePlayer)) {
-            return SpartanBukkit.getProtocol(this.offlinePlayer.getUniqueId());
-        } else {
-            return null;
-        }
     }
 
     // Separator
@@ -170,7 +180,7 @@ public class PlayerProfile {
     public Collection<Enums.HackType> getEvidenceList(Check.DataType dataType, double threshold) {
         List<Enums.HackType> set = new ArrayList<>();
 
-        for (CheckExecutor executor : executors) {
+        for (CheckExecutor executor : this.getExecutors()) {
             double probability = executor.getExtremeProbability(dataType);
 
             if (PlayerEvidence.surpassedProbability(probability, threshold)) {
@@ -183,7 +193,7 @@ public class PlayerProfile {
     public Set<Map.Entry<Enums.HackType, Double>> getEvidenceEntries(Check.DataType dataType, double threshold) {
         Map<Enums.HackType, Double> set = new HashMap<>();
 
-        for (CheckExecutor executor : executors) {
+        for (CheckExecutor executor : this.getExecutors()) {
             double probability = executor.getExtremeProbability(dataType);
 
             if (PlayerEvidence.surpassedProbability(probability, threshold)) {

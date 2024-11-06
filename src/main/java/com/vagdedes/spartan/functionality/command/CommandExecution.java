@@ -709,7 +709,7 @@ public class CommandExecution implements CommandExecutor {
                                 );
                                 return true;
                             }
-                            SpartanProtocol t = SpartanBukkit.getProtocol(args[1]);
+                            SpartanProtocol t = SpartanBukkit.getAnyCaseProtocol(args[1]);
 
                             if (t == null) {
                                 ClickableMessage.sendURL(
@@ -748,7 +748,7 @@ public class CommandExecution implements CommandExecutor {
                                 );
                                 return true;
                             }
-                            SpartanProtocol t = SpartanBukkit.getProtocol(args[1]);
+                            SpartanProtocol t = SpartanBukkit.getAnyCaseProtocol(args[1]);
 
                             if (t == null) {
                                 ClickableMessage.sendURL(
@@ -786,7 +786,7 @@ public class CommandExecution implements CommandExecutor {
                                     );
                                     return true;
                                 }
-                                SpartanProtocol t = SpartanBukkit.getProtocol(args[1]);
+                                SpartanProtocol t = SpartanBukkit.getAnyCaseProtocol(args[1]);
 
                                 if (t == null) {
                                     ClickableMessage.sendURL(
@@ -911,7 +911,7 @@ public class CommandExecution implements CommandExecutor {
                                     );
                                     return true;
                                 }
-                                SpartanProtocol t = SpartanBukkit.getProtocol(args[0]);
+                                SpartanProtocol t = SpartanBukkit.getAnyCaseProtocol(args[0]);
 
                                 if (t == null) {
                                     ClickableMessage.sendURL(

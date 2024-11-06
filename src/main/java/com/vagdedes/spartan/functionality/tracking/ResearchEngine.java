@@ -75,7 +75,6 @@ public class ResearchEngine {
     }
 
     public static PlayerProfile getPlayerProfile(String name, boolean create) {
-        name = name.toLowerCase();
         PlayerProfile playerProfile = playerProfiles.get(name);
 
         if (playerProfile != null) {
@@ -90,18 +89,29 @@ public class ResearchEngine {
         }
     }
 
+    public static PlayerProfile getAnyCasePlayerProfile(String name) {
+        if (!playerProfiles.isEmpty()) {
+            for (Map.Entry<String, PlayerProfile> entry : playerProfiles.entrySet()) {
+                if (entry.getKey().equalsIgnoreCase(name)) {
+                    return entry.getValue();
+                }
+            }
+        }
+        return null;
+    }
+
     public static PlayerProfile getPlayerProfile(SpartanProtocol protocol, boolean force) {
         PlayerProfile playerProfile;
 
         if (!force) {
-            playerProfile = playerProfiles.get(protocol.player.getName().toLowerCase());
+            playerProfile = playerProfiles.get(protocol.player.getName());
 
             if (playerProfile != null) {
                 return playerProfile;
             }
         }
         playerProfile = new PlayerProfile(protocol);
-        playerProfiles.put(protocol.player.getName().toLowerCase(), playerProfile);
+        playerProfiles.put(protocol.player.getName(), playerProfile);
         return playerProfile;
     }
 
@@ -162,24 +172,23 @@ public class ResearchEngine {
     public static void resetData(String playerName) {
         if (firstLoad) {
             // Clear Violations
-            SpartanProtocol p = SpartanBukkit.getProtocol(playerName);
-            boolean foundPlayer = p != null;
             PlayerProfile profile;
+            SpartanProtocol player = SpartanBukkit.getProtocol(playerName);
 
-            if (foundPlayer) {
-                profile = p.getProfile();
+            if (player == null) {
+                profile = getAnyCasePlayerProfile(playerName);
             } else {
-                profile = getPlayerProfile(playerName, true);
+                profile = player.getProfile();
             }
             Pattern.deleteFromFile(profile);
 
             if (isStorageMode()) {
                 // Clear Files/Database
                 SpartanBukkit.analysisThread.execute(() -> {
-                    playerProfiles.remove(playerName);
-
-                    if (foundPlayer) {
-                        p.setProfile(getPlayerProfile(p, true));
+                    if (player == null) {
+                        playerProfiles.remove(playerName);
+                    } else {
+                        player.setProfile(getPlayerProfile(player, true));
                     }
                     if (Config.sql.isEnabled()) {
                         Config.sql.update("DELETE FROM " + Config.sql.getTable() + " WHERE information LIKE '%" + playerName + "%';");
@@ -204,12 +213,10 @@ public class ResearchEngine {
                         }
                     }
                 });
-            } else {
+            } else if (player == null) {
                 playerProfiles.remove(playerName);
-
-                if (foundPlayer) {
-                    p.setProfile(getPlayerProfile(p, true));
-                }
+            } else {
+                player.setProfile(getPlayerProfile(player, true));
             }
             MainMenu.refresh();
             InteractiveInventory.playerInfo.refresh(playerName);
@@ -443,7 +450,7 @@ public class ResearchEngine {
                             String[] split = data.split(" ");
 
                             if (split.length >= 9) {
-                                String name = split[0].toLowerCase();
+                                String name = split[0];
 
                                 try {
                                     MiningHistory.MiningOre ore = MiningHistory.getMiningOre(

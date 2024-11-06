@@ -90,7 +90,7 @@ public class SpartanBukkit {
 
     public static SpartanProtocol getProtocol(Player player) {
         if (ProtocolLib.isTemporary(player)) {
-            return new SpartanProtocol(player);
+            return SpartanProtocol.DEFAULT;
         } else {
             SpartanProtocol protocol = playerProtocol.get(player.getUniqueId());
 
@@ -104,10 +104,19 @@ public class SpartanBukkit {
 
     public static SpartanProtocol getProtocol(String name) {
         if (!playerProtocol.isEmpty()) {
-            name = name.toLowerCase();
-
             for (SpartanProtocol protocol : playerProtocol.values()) {
-                if (protocol.player.getName().toLowerCase().equals(name)) {
+                if (protocol.player.getName().equals(name)) {
+                    return protocol;
+                }
+            }
+        }
+        return null;
+    }
+
+    public static SpartanProtocol getAnyCaseProtocol(String name) {
+        if (!playerProtocol.isEmpty()) {
+            for (SpartanProtocol protocol : playerProtocol.values()) {
+                if (protocol.player.getName().equalsIgnoreCase(name)) {
                     return protocol;
                 }
             }
@@ -160,7 +169,7 @@ public class SpartanBukkit {
             SpartanProtocol protocol = playerProtocol.remove(player.getUniqueId());
 
             if (protocol != null) {
-                protocol.getProfile().update(null);
+                protocol.getProfile().clear();
             }
             return protocol;
         }

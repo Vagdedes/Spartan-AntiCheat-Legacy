@@ -20,6 +20,9 @@ import java.util.*;
 
 public class SpartanProtocol {
 
+    // todo compare hashcode to find default and avoid check runs
+    public static final SpartanProtocol DEFAULT = new SpartanProtocol();
+
     public final Player player;
     public final SpartanPlayer spartanPlayer;
     public final TimerBalancer timerBalancer;
@@ -44,12 +47,12 @@ public class SpartanProtocol {
     public long placeTime, placeHash;
     public BlockPlaceEvent oldBlockEvent;
 
-
     public SpartanProtocol(Player player) {
+        long time = System.currentTimeMillis();
         this.player = player;
         this.version = MultiVersion.get(player);
 
-        this.placeTime = System.currentTimeMillis();
+        this.placeTime = time;
         this.placeHash = 0;
         this.onGround = false;
         this.onGroundFrom = false;
@@ -69,7 +72,7 @@ public class SpartanProtocol {
         this.teleported = false;
         this.vehicleStatus = true;
         this.keepEntity = 0;
-        this.tickTime = System.currentTimeMillis();
+        this.tickTime = time;
 
         this.rightClickCounter = 0;
         this.positionHistory = new LinkedList<>();
@@ -82,6 +85,14 @@ public class SpartanProtocol {
         this.oldBlockEvent = null;
 
         this.setProfile(ResearchEngine.getPlayerProfile(this, false));
+    }
+
+    private SpartanProtocol() {
+        this.player = null;
+        this.version = null;
+        this.spartanPlayer = null;
+        this.timerBalancer = null;
+        this.mcClient = null;
     }
 
     public boolean isUsingVersion(MultiVersion.MCVersion trialVersion) {
