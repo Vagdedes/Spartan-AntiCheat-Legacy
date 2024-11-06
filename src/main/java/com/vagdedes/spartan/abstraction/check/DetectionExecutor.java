@@ -80,8 +80,7 @@ public abstract class DetectionExecutor extends CheckDetection {
 
     @Override
     public int hashCode() {
-        return this.hackType.hashCode() * SpartanBukkit.hashCodeMultiplier
-                + (this.name == null ? 0 : this.name.hashCode());
+        return this.hackType.hashCode() * SpartanBukkit.hashCodeMultiplier + this.random.hashCode();
     }
 
     // Check
@@ -109,7 +108,7 @@ public abstract class DetectionExecutor extends CheckDetection {
                     k -> new TreeMap<>()
             );
 
-            if (map.size() == 1_000) {
+            if (map.size() == 1_024) {
                 Iterator<Long> iterator = map.keySet().iterator();
                 iterator.next();
                 iterator.remove();
@@ -119,7 +118,7 @@ public abstract class DetectionExecutor extends CheckDetection {
         ResearchEngine.queueToCache(this.hackType);
     }
 
-    public final Double getTimeDifference(Check.DataType dataType) {
+    public final double getTimeDifference(Check.DataType dataType) {
         if (this.hasDataToCompare(dataType)) {
             double squareSum = 0.0;
             int size;
@@ -142,7 +141,7 @@ public abstract class DetectionExecutor extends CheckDetection {
             }
             return Math.sqrt(squareSum / (size - 1.0));
         } else {
-            return null;
+            return 0.0;
         }
     }
 

@@ -6,3 +6,4 @@
 [#] Improved the identification of detection in cross server notifications.
 [#] Separated once again the data of java and bedrock players.
 [#] Made statistics run the same with less information stored in the memory.
+[#] Made the plugin require less data to start comparing and taking action.
