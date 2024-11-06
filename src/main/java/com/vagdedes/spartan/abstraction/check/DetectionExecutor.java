@@ -33,7 +33,7 @@ public abstract class DetectionExecutor extends CheckDetection {
     private final boolean def;
     private long notifications;
     private final Map<Check.DataType, Double> probability;
-    private final Map<Check.DataType, Map<Long, PlayerViolation>> data;
+    private final Map<Check.DataType, Map<Long, Double>> data;
 
     public DetectionExecutor(CheckExecutor executor, String name, boolean def) {
         super(executor);
@@ -98,13 +98,13 @@ public abstract class DetectionExecutor extends CheckDetection {
     // Data
 
     public final boolean hasDataToCompare(Check.DataType dataType) {
-        Map<Long, PlayerViolation> map = this.data.get(dataType);
+        Map<Long, Double> map = this.data.get(dataType);
         return map != null && map.size() > 1;
     }
 
     public final void store(Check.DataType dataType, PlayerViolation playerViolation) {
         synchronized (this.data) {
-            Map<Long, PlayerViolation> map = this.data.computeIfAbsent(
+            Map<Long, Double> map = this.data.computeIfAbsent(
                     dataType,
                     k -> new TreeMap<>()
             );
@@ -114,7 +114,7 @@ public abstract class DetectionExecutor extends CheckDetection {
                 iterator.next();
                 iterator.remove();
             }
-            map.put(playerViolation.time, playerViolation);
+            map.put(playerViolation.time, playerViolation.increase);
         }
         ResearchEngine.queueToCache(this.hackType);
     }
@@ -125,18 +125,18 @@ public abstract class DetectionExecutor extends CheckDetection {
             int size;
 
             synchronized (this.data) {
-                Map<Long, PlayerViolation> map = this.data.get(dataType);
+                Map<Long, Double> map = this.data.get(dataType);
                 size = map.size();
-                Iterator<PlayerViolation> iterator = map.values().iterator();
-                long previous = iterator.next().time;
+                Iterator<Map.Entry<Long, Double>> iterator = map.entrySet().iterator();
+                long previous = iterator.next().getKey();
 
                 while (iterator.hasNext()) {
-                    PlayerViolation violation = iterator.next();
+                    Map.Entry<Long, Double> entry = iterator.next();
                     double difference = Math.min(
-                            (violation.time - previous) / violation.increase,
+                            (entry.getKey() - previous) / entry.getValue(),
                             60_000L
                     );
-                    previous = violation.time;
+                    previous = entry.getKey();
                     squareSum += difference * difference;
                 }
             }
