@@ -207,7 +207,7 @@ public abstract class DetectionExecutor extends CheckDetection {
                                 && (silentCause == null
                                 || silentCause.hasExpired()
                                 || !silentCause.pointerMatches(information))
-                                && ResearchEngine.getRequiredPlayers(hackType, this.protocol().spartanPlayer.dataType, name, PlayerEvidence.preventionProbability) == 0
+                                && ResearchEngine.getRequiredPlayers(this, this.protocol().spartanPlayer.dataType, PlayerEvidence.preventionProbability) == 0
                                 && this.surpassedProbability(this.protocol().spartanPlayer.dataType, PlayerEvidence.preventionProbability);
             };
 
@@ -269,7 +269,7 @@ public abstract class DetectionExecutor extends CheckDetection {
         double probability = this.getProbability(this.protocol().spartanPlayer.dataType),
                 certainty = PlayerEvidence.probabilityToCertainty(probability) * 100.0;
         int roundedCertainty = AlgebraUtils.integerRound(certainty);
-        boolean hasSufficientData = ResearchEngine.getRequiredPlayers(hackType, this.protocol().spartanPlayer.dataType, name, PlayerEvidence.notificationProbability) == 0;
+        boolean hasSufficientData = ResearchEngine.getRequiredPlayers(this, this.protocol().spartanPlayer.dataType, PlayerEvidence.notificationProbability) == 0;
         String notification = ConfigUtils.replaceWithSyntax(
                 this.protocol().spartanPlayer,
                 Config.messages.getColorfulString("detection_notification")
@@ -344,7 +344,7 @@ public abstract class DetectionExecutor extends CheckDetection {
             List<String> commands = check.getPunishmentCommands();
 
             if (!commands.isEmpty()
-                    && ResearchEngine.getRequiredPlayers(hackType, this.protocol().spartanPlayer.dataType, name, PlayerEvidence.punishmentProbability) == 0) {
+                    && ResearchEngine.getRequiredPlayers(this, this.protocol().spartanPlayer.dataType, PlayerEvidence.punishmentProbability) == 0) {
                 Collection<Enums.HackType> detectedHacks = this.protocol().spartanPlayer.protocol.getProfile().getEvidenceList(
                         this.protocol().spartanPlayer.dataType,
                         PlayerEvidence.punishmentProbability

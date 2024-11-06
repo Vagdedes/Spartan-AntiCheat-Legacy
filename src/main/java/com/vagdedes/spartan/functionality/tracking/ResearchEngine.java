@@ -617,13 +617,13 @@ public class ResearchEngine {
         return count;
     }
 
-    public static int getRequiredPlayers(Enums.HackType hackType, Check.DataType dataType, String detection, double probability) {
+    public static int getRequiredPlayers(DetectionExecutor detectionExecutor, Check.DataType dataType, double probability) {
         int requirement = PlayerEvidence.probabilityToFactors(probability),
                 count = 0;
 
         if (playerProfiles.size() >= requirement) {
             for (PlayerProfile profile : playerProfiles.values()) {
-                if (profile.getExecutor(hackType).getDetection(detection).hasDataToCompare(dataType)) {
+                if (profile.getExecutor(detectionExecutor.hackType).getDetection(detectionExecutor.name).hasDataToCompare(dataType)) {
                     count++;
 
                     if (count == requirement) {
