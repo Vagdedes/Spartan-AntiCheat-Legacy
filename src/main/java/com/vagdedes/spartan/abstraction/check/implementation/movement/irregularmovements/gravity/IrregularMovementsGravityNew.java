@@ -161,7 +161,7 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
         //protocol().player.sendMessage("vl: " + vl);
     }
 
-    public double jumpMotion() {
+    private double jumpMotion() {
         double jumpPower = 0.42; // Default jump height in Minecraft
         SpartanPotionEffect jumpEffect = null;
 
