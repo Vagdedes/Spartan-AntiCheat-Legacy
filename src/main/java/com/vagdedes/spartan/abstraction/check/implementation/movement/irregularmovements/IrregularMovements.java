@@ -75,6 +75,7 @@ public class IrregularMovements extends CheckExecutor {
 
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
+        gravity.teleport();
         this.teleport = System.currentTimeMillis()
                 + (AlgebraUtils.integerCeil(TPS.maximum / 2.0) * TPS.tickTime);
     }

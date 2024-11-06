@@ -132,7 +132,7 @@ public class Speed extends CheckExecutor {
                 ? this.protocol().spartanPlayer.getPotionEffect(PotionEffectType.LEVITATION, 0)
                 : null;
 
-        if (speed > speedLimit) {
+        if (speed > speedLimit && onAir < 24) {
             this.multiplyViolation = speed / speedLimit;
             this.vl += 35 * multiplyViolation;
             this.violation = new Object[]{
