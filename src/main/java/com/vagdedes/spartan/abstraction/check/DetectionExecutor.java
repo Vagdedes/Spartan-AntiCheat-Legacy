@@ -31,6 +31,7 @@ public abstract class DetectionExecutor extends CheckDetection {
 
     public final String name, random;
     private final boolean def;
+    private int lastProbability;
     private long notifications;
     private final Map<Check.DataType, Double> probability;
     private final Map<Check.DataType, Map<Long, Double>> data;
@@ -224,10 +225,11 @@ public abstract class DetectionExecutor extends CheckDetection {
 
     // Notification
 
-    public final boolean canSendNotification(Object detected) {
+    public final boolean canSendNotification(Object detected, int probability) {
         long time = System.currentTimeMillis();
 
-        if (this.notifications <= time) {
+        if (this.notifications <= time
+                && this.lastProbability != probability) {
             boolean player = detected instanceof SpartanPlayer;
             int ticks = this.executor.getNotificationTicksCooldown(
                     player ? (SpartanPlayer) detected : null
@@ -259,9 +261,11 @@ public abstract class DetectionExecutor extends CheckDetection {
 
                 if (access) {
                     this.notifications = time + (ticks * TPS.tickTime);
+                    this.lastProbability = probability;
                     return true;
                 }
             } else {
+                this.lastProbability = probability;
                 return true;
             }
         }
@@ -279,7 +283,9 @@ public abstract class DetectionExecutor extends CheckDetection {
                         .replace("{info}", information)
                         .replace("{vls:detection}", String.valueOf(AlgebraUtils.cut(playerViolation.increase, 2)))
                         .replace("{vls:percentage}",
-                                hasSufficientData && roundedCertainty > 0 ? (roundedCertainty + "%") : "unlikely"
+                                hasSufficientData && roundedCertainty > 0
+                                        ? (roundedCertainty + "%")
+                                        : "unlikely"
                         ),
                 hackType
         );
@@ -325,7 +331,7 @@ public abstract class DetectionExecutor extends CheckDetection {
 
             if (!notificationPlayers.isEmpty()) {
                 for (SpartanPlayer staff : notificationPlayers) {
-                    if (staff.getExecutor(this.hackType).getDetection(this.name).canSendNotification(this.protocol().spartanPlayer)) {
+                    if (staff.getExecutor(this.hackType).getDetection(this.name).canSendNotification(this.protocol().spartanPlayer, roundedCertainty)) {
                         ClickableMessage.sendCommand(
                                 staff.getNative(),
                                 notification,
