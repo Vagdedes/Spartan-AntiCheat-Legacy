@@ -1,2 +1,2 @@
 [#] Made notifications appear less frequently by tracking the certainty of someone hacking.
-[#] Fix null errors caused by missing synchronization in update of executor protocols.
+[#] Fixed null errors caused by missing synchronization in update of executor protocols.
