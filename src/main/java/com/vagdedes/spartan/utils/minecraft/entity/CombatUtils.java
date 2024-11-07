@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.utils.minecraft.entity;
 
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import com.vagdedes.spartan.compatibility.manual.abilities.mcMMO;
@@ -195,7 +195,7 @@ public class CombatUtils {
                 && PlayerUtils.isSwordItem(p.getItemInHand().getType())) {
             double distance = 4.0;
             List<Entity> nearbyEntities = entity.getNearbyEntities(distance, distance, distance);
-            nearbyEntities.remove(p.getInstance());
+            nearbyEntities.remove(p.getNative());
             int i = 0;
 
             for (Entity e : nearbyEntities) {
@@ -211,13 +211,13 @@ public class CombatUtils {
     public static boolean canCheck(SpartanPlayer player) {
         if (!player.movement.isLowEyeHeight() // Covers swimming & gliding
                 && !player.movement.wasFlying()
-                && player.getInstance().getVehicle() == null
+                && player.getNative().getVehicle() == null
                 && !mcMMO.hasGeneralAbility(player)
                 && Attributes.getAmount(player, Attributes.GENERIC_ARMOR) == 0.0
                 && Attributes.getAmount(player, Attributes.GENERIC_ATTACK_SPEED) == 0.0
                 && Attributes.getAmount(player, Attributes.GENERIC_KNOCKBACK_RESISTANCE) == 0.0
                 && Attributes.getAmount(player, Attributes.PLAYER_ENTITY_INTERACTION_RANGE) == 0.0) {
-            GameMode gameMode = player.getInstance().getGameMode();
+            GameMode gameMode = player.getNative().getGameMode();
             return gameMode == GameMode.SURVIVAL
                     || gameMode == GameMode.ADVENTURE
                     || gameMode == GameMode.CREATIVE;
@@ -227,7 +227,7 @@ public class CombatUtils {
     }
 
     public static boolean canCheck(SpartanPlayer player, LivingEntity entity) {
-        return !player.getInstance().getName().equals(entity.getName())
+        return !player.getNative().getName().equals(entity.getName())
                 && !MythicMobs.is(entity)
                 && !ItemsAdder.is(entity);
     }

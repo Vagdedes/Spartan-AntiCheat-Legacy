@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.compatibility.manual.building;
 
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import io.lumine.mythic.bukkit.BukkitAPIHelper;
@@ -56,7 +56,7 @@ public class MythicMobs {
 
     public static boolean is(SpartanPlayer player) {
         if (Compatibility.CompatibilityType.MYTHIC_MOBS.isFunctional()) {
-            PlayerInventory inventory = player.getInstance().getInventory();
+            PlayerInventory inventory = player.getNative().getInventory();
 
             for (ItemStack armor : inventory.getArmorContents()) {
                 if (armor != null && is(armor)) {

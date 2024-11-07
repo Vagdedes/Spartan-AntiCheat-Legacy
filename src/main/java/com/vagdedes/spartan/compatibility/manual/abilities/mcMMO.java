@@ -3,7 +3,7 @@ package com.vagdedes.spartan.compatibility.manual.abilities;
 import com.gmail.nossr50.datatypes.player.McMMOPlayer;
 import com.gmail.nossr50.util.player.UserManager;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
 import org.bukkit.entity.Player;
 
 public class mcMMO {
@@ -41,7 +41,7 @@ public class mcMMO {
     }
 
     private static McMMOPlayer getMcMMOPlayer(SpartanPlayer p) {
-        Player n = p.getInstance();
+        Player n = p.getNative();
         return n == null ? null : UserManager.getPlayer(n);
     }
 

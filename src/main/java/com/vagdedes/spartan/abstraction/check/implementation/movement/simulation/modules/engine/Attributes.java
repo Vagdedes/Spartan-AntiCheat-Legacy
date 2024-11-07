@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.abstraction.check.implementation.movement.simulation.modules.engine;
 
 
-import com.vagdedes.spartan.abstraction.player.SpartanPotionEffect;
+import com.vagdedes.spartan.abstraction.protocol.SpartanPotionEffect;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import org.bukkit.potion.PotionEffectType;
 

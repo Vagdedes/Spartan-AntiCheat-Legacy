@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.functionality.notifications;
 
 import com.vagdedes.spartan.abstraction.configuration.implementation.Settings;
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
@@ -51,7 +51,7 @@ public class CrossServerNotifications {
 
                                             for (SpartanPlayer player : players) {
                                                 if (player.getExecutor(hackType).getDetection(detection).canSendNotification(playerName)) {
-                                                    player.getInstance().sendMessage(notification);
+                                                    player.getNative().sendMessage(notification);
                                                     processed.put(id, true);
                                                 }
                                             }

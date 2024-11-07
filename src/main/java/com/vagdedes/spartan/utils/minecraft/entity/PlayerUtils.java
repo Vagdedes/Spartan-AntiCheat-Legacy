@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.utils.minecraft.entity;
 
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
-import com.vagdedes.spartan.abstraction.player.SpartanPotionEffect;
+import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanPotionEffect;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
@@ -138,7 +138,7 @@ public class PlayerUtils {
         if (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)) {
             return 0;
         }
-        ItemStack b = p.getInstance().getInventory().getBoots();
+        ItemStack b = p.getNative().getInventory().getBoots();
         return b != null ? b.getEnchantmentLevel(Enchantment.DEPTH_STRIDER) : 0;
     }
 

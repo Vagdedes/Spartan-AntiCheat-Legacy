@@ -73,7 +73,7 @@ public class Event_Combat implements Listener {
 
             if (protocol.packetsEnabled() == packets) {
                 // Objects
-                protocol.spartanPlayer.handleReceivedDamage(e);
+                protocol.spartanPlayer.handleReceivedDamage();
 
                 // Detections
                 if (entityAttack && (damagerIsPlayer || damager instanceof LivingEntity)) {

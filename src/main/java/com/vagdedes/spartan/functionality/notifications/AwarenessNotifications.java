@@ -1,6 +1,6 @@
 package com.vagdedes.spartan.functionality.notifications;
 
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.Config;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -84,10 +84,10 @@ public class AwarenessNotifications {
                 }
             } else if (sender instanceof SpartanPlayer) {
                 SpartanPlayer spartanPlayer = (SpartanPlayer) sender;
-                spartanPlayer.getInstance().sendMessage(message);
+                spartanPlayer.getNative().sendMessage(message);
 
                 if (console) {
-                    Bukkit.getConsoleSender().sendMessage("(" + spartanPlayer.getInstance().getName() + ") " + message);
+                    Bukkit.getConsoleSender().sendMessage("(" + spartanPlayer.getNative().getName() + ") " + message);
                 }
             }
         } else if (console) {

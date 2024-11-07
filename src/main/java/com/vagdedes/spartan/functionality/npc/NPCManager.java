@@ -1,6 +1,6 @@
 package com.vagdedes.spartan.functionality.npc;
 
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
@@ -120,7 +120,7 @@ public class NPCManager implements Listener {
                             SpartanPlayer player = SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer;
 
                             if (player != null) {
-                                InteractiveInventory.mainMenu.open(player, Permissions.has(player.getInstance()));
+                                InteractiveInventory.mainMenu.open(player, Permissions.has(player.getNative()));
                             }
                             break;
                         }
@@ -149,7 +149,7 @@ public class NPCManager implements Listener {
                                 SpartanPlayer player = SpartanBukkit.getProtocol((Player) damager).spartanPlayer;
 
                                 if (player != null) {
-                                    InteractiveInventory.mainMenu.open(player, Permissions.has(player.getInstance()));
+                                    InteractiveInventory.mainMenu.open(player, Permissions.has(player.getNative()));
                                 }
                             }
                             break;

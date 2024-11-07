@@ -1,8 +1,8 @@
 package com.vagdedes.spartan.functionality.tracking;
 
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
-import com.vagdedes.spartan.abstraction.player.PlayerTrackers;
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
+import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.world.SpartanBlock;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
@@ -55,7 +55,7 @@ public class MovementProcessing {
                                                     double vertical, double box) {
         if (player.isOnGround(true)
                 && player.movement.getTicksOnAir() == 0
-                && player.getInstance().getVehicle() == null
+                && player.getNative().getVehicle() == null
                 && vertical == 0.0
                 && GroundUtils.collisionHeightExists(box)) {
             player.trackers.removeMany(PlayerTrackers.TrackerFamily.MOTION);
@@ -98,7 +98,7 @@ public class MovementProcessing {
             player.movement.setLastLiquid(LAVA);
             return true;
         } else {
-            for (double i = 0.0; i < Math.ceil(player.getInstance().getEyeHeight()); i++) {
+            for (double i = 0.0; i < Math.ceil(player.getNative().getEyeHeight()); i++) {
                 for (SpartanLocation locationModified : location.getSurroundingLocations(GroundUtils.boundingBox, i, GroundUtils.boundingBox)) {
                     if (locationModified.getBlock().isLiquidOrWaterLogged(false)) {
                         player.movement.setLastLiquid(WATER);
@@ -126,7 +126,7 @@ public class MovementProcessing {
             if (blockY > minY) {
                 SpartanLocation locationModified = location.clone();
                 int max = (blockY - minY),
-                        playerHeight = AlgebraUtils.integerCeil(player.getInstance().getEyeHeight());
+                        playerHeight = AlgebraUtils.integerCeil(player.getNative().getEyeHeight());
                 Set<Integer> emptyNonLiquid = new HashSet<>(max),
                         fullNonLiquid = new HashSet<>(max);
 
@@ -169,13 +169,12 @@ public class MovementProcessing {
     // Separator
 
     public static boolean canCheck(SpartanPlayer player,
-                                   boolean elytra, boolean velocity,
+                                   boolean elytra,
                                    boolean flight,
                                    boolean playerAttributes,
                                    boolean environmentalAttributes) {
         if ((elytra || !player.movement.isGliding())
                 && (flight || !player.movement.wasFlying())
-                && (velocity || !player.trackers.has(PlayerTrackers.TrackerType.ABSTRACT_VELOCITY))
 
                 && (playerAttributes
                 || Attributes.getAmount(player, Attributes.GENERIC_MOVEMENT_SPEED) == 0.0

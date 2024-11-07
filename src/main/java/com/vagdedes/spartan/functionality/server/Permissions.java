@@ -1,6 +1,6 @@
 package com.vagdedes.spartan.functionality.server;
 
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.entity.Player;

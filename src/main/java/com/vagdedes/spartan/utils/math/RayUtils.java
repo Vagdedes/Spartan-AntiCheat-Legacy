@@ -1,6 +1,6 @@
 package com.vagdedes.spartan.utils.math;
 
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.world.SpartanBlock;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
@@ -359,7 +359,7 @@ public class RayUtils {
     public static float getEyeHeight(final boolean sneak, SpartanPlayer player) {
         float f2 = 1.62F;
 
-        if (player.getInstance().isSleeping()) {
+        if (player.getNative().isSleeping()) {
             f2 = 0.2F;
         }
         if (sneak) {

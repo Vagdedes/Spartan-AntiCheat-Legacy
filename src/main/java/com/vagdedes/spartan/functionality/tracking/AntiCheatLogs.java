@@ -2,8 +2,8 @@ package com.vagdedes.spartan.functionality.tracking;
 
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.PlayerViolation;
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.profiling.MiningHistory;
+import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
@@ -87,7 +87,7 @@ public class AntiCheatLogs {
     }
 
     public static void logMining(SpartanPlayer player, Block block, boolean cancelled) {
-        if (player.getInstance().getGameMode() == GameMode.SURVIVAL
+        if (player.getNative().getGameMode() == GameMode.SURVIVAL
                 && PlayerUtils.isPickaxeItem(player.getItemInHand().getType())) {
             MiningHistory.MiningOre ore = MiningHistory.getMiningOre(block.getType());
 
@@ -96,14 +96,14 @@ public class AntiCheatLogs {
                 World.Environment environment = location.world.getEnvironment();
                 int x = location.getBlockX(), y = location.getBlockY(), z = location.getBlockZ(), amount = 1;
                 String key = ore.toString(),
-                        log = player.getInstance().getName() + " found " + amount + " " + key
+                        log = player.getNative().getName() + " found " + amount + " " + key
                                 + " on " + x + ", " + y + ", " + z + ", " + BlockUtils.environmentToString(environment);
 
                 // API Event
                 PlayerFoundOreEvent event;
 
                 if (Config.settings.getBoolean("Important.enable_developer_api")) {
-                    event = new PlayerFoundOreEvent(player.getInstance(), log, location.getBukkitLocation(), block.getType());
+                    event = new PlayerFoundOreEvent(player.getNative(), log, location.getBukkitLocation(), block.getType());
                     Register.manager.callEvent(event);
                 } else {
                     event = null;

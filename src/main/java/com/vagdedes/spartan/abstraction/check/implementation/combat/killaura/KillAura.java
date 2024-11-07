@@ -42,7 +42,7 @@ public class KillAura extends CheckExecutor {
                 && CombatUtils.canCheck(this.protocol().spartanPlayer, entity)) {
             boolean isPlayer = entity instanceof Player;
             return (isPlayer || !MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_10) || entity.hasAI())
-                    && !this.protocol().spartanPlayer.getInstance().equals(entity)
+                    && !this.protocol().player.equals(entity)
                     && hackType.getCheck().getBooleanOption("detection." + (isPlayer ? "players" : "entities"), true);
         }
         return false;

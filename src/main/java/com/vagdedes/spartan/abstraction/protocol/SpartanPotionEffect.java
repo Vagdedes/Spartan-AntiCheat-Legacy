@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.abstraction.player;
+package com.vagdedes.spartan.abstraction.protocol;
 
 import com.vagdedes.spartan.functionality.server.TPS;
 import org.bukkit.potion.PotionEffect;

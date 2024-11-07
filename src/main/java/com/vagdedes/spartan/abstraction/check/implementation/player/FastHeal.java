@@ -71,7 +71,7 @@ public class FastHeal extends CheckExecutor {
                 }
                 previousHealth = health;
             }
-        } else if (((FoodLevelChangeEvent) object).getFoodLevel() > this.protocol().spartanPlayer.getInstance().getFoodLevel()
+        } else if (((FoodLevelChangeEvent) object).getFoodLevel() > this.protocol().player.getFoodLevel()
                 && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
                 || this.protocol().spartanPlayer.getItemInHand().getType() != Material.DRIED_KELP)) {
             this.protocol().spartanPlayer.getExecutor(hackType).addDisableCause(null, null, 10);
@@ -81,9 +81,9 @@ public class FastHeal extends CheckExecutor {
     @Override
     protected boolean canRun() {
         if (this.protocol().spartanPlayer.getWorld().getDifficulty() != Difficulty.PEACEFUL
-                && this.protocol().spartanPlayer.getInstance().getFireTicks() <= 0
+                && this.protocol().player.getFireTicks() <= 0
                 && Attributes.getAmount(this.protocol().spartanPlayer, Attributes.GENERIC_MAX_ABSORPTION) == 0.0) {
-            GameMode gameMode = this.protocol().spartanPlayer.getInstance().getGameMode();
+            GameMode gameMode = this.protocol().player.getGameMode();
             return gameMode == GameMode.ADVENTURE || gameMode == GameMode.SURVIVAL;
         } else {
             return false;

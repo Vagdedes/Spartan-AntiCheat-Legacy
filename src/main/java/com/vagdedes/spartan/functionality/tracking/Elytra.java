@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.functionality.tracking;
 
 import com.vagdedes.spartan.abstraction.check.implementation.world.exploits.Exploits;
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.Permissions;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Material;
@@ -12,9 +12,9 @@ public class Elytra {
 
     public static void judge(SpartanPlayer p) {
         if (((Exploits) p.getExecutor(Enums.HackType.Exploits)).elytra.isEnabled()
-                && !Permissions.isBypassing(p.getInstance(), Enums.HackType.Exploits)) {
-            if (p.getInstance().getVehicle() == null) {
-                PlayerInventory inventory = p.getInstance().getInventory();
+                && !Permissions.isBypassing(p.getNative(), Enums.HackType.Exploits)) {
+            if (p.getNative().getVehicle() == null) {
+                PlayerInventory inventory = p.getNative().getInventory();
 
                 if (inventory != null) {
                     ItemStack i = inventory.getChestplate();
@@ -24,17 +24,17 @@ public class Elytra {
                             if (i.getDurability() < 432) {
                                 p.getExecutor(Enums.HackType.Exploits).handle(false, Elytra.class);
                             } else {
-                                p.getInstance().setGliding(false);
+                                p.getNative().setGliding(false);
                             }
                         } else {
-                            p.getInstance().setGliding(false);
+                            p.getNative().setGliding(false);
                         }
                     } else {
-                        p.getInstance().setGliding(false);
+                        p.getNative().setGliding(false);
                     }
                 }
             } else {
-                p.getInstance().setGliding(false);
+                p.getNative().setGliding(false);
             }
         }
     }

@@ -4,7 +4,7 @@ import com.vagdedes.filegui.api.FileGUIAPI;
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.inventory.InventoryMenu;
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.command.CommandExecution;
 import com.vagdedes.spartan.functionality.connection.DiscordMemberCount;
@@ -149,23 +149,23 @@ public class MainMenu extends InventoryMenu {
             player.sendImportantMessage("§6Discord Invite URL§8: §e§n" + DiscordMemberCount.discordURL);
 
         } else if (item.equals("Compatibilities")) {
-            if (!Permissions.has(player.getInstance(), Permission.MANAGE)) {
-                player.getInstance().closeInventory();
+            if (!Permissions.has(player.getNative(), Permission.MANAGE)) {
+                player.getNative().closeInventory();
                 ClickableMessage.sendURL(
-                        player.getInstance(),
+                        player.getNative(),
                         Config.messages.getColorfulString("no_permission"),
                         CommandExecution.support,
                         DiscordMemberCount.discordURL
                 );
             } else if (Compatibility.CompatibilityType.FILE_GUI.isFunctional()) {
-                Player n = player.getInstance();
+                Player n = player.getNative();
 
                 if (n != null && n.hasPermission("filegui.modify")) {
                     FileGUIAPI.openMenu(n, Config.compatibility.getFile().getPath(), 1);
                 } else {
-                    player.getInstance().closeInventory();
+                    player.getNative().closeInventory();
                     ClickableMessage.sendURL(
-                            player.getInstance(),
+                            player.getNative(),
                             Config.messages.getColorfulString("no_permission"),
                             CommandExecution.support,
                             DiscordMemberCount.discordURL
@@ -174,10 +174,10 @@ public class MainMenu extends InventoryMenu {
             }
 
         } else if (item.equals("Management")) {
-            if (!Permissions.has(player.getInstance(), Permission.MANAGE)) {
-                player.getInstance().closeInventory();
+            if (!Permissions.has(player.getNative(), Permission.MANAGE)) {
+                player.getNative().closeInventory();
                 ClickableMessage.sendURL(
-                        player.getInstance(),
+                        player.getNative(),
                         Config.messages.getColorfulString("no_permission"),
                         CommandExecution.support,
                         DiscordMemberCount.discordURL

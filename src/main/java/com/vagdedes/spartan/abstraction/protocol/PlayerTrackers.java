@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.abstraction.player;
+package com.vagdedes.spartan.abstraction.protocol;
 
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -14,9 +14,9 @@ public class PlayerTrackers {
     }
 
     public enum TrackerType {
-        ABSTRACT_VELOCITY(TrackerFamily.VELOCITY), BOUNCING_BLOCKS(TrackerFamily.VELOCITY),
-        PISTON(TrackerFamily.VELOCITY), BUBBLE_WATER(TrackerFamily.VELOCITY),
-        TRIDENT(TrackerFamily.VELOCITY), DAMAGE(TrackerFamily.VELOCITY),
+        BOUNCING_BLOCKS(TrackerFamily.VELOCITY), PISTON(TrackerFamily.VELOCITY),
+        BUBBLE_WATER(TrackerFamily.VELOCITY), TRIDENT(TrackerFamily.VELOCITY),
+        DAMAGE(TrackerFamily.VELOCITY),
 
         VEHICLE(TrackerFamily.MOTION);
 

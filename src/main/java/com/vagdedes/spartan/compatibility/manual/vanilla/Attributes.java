@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.compatibility.manual.vanilla;
 
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.java.ReflectionUtils;
 import org.bukkit.attribute.Attribute;
@@ -61,7 +61,7 @@ public class Attributes {
         if (classExists && Compatibility.CompatibilityType.ITEM_ATTRIBUTES.isFunctional()) {
             for (Attribute attribute : Attribute.values()) {
                 if (attribute.name().equals(attributeString)) {
-                    PlayerInventory inventory = p.getInstance().getInventory();
+                    PlayerInventory inventory = p.getNative().getInventory();
                     int modifiersCount = 0;
                     double amount = 0.0;
 

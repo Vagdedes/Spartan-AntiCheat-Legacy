@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.compatibility.manual.enchants;
 
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.willfp.ecoenchants.enchants.EcoEnchant;
 import org.bukkit.enchantments.Enchantment;
@@ -12,7 +12,7 @@ public class EcoEnchants {
 
     public static boolean has(SpartanPlayer player) {
         if (Compatibility.CompatibilityType.ECO_ENCHANTS.isFunctional()) {
-            PlayerInventory inventory = player.getInstance().getInventory();
+            PlayerInventory inventory = player.getNative().getInventory();
 
             for (ItemStack armor : inventory.getArmorContents()) {
                 if (armor != null && has(armor)) {

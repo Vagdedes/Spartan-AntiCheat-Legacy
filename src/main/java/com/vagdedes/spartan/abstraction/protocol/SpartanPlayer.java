@@ -1,10 +1,9 @@
-package com.vagdedes.spartan.abstraction.player;
+package com.vagdedes.spartan.abstraction.protocol;
 
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.necessary.BedrockCompatibility;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
@@ -18,17 +17,14 @@ import com.vagdedes.spartan.listeners.bukkit.standalone.chunks.Event_Chunks;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
-import com.vagdedes.spartan.utils.minecraft.inventory.EnchantmentUtils;
 import com.vagdedes.spartan.utils.minecraft.server.PluginUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import com.vagdedes.spartan.utils.minecraft.world.GroundUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.*;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -38,21 +34,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SpartanPlayer {
-
-    private static final Set<Enums.HackType> resetChecks;
-
-    static {
-        Set<Enums.HackType> set = new HashSet<>();
-
-        for (Enums.HackType hackType : Enums.HackType.values()) {
-            if (hackType.category == Enums.HackCategoryType.COMBAT
-                    || hackType.category == Enums.HackCategoryType.MOVEMENT
-                    || hackType.category == Enums.HackCategoryType.WORLD) {
-                set.add(hackType);
-            }
-        }
-        resetChecks = set;
-    }
 
     public final SpartanProtocol protocol;
     private final Map<PotionEffectType, SpartanPotionEffect> potionEffects;
@@ -108,7 +89,7 @@ public class SpartanPlayer {
 
     public boolean debug(boolean function, boolean broadcast, boolean cutDecimals, Object... message) {
         if (function && Bukkit.getMotd().contains(Register.plugin.getName())) {
-            Player p = getInstance();
+            Player p = getNative();
 
             if (p.isWhitelisted()) {
                 String string = "§f" + p.getName() + " ";
@@ -195,32 +176,32 @@ public class SpartanPlayer {
 
     public void sendInventoryCloseMessage(String message) {
         if (message != null) {
-            this.getInstance().sendMessage(message);
+            this.getNative().sendMessage(message);
         }
-        SpartanBukkit.transferTask(this, this.getInstance()::closeInventory);
+        SpartanBukkit.transferTask(this, this.getNative()::closeInventory);
     }
 
     public void sendImportantMessage(String message) {
-        this.getInstance().sendMessage("");
+        this.getNative().sendMessage("");
         this.sendInventoryCloseMessage(message);
-        this.getInstance().sendMessage("");
+        this.getNative().sendMessage("");
     }
 
     // Separator
 
     public Inventory createInventory(int size, String title) {
-        return Bukkit.createInventory(this.getInstance(), size, title);
+        return Bukkit.createInventory(this.getNative(), size, title);
     }
 
     // Separator
 
     public ItemStack getItemInHand() {
-        return this.getInstance().getInventory().getItemInHand();
+        return this.getNative().getInventory().getItemInHand();
     }
 
     // Separator
 
-    public Player getInstance() {
+    public Player getNative() {
         return this.protocol.player;
     }
 
@@ -236,7 +217,7 @@ public class SpartanPlayer {
     }
 
     public boolean isOnGround(boolean custom) {
-        Entity vehicle = this.getInstance().getVehicle();
+        Entity vehicle = this.getNative().getVehicle();
 
         if (vehicle != null) {
             return vehicle.isOnGround();
@@ -252,7 +233,7 @@ public class SpartanPlayer {
     public Block getTargetBlock(double distance, double limit) {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)) {
             try {
-                List<Block> list = this.getInstance().getLineOfSight(null, (int) Math.min(distance, limit));
+                List<Block> list = this.getNative().getLineOfSight(null, (int) Math.min(distance, limit));
 
                 if (!list.isEmpty()) {
                     for (Block block : list) {
@@ -271,7 +252,7 @@ public class SpartanPlayer {
 
     public boolean isFrozen() {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)) {
-            return this.getInstance().isFrozen();
+            return this.getNative().isFrozen();
         } else {
             return false;
         }
@@ -279,73 +260,15 @@ public class SpartanPlayer {
 
     // Separator
 
-    public void handleReceivedDamage(EntityDamageEvent event) {
-        boolean abstractVelocity = false;
+    public void handleReceivedDamage() {
         this.trackers.add(PlayerTrackers.TrackerType.DAMAGE, AlgebraUtils.integerCeil(TPS.maximum));
-        ItemStack activeItem;
-
-        if (event instanceof EntityDamageByEntityEvent) {
-            EntityDamageByEntityEvent actualEvent = (EntityDamageByEntityEvent) event;
-
-            if (actualEvent.getDamager() instanceof Player) {
-                activeItem = ((Player) actualEvent.getDamager()).getInventory().getItemInHand();
-            } else if (actualEvent.getDamager() instanceof LivingEntity) {
-                activeItem = ((LivingEntity) actualEvent.getDamager()).getEquipment().getItemInHand();
-            } else if (actualEvent.getDamager() instanceof Projectile) {
-                Projectile projectile = (Projectile) actualEvent.getDamager();
-
-                if (projectile.getShooter() instanceof LivingEntity) {
-                    LivingEntity shooter = (LivingEntity) projectile.getShooter();
-                    activeItem = shooter.getEquipment().getItemInHand();
-
-                    if (activeItem != null
-                            && (activeItem.getType() == Material.BOW
-                            || MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_14)
-                            && activeItem.getType() == Material.CROSSBOW)) {
-                        int level = activeItem.getEnchantmentLevel(EnchantmentUtils.ARROW_KNOCKBACK);
-
-                        if (level > 2) {
-                            this.trackers.add(
-                                    PlayerTrackers.TrackerType.ABSTRACT_VELOCITY,
-                                    AlgebraUtils.integerRound(Math.log(level) * TPS.maximum)
-                            );
-                            abstractVelocity = true;
-                        }
-                    }
-                } else {
-                    activeItem = null;
-                }
-            } else if (actualEvent.getDamager() instanceof Explosive) {
-                activeItem = null;
-            } else {
-                activeItem = null;
-            }
-        } else {
-            activeItem = null;
-        }
-
-        if (activeItem != null) {
-            int level = activeItem.getEnchantmentLevel(Enchantment.KNOCKBACK);
-
-            if (level > 2) {
-                this.trackers.add(
-                        PlayerTrackers.TrackerType.ABSTRACT_VELOCITY,
-                        AlgebraUtils.integerRound(Math.log(level) * TPS.maximum)
-                );
-                abstractVelocity = true;
-            }
-        }
-
-        if (!abstractVelocity && !event.isCancelled()) {
-            this.trackers.disable(PlayerTrackers.TrackerType.ABSTRACT_VELOCITY, 2);
-        }
     }
 
     // Separator
 
     public float getAttackCooldown() {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)) {
-            return this.getInstance().getAttackCooldown();
+            return this.getNative().getAttackCooldown();
         } else {
             return 1.0f;
         }
@@ -354,25 +277,25 @@ public class SpartanPlayer {
     // Separator
 
     public double getHealth() {
-        return ProtocolLib.isTemporary(this.getInstance())
+        return ProtocolLib.isTemporary(this.getNative())
                 ? 0.0
-                : this.getInstance().getHealth();
+                : this.getNative().getHealth();
     }
 
     public int getEntityId() {
-        return ProtocolLib.isTemporary(this.getInstance())
+        return ProtocolLib.isTemporary(this.getNative())
                 ? new Random().nextInt()
-                : this.getInstance().getEntityId();
+                : this.getNative().getEntityId();
     }
 
     // Separator
 
     private void setStoredPotionEffects() {
-        if (!ProtocolLib.isTemporary(this.getInstance())) {
+        if (!ProtocolLib.isTemporary(this.getNative())) {
             SpartanBukkit.transferTask(
                     protocol.spartanPlayer,
                     () -> {
-                        for (PotionEffect effect : this.getInstance().getActivePotionEffects()) {
+                        for (PotionEffect effect : this.getNative().getActivePotionEffects()) {
                             this.potionEffects.put(effect.getType(), new SpartanPotionEffect(effect));
                         }
                     }
@@ -381,9 +304,9 @@ public class SpartanPlayer {
     }
 
     public Collection<PotionEffect> getActivePotionEffects() {
-        return ProtocolLib.isTemporary(this.getInstance())
+        return ProtocolLib.isTemporary(this.getNative())
                 ? new ArrayList<>(0)
-                : this.getInstance().getActivePotionEffects();
+                : this.getNative().getActivePotionEffects();
     }
 
     public SpartanPotionEffect getPotionEffect(PotionEffectType type, long lastActive) {
@@ -450,7 +373,7 @@ public class SpartanPlayer {
             SpartanBukkit.transferTask(
                     this,
                     () -> {
-                        nearbyEntities.addAll(this.getInstance().getNearbyEntities(x, y, z));
+                        nearbyEntities.addAll(this.getNative().getNearbyEntities(x, y, z));
                         booleans[0] = true;
 
                         synchronized (thread) {
@@ -522,18 +445,18 @@ public class SpartanPlayer {
         }
 
         if (iterations > 0) {
-            this.getInstance().setFallDistance(0.0f);
+            this.getNative().setFallDistance(0.0f);
 
             if (Config.settings.getBoolean("Detections.fall_damage_on_teleport")
                     && iterations > PlayerUtils.fallDamageAboveBlocks) { // Damage
-                damage(Math.max(this.getInstance().getFallDistance(), iterations));
+                damage(Math.max(this.getNative().getFallDistance(), iterations));
             }
         }
     }
 
     public boolean teleport(SpartanLocation location) {
         if (this.getWorld().equals(location.world)) {
-            Player p = getInstance();
+            Player p = getNative();
 
             if (SpartanBukkit.isSynchronised()) {
                 p.leaveVehicle();
@@ -555,8 +478,7 @@ public class SpartanPlayer {
     // Separator
 
     public void damage(double amount) {
-        trackers.disable(PlayerTrackers.TrackerType.ABSTRACT_VELOCITY, 3);
-        this.getInstance().damage(amount);
+        this.getNative().damage(amount);
     }
 
     // Separator

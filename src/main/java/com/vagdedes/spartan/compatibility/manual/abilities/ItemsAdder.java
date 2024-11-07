@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.compatibility.manual.abilities;
 
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.java.ReflectionUtils;
 import dev.lone.itemsadder.api.CustomBlock;
@@ -18,7 +18,7 @@ public class ItemsAdder {
 
     public static boolean is(SpartanPlayer player) {
         if (classExists && Compatibility.CompatibilityType.ITEMS_ADDER.isFunctional()) {
-            PlayerInventory inventory = player.getInstance().getInventory();
+            PlayerInventory inventory = player.getNative().getInventory();
 
             for (ItemStack armor : inventory.getArmorContents()) {
                 if (armor != null && is(armor)) {

@@ -36,7 +36,7 @@ public class FastBow extends CheckExecutor {
                 checkBowForce(((EntityShootBowEvent) object).getForce());
             }
         } else if (((PlayerInteractEvent) object).getAction() == Action.RIGHT_CLICK_AIR) {
-            PlayerInventory inventory = this.protocol().spartanPlayer.getInstance().getInventory();
+            PlayerInventory inventory = this.protocol().player.getInventory();
 
             if (inventory.getItemInHand().getType() == Material.BOW
                     && inventory.contains(Material.ARROW)) {

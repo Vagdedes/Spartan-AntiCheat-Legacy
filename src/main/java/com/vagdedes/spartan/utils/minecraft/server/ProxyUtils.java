@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.utils.minecraft.server;
 
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
@@ -55,11 +55,11 @@ public class ProxyUtils {
                         SpartanProtocol protocol = entry.getValue();
                         SpartanPlayer loopPlayer = protocol.spartanPlayer;
 
-                        if (loopPlayer.getInstance().isOp()) {
-                            player = loopPlayer.getInstance();
+                        if (loopPlayer.getNative().isOp()) {
+                            player = loopPlayer.getNative();
                             break;
                         } else if (Permissions.isStaff(protocol.player)) {
-                            player = loopPlayer.getInstance();
+                            player = loopPlayer.getNative();
                         }
                     }
                 }

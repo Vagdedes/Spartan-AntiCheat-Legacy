@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.functionality.connection.cloud;
 
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
@@ -90,7 +90,7 @@ public class CloudBase {
     }
 
     public static void announce(SpartanPlayer player) {
-        if (Permissions.isStaff(player.getInstance())) {
+        if (Permissions.isStaff(player.getNative())) {
             SpartanBukkit.connectionThread.execute(() -> {
                 String[][] announcements = CloudConnections.getStaffAnnouncements();
 
@@ -104,7 +104,7 @@ public class CloudBase {
                                     "staff-announcement-" + announcement[0],
                                     Integer.parseInt(announcement[2])
                             )) {
-                                player.getInstance().sendMessage(AwarenessNotifications.getNotification(announcement[1]));
+                                player.getNative().sendMessage(AwarenessNotifications.getNotification(announcement[1]));
                             }
                         }
                     }
@@ -303,7 +303,7 @@ public class CloudBase {
                                         "staff-announcement-" + announcement[0],
                                         Integer.parseInt(announcement[2])
                                 )) {
-                                    p.getInstance().sendMessage(AwarenessNotifications.getNotification(announcement[1]));
+                                    p.getNative().sendMessage(AwarenessNotifications.getNotification(announcement[1]));
                                 }
                             }
                         }

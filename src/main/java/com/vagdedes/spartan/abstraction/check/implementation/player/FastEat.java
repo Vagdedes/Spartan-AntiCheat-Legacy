@@ -35,7 +35,7 @@ public class FastEat extends CheckExecutor {
 
     private long getDelay() {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
-            PlayerInventory inventory = this.protocol().spartanPlayer.getInstance().getInventory();
+            PlayerInventory inventory = this.protocol().player.getInventory();
 
             for (ItemStack itemStack : new ItemStack[]{inventory.getItemInHand(), inventory.getItemInOffHand()}) {
                 if (itemStack != null) {
@@ -100,9 +100,9 @@ public class FastEat extends CheckExecutor {
         if (object instanceof FoodLevelChangeEvent) {
             int lvl = ((FoodLevelChangeEvent) object).getFoodLevel();
 
-            if (lvl > this.protocol().spartanPlayer.getInstance().getFoodLevel()
+            if (lvl > this.protocol().player.getFoodLevel()
                     && (checkDelay() || checkEating())) {
-                Player p = this.protocol().spartanPlayer.getInstance();
+                Player p = this.protocol().player;
                 p.setFoodLevel(p.getFoodLevel() - (lvl - p.getFoodLevel()));
             }
         } else if (!this.protocol().spartanPlayer.isBedrockPlayer()) {

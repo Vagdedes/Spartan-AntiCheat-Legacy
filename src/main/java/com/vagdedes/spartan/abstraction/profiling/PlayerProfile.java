@@ -41,10 +41,10 @@ public class PlayerProfile {
 
         if (protocol != null) {
             this.offlinePlayer = protocol.player;
-            this.registerExecutors(protocol, false);
+            this.registerExecutors(protocol);
         } else {
             this.offlinePlayer = null;
-            this.registerExecutors(SpartanProtocol.DEFAULT, true);
+            this.registerExecutors(null);
         }
     }
 
@@ -59,7 +59,7 @@ public class PlayerProfile {
         for (MiningHistory.MiningOre ore : MiningHistory.MiningOre.values()) {
             this.miningHistory[ore.ordinal()] = new MiningHistory(ore);
         }
-        this.registerExecutors(protocol, false);
+        this.registerExecutors(protocol);
     }
 
     // Separator
@@ -68,22 +68,9 @@ public class PlayerProfile {
         return lastDataType;
     }
 
-    // Separator
-
-    public void clear() {
-        for (CheckExecutor executor : this.getExecutors()) {
-            executor.setProtocol(null);
-
-            for (DetectionExecutor detectionExecutor : executor.getDetections()) {
-                detectionExecutor.setProtocol(null);
-            }
-        }
-    }
-
     public void update(SpartanProtocol protocol) {
         this.offlinePlayer = protocol.player;
         this.lastDataType = protocol.spartanPlayer.dataType;
-        this.registerExecutors(protocol, false);
 
         for (CheckExecutor executor : this.getExecutors()) {
             executor.setProtocol(protocol);
@@ -95,6 +82,16 @@ public class PlayerProfile {
     }
 
     // Separator
+
+    public void clearExecutors() {
+        for (CheckExecutor executor : this.getExecutors()) {
+            executor.setProtocol(null);
+
+            for (DetectionExecutor detectionExecutor : executor.getDetections()) {
+                detectionExecutor.setProtocol(null);
+            }
+        }
+    }
 
     public CheckExecutor getExecutor(Enums.HackType hackType) {
         int ordinal = hackType.ordinal();
@@ -110,7 +107,7 @@ public class PlayerProfile {
         }
     }
 
-    private void registerExecutors(SpartanProtocol protocol, boolean clear) {
+    private void registerExecutors(SpartanProtocol protocol) {
         synchronized (this.executors) {
             for (Enums.HackType hackType : Enums.HackType.values()) {
                 try {
@@ -118,14 +115,6 @@ public class PlayerProfile {
                             .getConstructor(hackType.getClass(), SpartanProtocol.class)
                             .newInstance(hackType, protocol);
                     this.executors[hackType.ordinal()] = executor;
-
-                    if (clear) {
-                        executor.setProtocol(null);
-
-                        for (DetectionExecutor detectionExecutor : executor.getDetections()) {
-                            detectionExecutor.setProtocol(null);
-                        }
-                    }
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -167,7 +156,7 @@ public class PlayerProfile {
         for (CheckExecutor checkExecutor : this.getExecutors()) {
             for (DetectionExecutor detectionExecutor : checkExecutor.getDetections()) {
                 if (detectionExecutor.hasDataToCompare(dataType)) {
-                    return detectionExecutor.protocol().spartanPlayer != null
+                    return detectionExecutor.protocol() != null
                             && detectionExecutor.protocol().spartanPlayer.dataType == dataType;
                 }
             }

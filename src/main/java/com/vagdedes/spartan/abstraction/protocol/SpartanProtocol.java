@@ -2,7 +2,6 @@ package com.vagdedes.spartan.abstraction.protocol;
 
 import com.vagdedes.spartan.abstraction.check.implementation.movement.morepackets.TimerBalancer;
 import com.vagdedes.spartan.abstraction.data.CheckBoundData;
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.connection.Latency;
@@ -19,9 +18,6 @@ import org.bukkit.event.player.PlayerVelocityEvent;
 import java.util.*;
 
 public class SpartanProtocol {
-
-    // todo compare hashcode to find default and avoid check runs
-    public static final SpartanProtocol DEFAULT = new SpartanProtocol();
 
     public final Player player;
     public final SpartanPlayer spartanPlayer;
@@ -85,14 +81,6 @@ public class SpartanProtocol {
         this.oldBlockEvent = null;
 
         this.setProfile(ResearchEngine.getPlayerProfile(this, false));
-    }
-
-    private SpartanProtocol() {
-        this.player = null;
-        this.version = null;
-        this.spartanPlayer = null;
-        this.timerBalancer = null;
-        this.mcClient = null;
     }
 
     public boolean isUsingVersion(MultiVersion.MCVersion trialVersion) {

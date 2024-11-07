@@ -2,7 +2,7 @@ package com.vagdedes.spartan.utils.minecraft.server;
 
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.Check;
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.notifications.CrossServerNotifications;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
@@ -55,13 +55,13 @@ public class ConfigUtils {
     public static String replaceWithSyntax(SpartanPlayer p, String message, HackType hackType) {
         SpartanLocation loc = p.movement.getLocation();
         String worldName = p.getWorld().getName();
-        message = replace(message, "{player}", p.getInstance().getName());
+        message = replace(message, "{player}", p.getNative().getName());
         message = replace(message, "{player:type}", p.dataType.toString().toLowerCase());
         message = replace(message, "{uuid}", p.protocol.getUUID().toString());
         message = replace(message, "{ping}", String.valueOf(p.protocol.getPing()));
         message = replace(message, "{world}", worldName);
         message = replace(message, "{health}", String.valueOf(p.getHealth()));
-        message = replace(message, "{gamemode}", p.getInstance().getGameMode().toString().toLowerCase());
+        message = replace(message, "{gamemode}", p.getNative().getGameMode().toString().toLowerCase());
         message = replace(message, "{x}", String.valueOf(loc.getBlockX()));
         message = replace(message, "{y}", String.valueOf(loc.getBlockY()));
         message = replace(message, "{z}", String.valueOf(loc.getBlockZ()));

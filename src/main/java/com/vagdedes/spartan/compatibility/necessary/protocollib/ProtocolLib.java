@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.compatibility.necessary.protocollib;
 
 import com.comphenix.protocol.injector.temporary.TemporaryPlayer;
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.listeners.bukkit.standalone.chunks.Event_Chunks;
@@ -52,7 +52,7 @@ public class ProtocolLib {
             if (!players.isEmpty()) {
                 for (SpartanPlayer p : players) {
                     if (AwarenessNotifications.canSend(p.protocol.getUUID(), "protocol-lib", 0)) {
-                        p.getInstance().sendMessage(message);
+                        p.getNative().sendMessage(message);
                     }
                 }
             }

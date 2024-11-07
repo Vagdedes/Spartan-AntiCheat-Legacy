@@ -1,6 +1,6 @@
 package com.vagdedes.spartan.functionality.command;
 
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
@@ -93,7 +93,7 @@ public class CommandTab implements TabCompleter {
                 player &= p != null;
 
                 for (SpartanProtocol protocol : protocols) {
-                    if (!player || p.getInstance().canSee(protocol.player)) {
+                    if (!player || p.getNative().canSee(protocol.player)) {
                         String name = protocol.player.getName();
 
                         if (name.toLowerCase().contains(argAbstract)) {

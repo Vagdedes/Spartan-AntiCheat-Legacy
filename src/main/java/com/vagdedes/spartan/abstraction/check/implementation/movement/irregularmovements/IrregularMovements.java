@@ -85,7 +85,6 @@ public class IrregularMovements extends CheckExecutor {
         return MovementProcessing.canCheck(
                 this.protocol().spartanPlayer,
                 false,
-                true,
                 false,
                 true,
                 false

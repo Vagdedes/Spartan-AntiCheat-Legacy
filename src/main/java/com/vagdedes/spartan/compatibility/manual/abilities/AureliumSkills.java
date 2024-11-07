@@ -3,7 +3,7 @@ package com.vagdedes.spartan.compatibility.manual.abilities;
 import com.archyx.aureliumskills.api.event.TerraformBlockBreakEvent;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.data.Cooldowns;
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.java.OverflowMap;
 import org.bukkit.event.EventHandler;

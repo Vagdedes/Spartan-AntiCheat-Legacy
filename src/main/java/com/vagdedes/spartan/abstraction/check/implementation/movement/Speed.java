@@ -4,9 +4,9 @@ import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
-import com.vagdedes.spartan.abstraction.player.PlayerTrackers;
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
-import com.vagdedes.spartan.abstraction.player.SpartanPotionEffect;
+import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
+import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanPotionEffect;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanBlock;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
@@ -105,11 +105,11 @@ public class Speed extends CheckExecutor {
     }
 
     private void moveTick(PlayerMoveEvent e) {
-        Location location = this.protocol().spartanPlayer.protocol.getLocation().clone();
+        Location location = this.protocol().getLocation().clone();
         if (f == null) f = location.clone();
         Location from = e.getFrom();
         Location to = e.getTo();
-        boolean onGround = this.protocol().spartanPlayer.protocol.isOnGround();
+        boolean onGround = this.protocol().isOnGround();
         double dx = to.getX() - from.getX();
         double dz = to.getZ() - from.getZ();
 
@@ -201,18 +201,18 @@ public class Speed extends CheckExecutor {
     }
 
     private double updateStats() {
-        if (!this.protocol().spartanPlayer.protocol.isOnGround()) {
+        if (!this.protocol().isOnGround()) {
             onAir++;
             onGround = 0;
         } else {
             onGround++;
             onAir = 0;
         }
-        SpartanLocation to = new SpartanLocation(this.protocol().spartanPlayer.protocol.getLocation().clone());
-        PlayerInventory inventory = this.protocol().spartanPlayer.getInstance().getInventory();
-        Entity vehicle = this.protocol().spartanPlayer.getInstance().getVehicle();
+        SpartanLocation to = new SpartanLocation(this.protocol().getLocation().clone());
+        PlayerInventory inventory = this.protocol().player.getInventory();
+        Entity vehicle = this.protocol().player.getVehicle();
         if (onGround == 1) this.multiplyFriction = 0.26;
-        double m = (this.protocol().spartanPlayer.getInstance().getWalkSpeed() * 5);
+        double m = (this.protocol().player.getWalkSpeed() * 5);
         boolean solidBlockOnTop = RayUtils.onSolidBlock(this.protocol().spartanPlayer, to.clone().add(0, 2, 0));
         m += getMaxSpeedAmplifier();
         SpartanPotionEffect dolphinEffect = PlayerUtils.dolphinsGrace
@@ -233,7 +233,7 @@ public class Speed extends CheckExecutor {
             }
         }
         if (dolphinEffect != null) if (this.multiply < 5.0D) this.multiply = 5.0D;
-        if (slimeBlockCause(this.protocol().spartanPlayer, new SpartanLocation(this.protocol().spartanPlayer.protocol.getLocation()))) {
+        if (slimeBlockCause(this.protocol().spartanPlayer, new SpartanLocation(this.protocol().getLocation()))) {
             if (this.multiply < 3) this.multiply = 3D;
         }
         if (solidBlockOnTop) {
@@ -269,9 +269,9 @@ public class Speed extends CheckExecutor {
         m *= 1 + (((speedEffect != null ? (speedEffect.bukkitEffect.getAmplifier() + 1) * 0.4 : 0))
                 + (this.onIce(this.protocol().spartanPlayer, this.protocol().spartanPlayer.movement.getLocation().clone()) ? 0.66 : 0)
                 + multiply + multiplyVelo
-                + ((this.protocol().spartanPlayer.protocol.isOnGround()) ? multiplyFriction : 0));
+                + ((this.protocol().isOnGround()) ? multiplyFriction : 0));
         if (levitationEffect != null || glideEffect != null) m *= 1.3;
-        SpartanBlock block = new SpartanLocation(this.protocol().spartanPlayer.protocol.getLocation()).getBlock();
+        SpartanBlock block = new SpartanLocation(this.protocol().getLocation()).getBlock();
         if (BlockUtils.areWebs(block.getType())) {
             m /= 4.0;
         }
@@ -336,7 +336,6 @@ public class Speed extends CheckExecutor {
     protected boolean canRun() {
         return MovementProcessing.canCheck(
                 this.protocol().spartanPlayer,
-                true,
                 true,
                 false,
                 true,

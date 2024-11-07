@@ -39,15 +39,15 @@ public class HitReach extends CheckExecutor {
         PlayerAttackEvent event = (PlayerAttackEvent) object;
         LivingEntity target = event.target;
 
-        if (this.protocol().spartanPlayer.protocol.packetsEnabled()) {
+        if (this.protocol().packetsEnabled()) {
             if (CombatUtils.canCheck(this.protocol().spartanPlayer, target)
-                    && !this.protocol().spartanPlayer.getInstance().getGameMode().equals(GameMode.CREATIVE)) {
+                    && !this.protocol().player.getGameMode().equals(GameMode.CREATIVE)) {
                 SpartanProtocol targetProtocol = SpartanBukkit.getProtocol(ProtocolLib.getUUID(target));
                 if (targetProtocol == null) return;
                 double bruteforceRayTrace = 14.88;
                 double value;
 
-                boolean is1_8 = this.protocol().spartanPlayer.protocol.isUsingVersion(MultiVersion.MCVersion.V1_8);
+                boolean is1_8 = this.protocol().isUsingVersion(MultiVersion.MCVersion.V1_8);
                 double hitbox = (is1_8) ? 0.4 : 0.3;
                 if (targetProtocol.getLocations() == null) return;
                 try {
@@ -78,12 +78,12 @@ public class HitReach extends CheckExecutor {
                         localVl -= 40;
                     }
                 } catch (Exception e) {
-                    Register.plugin.getLogger().warning("Failed to check RayTrace stack (" + this.protocol().spartanPlayer.protocol.player.getName() + ")");
+                    Register.plugin.getLogger().warning("Failed to check RayTrace stack (" + this.protocol().player.getName() + ")");
                 }
             }
         } else {
             if (CombatUtils.canCheck(this.protocol().spartanPlayer, target)
-                    && !this.protocol().spartanPlayer.getInstance().getGameMode().equals(GameMode.CREATIVE)) {
+                    && !this.protocol().player.getGameMode().equals(GameMode.CREATIVE)) {
                 double bruteforceRayTrace = RayUtils.bruteforceRayTrace(this.protocol().spartanPlayer, target),
                         diff = bruteforceRayTrace - 0.4;
                 rayTraceAnalysis.addLast(bruteforceRayTrace);
@@ -103,7 +103,7 @@ public class HitReach extends CheckExecutor {
         }
         double result = globalValue / rayTraceAnalysis.size();
 
-        if (result > (this.protocol().spartanPlayer.protocol.packetsEnabled() ? 0.43 : 0.5)) punish = "simple";
+        if (result > (this.protocol().packetsEnabled() ? 0.43 : 0.5)) punish = "simple";
         int percent = (int) ((result / 0.4) * 100);
         if (punish != null) {
             vl += 100;

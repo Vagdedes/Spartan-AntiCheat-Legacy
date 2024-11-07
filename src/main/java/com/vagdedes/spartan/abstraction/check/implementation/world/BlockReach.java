@@ -103,7 +103,7 @@ public class BlockReach extends CheckExecutor {
                             && BlockUtils.isFullSolid(block.getType())
                             && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
                             || block.getType() != Material.BARRIER)
-                            && this.protocol().spartanPlayer.getInstance().getVehicle() == null
+                            && this.protocol().player.getVehicle() == null
                             && distance > (ab_distance + GroundUtils.boundingBox + 0.1)) {
                         this.unusual.cancel(
                                 "type: unusual, distance: " + distance

@@ -1,7 +1,6 @@
 package com.vagdedes.spartan.listeners.bukkit.standalone;
 
-import com.vagdedes.spartan.abstraction.player.PlayerTrackers;
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
@@ -11,14 +10,12 @@ import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.AntiCheatLogs;
 import com.vagdedes.spartan.functionality.tracking.Piston;
 import com.vagdedes.spartan.listeners.bukkit.standalone.chunks.Event_Chunks;
-import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.CombatUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -26,7 +23,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.SignChangeEvent;
-import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerAnimationEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
@@ -182,34 +178,6 @@ public class Event_World implements Listener {
         if (!e.isCancelled()) {
             // Handlers
             Piston.run(e.getBlock(), e.getBlocks());
-        }
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    private void EntityExplosion(EntityExplodeEvent e) {
-        if (v1_21
-                && !e.isCancelled()
-                && SpartanBukkit.getPlayerCount() > 0) {
-            Location location = e.getLocation();
-            Collection<Entity> entities = location.getNearbyEntities(
-                    CombatUtils.maxHitDistance,
-                    CombatUtils.maxHitDistance,
-                    CombatUtils.maxHitDistance
-            );
-
-            if (!entities.isEmpty()) {
-                for (Entity entity : entities) {
-                    if (entity instanceof Player) {
-                        SpartanBukkit.getProtocol((Player) entity).spartanPlayer.trackers.add(
-                                PlayerTrackers.TrackerType.ABSTRACT_VELOCITY,
-                                AlgebraUtils.integerCeil(
-                                        CombatUtils.maxHitDistance
-                                                - ProtocolLib.getLocation((Player) entity).distance(location)
-                                ) * 5
-                        );
-                    }
-                }
-            }
         }
     }
 

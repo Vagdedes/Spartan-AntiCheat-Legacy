@@ -1,6 +1,6 @@
 package com.vagdedes.spartan.abstraction.inventory;
 
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
@@ -77,7 +77,7 @@ public abstract class InventoryMenu {
             boolean check = false;
 
             for (Enums.Permission permission : permissions) {
-                if (Permissions.has(player.getInstance(), permission)) {
+                if (Permissions.has(player.getNative(), permission)) {
                     check = true;
                     break;
                 }
@@ -90,7 +90,7 @@ public abstract class InventoryMenu {
             if (internalOpen(player, permissionMessage, object)) {
                 SpartanBukkit.transferTask(
                         player,
-                        () -> player.getInstance().openInventory(inventory)
+                        () -> player.getNative().openInventory(inventory)
                 );
                 return true;
             } else {
@@ -116,7 +116,7 @@ public abstract class InventoryMenu {
                 boolean check = false;
 
                 for (Enums.Permission permission : permissions) {
-                    if (Permissions.has(player.getInstance(), permission)) {
+                    if (Permissions.has(player.getNative(), permission)) {
                         check = true;
                         break;
                     }
@@ -124,7 +124,7 @@ public abstract class InventoryMenu {
                 access = check;
 
                 if (!access) {
-                    player.getInstance().closeInventory();
+                    player.getNative().closeInventory();
                 }
             }
 

@@ -31,7 +31,7 @@ public class AutoRespawn extends CheckExecutor {
         long time = System.currentTimeMillis() - this.memory,
                 limit = 750L;
 
-        if (time <= limit && !this.protocol().spartanPlayer.getInstance().isDead()) {
+        if (time <= limit && !this.protocol().player.isDead()) {
             memory = 0L;
             this.detection.cancel(
                     "type: default, ms: " + time,

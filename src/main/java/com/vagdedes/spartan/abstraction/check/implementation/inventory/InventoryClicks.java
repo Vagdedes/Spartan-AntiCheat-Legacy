@@ -53,7 +53,7 @@ public class InventoryClicks extends CheckExecutor {
             Material material = item.getType();
 
             if (!BlockUtils.isSensitive(this.protocol().spartanPlayer, material)) {
-                boolean quick = this.protocol().spartanPlayer.getInstance().getOpenInventory().countSlots() <= PlayerUtils.playerInventorySlots,
+                boolean quick = this.protocol().player.getOpenInventory().countSlots() <= PlayerUtils.playerInventorySlots,
                         shift = click.isShiftClick();
                 String type = BlockUtils.materialToString(material);
 
@@ -63,7 +63,7 @@ public class InventoryClicks extends CheckExecutor {
 
                 if (shift
                         && !quick
-                        && !BlockUtils.hasMaterial(this.protocol().spartanPlayer.getInstance().getOpenInventory().getCursor())
+                        && !BlockUtils.hasMaterial(this.protocol().player.getOpenInventory().getCursor())
                         && shiftBuffer.count(1, 5) == 4) { // Inventory
                     shiftBuffer.reset();
                     this.shift.cancel("type: shift, item: " + type);

@@ -2,7 +2,7 @@ package com.vagdedes.spartan.abstraction.inventory.implementation;
 
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.inventory.InventoryMenu;
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
 import com.vagdedes.spartan.functionality.command.CommandExecution;
 import com.vagdedes.spartan.functionality.connection.DiscordMemberCount;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
@@ -87,9 +87,9 @@ public class ManageChecks extends InventoryMenu {
 
                 if (check != null) {
                     ResearchEngine.resetData(check.hackType);
-                    player.getInstance().closeInventory();
+                    player.getNative().closeInventory();
                     ClickableMessage.sendURL(
-                            player.getInstance(),
+                            player.getNative(),
                             Config.messages.getColorfulString("check_stored_data_delete_message"),
                             CommandExecution.support,
                             DiscordMemberCount.discordURL
@@ -111,7 +111,7 @@ public class ManageChecks extends InventoryMenu {
         Check check = hackType.getCheck();
         boolean enabled = check.isEnabled(null, null),
                 silent = check.isSilent(null, null),
-                bypassing = Permissions.isBypassing(player.getInstance(), hackType),
+                bypassing = Permissions.isBypassing(player.getNative(), hackType),
                 punish = check.canPunish(null);
         String[] disabledDetections = CloudBase.getShownDisabledDetections(hackType);
         String enabledOption, silentOption, punishOption, colour, secondColour;

@@ -71,7 +71,7 @@ public class MorePackets extends CheckExecutor {
         } else if (object instanceof Byte && object.equals(TELEPORT)) {
             this.teleported = System.currentTimeMillis()
                     + (AlgebraUtils.integerCeil(TPS.maximum) * TPS.tickTime * 4L);
-        } else if (!this.protocol().spartanPlayer.protocol.packetsEnabled()) {
+        } else if (!this.protocol().packetsEnabled()) {
             bukkitNmsMap.put(TPS.tick(), bukkitNmsMap.getOrDefault(TPS.tick(), 0) + 1);
 
             if (bukkitNmsMap.size() > configuredTicks()) {
@@ -142,7 +142,7 @@ public class MorePackets extends CheckExecutor {
     @Override
     protected void runInternal(boolean cancelled) {
         if (!bukkitNmsMap.isEmpty()
-                && !this.protocol().spartanPlayer.protocol.packetsEnabled()) {
+                && !this.protocol().packetsEnabled()) {
             long currentTick = TPS.tick(),
                     oldestTick = currentTick - configuredTicks();
             int period = 0, collections = 0;
@@ -247,8 +247,7 @@ public class MorePackets extends CheckExecutor {
                 && this.teleported < System.currentTimeMillis()
                 && MovementProcessing.canCheck(
                 this.protocol().spartanPlayer,
-                this.protocol().spartanPlayer.protocol.packetsEnabled(),
-                true,
+                this.protocol().packetsEnabled(),
                 true,
                 true,
                 true

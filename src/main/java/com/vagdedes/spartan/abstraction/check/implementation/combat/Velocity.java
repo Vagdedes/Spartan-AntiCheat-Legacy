@@ -3,7 +3,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.combat;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
-import com.vagdedes.spartan.abstraction.player.PlayerTrackers;
+import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.CombatUtils;
@@ -87,7 +87,7 @@ public class Velocity extends CheckExecutor {
                     veloH = false;
                     return;
                 }
-                double decreace = this.protocol().spartanPlayer.protocol.isSprinting() ? 2.5 : 1.5;
+                double decreace = this.protocol().isSprinting() ? 2.5 : 1.5;
                 if (x < xSended / decreace && z < zSended / decreace) {
                     vl += 100;
                     if (vl > 300) {
@@ -108,7 +108,7 @@ public class Velocity extends CheckExecutor {
 
     @Override
     protected boolean canRun() {
-        return this.protocol().spartanPlayer.protocol.packetsEnabled()
+        return this.protocol().packetsEnabled()
                 && !this.protocol().spartanPlayer.trackers.has(PlayerTrackers.TrackerType.BOUNCING_BLOCKS)
                 && CombatUtils.canCheck(this.protocol().spartanPlayer)
                 && !this.protocol().spartanPlayer.isOutsideOfTheBorder(-1.0)
@@ -116,7 +116,7 @@ public class Velocity extends CheckExecutor {
                 new double[][]{
                         {1, 0, 1},
                         {1, 1, 1},
-                        {1, this.protocol().spartanPlayer.getInstance().getEyeHeight(), 1}
+                        {1, this.protocol().player.getEyeHeight(), 1}
                 },
                 this.protocol().spartanPlayer.movement.getLocation(),
                 true,

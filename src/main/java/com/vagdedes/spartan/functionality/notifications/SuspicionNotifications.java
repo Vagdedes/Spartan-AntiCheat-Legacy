@@ -1,6 +1,6 @@
 package com.vagdedes.spartan.functionality.notifications;
 
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudConnections;
 import com.vagdedes.spartan.functionality.server.Config;
@@ -61,11 +61,11 @@ public class SuspicionNotifications {
 
                 if (evidence.length() > 0) {
                     size++;
-                    players.append(player.getInstance().getName()).append(comma);
+                    players.append(player.getNative().getName()).append(comma);
                     SpartanLocation location = player.movement.getLocation();
                     CloudConnections.executeDiscordWebhook(
                             "checks",
-                            player.protocol.getUUID(), player.getInstance().getName(),
+                            player.protocol.getUUID(), player.getNative().getName(),
                             location.getBlockX(), location.getBlockY(), location.getBlockZ(),
                             "Suspected for", evidence.substring(0, evidence.length() - commaLength)
                     );
@@ -80,7 +80,7 @@ public class SuspicionNotifications {
 
             if (!staff.isEmpty()) {
                 for (SpartanPlayer player : staff) {
-                    player.getInstance().sendMessage(message);
+                    player.getNative().sendMessage(message);
                 }
             }
         }

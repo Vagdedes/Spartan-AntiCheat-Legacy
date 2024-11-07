@@ -139,11 +139,11 @@ public class ImpossibleActions extends CheckExecutor {
                     && !Compatibility.CompatibilityType.MC_MMO.isFunctional()) {
                 int cases;
 
-                if (this.protocol().spartanPlayer.getInstance().isSleeping()) {
+                if (this.protocol().player.isSleeping()) {
                     cases = 1;
-                } else if (this.protocol().spartanPlayer.getInstance().isDead()) {
+                } else if (this.protocol().player.isDead()) {
                     cases = 2;
-                } else if (BlockUtils.hasMaterial(this.protocol().spartanPlayer.getInstance().getOpenInventory().getCursor())) {
+                } else if (BlockUtils.hasMaterial(this.protocol().player.getOpenInventory().getCursor())) {
                     cases = 3;
                 } else {
                     cases = 0;

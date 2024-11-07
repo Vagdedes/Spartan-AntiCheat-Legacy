@@ -3,7 +3,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.irregular
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
-import com.vagdedes.spartan.abstraction.player.PlayerTrackers;
+import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
@@ -102,8 +102,8 @@ public class IrregularMovementsJump extends DetectionExecutor {
                         );
                     }
                 }
-            } else if (this.protocol().spartanPlayer.protocol.version == MultiVersion.MCVersion.OTHER
-                    || this.protocol().spartanPlayer.protocol.isUsingVersionOrGreater(MultiVersion.serverVersion)) {
+            } else if (this.protocol().version == MultiVersion.MCVersion.OTHER
+                    || this.protocol().isUsingVersionOrGreater(MultiVersion.serverVersion)) {
                 int limit = Math.max(jumpTicks, AlgebraUtils.integerCeil(TPS.maximum));
 
                 if (!this.protocol().spartanPlayer.isOnGround(this.protocol().spartanPlayer.movement.getLocation(), true)

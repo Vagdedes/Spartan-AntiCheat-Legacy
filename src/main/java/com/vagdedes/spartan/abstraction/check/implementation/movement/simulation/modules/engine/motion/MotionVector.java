@@ -1,6 +1,6 @@
 package com.vagdedes.spartan.abstraction.check.implementation.movement.simulation.modules.engine.motion;
 
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import org.bukkit.Location;

@@ -3,7 +3,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.irregular
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
-import com.vagdedes.spartan.abstraction.player.PlayerTrackers;
+import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.java.ReflectionUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -96,7 +96,7 @@ public class IrregularMovementsStep extends DetectionExecutor {
     void run(boolean knownBox, boolean knownOldBox,
              double box, double oldBox,
              double vertical, boolean teleported) {
-        Entity vehicle = this.protocol().spartanPlayer.getInstance().getVehicle();
+        Entity vehicle = this.protocol().player.getVehicle();
 
         if (knownBox && knownOldBox) {
             int hash = hash(oldBox, box);

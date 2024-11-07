@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.abstraction.player;
+package com.vagdedes.spartan.abstraction.protocol;
 
 import java.util.*;
 

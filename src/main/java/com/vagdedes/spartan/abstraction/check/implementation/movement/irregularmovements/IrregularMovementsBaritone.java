@@ -19,7 +19,7 @@ public class IrregularMovementsBaritone extends DetectionExecutor {
 
     void run() {
         if (!this.protocol().spartanPlayer.isBedrockPlayer()) {
-            Location l = this.protocol().spartanPlayer.protocol.getLocation();
+            Location l = this.protocol().getLocation();
             SpartanVector2F v2 = new SpartanVector2F(l.getYaw(), l.getPitch());
             float deltaYaw = (float) RayUtils.scaleVal(Math.abs(v2.x - oldV2.x), 3);
             float deltaPitch = (float) RayUtils.scaleVal(Math.abs(v2.y - oldV2.y), 3);

@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.abstraction.player;
+package com.vagdedes.spartan.abstraction.protocol;
 
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
@@ -52,7 +52,7 @@ public class SpartanPlayerMovement {
         this.lastLiquidMaterial = Material.AIR;
 
         SpartanLocation location = new SpartanLocation(
-                ProtocolLib.getLocation(parent.getInstance())
+                ProtocolLib.getLocation(parent.getNative())
         );
         this.locations = Collections.synchronizedMap(new LinkedHashMap<>());
         this.locations.put(System.currentTimeMillis(), location);
@@ -147,7 +147,7 @@ public class SpartanPlayerMovement {
         if (artificialSwimming >= System.currentTimeMillis()) {
             return true;
         } else if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
-            return this.parent.getInstance().isSwimming();
+            return this.parent.getNative().isSwimming();
         } else {
             return false;
         }
@@ -160,7 +160,7 @@ public class SpartanPlayerMovement {
     // Separator
 
     public boolean isLowEyeHeight() {
-        return this.parent.getInstance().getEyeHeight() < 1.0;
+        return this.parent.getNative().getEyeHeight() < 1.0;
     }
 
     public boolean isWalkJumping(double vertical) {
@@ -170,13 +170,13 @@ public class SpartanPlayerMovement {
     }
 
     public boolean isFlying() {
-        Entity vehicle = this.parent.getInstance().getVehicle();
+        Entity vehicle = this.parent.getNative().getVehicle();
         boolean flying;
 
         if (vehicle != null) {
             flying = vehicle instanceof Player && ((Player) vehicle).isFlying();
         } else {
-            flying = this.parent.getInstance().isFlying();
+            flying = this.parent.getNative().isFlying();
         }
         if (flying) {
             this.lastFlight = System.currentTimeMillis();
@@ -255,7 +255,7 @@ public class SpartanPlayerMovement {
 
     public boolean isGliding() {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
-            if (this.parent.getInstance().isGliding()) {
+            if (this.parent.getNative().isGliding()) {
                 this.lastGlide = System.currentTimeMillis();
                 return true;
             } else {
@@ -333,7 +333,7 @@ public class SpartanPlayerMovement {
     // Separator
 
     public SpartanLocation getVehicleLocation() {
-        Entity vehicle = this.parent.getInstance().getVehicle();
+        Entity vehicle = this.parent.getNative().getVehicle();
 
         if (vehicle instanceof LivingEntity || vehicle instanceof Vehicle) {
             Location playerLocation = this.parent.protocol.getLocation();

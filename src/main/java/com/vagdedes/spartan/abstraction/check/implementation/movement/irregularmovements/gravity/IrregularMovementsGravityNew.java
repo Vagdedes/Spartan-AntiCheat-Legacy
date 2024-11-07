@@ -2,8 +2,8 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.irregular
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
-import com.vagdedes.spartan.abstraction.player.SpartanPlayerMovement;
-import com.vagdedes.spartan.abstraction.player.SpartanPotionEffect;
+import com.vagdedes.spartan.abstraction.protocol.SpartanPlayerMovement;
+import com.vagdedes.spartan.abstraction.protocol.SpartanPotionEffect;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.MultiVersion.MCVersion;
@@ -34,7 +34,7 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
 
     public void run() {
         if (this.protocol().spartanPlayer != null) {
-            SpartanProtocol p = this.protocol().spartanPlayer.protocol;
+            SpartanProtocol p = this.protocol();
             boolean isOnGround = p.isOnGround();
             Location to = p.getLocation();
             Location from = this.protocol().spartanPlayer.movement.getEventFromLocation().getBukkitLocation();

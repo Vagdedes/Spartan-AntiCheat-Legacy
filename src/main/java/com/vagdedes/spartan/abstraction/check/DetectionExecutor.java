@@ -1,8 +1,8 @@
 package com.vagdedes.spartan.abstraction.check;
 
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
+import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudConnections;
@@ -87,8 +87,12 @@ public abstract class DetectionExecutor extends CheckDetection {
 
     public final boolean isEnabled() {
         return this.hackType.getCheck().isEnabled(
-                this.protocol().spartanPlayer == null ? null : this.protocol().spartanPlayer.dataType,
-                this.protocol().spartanPlayer == null ? null : this.protocol().spartanPlayer.getWorld().getName()
+                this.protocol() == null || this.protocol().spartanPlayer == null
+                        ? null
+                        : this.protocol().spartanPlayer.dataType,
+                this.protocol() == null || this.protocol().spartanPlayer == null
+                        ? null
+                        : this.protocol().spartanPlayer.getWorld().getName()
         )
                 && (this.name == null
                 || this.hackType.getCheck().getBooleanOption("check_" + this.name, this.def));
@@ -186,7 +190,7 @@ public abstract class DetectionExecutor extends CheckDetection {
             Runnable runnable = () -> {
                 if (event) {
                     PlayerViolationEvent playerViolationEvent = new PlayerViolationEvent(
-                            this.protocol().spartanPlayer.getInstance(),
+                            this.protocol().player,
                             hackType,
                             playerViolation.increase,
                             information
@@ -281,7 +285,7 @@ public abstract class DetectionExecutor extends CheckDetection {
         );
 
         SpartanLocation location = this.protocol().spartanPlayer.movement.getLocation();
-        information = this.protocol().spartanPlayer.getInstance().getName() + " failed " + hackType
+        information = this.protocol().player.getName() + " failed " + hackType
                 + " (" + CheckExecutor.violationLevelIdentifier + " " + playerViolation.increase + "), "
                 + "(Server-Version: " + MultiVersion.serverVersion.toString() + "), "
                 + "(Certainty: " + AlgebraUtils.cut(certainty, 2) + "), "
@@ -289,8 +293,8 @@ public abstract class DetectionExecutor extends CheckDetection {
                 + "(Silent: " + hackType.getCheck().isSilent(this.protocol().spartanPlayer.dataType, this.protocol().spartanPlayer.getWorld().getName()) + "), "
                 + "(" + CheckExecutor.javaPlayerIdentifier + " " + (!this.protocol().spartanPlayer.isBedrockPlayer()) + ")" + ", "
                 + "(" + CheckExecutor.detectionIdentifier + " " + this.name + ")" + ", "
-                + "(Packets: " + this.protocol().spartanPlayer.protocol.packetsEnabled() + "), "
-                + "(Ping: " + this.protocol().spartanPlayer.protocol.getPing() + "ms), "
+                + "(Packets: " + this.protocol().packetsEnabled() + "), "
+                + "(Ping: " + this.protocol().getPing() + "ms), "
                 + "(W-XYZ: " + location.world.getName() + " " + location.getBlockX() + " " + location.getBlockY() + " " + location.getBlockZ() + "), "
                 + "[Information: " + information + "]";
         AntiCheatLogs.logInfo(
@@ -310,11 +314,11 @@ public abstract class DetectionExecutor extends CheckDetection {
 
         // Local Notifications
         String command = Config.settings.getString("Notifications.message_clickable_command")
-                .replace("{player}", this.protocol().spartanPlayer.getInstance().getName());
+                .replace("{player}", this.protocol().player.getName());
 
         if (Config.settings.getBoolean("Notifications.individual_only_notifications")) {
-            if (DetectionNotifications.isEnabled(this.protocol().spartanPlayer.protocol)) { // Attention
-                ClickableMessage.sendCommand(this.protocol().spartanPlayer.getInstance(), notification, command, command);
+            if (DetectionNotifications.isEnabled(this.protocol())) { // Attention
+                ClickableMessage.sendCommand(this.protocol().player, notification, command, command);
             }
         } else {
             List<SpartanPlayer> notificationPlayers = DetectionNotifications.getPlayers();
@@ -323,7 +327,7 @@ public abstract class DetectionExecutor extends CheckDetection {
                 for (SpartanPlayer staff : notificationPlayers) {
                     if (staff.getExecutor(this.hackType).getDetection(this.name).canSendNotification(this.protocol().spartanPlayer)) {
                         ClickableMessage.sendCommand(
-                                staff.getInstance(),
+                                staff.getNative(),
                                 notification,
                                 command,
                                 command
@@ -344,7 +348,7 @@ public abstract class DetectionExecutor extends CheckDetection {
 
             if (!commands.isEmpty()
                     && ResearchEngine.getRequiredPlayers(this, this.protocol().spartanPlayer.dataType, PlayerEvidence.punishmentProbability) == 0) {
-                Collection<Enums.HackType> detectedHacks = this.protocol().spartanPlayer.protocol.getProfile().getEvidenceList(
+                Collection<Enums.HackType> detectedHacks = this.protocol().getProfile().getEvidenceList(
                         this.protocol().spartanPlayer.dataType,
                         PlayerEvidence.punishmentProbability
                 );
@@ -372,7 +376,7 @@ public abstract class DetectionExecutor extends CheckDetection {
                         if (enabledDeveloperAPI) {
                             Runnable runnable = () -> {
                                 PlayerViolationCommandEvent event = new PlayerViolationCommandEvent(
-                                        this.protocol().spartanPlayer.getInstance(),
+                                        this.protocol().player,
                                         hackType,
                                         detectedHacks,
                                         modifiedCommand
@@ -396,8 +400,8 @@ public abstract class DetectionExecutor extends CheckDetection {
                     SpartanLocation location = this.protocol().spartanPlayer.movement.getLocation();
                     CloudConnections.executeDiscordWebhook(
                             "punishments",
-                            this.protocol().spartanPlayer.protocol.getUUID(),
-                            this.protocol().spartanPlayer.getInstance().getName(),
+                            this.protocol().getUUID(),
+                            this.protocol().player.getName(),
                             location.getBlockX(),
                             location.getBlockY(),
                             location.getBlockZ(),

@@ -55,7 +55,7 @@ public class FastBreak extends CheckExecutor {
 
     private void checkDelay(Block block, int seconds) {
         if (!BlockUtils.isSensitive(block.getType())) {
-            GameMode gameMode = this.protocol().spartanPlayer.getInstance().getGameMode();
+            GameMode gameMode = this.protocol().player.getGameMode();
 
             if (gameMode == GameMode.SURVIVAL || gameMode == GameMode.ADVENTURE) {
                 long time = interactTime.getOrDefault(
@@ -147,7 +147,7 @@ public class FastBreak extends CheckExecutor {
     }
 
     private void checkBreaksPerSecond(int seconds, Block block) {
-        GameMode gameMode = this.protocol().spartanPlayer.getInstance().getGameMode();
+        GameMode gameMode = this.protocol().player.getGameMode();
 
         if (gameMode == GameMode.CREATIVE) {
             int limit = hackType.getCheck().getNumericalOption("max_breaks_per_second", 40);
@@ -170,7 +170,7 @@ public class FastBreak extends CheckExecutor {
     }
 
     private void checkIndirectSurroundingsPerSecond(int seconds, Block block) {
-        GameMode gameMode = this.protocol().spartanPlayer.getInstance().getGameMode();
+        GameMode gameMode = this.protocol().player.getGameMode();
 
         if ((gameMode == GameMode.SURVIVAL || gameMode == GameMode.ADVENTURE)
                 && !BlockUtils.isSensitive(this.protocol().spartanPlayer, block.getType())) {

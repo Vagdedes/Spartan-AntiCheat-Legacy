@@ -2,7 +2,7 @@ package com.vagdedes.spartan.abstraction.check;
 
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import com.vagdedes.spartan.compatibility.manual.building.MythicMobs;
@@ -81,7 +81,7 @@ public abstract class CheckExecutor extends CheckDetection {
     // Run
 
     public final void run(boolean cancelled) {
-        if (this.protocol().spartanPlayer != null) {
+        if (this.protocol() != null) {
             this.cancelled = cancelled;
             this.runInternal(cancelled);
         }
@@ -94,7 +94,7 @@ public abstract class CheckExecutor extends CheckDetection {
     // Handle
 
     public final void handle(boolean cancelled, Object object) {
-        if (this.protocol().spartanPlayer != null) {
+        if (this.protocol() != null) {
             this.cancelled = cancelled;
             this.handleInternal(cancelled, object);
         }
@@ -113,11 +113,11 @@ public abstract class CheckExecutor extends CheckDetection {
     // Separator
 
     final boolean canFunction() {
-        return this.protocol().spartanPlayer != null
+        return this.protocol() != null
                 && (System.currentTimeMillis() - this.creation) > TPS.maximum * TPS.tickTime
                 && (!cancelled || hackType.getCheck().handleCancelledEvents)
-                && !this.protocol().spartanPlayer.protocol.isLoading()
-                && (!v1_8 || this.protocol().spartanPlayer.getInstance().getGameMode() != GameMode.SPECTATOR)
+                && !this.protocol().isLoading()
+                && (!v1_8 || this.protocol().player.getGameMode() != GameMode.SPECTATOR)
                 && hackType.getCheck().isEnabled(this.protocol().spartanPlayer.dataType, this.protocol().spartanPlayer.getWorld().getName())
                 && Attributes.getAmount(this.protocol().spartanPlayer, Attributes.GENERIC_SCALE) == 0.0
                 && canRun()
@@ -128,7 +128,7 @@ public abstract class CheckExecutor extends CheckDetection {
 
     public final CancelCause getDisableCause() {
         if (disableCause == null || disableCause.hasExpired()) {
-            if (this.protocol().spartanPlayer != null) {
+            if (this.protocol() != null) {
                 return MythicMobs.is(this.protocol().spartanPlayer)
                         ? new CancelCause(Compatibility.CompatibilityType.MYTHIC_MOBS)
                         : ItemsAdder.is(this.protocol().spartanPlayer)
@@ -159,8 +159,8 @@ public abstract class CheckExecutor extends CheckDetection {
         } else {
             disableCause = new CancelCause(reason, pointer, ticks);
         }
-        if (this.protocol().spartanPlayer != null) {
-            InteractiveInventory.playerInfo.refresh(this.protocol().spartanPlayer.getInstance().getName());
+        if (this.protocol() != null) {
+            InteractiveInventory.playerInfo.refresh(this.protocol().player.getName());
         }
     }
 
@@ -170,24 +170,24 @@ public abstract class CheckExecutor extends CheckDetection {
         } else {
             silentCause = new CancelCause(reason, pointer, ticks);
         }
-        if (this.protocol().spartanPlayer != null) {
-            InteractiveInventory.playerInfo.refresh(this.protocol().spartanPlayer.getInstance().getName());
+        if (this.protocol() != null) {
+            InteractiveInventory.playerInfo.refresh(this.protocol().player.getName());
         }
     }
 
     public final void removeDisableCause() {
         this.disableCause = null;
 
-        if (this.protocol().spartanPlayer != null) {
-            InteractiveInventory.playerInfo.refresh(this.protocol().spartanPlayer.getInstance().getName());
+        if (this.protocol() != null) {
+            InteractiveInventory.playerInfo.refresh(this.protocol().player.getName());
         }
     }
 
     public final void removeSilentCause() {
         this.silentCause = null;
 
-        if (this.protocol().spartanPlayer != null) {
-            InteractiveInventory.playerInfo.refresh(this.protocol().spartanPlayer.getInstance().getName());
+        if (this.protocol() != null) {
+            InteractiveInventory.playerInfo.refresh(this.protocol().player.getName());
         }
     }
 
@@ -199,7 +199,7 @@ public abstract class CheckExecutor extends CheckDetection {
                 CheckCancelEvent checkCancelEvent;
 
                 if (Config.settings.getBoolean("Important.enable_developer_api")) {
-                    checkCancelEvent = new CheckCancelEvent(this.protocol().spartanPlayer.getInstance(), hackType);
+                    checkCancelEvent = new CheckCancelEvent(this.protocol().player, hackType);
                     Register.manager.callEvent(checkCancelEvent);
                 } else {
                     checkCancelEvent = null;
@@ -217,7 +217,7 @@ public abstract class CheckExecutor extends CheckDetection {
                 Boolean[] cancelled = new Boolean[1];
 
                 SpartanBukkit.transferTask(this.protocol().spartanPlayer, () -> {
-                    CheckCancelEvent checkCancelEvent = new CheckCancelEvent(this.protocol().spartanPlayer.getInstance(), hackType);
+                    CheckCancelEvent checkCancelEvent = new CheckCancelEvent(this.protocol().player, hackType);
                     Register.manager.callEvent(checkCancelEvent);
                     cancelled[0] = checkCancelEvent.isCancelled();
 
@@ -254,7 +254,7 @@ public abstract class CheckExecutor extends CheckDetection {
                 && frequency != DetectionNotifications.defaultFrequency) {
             return frequency;
         } else if (detected != null
-                && (detected.getInstance().equals(this.protocol().spartanPlayer.getInstance())
+                && (detected.getNative().equals(this.protocol().player)
                 || detected.getWorld().equals(this.protocol().spartanPlayer.getWorld())
                 && detected.movement.getLocation().distance(this.protocol().spartanPlayer.movement.getLocation()) <= PlayerUtils.chunk)) {
             return AlgebraUtils.integerRound(Math.sqrt(TPS.maximum));

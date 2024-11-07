@@ -22,7 +22,7 @@ public class Simulation extends CheckExecutor {
 
     @Override
     public void handleInternal(boolean cancelled, Object object) {
-        MCClient client = this.protocol().spartanPlayer.protocol.mcClient;
+        MCClient client = this.protocol().mcClient;
 
         if (object instanceof PlayerMoveEvent) {
             PlayerMoveEvent event = (PlayerMoveEvent) object;

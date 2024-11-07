@@ -64,8 +64,8 @@ public class ImpossibleInventory extends CheckExecutor {
 
     @Override
     protected void runInternal(boolean cancelled) {
-        if (!this.protocol().spartanPlayer.movement.isSwimming() && this.protocol().spartanPlayer.getInstance().getVehicle() == null) {
-            ItemStack cursor = this.protocol().spartanPlayer.getInstance().getOpenInventory().getCursor();
+        if (!this.protocol().spartanPlayer.movement.isSwimming() && this.protocol().player.getVehicle() == null) {
+            ItemStack cursor = this.protocol().player.getOpenInventory().getCursor();
 
             if (BlockUtils.hasMaterial(cursor)) {
                 int cases = getActionCase();
@@ -98,8 +98,8 @@ public class ImpossibleInventory extends CheckExecutor {
                 && !click.isCreativeAction()
                 && !click.isKeyboardClick()
                 && !this.protocol().spartanPlayer.movement.isSwimming()
-                && this.protocol().spartanPlayer.getInstance().getVehicle() == null
-                && this.protocol().spartanPlayer.getInstance().getOpenInventory().countSlots() > PlayerUtils.playerInventorySlots
+                && this.protocol().player.getVehicle() == null
+                && this.protocol().player.getOpenInventory().countSlots() > PlayerUtils.playerInventorySlots
                 && !BlockPatternUtils.isBlockPattern(
                 belowBlocks,
                 this.protocol().spartanPlayer.movement.getLocation(),
@@ -127,14 +127,14 @@ public class ImpossibleInventory extends CheckExecutor {
         } else {
             Check check = hackType.getCheck();
             return check.getBooleanOption("check_sneaking", true)
-                    && this.protocol().spartanPlayer.protocol.isSneaking() ? 1
+                    && this.protocol().isSneaking() ? 1
                     : !MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_15)
                     && check.getBooleanOption("check_sprinting", true)
-                    && this.protocol().spartanPlayer.protocol.isSprinting() ? 2
+                    && this.protocol().isSprinting() ? 2
                     : check.getBooleanOption("check_sleeping", true)
-                    && this.protocol().spartanPlayer.getInstance().isSleeping() ? 3
+                    && this.protocol().player.isSleeping() ? 3
                     : check.getBooleanOption("check_dead", true)
-                    && this.protocol().spartanPlayer.getInstance().isDead() ? 5
+                    && this.protocol().player.isDead() ? 5
                     : check.getBooleanOption("check_sprint_jumping", true)
                     && this.protocol().spartanPlayer.movement.isSprintJumping(this.protocol().spartanPlayer.movement.getValueOrDefault(this.protocol().spartanPlayer.movement.getEventVertical(), 0.0)) ? 6
                     : check.getBooleanOption("check_walk_jumping", true)

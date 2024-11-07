@@ -3,7 +3,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.irregular
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
-import com.vagdedes.spartan.abstraction.player.PlayerTrackers;
+import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
@@ -55,7 +55,7 @@ public class IrregularMovementsGravity extends DetectionExecutor {
                             new double[][]{
                                     {GroundUtils.contactBoundingBox, 0.0, GroundUtils.contactBoundingBox},
                                     {GroundUtils.contactBoundingBox, 1.0, GroundUtils.contactBoundingBox},
-                                    {GroundUtils.contactBoundingBox, Math.ceil(this.protocol().spartanPlayer.getInstance().getEyeHeight()), GroundUtils.contactBoundingBox}
+                                    {GroundUtils.contactBoundingBox, Math.ceil(this.protocol().player.getEyeHeight()), GroundUtils.contactBoundingBox}
                             },
                             to,
                             true,
@@ -64,7 +64,7 @@ public class IrregularMovementsGravity extends DetectionExecutor {
                             new double[][]{
                                     {GroundUtils.contactBoundingBox, 0.0, GroundUtils.contactBoundingBox},
                                     {GroundUtils.contactBoundingBox, 1.0, GroundUtils.contactBoundingBox},
-                                    {GroundUtils.contactBoundingBox, Math.ceil(this.protocol().spartanPlayer.getInstance().getEyeHeight()), GroundUtils.contactBoundingBox}
+                                    {GroundUtils.contactBoundingBox, Math.ceil(this.protocol().player.getEyeHeight()), GroundUtils.contactBoundingBox}
                             },
                             from,
                             true,
@@ -129,12 +129,12 @@ public class IrregularMovementsGravity extends DetectionExecutor {
             if (climb) {
                 if (vertical == 0.0 && oldVertical == 0.0) {
                     if (!this.protocol().spartanPlayer.isOnGround(to, true)
-                            && !this.protocol().spartanPlayer.protocol.isSneaking()
+                            && !this.protocol().isSneaking()
                             && this.protocol().spartanPlayer.getNearbyEntities(1.0, 1.0, 1.0).isEmpty()
                             && !BlockPatternUtils.isBlockPattern(
                             new double[]{
                                     GroundUtils.boundingBox,
-                                    Math.ceil(this.protocol().spartanPlayer.getInstance().getEyeHeight()),
+                                    Math.ceil(this.protocol().player.getEyeHeight()),
                                     GroundUtils.boundingBox
                             },
                             to,
@@ -244,7 +244,7 @@ public class IrregularMovementsGravity extends DetectionExecutor {
 
     private boolean isUsingMace() {
         if (MACE != null) {
-            ItemStack[] contents = this.protocol().spartanPlayer.getInstance().getInventory().getContents();
+            ItemStack[] contents = this.protocol().player.getInventory().getContents();
 
             for (ItemStack item : contents) {
                 if (item != null && item.getType() == MACE) {

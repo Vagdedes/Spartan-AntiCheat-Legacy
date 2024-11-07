@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.utils.minecraft.world;
 
-import com.vagdedes.spartan.abstraction.player.PlayerTrackers;
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
+import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.world.SpartanBlock;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
@@ -206,7 +206,7 @@ public class GroundUtils {
                     return true;
                 }
             }
-            Entity vehicle = p.getInstance().getVehicle();
+            Entity vehicle = p.getNative().getVehicle();
             boolean hasVehicle = vehicle != null;
 
             if (hasVehicle) {

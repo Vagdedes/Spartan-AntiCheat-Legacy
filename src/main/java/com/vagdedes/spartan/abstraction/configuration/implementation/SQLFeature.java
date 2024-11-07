@@ -2,7 +2,7 @@ package com.vagdedes.spartan.abstraction.configuration.implementation;
 
 import com.vagdedes.spartan.abstraction.check.PlayerViolation;
 import com.vagdedes.spartan.abstraction.configuration.ConfigurationBuilder;
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.notifications.CrossServerNotifications;
@@ -353,7 +353,7 @@ public class SQLFeature extends ConfigurationBuilder {
                             + ", " + (notification != null ? syntaxForColumn(notification) : "NULL")
                             + ", " + syntaxForColumn(information)
                             + ", " + (hasPlayer ? syntaxForColumn(p.protocol.getUUID()) : "NULL")
-                            + ", " + (hasPlayer ? syntaxForColumn(p.getInstance().getName()) : "NULL")
+                            + ", " + (hasPlayer ? syntaxForColumn(p.getNative().getName()) : "NULL")
                             + ", " + (hasPlayer ? syntaxForColumn(p.protocol.getPing()) : "NULL")
                             + ", " + (hasPlayer ? syntaxForColumn(location.getBlockX()) : "NULL")
                             + ", " + (hasPlayer ? syntaxForColumn(location.getBlockY()) : "NULL")

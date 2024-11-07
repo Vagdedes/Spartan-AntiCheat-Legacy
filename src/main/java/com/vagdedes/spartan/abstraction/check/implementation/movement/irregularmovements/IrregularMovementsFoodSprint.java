@@ -15,9 +15,9 @@ public class IrregularMovementsFoodSprint extends DetectionExecutor {
     }
 
     void run() {
-        if (this.protocol().spartanPlayer.protocol.isSprinting()) {
-            GameMode gameMode = this.protocol().spartanPlayer.getInstance().getGameMode();
-            int food = this.protocol().spartanPlayer.getInstance().getFoodLevel(),
+        if (this.protocol().isSprinting()) {
+            GameMode gameMode = this.protocol().player.getGameMode();
+            int food = this.protocol().player.getFoodLevel(),
                     threshold = 6;
 
             if (food <= threshold

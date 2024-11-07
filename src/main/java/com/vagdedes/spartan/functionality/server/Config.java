@@ -6,7 +6,7 @@ import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibili
 import com.vagdedes.spartan.abstraction.configuration.implementation.Messages;
 import com.vagdedes.spartan.abstraction.configuration.implementation.SQLFeature;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Settings;
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
 import com.vagdedes.spartan.functionality.moderation.Wave;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
@@ -91,7 +91,7 @@ public class Config {
             if (sender instanceof CommandSender) {
                 ((CommandSender) sender).sendMessage(message);
             } else if (sender instanceof SpartanPlayer) {
-                ((SpartanPlayer) sender).getInstance().sendMessage(message);
+                ((SpartanPlayer) sender).getNative().sendMessage(message);
             }
         }
         create();

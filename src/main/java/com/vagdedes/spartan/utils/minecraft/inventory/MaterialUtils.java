@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.utils.minecraft.inventory;
 
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
-import com.vagdedes.spartan.abstraction.player.SpartanPotionEffect;
+import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanPotionEffect;
 import com.vagdedes.spartan.abstraction.world.SpartanBlock;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -254,7 +254,7 @@ public class MaterialUtils {
             if (player.movement.isSwimming()) {
                 water = true;
             } else {
-                SpartanBlock block = player.movement.getLocation().clone().add(0, player.getInstance().getEyeHeight(), 0).getBlock();
+                SpartanBlock block = player.movement.getLocation().clone().add(0, player.getNative().getEyeHeight(), 0).getBlock();
                 water = block.isWaterLogged() || block.getType() == MaterialUtils.get("water");
             }
             if (water) {
@@ -263,7 +263,7 @@ public class MaterialUtils {
                 if (itemStack.getEnchantmentLevel(EnchantmentUtils.WATER_WORKER) > 0) {
                     aquaInfinity = true;
                 } else {
-                    PlayerInventory inventory = player.getInstance().getInventory();
+                    PlayerInventory inventory = player.getNative().getInventory();
                     List<ItemStack> items = new ArrayList<>(4 + 1);
                     items.addAll(Arrays.asList(inventory.getArmorContents()));
                     items.add(inventory.getItemInHand());

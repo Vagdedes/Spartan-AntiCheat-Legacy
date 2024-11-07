@@ -4,8 +4,8 @@ import com.vagdedes.spartan.abstraction.check.CancelCause;
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.data.Cooldowns;
 import com.vagdedes.spartan.abstraction.inventory.InventoryMenu;
-import com.vagdedes.spartan.abstraction.player.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
+import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.command.CommandExecution;
 import com.vagdedes.spartan.functionality.connection.DiscordMemberCount;
@@ -57,9 +57,9 @@ public class PlayerInfo extends InventoryMenu {
                 : ResearchEngine.getAnyCasePlayerProfile(object.toString());
 
         if (profile == null) {
-            player.getInstance().closeInventory();
+            player.getNative().closeInventory();
             ClickableMessage.sendURL(
-                    player.getInstance(),
+                    player.getNative(),
                     Config.messages.getColorfulString("player_not_found_message"),
                     CommandExecution.support,
                     DiscordMemberCount.discordURL
@@ -203,7 +203,7 @@ public class PlayerInfo extends InventoryMenu {
             return "Disabled";
         }
         CancelCause disabledCause = player.getExecutor(hackType).getDisableCause();
-        return Permissions.isBypassing(player.getInstance(), hackType) ? "Permission Bypass" :
+        return Permissions.isBypassing(player.getNative(), hackType) ? "Permission Bypass" :
                 disabledCause != null ? "Cancelled (" + disabledCause.getReason() + ")" :
                         (check.isSilent(dataType, worldName) ? "Silent " : "") + "Checking";
     }
@@ -231,10 +231,10 @@ public class PlayerInfo extends InventoryMenu {
         String playerName = title.substring(menu.length());
 
         if (item.equalsIgnoreCase(playerName)) {
-            if (!Permissions.has(player.getInstance(), Permission.MANAGE)) {
-                player.getInstance().closeInventory();
+            if (!Permissions.has(player.getNative(), Permission.MANAGE)) {
+                player.getNative().closeInventory();
                 ClickableMessage.sendURL(
-                        player.getInstance(),
+                        player.getNative(),
                         Config.messages.getColorfulString("no_permission"),
                         CommandExecution.support,
                         DiscordMemberCount.discordURL
@@ -244,19 +244,19 @@ public class PlayerInfo extends InventoryMenu {
 
                 if (name == null) {
                     ClickableMessage.sendURL(
-                            player.getInstance(),
+                            player.getNative(),
                             Config.messages.getColorfulString("player_not_found_message"),
                             CommandExecution.support,
                             DiscordMemberCount.discordURL
                     );
                 } else {
                     ResearchEngine.resetData(name);
-                    player.getInstance().sendMessage(Config.messages.getColorfulString("player_stored_data_delete_message").replace("{player}", name));
+                    player.getNative().sendMessage(Config.messages.getColorfulString("player_stored_data_delete_message").replace("{player}", name));
                 }
-                player.getInstance().closeInventory();
+                player.getNative().closeInventory();
             }
         } else if (item.equals("Close")) {
-            player.getInstance().closeInventory();
+            player.getNative().closeInventory();
         } else if (item.equals("Back")) {
             InteractiveInventory.mainMenu.open(player);
         } else {

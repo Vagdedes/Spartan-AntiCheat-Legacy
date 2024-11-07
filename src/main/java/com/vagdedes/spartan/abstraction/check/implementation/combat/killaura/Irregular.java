@@ -13,12 +13,12 @@ public class Irregular extends DetectionExecutor {
     }
 
     void run() {
-        if (this.protocol().spartanPlayer.getInstance().isDead()) {
+        if (this.protocol().player.isDead()) {
             cancel("type: irregular, scenario: death");
-        } else if (this.protocol().spartanPlayer.getInstance().isSleeping()) {
+        } else if (this.protocol().player.isSleeping()) {
             cancel("type: irregular, scenario: sleeping");
         } else {
-            InventoryView inventoryView = this.protocol().spartanPlayer.getInstance().getOpenInventory();
+            InventoryView inventoryView = this.protocol().player.getOpenInventory();
 
             if (BlockUtils.hasMaterial(inventoryView.getCursor())) {
                 cancel("type: irregular, scenario: cursor");

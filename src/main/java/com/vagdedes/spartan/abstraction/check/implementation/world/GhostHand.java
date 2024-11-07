@@ -97,7 +97,7 @@ public class GhostHand extends CheckExecutor {
                 && !PrinterMode.isUsing(this.protocol().spartanPlayer)
                 && !mcMMO.hasGeneralAbility(this.protocol().spartanPlayer)
                 && Attributes.getAmount(this.protocol().spartanPlayer, Attributes.PLAYER_BLOCK_INTERACTION_RANGE) == 0.0) {
-            GameMode gameMode = this.protocol().spartanPlayer.getInstance().getGameMode();
+            GameMode gameMode = this.protocol().player.getGameMode();
             return gameMode == GameMode.SURVIVAL
                     || gameMode == GameMode.ADVENTURE;
         }
