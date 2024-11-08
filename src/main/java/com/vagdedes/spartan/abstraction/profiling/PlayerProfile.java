@@ -129,18 +129,6 @@ public class PlayerProfile {
         return miningHistory[ore.ordinal()];
     }
 
-    public boolean hasData(Check.DataType dataType) {
-        for (CheckExecutor checkExecutor : this.getExecutors()) {
-            for (DetectionExecutor detectionExecutor : checkExecutor.getDetections()) {
-                if (detectionExecutor.hasDataToCompare(dataType)) {
-                    return detectionExecutor.protocol() != null
-                            && detectionExecutor.protocol().spartanPlayer.dataType == dataType;
-                }
-            }
-        }
-        return false;
-    }
-
     // Separator
 
     public Collection<Enums.HackType> getEvidenceList(double threshold) {
