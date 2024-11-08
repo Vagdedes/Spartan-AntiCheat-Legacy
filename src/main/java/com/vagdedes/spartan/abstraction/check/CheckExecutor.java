@@ -46,6 +46,15 @@ public abstract class CheckExecutor extends CheckDetection {
 
     // Probability
 
+    public boolean hasSufficientData(Check.DataType dataType) {
+        for (DetectionExecutor detectionExecutor : this.detections.values()) {
+            if (detectionExecutor.hasSufficientData(dataType)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public double getExtremeProbability(Check.DataType dataType) {
         double num = PlayerEvidence.emptyProbability;
 

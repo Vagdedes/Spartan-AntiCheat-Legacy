@@ -603,46 +603,4 @@ public class ResearchEngine {
         violationFired.put(hackType, true);
     }
 
-    public static int getRequiredPlayers(Enums.HackType hackType, double probability) {
-        int requirement = PlayerEvidence.probabilityToFactors(probability),
-                count = 0;
-
-        if (playerProfiles.size() >= requirement) {
-            for (PlayerProfile profile : playerProfiles.values()) {
-                if (profile.hasData(hackType)) {
-                    count++;
-
-                    if (count == requirement) {
-                        return 0;
-                    }
-                }
-            }
-            count = requirement - count;
-        } else {
-            count = requirement - playerProfiles.size();
-        }
-        return count;
-    }
-
-    public static int getRequiredPlayers(DetectionExecutor detectionExecutor, Check.DataType dataType, double probability) {
-        int requirement = PlayerEvidence.probabilityToFactors(probability),
-                count = 0;
-
-        if (playerProfiles.size() >= requirement) {
-            for (PlayerProfile profile : playerProfiles.values()) {
-                if (profile.getExecutor(detectionExecutor.hackType).getDetection(detectionExecutor.name).hasDataToCompare(dataType)) {
-                    count++;
-
-                    if (count == requirement) {
-                        return 0;
-                    }
-                }
-            }
-            count = requirement - count;
-        } else {
-            count = requirement - playerProfiles.size();
-        }
-        return count;
-    }
-
 }

@@ -6,7 +6,6 @@ import com.vagdedes.spartan.functionality.connection.cloud.CloudConnections;
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
-import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
 import me.vagdedes.spartan.system.Enums;
 
 import java.util.ArrayList;
@@ -46,7 +45,6 @@ public class SuspicionNotifications {
 
         for (SpartanPlayer player : online) {
             Collection<Enums.HackType> list = player.protocol.getProfile().getEvidenceList(
-                    player.dataType,
                     PlayerEvidence.notificationProbability
             );
 
@@ -54,9 +52,14 @@ public class SuspicionNotifications {
                 StringBuilder evidence = new StringBuilder();
 
                 for (Enums.HackType hackType : list) {
-                    if (ResearchEngine.getRequiredPlayers(hackType, PlayerEvidence.notificationProbability) == 0) {
-                        evidence.append(hackType.getCheck().getName()).append(comma);
-                    }
+                    evidence.append(
+                            hackType.getCheck().getName()
+                                    + (player.getExecutor(hackType).hasSufficientData(player.dataType)
+                                    ? ""
+                                    : " (Unlikely)")
+                    ).append(
+                            comma
+                    );
                 }
 
                 if (evidence.length() > 0) {
@@ -65,9 +68,13 @@ public class SuspicionNotifications {
                     SpartanLocation location = player.movement.getLocation();
                     CloudConnections.executeDiscordWebhook(
                             "checks",
-                            player.protocol.getUUID(), player.getNative().getName(),
-                            location.getBlockX(), location.getBlockY(), location.getBlockZ(),
-                            "Suspected for", evidence.substring(0, evidence.length() - commaLength)
+                            player.protocol.getUUID(),
+                            player.getNative().getName(),
+                            location.getBlockX(),
+                            location.getBlockY(),
+                            location.getBlockZ(),
+                            "Suspected for",
+                            evidence.substring(0, evidence.length() - commaLength)
                     );
                 }
             }

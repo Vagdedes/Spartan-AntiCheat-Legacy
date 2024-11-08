@@ -11,7 +11,6 @@ import com.vagdedes.spartan.functionality.notifications.clickable.ClickableMessa
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.Permissions;
-import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
 import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
 import com.vagdedes.spartan.utils.minecraft.inventory.EnchantmentUtils;
 import com.vagdedes.spartan.utils.minecraft.inventory.MaterialUtils;
@@ -166,12 +165,18 @@ public class ManageChecks extends InventoryMenu {
         }
 
         // Separator
-        boolean preventionsOff = ResearchEngine.getRequiredPlayers(hackType, PlayerEvidence.preventionProbability) == 0,
-                punishmentsOff = ResearchEngine.getRequiredPlayers(hackType, PlayerEvidence.punishmentProbability) == 0;
+        boolean enoughData = false;
+
+        for (Check.DataType dataType : Check.DataType.values()) {
+            if (player.getExecutor(hackType).hasSufficientData(dataType)) {
+                enoughData = true;
+                break;
+            }
+        }
         lore.add("");
         lore.add((enabled ? "§a" : "§c") + "Enabled §8/ "
-                + (silent ? (preventionsOff ? "§e" : "§a") : "§c") + "Silent §8/ "
-                + (punish ? (punishmentsOff ? "§e" : "§a") : "§c") + "Punishments §8/ "
+                + (silent ? (!enoughData ? "§e" : "§a") : "§c") + "Silent §8/ "
+                + (punish ? (!enoughData ? "§e" : "§a") : "§c") + "Punishments §8/ "
                 + (bypassing ? "§a" : "§c") + "Bypassing");
         int counter = 0;
 
@@ -197,8 +202,8 @@ public class ManageChecks extends InventoryMenu {
 
         // Separator
 
-        if (silent && preventionsOff
-                || punish && punishmentsOff) {
+        if (silent && !enoughData
+                || punish && !enoughData) {
             lore.add("");
             lore.add("§eYellow text in preventions & punishments");
             lore.add("§eindicate the check is still collecting");

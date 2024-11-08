@@ -129,17 +129,6 @@ public class PlayerProfile {
         return miningHistory[ore.ordinal()];
     }
 
-    public boolean hasData(Enums.HackType hackType) {
-        for (DetectionExecutor detectionExecutor : this.getExecutor(hackType).getDetections()) {
-            for (Check.DataType dataType : Check.DataType.values()) {
-                if (detectionExecutor.hasDataToCompare(dataType)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     public boolean hasData(Check.DataType dataType) {
         for (CheckExecutor checkExecutor : this.getExecutors()) {
             for (DetectionExecutor detectionExecutor : checkExecutor.getDetections()) {
@@ -154,11 +143,11 @@ public class PlayerProfile {
 
     // Separator
 
-    public Collection<Enums.HackType> getEvidenceList(Check.DataType dataType, double threshold) {
+    public Collection<Enums.HackType> getEvidenceList(double threshold) {
         List<Enums.HackType> set = new ArrayList<>();
 
         for (CheckExecutor executor : this.getExecutors()) {
-            double probability = executor.getExtremeProbability(dataType);
+            double probability = executor.getExtremeProbability(this.lastDataType);
 
             if (PlayerEvidence.surpassedProbability(probability, threshold)) {
                 set.add(executor.hackType);
@@ -167,11 +156,13 @@ public class PlayerProfile {
         return set;
     }
 
-    public Set<Map.Entry<Enums.HackType, Double>> getEvidenceEntries(Check.DataType dataType, double threshold) {
+    public Set<Map.Entry<Enums.HackType, Double>> getEvidenceEntries(
+            double threshold
+    ) {
         Map<Enums.HackType, Double> set = new HashMap<>();
 
         for (CheckExecutor executor : this.getExecutors()) {
-            double probability = executor.getExtremeProbability(dataType);
+            double probability = executor.getExtremeProbability(this.lastDataType);
 
             if (PlayerEvidence.surpassedProbability(probability, threshold)) {
                 set.put(executor.hackType, probability);

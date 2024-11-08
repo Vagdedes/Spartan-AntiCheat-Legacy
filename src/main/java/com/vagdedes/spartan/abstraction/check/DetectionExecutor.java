@@ -152,7 +152,27 @@ public abstract class DetectionExecutor extends CheckDetection {
 
     // Probability
 
-    public final boolean surpassedProbability(Check.DataType dataType, double threshold) {
+    final boolean hasSufficientData(Check.DataType dataType) {
+        List<PlayerProfile> playerProfiles = ResearchEngine.getPlayerProfiles();
+        int requirement = PlayerEvidence.probabilityToFactors(PlayerEvidence.punishmentProbability);
+
+        if (playerProfiles.size() >= requirement) {
+            int count = 0;
+
+            for (PlayerProfile profile : playerProfiles) {
+                if (profile.getExecutor(this.hackType).getDetection(this.name).hasDataToCompare(dataType)) {
+                    count++;
+
+                    if (count == requirement) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean surpassedProbability(Check.DataType dataType, double threshold) {
         return PlayerEvidence.surpassedProbability(this.getProbability(dataType), threshold);
     }
 
@@ -164,7 +184,7 @@ public abstract class DetectionExecutor extends CheckDetection {
         this.probability.put(dataType, probability);
     }
 
-    public final double getProbability(Check.DataType dataType) {
+    final double getProbability(Check.DataType dataType) {
         return isEnabled()
                 ? this.probability.getOrDefault(dataType, PlayerEvidence.emptyProbability)
                 : PlayerEvidence.emptyProbability;
@@ -211,7 +231,7 @@ public abstract class DetectionExecutor extends CheckDetection {
                                 && (silentCause == null
                                 || silentCause.hasExpired()
                                 || !silentCause.pointerMatches(information))
-                                && ResearchEngine.getRequiredPlayers(this, this.protocol().spartanPlayer.dataType, PlayerEvidence.preventionProbability) == 0
+                                && this.hasSufficientData(this.protocol().spartanPlayer.dataType)
                                 && this.surpassedProbability(this.protocol().spartanPlayer.dataType, PlayerEvidence.preventionProbability);
             };
 
@@ -229,7 +249,8 @@ public abstract class DetectionExecutor extends CheckDetection {
         long time = System.currentTimeMillis();
 
         if (this.notifications <= time
-                && this.lastProbability != probability) {
+                && (this.lastProbability != probability
+                || time - this.notifications >= 5_000L)) {
             boolean player = detected instanceof SpartanPlayer;
             int ticks = this.executor.getNotificationTicksCooldown(
                     player ? (SpartanPlayer) detected : null
@@ -265,6 +286,7 @@ public abstract class DetectionExecutor extends CheckDetection {
                     return true;
                 }
             } else {
+                this.notifications = time;
                 this.lastProbability = probability;
                 return true;
             }
@@ -276,7 +298,7 @@ public abstract class DetectionExecutor extends CheckDetection {
         double probability = this.getProbability(this.protocol().spartanPlayer.dataType),
                 certainty = PlayerEvidence.probabilityToCertainty(probability) * 100.0;
         int roundedCertainty = AlgebraUtils.integerRound(certainty);
-        boolean hasSufficientData = ResearchEngine.getRequiredPlayers(this, this.protocol().spartanPlayer.dataType, PlayerEvidence.notificationProbability) == 0;
+        boolean hasSufficientData = this.hasSufficientData(this.protocol().spartanPlayer.dataType);
         String notification = ConfigUtils.replaceWithSyntax(
                 this.protocol().spartanPlayer,
                 Config.messages.getColorfulString("detection_notification")
@@ -353,9 +375,8 @@ public abstract class DetectionExecutor extends CheckDetection {
             List<String> commands = check.getPunishmentCommands();
 
             if (!commands.isEmpty()
-                    && ResearchEngine.getRequiredPlayers(this, this.protocol().spartanPlayer.dataType, PlayerEvidence.punishmentProbability) == 0) {
+                    && this.hasSufficientData(this.protocol().spartanPlayer.dataType)) {
                 Collection<Enums.HackType> detectedHacks = this.protocol().getProfile().getEvidenceList(
-                        this.protocol().spartanPlayer.dataType,
                         PlayerEvidence.punishmentProbability
                 );
                 detectedHacks.removeIf(loopHackType -> !loopHackType.getCheck().canPunish(this.protocol().spartanPlayer.dataType));

@@ -68,7 +68,6 @@ public class PlayerInfo extends InventoryMenu {
         } else {
             setTitle(player, menu + (isOnline ? target.player.getName() : profile.name));
             Set<Map.Entry<HackType, Double>> evidenceDetails = profile.getEvidenceEntries(
-                    (isOnline ? target.spartanPlayer.dataType : profile.getLastDataType()),
                     PlayerEvidence.emptyProbability
             );
             List<String> lore = new ArrayList<>();
@@ -79,12 +78,22 @@ public class PlayerInfo extends InventoryMenu {
                 Map<Double, HackType> map = PlayerEvidence.POSITIVE
                         ? new TreeMap<>(Collections.reverseOrder())
                         : new TreeMap<>();
+                boolean missingData = false;
 
                 for (Map.Entry<HackType, Double> entry : evidenceDetails) {
                     map.put(
                             entry.getValue(),
                             entry.getKey()
                     );
+
+                    if (!missingData
+                            && !profile.getExecutor(
+                            entry.getKey()
+                    ).hasSufficientData(
+                            profile.getLastDataType()
+                    )) {
+                        missingData = true;
+                    }
                 }
                 for (Map.Entry<Double, HackType> entry : map.entrySet()) {
                     HackType hackType = entry.getValue();
@@ -128,6 +137,11 @@ public class PlayerInfo extends InventoryMenu {
                         }
                     }
                 }
+                if (missingData) {
+                    lore.add("");
+                    lore.add("§eSome checks are still collecting data");
+                    lore.add("§eand will fully enable in the future.");
+                }
                 lore.add("");
             }
 
@@ -148,7 +162,7 @@ public class PlayerInfo extends InventoryMenu {
             SpartanPlayer sp = isOnline ? target.spartanPlayer : null;
 
             for (Enums.HackCategoryType checkType : Enums.HackCategoryType.values()) {
-                addChecks(slots[checkType.ordinal()], isOnline, sp, lore, checkType);
+                addChecks(slots[checkType.ordinal()], isOnline, sp, profile, lore, checkType);
             }
 
             add("§c" + (back ? "Back" : "Close"), null, new ItemStack(Material.ARROW), 40);
@@ -158,6 +172,7 @@ public class PlayerInfo extends InventoryMenu {
 
     private void addChecks(int slot, boolean isOnline,
                            SpartanPlayer player,
+                           PlayerProfile profile,
                            List<String> lore, Enums.HackCategoryType checkType) {
         lore.clear();
         lore.add("");
@@ -168,14 +183,12 @@ public class PlayerInfo extends InventoryMenu {
 
         // Separator
 
-        Check.DataType dataType = isOnline ? player.dataType : null;
-
         for (HackType hackType : Enums.HackType.values()) {
             if (hackType.category == checkType) {
                 String state = getDetectionState(
                         player,
                         hackType,
-                        dataType,
+                        profile.getLastDataType(),
                         isOnline
                 );
                 lore.add(
@@ -193,7 +206,7 @@ public class PlayerInfo extends InventoryMenu {
         if (!hasPlayer) {
             return "Offline";
         }
-        if (dataType != null && !SpartanEdition.hasDetectionsPurchased(dataType)) {
+        if (!SpartanEdition.hasDetectionsPurchased(dataType)) {
             return "Detection Missing";
         }
         String worldName = player.getWorld().getName();
