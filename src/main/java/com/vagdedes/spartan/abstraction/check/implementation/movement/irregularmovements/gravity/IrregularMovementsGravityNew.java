@@ -33,6 +33,7 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
     }
 
     public void run() {
+        if (true) return;
         if (this.protocol().spartanPlayer != null) {
             SpartanProtocol p = this.protocol();
             boolean isOnGround = p.isOnGround();
@@ -46,7 +47,7 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
                 this.ground = isOnGround ? this.ground + 1 : 0;
                 boolean isOnWater = this.isOnWater(p.getLocation());
                 double pr2;
-                SpartanPlayerMovement var10000;
+                SpartanPlayerMovement playerMovement;
                 if (isOnGround) {
                     if (this.ground != 1) {
                         this.setPredict(0.0);
@@ -54,8 +55,8 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
                             this.setPredict(motion);
                         }
                     } else {
-                        var10000 = this.protocol().spartanPlayer.movement;
-                        pr2 = var10000.motionY -= gravity;
+                        playerMovement = this.protocol().spartanPlayer.movement;
+                        pr2 = playerMovement.motionY -= gravity;
                         pr2 *= 0.9800000190734863;
                         if (motion > pr2 && motion < 0.0) {
                             this.setPredict(motion);
@@ -87,10 +88,10 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
                         }
                     }
                 } else {
-                    var10000 = this.protocol().spartanPlayer.movement;
-                    var10000.motionY -= gravity;
-                    var10000 = this.protocol().spartanPlayer.movement;
-                    var10000.motionY *= 0.9800000190734863;
+                    playerMovement = this.protocol().spartanPlayer.movement;
+                    playerMovement.motionY -= gravity;
+                    playerMovement = this.protocol().spartanPlayer.movement;
+                    playerMovement.motionY *= 0.9800000190734863;
                     if (this.protocol().spartanPlayer.movement.motionY < -3.92) {
                         this.protocol().spartanPlayer.movement.motionY = -3.92;
                     }
