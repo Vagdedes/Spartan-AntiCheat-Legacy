@@ -32,7 +32,6 @@ public class CloudBase {
             connectionRefreshCooldown = 0L,
             connectionFailedCooldown = 0L;
     private static final long refreshTime = 60_000L;
-    private static int outdatedVersion = AutoUpdater.NOT_CHECKED;
 
     // Parameters
     static String identification = "", token = null;
@@ -145,38 +144,6 @@ public class CloudBase {
 
             // Separator
             SpartanBukkit.connectionThread.executeIfSyncElseHere(SpartanEdition::refresh);
-
-            // Separator
-            if (outdatedVersion == AutoUpdater.NOT_CHECKED) {
-                SpartanBukkit.connectionThread.executeIfSyncElseHere(() -> {
-                    try {
-                        String[] results = RequestUtils.get(StringUtils.decodeBase64(website) + "?" + identification
-                                + "&action=get&data=outdatedVersionCheck&version=" + version);
-
-                        if (results.length > 0) {
-                            String data = results[0];
-
-                            if (data.equals("true")) {
-                                String token = getToken();
-
-                                if (token != null) {
-                                    if (AutoUpdater.downloadFile(token)) {
-                                        outdatedVersion = AutoUpdater.UPDATE_SUCCESS;
-                                    } else {
-                                        outdatedVersion = AutoUpdater.UPDATE_FAILURE;
-                                    }
-                                } else {
-                                    outdatedVersion = AutoUpdater.OUTDATED;
-                                }
-                            } else {
-                                outdatedVersion = AutoUpdater.NOT_OUTDATED;
-                            }
-                        }
-                    } catch (Exception e) {
-                        throwError(e, "outdatedVersionCheck:GET");
-                    }
-                });
-            }
 
             // Separator
             SpartanBukkit.connectionThread.executeIfSyncElseHere(() -> {

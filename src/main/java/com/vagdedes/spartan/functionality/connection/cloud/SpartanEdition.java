@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.functionality.connection.cloud;
 
+import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
@@ -7,7 +8,7 @@ import com.vagdedes.spartan.functionality.connection.DiscordMemberCount;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
-import com.vagdedes.spartan.utils.java.StringUtils;
+import org.bukkit.Bukkit;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,16 +16,17 @@ import java.util.List;
 public class SpartanEdition {
 
     private static final Check.DataType
-            currentType = Check.DataType.JAVA,
+            currentType = IDs.resource.equals("25638")
+            || IDs.resource.equals("11196")
+            || IDs.resource.equals("350")
+            || Bukkit.getMotd().contains(Register.plugin.getName())
+            ? Check.DataType.JAVA
+            : Check.DataType.BEDROCK,
             oppositeType = currentType == Check.DataType.JAVA
                     ? Check.DataType.BEDROCK
                     : Check.DataType.JAVA;
 
     private static long checkTime = 0L;
-    public static final String[] jarNames = new String[]{
-            StringUtils.decodeBase64("U3BhcnRhbkJlZHJvY2tFZGl0aW9u"),
-            "Spartan",
-    };
     public static final String patreonURL = "https://www.vagdedes.com/patreon";
     private static final int notificationCooldown = 60 * 60;
     private static final String
