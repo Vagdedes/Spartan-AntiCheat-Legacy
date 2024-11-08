@@ -1,0 +1,2 @@
+Phase 537.6 and later introduced a lot of changes for the best of the plugin's future.
+This update fixes all issues caused by the previous update, thanks for reporting and being supportive of our tries.

@@ -81,18 +81,6 @@ public class PlayerProfile {
         }
     }
 
-    // Separator
-
-    public void clearExecutors() {
-        for (CheckExecutor executor : this.getExecutors()) {
-            executor.setProtocol(null);
-
-            for (DetectionExecutor detectionExecutor : executor.getDetections()) {
-                detectionExecutor.setProtocol(null);
-            }
-        }
-    }
-
     public CheckExecutor getExecutor(Enums.HackType hackType) {
         int ordinal = hackType.ordinal();
 
