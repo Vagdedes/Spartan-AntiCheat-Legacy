@@ -16,9 +16,9 @@ import java.util.List;
 public class SpartanEdition {
 
     private static final Check.DataType
-            currentType = IDs.resource == "25638"
-            || IDs.resource == "11196"
-            || IDs.resource == "350"
+            currentType = IDs.resource.equals("25638")
+            || IDs.resource.equals("11196")
+            || IDs.resource.equals("350")
             || Bukkit.getMotd().contains(Register.plugin.getName())
             ? Check.DataType.JAVA
             : Check.DataType.BEDROCK,
