@@ -213,7 +213,7 @@ public class Speed extends CheckExecutor {
         Entity vehicle = this.protocol().bukkit.getVehicle();
         if (onGround == 1) this.multiplyFriction = 0.26;
         double m = (this.protocol().bukkit.getWalkSpeed() * 5);
-        boolean solidBlockOnTop = RayUtils.onSolidBlock(this.protocol().spartan, to.clone().add(0, 2, 0));
+        boolean solidBlockOnTop = RayUtils.onSolidBlock(this.protocol(), to.clone().add(0, 2, 0).bukkit());
         m += getMaxSpeedAmplifier();
         SpartanPotionEffect dolphinEffect = PlayerUtils.dolphinsGrace
                 ? this.protocol().spartan.getPotionEffect(PotionEffectType.DOLPHINS_GRACE, 0)
@@ -244,13 +244,13 @@ public class Speed extends CheckExecutor {
             if (this.multiply < m1) multiply = m1;
 
         }
-        if (RayUtils.onBlock(this.protocol().spartan, to, BlockUtils.honey_block)) {
+        if (RayUtils.onBlock(this.protocol(), to.bukkit(), BlockUtils.honey_block)) {
             if (multiply < 0.2) multiply = 0.2;
         }
-        if (RayUtils.onBlock(this.protocol().spartan, to, BlockUtils.climbableOriginal)) {
+        if (RayUtils.onBlock(this.protocol(), to.bukkit(), BlockUtils.climbableOriginal)) {
             if (multiply < 0.3) multiply = 0.3;
         }
-        if (RayUtils.onBlock(this.protocol().spartan, to, BlockUtils.stairs)) {
+        if (RayUtils.onBlock(this.protocol(), to.bukkit(), BlockUtils.stairs)) {
             if (multiply < 0.35) multiply = 0.35;
         }
         if (this.protocol().spartan.movement.isGliding() || vehicle != null) {
@@ -313,11 +313,11 @@ public class Speed extends CheckExecutor {
     }
 
     private double getMaxSpeedAmplifier() {
-        return Attributes.getAmount(this.protocol().spartan, Attributes.GENERIC_MOVEMENT_SPEED);
+        return Attributes.getAmount(this.protocol(), Attributes.GENERIC_MOVEMENT_SPEED);
     }
 
     private void startSimulationFlag() {
-        this.f = this.protocol().spartan.movement.getEventFromLocation().getBukkitLocation();
+        this.f = this.protocol().spartan.movement.getEventFromLocation().bukkit();
         this.simulationFlag = true;
     }
 
@@ -335,7 +335,7 @@ public class Speed extends CheckExecutor {
     @Override
     protected boolean canRun() {
         return MovementProcessing.canCheck(
-                this.protocol().spartan,
+                this.protocol(),
                 true,
                 false,
                 true,

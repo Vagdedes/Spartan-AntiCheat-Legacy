@@ -73,7 +73,7 @@ public class Event_Chunks implements Listener {
                     SpartanLocation location = protocol.spartan.movement.getLocation();
 
                     if (isLoaded(location.world, location.getChunkX(), location.getChunkZ())
-                            && cache(location.getBukkitLocation().getChunk(), true)) {
+                            && cache(location.bukkit().getChunk(), true)) {
                         break;
                     }
                 }

@@ -151,7 +151,7 @@ public class SpartanProtocol {
 
     public void startSimulationFlag() {
         this.spartan.teleport(this.spartan.movement.getEventFromLocation());
-        this.simulationStartPoint = this.spartan.movement.getEventFromLocation().getBukkitLocation().clone();
+        this.simulationStartPoint = this.spartan.movement.getEventFromLocation().bukkit().clone();
         this.simulationFlag = true;
         this.simulationDelayPerTP = 1;
     }

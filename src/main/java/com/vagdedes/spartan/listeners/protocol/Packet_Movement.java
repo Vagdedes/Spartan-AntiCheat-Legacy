@@ -88,7 +88,7 @@ public class Packet_Movement extends PacketAdapter {
 
         if (protocol.simulationFlag) {
             Location to = protocol.getLocation();
-            Location from = protocol.spartan.movement.getEventFromLocation().getBukkitLocation();
+            Location from = protocol.spartan.movement.getEventFromLocation().bukkit();
             double dx = RayUtils.scaleVal(to.getX() - from.getX(), 6),
                     dy = RayUtils.scaleVal(to.getY() - from.getY(), 6),
                     dz = RayUtils.scaleVal(to.getZ() - from.getZ(), 6);

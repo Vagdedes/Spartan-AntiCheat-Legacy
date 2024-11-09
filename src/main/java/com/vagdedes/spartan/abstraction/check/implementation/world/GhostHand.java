@@ -5,7 +5,6 @@ import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
-import com.vagdedes.spartan.compatibility.manual.abilities.mcMMO;
 import com.vagdedes.spartan.compatibility.manual.building.PrinterMode;
 import com.vagdedes.spartan.compatibility.manual.entity.Vehicles;
 import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
@@ -95,8 +94,7 @@ public class GhostHand extends CheckExecutor {
         if (!this.protocol().spartan.movement.isFlying()
                 && !Vehicles.has(this.protocol(), Vehicles.DRILL)
                 && !PrinterMode.isUsing(this.protocol())
-                && !mcMMO.hasGeneralAbility(this.protocol().spartan)
-                && Attributes.getAmount(this.protocol().spartan, Attributes.PLAYER_BLOCK_INTERACTION_RANGE) == 0.0) {
+                && Attributes.getAmount(this.protocol(), Attributes.PLAYER_BLOCK_INTERACTION_RANGE) == 0.0) {
             GameMode gameMode = this.protocol().bukkit.getGameMode();
             return gameMode == GameMode.SURVIVAL
                     || gameMode == GameMode.ADVENTURE;

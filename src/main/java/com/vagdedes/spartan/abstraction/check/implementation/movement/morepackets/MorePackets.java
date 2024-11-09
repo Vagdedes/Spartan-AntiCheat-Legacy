@@ -246,7 +246,7 @@ public class MorePackets extends CheckExecutor {
         return !this.protocol().spartan.isBedrockPlayer()
                 && this.teleported < System.currentTimeMillis()
                 && MovementProcessing.canCheck(
-                this.protocol().spartan,
+                this.protocol(),
                 this.protocol().packetsEnabled(),
                 true,
                 true,

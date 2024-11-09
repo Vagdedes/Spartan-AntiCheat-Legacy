@@ -8,7 +8,6 @@ import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
 import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.compatibility.manual.abilities.AureliumSkills;
-import com.vagdedes.spartan.compatibility.manual.abilities.mcMMO;
 import com.vagdedes.spartan.compatibility.manual.building.MineBomb;
 import com.vagdedes.spartan.compatibility.manual.building.TreeFeller;
 import com.vagdedes.spartan.compatibility.manual.entity.Vehicles;
@@ -57,8 +56,8 @@ public class NoSwing extends CheckExecutor {
             }
             Block block = ((BlockBreakEvent) object).getBlock();
 
-            if (!BlockUtils.isSensitive(this.protocol().spartan, block.getType())
-                    && !TreeFeller.canCancel(this.protocol().spartan, block)
+            if (!BlockUtils.isSensitive(this.protocol(), block.getType())
+                    && !TreeFeller.canCancel(block)
                     && System.currentTimeMillis() - breakTime > TPS.tickTime) {
                 if (this.animationTime == Long.MAX_VALUE) {
                     this.breaking.cancel(
@@ -76,7 +75,7 @@ public class NoSwing extends CheckExecutor {
             }
             LivingEntity entity = ((PlayerAttackEvent) object).target;
 
-            if (!CombatUtils.canCheck(this.protocol().spartan, entity)) {
+            if (!CombatUtils.canCheck(this.protocol(), entity)) {
                 return;
             }
             long time = System.currentTimeMillis();
@@ -106,8 +105,7 @@ public class NoSwing extends CheckExecutor {
 
     @Override
     public boolean canRun() {
-        return !Vehicles.has(this.protocol(), Vehicles.DRILL)
-                && !mcMMO.hasGeneralAbility(this.protocol().spartan);
+        return !Vehicles.has(this.protocol(), Vehicles.DRILL);
     }
 
 }

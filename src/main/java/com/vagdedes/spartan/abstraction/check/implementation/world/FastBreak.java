@@ -7,7 +7,6 @@ import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibili
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.compatibility.manual.abilities.AureliumSkills;
-import com.vagdedes.spartan.compatibility.manual.abilities.mcMMO;
 import com.vagdedes.spartan.compatibility.manual.building.MineBomb;
 import com.vagdedes.spartan.compatibility.manual.building.SuperPickaxe;
 import com.vagdedes.spartan.compatibility.manual.building.TreeFeller;
@@ -67,7 +66,7 @@ public class FastBreak extends CheckExecutor {
 
                     if (time > 0L) { // Make sure the plugin knows when the player started breaking the block
                         ItemStack itemStack = this.protocol().spartan.getItemInHand();
-                        long originalLimit = MaterialUtils.getBlockBreakTime(this.protocol().spartan, itemStack, block.getType()),
+                        long originalLimit = MaterialUtils.getBlockBreakTime(this.protocol(), itemStack, block.getType()),
                                 limit = originalLimit;
 
                         if (limit > -1L) { // Make sure the limit can be calculated on this specific server
@@ -170,7 +169,7 @@ public class FastBreak extends CheckExecutor {
         GameMode gameMode = this.protocol().bukkit.getGameMode();
 
         if ((gameMode == GameMode.SURVIVAL || gameMode == GameMode.ADVENTURE)
-                && !BlockUtils.isSensitive(this.protocol().spartan, block.getType())) {
+                && !BlockUtils.isSensitive(this.protocol(), block.getType())) {
             int bufferTicks = AlgebraUtils.integerCeil(TPS.maximum),
                     limit = hackType.getCheck().getNumericalOption(
                             "indirect_surroundings_per_second",
@@ -235,7 +234,7 @@ public class FastBreak extends CheckExecutor {
         } else {
             Block b = ((BlockBreakEvent) object).getBlock();
 
-            if (!TreeFeller.canCancel(this.protocol().spartan, b)) {
+            if (!TreeFeller.canCancel(b)) {
                 int seconds = AlgebraUtils.integerCeil(TPS.maximum);
                 checkDelay(b, seconds);
                 checkBreaksPerSecond(seconds, b);
@@ -250,9 +249,8 @@ public class FastBreak extends CheckExecutor {
                 && !Vehicles.has(this.protocol(), Vehicles.DRILL)
                 && !SuperPickaxe.isUsing(this.protocol().spartan)
                 && !AureliumSkills.isUsing(this.protocol())
-                && !mcMMO.hasGeneralAbility(this.protocol().spartan)
                 && !Compatibility.CompatibilityType.CRAFT_BOOK.isFunctional()
-                && Attributes.getAmount(this.protocol().spartan, Attributes.PLAYER_BLOCK_BREAK_SPEED) == 0.0;
+                && Attributes.getAmount(this.protocol(), Attributes.PLAYER_BLOCK_BREAK_SPEED) == 0.0;
     }
 
 }

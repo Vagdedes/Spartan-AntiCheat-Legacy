@@ -118,11 +118,8 @@ public class NPCManager implements Listener {
                         if (npc.getUniqueId().equals(uuid)) {
                             e.setCancelled(true);
                             npc.updateHead();
-                            SpartanPlayer player = SpartanBukkit.getProtocol(e.getPlayer()).spartan;
-
-                            if (player != null) {
-                                InteractiveInventory.mainMenu.open(player, Permissions.has(player.bukkit()));
-                            }
+                            SpartanProtocol protocol = SpartanBukkit.getProtocol(e.getPlayer());
+                            InteractiveInventory.mainMenu.open(protocol, Permissions.has(protocol.bukkit));
                             break;
                         }
                     }
@@ -147,11 +144,8 @@ public class NPCManager implements Listener {
                             Entity damager = e.getDamager();
 
                             if (damager instanceof Player) {
-                                SpartanPlayer player = SpartanBukkit.getProtocol((Player) damager).spartan;
-
-                                if (player != null) {
-                                    InteractiveInventory.mainMenu.open(player, Permissions.has(player.bukkit()));
-                                }
+                                SpartanProtocol protocol = SpartanBukkit.getProtocol((Player) damager);
+                                InteractiveInventory.mainMenu.open(protocol, Permissions.has(protocol.bukkit));
                             }
                             break;
                         }

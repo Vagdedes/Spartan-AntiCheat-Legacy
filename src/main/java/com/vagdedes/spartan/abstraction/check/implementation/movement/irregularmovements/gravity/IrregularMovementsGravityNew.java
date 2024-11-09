@@ -38,7 +38,7 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
             SpartanProtocol p = this.protocol();
             boolean isOnGround = p.isOnGround();
             Location to = p.getLocation();
-            Location from = this.protocol().spartan.movement.getEventFromLocation().getBukkitLocation();
+            Location from = this.protocol().spartan.movement.getEventFromLocation().bukkit();
             if (to.getX() != from.getX() || to.getY() != from.getY() || to.getZ() != from.getZ()) {
                 double motion = to.getY() - from.getY();
                 double gravity = 0.08;

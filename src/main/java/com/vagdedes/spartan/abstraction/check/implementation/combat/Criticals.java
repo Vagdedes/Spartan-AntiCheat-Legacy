@@ -24,13 +24,20 @@ public class Criticals extends CheckExecutor {
         Double verticalMaxAccuracy = this.protocol().spartan.movement.getEventVertical();
 
         if (verticalMaxAccuracy != null) {
-            if (RayUtils.onBlock(this.protocol().spartan, this.protocol().spartan.movement.getLocation(), BlockUtils.web)) return;
+            if (RayUtils.onBlock(
+                    this.protocol(),
+                    this.protocol().spartan.movement.getLocation().bukkit(),
+                    BlockUtils.web
+            )
+            ) {
+                return;
+            }
 
             if ((verticalMaxAccuracy < 0.079 || Math.abs(verticalMaxAccuracy) == 0.0625)
                     && verticalMaxAccuracy > 0
                     && this.protocol().spartan.movement.getTicksOnAir() == 1
                     && !this.protocol().spartan.movement.getLocation().getBlock().getType().isBlock()
-                    && !RayUtils.onSolidBlock(this.protocol().spartan, this.protocol().spartan.movement.getLocation().clone().add(0, 2, 0))) {
+                    && !RayUtils.onSolidBlock(this.protocol(), this.protocol().spartan.movement.getLocation().clone().add(0, 2, 0).bukkit())) {
                 this.detection.cancel("type: packet", 1);
             }
         }
@@ -38,7 +45,7 @@ public class Criticals extends CheckExecutor {
 
     @Override
     protected boolean canRun() {
-        return CombatUtils.canCheck(this.protocol().spartan)
+        return CombatUtils.canCheck(this.protocol())
                 && !this.protocol().spartan.movement.isInLiquids()
                 && !this.protocol().spartan.hasPotionEffect(PotionEffectType.BLINDNESS, 0);
     }

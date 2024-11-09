@@ -201,7 +201,7 @@ public class SpartanPlayer {
 
     // Separator
 
-    public Player bukkit() {
+    Player bukkit() {
         return this.protocol.bukkit;
     }
 
@@ -209,7 +209,7 @@ public class SpartanPlayer {
 
     public boolean isOnGround(SpartanLocation location, boolean checkEntities) {
         return GroundUtils.isOnGround(
-                this,
+                this.protocol,
                 location,
                 this.protocol.isOnGround(),
                 checkEntities
@@ -224,7 +224,7 @@ public class SpartanPlayer {
         } else {
             return this.protocol.isOnGround()
                     || custom
-                    && GroundUtils.isOnGround(this, movement.getLocation(), false, true);
+                    && GroundUtils.isOnGround(this.protocol, movement.getLocation(), false, true);
         }
     }
 
@@ -465,9 +465,9 @@ public class SpartanPlayer {
             this.trackers.removeMany(PlayerTrackers.TrackerFamily.VELOCITY);
 
             if (MultiVersion.folia) {
-                p.teleportAsync(location.getBukkitLocation());
+                p.teleportAsync(location.bukkit());
             } else {
-                SpartanBukkit.transferTask(this, () -> p.teleport(location.getBukkitLocation()));
+                SpartanBukkit.transferTask(this, () -> p.teleport(location.bukkit()));
             }
             return true;
         } else {

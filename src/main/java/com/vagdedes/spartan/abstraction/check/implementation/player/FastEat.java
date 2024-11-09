@@ -129,6 +129,6 @@ public class FastEat extends CheckExecutor {
     protected boolean canRun() {
         return this.protocol().spartan.getWorld().getDifficulty() != Difficulty.PEACEFUL
                 && !this.protocol().spartan.hasPotionEffect(PotionEffectType.SATURATION, 0)
-                && Attributes.getAmount(this.protocol().spartan, Attributes.GENERIC_MAX_ABSORPTION) == 0.0;
+                && Attributes.getAmount(this.protocol(), Attributes.GENERIC_MAX_ABSORPTION) == 0.0;
     }
 }

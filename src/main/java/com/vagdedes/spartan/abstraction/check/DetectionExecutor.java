@@ -3,6 +3,7 @@ package com.vagdedes.spartan.abstraction.check;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudConnections;
@@ -253,7 +254,7 @@ public abstract class DetectionExecutor extends CheckDetection {
                 || time - this.notifications >= 5_000L)) {
             boolean player = detected instanceof SpartanPlayer;
             int ticks = this.executor.getNotificationTicksCooldown(
-                    player ? (SpartanPlayer) detected : null
+                    player ? (SpartanProtocol) detected : null
             );
 
             if (ticks > 0) {
@@ -349,13 +350,13 @@ public abstract class DetectionExecutor extends CheckDetection {
                 ClickableMessage.sendCommand(this.protocol().bukkit, notification, command, command);
             }
         } else {
-            List<SpartanPlayer> notificationPlayers = DetectionNotifications.getPlayers();
+            List<SpartanProtocol> protocols = DetectionNotifications.getPlayers();
 
-            if (!notificationPlayers.isEmpty()) {
-                for (SpartanPlayer staff : notificationPlayers) {
-                    if (staff.getExecutor(this.hackType).getDetection(this.name).canSendNotification(this.protocol().spartan, roundedCertainty)) {
+            if (!protocols.isEmpty()) {
+                for (SpartanProtocol staff : protocols) {
+                    if (staff.spartan.getExecutor(this.hackType).getDetection(this.name).canSendNotification(this.protocol(), roundedCertainty)) {
                         ClickableMessage.sendCommand(
-                                staff.bukkit(),
+                                staff.bukkit,
                                 notification,
                                 command,
                                 command

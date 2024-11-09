@@ -54,7 +54,10 @@ public class Velocity extends CheckExecutor {
             }
             double x = RayUtils.scaleVal(Math.abs(eventXDiff), 2);
             double z = RayUtils.scaleVal(Math.abs(eventZDiff), 2);
-            boolean blockOnTop = RayUtils.onSolidBlock(this.protocol().spartan, this.protocol().spartan.movement.getLocation().clone().add(0, 2, 0));
+            boolean blockOnTop = RayUtils.onSolidBlock(
+                    this.protocol(),
+                    this.protocol().spartan.movement.getLocation().clone().add(0, 2, 0).bukkit()
+            );
             vertical = RayUtils.scaleVal(vertical, 2);
             // vertical check
             if (veloV) {
@@ -110,7 +113,7 @@ public class Velocity extends CheckExecutor {
     protected boolean canRun() {
         return this.protocol().packetsEnabled()
                 && !this.protocol().spartan.trackers.has(PlayerTrackers.TrackerType.BOUNCING_BLOCKS)
-                && CombatUtils.canCheck(this.protocol().spartan)
+                && CombatUtils.canCheck(this.protocol())
                 && !this.protocol().spartan.isOutsideOfTheBorder(-1.0)
                 && !BlockPatternUtils.isBlockPattern(
                 new double[][]{

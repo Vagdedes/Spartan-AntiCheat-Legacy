@@ -54,7 +54,7 @@ public class SuspicionNotifications {
                 for (Enums.HackType hackType : list) {
                     evidence.append(
                             hackType.getCheck().getName()
-                                    + (protocol.getProfile().getExecutor(hackType).hasSufficientData(protocol.spartan.dataType)
+                                    + (protocol.spartan.getExecutor(hackType).hasSufficientData(protocol.spartan.dataType)
                                     ? ""
                                     : " (Unlikely)")
                     ).append(

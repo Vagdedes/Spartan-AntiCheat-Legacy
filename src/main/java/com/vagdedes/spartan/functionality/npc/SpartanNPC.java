@@ -38,7 +38,7 @@ public class SpartanNPC {
         loc.setZ(loc.getBlockZ() + 0.5);
         this.location = loc;
         this.armorStand = (ArmorStand) loc.world.spawnEntity(
-                loc.getBukkitLocation(),
+                loc.bukkit(),
                 EntityType.ARMOR_STAND
         );
         armorStand.setGravity(false);

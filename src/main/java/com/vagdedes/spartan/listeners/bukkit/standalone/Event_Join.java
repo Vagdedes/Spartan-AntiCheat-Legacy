@@ -23,7 +23,7 @@ public class Event_Join implements Listener {
                 && !Permissions.isStaff(n)) {
             n.sendMessage("");
             AwarenessNotifications.forcefullySend(
-                    protocol.spartan,
+                    protocol,
                     "\nThis server is protected by the Spartan AntiCheat",
                     false
             );

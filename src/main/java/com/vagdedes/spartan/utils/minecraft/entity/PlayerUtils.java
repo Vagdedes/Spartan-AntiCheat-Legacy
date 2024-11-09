@@ -12,8 +12,6 @@ import com.vagdedes.spartan.utils.minecraft.world.GroundUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
@@ -130,16 +128,6 @@ public class PlayerUtils {
         } else {
             height = 256;
         }
-    }
-
-    // Enchantments
-
-    public static int getDepthStriderLevel(SpartanPlayer p) {
-        if (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)) {
-            return 0;
-        }
-        ItemStack b = p.bukkit().getInventory().getBoots();
-        return b != null ? b.getEnchantmentLevel(Enchantment.DEPTH_STRIDER) : 0;
     }
 
     // Jumping

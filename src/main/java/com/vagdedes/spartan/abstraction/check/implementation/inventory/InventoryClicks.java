@@ -52,7 +52,7 @@ public class InventoryClicks extends CheckExecutor {
                 && item.getItemMeta() != null) {
             Material material = item.getType();
 
-            if (!BlockUtils.isSensitive(this.protocol().spartan, material)) {
+            if (!BlockUtils.isSensitive(this.protocol(), material)) {
                 boolean quick = this.protocol().bukkit.getOpenInventory().countSlots() <= PlayerUtils.playerInventorySlots,
                         shift = click.isShiftClick();
                 String type = BlockUtils.materialToString(material);

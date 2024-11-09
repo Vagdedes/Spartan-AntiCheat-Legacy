@@ -307,28 +307,13 @@ public class SpartanPlayerMovement {
 
     // Separator
 
-    public boolean positionChanged() {
-        return this.location.getX() != this.eventFrom.getX()
-                || this.location.getY() != this.eventFrom.getY()
-                || this.location.getZ() != this.eventFrom.getZ();
-    }
-
-    public boolean directionChanged() {
-        return this.location.getYaw() != this.eventFrom.getYaw()
-                || this.location.getPitch() != this.eventFrom.getPitch();
-    }
-
-    // Separator
-
     public SpartanLocation getVehicleLocation() {
         Entity vehicle = this.parent.bukkit().getVehicle();
 
         if (vehicle instanceof LivingEntity || vehicle instanceof Vehicle) {
-            Location playerLocation = this.parent.protocol.getLocation();
             return new SpartanLocation(
-                    ProtocolLib.getLocation(vehicle),
-                    playerLocation.getYaw(),
-                    playerLocation.getPitch());
+                    ProtocolLib.getLocation(vehicle)
+            );
         }
         return null;
     }
@@ -342,10 +327,6 @@ public class SpartanPlayerMovement {
         } else {
             return vehicleLocation;
         }
-    }
-
-    public SpartanLocation getRawLocation() {
-        return this.location;
     }
 
     // Separator

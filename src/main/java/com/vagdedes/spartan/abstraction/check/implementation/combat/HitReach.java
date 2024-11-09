@@ -40,7 +40,7 @@ public class HitReach extends CheckExecutor {
         LivingEntity target = event.target;
 
         if (this.protocol().packetsEnabled()) {
-            if (CombatUtils.canCheck(this.protocol().spartan, target)
+            if (CombatUtils.canCheck(this.protocol(), target)
                     && !this.protocol().bukkit.getGameMode().equals(GameMode.CREATIVE)) {
                 SpartanProtocol targetProtocol = SpartanBukkit.getProtocol(ProtocolLib.getUUID(target));
                 if (targetProtocol == null) return;
@@ -54,7 +54,7 @@ public class HitReach extends CheckExecutor {
                     for (Location targetLocation : targetProtocol.getLocations()) {
                         if (targetLocation != null) {
                             value = RayUtils.bruteforceRayTraceWithCustomLocation(
-                                    this.protocol().spartan,
+                                    this.protocol(),
                                     targetLocation,
                                     target
                             );
@@ -82,9 +82,9 @@ public class HitReach extends CheckExecutor {
                 }
             }
         } else {
-            if (CombatUtils.canCheck(this.protocol().spartan, target)
+            if (CombatUtils.canCheck(this.protocol(), target)
                     && !this.protocol().bukkit.getGameMode().equals(GameMode.CREATIVE)) {
-                double bruteforceRayTrace = RayUtils.bruteforceRayTrace(this.protocol().spartan, target),
+                double bruteforceRayTrace = RayUtils.bruteforceRayTrace(this.protocol(), target),
                         diff = bruteforceRayTrace - 0.4;
                 rayTraceAnalysis.addLast(bruteforceRayTrace);
                 if (rayTraceAnalysis.size() >= 10) {
@@ -123,6 +123,6 @@ public class HitReach extends CheckExecutor {
 
     @Override
     protected boolean canRun() {
-        return CombatUtils.canCheck(this.protocol().spartan);
+        return CombatUtils.canCheck(this.protocol());
     }
 }

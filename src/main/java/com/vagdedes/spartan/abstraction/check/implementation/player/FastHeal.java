@@ -82,7 +82,7 @@ public class FastHeal extends CheckExecutor {
     protected boolean canRun() {
         if (this.protocol().spartan.getWorld().getDifficulty() != Difficulty.PEACEFUL
                 && this.protocol().bukkit.getFireTicks() <= 0
-                && Attributes.getAmount(this.protocol().spartan, Attributes.GENERIC_MAX_ABSORPTION) == 0.0) {
+                && Attributes.getAmount(this.protocol(), Attributes.GENERIC_MAX_ABSORPTION) == 0.0) {
             GameMode gameMode = this.protocol().bukkit.getGameMode();
             return gameMode == GameMode.ADVENTURE || gameMode == GameMode.SURVIVAL;
         } else {

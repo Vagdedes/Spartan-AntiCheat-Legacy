@@ -83,7 +83,7 @@ public class IrregularMovements extends CheckExecutor {
     @Override
     protected boolean canRun() {
         return MovementProcessing.canCheck(
-                this.protocol().spartan,
+                this.protocol(),
                 false,
                 false,
                 true,

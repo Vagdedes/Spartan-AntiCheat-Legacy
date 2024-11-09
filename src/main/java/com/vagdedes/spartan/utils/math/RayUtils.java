@@ -1,6 +1,5 @@
 package com.vagdedes.spartan.utils.math;
 
-import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanBlock;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
@@ -86,8 +85,8 @@ public class RayUtils {
 
 
     @SafeVarargs
-    public static boolean onBlock(SpartanPlayer player, SpartanLocation location, Set<Material>... sets) {
-        World world = player.getWorld();
+    public static boolean onBlock(SpartanProtocol protocol, Location location, Set<Material>... sets) {
+        World world = protocol.spartan.getWorld();
         Vector playerLocation = location.toVector(),
                 min = playerLocation.clone().add(new Vector(-0.3, -0.5, -0.3)),
                 max = playerLocation.clone().add(new Vector(0.3, 0.1, 0.3));
@@ -108,8 +107,8 @@ public class RayUtils {
         return false;
     }
 
-    public static boolean onBlock(SpartanPlayer player, SpartanLocation location, Set<Material> set) {
-        World world = player.getWorld();
+    public static boolean onBlock(SpartanProtocol protocol, Location location, Set<Material> set) {
+        World world = protocol.spartan.getWorld();
         Vector playerLocation = location.toVector(),
                 min = playerLocation.clone().add(new Vector(-0.3, -0.5, -0.3)),
                 max = playerLocation.clone().add(new Vector(0.3, 0.1, 0.3));
@@ -128,8 +127,8 @@ public class RayUtils {
         return false;
     }
 
-    public static boolean onBlock(SpartanPlayer player, SpartanLocation location, Material material) {
-        World world = player.getWorld();
+    public static boolean onBlock(SpartanProtocol protocol, Location location, Material material) {
+        World world = protocol.spartan.getWorld();
         Vector playerLocation = location.toVector(),
                 min = playerLocation.clone().add(new Vector(-0.3, -0.5, -0.3)),
                 max = playerLocation.clone().add(new Vector(0.3, 0.1, 0.3));
@@ -148,8 +147,8 @@ public class RayUtils {
         return false;
     }
 
-    public static boolean onSolidBlock(SpartanPlayer player, SpartanLocation location) {
-        World world = player.getWorld();
+    public static boolean onSolidBlock(SpartanProtocol protocol, Location location) {
+        World world = protocol.spartan.getWorld();
         Vector playerLocation = location.toVector(),
                 min = playerLocation.clone().add(new Vector(-0.3, -0.5, -0.3)),
                 max = playerLocation.clone().add(new Vector(0.3, 0.1, 0.3));
@@ -168,8 +167,8 @@ public class RayUtils {
         return false;
     }
 
-    public static boolean isSolidBlock(SpartanPlayer player, SpartanLocation location) {
-        World world = player.getWorld();
+    public static boolean isSolidBlock(SpartanProtocol protocol, Location location) {
+        World world = protocol.spartan.getWorld();
         Vector playerLocation = location.toVector(),
                 min = playerLocation.clone().add(new Vector(-0.3, -0.3, -0.3)),
                 max = playerLocation.clone().add(new Vector(0.3, 0.3, 0.3));
@@ -188,8 +187,8 @@ public class RayUtils {
         return false;
     }
 
-    public static boolean inBlock(SpartanPlayer player, SpartanLocation location) {
-        World world = player.getWorld();
+    public static boolean inBlock(SpartanProtocol protocol, Location location) {
+        World world = protocol.spartan.getWorld();
         Vector playerLocation = location.toVector(),
                 min = playerLocation.clone().add(new Vector(-0.3, 0.0, -0.3)),
                 max = playerLocation.clone().add(new Vector(0.3, 0.5, 0.3));
@@ -232,7 +231,7 @@ public class RayUtils {
                     targetX + size, targetY + 1.9F, targetZ + size
             );
             // boundingBox = boundingBox.expand(0.04, 0.03, 0.04);
-            intersection = isIntersection(player, location, intersection, boundingBox);
+            intersection = isIntersection(protocol, location, intersection, boundingBox);
             exempt = target.isInsideVehicle();
         } else {
             double targetX = target.getLocation().getX();
@@ -244,15 +243,15 @@ public class RayUtils {
                     targetX + size, targetY + 1.9F, targetZ + size
             );
             // boundingBox = boundingBox.expand(0.04, 0.03, 0.04);
-            intersection = isIntersection(player, location, intersection, boundingBox);
-            intersection2 = isIntersection(player, player.movement.getEventFromLocation(), intersection2, boundingBox);
+            intersection = isIntersection(protocol, location, intersection, boundingBox);
+            intersection2 = isIntersection(protocol, protocol.spartan.movement.getEventFromLocation().bukkit(), intersection2, boundingBox);
             exempt = target.isInsideVehicle() || !(target instanceof Villager || target instanceof Zombie || target instanceof Skeleton || target instanceof Creeper);
         }
         return intersection || intersection2 || exempt;
     }
 
-    public static boolean inHitbox(SpartanPlayer player, Location locationIn, Entity target, float size) {
-        SpartanLocation location = player.movement.getRawLocation();
+    public static boolean inHitbox(SpartanProtocol protocol, Location locationIn, Entity target, float size) {
+        Location location = protocol.getLocation();
         boolean intersection = false;
         boolean exempt;
         double targetX = locationIn.getX();
@@ -264,13 +263,13 @@ public class RayUtils {
                 targetX + size, targetY + 1.9F, targetZ + size
         );
         // boundingBox = boundingBox.expand(0.04, 0.03, 0.04);
-        intersection = isIntersection(player, location, intersection, boundingBox);
+        intersection = isIntersection(protocol, location, intersection, boundingBox);
         exempt = target.isInsideVehicle();
         return intersection || exempt;
     }
 
-    public static boolean inHitbox(SpartanPlayer player, Location locationIn, float size) {
-        SpartanLocation location = player.movement.getRawLocation();
+    public static boolean inHitbox(SpartanProtocol protocol, Location locationIn, float size) {
+        Location location = protocol.getLocation();
         boolean intersection = false;
         double targetX = locationIn.getX();
         double targetY = locationIn.getY();
@@ -281,13 +280,13 @@ public class RayUtils {
                 targetX + size, targetY + size, targetZ + size
         );
         // boundingBox = boundingBox.expand(0.04, 0.03, 0.04);
-        intersection = isIntersection(player, location, intersection, boundingBox);
+        intersection = isIntersection(protocol, location, intersection, boundingBox);
         ;
         return intersection;
     }
 
-    public static boolean inHitbox(SpartanPlayer player, Location locationIn, float size, double dist) {
-        SpartanLocation location = player.movement.getRawLocation();
+    public static boolean inHitbox(SpartanProtocol protocol, Location locationIn, float size, double dist) {
+        Location location = protocol.getLocation();
         boolean intersection = false;
         double targetX = locationIn.getX();
         double targetY = locationIn.getY();
@@ -298,23 +297,23 @@ public class RayUtils {
                 targetX + size, targetY + size, targetZ + size
         );
         // boundingBox = boundingBox.expand(0.04, 0.03, 0.04);
-        intersection = isIntersection(player, location, intersection, boundingBox, dist);
+        intersection = isIntersection(protocol, location, intersection, boundingBox, dist);
         return intersection;
     }
 
-    private static boolean isIntersection(SpartanPlayer player, SpartanLocation location, boolean intersection, AxisAlignedBB boundingBox) {
+    private static boolean isIntersection(SpartanProtocol protocol, Location location, boolean intersection, AxisAlignedBB boundingBox) {
         for (final boolean rotation : BOOLEANS) {
             for (final boolean sneak : BOOLEANS) {
                 final float yaw = location.getYaw();
                 final float pitch = location.getPitch();
-                final MovingObjectPosition result = rayCast(yaw, pitch, sneak, boundingBox, player);
+                final MovingObjectPosition result = rayCast(yaw, pitch, sneak, boundingBox, protocol);
                 intersection |= result != null && result.hitVec != null;
             }
         }
         return intersection;
     }
 
-    private static boolean isIntersection(SpartanProtocol protocol, SpartanLocation location, boolean intersection, AxisAlignedBB boundingBox, double dist) {
+    private static boolean isIntersection(SpartanProtocol protocol, Location location, boolean intersection, AxisAlignedBB boundingBox, double dist) {
         for (final boolean rotation : BOOLEANS) {
             for (final boolean sneak : BOOLEANS) {
                 final float yaw = location.getYaw();
@@ -327,7 +326,7 @@ public class RayUtils {
     }
 
     private static MovingObjectPosition rayCast(final float yaw, final float pitch, final boolean sneak, final AxisAlignedBB bb, SpartanProtocol protocol) {
-        SpartanLocation position = protocol.spartan.movement.getRawLocation();
+        Location position = protocol.getLocation();
         double lastX = position.getX(),
                 lastY = position.getY(),
                 lastZ = position.getZ();
@@ -338,7 +337,7 @@ public class RayUtils {
     }
 
     private static MovingObjectPosition rayCast(final float yaw, final float pitch, final boolean sneak, final AxisAlignedBB bb, SpartanProtocol protocol, double dist) {
-        SpartanLocation position = protocol.spartan.movement.getRawLocation();
+        Location position = protocol.getLocation();
         double lastX = position.getX(),
                 lastY = position.getY(),
                 lastZ = position.getZ();
@@ -374,13 +373,13 @@ public class RayUtils {
     }
 
     public static float bruteforceRayTrace(Player player, Entity target) {
-        SpartanPlayer spartanPlayer = SpartanBukkit.getProtocol(player).spartan;
+        SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
         float bruteForce = 0.01F,
                 bruteForceStart = 0.01F;
         boolean checked = false;
 
         for (int i = 0; i < 40; i++) {
-            if (inHitbox(spartanPlayer, target, bruteForceStart)) {
+            if (inHitbox(protocol, target, bruteForceStart)) {
                 bruteForce = bruteForceStart;
                 checked = true;
             } else {
@@ -390,13 +389,13 @@ public class RayUtils {
         return (checked) ? bruteForce : 0.4F;
     }
 
-    public static float bruteforceRayTrace(SpartanPlayer spartanPlayer, Entity target) {
+    public static float bruteforceRayTrace(SpartanProtocol protocol, Entity target) {
         float bruteForce = 0.01F;
         float bruteForceStart = 0.01F;
         boolean checked = false;
 
         for (int i = 0; i < 60; i++) {
-            if (inHitbox(spartanPlayer, target, bruteForceStart)) {
+            if (inHitbox(protocol, target, bruteForceStart)) {
                 bruteForce = bruteForceStart;
                 checked = true;
             } else {
@@ -406,13 +405,13 @@ public class RayUtils {
         return (checked) ? bruteForce : 0.6F;
     }
 
-    public static float bruteforceRayTraceWithCustomLocation(SpartanPlayer spartanPlayer, Location location, Entity target) {
+    public static float bruteforceRayTraceWithCustomLocation(SpartanProtocol protocol, Location location, Entity target) {
         float bruteForce = 0.01F;
         float bruteForceStart = 0.01F;
         boolean checked = false;
 
         for (int i = 0; i < 100; i++) {
-            if (inHitbox(spartanPlayer, location, target, bruteForceStart)) {
+            if (inHitbox(protocol, location, target, bruteForceStart)) {
                 bruteForce = bruteForceStart;
                 checked = true;
             } else {
@@ -495,7 +494,7 @@ public class RayUtils {
 
         boolean intersection = false;
         // boundingBox = boundingBox.expand(0.04, 0.03, 0.04);
-        intersection = isIntersection(protocol, new SpartanLocation(protocol.getLocation()), intersection, boundingBox, dist);
+        intersection = isIntersection(protocol, protocol.getLocation(), intersection, boundingBox, dist);
         return intersection;
     }
 
@@ -504,8 +503,8 @@ public class RayUtils {
         boolean intersection = false;
         boolean intersection2 = false;
         // boundingBox = boundingBox.expand(0.04, 0.03, 0.04);
-        intersection = isIntersection(protocol, new SpartanLocation(protocol.getLocation()), intersection, boundingBox, dist);
-        intersection2 = isIntersection(protocol, protocol.spartan.movement.getEventFromLocation(), intersection, boundingBox, dist);
+        intersection = isIntersection(protocol, protocol.getLocation(), intersection, boundingBox, dist);
+        intersection2 = isIntersection(protocol, protocol.spartan.movement.getEventFromLocation().bukkit(), intersection, boundingBox, dist);
         return intersection || intersection2;
     }
 }

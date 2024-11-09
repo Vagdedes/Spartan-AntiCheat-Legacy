@@ -5,7 +5,6 @@ import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.data.Cooldowns;
 import com.vagdedes.spartan.abstraction.inventory.InventoryMenu;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
-import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.command.CommandExecution;
 import com.vagdedes.spartan.functionality.connection.DiscordMemberCount;
@@ -159,10 +158,8 @@ public class PlayerInfo extends InventoryMenu {
                     profile.getSkull(),
                     4
             );
-            SpartanPlayer sp = isOnline ? target.spartan : null;
-
             for (Enums.HackCategoryType checkType : Enums.HackCategoryType.values()) {
-                addChecks(slots[checkType.ordinal()], isOnline, sp, profile, lore, checkType);
+                addChecks(slots[checkType.ordinal()], isOnline, target, profile, lore, checkType);
             }
 
             add("§c" + (back ? "Back" : "Close"), null, new ItemStack(Material.ARROW), 40);
@@ -171,7 +168,7 @@ public class PlayerInfo extends InventoryMenu {
     }
 
     private void addChecks(int slot, boolean isOnline,
-                           SpartanPlayer player,
+                           SpartanProtocol protocol,
                            PlayerProfile profile,
                            List<String> lore, Enums.HackCategoryType checkType) {
         lore.clear();
@@ -186,7 +183,7 @@ public class PlayerInfo extends InventoryMenu {
         for (HackType hackType : Enums.HackType.values()) {
             if (hackType.category == checkType) {
                 String state = getDetectionState(
-                        player,
+                        protocol,
                         hackType,
                         profile.getLastDataType(),
                         isOnline
@@ -199,7 +196,7 @@ public class PlayerInfo extends InventoryMenu {
         add("§2" + checkType + " Checks", lore, item, slot);
     }
 
-    private String getDetectionState(SpartanPlayer player,
+    private String getDetectionState(SpartanProtocol protocol,
                                      HackType hackType,
                                      Check.DataType dataType,
                                      boolean hasPlayer) {
@@ -209,14 +206,14 @@ public class PlayerInfo extends InventoryMenu {
         if (!SpartanEdition.hasDetectionsPurchased(dataType)) {
             return "Detection Missing";
         }
-        String worldName = player.getWorld().getName();
+        String worldName = protocol.spartan.getWorld().getName();
         Check check = hackType.getCheck();
 
         if (!check.isEnabled(dataType, worldName)) { // Do not put player because we calculate it below
             return "Disabled";
         }
-        CancelCause disabledCause = player.getExecutor(hackType).getDisableCause();
-        return Permissions.isBypassing(player.bukkit(), hackType) ? "Permission Bypass" :
+        CancelCause disabledCause = protocol.spartan.getExecutor(hackType).getDisableCause();
+        return Permissions.isBypassing(protocol.bukkit, hackType) ? "Permission Bypass" :
                 disabledCause != null ? "Cancelled (" + disabledCause.getReason() + ")" :
                         (check.isSilent(dataType, worldName) ? "Silent " : "") + "Checking";
     }

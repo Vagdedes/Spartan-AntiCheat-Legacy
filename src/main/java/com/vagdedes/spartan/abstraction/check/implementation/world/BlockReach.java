@@ -55,7 +55,7 @@ public class BlockReach extends CheckExecutor {
             Block block = ((BlockBreakEvent) object).getBlock();
 
             if (canDo(block)
-                    && !TreeFeller.canCancel(this.protocol().spartan, block)) {
+                    && !TreeFeller.canCancel(block)) {
                 double distance = this.protocol().spartan.movement.getLocation().distance(block),
                         limit = getLimit();
 
@@ -135,6 +135,6 @@ public class BlockReach extends CheckExecutor {
                 && !PrinterMode.isUsing(this.protocol())
                 && !AureliumSkills.isUsing(this.protocol())
                 && !MineBomb.isUsing(this.protocol().spartan)
-                && Attributes.getAmount(this.protocol().spartan, Attributes.PLAYER_BLOCK_INTERACTION_RANGE) == 0.0;
+                && Attributes.getAmount(this.protocol(), Attributes.PLAYER_BLOCK_INTERACTION_RANGE) == 0.0;
     }
 }

@@ -2,7 +2,6 @@ package com.vagdedes.spartan.abstraction.check;
 
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
-import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import com.vagdedes.spartan.compatibility.manual.building.MythicMobs;
@@ -128,7 +127,7 @@ public abstract class CheckExecutor extends CheckDetection {
                 && !this.protocol().isLoading()
                 && (!v1_8 || this.protocol().bukkit.getGameMode() != GameMode.SPECTATOR)
                 && hackType.getCheck().isEnabled(this.protocol().spartan.dataType, this.protocol().spartan.getWorld().getName())
-                && Attributes.getAmount(this.protocol().spartan, Attributes.GENERIC_SCALE) == 0.0
+                && Attributes.getAmount(this.protocol(), Attributes.GENERIC_SCALE) == 0.0
                 && canRun()
                 && !Permissions.isBypassing(this.protocol().bukkit, hackType);
     }
@@ -138,13 +137,13 @@ public abstract class CheckExecutor extends CheckDetection {
     public final CancelCause getDisableCause() {
         if (disableCause == null || disableCause.hasExpired()) {
             if (this.protocol() != null) {
-                return MythicMobs.is(this.protocol().spartan)
+                return MythicMobs.is(this.protocol())
                         ? new CancelCause(Compatibility.CompatibilityType.MYTHIC_MOBS)
-                        : ItemsAdder.is(this.protocol().spartan)
+                        : ItemsAdder.is(this.protocol())
                         ? new CancelCause(Compatibility.CompatibilityType.ITEMS_ADDER)
-                        : CustomEnchantsPlus.has(this.protocol().spartan)
+                        : CustomEnchantsPlus.has(this.protocol())
                         ? new CancelCause(Compatibility.CompatibilityType.CUSTOM_ENCHANTS_PLUS)
-                        : EcoEnchants.has(this.protocol().spartan)
+                        : EcoEnchants.has(this.protocol())
                         ? new CancelCause(Compatibility.CompatibilityType.ECO_ENCHANTS)
                         : null;
             } else {
@@ -256,16 +255,16 @@ public abstract class CheckExecutor extends CheckDetection {
 
     // Notification
 
-    final int getNotificationTicksCooldown(SpartanPlayer detected) {
+    final int getNotificationTicksCooldown(SpartanProtocol detected) {
         Integer frequency = DetectionNotifications.getFrequency(this.protocol());
 
         if (frequency != null
                 && frequency != DetectionNotifications.defaultFrequency) {
             return frequency;
         } else if (detected != null
-                && (detected.bukkit().equals(this.protocol().bukkit)
-                || detected.getWorld().equals(this.protocol().spartan.getWorld())
-                && detected.movement.getLocation().distance(this.protocol().spartan.movement.getLocation()) <= PlayerUtils.chunk)) {
+                && (detected.bukkit.equals(this.protocol().bukkit)
+                || detected.spartan.getWorld().equals(this.protocol().spartan.getWorld())
+                && detected.spartan.movement.getLocation().distance(this.protocol().spartan.movement.getLocation()) <= PlayerUtils.chunk)) {
             return AlgebraUtils.integerRound(Math.sqrt(TPS.maximum));
         } else {
             return AlgebraUtils.integerCeil(TPS.maximum);

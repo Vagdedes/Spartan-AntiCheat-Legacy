@@ -72,7 +72,7 @@ public class Event_Movement implements Listener {
                 p.movement.judgeGround();
                 return;
             }
-            MovementProcessing.run(p, to, ver, box);
+            MovementProcessing.run(protocol, to, ver, box);
 
             // Detections
             boolean cancelled = e.isCancelled();

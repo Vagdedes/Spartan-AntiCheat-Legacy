@@ -49,7 +49,7 @@ public class MoveDirection extends DetectionExecutor {
             Entity target = attackHandle.target;
 
             if (target != null) {
-                double bruteforceRayTrace = RayUtils.bruteforceRayTrace(this.protocol().spartan, target);
+                double bruteforceRayTrace = RayUtils.bruteforceRayTrace(this.protocol(), target);
                 double diff = bruteforceRayTrace - 0.4;
                 double predict = RayUtils.castTo360(
                         calculate(

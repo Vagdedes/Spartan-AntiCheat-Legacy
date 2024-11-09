@@ -103,7 +103,7 @@ public class AntiCheatLogs {
                 PlayerFoundOreEvent event;
 
                 if (Config.settings.getBoolean("Important.enable_developer_api")) {
-                    event = new PlayerFoundOreEvent(protocol.bukkit, log, location.getBukkitLocation(), block.getType());
+                    event = new PlayerFoundOreEvent(protocol.bukkit, log, location.bukkit(), block.getType());
                     Register.manager.callEvent(event);
                 } else {
                     event = null;
