@@ -206,7 +206,7 @@ public class GroundUtils {
                     return true;
                 }
             }
-            Entity vehicle = p.bukkit.getVehicle();
+            Entity vehicle = p.spartan.getVehicle();
             boolean hasVehicle = vehicle != null;
 
             if (hasVehicle) {

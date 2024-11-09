@@ -102,4 +102,17 @@ public class ProtocolLib {
             return player.getLocation();
         }
     }
+
+    public static Entity getVehicle(Entity entity) {
+        if (entity instanceof Player) {
+            if (ProtocolLib.isTemporary((Player) entity)) {
+                return null;
+            } else {
+                return entity.getVehicle();
+            }
+        } else {
+            return entity.getVehicle();
+        }
+    }
+
 }

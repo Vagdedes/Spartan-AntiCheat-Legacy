@@ -64,7 +64,7 @@ public class ImpossibleInventory extends CheckExecutor {
 
     @Override
     protected void runInternal(boolean cancelled) {
-        if (!this.protocol().spartan.movement.isSwimming() && this.protocol().bukkit.getVehicle() == null) {
+        if (!this.protocol().spartan.movement.isSwimming() && this.protocol().spartan.getVehicle() == null) {
             ItemStack cursor = this.protocol().bukkit.getOpenInventory().getCursor();
 
             if (BlockUtils.hasMaterial(cursor)) {
@@ -98,7 +98,7 @@ public class ImpossibleInventory extends CheckExecutor {
                 && !click.isCreativeAction()
                 && !click.isKeyboardClick()
                 && !this.protocol().spartan.movement.isSwimming()
-                && this.protocol().bukkit.getVehicle() == null
+                && this.protocol().spartan.getVehicle() == null
                 && this.protocol().bukkit.getOpenInventory().countSlots() > PlayerUtils.playerInventorySlots
                 && !BlockPatternUtils.isBlockPattern(
                 belowBlocks,

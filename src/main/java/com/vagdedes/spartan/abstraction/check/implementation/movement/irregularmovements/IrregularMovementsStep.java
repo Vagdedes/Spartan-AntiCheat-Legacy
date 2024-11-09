@@ -96,7 +96,7 @@ public class IrregularMovementsStep extends DetectionExecutor {
     void run(boolean knownBox, boolean knownOldBox,
              double box, double oldBox,
              double vertical, boolean teleported) {
-        Entity vehicle = this.protocol().bukkit.getVehicle();
+        Entity vehicle = this.protocol().spartan.getVehicle();
 
         if (knownBox && knownOldBox) {
             int hash = hash(oldBox, box);

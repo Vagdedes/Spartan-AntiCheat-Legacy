@@ -13,7 +13,7 @@ public class Elytra {
     public static void judge(SpartanProtocol p) {
         if (((Exploits) p.spartan.getExecutor(Enums.HackType.Exploits)).elytra.isEnabled()
                 && !Permissions.isBypassing(p.bukkit, Enums.HackType.Exploits)) {
-            if (p.bukkit.getVehicle() == null) {
+            if (p.spartan.getVehicle() == null) {
                 PlayerInventory inventory = p.bukkit.getInventory();
 
                 if (inventory != null) {

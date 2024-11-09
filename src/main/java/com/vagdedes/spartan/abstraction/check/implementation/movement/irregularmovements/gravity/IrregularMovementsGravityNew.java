@@ -2,8 +2,8 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.irregular
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
-import com.vagdedes.spartan.abstraction.protocol.PlayerMovement;
 import com.vagdedes.spartan.abstraction.protocol.ExtendedPotionEffect;
+import com.vagdedes.spartan.abstraction.protocol.PlayerMovement;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.MultiVersion.MCVersion;

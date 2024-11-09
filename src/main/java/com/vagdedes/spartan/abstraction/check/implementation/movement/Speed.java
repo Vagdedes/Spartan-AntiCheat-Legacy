@@ -4,9 +4,9 @@ import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
+import com.vagdedes.spartan.abstraction.protocol.ExtendedPotionEffect;
 import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
 import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
-import com.vagdedes.spartan.abstraction.protocol.ExtendedPotionEffect;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanBlock;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
@@ -210,7 +210,7 @@ public class Speed extends CheckExecutor {
         }
         SpartanLocation to = new SpartanLocation(this.protocol().getLocation().clone());
         PlayerInventory inventory = this.protocol().bukkit.getInventory();
-        Entity vehicle = this.protocol().bukkit.getVehicle();
+        Entity vehicle = this.protocol().spartan.getVehicle();
         if (onGround == 1) this.multiplyFriction = 0.26;
         double m = (this.protocol().bukkit.getWalkSpeed() * 5);
         boolean solidBlockOnTop = RayUtils.onSolidBlock(this.protocol(), to.clone().add(0, 2, 0).bukkit());

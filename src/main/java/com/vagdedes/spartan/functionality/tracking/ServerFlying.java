@@ -15,7 +15,7 @@ public class ServerFlying {
                 && p.spartan.movement.isFlying()
                 && !p.spartan.movement.isGliding()
                 && !p.spartan.movement.isSwimming()
-                && p.bukkit.getVehicle() == null
+                && p.spartan.getVehicle() == null
                 && !p.bukkit.isSleeping()
                 && !p.bukkit.isDead()
                 && !p.spartan.trackers.has(PlayerTrackers.TrackerFamily.VELOCITY)

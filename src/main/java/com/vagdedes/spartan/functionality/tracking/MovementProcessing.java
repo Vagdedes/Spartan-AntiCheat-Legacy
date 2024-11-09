@@ -55,7 +55,7 @@ public class MovementProcessing {
                                                     double vertical, double box) {
         if (protocol.spartan.isOnGround(true)
                 && protocol.spartan.movement.getTicksOnAir() == 0
-                && protocol.bukkit.getVehicle() == null
+                && protocol.spartan.getVehicle() == null
                 && vertical == 0.0
                 && GroundUtils.collisionHeightExists(box)) {
             protocol.spartan.trackers.removeMany(PlayerTrackers.TrackerFamily.MOTION);

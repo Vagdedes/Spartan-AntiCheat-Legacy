@@ -184,7 +184,7 @@ public class CombatUtils {
     public static boolean canCheck(SpartanProtocol protocol) {
         if (!protocol.spartan.movement.isLowEyeHeight() // Covers swimming & gliding
                 && !protocol.spartan.movement.wasFlying()
-                && protocol.bukkit.getVehicle() == null
+                && protocol.spartan.getVehicle() == null
                 && Attributes.getAmount(protocol, Attributes.GENERIC_ARMOR) == 0.0
                 && Attributes.getAmount(protocol, Attributes.GENERIC_ATTACK_SPEED) == 0.0
                 && Attributes.getAmount(protocol, Attributes.GENERIC_KNOCKBACK_RESISTANCE) == 0.0

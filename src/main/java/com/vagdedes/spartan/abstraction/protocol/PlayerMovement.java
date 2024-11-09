@@ -164,7 +164,7 @@ public class PlayerMovement {
     }
 
     public boolean isFlying() {
-        Entity vehicle = this.parent.protocol.bukkit.getVehicle();
+        Entity vehicle = this.parent.protocol.spartan.getVehicle();
         boolean flying;
 
         if (vehicle != null) {
@@ -308,7 +308,7 @@ public class PlayerMovement {
     // Separator
 
     public SpartanLocation getVehicleLocation() {
-        Entity vehicle = this.parent.protocol.bukkit.getVehicle();
+        Entity vehicle = this.parent.getVehicle();
 
         if (vehicle instanceof LivingEntity || vehicle instanceof Vehicle) {
             return new SpartanLocation(

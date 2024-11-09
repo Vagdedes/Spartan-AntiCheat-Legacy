@@ -54,7 +54,7 @@ public class Packet_Vehicle extends PacketAdapter {
             Player player = event.getPlayer();
             SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
             protocol.timerBalancer.addBalance(50);
-            Entity entity = player.getVehicle();
+            Entity entity = protocol.spartan.getVehicle();
 
             if (entity instanceof Vehicle) {
                 if (protocol.vehicleStatus && protocol.keepEntity != 0) {

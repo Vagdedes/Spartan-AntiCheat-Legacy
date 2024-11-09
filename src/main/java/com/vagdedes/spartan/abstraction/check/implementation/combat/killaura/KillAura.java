@@ -5,6 +5,7 @@ import com.vagdedes.spartan.abstraction.check.implementation.combat.killaura.mov
 import com.vagdedes.spartan.abstraction.event.EntityAttackPlayerEvent;
 import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.minecraft.entity.CombatUtils;
 import me.vagdedes.spartan.system.Enums;
@@ -38,7 +39,7 @@ public class KillAura extends CheckExecutor {
     }
 
     boolean canRunEntity(LivingEntity entity) {
-        if (entity.getVehicle() == null
+        if (ProtocolLib.getVehicle(entity) == null
                 && CombatUtils.canCheck(this.protocol(), entity)) {
             boolean isPlayer = entity instanceof Player;
             return (isPlayer || !MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_10) || entity.hasAI())

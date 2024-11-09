@@ -208,7 +208,7 @@ public class SpartanPlayer {
     }
 
     public boolean isOnGround(boolean custom) {
-        Entity vehicle = this.protocol.bukkit.getVehicle();
+        Entity vehicle = this.protocol.spartan.getVehicle();
 
         if (vehicle != null) {
             return vehicle.isOnGround();
@@ -266,6 +266,10 @@ public class SpartanPlayer {
     }
 
     // Separator
+
+    public Entity getVehicle() {
+        return ProtocolLib.getVehicle(this.protocol.bukkit);
+    }
 
     public double getHealth() {
         return ProtocolLib.isTemporary(this.protocol.bukkit)
