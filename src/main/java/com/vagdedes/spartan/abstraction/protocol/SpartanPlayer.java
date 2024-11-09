@@ -24,7 +24,6 @@ import me.vagdedes.spartan.system.Enums;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -89,10 +88,8 @@ public class SpartanPlayer {
 
     public boolean debug(boolean function, boolean broadcast, boolean cutDecimals, Object... message) {
         if (function && Bukkit.getMotd().contains(Register.plugin.getName())) {
-            Player p = bukkit();
-
-            if (p.isWhitelisted()) {
-                String string = "§f" + p.getName() + " ";
+            if (this.protocol.bukkit.isWhitelisted()) {
+                String string = "§f" + this.protocol.bukkit.getName() + " ";
 
                 if (message == null || message.length == 0) {
                     string += new Random().nextInt();
@@ -176,33 +173,27 @@ public class SpartanPlayer {
 
     public void sendInventoryCloseMessage(String message) {
         if (message != null) {
-            this.bukkit().sendMessage(message);
+            this.protocol.bukkit.sendMessage(message);
         }
-        SpartanBukkit.transferTask(this, this.bukkit()::closeInventory);
+        SpartanBukkit.transferTask(this, this.protocol.bukkit::closeInventory);
     }
 
     public void sendImportantMessage(String message) {
-        this.bukkit().sendMessage("");
+        this.protocol.bukkit.sendMessage("");
         this.sendInventoryCloseMessage(message);
-        this.bukkit().sendMessage("");
+        this.protocol.bukkit.sendMessage("");
     }
 
     // Separator
 
     public Inventory createInventory(int size, String title) {
-        return Bukkit.createInventory(this.bukkit(), size, title);
+        return Bukkit.createInventory(this.protocol.bukkit, size, title);
     }
 
     // Separator
 
     public ItemStack getItemInHand() {
-        return this.bukkit().getInventory().getItemInHand();
-    }
-
-    // Separator
-
-    Player bukkit() {
-        return this.protocol.bukkit;
+        return this.protocol.bukkit.getInventory().getItemInHand();
     }
 
     // Separator
@@ -217,7 +208,7 @@ public class SpartanPlayer {
     }
 
     public boolean isOnGround(boolean custom) {
-        Entity vehicle = this.bukkit().getVehicle();
+        Entity vehicle = this.protocol.bukkit.getVehicle();
 
         if (vehicle != null) {
             return vehicle.isOnGround();
@@ -233,7 +224,7 @@ public class SpartanPlayer {
     public Block getTargetBlock(double distance, double limit) {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)) {
             try {
-                List<Block> list = this.bukkit().getLineOfSight(null, (int) Math.min(distance, limit));
+                List<Block> list = this.protocol.bukkit.getLineOfSight(null, (int) Math.min(distance, limit));
 
                 if (!list.isEmpty()) {
                     for (Block block : list) {
@@ -252,7 +243,7 @@ public class SpartanPlayer {
 
     public boolean isFrozen() {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)) {
-            return this.bukkit().isFrozen();
+            return this.protocol.bukkit.isFrozen();
         } else {
             return false;
         }
@@ -268,7 +259,7 @@ public class SpartanPlayer {
 
     public float getAttackCooldown() {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)) {
-            return this.bukkit().getAttackCooldown();
+            return this.protocol.bukkit.getAttackCooldown();
         } else {
             return 1.0f;
         }
@@ -277,25 +268,25 @@ public class SpartanPlayer {
     // Separator
 
     public double getHealth() {
-        return ProtocolLib.isTemporary(this.bukkit())
+        return ProtocolLib.isTemporary(this.protocol.bukkit)
                 ? 0.0
-                : this.bukkit().getHealth();
+                : this.protocol.bukkit.getHealth();
     }
 
     public int getEntityId() {
-        return ProtocolLib.isTemporary(this.bukkit())
+        return ProtocolLib.isTemporary(this.protocol.bukkit)
                 ? new Random().nextInt()
-                : this.bukkit().getEntityId();
+                : this.protocol.bukkit.getEntityId();
     }
 
     // Separator
 
     private void setStoredPotionEffects() {
-        if (!ProtocolLib.isTemporary(this.bukkit())) {
+        if (!ProtocolLib.isTemporary(this.protocol.bukkit)) {
             SpartanBukkit.transferTask(
                     protocol.spartan,
                     () -> {
-                        for (PotionEffect effect : this.bukkit().getActivePotionEffects()) {
+                        for (PotionEffect effect : this.protocol.bukkit.getActivePotionEffects()) {
                             this.potionEffects.put(effect.getType(), new SpartanPotionEffect(effect));
                         }
                     }
@@ -304,9 +295,9 @@ public class SpartanPlayer {
     }
 
     public Collection<PotionEffect> getActivePotionEffects() {
-        return ProtocolLib.isTemporary(this.bukkit())
+        return ProtocolLib.isTemporary(this.protocol.bukkit)
                 ? new ArrayList<>(0)
-                : this.bukkit().getActivePotionEffects();
+                : this.protocol.bukkit.getActivePotionEffects();
     }
 
     public SpartanPotionEffect getPotionEffect(PotionEffectType type, long lastActive) {
@@ -373,7 +364,7 @@ public class SpartanPlayer {
             SpartanBukkit.transferTask(
                     this,
                     () -> {
-                        nearbyEntities.addAll(this.bukkit().getNearbyEntities(x, y, z));
+                        nearbyEntities.addAll(this.protocol.bukkit.getNearbyEntities(x, y, z));
                         booleans[0] = true;
 
                         synchronized (thread) {
@@ -445,29 +436,27 @@ public class SpartanPlayer {
         }
 
         if (iterations > 0) {
-            this.bukkit().setFallDistance(0.0f);
+            this.protocol.bukkit.setFallDistance(0.0f);
 
             if (Config.settings.getBoolean("Detections.fall_damage_on_teleport")
                     && iterations > PlayerUtils.fallDamageAboveBlocks) { // Damage
-                damage(Math.max(this.bukkit().getFallDistance(), iterations));
+                damage(Math.max(this.protocol.bukkit.getFallDistance(), iterations));
             }
         }
     }
 
     public boolean teleport(SpartanLocation location) {
         if (this.getWorld().equals(location.world)) {
-            Player p = bukkit();
-
             if (SpartanBukkit.isSynchronised()) {
-                p.leaveVehicle();
+                this.protocol.bukkit.leaveVehicle();
             }
             this.movement.removeLastLiquidTime();
             this.trackers.removeMany(PlayerTrackers.TrackerFamily.VELOCITY);
 
             if (MultiVersion.folia) {
-                p.teleportAsync(location.bukkit());
+                this.protocol.bukkit.teleportAsync(location.bukkit());
             } else {
-                SpartanBukkit.transferTask(this, () -> p.teleport(location.bukkit()));
+                SpartanBukkit.transferTask(this, () -> this.protocol.bukkit.teleport(location.bukkit()));
             }
             return true;
         } else {
@@ -478,7 +467,7 @@ public class SpartanPlayer {
     // Separator
 
     public void damage(double amount) {
-        this.bukkit().damage(amount);
+        this.protocol.bukkit.damage(amount);
     }
 
     // Separator

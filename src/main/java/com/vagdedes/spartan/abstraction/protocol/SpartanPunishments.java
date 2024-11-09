@@ -23,7 +23,7 @@ public class SpartanPunishments {
     public boolean kick(CommandSender punisher, String reason) {
         if (kickCooldown < System.currentTimeMillis()) {
             kickCooldown = System.currentTimeMillis() + 1_000L;
-            Player target = this.parent.bukkit();
+            Player target = this.parent.protocol.bukkit;
             String punisherName = punisher instanceof ConsoleCommandSender
                     ? Config.messages.getColorfulString("console_name")
                     : punisher.getName(),
@@ -65,7 +65,7 @@ public class SpartanPunishments {
     public boolean warn(CommandSender punisher, String reason) {
         if (warnCooldown < System.currentTimeMillis()) {
             warnCooldown = System.currentTimeMillis() + 1_000L;
-            Player target = this.parent.bukkit();
+            Player target = this.parent.protocol.bukkit;
             String punisherName = punisher instanceof ConsoleCommandSender
                     ? Config.messages.getColorfulString("console_name")
                     : punisher.getName(),
