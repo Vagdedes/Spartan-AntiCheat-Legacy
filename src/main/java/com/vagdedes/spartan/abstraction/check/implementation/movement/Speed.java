@@ -94,9 +94,9 @@ public class Speed extends CheckExecutor {
             Vector v = e.getVelocity();
             double dx = v.getX();
             double dz = v.getZ();
-            multiplyVelo = Math.sqrt(dx * dx + dz * dz) * 2;
+            multiplyVelo = Math.sqrt(dx * dx + dz * dz) * 2.5;
             if (Compatibility.CompatibilityType.OLD_COMBAT_MECHANICS.isFunctional()) {
-                multiplyVelo += 0.2; multiplyVelo *= 1.5;
+                multiplyVelo += 0.2; multiplyVelo *= 2;
             }
             velocity = 2;
         } else if (object instanceof Integer) {

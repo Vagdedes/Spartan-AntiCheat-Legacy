@@ -13,6 +13,7 @@ import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.potion.PotionEffectType;
 
 public class IrregularMovementsGravityNew extends DetectionExecutor {
@@ -21,6 +22,8 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
     private int top = 0;
     private int topReset = 0;
     private int levitation = 0;
+    private int glideBlocks = 0;
+    private int climbBlocks = 0;
     private int slowFalling = 0;
     private int levitationA = 0;
     private int slowFallingA = 0;
@@ -51,7 +54,10 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
                 if (isOnGround) {
                     if (this.ground != 1) {
                         this.setPredict(0.0);
-                        if (this.abs(motion) < 0.08 && this.abs(motion) > 0.0 && (this.isBlocksOnTop(to) || this.isOnSlime(to))) {
+                        if (this.abs(motion) < 0.08 && this.abs(motion) > 0.0
+                                        && (this.isBlocksOnTop(to)
+                                        || this.isOnSlime(to)
+                                        || isNearGlideBlocks(to))) {
                             this.setPredict(motion);
                         }
                     } else {
@@ -74,7 +80,7 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
                     }
                 } else if (this.air == 1) {
                     if (motion > 0.0) {
-                        this.setPredict((double)((float)jumpStartMotionY));
+                        this.setPredict((float) jumpStartMotionY);
                     } else {
                         this.setPredict(-gravity * 0.9800000190734863);
                     }
@@ -100,9 +106,16 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
                 }
 
                 pr2 = this.abs(this.abs(motion) - this.abs(this.predictY()));
-                if (this.protocol().claimedVeloGravity != null && pr2 > 0.001 && this.r(motion) == this.r(this.protocol().claimedVeloGravity.getVelocity().getY())) {
-                    this.setPredict(this.protocol().claimedVeloGravity.getVelocity().getY());
-                    this.protocol().claimedVeloGravity = null;
+                if (!this.protocol().claimedVeloGravity.isEmpty() && pr2 > 0.001) {
+                    PlayerVelocityEvent claimed = null;
+                    for (PlayerVelocityEvent velo : this.protocol().claimedVeloGravity) {
+                        if ((this.abs(motion) - this.abs(velo.getVelocity().getY()) < 0.05)) {
+                            this.setPredict(velo.getVelocity().getY());
+                            claimed = velo;
+                            break;
+                        }
+                    }
+                    if (claimed != null) this.protocol().claimedVeloGravity.remove(claimed);
                 }
 
                 double dev1 = this.abs(this.abs(motion) - this.abs(this.predictY()));
@@ -177,7 +190,8 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
                     }
                 }
 
-                if (this.protocol().bukkit.isFlying()) {
+                if (this.protocol().bukkit.isFlying()
+                    || this.protocol().bukkit.isGliding()) {
                     this.setPredict(motion);
                 }
 
@@ -194,6 +208,27 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
                         this.fallDistance = 0.0;
                     }
                 }
+                double devPreTotal = this.abs(this.abs(motion) - this.abs(this.predictY()));
+
+                if (glideBlocks > 0 && devPreTotal > 0.001 && motion < 0 && motion > -0.16) {
+                    this.setPredict(motion);
+                    glideBlocks--;
+                } else if (devPreTotal > 0.001 && motion < 0 && motion > -0.16 && isNearGlideBlocks(to)) {
+                    this.setPredict(motion);
+                    this.glideBlocks = 2;
+                }
+
+                double devPreTotal2 = this.abs(this.abs(motion) - this.abs(this.predictY()));
+
+                if (climbBlocks > 0 && devPreTotal2 > 0.001 && motion < 0.118 && motion > -0.16) {
+                    this.setPredict(motion);
+                    climbBlocks--;
+                } else if (devPreTotal2 > 0.001 && motion < 0.118 && motion > -0.16 && isNearClimbBlocks(to)) {
+                    this.setPredict(motion);
+                    this.climbBlocks = 2;
+                }
+
+                //this.protocol().bukkit.sendMessage("m: " + motion + " p: " + this.predictY());
 
                 double devTotal = this.abs(this.abs(motion) - this.abs(this.predictY()));
                 if (devTotal > 0.009) {
@@ -203,9 +238,8 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
                         if (devTotal < 1.0) {
                             alertBuilder.deleteCharAt(0);
                         }
-
                         this.cancel("simulation[y], " + alertBuilder);
-                        this.protocol().bukkit.sendMessage("hacks: " + devTotal);
+                        //this.protocol().bukkit.sendMessage("hacks: " + devTotal);
                     }
 
                     this.setPredict(motion);
@@ -288,7 +322,11 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
                 for(int dz = -1; dz <= 1; ++dz) {
                     Block block = this.getBlockAsync(new Location(this.protocol().spartan.getWorld(), x + (double)dx * 0.3, y + (double)dy * 0.5, z + (double)dz * 0.3));
                     Material material = block != null ? block.getType() : null;
-                    if (material != null && (BlockUtils.isSemiSolid(material) || BlockUtils.areSlimeBlocks(material) || BlockUtils.areHoneyBlocks(material))) {
+                    if (material != null &&
+                                    (BlockUtils.isSemiSolid(material)
+                                    || BlockUtils.areSlimeBlocks(material)
+                                    || BlockUtils.areHoneyBlocks(material)
+                                    || BlockUtils.areWebs(material))) {
                         return true;
                     }
                 }
@@ -297,6 +335,52 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
 
         return false;
     }
+
+    private boolean isNearGlideBlocks(Location location) {
+        double x = location.getX();
+        double y = location.getY() - 0.1;
+        double z = location.getZ();
+
+        for(int dx = -1; dx <= 1; ++dx) {
+            for(int dy = -1; dy <= 1; ++dy) {
+                for(int dz = -1; dz <= 1; ++dz) {
+                    Block block = this.getBlockAsync(new Location(this.protocol().spartan.getWorld(), x + (double)dx * 0.3, y + (double)dy * 0.5, z + (double)dz * 0.3));
+                    Material material = block != null ? block.getType() : null;
+                    if (material != null
+                                    && BlockUtils.isPowderSnow(material)
+                                    || BlockUtils.areHoneyBlocks(material)
+                                    || BlockUtils.areWebs(material)
+                                    || BlockUtils.areInteractiveBushes(material)) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private boolean isNearClimbBlocks(Location location) {
+        double x = location.getX();
+        double y = location.getY() - 0.1;
+        double z = location.getZ();
+
+        for(int dx = -1; dx <= 1; ++dx) {
+            for(int dy = -1; dy <= 1; ++dy) {
+                for(int dz = -1; dz <= 1; ++dz) {
+                    Block block = this.getBlockAsync(new Location(this.protocol().spartan.getWorld(), x + (double)dx * 0.3, y + (double)dy * 0.5, z + (double)dz * 0.3));
+                    Material material = block != null ? block.getType() : null;
+                    if (material != null
+                                    && BlockUtils.canClimb(material, false) || BlockUtils.canClimb(material, true)) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
 
     private boolean isOnSlime(Location location) {
         double x = location.getX();

@@ -36,7 +36,8 @@ public class SpartanProtocol {
     public final MCClient mcClient;
     public byte simulationDelayPerTP, keepEntity;
     public LinkedList<Location> positionHistory;
-    public PlayerVelocityEvent claimedVelocity, claimedVeloGravity;
+    public PlayerVelocityEvent claimedVelocity;
+    public List<PlayerVelocityEvent> claimedVeloGravity;
     public long tickTime;
     public final MultiVersion.MCVersion version;
 
@@ -76,7 +77,7 @@ public class SpartanProtocol {
         this.positionHistory = new LinkedList<>();
         this.hashPosBuffer = 0;
         this.claimedVelocity = null;
-        this.claimedVeloGravity = null;
+        this.claimedVeloGravity = new ArrayList<>();
 
         this.axisMatrixCache = new HashSet<>();
         this.checkBoundData = null;

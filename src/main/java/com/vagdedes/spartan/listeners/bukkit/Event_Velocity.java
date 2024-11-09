@@ -9,6 +9,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerVelocityEvent;
+import org.bukkit.util.Vector;
 
 public class Event_Velocity implements Listener {
 
@@ -20,7 +21,12 @@ public class Event_Velocity implements Listener {
     public static void event(PlayerVelocityEvent e, boolean packets) {
         SpartanProtocol protocol = SpartanBukkit.getProtocol(e.getPlayer());
         protocol.claimedVelocity = e;
-        protocol.claimedVeloGravity = e;
+        protocol.claimedVeloGravity.add(e);
+        if (e.getVelocity().getY() > 0.42) {
+            protocol.claimedVeloGravity.add(
+                            new PlayerVelocityEvent(e.getPlayer(),
+                            e.getVelocity().clone().add(new Vector(0, -0.42, 0))));
+        }
 
         if (protocol.packetsEnabled() == packets) {
             SpartanPlayer p = protocol.spartan;
