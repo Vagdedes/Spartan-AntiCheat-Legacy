@@ -11,17 +11,17 @@ public class ServerFlying {
 
     static void run(SpartanPlayer p) {
         if (((IrregularMovements) p.getExecutor(Enums.HackType.IrregularMovements)).limitServerFlying.isEnabled()
-                && !Permissions.isBypassing(p.getNative(), Enums.HackType.IrregularMovements)
+                && !Permissions.isBypassing(p.bukkit(), Enums.HackType.IrregularMovements)
                 && p.movement.isFlying()
                 && !p.movement.isGliding()
                 && !p.movement.isSwimming()
-                && p.getNative().getVehicle() == null
-                && !p.getNative().isSleeping()
-                && !p.getNative().isDead()
+                && p.bukkit().getVehicle() == null
+                && !p.bukkit().isSleeping()
+                && !p.bukkit().isDead()
                 && !p.trackers.has(PlayerTrackers.TrackerFamily.VELOCITY)
                 && !p.trackers.has(PlayerTrackers.TrackerFamily.MOTION)
                 && Attributes.getAmount(p, Attributes.GENERIC_FLYING_SPEED) == 0.0) {
-            double limit = (p.getNative().getFlySpeed() * 10.0) + 1.0;
+            double limit = (p.bukkit().getFlySpeed() * 10.0) + 1.0;
             Double nmsDistance = p.movement.getEventDistance();
 
             if (nmsDistance != null && nmsDistance >= limit

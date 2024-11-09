@@ -195,7 +195,7 @@ public class CombatUtils {
                 && PlayerUtils.isSwordItem(p.getItemInHand().getType())) {
             double distance = 4.0;
             List<Entity> nearbyEntities = entity.getNearbyEntities(distance, distance, distance);
-            nearbyEntities.remove(p.getNative());
+            nearbyEntities.remove(p.bukkit());
             int i = 0;
 
             for (Entity e : nearbyEntities) {
@@ -211,13 +211,13 @@ public class CombatUtils {
     public static boolean canCheck(SpartanPlayer player) {
         if (!player.movement.isLowEyeHeight() // Covers swimming & gliding
                 && !player.movement.wasFlying()
-                && player.getNative().getVehicle() == null
+                && player.bukkit().getVehicle() == null
                 && !mcMMO.hasGeneralAbility(player)
                 && Attributes.getAmount(player, Attributes.GENERIC_ARMOR) == 0.0
                 && Attributes.getAmount(player, Attributes.GENERIC_ATTACK_SPEED) == 0.0
                 && Attributes.getAmount(player, Attributes.GENERIC_KNOCKBACK_RESISTANCE) == 0.0
                 && Attributes.getAmount(player, Attributes.PLAYER_ENTITY_INTERACTION_RANGE) == 0.0) {
-            GameMode gameMode = player.getNative().getGameMode();
+            GameMode gameMode = player.bukkit().getGameMode();
             return gameMode == GameMode.SURVIVAL
                     || gameMode == GameMode.ADVENTURE
                     || gameMode == GameMode.CREATIVE;
@@ -227,7 +227,7 @@ public class CombatUtils {
     }
 
     public static boolean canCheck(SpartanPlayer player, LivingEntity entity) {
-        return !player.getNative().getName().equals(entity.getName())
+        return !player.bukkit().getName().equals(entity.getName())
                 && !MythicMobs.is(entity)
                 && !ItemsAdder.is(entity);
     }

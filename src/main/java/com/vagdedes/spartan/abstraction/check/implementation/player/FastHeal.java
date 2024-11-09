@@ -31,7 +31,7 @@ public class FastHeal extends CheckExecutor {
     }
 
     private long calculate() {
-        int level = PlayerUtils.getPotionLevel(this.protocol().spartanPlayer, PotionEffectType.REGENERATION);
+        int level = PlayerUtils.getPotionLevel(this.protocol().spartan, PotionEffectType.REGENERATION);
         long i = 0L;
 
         if (level > -1) {
@@ -51,7 +51,7 @@ public class FastHeal extends CheckExecutor {
 
             if (reason != RegainReason.CUSTOM
                     && reason != RegainReason.MAGIC) {
-                double health = this.protocol().spartanPlayer.getHealth();
+                double health = this.protocol().spartan.getHealth();
                 long timePassed = System.currentTimeMillis() - time;
                 time = System.currentTimeMillis();
 
@@ -71,19 +71,19 @@ public class FastHeal extends CheckExecutor {
                 }
                 previousHealth = health;
             }
-        } else if (((FoodLevelChangeEvent) object).getFoodLevel() > this.protocol().player.getFoodLevel()
+        } else if (((FoodLevelChangeEvent) object).getFoodLevel() > this.protocol().bukkit.getFoodLevel()
                 && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
-                || this.protocol().spartanPlayer.getItemInHand().getType() != Material.DRIED_KELP)) {
-            this.protocol().spartanPlayer.getExecutor(hackType).addDisableCause(null, null, 10);
+                || this.protocol().spartan.getItemInHand().getType() != Material.DRIED_KELP)) {
+            this.protocol().spartan.getExecutor(hackType).addDisableCause(null, null, 10);
         }
     }
 
     @Override
     protected boolean canRun() {
-        if (this.protocol().spartanPlayer.getWorld().getDifficulty() != Difficulty.PEACEFUL
-                && this.protocol().player.getFireTicks() <= 0
-                && Attributes.getAmount(this.protocol().spartanPlayer, Attributes.GENERIC_MAX_ABSORPTION) == 0.0) {
-            GameMode gameMode = this.protocol().player.getGameMode();
+        if (this.protocol().spartan.getWorld().getDifficulty() != Difficulty.PEACEFUL
+                && this.protocol().bukkit.getFireTicks() <= 0
+                && Attributes.getAmount(this.protocol().spartan, Attributes.GENERIC_MAX_ABSORPTION) == 0.0) {
+            GameMode gameMode = this.protocol().bukkit.getGameMode();
             return gameMode == GameMode.ADVENTURE || gameMode == GameMode.SURVIVAL;
         } else {
             return false;

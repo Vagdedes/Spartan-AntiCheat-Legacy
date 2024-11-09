@@ -41,7 +41,7 @@ public class mcMMO {
     }
 
     private static McMMOPlayer getMcMMOPlayer(SpartanPlayer p) {
-        Player n = p.getNative();
+        Player n = p.bukkit();
         return n == null ? null : UserManager.getPlayer(n);
     }
 

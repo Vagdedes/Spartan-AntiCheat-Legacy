@@ -15,7 +15,7 @@ public class Event_BlockPlace implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public static void event(BlockPlaceEvent e) {
-        SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartanPlayer;
+        SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartan;
         Block nb = e.getBlock();
         Event_Chunks.cache(nb.getChunk(), false);
         p.movement.judgeGround();

@@ -51,32 +51,32 @@ public class NoSwing extends CheckExecutor {
         } else if (object instanceof PlayerAnimationEvent) {
             this.animationTime = System.currentTimeMillis();
         } else if (object instanceof BlockBreakEvent) {
-            if (MineBomb.isUsing(this.protocol().spartanPlayer)
-                    || AureliumSkills.isUsing(this.protocol().spartanPlayer)) {
+            if (MineBomb.isUsing(this.protocol().spartan)
+                    || AureliumSkills.isUsing(this.protocol())) {
                 return;
             }
             Block block = ((BlockBreakEvent) object).getBlock();
 
-            if (!BlockUtils.isSensitive(this.protocol().spartanPlayer, block.getType())
-                    && !TreeFeller.canCancel(this.protocol().spartanPlayer, block)
+            if (!BlockUtils.isSensitive(this.protocol().spartan, block.getType())
+                    && !TreeFeller.canCancel(this.protocol().spartan, block)
                     && System.currentTimeMillis() - breakTime > TPS.tickTime) {
                 if (this.animationTime == Long.MAX_VALUE) {
                     this.breaking.cancel(
                             "type: breaking"
                                     + ", block: " + BlockUtils.blockToString(block)
-                                    + ", item: " + BlockUtils.materialToString(this.protocol().spartanPlayer.getItemInHand().getType()));
+                                    + ", item: " + BlockUtils.materialToString(this.protocol().spartan.getItemInHand().getType()));
                 } else {
                     resetAnimationData();
                 }
             }
         } else if (object instanceof PlayerAttackEvent) {
-            if (this.protocol().spartanPlayer.getAttackCooldown() != 1.0f
-                    || this.protocol().spartanPlayer.trackers.has(PlayerTrackers.TrackerType.TRIDENT)) {
+            if (this.protocol().spartan.getAttackCooldown() != 1.0f
+                    || this.protocol().spartan.trackers.has(PlayerTrackers.TrackerType.TRIDENT)) {
                 return;
             }
             LivingEntity entity = ((PlayerAttackEvent) object).target;
 
-            if (!CombatUtils.canCheck(this.protocol().spartanPlayer, entity)) {
+            if (!CombatUtils.canCheck(this.protocol().spartan, entity)) {
                 return;
             }
             long time = System.currentTimeMillis();
@@ -90,7 +90,7 @@ public class NoSwing extends CheckExecutor {
                         this.damage.cancel(
                                 "type: damage"
                                         + ", entity: " + CombatUtils.entityToString(entity)
-                                        + ", item: " + BlockUtils.materialToString(this.protocol().spartanPlayer.getItemInHand().getType())
+                                        + ", item: " + BlockUtils.materialToString(this.protocol().spartan.getItemInHand().getType())
                         );
                     }
                 } else {
@@ -106,8 +106,8 @@ public class NoSwing extends CheckExecutor {
 
     @Override
     public boolean canRun() {
-        return !Vehicles.has(this.protocol().spartanPlayer, Vehicles.DRILL)
-                && !mcMMO.hasGeneralAbility(this.protocol().spartanPlayer);
+        return !Vehicles.has(this.protocol(), Vehicles.DRILL)
+                && !mcMMO.hasGeneralAbility(this.protocol().spartan);
     }
 
 }

@@ -38,12 +38,12 @@ public class IrregularMovements extends CheckExecutor {
     @Override
     protected void runInternal(boolean cancelled) {
         foodSprint.run();
-        Double vertical = this.protocol().spartanPlayer.movement.getEventVertical(),
-                oldVertical = this.protocol().spartanPlayer.movement.getPreviousEventVertical(),
-                horizontal = this.protocol().spartanPlayer.movement.getEventHorizontal(),
-                oldHorizontal = this.protocol().spartanPlayer.movement.getPreviousEventHorizontal(),
-                box = this.protocol().spartanPlayer.movement.getEventBox(),
-                oldBox = this.protocol().spartanPlayer.movement.getPreviousEventBox();
+        Double vertical = this.protocol().spartan.movement.getEventVertical(),
+                oldVertical = this.protocol().spartan.movement.getPreviousEventVertical(),
+                horizontal = this.protocol().spartan.movement.getEventHorizontal(),
+                oldHorizontal = this.protocol().spartan.movement.getPreviousEventHorizontal(),
+                box = this.protocol().spartan.movement.getEventBox(),
+                oldBox = this.protocol().spartan.movement.getPreviousEventBox();
 
         if (vertical == null
                 || oldVertical == null
@@ -83,12 +83,12 @@ public class IrregularMovements extends CheckExecutor {
     @Override
     protected boolean canRun() {
         return MovementProcessing.canCheck(
-                this.protocol().spartanPlayer,
+                this.protocol().spartan,
                 false,
                 false,
                 true,
                 false
-        ) && !this.protocol().spartanPlayer.movement.wasGliding();
+        ) && !this.protocol().spartan.movement.wasGliding();
     }
 
 }

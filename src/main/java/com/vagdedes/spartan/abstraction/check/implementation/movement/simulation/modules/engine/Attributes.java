@@ -9,8 +9,8 @@ public class Attributes {
 
     public static Object getAttributeValue(Attribute attribute, SpartanProtocol protocol) {
         if (attribute.equals(Attribute.MOVEMENT_SPEED)) {
-            float d = 0.1F * (protocol.player.getWalkSpeed() * 5);
-            SpartanPotionEffect speedEffect = protocol.spartanPlayer.getPotionEffect(PotionEffectType.SPEED, 0);
+            float d = 0.1F * (protocol.bukkit.getWalkSpeed() * 5);
+            SpartanPotionEffect speedEffect = protocol.spartan.getPotionEffect(PotionEffectType.SPEED, 0);
             if (protocol.isSprinting()) {
                 d *= 1.3F;
             }

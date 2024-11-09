@@ -44,15 +44,6 @@ public class SpartanBukkit {
         return !playerProtocol.isEmpty();
     }
 
-    public static List<SpartanPlayer> getPlayers() {
-        List<SpartanPlayer> list = new ArrayList<>(playerProtocol.size());
-
-        for (SpartanProtocol protocol : playerProtocol.values()) {
-            list.add(protocol.spartanPlayer);
-        }
-        return list;
-    }
-
     public static List<SpartanProtocol> getProtocols() {
         return new ArrayList<>(playerProtocol.values());
     }
@@ -101,7 +92,7 @@ public class SpartanBukkit {
     public static SpartanProtocol getProtocol(String name) {
         if (!playerProtocol.isEmpty()) {
             for (SpartanProtocol protocol : playerProtocol.values()) {
-                if (protocol.player.getName().equals(name)) {
+                if (protocol.bukkit.getName().equals(name)) {
                     return protocol;
                 }
             }
@@ -112,7 +103,7 @@ public class SpartanBukkit {
     public static SpartanProtocol getAnyCaseProtocol(String name) {
         if (!playerProtocol.isEmpty()) {
             for (SpartanProtocol protocol : playerProtocol.values()) {
-                if (protocol.player.getName().equalsIgnoreCase(name)) {
+                if (protocol.bukkit.getName().equalsIgnoreCase(name)) {
                     return protocol;
                 }
             }
@@ -122,7 +113,7 @@ public class SpartanBukkit {
 
     public static SpartanProtocol getProtocol(int entityID) {
         for (SpartanProtocol protocol : playerProtocol.values()) {
-            if (protocol.spartanPlayer.getEntityId() == entityID) {
+            if (protocol.spartan.getEntityId() == entityID) {
                 return protocol;
             }
         }

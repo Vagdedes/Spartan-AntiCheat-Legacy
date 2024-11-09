@@ -56,7 +56,7 @@ public class MythicMobs {
 
     public static boolean is(SpartanPlayer player) {
         if (Compatibility.CompatibilityType.MYTHIC_MOBS.isFunctional()) {
-            PlayerInventory inventory = player.getNative().getInventory();
+            PlayerInventory inventory = player.bukkit().getInventory();
 
             for (ItemStack armor : inventory.getArmorContents()) {
                 if (armor != null && is(armor)) {

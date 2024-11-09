@@ -17,7 +17,7 @@ public class TridentUse {
 
     public static void run(SpartanPlayer p) {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
-            PlayerInventory inventory = p.getNative().getInventory();
+            PlayerInventory inventory = p.bukkit().getInventory();
 
             for (ItemStack item : new ItemStack[]{inventory.getItemInHand(), inventory.getItemInOffHand()}) {
                 if (item.getType() == Material.TRIDENT) {

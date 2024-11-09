@@ -1,6 +1,6 @@
 package com.vagdedes.spartan.functionality.notifications;
 
-import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudConnections;
 import com.vagdedes.spartan.functionality.server.Config;
@@ -20,11 +20,11 @@ public class SuspicionNotifications {
     static void run() {
         SpartanBukkit.runRepeatingTask(() -> { // Here because there are no other class calls
             if (!Config.settings.getBoolean("Notifications.individual_only_notifications")) {
-                List<SpartanPlayer> players = SpartanBukkit.getPlayers();
+                List<SpartanProtocol> protocols = SpartanBukkit.getProtocols();
 
-                if (!players.isEmpty()) {
-                    List<SpartanPlayer> staff = new ArrayList<>(players);
-                    Iterator<SpartanPlayer> iterator = staff.iterator();
+                if (!protocols.isEmpty()) {
+                    List<SpartanProtocol> staff = new ArrayList<>(protocols);
+                    Iterator<SpartanProtocol> iterator = staff.iterator();
 
                     while (iterator.hasNext()) {
                         Integer frequency = DetectionNotifications.getFrequency(iterator.next());
@@ -33,18 +33,18 @@ public class SuspicionNotifications {
                             iterator.remove();
                         }
                     }
-                    run(staff, players);
+                    run(staff, protocols);
                 }
             }
         }, 1L, 300L);
     }
 
-    private static void run(List<SpartanPlayer> staff, List<SpartanPlayer> online) {
+    private static void run(List<SpartanProtocol> staff, List<SpartanProtocol> online) {
         StringBuilder players = new StringBuilder();
         int size = 0, commaLength = comma.length();
 
-        for (SpartanPlayer player : online) {
-            Collection<Enums.HackType> list = player.protocol.getProfile().getEvidenceList(
+        for (SpartanProtocol protocol : online) {
+            Collection<Enums.HackType> list = protocol.getProfile().getEvidenceList(
                     PlayerEvidence.notificationProbability
             );
 
@@ -54,7 +54,7 @@ public class SuspicionNotifications {
                 for (Enums.HackType hackType : list) {
                     evidence.append(
                             hackType.getCheck().getName()
-                                    + (player.getExecutor(hackType).hasSufficientData(player.dataType)
+                                    + (protocol.getProfile().getExecutor(hackType).hasSufficientData(protocol.spartan.dataType)
                                     ? ""
                                     : " (Unlikely)")
                     ).append(
@@ -64,12 +64,12 @@ public class SuspicionNotifications {
 
                 if (evidence.length() > 0) {
                     size++;
-                    players.append(player.getNative().getName()).append(comma);
-                    SpartanLocation location = player.movement.getLocation();
+                    players.append(protocol.bukkit.getName()).append(comma);
+                    SpartanLocation location = protocol.spartan.movement.getLocation();
                     CloudConnections.executeDiscordWebhook(
                             "checks",
-                            player.protocol.getUUID(),
-                            player.getNative().getName(),
+                            protocol.getUUID(),
+                            protocol.bukkit.getName(),
                             location.getBlockX(),
                             location.getBlockY(),
                             location.getBlockZ(),
@@ -86,8 +86,8 @@ public class SuspicionNotifications {
                     .replace("{players}", players.substring(0, players.length() - comma.length()));
 
             if (!staff.isEmpty()) {
-                for (SpartanPlayer player : staff) {
-                    player.getNative().sendMessage(message);
+                for (SpartanProtocol protocol : staff) {
+                    protocol.bukkit.sendMessage(message);
                 }
             }
         }

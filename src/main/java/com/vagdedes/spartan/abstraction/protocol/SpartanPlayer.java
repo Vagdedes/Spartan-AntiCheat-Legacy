@@ -35,7 +35,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class SpartanPlayer {
 
-    public final SpartanProtocol protocol;
+    final SpartanProtocol protocol;
     private final Map<PotionEffectType, SpartanPotionEffect> potionEffects;
     public final Check.DataType dataType;
     public final SpartanPlayerMovement movement;
@@ -50,12 +50,12 @@ public class SpartanPlayer {
             if (!protocols.isEmpty()) {
                 for (SpartanProtocol protocol : protocols) {
                     if (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
-                        protocol.spartanPlayer.setStoredPotionEffects();
+                        protocol.spartan.setStoredPotionEffects();
                     }
-                    protocol.spartanPlayer.getExecutor(Enums.HackType.AutoRespawn).run(false);
-                    protocol.spartanPlayer.getExecutor(Enums.HackType.MorePackets).run(false);
-                    protocol.spartanPlayer.getExecutor(Enums.HackType.Exploits).run(false);
-                    protocol.spartanPlayer.movement.schedulerFrom = protocol.spartanPlayer.movement.getLocation();
+                    protocol.spartan.getExecutor(Enums.HackType.AutoRespawn).run(false);
+                    protocol.spartan.getExecutor(Enums.HackType.MorePackets).run(false);
+                    protocol.spartan.getExecutor(Enums.HackType.Exploits).run(false);
+                    protocol.spartan.movement.schedulerFrom = protocol.spartan.movement.getLocation();
                 }
             }
         }, 1L, 1L);
@@ -65,7 +65,7 @@ public class SpartanPlayer {
 
     public SpartanPlayer(SpartanProtocol protocol) {
         this.protocol = protocol;
-        this.dataType = BedrockCompatibility.isPlayer(protocol.player)
+        this.dataType = BedrockCompatibility.isPlayer(protocol.bukkit)
                 ? Check.DataType.BEDROCK
                 : Check.DataType.JAVA;
         this.trackers = new PlayerTrackers();
@@ -84,12 +84,12 @@ public class SpartanPlayer {
 
     @Override
     public String toString() {
-        return this.protocol.player.getName();
+        return this.protocol.bukkit.getName();
     }
 
     public boolean debug(boolean function, boolean broadcast, boolean cutDecimals, Object... message) {
         if (function && Bukkit.getMotd().contains(Register.plugin.getName())) {
-            Player p = getNative();
+            Player p = bukkit();
 
             if (p.isWhitelisted()) {
                 String string = "§f" + p.getName() + " ";
@@ -124,8 +124,8 @@ public class SpartanPlayer {
                         Bukkit.broadcastMessage(string);
                     } else {
                         for (SpartanProtocol protocol : protocols) {
-                            if (protocol.player.isOp()) {
-                                protocol.player.sendMessage(string);
+                            if (protocol.bukkit.isOp()) {
+                                protocol.bukkit.sendMessage(string);
                             }
                         }
                     }
@@ -160,7 +160,7 @@ public class SpartanPlayer {
         if (run) {
             clicks.calculate();
             this.getExecutor(Enums.HackType.FastClicks).run(false);
-            InteractiveInventory.playerInfo.refresh(this.protocol.player.getName());
+            InteractiveInventory.playerInfo.refresh(this.protocol.bukkit.getName());
         }
     }
 
@@ -176,33 +176,33 @@ public class SpartanPlayer {
 
     public void sendInventoryCloseMessage(String message) {
         if (message != null) {
-            this.getNative().sendMessage(message);
+            this.bukkit().sendMessage(message);
         }
-        SpartanBukkit.transferTask(this, this.getNative()::closeInventory);
+        SpartanBukkit.transferTask(this, this.bukkit()::closeInventory);
     }
 
     public void sendImportantMessage(String message) {
-        this.getNative().sendMessage("");
+        this.bukkit().sendMessage("");
         this.sendInventoryCloseMessage(message);
-        this.getNative().sendMessage("");
+        this.bukkit().sendMessage("");
     }
 
     // Separator
 
     public Inventory createInventory(int size, String title) {
-        return Bukkit.createInventory(this.getNative(), size, title);
+        return Bukkit.createInventory(this.bukkit(), size, title);
     }
 
     // Separator
 
     public ItemStack getItemInHand() {
-        return this.getNative().getInventory().getItemInHand();
+        return this.bukkit().getInventory().getItemInHand();
     }
 
     // Separator
 
-    public Player getNative() {
-        return this.protocol.player;
+    public Player bukkit() {
+        return this.protocol.bukkit;
     }
 
     // Separator
@@ -217,7 +217,7 @@ public class SpartanPlayer {
     }
 
     public boolean isOnGround(boolean custom) {
-        Entity vehicle = this.getNative().getVehicle();
+        Entity vehicle = this.bukkit().getVehicle();
 
         if (vehicle != null) {
             return vehicle.isOnGround();
@@ -233,7 +233,7 @@ public class SpartanPlayer {
     public Block getTargetBlock(double distance, double limit) {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)) {
             try {
-                List<Block> list = this.getNative().getLineOfSight(null, (int) Math.min(distance, limit));
+                List<Block> list = this.bukkit().getLineOfSight(null, (int) Math.min(distance, limit));
 
                 if (!list.isEmpty()) {
                     for (Block block : list) {
@@ -252,7 +252,7 @@ public class SpartanPlayer {
 
     public boolean isFrozen() {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)) {
-            return this.getNative().isFrozen();
+            return this.bukkit().isFrozen();
         } else {
             return false;
         }
@@ -268,7 +268,7 @@ public class SpartanPlayer {
 
     public float getAttackCooldown() {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)) {
-            return this.getNative().getAttackCooldown();
+            return this.bukkit().getAttackCooldown();
         } else {
             return 1.0f;
         }
@@ -277,25 +277,25 @@ public class SpartanPlayer {
     // Separator
 
     public double getHealth() {
-        return ProtocolLib.isTemporary(this.getNative())
+        return ProtocolLib.isTemporary(this.bukkit())
                 ? 0.0
-                : this.getNative().getHealth();
+                : this.bukkit().getHealth();
     }
 
     public int getEntityId() {
-        return ProtocolLib.isTemporary(this.getNative())
+        return ProtocolLib.isTemporary(this.bukkit())
                 ? new Random().nextInt()
-                : this.getNative().getEntityId();
+                : this.bukkit().getEntityId();
     }
 
     // Separator
 
     private void setStoredPotionEffects() {
-        if (!ProtocolLib.isTemporary(this.getNative())) {
+        if (!ProtocolLib.isTemporary(this.bukkit())) {
             SpartanBukkit.transferTask(
-                    protocol.spartanPlayer,
+                    protocol.spartan,
                     () -> {
-                        for (PotionEffect effect : this.getNative().getActivePotionEffects()) {
+                        for (PotionEffect effect : this.bukkit().getActivePotionEffects()) {
                             this.potionEffects.put(effect.getType(), new SpartanPotionEffect(effect));
                         }
                     }
@@ -304,9 +304,9 @@ public class SpartanPlayer {
     }
 
     public Collection<PotionEffect> getActivePotionEffects() {
-        return ProtocolLib.isTemporary(this.getNative())
+        return ProtocolLib.isTemporary(this.bukkit())
                 ? new ArrayList<>(0)
-                : this.getNative().getActivePotionEffects();
+                : this.bukkit().getActivePotionEffects();
     }
 
     public SpartanPotionEffect getPotionEffect(PotionEffectType type, long lastActive) {
@@ -373,7 +373,7 @@ public class SpartanPlayer {
             SpartanBukkit.transferTask(
                     this,
                     () -> {
-                        nearbyEntities.addAll(this.getNative().getNearbyEntities(x, y, z));
+                        nearbyEntities.addAll(this.bukkit().getNearbyEntities(x, y, z));
                         booleans[0] = true;
 
                         synchronized (thread) {
@@ -445,18 +445,18 @@ public class SpartanPlayer {
         }
 
         if (iterations > 0) {
-            this.getNative().setFallDistance(0.0f);
+            this.bukkit().setFallDistance(0.0f);
 
             if (Config.settings.getBoolean("Detections.fall_damage_on_teleport")
                     && iterations > PlayerUtils.fallDamageAboveBlocks) { // Damage
-                damage(Math.max(this.getNative().getFallDistance(), iterations));
+                damage(Math.max(this.bukkit().getFallDistance(), iterations));
             }
         }
     }
 
     public boolean teleport(SpartanLocation location) {
         if (this.getWorld().equals(location.world)) {
-            Player p = getNative();
+            Player p = bukkit();
 
             if (SpartanBukkit.isSynchronised()) {
                 p.leaveVehicle();
@@ -478,13 +478,13 @@ public class SpartanPlayer {
     // Separator
 
     public void damage(double amount) {
-        this.getNative().damage(amount);
+        this.bukkit().damage(amount);
     }
 
     // Separator
 
     public World getWorld() {
-        return movement.getRawLocation().world;
+        return movement.getLocation().world;
     }
 
     public boolean isOutsideOfTheBorder(double deviation) {

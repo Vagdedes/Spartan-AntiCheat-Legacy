@@ -23,16 +23,16 @@ public class Event_Join implements Listener {
                 && !Permissions.isStaff(n)) {
             n.sendMessage("");
             AwarenessNotifications.forcefullySend(
-                    protocol.spartanPlayer,
+                    protocol.spartan,
                     "\nThis server is protected by the Spartan AntiCheat",
                     false
             );
             n.sendMessage("");
         }
 
-        SpartanBukkit.runDelayedTask(protocol.spartanPlayer, () -> {
+        SpartanBukkit.runDelayedTask(protocol.spartan, () -> {
             Config.settings.runOnLogin(protocol);
-            CloudBase.announce(protocol.spartanPlayer);
+            CloudBase.announce(protocol);
         }, 10L);
     }
 

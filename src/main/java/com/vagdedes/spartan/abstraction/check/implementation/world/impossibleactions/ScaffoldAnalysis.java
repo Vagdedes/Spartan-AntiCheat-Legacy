@@ -41,7 +41,7 @@ public class ScaffoldAnalysis extends DetectionExecutor {
         Block b = e.getBlock();
         Location bL = b.getLocation();
         Block oldB = p.oldBlockEvent.getBlock();
-        Block downB = p.player.getWorld().getBlockAt(bL.clone().add(0, -1, 0));
+        Block downB = p.bukkit.getWorld().getBlockAt(bL.clone().add(0, -1, 0));
         {
             long delay = System.currentTimeMillis() - p.placeTime;
             boolean checkHash = false;
@@ -80,7 +80,7 @@ public class ScaffoldAnalysis extends DetectionExecutor {
             if (delay < 5
                     || placeHash == p.placeHash
                     || (long) p.getLocation().getY() <= bL.getY()
-                    || p.player.isFlying() || !checkHash) {
+                    || p.bukkit.isFlying() || !checkHash) {
                 p.rightClickCounter = 0;
                 p.placeTime = System.currentTimeMillis();
                 p.oldBlockEvent = e;

@@ -52,7 +52,7 @@ public class SpartanPlayerMovement {
         this.lastLiquidMaterial = Material.AIR;
 
         SpartanLocation location = new SpartanLocation(
-                ProtocolLib.getLocation(parent.getNative())
+                ProtocolLib.getLocation(parent.bukkit())
         );
         this.locations = Collections.synchronizedMap(new LinkedHashMap<>());
         this.locations.put(System.currentTimeMillis(), location);
@@ -147,7 +147,7 @@ public class SpartanPlayerMovement {
         if (artificialSwimming >= System.currentTimeMillis()) {
             return true;
         } else if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
-            return this.parent.getNative().isSwimming();
+            return this.parent.bukkit().isSwimming();
         } else {
             return false;
         }
@@ -160,23 +160,17 @@ public class SpartanPlayerMovement {
     // Separator
 
     public boolean isLowEyeHeight() {
-        return this.parent.getNative().getEyeHeight() < 1.0;
-    }
-
-    public boolean isWalkJumping(double vertical) {
-        return !this.parent.protocol.isSprinting()
-                && this.getValueOrDefault(this.getEventDistance(), 0.0) > 0.0
-                && this.justJumped(vertical);
+        return this.parent.bukkit().getEyeHeight() < 1.0;
     }
 
     public boolean isFlying() {
-        Entity vehicle = this.parent.getNative().getVehicle();
+        Entity vehicle = this.parent.bukkit().getVehicle();
         boolean flying;
 
         if (vehicle != null) {
             flying = vehicle instanceof Player && ((Player) vehicle).isFlying();
         } else {
-            flying = this.parent.getNative().isFlying();
+            flying = this.parent.bukkit().isFlying();
         }
         if (flying) {
             this.lastFlight = System.currentTimeMillis();
@@ -187,12 +181,6 @@ public class SpartanPlayerMovement {
     public boolean wasFlying() {
         return this.isFlying()
                 || System.currentTimeMillis() - this.lastFlight <= TPS.maximum * TPS.tickTime;
-    }
-
-    // Separator
-
-    public boolean isSprintJumping(double vertical) {
-        return this.parent.protocol.isSprinting() && this.isJumping(vertical);
     }
 
     // Separator
@@ -255,7 +243,7 @@ public class SpartanPlayerMovement {
 
     public boolean isGliding() {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
-            if (this.parent.getNative().isGliding()) {
+            if (this.parent.bukkit().isGliding()) {
                 this.lastGlide = System.currentTimeMillis();
                 return true;
             } else {
@@ -333,7 +321,7 @@ public class SpartanPlayerMovement {
     // Separator
 
     public SpartanLocation getVehicleLocation() {
-        Entity vehicle = this.parent.getNative().getVehicle();
+        Entity vehicle = this.parent.bukkit().getVehicle();
 
         if (vehicle instanceof LivingEntity || vehicle instanceof Vehicle) {
             Location playerLocation = this.parent.protocol.getLocation();

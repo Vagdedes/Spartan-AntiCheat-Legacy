@@ -40,7 +40,7 @@ public class PlayerProfile {
         SpartanProtocol protocol = SpartanBukkit.getProtocol(name);
 
         if (protocol != null) {
-            this.offlinePlayer = protocol.player;
+            this.offlinePlayer = protocol.bukkit;
             this.registerExecutors(protocol);
         } else {
             this.offlinePlayer = null;
@@ -49,12 +49,12 @@ public class PlayerProfile {
     }
 
     public PlayerProfile(SpartanProtocol protocol) {
-        this.name = protocol.player.getName();
-        this.offlinePlayer = protocol.player; // Attention
+        this.name = protocol.bukkit.getName();
+        this.offlinePlayer = protocol.bukkit; // Attention
         this.skull = null;
         this.executors = new CheckExecutor[Enums.HackType.values().length];
         this.miningHistory = new MiningHistory[MiningHistory.MiningOre.values().length];
-        this.lastDataType = protocol.spartanPlayer.dataType;
+        this.lastDataType = protocol.spartan.dataType;
 
         for (MiningHistory.MiningOre ore : MiningHistory.MiningOre.values()) {
             this.miningHistory[ore.ordinal()] = new MiningHistory(ore);
@@ -69,8 +69,8 @@ public class PlayerProfile {
     }
 
     public void update(SpartanProtocol protocol) {
-        this.offlinePlayer = protocol.player;
-        this.lastDataType = protocol.spartanPlayer.dataType;
+        this.offlinePlayer = protocol.bukkit;
+        this.lastDataType = protocol.spartan.dataType;
 
         for (CheckExecutor executor : this.getExecutors()) {
             executor.setProtocol(protocol);
@@ -79,6 +79,10 @@ public class PlayerProfile {
                 detectionExecutor.setProtocol(protocol);
             }
         }
+    }
+
+    public SpartanProtocol protocol() {
+        return this.executors[0].protocol();
     }
 
     public CheckExecutor getExecutor(Enums.HackType hackType) {

@@ -9,7 +9,6 @@ import com.vagdedes.spartan.abstraction.inventory.implementation.MainMenu;
 import com.vagdedes.spartan.abstraction.pattern.Pattern;
 import com.vagdedes.spartan.abstraction.profiling.MiningHistory;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
-import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
@@ -104,14 +103,14 @@ public class ResearchEngine {
         PlayerProfile playerProfile;
 
         if (!force) {
-            playerProfile = playerProfiles.get(protocol.player.getName());
+            playerProfile = playerProfiles.get(protocol.bukkit.getName());
 
             if (playerProfile != null) {
                 return playerProfile;
             }
         }
         playerProfile = new PlayerProfile(protocol);
-        playerProfiles.put(protocol.player.getName(), playerProfile);
+        playerProfiles.put(protocol.bukkit.getName(), playerProfile);
         return playerProfile;
     }
 
@@ -583,12 +582,12 @@ public class ResearchEngine {
                     );
 
                     if (message != null) {
-                        List<SpartanPlayer> players = Permissions.getStaff();
+                        List<SpartanProtocol> protocols = Permissions.getStaff();
 
-                        if (!players.isEmpty()) {
-                            for (SpartanPlayer p : players) {
-                                if (AwarenessNotifications.canSend(p.protocol.getUUID(), "packet-preventions", 60 * 60)) {
-                                    p.getNative().sendMessage(message);
+                        if (!protocols.isEmpty()) {
+                            for (SpartanProtocol p : protocols) {
+                                if (AwarenessNotifications.canSend(p.getUUID(), "packet-preventions", 60 * 60)) {
+                                    p.bukkit.sendMessage(message);
                                 }
                             }
                         }

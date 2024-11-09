@@ -23,7 +23,7 @@ public class Event_Teleport implements Listener {
         SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
 
         if (protocol.packetsEnabled() == packets) {
-            SpartanPlayer p = protocol.spartanPlayer;
+            SpartanPlayer p = protocol.spartan;
 
             // Object
             p.resetCrucialData();
@@ -43,7 +43,7 @@ public class Event_Teleport implements Listener {
         SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
 
         if (protocol.packetsEnabled() == packets) {
-            SpartanPlayer p = protocol.spartanPlayer;
+            SpartanPlayer p = protocol.spartan;
 
             // Objects
             p.resetCrucialData();

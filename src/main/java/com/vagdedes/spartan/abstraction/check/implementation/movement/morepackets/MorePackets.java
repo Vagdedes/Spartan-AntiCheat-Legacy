@@ -129,7 +129,7 @@ public class MorePackets extends CheckExecutor {
             executor.cancel(
                     info,
                     1,
-                    this.protocol().spartanPlayer.movement.getDetectionLocation(),
+                    this.protocol().spartan.movement.getDetectionLocation(),
                     0,
                     true
             );
@@ -214,7 +214,7 @@ public class MorePackets extends CheckExecutor {
                                         + ", collections: " + collections
                                         + ", ratio: " + ratioSum,
                                 ratioSum,
-                                this.protocol().spartanPlayer.movement.getDetectionLocation(),
+                                this.protocol().spartan.movement.getDetectionLocation(),
                                 0,
                                 true
                         );
@@ -243,10 +243,10 @@ public class MorePackets extends CheckExecutor {
 
     @Override
     protected boolean canRun() {
-        return !this.protocol().spartanPlayer.isBedrockPlayer()
+        return !this.protocol().spartan.isBedrockPlayer()
                 && this.teleported < System.currentTimeMillis()
                 && MovementProcessing.canCheck(
-                this.protocol().spartanPlayer,
+                this.protocol().spartan,
                 this.protocol().packetsEnabled(),
                 true,
                 true,

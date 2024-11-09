@@ -55,7 +55,7 @@ public class MovementProcessing {
                                                     double vertical, double box) {
         if (player.isOnGround(true)
                 && player.movement.getTicksOnAir() == 0
-                && player.getNative().getVehicle() == null
+                && player.bukkit().getVehicle() == null
                 && vertical == 0.0
                 && GroundUtils.collisionHeightExists(box)) {
             player.trackers.removeMany(PlayerTrackers.TrackerFamily.MOTION);
@@ -98,7 +98,7 @@ public class MovementProcessing {
             player.movement.setLastLiquid(LAVA);
             return true;
         } else {
-            for (double i = 0.0; i < Math.ceil(player.getNative().getEyeHeight()); i++) {
+            for (double i = 0.0; i < Math.ceil(player.bukkit().getEyeHeight()); i++) {
                 for (SpartanLocation locationModified : location.getSurroundingLocations(GroundUtils.boundingBox, i, GroundUtils.boundingBox)) {
                     if (locationModified.getBlock().isLiquidOrWaterLogged(false)) {
                         player.movement.setLastLiquid(WATER);
@@ -126,7 +126,7 @@ public class MovementProcessing {
             if (blockY > minY) {
                 SpartanLocation locationModified = location.clone();
                 int max = (blockY - minY),
-                        playerHeight = AlgebraUtils.integerCeil(player.getNative().getEyeHeight());
+                        playerHeight = AlgebraUtils.integerCeil(player.bukkit().getEyeHeight());
                 Set<Integer> emptyNonLiquid = new HashSet<>(max),
                         fullNonLiquid = new HashSet<>(max);
 

@@ -126,11 +126,11 @@ public abstract class CheckExecutor extends CheckDetection {
                 && (System.currentTimeMillis() - this.creation) > TPS.maximum * TPS.tickTime
                 && (!cancelled || hackType.getCheck().handleCancelledEvents)
                 && !this.protocol().isLoading()
-                && (!v1_8 || this.protocol().player.getGameMode() != GameMode.SPECTATOR)
-                && hackType.getCheck().isEnabled(this.protocol().spartanPlayer.dataType, this.protocol().spartanPlayer.getWorld().getName())
-                && Attributes.getAmount(this.protocol().spartanPlayer, Attributes.GENERIC_SCALE) == 0.0
+                && (!v1_8 || this.protocol().bukkit.getGameMode() != GameMode.SPECTATOR)
+                && hackType.getCheck().isEnabled(this.protocol().spartan.dataType, this.protocol().spartan.getWorld().getName())
+                && Attributes.getAmount(this.protocol().spartan, Attributes.GENERIC_SCALE) == 0.0
                 && canRun()
-                && !Permissions.isBypassing(this.protocol().player, hackType);
+                && !Permissions.isBypassing(this.protocol().bukkit, hackType);
     }
 
     // Causes
@@ -138,13 +138,13 @@ public abstract class CheckExecutor extends CheckDetection {
     public final CancelCause getDisableCause() {
         if (disableCause == null || disableCause.hasExpired()) {
             if (this.protocol() != null) {
-                return MythicMobs.is(this.protocol().spartanPlayer)
+                return MythicMobs.is(this.protocol().spartan)
                         ? new CancelCause(Compatibility.CompatibilityType.MYTHIC_MOBS)
-                        : ItemsAdder.is(this.protocol().spartanPlayer)
+                        : ItemsAdder.is(this.protocol().spartan)
                         ? new CancelCause(Compatibility.CompatibilityType.ITEMS_ADDER)
-                        : CustomEnchantsPlus.has(this.protocol().spartanPlayer)
+                        : CustomEnchantsPlus.has(this.protocol().spartan)
                         ? new CancelCause(Compatibility.CompatibilityType.CUSTOM_ENCHANTS_PLUS)
-                        : EcoEnchants.has(this.protocol().spartanPlayer)
+                        : EcoEnchants.has(this.protocol().spartan)
                         ? new CancelCause(Compatibility.CompatibilityType.ECO_ENCHANTS)
                         : null;
             } else {
@@ -169,7 +169,7 @@ public abstract class CheckExecutor extends CheckDetection {
             disableCause = new CancelCause(reason, pointer, ticks);
         }
         if (this.protocol() != null) {
-            InteractiveInventory.playerInfo.refresh(this.protocol().player.getName());
+            InteractiveInventory.playerInfo.refresh(this.protocol().bukkit.getName());
         }
     }
 
@@ -180,7 +180,7 @@ public abstract class CheckExecutor extends CheckDetection {
             silentCause = new CancelCause(reason, pointer, ticks);
         }
         if (this.protocol() != null) {
-            InteractiveInventory.playerInfo.refresh(this.protocol().player.getName());
+            InteractiveInventory.playerInfo.refresh(this.protocol().bukkit.getName());
         }
     }
 
@@ -188,7 +188,7 @@ public abstract class CheckExecutor extends CheckDetection {
         this.disableCause = null;
 
         if (this.protocol() != null) {
-            InteractiveInventory.playerInfo.refresh(this.protocol().player.getName());
+            InteractiveInventory.playerInfo.refresh(this.protocol().bukkit.getName());
         }
     }
 
@@ -196,7 +196,7 @@ public abstract class CheckExecutor extends CheckDetection {
         this.silentCause = null;
 
         if (this.protocol() != null) {
-            InteractiveInventory.playerInfo.refresh(this.protocol().player.getName());
+            InteractiveInventory.playerInfo.refresh(this.protocol().bukkit.getName());
         }
     }
 
@@ -208,7 +208,7 @@ public abstract class CheckExecutor extends CheckDetection {
                 CheckCancelEvent checkCancelEvent;
 
                 if (Config.settings.getBoolean("Important.enable_developer_api")) {
-                    checkCancelEvent = new CheckCancelEvent(this.protocol().player, hackType);
+                    checkCancelEvent = new CheckCancelEvent(this.protocol().bukkit, hackType);
                     Register.manager.callEvent(checkCancelEvent);
                 } else {
                     checkCancelEvent = null;
@@ -216,7 +216,7 @@ public abstract class CheckExecutor extends CheckDetection {
 
                 if (checkCancelEvent == null
                         || !checkCancelEvent.isCancelled()) {
-                    this.prevention.handle(this.protocol().spartanPlayer);
+                    this.prevention.handle(this.protocol());
                     return true;
                 } else {
                     return false;
@@ -225,8 +225,8 @@ public abstract class CheckExecutor extends CheckDetection {
                 Thread thread = Thread.currentThread();
                 Boolean[] cancelled = new Boolean[1];
 
-                SpartanBukkit.transferTask(this.protocol().spartanPlayer, () -> {
-                    CheckCancelEvent checkCancelEvent = new CheckCancelEvent(this.protocol().player, hackType);
+                SpartanBukkit.transferTask(this.protocol().spartan, () -> {
+                    CheckCancelEvent checkCancelEvent = new CheckCancelEvent(this.protocol().bukkit, hackType);
                     Register.manager.callEvent(checkCancelEvent);
                     cancelled[0] = checkCancelEvent.isCancelled();
 
@@ -243,7 +243,7 @@ public abstract class CheckExecutor extends CheckDetection {
                     }
                 }
                 if (!cancelled[0]) {
-                    this.prevention.handle(this.protocol().spartanPlayer);
+                    this.prevention.handle(this.protocol());
                     return true;
                 } else {
                     return false;
@@ -257,15 +257,15 @@ public abstract class CheckExecutor extends CheckDetection {
     // Notification
 
     final int getNotificationTicksCooldown(SpartanPlayer detected) {
-        Integer frequency = DetectionNotifications.getFrequency(this.protocol().spartanPlayer);
+        Integer frequency = DetectionNotifications.getFrequency(this.protocol());
 
         if (frequency != null
                 && frequency != DetectionNotifications.defaultFrequency) {
             return frequency;
         } else if (detected != null
-                && (detected.getNative().equals(this.protocol().player)
-                || detected.getWorld().equals(this.protocol().spartanPlayer.getWorld())
-                && detected.movement.getLocation().distance(this.protocol().spartanPlayer.movement.getLocation()) <= PlayerUtils.chunk)) {
+                && (detected.bukkit().equals(this.protocol().bukkit)
+                || detected.getWorld().equals(this.protocol().spartan.getWorld())
+                && detected.movement.getLocation().distance(this.protocol().spartan.movement.getLocation()) <= PlayerUtils.chunk)) {
             return AlgebraUtils.integerRound(Math.sqrt(TPS.maximum));
         } else {
             return AlgebraUtils.integerCeil(TPS.maximum);

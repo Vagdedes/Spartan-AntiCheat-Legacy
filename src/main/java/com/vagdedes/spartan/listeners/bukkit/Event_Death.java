@@ -22,7 +22,7 @@ public class Event_Death implements Listener {
         protocol.timerBalancer.addBalance(50);
 
         if (protocol.packetsEnabled() == packets) {
-            SpartanPlayer p = protocol.spartanPlayer;
+            SpartanPlayer p = protocol.spartan;
 
             // Detections
             p.getExecutor(Enums.HackType.AutoRespawn).handle(false, null);

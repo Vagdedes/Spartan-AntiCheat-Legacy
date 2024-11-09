@@ -31,7 +31,7 @@ public class DetectionNotifications {
                 SpartanProtocol protocol = SpartanBukkit.getProtocol(uuid);
 
                 if (protocol != null) {
-                    list.add(protocol.spartanPlayer);
+                    list.add(protocol.spartan);
                 }
             }
             return list;
@@ -44,11 +44,11 @@ public class DetectionNotifications {
     }
 
     public static boolean hasPermission(SpartanProtocol p) {
-        return Permissions.has(p.player, Enums.Permission.NOTIFICATIONS);
+        return Permissions.has(p.bukkit, Enums.Permission.NOTIFICATIONS);
     }
 
-    public static Integer getFrequency(SpartanPlayer p) {
-        return notifications.get(p.protocol.getUUID());
+    public static Integer getFrequency(SpartanProtocol p) {
+        return notifications.get(p.getUUID());
     }
 
     public static void remove(SpartanProtocol p) {
@@ -59,12 +59,12 @@ public class DetectionNotifications {
         Integer frequency = notifications.put(p.getUUID(), i);
 
         if (frequency == null) {
-            p.player.sendMessage(Config.messages.getColorfulString("notifications_enable"));
+            p.bukkit.sendMessage(Config.messages.getColorfulString("notifications_enable"));
         } else if (frequency != i) {
-            p.player.sendMessage(Config.messages.getColorfulString("notifications_modified"));
+            p.bukkit.sendMessage(Config.messages.getColorfulString("notifications_modified"));
         } else {
             notifications.remove(p.getUUID());
-            p.player.sendMessage(Config.messages.getColorfulString("notifications_disable"));
+            p.bukkit.sendMessage(Config.messages.getColorfulString("notifications_disable"));
         }
     }
 

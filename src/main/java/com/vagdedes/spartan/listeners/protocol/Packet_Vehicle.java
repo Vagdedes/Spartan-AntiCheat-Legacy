@@ -36,7 +36,7 @@ public class Packet_Vehicle extends PacketAdapter {
             if (event.getPacket().getBooleans().size() > 0) {
                 boolean dismount = event.getPacket().getBooleans().read(1);
 
-                if (protocol.spartanPlayer.isBedrockPlayer()) {
+                if (protocol.spartan.isBedrockPlayer()) {
                     return;
                 }
 

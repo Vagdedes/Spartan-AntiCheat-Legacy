@@ -29,10 +29,10 @@ public class MoveLength extends DetectionExecutor {
     }
 
     void run() {
-        if (!this.protocol().spartanPlayer.isBedrockPlayer()
+        if (!this.protocol().spartan.isBedrockPlayer()
                 && this.hit - System.currentTimeMillis() <= 2_000L
                 && this.hitBy - System.currentTimeMillis() <= 1_000L) {
-            float pitch = this.protocol().spartanPlayer.movement.getLocation().getPitch(),
+            float pitch = this.protocol().spartan.movement.getLocation().getPitch(),
                     pitchDifference = Math.abs(pitch - previousPitch);
 
             if (pitchDifference > 0.0

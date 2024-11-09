@@ -23,7 +23,7 @@ public class Event_Velocity implements Listener {
         protocol.claimedVeloGravity = e;
 
         if (protocol.packetsEnabled() == packets) {
-            SpartanPlayer p = protocol.spartanPlayer;
+            SpartanPlayer p = protocol.spartan;
 
             // Detections
             boolean cancelled = e.isCancelled();

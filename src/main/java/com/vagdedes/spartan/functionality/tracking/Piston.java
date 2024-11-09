@@ -27,13 +27,13 @@ public class Piston {
             World world = block.getWorld();
 
             for (SpartanProtocol protocol : protocols) {
-                if (protocol.spartanPlayer.getWorld().equals(world)) {
-                    SpartanLocation location = protocol.spartanPlayer.movement.getLocation();
+                if (protocol.spartan.getWorld().equals(world)) {
+                    SpartanLocation location = protocol.spartan.movement.getLocation();
                     double preX = AlgebraUtils.getSquare(location.getX(), block.getX()),
                             diffY = location.getY() - block.getY(),
                             preZ = AlgebraUtils.getSquare(location.getZ(), block.getZ());
 
-                    if (!run(protocol.spartanPlayer, preX, diffY, preZ) // Check if the player is nearby to the piston
+                    if (!run(protocol.spartan, preX, diffY, preZ) // Check if the player is nearby to the piston
                             && runBlocks
                             && Math.sqrt(preX + (diffY * diffY) + preZ) <= PlayerUtils.chunk) { // Check if the player is nearby to the piston affected blocks
                         for (Block affected : blocks) {
@@ -41,7 +41,7 @@ public class Piston {
                             diffY = location.getY() - block.getY();
                             preZ = AlgebraUtils.getSquare(location.getZ(), affected.getZ());
 
-                            if (run(protocol.spartanPlayer, preX, diffY, preZ)) { // Check if the player is nearby to the piston affected block
+                            if (run(protocol.spartan, preX, diffY, preZ)) { // Check if the player is nearby to the piston affected block
                                 break;
                             }
                         }

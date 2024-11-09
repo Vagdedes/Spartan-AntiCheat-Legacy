@@ -35,7 +35,7 @@ public class FastEat extends CheckExecutor {
 
     private long getDelay() {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
-            PlayerInventory inventory = this.protocol().player.getInventory();
+            PlayerInventory inventory = this.protocol().bukkit.getInventory();
 
             for (ItemStack itemStack : new ItemStack[]{inventory.getItemInHand(), inventory.getItemInOffHand()}) {
                 if (itemStack != null) {
@@ -50,7 +50,7 @@ public class FastEat extends CheckExecutor {
                 }
             }
         } else {
-            ItemStack itemStack = this.protocol().spartanPlayer.getItemInHand();
+            ItemStack itemStack = this.protocol().spartan.getItemInHand();
 
             if (itemStack != null) {
                 Material type = itemStack.getType();
@@ -100,22 +100,22 @@ public class FastEat extends CheckExecutor {
         if (object instanceof FoodLevelChangeEvent) {
             int lvl = ((FoodLevelChangeEvent) object).getFoodLevel();
 
-            if (lvl > this.protocol().player.getFoodLevel()
+            if (lvl > this.protocol().bukkit.getFoodLevel()
                     && (checkDelay() || checkEating())) {
-                Player p = this.protocol().player;
+                Player p = this.protocol().bukkit;
                 p.setFoodLevel(p.getFoodLevel() - (lvl - p.getFoodLevel()));
             }
-        } else if (!this.protocol().spartanPlayer.isBedrockPlayer()) {
+        } else if (!this.protocol().spartan.isBedrockPlayer()) {
             PlayerInteractEvent e = (PlayerInteractEvent) object;
 
             switch (e.getAction()) {
                 case RIGHT_CLICK_BLOCK:
                     if (e.getClickedBlock().getType() == cake) {
-                        this.protocol().spartanPlayer.getExecutor(hackType).addDisableCause(null, null, 10);
+                        this.protocol().spartan.getExecutor(hackType).addDisableCause(null, null, 10);
                     }
                     break;
                 case RIGHT_CLICK_AIR:
-                    if (this.protocol().spartanPlayer.getItemInHand().getType().isEdible()) {
+                    if (this.protocol().spartan.getItemInHand().getType().isEdible()) {
                         this.eatTime = System.currentTimeMillis();
                     }
                     break;
@@ -127,8 +127,8 @@ public class FastEat extends CheckExecutor {
 
     @Override
     protected boolean canRun() {
-        return this.protocol().spartanPlayer.getWorld().getDifficulty() != Difficulty.PEACEFUL
-                && !this.protocol().spartanPlayer.hasPotionEffect(PotionEffectType.SATURATION, 0)
-                && Attributes.getAmount(this.protocol().spartanPlayer, Attributes.GENERIC_MAX_ABSORPTION) == 0.0;
+        return this.protocol().spartan.getWorld().getDifficulty() != Difficulty.PEACEFUL
+                && !this.protocol().spartan.hasPotionEffect(PotionEffectType.SATURATION, 0)
+                && Attributes.getAmount(this.protocol().spartan, Attributes.GENERIC_MAX_ABSORPTION) == 0.0;
     }
 }

@@ -197,12 +197,12 @@ public class MCClient {
             { // air Y sim
                 SpartanPotionEffect levitation = null;
                 if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
-                    levitation = this.p().spartanPlayer.getPotionEffect(PotionEffectType.LEVITATION, 0);
+                    levitation = this.p().spartan.getPotionEffect(PotionEffectType.LEVITATION, 0);
                 }
                 double d0 = 0.08D;
                 boolean flag = this.getMotion().y <= 0.0D;
 
-                if (flag && MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) && this.p().spartanPlayer.getPotionEffect(PotionEffectType.SLOW_FALLING, 0) != null) {
+                if (flag && MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) && this.p().spartan.getPotionEffect(PotionEffectType.SLOW_FALLING, 0) != null) {
                     d0 = 0.01D;
                 }
                 Location blockpos = this.p().getLocation().clone().add(0, -1, 0);
@@ -213,7 +213,7 @@ public class MCClient {
                     d2 += (0.05D * (double) (levitation.bukkitEffect.getAmplifier() + 1) - vector3d5.y) * 0.2D;
                     //this.fallDistance = 0.0F;
                 }
-                if (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_10) || this.p().player.hasGravity()) {
+                if (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_10) || this.p().bukkit.hasGravity()) {
                     d2 -= d0;
                 }
                 this.getMotion().y = d2 * (double) 0.98F;
@@ -444,9 +444,9 @@ public class MCClient {
         float f = this.getJumpUpwardsMotion();
         SpartanPotionEffect jumpEffect = null;
         if (PotionEffectType.getByName("JUMP_BOOST") != null) {
-            jumpEffect = this.p().spartanPlayer.getPotionEffect(PotionEffectType.getByName("JUMP_BOOST"), 1L);
+            jumpEffect = this.p().spartan.getPotionEffect(PotionEffectType.getByName("JUMP_BOOST"), 1L);
         } else {
-            jumpEffect = this.p().spartanPlayer.getPotionEffect(PotionEffectType.getByName("JUMP"), 1L);
+            jumpEffect = this.p().spartan.getPotionEffect(PotionEffectType.getByName("JUMP"), 1L);
         }
 
         if (jumpEffect != null) {
@@ -475,7 +475,7 @@ public class MCClient {
     }
 
     private void debug(String msg) {
-        this.p().player.sendMessage(msg);
+        this.p().bukkit.sendMessage(msg);
     }
 
 }

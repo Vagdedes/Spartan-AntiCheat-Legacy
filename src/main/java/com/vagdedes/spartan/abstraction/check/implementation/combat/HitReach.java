@@ -40,8 +40,8 @@ public class HitReach extends CheckExecutor {
         LivingEntity target = event.target;
 
         if (this.protocol().packetsEnabled()) {
-            if (CombatUtils.canCheck(this.protocol().spartanPlayer, target)
-                    && !this.protocol().player.getGameMode().equals(GameMode.CREATIVE)) {
+            if (CombatUtils.canCheck(this.protocol().spartan, target)
+                    && !this.protocol().bukkit.getGameMode().equals(GameMode.CREATIVE)) {
                 SpartanProtocol targetProtocol = SpartanBukkit.getProtocol(ProtocolLib.getUUID(target));
                 if (targetProtocol == null) return;
                 double bruteforceRayTrace = 14.88;
@@ -54,7 +54,7 @@ public class HitReach extends CheckExecutor {
                     for (Location targetLocation : targetProtocol.getLocations()) {
                         if (targetLocation != null) {
                             value = RayUtils.bruteforceRayTraceWithCustomLocation(
-                                    this.protocol().spartanPlayer,
+                                    this.protocol().spartan,
                                     targetLocation,
                                     target
                             );
@@ -70,7 +70,7 @@ public class HitReach extends CheckExecutor {
                             this.hitboxRaytrace.cancel(
                                     "type: hitbox-raytrace, reach: " + ((bruteforceRayTrace - hitbox) + 3),
                                     vl / 100D,
-                                    this.protocol().spartanPlayer.movement.getDetectionLocation()
+                                    this.protocol().spartan.movement.getDetectionLocation()
                             );
                         }
                         localVl -= 25;
@@ -78,17 +78,17 @@ public class HitReach extends CheckExecutor {
                         localVl -= 40;
                     }
                 } catch (Exception e) {
-                    Register.plugin.getLogger().warning("Failed to check RayTrace stack (" + this.protocol().player.getName() + ")");
+                    Register.plugin.getLogger().warning("Failed to check RayTrace stack (" + this.protocol().bukkit.getName() + ")");
                 }
             }
         } else {
-            if (CombatUtils.canCheck(this.protocol().spartanPlayer, target)
-                    && !this.protocol().player.getGameMode().equals(GameMode.CREATIVE)) {
-                double bruteforceRayTrace = RayUtils.bruteforceRayTrace(this.protocol().spartanPlayer, target),
+            if (CombatUtils.canCheck(this.protocol().spartan, target)
+                    && !this.protocol().bukkit.getGameMode().equals(GameMode.CREATIVE)) {
+                double bruteforceRayTrace = RayUtils.bruteforceRayTrace(this.protocol().spartan, target),
                         diff = bruteforceRayTrace - 0.4;
                 rayTraceAnalysis.addLast(bruteforceRayTrace);
                 if (rayTraceAnalysis.size() >= 10) {
-                    analyze(this.protocol().spartanPlayer.movement.getLocation(), bruteforceRayTrace);
+                    analyze(this.protocol().spartan.movement.getLocation(), bruteforceRayTrace);
                 }
             }
         }
@@ -123,6 +123,6 @@ public class HitReach extends CheckExecutor {
 
     @Override
     protected boolean canRun() {
-        return CombatUtils.canCheck(this.protocol().spartanPlayer);
+        return CombatUtils.canCheck(this.protocol().spartan);
     }
 }

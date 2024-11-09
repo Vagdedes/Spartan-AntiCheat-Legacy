@@ -70,11 +70,11 @@ public class BlockRaytrace extends DetectionExecutor {
                         l.getX() - size, l.getY() - 0.3, l.getZ() - size,
                         l.getX() + size, l.getY() + 2.3, l.getZ() + size);
         for (double d = 0.0; d < 3.0; d += 0.01) {
-            if (RayUtils.ifRayBoundClient(attacker.spartanPlayer, target, d)) {
+            if (RayUtils.ifRayBoundClient(attacker, target, d)) {
                 return null;
             }
             for (AxisAlignedBB bb : blocks) {
-                if (RayUtils.ifRayBound(attacker.spartanPlayer, bb, d)
+                if (RayUtils.ifRayBound(attacker, bb, d)
                                 && !bb.isEqual(target))  {
                     return bb.toVector();
                 }

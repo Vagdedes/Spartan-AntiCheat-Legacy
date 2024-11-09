@@ -51,7 +51,7 @@ public class CrossServerNotifications {
 
                                             for (SpartanPlayer player : players) {
                                                 if (player.getExecutor(hackType).getDetection(detection).canSendNotification(playerName, 0)) {
-                                                    player.getNative().sendMessage(notification);
+                                                    player.bukkit().sendMessage(notification);
                                                     processed.put(id, true);
                                                 }
                                             }

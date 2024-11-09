@@ -91,7 +91,7 @@ public class Config {
             if (sender instanceof CommandSender) {
                 ((CommandSender) sender).sendMessage(message);
             } else if (sender instanceof SpartanPlayer) {
-                ((SpartanPlayer) sender).getNative().sendMessage(message);
+                ((SpartanPlayer) sender).bukkit().sendMessage(message);
             }
         }
         create();

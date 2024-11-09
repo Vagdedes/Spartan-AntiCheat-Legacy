@@ -18,7 +18,7 @@ public class ItemsAdder {
 
     public static boolean is(SpartanPlayer player) {
         if (classExists && Compatibility.CompatibilityType.ITEMS_ADDER.isFunctional()) {
-            PlayerInventory inventory = player.getNative().getInventory();
+            PlayerInventory inventory = player.bukkit().getInventory();
 
             for (ItemStack armor : inventory.getArmorContents()) {
                 if (armor != null && is(armor)) {

@@ -19,7 +19,7 @@ public class Event_Damaged implements Listener {
         if (entity instanceof Player) {
             SpartanProtocol protocol = SpartanBukkit.getProtocol((Player) entity);
 
-            protocol.spartanPlayer.handleReceivedDamage();
+            protocol.spartan.handleReceivedDamage();
         } else {
             handlePassengers(entity, false, e);
         }
@@ -37,7 +37,7 @@ public class Event_Damaged implements Listener {
                     SpartanProtocol protocol = SpartanBukkit.getProtocol((Player) passenger);
 
                     if (protocol.packetsEnabled() == packets) {
-                        protocol.spartanPlayer.handleReceivedDamage();
+                        protocol.spartan.handleReceivedDamage();
                     }
                 }
             }

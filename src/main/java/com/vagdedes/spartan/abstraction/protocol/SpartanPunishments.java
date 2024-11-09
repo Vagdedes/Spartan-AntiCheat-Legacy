@@ -23,7 +23,7 @@ public class SpartanPunishments {
     public boolean kick(CommandSender punisher, String reason) {
         if (kickCooldown < System.currentTimeMillis()) {
             kickCooldown = System.currentTimeMillis() + 1_000L;
-            Player target = this.parent.getNative();
+            Player target = this.parent.bukkit();
             String punisherName = punisher instanceof ConsoleCommandSender
                     ? Config.messages.getColorfulString("console_name")
                     : punisher.getName(),
@@ -46,7 +46,7 @@ public class SpartanPunishments {
                 if (!protocols.isEmpty()) {
                     for (SpartanProtocol protocol : protocols) {
                         if (DetectionNotifications.hasPermission(protocol)) {
-                            protocol.player.sendMessage(announcement);
+                            protocol.bukkit.sendMessage(announcement);
                         }
                     }
                 }
@@ -65,7 +65,7 @@ public class SpartanPunishments {
     public boolean warn(CommandSender punisher, String reason) {
         if (warnCooldown < System.currentTimeMillis()) {
             warnCooldown = System.currentTimeMillis() + 1_000L;
-            Player target = this.parent.getNative();
+            Player target = this.parent.bukkit();
             String punisherName = punisher instanceof ConsoleCommandSender
                     ? Config.messages.getColorfulString("console_name")
                     : punisher.getName(),

@@ -18,7 +18,7 @@ public class Event_Health implements Listener {
         Entity entity = e.getEntity();
 
         if (entity instanceof Player) {
-            SpartanPlayer p = SpartanBukkit.getProtocol((Player) entity).spartanPlayer;
+            SpartanPlayer p = SpartanBukkit.getProtocol((Player) entity).spartan;
             boolean cancelled = e.isCancelled();
 
             // Detections
@@ -36,7 +36,7 @@ public class Event_Health implements Listener {
         Entity entity = e.getEntity();
 
         if (entity instanceof Player) {
-            SpartanPlayer p = SpartanBukkit.getProtocol((Player) entity).spartanPlayer;
+            SpartanPlayer p = SpartanBukkit.getProtocol((Player) entity).spartan;
 
             // Detections
             p.getExecutor(Enums.HackType.FastHeal).handle(e.isCancelled(), e);

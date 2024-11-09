@@ -12,7 +12,7 @@ public class EcoEnchants {
 
     public static boolean has(SpartanPlayer player) {
         if (Compatibility.CompatibilityType.ECO_ENCHANTS.isFunctional()) {
-            PlayerInventory inventory = player.getNative().getInventory();
+            PlayerInventory inventory = player.bukkit().getInventory();
 
             for (ItemStack armor : inventory.getArmorContents()) {
                 if (armor != null && has(armor)) {

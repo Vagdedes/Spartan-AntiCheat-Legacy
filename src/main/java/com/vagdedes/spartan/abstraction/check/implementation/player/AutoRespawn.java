@@ -31,12 +31,12 @@ public class AutoRespawn extends CheckExecutor {
         long time = System.currentTimeMillis() - this.memory,
                 limit = 750L;
 
-        if (time <= limit && !this.protocol().player.isDead()) {
+        if (time <= limit && !this.protocol().bukkit.isDead()) {
             memory = 0L;
             this.detection.cancel(
                     "type: default, ms: " + time,
                     limit / (double) time,
-                    this.protocol().spartanPlayer.movement.getDetectionLocation(),
+                    this.protocol().spartan.movement.getDetectionLocation(),
                     AlgebraUtils.integerCeil(TPS.maximum)
             );
         }
@@ -46,6 +46,6 @@ public class AutoRespawn extends CheckExecutor {
     protected boolean canRun() {
         return !PluginUtils.contains("respawn")
                 && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_15)
-                || !this.protocol().spartanPlayer.getWorld().getGameRuleValue(GameRule.DO_IMMEDIATE_RESPAWN) == true);
+                || !this.protocol().spartan.getWorld().getGameRuleValue(GameRule.DO_IMMEDIATE_RESPAWN) == true);
     }
 }

@@ -206,7 +206,7 @@ public class GroundUtils {
                     return true;
                 }
             }
-            Entity vehicle = p.getNative().getVehicle();
+            Entity vehicle = p.bukkit().getVehicle();
             boolean hasVehicle = vehicle != null;
 
             if (hasVehicle) {

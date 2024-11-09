@@ -33,9 +33,9 @@ public class GhostHand extends CheckExecutor {
             Block b = (Block) object;
 
             if (canDo(b)) {
-                SpartanLocation location = this.protocol().spartanPlayer.movement.getLocation();
+                SpartanLocation location = this.protocol().spartan.movement.getLocation();
                 double bDistance = location.distance(b);
-                Block t = this.protocol().spartanPlayer.getTargetBlock(bDistance, PlayerUtils.chunk);
+                Block t = this.protocol().spartan.getTargetBlock(bDistance, PlayerUtils.chunk);
 
                 if (t != null) {
                     double tDistance = location.distance(t);
@@ -61,9 +61,9 @@ public class GhostHand extends CheckExecutor {
                 Block b = event.getClickedBlock();
 
                 if (canDo(b) && BlockUtils.isChangeable(b.getType())) {
-                    SpartanLocation location = this.protocol().spartanPlayer.movement.getLocation();
+                    SpartanLocation location = this.protocol().spartan.movement.getLocation();
                     double bDistance = location.distance(b);
-                    Block t = this.protocol().spartanPlayer.getTargetBlock(bDistance, PlayerUtils.chunk);
+                    Block t = this.protocol().spartan.getTargetBlock(bDistance, PlayerUtils.chunk);
 
                     if (t != null) {
                         double tDistance = location.distance(t);
@@ -87,17 +87,17 @@ public class GhostHand extends CheckExecutor {
     }
 
     private boolean canDo(Block b) {
-        return b.getWorld() == this.protocol().spartanPlayer.getWorld();
+        return b.getWorld() == this.protocol().spartan.getWorld();
     }
 
     @Override
     protected boolean canRun() {
-        if (!this.protocol().spartanPlayer.movement.isFlying()
-                && !Vehicles.has(this.protocol().spartanPlayer, Vehicles.DRILL)
-                && !PrinterMode.isUsing(this.protocol().spartanPlayer)
-                && !mcMMO.hasGeneralAbility(this.protocol().spartanPlayer)
-                && Attributes.getAmount(this.protocol().spartanPlayer, Attributes.PLAYER_BLOCK_INTERACTION_RANGE) == 0.0) {
-            GameMode gameMode = this.protocol().player.getGameMode();
+        if (!this.protocol().spartan.movement.isFlying()
+                && !Vehicles.has(this.protocol(), Vehicles.DRILL)
+                && !PrinterMode.isUsing(this.protocol())
+                && !mcMMO.hasGeneralAbility(this.protocol().spartan)
+                && Attributes.getAmount(this.protocol().spartan, Attributes.PLAYER_BLOCK_INTERACTION_RANGE) == 0.0) {
+            GameMode gameMode = this.protocol().bukkit.getGameMode();
             return gameMode == GameMode.SURVIVAL
                     || gameMode == GameMode.ADVENTURE;
         }

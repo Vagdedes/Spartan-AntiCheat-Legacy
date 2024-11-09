@@ -58,6 +58,6 @@ public class ItemDrops extends CheckExecutor {
 
     @Override
     protected boolean canRun() {
-        return !this.protocol().player.isDead();
+        return !this.protocol().bukkit.isDead();
     }
 }

@@ -43,9 +43,9 @@ public class Velocity extends CheckExecutor {
             zSended = RayUtils.scaleVal(Math.abs(event.getVelocity().getZ()), 2);
         }
         if (object instanceof PlayerMoveEvent) {
-            Double eventXDiff = this.protocol().spartanPlayer.movement.getEventXDiff(),
-                    eventZDiff = this.protocol().spartanPlayer.movement.getEventZDiff(),
-                    vertical = this.protocol().spartanPlayer.movement.getEventVertical();
+            Double eventXDiff = this.protocol().spartan.movement.getEventXDiff(),
+                    eventZDiff = this.protocol().spartan.movement.getEventZDiff(),
+                    vertical = this.protocol().spartan.movement.getEventVertical();
 
             if (eventXDiff == null
                     || eventZDiff == null
@@ -54,7 +54,7 @@ public class Velocity extends CheckExecutor {
             }
             double x = RayUtils.scaleVal(Math.abs(eventXDiff), 2);
             double z = RayUtils.scaleVal(Math.abs(eventZDiff), 2);
-            boolean blockOnTop = RayUtils.onSolidBlock(this.protocol().spartanPlayer, this.protocol().spartanPlayer.movement.getLocation().clone().add(0, 2, 0));
+            boolean blockOnTop = RayUtils.onSolidBlock(this.protocol().spartan, this.protocol().spartan.movement.getLocation().clone().add(0, 2, 0));
             vertical = RayUtils.scaleVal(vertical, 2);
             // vertical check
             if (veloV) {
@@ -72,7 +72,7 @@ public class Velocity extends CheckExecutor {
                                     "type: vertical, speed-vertical: "
                                             + vertical + ", sended-vertical: " + verticalSended,
                                     1,
-                                    this.protocol().spartanPlayer.movement.getDetectionLocation()
+                                    this.protocol().spartan.movement.getDetectionLocation()
                             );
                         }
                     }
@@ -95,7 +95,7 @@ public class Velocity extends CheckExecutor {
                                 "type: horizontal, x: " + x + ", z: " + z
                                         + ", sended-x: " + xSended + ", sended-z: " + zSended,
                                 1,
-                                this.protocol().spartanPlayer.movement.getDetectionLocation()
+                                this.protocol().spartan.movement.getDetectionLocation()
                         );
                     }
                 } else {
@@ -109,16 +109,16 @@ public class Velocity extends CheckExecutor {
     @Override
     protected boolean canRun() {
         return this.protocol().packetsEnabled()
-                && !this.protocol().spartanPlayer.trackers.has(PlayerTrackers.TrackerType.BOUNCING_BLOCKS)
-                && CombatUtils.canCheck(this.protocol().spartanPlayer)
-                && !this.protocol().spartanPlayer.isOutsideOfTheBorder(-1.0)
+                && !this.protocol().spartan.trackers.has(PlayerTrackers.TrackerType.BOUNCING_BLOCKS)
+                && CombatUtils.canCheck(this.protocol().spartan)
+                && !this.protocol().spartan.isOutsideOfTheBorder(-1.0)
                 && !BlockPatternUtils.isBlockPattern(
                 new double[][]{
                         {1, 0, 1},
                         {1, 1, 1},
-                        {1, this.protocol().player.getEyeHeight(), 1}
+                        {1, this.protocol().bukkit.getEyeHeight(), 1}
                 },
-                this.protocol().spartanPlayer.movement.getLocation(),
+                this.protocol().spartan.movement.getLocation(),
                 true,
                 BlockUtils.solid, BlockUtils.semi_solid
         );

@@ -2,7 +2,7 @@ package com.vagdedes.spartan.abstraction.inventory.implementation;
 
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.inventory.InventoryMenu;
-import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.command.CommandExecution;
 import com.vagdedes.spartan.functionality.connection.DiscordMemberCount;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
@@ -31,9 +31,9 @@ public class ManageChecks extends InventoryMenu {
     }
 
     @Override
-    public boolean internalOpen(SpartanPlayer player, boolean permissionMessage, Object object) {
+    public boolean internalOpen(SpartanProtocol protocol, boolean permissionMessage, Object object) {
         for (HackType check : Enums.HackType.values()) {
-            addCheck(player, check);
+            addCheck(protocol, check);
         }
         add("§cDisable silent checking for all checks", null, new ItemStack(MaterialUtils.get("lead")), 46);
         add("§cDisable all checks", null, new ItemStack(MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? Material.RED_TERRACOTTA : Material.getMaterial("STAINED_CLAY"), 1, (short) 14), 47);
@@ -46,24 +46,24 @@ public class ManageChecks extends InventoryMenu {
     }
 
     @Override
-    public boolean internalHandle(SpartanPlayer player) {
+    public boolean internalHandle(SpartanProtocol protocol) {
         String item = itemStack.getItemMeta().getDisplayName();
         item = item.startsWith("§") ? item.substring(2) : item;
 
         if (item.equals("Back")) {
-            InteractiveInventory.mainMenu.open(player);
+            InteractiveInventory.mainMenu.open(protocol);
         } else if (item.equals("Disable all checks")) {
             Config.disableChecks();
-            open(player);
+            open(protocol);
         } else if (item.equals("Enable all checks")) {
             Config.enableChecks();
-            open(player);
+            open(protocol);
         } else if (item.equals("Disable silent checking for all checks")) {
             Config.disableSilentChecking();
-            open(player);
+            open(protocol);
         } else if (item.equals("Enable silent checking for all checks")) {
             Config.enableSilentChecking();
-            open(player);
+            open(protocol);
         } else {
             item = item.split(" ")[0];
 
@@ -73,22 +73,22 @@ public class ManageChecks extends InventoryMenu {
                 if (check != null) {
                     check.setEnabled(null, !check.isEnabled(null, null));
                 }
-                open(player);
+                open(protocol);
             } else if (clickType == ClickType.RIGHT) {
                 Check check = Config.getCheckByName(item);
 
                 if (check != null) {
                     check.setSilent(null, !check.isSilent(null, null));
                 }
-                open(player);
+                open(protocol);
             } else if (clickType.isShiftClick()) {
                 Check check = Config.getCheckByName(item);
 
                 if (check != null) {
                     ResearchEngine.resetData(check.hackType);
-                    player.getNative().closeInventory();
+                    protocol.bukkit.closeInventory();
                     ClickableMessage.sendURL(
-                            player.getNative(),
+                            protocol.bukkit,
                             Config.messages.getColorfulString("check_stored_data_delete_message"),
                             CommandExecution.support,
                             DiscordMemberCount.discordURL
@@ -100,17 +100,17 @@ public class ManageChecks extends InventoryMenu {
                 if (check != null) {
                     check.setPunish(null, !check.canPunish(null));
                 }
-                open(player);
+                open(protocol);
             }
         }
         return true;
     }
 
-    private void addCheck(SpartanPlayer player, HackType hackType) {
+    private void addCheck(SpartanProtocol protocol, HackType hackType) {
         Check check = hackType.getCheck();
         boolean enabled = check.isEnabled(null, null),
                 silent = check.isSilent(null, null),
-                bypassing = Permissions.isBypassing(player.getNative(), hackType),
+                bypassing = Permissions.isBypassing(protocol.bukkit, hackType),
                 punish = check.canPunish(null);
         String[] disabledDetections = CloudBase.getShownDisabledDetections(hackType);
         String enabledOption, silentOption, punishOption, colour, secondColour;
@@ -168,7 +168,7 @@ public class ManageChecks extends InventoryMenu {
         boolean enoughData = false;
 
         for (Check.DataType dataType : Check.DataType.values()) {
-            if (player.getExecutor(hackType).hasSufficientData(dataType)) {
+            if (protocol.getProfile().getExecutor(hackType).hasSufficientData(dataType)) {
                 enoughData = true;
                 break;
             }

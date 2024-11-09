@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.functionality.connection.cloud;
 
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
@@ -88,23 +88,19 @@ public class CloudBase {
         return false;
     }
 
-    public static void announce(SpartanPlayer player) {
-        if (Permissions.isStaff(player.getNative())) {
+    public static void announce(SpartanProtocol protocol) {
+        if (Permissions.isStaff(protocol.bukkit)) {
             SpartanBukkit.connectionThread.execute(() -> {
                 String[][] announcements = CloudConnections.getStaffAnnouncements();
 
                 if (announcements.length > 0) {
-                    List<SpartanPlayer> players = Permissions.getStaff();
-
-                    if (!players.isEmpty()) {
-                        for (String[] announcement : announcements) {
-                            if (AwarenessNotifications.canSend(
-                                    player.protocol.getUUID(),
-                                    "staff-announcement-" + announcement[0],
-                                    Integer.parseInt(announcement[2])
-                            )) {
-                                player.getNative().sendMessage(AwarenessNotifications.getNotification(announcement[1]));
-                            }
+                    for (String[] announcement : announcements) {
+                        if (AwarenessNotifications.canSend(
+                                protocol.getUUID(),
+                                "staff-announcement-" + announcement[0],
+                                Integer.parseInt(announcement[2])
+                        )) {
+                            protocol.bukkit.sendMessage(AwarenessNotifications.getNotification(announcement[1]));
                         }
                     }
                 }
@@ -257,25 +253,25 @@ public class CloudBase {
 
             // Separator
             SpartanBukkit.connectionThread.executeIfSyncElseHere(() -> {
-                List<SpartanPlayer> players = Permissions.getStaff();
+                List<SpartanProtocol> protocols = Permissions.getStaff();
 
-                if (!players.isEmpty()) {
+                if (!protocols.isEmpty()) {
                     String[][] announcements = CloudConnections.getStaffAnnouncements();
 
                     if (announcements.length > 0) {
                         for (String[] announcement : announcements) {
-                            for (SpartanPlayer p : players) {
+                            for (SpartanProtocol p : protocols) {
                                 if (AwarenessNotifications.canSend(
-                                        p.protocol.getUUID(),
+                                        p.getUUID(),
                                         "staff-announcement-" + announcement[0],
                                         Integer.parseInt(announcement[2])
                                 )) {
-                                    p.getNative().sendMessage(AwarenessNotifications.getNotification(announcement[1]));
+                                    p.bukkit.sendMessage(AwarenessNotifications.getNotification(announcement[1]));
                                 }
                             }
                         }
                     } else {
-                        for (SpartanPlayer p : players) {
+                        for (SpartanProtocol p : protocols) {
                             SpartanEdition.attemptNotifications(p);
                         }
                     }

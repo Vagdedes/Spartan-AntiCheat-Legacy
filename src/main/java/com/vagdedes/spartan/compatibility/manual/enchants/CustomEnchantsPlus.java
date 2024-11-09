@@ -12,7 +12,7 @@ public class CustomEnchantsPlus {
 
     public static boolean has(SpartanPlayer player) {
         if (Compatibility.CompatibilityType.CUSTOM_ENCHANTS_PLUS.isFunctional()) {
-            PlayerInventory inventory = player.getNative().getInventory();
+            PlayerInventory inventory = player.bukkit().getInventory();
 
             for (ItemStack armor : inventory.getArmorContents()) {
                 if (armor != null && has(armor)) {

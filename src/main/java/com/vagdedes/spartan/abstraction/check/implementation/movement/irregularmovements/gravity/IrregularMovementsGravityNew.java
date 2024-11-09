@@ -34,11 +34,11 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
 
     public void run() {
         if (true) return;
-        if (this.protocol().spartanPlayer != null) {
+        if (this.protocol().spartan != null) {
             SpartanProtocol p = this.protocol();
             boolean isOnGround = p.isOnGround();
             Location to = p.getLocation();
-            Location from = this.protocol().spartanPlayer.movement.getEventFromLocation().getBukkitLocation();
+            Location from = this.protocol().spartan.movement.getEventFromLocation().getBukkitLocation();
             if (to.getX() != from.getX() || to.getY() != from.getY() || to.getZ() != from.getZ()) {
                 double motion = to.getY() - from.getY();
                 double gravity = 0.08;
@@ -55,7 +55,7 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
                             this.setPredict(motion);
                         }
                     } else {
-                        playerMovement = this.protocol().spartanPlayer.movement;
+                        playerMovement = this.protocol().spartan.movement;
                         pr2 = playerMovement.motionY -= gravity;
                         pr2 *= 0.9800000190734863;
                         if (motion > pr2 && motion < 0.0) {
@@ -88,12 +88,12 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
                         }
                     }
                 } else {
-                    playerMovement = this.protocol().spartanPlayer.movement;
+                    playerMovement = this.protocol().spartan.movement;
                     playerMovement.motionY -= gravity;
-                    playerMovement = this.protocol().spartanPlayer.movement;
+                    playerMovement = this.protocol().spartan.movement;
                     playerMovement.motionY *= 0.9800000190734863;
-                    if (this.protocol().spartanPlayer.movement.motionY < -3.92) {
-                        this.protocol().spartanPlayer.movement.motionY = -3.92;
+                    if (this.protocol().spartan.movement.motionY < -3.92) {
+                        this.protocol().spartan.movement.motionY = -3.92;
                     }
 
                     this.slime = false;
@@ -130,7 +130,7 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
                 SpartanPotionEffect slowFalling;
                 double pr;
                 if (MultiVersion.isOrGreater(MCVersion.V1_9)) {
-                    slowFalling = this.protocol().spartanPlayer.getPotionEffect(PotionEffectType.LEVITATION, 0L);
+                    slowFalling = this.protocol().spartan.getPotionEffect(PotionEffectType.LEVITATION, 0L);
                     if (slowFalling != null || this.levitation > 0) {
                         if (slowFalling != null) {
                             this.levitation = 2;
@@ -155,7 +155,7 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
                 }
 
                 if (MultiVersion.isOrGreater(MCVersion.V1_13)) {
-                    slowFalling = this.protocol().spartanPlayer.getPotionEffect(PotionEffectType.SLOW_FALLING, 0L);
+                    slowFalling = this.protocol().spartan.getPotionEffect(PotionEffectType.SLOW_FALLING, 0L);
                     if (slowFalling != null || this.slowFalling > 0) {
                         if (slowFalling != null) {
                             this.slowFalling = 2;
@@ -177,7 +177,7 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
                     }
                 }
 
-                if (this.protocol().player.isFlying()) {
+                if (this.protocol().bukkit.isFlying()) {
                     this.setPredict(motion);
                 }
 
@@ -205,7 +205,7 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
                         }
 
                         this.cancel("simulation[y], " + alertBuilder);
-                        this.protocol().player.sendMessage("hacks: " + devTotal);
+                        this.protocol().bukkit.sendMessage("hacks: " + devTotal);
                     }
 
                     this.setPredict(motion);
@@ -230,9 +230,9 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
         double jumpPower = 0.42;
         SpartanPotionEffect jumpEffect = null;
         if (PotionEffectType.getByName("JUMP_BOOST") != null) {
-            jumpEffect = this.protocol().spartanPlayer.getPotionEffect(PotionEffectType.getByName("JUMP_BOOST"), 1L);
+            jumpEffect = this.protocol().spartan.getPotionEffect(PotionEffectType.getByName("JUMP_BOOST"), 1L);
         } else {
-            jumpEffect = this.protocol().spartanPlayer.getPotionEffect(PotionEffectType.getByName("JUMP"), 1L);
+            jumpEffect = this.protocol().spartan.getPotionEffect(PotionEffectType.getByName("JUMP"), 1L);
         }
 
         if (jumpEffect != null) {
@@ -251,11 +251,11 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
     }
 
     private double predictY() {
-        return this.protocol().spartanPlayer.movement.motionY;
+        return this.protocol().spartan.movement.motionY;
     }
 
     private void setPredict(double v) {
-        this.protocol().spartanPlayer.movement.motionY = v;
+        this.protocol().spartan.movement.motionY = v;
     }
 
     private boolean isOnWater(Location location) {
@@ -266,7 +266,7 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
         for(int dx = -1; dx <= 1; ++dx) {
             for(int dy = -1; dy <= 1; ++dy) {
                 for(int dz = -1; dz <= 1; ++dz) {
-                    Block block = this.getBlockAsync(new Location(this.protocol().spartanPlayer.getWorld(), x + (double)dx * 0.3, y + (double)dy * 0.5, z + (double)dz * 0.3));
+                    Block block = this.getBlockAsync(new Location(this.protocol().spartan.getWorld(), x + (double)dx * 0.3, y + (double)dy * 0.5, z + (double)dz * 0.3));
                     Material material = block != null ? block.getType() : null;
                     if (material != null && BlockUtils.isLiquidOrWaterLogged(block, true)) {
                         return true;
@@ -286,7 +286,7 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
         for(int dx = -1; dx <= 1; ++dx) {
             for(int dy = -1; dy <= 1; ++dy) {
                 for(int dz = -1; dz <= 1; ++dz) {
-                    Block block = this.getBlockAsync(new Location(this.protocol().spartanPlayer.getWorld(), x + (double)dx * 0.3, y + (double)dy * 0.5, z + (double)dz * 0.3));
+                    Block block = this.getBlockAsync(new Location(this.protocol().spartan.getWorld(), x + (double)dx * 0.3, y + (double)dy * 0.5, z + (double)dz * 0.3));
                     Material material = block != null ? block.getType() : null;
                     if (material != null && (BlockUtils.isSemiSolid(material) || BlockUtils.areSlimeBlocks(material) || BlockUtils.areHoneyBlocks(material))) {
                         return true;
@@ -306,7 +306,7 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
         for(int dx = -1; dx <= 1; ++dx) {
             for(int dy = -1; dy <= 1; ++dy) {
                 for(int dz = -1; dz <= 1; ++dz) {
-                    Block block = this.getBlockAsync(new Location(this.protocol().spartanPlayer.getWorld(), x + (double)dx * 0.3, y + (double)dy * 0.5, z + (double)dz * 0.3));
+                    Block block = this.getBlockAsync(new Location(this.protocol().spartan.getWorld(), x + (double)dx * 0.3, y + (double)dy * 0.5, z + (double)dz * 0.3));
                     Material material = block != null ? block.getType() : null;
                     if (material != null && (BlockUtils.areHoneyBlocks(material) || BlockUtils.areSlimeBlocks(material))) {
                         return true;
@@ -326,7 +326,7 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
         for(int dx = -1; dx <= 1; ++dx) {
             for(double dy = 1.0; dy <= 2.0; dy += 0.5) {
                 for(int dz = -1; dz <= 1; ++dz) {
-                    Block block = this.getBlockAsync(new Location(this.protocol().spartanPlayer.getWorld(), x + (double)dx * 0.3, y + dy, z + (double)dz * 0.3));
+                    Block block = this.getBlockAsync(new Location(this.protocol().spartan.getWorld(), x + (double)dx * 0.3, y + dy, z + (double)dz * 0.3));
                     Material material = block != null ? block.getType() : null;
                     if (material != null && (BlockUtils.isSemiSolid(material) || material.isSolid())) {
                         return true;

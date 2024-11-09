@@ -16,8 +16,8 @@ public class IrregularMovementsFoodSprint extends DetectionExecutor {
 
     void run() {
         if (this.protocol().isSprinting()) {
-            GameMode gameMode = this.protocol().player.getGameMode();
-            int food = this.protocol().player.getFoodLevel(),
+            GameMode gameMode = this.protocol().bukkit.getGameMode();
+            int food = this.protocol().bukkit.getFoodLevel(),
                     threshold = 6;
 
             if (food <= threshold
@@ -30,7 +30,7 @@ public class IrregularMovementsFoodSprint extends DetectionExecutor {
                                 + ", game-mode: " + gameMode.toString().toLowerCase().replace("_", "-")
                                 + ", food: " + food,
                         threshold / (double) food,
-                        this.protocol().spartanPlayer.movement.getDetectionLocation(),
+                        this.protocol().spartan.movement.getDetectionLocation(),
                         0,
                         true
                 );

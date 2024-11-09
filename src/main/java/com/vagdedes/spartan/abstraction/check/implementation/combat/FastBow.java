@@ -31,12 +31,12 @@ public class FastBow extends CheckExecutor {
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
         if (object instanceof EntityShootBowEvent) {
-            if (this.protocol().spartanPlayer.getItemInHand().getType() == Material.BOW) {
+            if (this.protocol().spartan.getItemInHand().getType() == Material.BOW) {
                 checkBowShots();
                 checkBowForce(((EntityShootBowEvent) object).getForce());
             }
         } else if (((PlayerInteractEvent) object).getAction() == Action.RIGHT_CLICK_AIR) {
-            PlayerInventory inventory = this.protocol().player.getInventory();
+            PlayerInventory inventory = this.protocol().bukkit.getInventory();
 
             if (inventory.getItemInHand().getType() == Material.BOW
                     && inventory.contains(Material.ARROW)) {

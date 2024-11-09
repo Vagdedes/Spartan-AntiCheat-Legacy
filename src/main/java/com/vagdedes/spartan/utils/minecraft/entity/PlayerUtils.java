@@ -138,7 +138,7 @@ public class PlayerUtils {
         if (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)) {
             return 0;
         }
-        ItemStack b = p.getNative().getInventory().getBoots();
+        ItemStack b = p.bukkit().getInventory().getBoots();
         return b != null ? b.getEnchantmentLevel(Enchantment.DEPTH_STRIDER) : 0;
     }
 
