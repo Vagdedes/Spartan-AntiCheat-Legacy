@@ -193,10 +193,9 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
                 if (this.protocol().bukkit.isFlying()
                     || this.protocol().bukkit.isGliding()) {
                     this.setPredict(motion);
+                    this.levitation = 3;
+                    this.levitationA = 2;
                 }
-
-                this.levitation = 2;
-                this.levitationA = 1;
                 if (!isOnGround) {
                     if (this.air == 1) {
                         if (motion < 0.0) {
@@ -239,7 +238,7 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
                             alertBuilder.deleteCharAt(0);
                         }
                         this.cancel("simulation[y], " + alertBuilder);
-                        //this.protocol().bukkit.sendMessage("hacks: " + devTotal);
+                        this.protocol().bukkit.sendMessage("hacks: " + devTotal);
                     }
 
                     this.setPredict(motion);
