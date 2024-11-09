@@ -3,12 +3,12 @@ package com.vagdedes.spartan.abstraction.protocol;
 import com.vagdedes.spartan.functionality.server.TPS;
 import org.bukkit.potion.PotionEffect;
 
-public class SpartanPotionEffect {
+public class ExtendedPotionEffect {
 
     public final PotionEffect bukkitEffect;
     private final long expiration;
 
-    public SpartanPotionEffect(PotionEffect effect) {
+    public ExtendedPotionEffect(PotionEffect effect) {
         this.bukkitEffect = effect;
         this.expiration = System.currentTimeMillis() + (effect.getDuration() * TPS.tickTime);
     }

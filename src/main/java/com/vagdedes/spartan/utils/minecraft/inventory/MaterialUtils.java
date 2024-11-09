@@ -1,6 +1,6 @@
 package com.vagdedes.spartan.utils.minecraft.inventory;
 
-import com.vagdedes.spartan.abstraction.protocol.SpartanPotionEffect;
+import com.vagdedes.spartan.abstraction.protocol.ExtendedPotionEffect;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanBlock;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
@@ -233,7 +233,7 @@ public class MaterialUtils {
             }
 
             // Separator
-            SpartanPotionEffect hasteEffect = protocol.spartan.getPotionEffect(PotionEffectUtils.FAST_DIGGING, 0L);
+            ExtendedPotionEffect hasteEffect = protocol.spartan.getPotionEffect(PotionEffectUtils.FAST_DIGGING, 0L);
 
             if (hasteEffect != null
                     && hasteEffect.isActive()) {
@@ -241,7 +241,7 @@ public class MaterialUtils {
             }
 
             // Separator
-            SpartanPotionEffect miningFatigueEffect = protocol.spartan.getPotionEffect(PotionEffectUtils.SLOW_DIGGING, 0);
+            ExtendedPotionEffect miningFatigueEffect = protocol.spartan.getPotionEffect(PotionEffectUtils.SLOW_DIGGING, 0);
 
             if (miningFatigueEffect != null
                     && miningFatigueEffect.isActive()) {

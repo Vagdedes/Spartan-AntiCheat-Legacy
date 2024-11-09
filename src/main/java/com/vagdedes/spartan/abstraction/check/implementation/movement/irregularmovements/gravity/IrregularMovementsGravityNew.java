@@ -2,8 +2,8 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.irregular
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
-import com.vagdedes.spartan.abstraction.protocol.SpartanPlayerMovement;
-import com.vagdedes.spartan.abstraction.protocol.SpartanPotionEffect;
+import com.vagdedes.spartan.abstraction.protocol.PlayerMovement;
+import com.vagdedes.spartan.abstraction.protocol.ExtendedPotionEffect;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.MultiVersion.MCVersion;
@@ -47,7 +47,7 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
                 this.ground = isOnGround ? this.ground + 1 : 0;
                 boolean isOnWater = this.isOnWater(p.getLocation());
                 double pr2;
-                SpartanPlayerMovement playerMovement;
+                PlayerMovement playerMovement;
                 if (isOnGround) {
                     if (this.ground != 1) {
                         this.setPredict(0.0);
@@ -127,7 +127,7 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
                     this.setPredict(motion);
                 }
 
-                SpartanPotionEffect slowFalling;
+                ExtendedPotionEffect slowFalling;
                 double pr;
                 if (MultiVersion.isOrGreater(MCVersion.V1_9)) {
                     slowFalling = this.protocol().spartan.getPotionEffect(PotionEffectType.LEVITATION, 0L);
@@ -228,7 +228,7 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
 
     private double jumpMotion() {
         double jumpPower = 0.42;
-        SpartanPotionEffect jumpEffect = null;
+        ExtendedPotionEffect jumpEffect = null;
         if (PotionEffectType.getByName("JUMP_BOOST") != null) {
             jumpEffect = this.protocol().spartan.getPotionEffect(PotionEffectType.getByName("JUMP_BOOST"), 1L);
         } else {

@@ -35,10 +35,10 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SpartanPlayer {
 
     final SpartanProtocol protocol;
-    private final Map<PotionEffectType, SpartanPotionEffect> potionEffects;
+    private final Map<PotionEffectType, ExtendedPotionEffect> potionEffects;
     public final Check.DataType dataType;
-    public final SpartanPlayerMovement movement;
-    public final SpartanPunishments punishments;
+    public final PlayerMovement movement;
+    public final PlayerPunishments punishments;
     public final PlayerTrackers trackers;
     public final PlayerClicks clicks;
 
@@ -73,8 +73,8 @@ public class SpartanPlayer {
         this.setStoredPotionEffects();
 
         this.clicks = new PlayerClicks();
-        this.movement = new SpartanPlayerMovement(this);
-        this.punishments = new SpartanPunishments(this);
+        this.movement = new PlayerMovement(this);
+        this.punishments = new PlayerPunishments(this);
     }
 
     public boolean isBedrockPlayer() {
@@ -287,7 +287,7 @@ public class SpartanPlayer {
                     protocol.spartan,
                     () -> {
                         for (PotionEffect effect : this.protocol.bukkit.getActivePotionEffects()) {
-                            this.potionEffects.put(effect.getType(), new SpartanPotionEffect(effect));
+                            this.potionEffects.put(effect.getType(), new ExtendedPotionEffect(effect));
                         }
                     }
             );
@@ -300,9 +300,9 @@ public class SpartanPlayer {
                 : this.protocol.bukkit.getActivePotionEffects();
     }
 
-    public SpartanPotionEffect getPotionEffect(PotionEffectType type, long lastActive) {
+    public ExtendedPotionEffect getPotionEffect(PotionEffectType type, long lastActive) {
         this.setStoredPotionEffects();
-        SpartanPotionEffect potionEffect = this.potionEffects.get(type);
+        ExtendedPotionEffect potionEffect = this.potionEffects.get(type);
 
         if (potionEffect != null
                 && potionEffect.timePassed() <= lastActive
@@ -315,7 +315,7 @@ public class SpartanPlayer {
 
     public boolean hasPotionEffect(PotionEffectType type, long lastActive) {
         this.setStoredPotionEffects();
-        SpartanPotionEffect potionEffect = this.potionEffects.get(type);
+        ExtendedPotionEffect potionEffect = this.potionEffects.get(type);
         return potionEffect != null
                 && potionEffect.timePassed() <= lastActive
                 && potionEffect.bukkitEffect.getType().equals(type);

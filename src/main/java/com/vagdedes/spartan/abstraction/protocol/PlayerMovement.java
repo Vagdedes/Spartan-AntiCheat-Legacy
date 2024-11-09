@@ -17,7 +17,7 @@ import org.bukkit.util.Vector;
 
 import java.util.*;
 
-public class SpartanPlayerMovement {
+public class PlayerMovement {
 
     private final SpartanPlayer parent;
     private Double
@@ -47,7 +47,7 @@ public class SpartanPlayerMovement {
     private Vector clampVector;
     public double motionY;
 
-    SpartanPlayerMovement(SpartanPlayer parent) {
+    PlayerMovement(SpartanPlayer parent) {
         this.parent = parent;
         this.lastLiquidMaterial = Material.AIR;
 

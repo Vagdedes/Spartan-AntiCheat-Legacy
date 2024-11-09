@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.utils.minecraft.entity;
 
 import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
-import com.vagdedes.spartan.abstraction.protocol.SpartanPotionEffect;
+import com.vagdedes.spartan.abstraction.protocol.ExtendedPotionEffect;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
@@ -296,7 +296,7 @@ public class PlayerUtils {
     // Potion Effects
 
     public static int getPotionLevel(SpartanPlayer entity, PotionEffectType potionEffectType) {
-        SpartanPotionEffect potionEffect = entity.getPotionEffect(
+        ExtendedPotionEffect potionEffect = entity.getPotionEffect(
                 potionEffectType,
                 handledPotionEffects.getOrDefault(potionEffectType, 0L)
         );

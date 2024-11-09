@@ -195,7 +195,7 @@ public class MCClient {
         double zM = Math.cos(yaw);
         if (!onGround) {
             { // air Y sim
-                SpartanPotionEffect levitation = null;
+                ExtendedPotionEffect levitation = null;
                 if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
                     levitation = this.p().spartan.getPotionEffect(PotionEffectType.LEVITATION, 0);
                 }
@@ -442,7 +442,7 @@ public class MCClient {
 
     public void jump() {
         float f = this.getJumpUpwardsMotion();
-        SpartanPotionEffect jumpEffect = null;
+        ExtendedPotionEffect jumpEffect = null;
         if (PotionEffectType.getByName("JUMP_BOOST") != null) {
             jumpEffect = this.p().spartan.getPotionEffect(PotionEffectType.getByName("JUMP_BOOST"), 1L);
         } else {

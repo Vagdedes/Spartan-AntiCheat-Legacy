@@ -6,7 +6,7 @@ import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
 import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
-import com.vagdedes.spartan.abstraction.protocol.SpartanPotionEffect;
+import com.vagdedes.spartan.abstraction.protocol.ExtendedPotionEffect;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanBlock;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
@@ -125,10 +125,10 @@ public class Speed extends CheckExecutor {
             yaw1move = radiYaw;
         }
         double rayDiff = RayUtils.calculateRayLines(lookRay, moveRay);
-        SpartanPotionEffect glideEffect = PlayerUtils.slowFall
+        ExtendedPotionEffect glideEffect = PlayerUtils.slowFall
                 ? this.protocol().spartan.getPotionEffect(PotionEffectType.SLOW_FALLING, 0)
                 : null;
-        SpartanPotionEffect levitationEffect = PlayerUtils.levitation
+        ExtendedPotionEffect levitationEffect = PlayerUtils.levitation
                 ? this.protocol().spartan.getPotionEffect(PotionEffectType.LEVITATION, 0)
                 : null;
 
@@ -215,14 +215,14 @@ public class Speed extends CheckExecutor {
         double m = (this.protocol().bukkit.getWalkSpeed() * 5);
         boolean solidBlockOnTop = RayUtils.onSolidBlock(this.protocol(), to.clone().add(0, 2, 0).bukkit());
         m += getMaxSpeedAmplifier();
-        SpartanPotionEffect dolphinEffect = PlayerUtils.dolphinsGrace
+        ExtendedPotionEffect dolphinEffect = PlayerUtils.dolphinsGrace
                 ? this.protocol().spartan.getPotionEffect(PotionEffectType.DOLPHINS_GRACE, 0)
                 : null;
-        SpartanPotionEffect speedEffect = this.protocol().spartan.getPotionEffect(PotionEffectType.SPEED, 0);
-        SpartanPotionEffect glideEffect = PlayerUtils.slowFall
+        ExtendedPotionEffect speedEffect = this.protocol().spartan.getPotionEffect(PotionEffectType.SPEED, 0);
+        ExtendedPotionEffect glideEffect = PlayerUtils.slowFall
                 ? this.protocol().spartan.getPotionEffect(PotionEffectType.SLOW_FALLING, 0)
                 : null;
-        SpartanPotionEffect levitationEffect = PlayerUtils.levitation
+        ExtendedPotionEffect levitationEffect = PlayerUtils.levitation
                 ? this.protocol().spartan.getPotionEffect(PotionEffectType.LEVITATION, 0)
                 : null;
         if (PlayerUtils.soulSpeed && inventory.getBoots() != null) {

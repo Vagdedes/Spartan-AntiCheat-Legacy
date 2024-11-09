@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.abstraction.check.implementation.movement.simulation.modules.engine;
 
 
-import com.vagdedes.spartan.abstraction.protocol.SpartanPotionEffect;
+import com.vagdedes.spartan.abstraction.protocol.ExtendedPotionEffect;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import org.bukkit.potion.PotionEffectType;
 
@@ -10,7 +10,7 @@ public class Attributes {
     public static Object getAttributeValue(Attribute attribute, SpartanProtocol protocol) {
         if (attribute.equals(Attribute.MOVEMENT_SPEED)) {
             float d = 0.1F * (protocol.bukkit.getWalkSpeed() * 5);
-            SpartanPotionEffect speedEffect = protocol.spartan.getPotionEffect(PotionEffectType.SPEED, 0);
+            ExtendedPotionEffect speedEffect = protocol.spartan.getPotionEffect(PotionEffectType.SPEED, 0);
             if (protocol.isSprinting()) {
                 d *= 1.3F;
             }

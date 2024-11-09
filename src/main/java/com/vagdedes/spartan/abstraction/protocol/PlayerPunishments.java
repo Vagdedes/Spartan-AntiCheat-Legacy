@@ -11,12 +11,12 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
-public class SpartanPunishments {
+public class PlayerPunishments {
 
     private final SpartanPlayer parent;
     private long kickCooldown, warnCooldown;
 
-    public SpartanPunishments(SpartanPlayer player) {
+    public PlayerPunishments(SpartanPlayer player) {
         this.parent = player;
     }
 
