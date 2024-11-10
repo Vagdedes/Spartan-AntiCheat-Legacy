@@ -114,7 +114,7 @@ public abstract class DetectionExecutor extends CheckDetection {
                     k -> new TreeMap<>()
             );
 
-            if (map.size() == 1_024) {
+            if (map.size() == 2_048) {
                 Iterator<Long> iterator = map.keySet().iterator();
                 iterator.next();
                 iterator.remove();

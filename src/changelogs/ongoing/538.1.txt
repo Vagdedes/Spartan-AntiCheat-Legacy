@@ -1,1 +1,2 @@
 [#] Fixed an ImpossibleActions detection error caused by block face bukkit object.
+[#] Increased the size of data Spartan can hold due to recent object optimizations.
