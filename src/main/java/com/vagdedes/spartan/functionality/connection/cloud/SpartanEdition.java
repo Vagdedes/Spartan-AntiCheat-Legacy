@@ -22,7 +22,7 @@ public class SpartanEdition {
             || Bukkit.getMotd().contains(Register.plugin.getName())
             ? Check.DataType.JAVA
             : Check.DataType.BEDROCK,
-            oppositeType = currentType == Check.DataType.JAVA
+            alternativeType = currentType == Check.DataType.JAVA
                     ? Check.DataType.BEDROCK
                     : Check.DataType.JAVA;
 
@@ -63,7 +63,7 @@ public class SpartanEdition {
             }
             if (!alternativeVersion
                     && CloudConnections.ownsProduct(
-                    getProductID(oppositeType)
+                    getProductID(alternativeType)
             )) {
                 alternativeVersion = true;
             }
@@ -72,7 +72,7 @@ public class SpartanEdition {
                     && !CloudConnections.ownsProduct("26")) {
                 alternativeVersion = false;
             }
-            hasAccount = !JarVerification.isValid(false) || CloudConnections.hasAccount();
+            hasAccount = !CloudBase.hasToken() || CloudConnections.hasAccount();
         });
     }
 
@@ -96,18 +96,27 @@ public class SpartanEdition {
         return getProductID(
                 currentVersion
                         ? currentType
-                        : (alternativeVersion ? oppositeType : null)
+                        : (alternativeVersion ? alternativeType : null)
         );
     }
 
-    public static String getProductName() {
-        if (currentVersion && alternativeVersion) {
-            return "Spartan AntiCheat: Java & Bedrock";
-        } else if (currentVersion || alternativeVersion) {
-            return "Spartan AntiCheat: " + currentType + " (" + oppositeType + " Missing)";
-        } else {
-            return "Spartan AntiCheat";
+    public static String getProductName(String context) {
+        String lastColor = null;
+        boolean color = false;
+
+        for (char c : context.toCharArray()) {
+            if (c == '§') {
+                color = true;
+            } else if (color) {
+                lastColor = Character.toString(c);
+                color = false;
+            }
         }
+        return "Spartan: §a"
+                + (currentVersion ? "§a" : "§c") + currentType
+                + "§8/"
+                + (alternativeVersion ? "§a" : "§c") + alternativeType
+                + (lastColor != null ? "§" + lastColor : "");
     }
 
     // Notifications
@@ -120,11 +129,11 @@ public class SpartanEdition {
     public static void attemptNotifications(SpartanProtocol protocol) {
         Check.DataType[] missingDetections =
                 !currentVersion && !alternativeVersion
-                        ? new Check.DataType[]{currentType, oppositeType}
+                        ? new Check.DataType[]{currentType, alternativeType}
                         : !currentVersion
                         ? new Check.DataType[]{currentType}
                         : !alternativeVersion
-                        ? new Check.DataType[]{oppositeType}
+                        ? new Check.DataType[]{alternativeType}
                         : new Check.DataType[]{};
 
         if (missingDetections.length == Check.DataType.values().length) {
