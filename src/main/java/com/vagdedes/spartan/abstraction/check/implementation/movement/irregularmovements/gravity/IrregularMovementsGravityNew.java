@@ -462,7 +462,8 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
                 for(int dz = -1; dz <= 1; ++dz) {
                     Block block = this.getBlockAsync(new Location(this.protocol().spartan.getWorld(), x + (double)dx * 0.3, y + (double)dy * 0.5, z + (double)dz * 0.3));
                     Material material = block != null ? block.getType() : null;
-                    if (material != null && (BlockUtils.areHoneyBlocks(material) || BlockUtils.areSlimeBlocks(material))) {
+                    if (material != null && (BlockUtils.areHoneyBlocks(material)
+                                    || BlockUtils.areBeds(material) || BlockUtils.areSlimeBlocks(material))) {
                         return true;
                     }
                 }
