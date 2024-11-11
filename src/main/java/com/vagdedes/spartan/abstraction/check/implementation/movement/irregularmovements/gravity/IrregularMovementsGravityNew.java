@@ -10,16 +10,21 @@ import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.MultiVersion.MCVersion;
 import com.vagdedes.spartan.listeners.bukkit.standalone.chunks.Event_Chunks;
+import com.vagdedes.spartan.utils.math.MathHelper;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 public class IrregularMovementsGravityNew extends DetectionExecutor {
@@ -229,62 +234,60 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
 
                 //this.protocol().bukkit.sendMessage("m: " + slimeEvent + " " + motion + " p: " + this.predictY());
 
-                Bukkit.getScheduler().runTask(Register.plugin, () -> {
-                    boolean boat = false;
-                    List<Entity> nearbyEntities = this.protocol().bukkit.getNearbyEntities(2, 2, 2);
-                    for (Entity vehicle : nearbyEntities) {
-                        if (vehicle.getType().toString().toLowerCase().contains("boat")) {
-                            boat = true;
-                        }
+                boolean boat = false;
+                List<Entity> nearbyEntities = this.getEntitiesAroundPoint(to, 2);
+                for (Entity vehicle : nearbyEntities) {
+                    if (vehicle.getType().toString().toLowerCase().contains("boat")) {
+                        boat = true;
                     }
-                    if (this.abs(this.abs(motion) - this.abs(this.predictY())) > 0.005
-                                    && boat && motion < 0.6 && motion > 0)
+                }
+                if (this.abs(this.abs(motion) - this.abs(this.predictY())) > 0.005
+                                && boat && motion < 0.6 && motion > 0)
+                    this.setPredict(motion);
+
+                if (this.abs(this.abs(motion) - this.abs(this.predictY())) > 0.005
+                                && this.protocol().spartan.getVehicle() != null) {
+                    Entity v = this.protocol().spartan.getVehicle();
+                    boolean isJumpingEntity = (v.getName().toLowerCase().contains("horse")
+                                    || v.getName().toLowerCase().contains("donkey")
+                                    || v.getName().toLowerCase().contains("mule")
+                                    || v.getName().toLowerCase().contains("llama"));
+
+                    if (this.isOnSolidGround(to) && this.abs(motion) <= ((isJumpingEntity || boat) ? 1.0 : 0.3)) {
                         this.setPredict(motion);
-
-                    if (this.abs(this.abs(motion) - this.abs(this.predictY())) > 0.005
-                                    && this.protocol().spartan.getVehicle() != null) {
-                        Entity v = this.protocol().spartan.getVehicle();
-                        boolean isJumpingEntity = (v.getName().toLowerCase().contains("horse")
-                                        || v.getName().toLowerCase().contains("donkey")
-                                        || v.getName().toLowerCase().contains("mule")
-                                        || v.getName().toLowerCase().contains("llama"));
-
-                        if (this.isOnSolidGround(to) && this.abs(motion) <= ((isJumpingEntity || boat) ? 1.0 : 0.3)) {
-                            this.setPredict(motion);
-                        } else if (!this.isOnSolidGround(to)
-                                        && motion < this.predictY() / 2) {
-                            this.setPredict(motion);
-                        }
+                    } else if (!this.isOnSolidGround(to)
+                                    && motion < this.predictY() / 2) {
+                        this.setPredict(motion);
                     }
+                }
 
-                    double devTotal = this.abs(this.abs(motion) - this.abs(this.predictY()));
-                    if (devTotal > 0.009) {
-                        if (this.protocol().spartan.trackers.has(
-                                        PlayerTrackers.TrackerType.VEHICLE, "exit_tp")
-                                        && devTotal < 1.0) {
-                            this.setPredict(0.0);
-                        } else {
-                            this.vl += devTotal;
-                            if (this.vl > 0.09) {
-                                StringBuilder alertBuilder = new StringBuilder(String.valueOf(RayUtils.scaleVal(devTotal, 6.0)));
-                                if (devTotal < 1.0) {
-                                    alertBuilder.deleteCharAt(0);
-                                }
-                                this.cancel("simulation[y], " + alertBuilder);
-                                //this.protocol().bukkit.sendMessage("hacks: " + devTotal);
-                            }
-
-                            this.setPredict(motion);
-                            this.vl /= 1.3;
-                        }
+                double devTotal = this.abs(this.abs(motion) - this.abs(this.predictY()));
+                if (devTotal > 0.009) {
+                    if (this.protocol().spartan.trackers.has(
+                                    PlayerTrackers.TrackerType.VEHICLE, "exit_tp")
+                                    && devTotal < 1.0) {
+                        this.setPredict(0.0);
                     } else {
-                        ++this.topReset;
-                        this.vl /= 1.01;
-                        if (this.topReset == 48) {
-                            this.topReset = 0;
+                        this.vl += devTotal;
+                        if (this.vl > 0.09) {
+                            StringBuilder alertBuilder = new StringBuilder(String.valueOf(RayUtils.scaleVal(devTotal, 6.0)));
+                            if (devTotal < 1.0) {
+                                alertBuilder.deleteCharAt(0);
+                            }
+                            this.cancel("simulation[y], " + alertBuilder);
+                            //this.protocol().bukkit.sendMessage("hacks: " + devTotal);
                         }
+
+                        this.setPredict(motion);
+                        this.vl /= 1.3;
                     }
-                });
+                } else {
+                    ++this.topReset;
+                    this.vl /= 1.01;
+                    if (this.topReset == 48) {
+                        this.topReset = 0;
+                    }
+                }
             }
             slime0Tick = (this.isOnSlimeWide(to) || this.isOnSlimeWide(from));
         }
@@ -341,6 +344,25 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
 
     private void setPredict(double v) {
         this.protocol().spartan.movement.motionY = v;
+    }
+
+    private List<Entity> getEntitiesAroundPoint(Location location, double radius) {
+        List<Entity> entities = new ArrayList<>();
+        World world = location.getWorld();
+        int smallX = MathHelper.floor_double((location.getX() - radius) / 16.0D);
+        int bigX = MathHelper.floor_double((location.getX() + radius) / 16.0D);
+        int smallZ = MathHelper.floor_double((location.getZ() - radius) / 16.0D);
+        int bigZ = MathHelper.floor_double((location.getZ() + radius) / 16.0D);
+
+        for (int x = smallX; x <= bigX; x++) {
+            for (int z = smallZ; z <= bigZ; z++) {
+                if (world.isChunkLoaded(x, z)) {
+                    entities.addAll(Arrays.asList(world.getChunkAt(x, z).getEntities())); // Add all entities from this chunk to the list
+                }
+            }
+        }
+        entities.removeIf(entity -> entity.getLocation().distanceSquared(location) > radius * radius);
+        return entities;
     }
 
     private boolean isOnWater(Location location) {
