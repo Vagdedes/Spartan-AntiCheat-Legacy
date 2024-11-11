@@ -318,7 +318,6 @@ public abstract class DetectionExecutor extends CheckDetection {
 
     private void punish() {
         Check check = hackType.getCheck();
-
         if (check.canPunish(this.protocol().spartan.dataType)) {
             List<String> commands = check.getPunishmentCommands();
 
@@ -408,7 +407,6 @@ public abstract class DetectionExecutor extends CheckDetection {
                 damage
         );
         CancelCause disableCause = this.executor.getDisableCause();
-
         if (disableCause == null
                 || disableCause.hasExpired()
                 || !disableCause.pointerMatches(information)) {
@@ -447,6 +445,7 @@ public abstract class DetectionExecutor extends CheckDetection {
                                 || !silentCause.pointerMatches(information))
                                 && this.hasSufficientData(this.protocol().spartan.dataType)
                                 && this.surpassedProbability(this.protocol().spartan.dataType, PlayerEvidence.preventionProbability);
+
             };
 
             if (!event || SpartanBukkit.isSynchronised()) {

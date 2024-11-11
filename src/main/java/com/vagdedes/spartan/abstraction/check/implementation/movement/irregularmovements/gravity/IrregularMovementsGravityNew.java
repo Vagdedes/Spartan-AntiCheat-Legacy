@@ -1,6 +1,5 @@
 package com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.gravity;
 
-import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.protocol.ExtendedPotionEffect;
@@ -13,7 +12,6 @@ import com.vagdedes.spartan.listeners.bukkit.standalone.chunks.Event_Chunks;
 import com.vagdedes.spartan.utils.math.MathHelper;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -24,7 +22,6 @@ import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 public class IrregularMovementsGravityNew extends DetectionExecutor {
@@ -33,7 +30,7 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
     private int levitation = 0, glideBlocks = 0, climbBlocks = 0,
                 slowFalling = 0, levitationA = 0, slowFallingA = 0;
     private boolean slime = false, slime0Tick = false, trident = false;
-    private int slimePunch = 0;
+    private int slimePunch = 0, sub = 0;
     private double vl = 0.0;
     private double fallDistance = 0.0;
 
@@ -139,11 +136,17 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
 
                 if (dev1 > 0.01 && isOnWater && motion > -3.92 && motion < 0.41) {
                     this.setPredict(motion);
+                    this.sub = 3;
                 }
 
                 if (this.abs(this.abs(motion)
                                 - this.abs(this.predictY())) > 0.01
                                 && this.trident && motion < 4.2) {
+                    this.setPredict(motion);
+                }
+
+                if (this.sub > 0 && this.abs(this.abs(motion) - this.abs(this.predictY())) < 0.14) {
+                    this.sub--;
                     this.setPredict(motion);
                 }
 
@@ -219,9 +222,9 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
 
                 double devPreTotal2 = this.abs(this.abs(motion) - this.abs(this.predictY()));
 
-                if (climbBlocks > 0 && devPreTotal2 > 0.001 && motion < 0.118 && motion > -0.16) {
+                if (this.climbBlocks > 0 && devPreTotal2 > 0.001 && motion < 0.118 && motion > -0.16) {
                     this.setPredict(motion);
-                    climbBlocks--;
+                    this.climbBlocks--;
                 } else if (devPreTotal2 > 0.001 && motion < 0.118 && motion > -0.16 && isNearClimbBlocks(to)) {
                     this.setPredict(motion);
                     this.climbBlocks = 2;

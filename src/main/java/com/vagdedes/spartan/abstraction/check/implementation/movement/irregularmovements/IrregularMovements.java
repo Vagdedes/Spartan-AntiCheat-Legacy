@@ -79,6 +79,7 @@ public class IrregularMovements extends CheckExecutor {
             gravity.trident();
         } else {
             gravity.teleport();
+            baritone.teleport();
             this.teleport = System.currentTimeMillis()
                             + (AlgebraUtils.integerCeil(TPS.maximum / 2.0) * TPS.tickTime);
         }

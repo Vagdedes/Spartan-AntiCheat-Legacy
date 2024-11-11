@@ -32,7 +32,9 @@ public class IrregularMovementsBaritone extends DetectionExecutor {
                 yawMoved += (Math.abs(l.getPitch()) > 89) ? 0 : (deltaPitch == 0.0F) ? deltaYaw : -yawMoved;
                 yawMoved = (float) RayUtils.scaleVal(yawMoved, 2);
                 if (yawMoved > 45) {
-                    punish(3, "type: baritone[rotation], euler-y-total: " + yawMoved);
+                    vl += 3;
+                    if (vl > 14)
+                        punish(3, "type: baritone[rotation], euler-y-total: " + yawMoved);
                 }
                 //player.getInstance().sendMessage(jiffDeltaYaw + " " + jiffDeltaPitch);
             }
@@ -40,6 +42,10 @@ public class IrregularMovementsBaritone extends DetectionExecutor {
             oldV2 = v2;
             oldDeltaMap = deltaMap;
         }
+    }
+
+    void teleport() {
+        this.yawMoved = 0;
     }
 
     private void punish(int v, String s) {
