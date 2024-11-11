@@ -28,7 +28,7 @@ public class SpartanProtocol {
     private int hashPosBuffer;
     public int rightClickCounter;
     public boolean mutateTeleport, sprinting, sneaking, vehicleStatus;
-    public boolean loaded, simulationFlag, teleported;
+    public boolean loaded, simulationFlag, teleported, pistonHandle;
     private Location location;
     public Location simulationStartPoint;
     private PlayerProfile profile;
@@ -82,6 +82,7 @@ public class SpartanProtocol {
         this.axisMatrixCache = new HashSet<>();
         this.checkBoundData = null;
         this.oldBlockEvent = null;
+        this.pistonHandle = false;
 
         this.setProfile(ResearchEngine.getPlayerProfile(this, false));
     }

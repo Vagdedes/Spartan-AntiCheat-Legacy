@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.listeners.protocol;
 
 import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
@@ -9,6 +10,7 @@ import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.listeners.bukkit.Event_Velocity;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.util.Vector;
@@ -19,7 +21,7 @@ public class Packet_Velocity extends PacketAdapter {
     public Packet_Velocity() {
         super(
                 Register.plugin,
-                ListenerPriority.NORMAL,
+                ListenerPriority.MONITOR,
                 PacketType.Play.Server.ENTITY_VELOCITY
         );
     }
@@ -34,8 +36,8 @@ public class Packet_Velocity extends PacketAdapter {
         }
         PacketContainer packet = event.getPacket();
         int id = packet.getIntegers().getValues().get(0);
-
         if (protocol.spartan.getEntityId() == id) {
+
             double x = packet.getIntegers().read(1).doubleValue() / 8000.0D,
                     y = packet.getIntegers().read(2).doubleValue() / 8000.0D,
                     z = packet.getIntegers().read(3).doubleValue() / 8000.0D;

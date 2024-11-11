@@ -35,6 +35,7 @@ public class TridentUse {
                         }
 
                         p.spartan.getExecutor(Enums.HackType.Speed).handle(false, level);
+                        p.spartan.getExecutor(Enums.HackType.IrregularMovements).handle(false, level);
                     }
                     break;
                 }

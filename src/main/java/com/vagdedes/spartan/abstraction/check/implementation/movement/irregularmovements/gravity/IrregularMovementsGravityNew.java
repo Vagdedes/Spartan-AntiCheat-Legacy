@@ -1,33 +1,34 @@
 package com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.gravity;
 
+import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.protocol.ExtendedPotionEffect;
 import com.vagdedes.spartan.abstraction.protocol.PlayerMovement;
+import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.MultiVersion.MCVersion;
 import com.vagdedes.spartan.listeners.bukkit.standalone.chunks.Event_Chunks;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
 import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.List;
+
 public class IrregularMovementsGravityNew extends DetectionExecutor {
-    private int air = 0;
-    private int ground = 0;
-    private int top = 0;
-    private int topReset = 0;
-    private int levitation = 0;
-    private int glideBlocks = 0;
-    private int climbBlocks = 0;
-    private int slowFalling = 0;
-    private int levitationA = 0;
-    private int slowFallingA = 0;
-    private boolean slime = false;
+    private int air = 0, ground = 0;
+    private int top = 0, topReset = 0;
+    private int levitation = 0, glideBlocks = 0, climbBlocks = 0,
+                slowFalling = 0, levitationA = 0, slowFallingA = 0;
+    private boolean slime = false, slime0Tick = false, trident = false;
+    private int slimePunch = 0;
     private double vl = 0.0;
     private double fallDistance = 0.0;
 
@@ -36,13 +37,17 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
     }
 
     public void run() {
-        if (true) return;
+       // if (true) return;
         if (this.protocol().spartan != null) {
             SpartanProtocol p = this.protocol();
             boolean isOnGround = p.isOnGround();
             Location to = p.getLocation();
             Location from = this.protocol().spartan.movement.getEventFromLocation().bukkit();
-            if (to.getX() != from.getX() || to.getY() != from.getY() || to.getZ() != from.getZ()) {
+            boolean slimeEvent = (p.pistonHandle && this.slime0Tick);
+            if (slimeEvent) slimePunch = 3;
+            p.pistonHandle = false;
+            if (to.getX() != from.getX() || to.getY() != from.getY() || to.getZ() != from.getZ()
+                            || to.getYaw() != from.getYaw() || to.getPitch() != from.getPitch()) {
                 double motion = to.getY() - from.getY();
                 double gravity = 0.08;
                 double jumpStartMotionY = this.jumpMotion();
@@ -101,21 +106,12 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
                     if (this.protocol().spartan.movement.motionY < -3.92) {
                         this.protocol().spartan.movement.motionY = -3.92;
                     }
-
                     this.slime = false;
                 }
 
                 pr2 = this.abs(this.abs(motion) - this.abs(this.predictY()));
                 if (!this.protocol().claimedVeloGravity.isEmpty() && pr2 > 0.001) {
-                    PlayerVelocityEvent claimed = null;
-                    for (PlayerVelocityEvent velo : this.protocol().claimedVeloGravity) {
-                        if ((this.abs(motion) - this.abs(velo.getVelocity().getY()) < 0.05)) {
-                            this.setPredict(velo.getVelocity().getY());
-                            claimed = velo;
-                            break;
-                        }
-                    }
-                    if (claimed != null) this.protocol().claimedVeloGravity.remove(claimed);
+                    this.velocity(motion);
                 }
 
                 double dev1 = this.abs(this.abs(motion) - this.abs(this.predictY()));
@@ -140,6 +136,12 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
                     this.setPredict(motion);
                 }
 
+                if (this.abs(this.abs(motion)
+                                - this.abs(this.predictY())) > 0.01
+                                && this.trident && motion < 4.2) {
+                    this.setPredict(motion);
+                }
+
                 ExtendedPotionEffect slowFalling;
                 double pr;
                 if (MultiVersion.isOrGreater(MCVersion.V1_9)) {
@@ -149,16 +151,12 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
                             this.levitation = 2;
                             pr = 0.05 * (double)slowFalling.bukkitEffect.getAmplifier() + 1.0;
                             this.levitationA = slowFalling.bukkitEffect.getAmplifier() + 1;
-                            if (motion < pr && motion >= 0.0) {
-                                this.setPredict(motion);
-                                this.fallDistance = 0.0;
-                            }
                         } else {
                             pr = 0.05 * (double)this.levitationA;
-                            if (motion < pr && motion >= 0.0) {
-                                this.setPredict(motion);
-                                this.fallDistance = 0.0;
-                            }
+                        }
+                        if (motion < pr && motion >= 0.0) {
+                            this.setPredict(motion);
+                            this.fallDistance = 0.0;
                         }
 
                         if (this.levitation > 0) {
@@ -174,14 +172,11 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
                             this.slowFalling = 2;
                             pr = 0.02 * (double)slowFalling.bukkitEffect.getAmplifier() + 0.5;
                             this.slowFallingA = slowFalling.bukkitEffect.getAmplifier() + 1;
-                            if (motion < pr && motion < 0.0) {
-                                this.setPredict(motion);
-                            }
                         } else {
                             pr = 0.02 * (double)this.slowFallingA + 0.5;
-                            if (motion < pr && motion < 0.0) {
-                                this.setPredict(motion);
-                            }
+                        }
+                        if (motion < pr && motion < 0.0) {
+                            this.setPredict(motion);
                         }
 
                         if (this.slowFalling > 0) {
@@ -194,7 +189,7 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
                     || this.protocol().bukkit.isGliding()) {
                     this.setPredict(motion);
                     this.levitation = 3;
-                    this.levitationA = 2;
+                    this.levitationA = 3;
                 }
                 if (!isOnGround) {
                     if (this.air == 1) {
@@ -227,41 +222,102 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
                     this.climbBlocks = 2;
                 }
 
-                //this.protocol().bukkit.sendMessage("m: " + motion + " p: " + this.predictY());
-
-                double devTotal = this.abs(this.abs(motion) - this.abs(this.predictY()));
-                if (devTotal > 0.009) {
-                    this.vl += devTotal;
-                    if (this.vl > 0.09) {
-                        StringBuilder alertBuilder = new StringBuilder(String.valueOf(RayUtils.scaleVal(devTotal, 6.0)));
-                        if (devTotal < 1.0) {
-                            alertBuilder.deleteCharAt(0);
-                        }
-                        this.cancel("simulation[y], " + alertBuilder);
-                        this.protocol().bukkit.sendMessage("hacks: " + devTotal);
-                    }
-
+                if (this.slimePunch > 0 && motion > 0 && motion < 1.52) {
                     this.setPredict(motion);
-                    this.vl /= 1.3;
-                } else {
-                    ++this.topReset;
-                    this.vl /= 1.01;
-                    if (this.topReset == 48) {
-                        this.topReset = 0;
-                    }
+                    this.slimePunch--;
                 }
 
+                //this.protocol().bukkit.sendMessage("m: " + slimeEvent + " " + motion + " p: " + this.predictY());
+
+                Bukkit.getScheduler().runTask(Register.plugin, () -> {
+                    boolean boat = false;
+                    List<Entity> nearbyEntities = this.protocol().bukkit.getNearbyEntities(2, 2, 2);
+                    for (Entity vehicle : nearbyEntities) {
+                        if (vehicle.getType().toString().toLowerCase().contains("boat")) {
+                            boat = true;
+                        }
+                    }
+                    if (this.abs(this.abs(motion) - this.abs(this.predictY())) > 0.005
+                                    && boat && motion < 0.6 && motion > 0)
+                        this.setPredict(motion);
+
+                    if (this.abs(this.abs(motion) - this.abs(this.predictY())) > 0.005
+                                    && this.protocol().spartan.getVehicle() != null) {
+                        Entity v = this.protocol().spartan.getVehicle();
+                        boolean isJumpingEntity = (v.getName().toLowerCase().contains("horse")
+                                        || v.getName().toLowerCase().contains("donkey")
+                                        || v.getName().toLowerCase().contains("mule")
+                                        || v.getName().toLowerCase().contains("llama"));
+
+                        if (this.isOnSolidGround(to) && this.abs(motion) <= ((isJumpingEntity || boat) ? 1.0 : 0.3)) {
+                            this.setPredict(motion);
+                        } else if (!this.isOnSolidGround(to)
+                                        && motion < this.predictY() / 2) {
+                            this.setPredict(motion);
+                        }
+                    }
+
+                    double devTotal = this.abs(this.abs(motion) - this.abs(this.predictY()));
+                    if (devTotal > 0.009) {
+                        if (this.protocol().spartan.trackers.has(
+                                        PlayerTrackers.TrackerType.VEHICLE, "exit_tp")
+                                        && devTotal < 1.0) {
+                            this.setPredict(0.0);
+                        } else {
+                            this.vl += devTotal;
+                            if (this.vl > 0.09) {
+                                StringBuilder alertBuilder = new StringBuilder(String.valueOf(RayUtils.scaleVal(devTotal, 6.0)));
+                                if (devTotal < 1.0) {
+                                    alertBuilder.deleteCharAt(0);
+                                }
+                                this.cancel("simulation[y], " + alertBuilder);
+                                //this.protocol().bukkit.sendMessage("hacks: " + devTotal);
+                            }
+
+                            this.setPredict(motion);
+                            this.vl /= 1.3;
+                        }
+                    } else {
+                        ++this.topReset;
+                        this.vl /= 1.01;
+                        if (this.topReset == 48) {
+                            this.topReset = 0;
+                        }
+                    }
+                });
+            }
+            slime0Tick = (this.isOnSlimeWide(to) || this.isOnSlimeWide(from));
+        }
+    }
+
+    private void velocity(double motion) {
+        PlayerVelocityEvent claimed = null;
+        for (PlayerVelocityEvent velo : this.protocol().claimedVeloGravity) {
+            if (veloIsValid(motion, velo.getVelocity().getY())) {
+                this.setPredict(motion);
+                claimed = velo;
+                break;
             }
         }
+        if (claimed != null) this.protocol().claimedVeloGravity.remove(claimed);
+    }
+
+    private boolean veloIsValid(double motion, double velo) {
+        return abs(this.abs(motion) - this.abs(velo)) < 0.08;
     }
 
     public void teleport() {
         this.air = 0;
     }
+    public void trident() {
+        this.trident = true;
+        this.levitation = 13;
+        this.levitationA = 4;
+    }
 
     private double jumpMotion() {
         double jumpPower = 0.42;
-        ExtendedPotionEffect jumpEffect = null;
+        ExtendedPotionEffect jumpEffect;
         if (PotionEffectType.getByName("JUMP_BOOST") != null) {
             jumpEffect = this.protocol().spartan.getPotionEffect(PotionEffectType.getByName("JUMP_BOOST"), 1L);
         } else {
@@ -273,10 +329,6 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
         }
 
         return jumpPower;
-    }
-
-    private double r(double v) {
-        return RayUtils.scaleVal(v, 1.0);
     }
 
     private double abs(double v) {
@@ -315,7 +367,6 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
         double x = location.getX();
         double y = location.getY() - 0.1;
         double z = location.getZ();
-
         for(int dx = -1; dx <= 1; ++dx) {
             for(int dy = -1; dy <= 1; ++dy) {
                 for(int dz = -1; dz <= 1; ++dz) {
@@ -331,7 +382,6 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
                 }
             }
         }
-
         return false;
     }
 
@@ -380,7 +430,6 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
         return false;
     }
 
-
     private boolean isOnSlime(Location location) {
         double x = location.getX();
         double y = location.getY() - 0.1;
@@ -397,7 +446,25 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
                 }
             }
         }
+        return false;
+    }
 
+    private boolean isOnSlimeWide(Location location) {
+        double x = location.getX();
+        double y = location.getY() - 0.1;
+        double z = location.getZ();
+
+        for(int dx = -2; dx <= 2; ++dx) {
+            for(int dy = -2; dy <= 2; ++dy) {
+                for(int dz = -2; dz <= 2; ++dz) {
+                    Block block = this.getBlockAsync(new Location(this.protocol().spartan.getWorld(), x + (double)dx, y + (double)dy, z + (double)dz));
+                    Material material = block != null ? block.getType() : null;
+                    if (material != null && (BlockUtils.areSlimeBlocks(material))) {
+                        return true;
+                    }
+                }
+            }
+        }
         return false;
     }
 
@@ -418,6 +485,35 @@ public class IrregularMovementsGravityNew extends DetectionExecutor {
             }
         }
 
+        return false;
+    }
+
+    private boolean isOnSolidGround(Location location) {
+        double x = location.getX(),
+                        y = location.getY() - 0.1,
+                        z = location.getZ();
+
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dy = -1; dy <= 1; dy++) {
+                for (int dz = -1; dz <= 1; dz++) {
+                    Block block = getBlockAsync(
+                                    new Location(
+                                                    this.protocol().spartan.getWorld(),
+                                                    x + dx,
+                                                    y + dy,
+                                                    z + dz)
+                    );
+                    Material material = block != null ? block.getType() : null;
+
+                    if (material == null) {
+                        continue;
+                    }
+                    if (BlockUtils.isSolid(material) || material.name().contains("GRASS")) {
+                        return true;
+                    }
+                }
+            }
+        }
         return false;
     }
 

@@ -22,11 +22,8 @@ public class Event_Velocity implements Listener {
         SpartanProtocol protocol = SpartanBukkit.getProtocol(e.getPlayer());
         protocol.claimedVelocity = e;
         protocol.claimedVeloGravity.add(e);
-        if (e.getVelocity().getY() > 0.42) {
-            protocol.claimedVeloGravity.add(
-                            new PlayerVelocityEvent(e.getPlayer(),
-                            e.getVelocity().clone().add(new Vector(0, -0.42, 0))));
-        }
+        if (protocol.claimedVeloGravity.size() > 2)
+            protocol.claimedVeloGravity.remove(protocol.claimedVeloGravity.size() - 1);
 
         if (protocol.packetsEnabled() == packets) {
             SpartanPlayer p = protocol.spartan;
