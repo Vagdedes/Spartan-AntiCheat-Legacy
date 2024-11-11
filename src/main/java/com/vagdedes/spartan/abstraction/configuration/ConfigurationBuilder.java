@@ -112,8 +112,8 @@ public abstract class ConfigurationBuilder {
         if (value == null) {
             return path;
         } else {
-            value = ChatColor.translateAlternateColorCodes('&', value)
-                    .replace(prefix, SpartanEdition.getProductName());
+            value = ChatColor.translateAlternateColorCodes('&', value);
+            value = value.replace(prefix, SpartanEdition.getProductName(value));
         }
         str.put(path, value);
         return value;

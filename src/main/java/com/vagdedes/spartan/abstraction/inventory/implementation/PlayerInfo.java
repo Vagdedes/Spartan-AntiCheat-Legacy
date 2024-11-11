@@ -37,7 +37,7 @@ public class PlayerInfo extends InventoryMenu {
     );
     private static final String
             menu = ("§0Player Info: ").substring(MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? 2 : 0),
-            documentationURL = "https://docs.google.com/document/d/e/2PACX-1vRSwc6vazSE5uCv6pcYkaWsP_RaHTmkU70lBLB9f9tudlSbJZr2ZdRQg3ZGXFtz-QWjDzTQqkSzmMt2/pub";
+            documentationURL = "https://github.com/Vagdedes/Spartan-AntiCheat/blob/main/src/documentation/dealing_with_detections.md";
     private static final int[] slots = new int[]{
             20, 21, 22, 23, 24
     };

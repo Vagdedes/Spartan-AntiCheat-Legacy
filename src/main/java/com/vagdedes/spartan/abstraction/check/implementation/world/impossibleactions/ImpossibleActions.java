@@ -15,6 +15,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.util.Vector;
 
 import java.util.Iterator;
 import java.util.List;
@@ -68,7 +69,7 @@ public class ImpossibleActions extends CheckExecutor {
                         case SOUTH_EAST:
                         case SOUTH_SOUTH_EAST:
                             double directionDistance = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)
-                                    ? blockFace.getDirection().distance(playerLocation.getDirection())
+                                    ? this.getDirection(blockFace).distance(playerLocation.getDirection())
                                     : Double.MAX_VALUE;
 
                             if (directionDistance <= 1.35) {
@@ -161,6 +162,15 @@ public class ImpossibleActions extends CheckExecutor {
                 }
             }
         }
+    }
+
+    private Vector getDirection(BlockFace blockFace) {
+        Vector direction = new Vector(blockFace.getModX(), blockFace.getModY(), blockFace.getModZ());
+
+        if (blockFace.getModX() != 0 || blockFace.getModY() != 0 || blockFace.getModZ() != 0) {
+            direction.normalize();
+        }
+        return direction;
     }
 
 }

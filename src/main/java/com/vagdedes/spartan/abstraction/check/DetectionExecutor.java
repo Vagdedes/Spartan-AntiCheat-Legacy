@@ -114,7 +114,7 @@ public abstract class DetectionExecutor extends CheckDetection {
                     k -> new TreeMap<>()
             );
 
-            if (map.size() == 1_024) {
+            if (map.size() == 2_048) {
                 Iterator<Long> iterator = map.keySet().iterator();
                 iterator.next();
                 iterator.remove();
@@ -189,59 +189,6 @@ public abstract class DetectionExecutor extends CheckDetection {
         return isEnabled()
                 ? this.probability.getOrDefault(dataType, PlayerEvidence.emptyProbability)
                 : PlayerEvidence.emptyProbability;
-    }
-
-    // Violation
-
-    final void violate(HackPrevention newPrevention, String information, double increase, long time) {
-        CancelCause disableCause = this.executor.getDisableCause();
-
-        if (disableCause == null
-                || disableCause.hasExpired()
-                || !disableCause.pointerMatches(information)) {
-            if (increase < 1.0) {
-                increase = 1.0;
-            }
-            PlayerViolation playerViolation = new PlayerViolation(
-                    time,
-                    increase
-            );
-            boolean event = Config.settings.getBoolean("Important.enable_developer_api");
-            CancelCause silentCause = this.executor.getSilentCause();
-
-            Runnable runnable = () -> {
-                if (event) {
-                    PlayerViolationEvent playerViolationEvent = new PlayerViolationEvent(
-                            this.protocol().bukkit,
-                            hackType,
-                            playerViolation.increase,
-                            information
-                    );
-                    Register.manager.callEvent(playerViolationEvent);
-
-                    if (playerViolationEvent.isCancelled()) {
-                        return;
-                    }
-                }
-                this.store(this.protocol().spartan.dataType, playerViolation);
-                this.notify(playerViolation, information);
-                this.punish();
-                this.executor.prevention = newPrevention;
-                this.executor.prevention.canPrevent =
-                        !hackType.getCheck().isSilent(this.protocol().spartan.dataType, this.protocol().spartan.getWorld().getName())
-                                && (silentCause == null
-                                || silentCause.hasExpired()
-                                || !silentCause.pointerMatches(information))
-                                && this.hasSufficientData(this.protocol().spartan.dataType)
-                                && this.surpassedProbability(this.protocol().spartan.dataType, PlayerEvidence.preventionProbability);
-            };
-
-            if (!event || SpartanBukkit.isSynchronised()) {
-                runnable.run();
-            } else {
-                SpartanBukkit.transferTask(this.protocol().spartan, runnable);
-            }
-        }
     }
 
     // Notification
@@ -445,22 +392,67 @@ public abstract class DetectionExecutor extends CheckDetection {
 
     public final void cancel(String information, double violations, SpartanLocation location,
                              int cancelTicks, boolean groundTeleport, double damage) {
-        if (this.isEnabled()) {
-            long time = System.currentTimeMillis();
+        if (!this.isEnabled()) {
+            return;
+        }
+        long time = System.currentTimeMillis();
 
-            if (this.executor.canFunction()
-                    && !CloudBase.isInformationCancelled(this.hackType, information)) {
-                this.violate(
-                        new HackPrevention(
-                                location,
-                                cancelTicks,
-                                groundTeleport,
-                                damage
-                        ),
-                        information,
-                        violations,
-                        time
-                );
+        if (!this.executor.canFunction()
+                || CloudBase.isInformationCancelled(this.hackType, information)) {
+            return;
+        }
+        HackPrevention newPrevention = new HackPrevention(
+                location,
+                cancelTicks,
+                groundTeleport,
+                damage
+        );
+        CancelCause disableCause = this.executor.getDisableCause();
+
+        if (disableCause == null
+                || disableCause.hasExpired()
+                || !disableCause.pointerMatches(information)) {
+            if (violations < 1.0) {
+                violations = 1.0;
+            }
+            PlayerViolation playerViolation = new PlayerViolation(
+                    time,
+                    violations
+            );
+            boolean event = Config.settings.getBoolean("Important.enable_developer_api");
+            CancelCause silentCause = this.executor.getSilentCause();
+
+            Runnable runnable = () -> {
+                if (event) {
+                    PlayerViolationEvent playerViolationEvent = new PlayerViolationEvent(
+                            this.protocol().bukkit,
+                            hackType,
+                            playerViolation.increase,
+                            information
+                    );
+                    Register.manager.callEvent(playerViolationEvent);
+
+                    if (playerViolationEvent.isCancelled()) {
+                        return;
+                    }
+                }
+                this.store(this.protocol().spartan.dataType, playerViolation);
+                this.notify(playerViolation, information);
+                this.punish();
+                this.executor.prevention = newPrevention;
+                this.executor.prevention.canPrevent =
+                        !hackType.getCheck().isSilent(this.protocol().spartan.dataType, this.protocol().spartan.getWorld().getName())
+                                && (silentCause == null
+                                || silentCause.hasExpired()
+                                || !silentCause.pointerMatches(information))
+                                && this.hasSufficientData(this.protocol().spartan.dataType)
+                                && this.surpassedProbability(this.protocol().spartan.dataType, PlayerEvidence.preventionProbability);
+            };
+
+            if (!event || SpartanBukkit.isSynchronised()) {
+                runnable.run();
+            } else {
+                SpartanBukkit.transferTask(this.protocol().spartan, runnable);
             }
         }
     }

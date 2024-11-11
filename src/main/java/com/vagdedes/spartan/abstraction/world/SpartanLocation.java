@@ -7,6 +7,7 @@ import com.vagdedes.spartan.listeners.bukkit.standalone.chunks.Event_Chunks_v1_1
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.CombatUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -18,8 +19,8 @@ import java.util.*;
 
 public class SpartanLocation implements Cloneable {
 
-    private static final boolean
-            v_1_13 = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13);
+    public static final Location bukkitDefault = new Location(Bukkit.getWorlds().get(0), 0, 0, 0);
+    private static final boolean v_1_13 = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13);
 
     public static int getChunkPos(int pos) {
         return pos >> 4;
