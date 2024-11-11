@@ -16,7 +16,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.Vector;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
 import java.util.List;

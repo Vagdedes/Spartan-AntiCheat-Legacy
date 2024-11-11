@@ -2,11 +2,11 @@ package com.vagdedes.spartan.compatibility.necessary.protocollib;
 
 import com.comphenix.protocol.injector.temporary.TemporaryPlayer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.listeners.bukkit.standalone.chunks.Event_Chunks;
 import com.vagdedes.spartan.utils.java.ReflectionUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Entity;
@@ -97,7 +97,7 @@ public class ProtocolLib {
 
     public static Location getLocation(Player player) {
         if (ProtocolLib.isTemporary(player)) {
-            return new Location(Bukkit.getWorlds().get(0), 0, 0, 0);
+            return SpartanLocation.bukkitDefault.clone();
         } else {
             return player.getLocation();
         }

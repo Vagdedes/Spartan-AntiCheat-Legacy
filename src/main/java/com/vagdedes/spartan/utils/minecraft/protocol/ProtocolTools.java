@@ -2,6 +2,7 @@ package com.vagdedes.spartan.utils.minecraft.protocol;
 
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
+import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import org.bukkit.Location;
 
 public class ProtocolTools {
@@ -17,13 +18,14 @@ public class ProtocolTools {
                     packet.getDoubles().read(2)
             );
         } else {
-            return null;
+            return SpartanLocation.bukkitDefault.clone();
         }
     }
 
     public static boolean onGroundPacketLevel(PacketEvent event) {
         PacketContainer packet = event.getPacket();
-        return packet.getBooleans().read(0);
+        return packet.getBooleans().size() > 0
+                && packet.getBooleans().read(0);
     }
 
     public static boolean invalidTeleport(Location location) {
