@@ -236,8 +236,6 @@ public class IrregularMovementsGravityNew extends HardcodedDetectionExecutor {
                     this.slimePunch--;
                 }
 
-                //this.protocol().bukkit.sendMessage("m: " + slimeEvent + " " + motion + " p: " + this.predictY());
-
                 boolean boat = false;
                 List<Entity> nearbyEntities = this.getEntitiesAroundPoint(to, 2);
                 for (Entity vehicle : nearbyEntities) {
@@ -264,6 +262,8 @@ public class IrregularMovementsGravityNew extends HardcodedDetectionExecutor {
                         this.setPredict(motion);
                     }
                 }
+
+                //this.protocol().bukkit.sendMessage("m: " + slimeEvent + " " + motion + " p: " + this.predictY());
 
                 double devTotal = this.abs(this.abs(motion) - this.abs(this.predictY()));
                 if (devTotal > 0.009) {
@@ -300,7 +300,7 @@ public class IrregularMovementsGravityNew extends HardcodedDetectionExecutor {
     private void velocity(double motion) {
         PlayerVelocityEvent claimed = null;
         for (PlayerVelocityEvent velo : this.protocol().claimedVeloGravity) {
-            if (veloIsValid(motion, velo.getVelocity().getY())) {
+            if (this.veloIsValid(motion, velo.getVelocity().getY())) {
                 this.setPredict(motion);
                 claimed = velo;
                 break;
