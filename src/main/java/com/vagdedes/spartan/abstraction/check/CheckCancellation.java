@@ -5,12 +5,12 @@ import com.vagdedes.spartan.functionality.server.TPS;
 
 public class CheckCancellation {
 
-    private String reason, pointer;
-    private long expiration;
+    private final String reason, pointer;
+    private final long expiration;
 
     CheckCancellation(Compatibility.CompatibilityType compatibilityType) {
         this.reason = compatibilityType.toString();
-        this.pointer = " ";
+        this.pointer = null;
         this.expiration = 0L;
     }
 
@@ -20,13 +20,6 @@ public class CheckCancellation {
         this.expiration = ticks == 0
                 ? Long.MAX_VALUE
                 : System.currentTimeMillis() + (ticks * TPS.tickTime);
-    }
-
-    // todo replace with list
-    void merge(CheckCancellation other) {
-        this.reason = other.reason;
-        this.pointer = other.pointer;
-        this.expiration = other.expiration;
     }
 
     boolean hasExpired() {

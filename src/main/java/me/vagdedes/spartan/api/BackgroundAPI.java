@@ -238,7 +238,7 @@ public class BackgroundAPI {
     static void stopCheck(Player p, HackType hackType) {
         if (Config.settings.getBoolean("Important.enable_developer_api")) {
             SpartanPlayer player = SpartanBukkit.getProtocol(p).spartan;
-            player.getExecutor(hackType).addSilentCause("Developer-API", null, 0);
+            player.getExecutor(hackType).addDisableCause("Developer-API", null, 0);
         }
     }
 

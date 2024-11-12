@@ -19,8 +19,7 @@ import me.vagdedes.spartan.api.CheckCancelEvent;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.GameMode;
 
-import java.util.Collection;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class CheckRunner extends CheckProcess {
@@ -32,7 +31,7 @@ public abstract class CheckRunner extends CheckProcess {
             detectionIdentifier = "Detection:";
 
     private final long creation;
-    private CheckCancellation disableCause, silentCause;
+    private final Collection<CheckCancellation> disableCauses, silentCauses;
     CheckPrevention prevention;
     private boolean cancelled;
     protected final Map<String, CheckDetection> detections;
@@ -42,6 +41,8 @@ public abstract class CheckRunner extends CheckProcess {
         this.creation = System.currentTimeMillis();
         this.prevention = new CheckPrevention();
         this.detections = new ConcurrentHashMap<>(2);
+        this.disableCauses = Collections.synchronizedList(new ArrayList<>());
+        this.silentCauses = Collections.synchronizedList(new ArrayList<>());
     }
 
     // Probability
@@ -135,8 +136,26 @@ public abstract class CheckRunner extends CheckProcess {
 
     // Causes
 
+    private CheckCancellation getLastCause(Collection<CheckCancellation> collection) {
+        CheckCancellation lastCause = null;
+        Iterator<CheckCancellation> iterator = collection.iterator();
+
+        while (iterator.hasNext()) {
+            CheckCancellation cause = iterator.next();
+
+            if (cause.hasExpired()) {
+                iterator.remove();
+            } else {
+                lastCause = cause;
+            }
+        }
+        return lastCause;
+    }
+
     public final CheckCancellation getDisableCause() {
-        if (disableCause == null || disableCause.hasExpired()) {
+        CheckCancellation disableCause = this.getLastCause(this.disableCauses);
+
+        if (disableCause == null) {
             if (this.protocol() != null) {
                 return MythicMobs.is(this.protocol())
                         ? new CheckCancellation(Compatibility.CompatibilityType.MYTHIC_MOBS)
@@ -156,36 +175,29 @@ public abstract class CheckRunner extends CheckProcess {
     }
 
     public final CheckCancellation getSilentCause() {
-        return silentCause != null && silentCause.hasExpired() ? null : silentCause;
+        return this.getLastCause(this.silentCauses);
     }
 
     public final void addDisableCause(String reason, String pointer, int ticks) {
         if (reason == null) {
             reason = this.hackType.getCheck().getName();
         }
-        if (disableCause != null) {
-            disableCause.merge(new CheckCancellation(reason, pointer, ticks));
-        } else {
-            disableCause = new CheckCancellation(reason, pointer, ticks);
-        }
+        this.disableCauses.add(new CheckCancellation(reason, pointer, ticks));
         if (this.protocol() != null) {
             InteractiveInventory.playerInfo.refresh(this.protocol().bukkit.getName());
         }
     }
 
     public final void addSilentCause(String reason, String pointer, int ticks) {
-        if (silentCause != null) {
-            silentCause.merge(new CheckCancellation(reason, pointer, ticks));
-        } else {
-            silentCause = new CheckCancellation(reason, pointer, ticks);
-        }
+        this.silentCauses.add(new CheckCancellation(reason, pointer, ticks));
+
         if (this.protocol() != null) {
             InteractiveInventory.playerInfo.refresh(this.protocol().bukkit.getName());
         }
     }
 
     public final void removeDisableCause() {
-        this.disableCause = null;
+        this.disableCauses.clear();
 
         if (this.protocol() != null) {
             InteractiveInventory.playerInfo.refresh(this.protocol().bukkit.getName());
@@ -193,7 +205,7 @@ public abstract class CheckRunner extends CheckProcess {
     }
 
     public final void removeSilentCause() {
-        this.silentCause = null;
+        this.silentCauses.clear();
 
         if (this.protocol() != null) {
             InteractiveInventory.playerInfo.refresh(this.protocol().bukkit.getName());

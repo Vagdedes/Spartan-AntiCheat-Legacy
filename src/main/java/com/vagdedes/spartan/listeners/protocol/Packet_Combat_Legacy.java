@@ -15,7 +15,6 @@ import com.vagdedes.spartan.listeners.bukkit.Event_Combat;
 import com.vagdedes.spartan.utils.java.OverflowMap;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
