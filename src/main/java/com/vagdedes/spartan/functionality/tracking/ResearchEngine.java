@@ -2,8 +2,8 @@ package com.vagdedes.spartan.functionality.tracking;
 
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.Check;
-import com.vagdedes.spartan.abstraction.check.CheckExecutor;
-import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.CheckRunner;
+import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.inventory.implementation.MainMenu;
 import com.vagdedes.spartan.abstraction.pattern.Pattern;
 import com.vagdedes.spartan.abstraction.profiling.MiningHistory;
@@ -124,7 +124,7 @@ public class ResearchEngine {
 
                 if (!playerProfiles.isEmpty()) {
                     for (PlayerProfile playerProfile : playerProfiles.values()) {
-                        for (DetectionExecutor detectionExecutor : playerProfile.getExecutor(hackType).getDetections()) {
+                        for (CheckDetection detectionExecutor : playerProfile.getExecutor(hackType).getDetections()) {
                             for (Check.DataType dataType : Check.DataType.values()) {
                                 detectionExecutor.clearProbability(dataType);
                             }
@@ -224,7 +224,7 @@ public class ResearchEngine {
     // Separator
 
     public static String getDetectionInformation(String s) {
-        String find = "(" + CheckExecutor.detectionIdentifier + " ";
+        String find = "(" + CheckRunner.detectionIdentifier + " ";
         int index = s.indexOf(find);
 
         if (index > -1) {
@@ -236,7 +236,7 @@ public class ResearchEngine {
     }
 
     private static Double getViolationIncrease(String s) {
-        String search = "(" + CheckExecutor.violationLevelIdentifier + " ";
+        String search = "(" + CheckRunner.violationLevelIdentifier + " ";
         int index1 = s.indexOf(search);
 
         if (index1 > -1) {
@@ -255,7 +255,7 @@ public class ResearchEngine {
     }
 
     private static Check.DataType getDataType(String s) {
-        String find = "(" + CheckExecutor.javaPlayerIdentifier + " ";
+        String find = "(" + CheckRunner.javaPlayerIdentifier + " ";
         int index = s.indexOf(find);
 
         if (index > -1) {
@@ -426,7 +426,7 @@ public class ResearchEngine {
 
                                             if (violationIncrease != null) {
                                                 PlayerProfile profile = getPlayerProfile(split[0], true);
-                                                DetectionExecutor detectionExecutor = profile.getExecutor(hackType).getDetection(detection);
+                                                CheckDetection detectionExecutor = profile.getExecutor(hackType).getDetection(detection);
 
                                                 if (detectionExecutor != null) {
                                                     SimpleDateFormat sdf = new SimpleDateFormat(AntiCheatLogs.dateFormat);
@@ -485,8 +485,8 @@ public class ResearchEngine {
 
             if (force) {
                 for (PlayerProfile profile : profiles) {
-                    for (CheckExecutor executor : profile.getExecutors()) {
-                        for (DetectionExecutor detectionExecutor : executor.getDetections()) {
+                    for (CheckRunner executor : profile.getExecutors()) {
+                        for (CheckDetection detectionExecutor : executor.getDetections()) {
                             for (Check.DataType dataType : Check.DataType.values()) {
                                 detectionExecutor.clearProbability(dataType);
                             }
@@ -502,10 +502,10 @@ public class ResearchEngine {
                     if (!hackType.getCheck().isEnabled(dataType, null)) {
                         continue;
                     }
-                    Map<String, Map<DetectionExecutor, Double>> wave = new LinkedHashMap<>();
+                    Map<String, Map<CheckDetection, Double>> wave = new LinkedHashMap<>();
 
                     for (PlayerProfile profile : profiles) {
-                        for (DetectionExecutor detectionExecutor : profile.getExecutor(hackType).getDetections()) {
+                        for (CheckDetection detectionExecutor : profile.getExecutor(hackType).getDetections()) {
                             Double timeDifference = detectionExecutor.getTimeDifference(dataType);
 
                             if (timeDifference != null) {
@@ -521,7 +521,7 @@ public class ResearchEngine {
                     }
 
                     if (!wave.isEmpty()) {
-                        for (Map<DetectionExecutor, Double> map : wave.values()) {
+                        for (Map<CheckDetection, Double> map : wave.values()) {
                             double sum = 0,
                                     squareSum = 0,
                                     min = Double.MAX_VALUE,
@@ -535,7 +535,7 @@ public class ResearchEngine {
                                     mean = sum / divisor,
                                     deviation = Math.sqrt(squareSum / divisor);
 
-                            for (Map.Entry<DetectionExecutor, Double> entry : map.entrySet()) {
+                            for (Map.Entry<CheckDetection, Double> entry : map.entrySet()) {
                                 double probability = StatisticsMath.getCumulativeProbability(
                                         (entry.getValue() - mean) / deviation
                                 );
@@ -551,7 +551,7 @@ public class ResearchEngine {
                             max = 1.0 - max;
                             double distributionDifference = Math.abs(max - min);
 
-                            for (Map.Entry<DetectionExecutor, Double> entry : map.entrySet()) {
+                            for (Map.Entry<CheckDetection, Double> entry : map.entrySet()) {
                                 entry.getKey().setProbability(
                                         dataType,
                                         PlayerEvidence.modifyProbability(

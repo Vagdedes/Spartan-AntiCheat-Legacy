@@ -1,8 +1,8 @@
 package com.vagdedes.spartan.abstraction.profiling;
 
 import com.vagdedes.spartan.abstraction.check.Check;
-import com.vagdedes.spartan.abstraction.check.CheckExecutor;
-import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.CheckRunner;
+import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
@@ -19,7 +19,7 @@ public class PlayerProfile {
     private final MiningHistory[] miningHistory;
     private ItemStack skull;
     private OfflinePlayer offlinePlayer;
-    private final CheckExecutor[] executors;
+    private final CheckRunner[] executors;
     private Check.DataType lastDataType;
 
     // Separator
@@ -27,7 +27,7 @@ public class PlayerProfile {
     public PlayerProfile(String name) {
         this.name = name;
         this.skull = null;
-        this.executors = new CheckExecutor[Enums.HackType.values().length];
+        this.executors = new CheckRunner[Enums.HackType.values().length];
         this.miningHistory = new MiningHistory[MiningHistory.MiningOre.values().length];
         this.lastDataType = Check.DataType.JAVA;
 
@@ -52,7 +52,7 @@ public class PlayerProfile {
         this.name = protocol.bukkit.getName();
         this.offlinePlayer = protocol.bukkit; // Attention
         this.skull = null;
-        this.executors = new CheckExecutor[Enums.HackType.values().length];
+        this.executors = new CheckRunner[Enums.HackType.values().length];
         this.miningHistory = new MiningHistory[MiningHistory.MiningOre.values().length];
         this.lastDataType = protocol.spartan.dataType;
 
@@ -72,10 +72,10 @@ public class PlayerProfile {
         this.offlinePlayer = protocol.bukkit;
         this.lastDataType = protocol.spartan.dataType;
 
-        for (CheckExecutor executor : this.getExecutors()) {
+        for (CheckRunner executor : this.getExecutors()) {
             executor.setProtocol(protocol);
 
-            for (DetectionExecutor detectionExecutor : executor.getDetections()) {
+            for (CheckDetection detectionExecutor : executor.getDetections()) {
                 detectionExecutor.setProtocol(protocol);
             }
         }
@@ -85,7 +85,7 @@ public class PlayerProfile {
         return this.executors[0].protocol();
     }
 
-    public CheckExecutor getExecutor(Enums.HackType hackType) {
+    public CheckRunner getExecutor(Enums.HackType hackType) {
         int ordinal = hackType.ordinal();
 
         synchronized (this.executors) {
@@ -93,7 +93,7 @@ public class PlayerProfile {
         }
     }
 
-    public CheckExecutor[] getExecutors() {
+    public CheckRunner[] getExecutors() {
         synchronized (this.executors) {
             return this.executors;
         }
@@ -103,7 +103,7 @@ public class PlayerProfile {
         synchronized (this.executors) {
             for (Enums.HackType hackType : Enums.HackType.values()) {
                 try {
-                    CheckExecutor executor = (CheckExecutor) hackType.executor
+                    CheckRunner executor = (CheckRunner) hackType.executor
                             .getConstructor(hackType.getClass(), SpartanProtocol.class)
                             .newInstance(hackType, protocol);
                     this.executors[hackType.ordinal()] = executor;
@@ -138,7 +138,7 @@ public class PlayerProfile {
     public Collection<Enums.HackType> getEvidenceList(double threshold) {
         List<Enums.HackType> set = new ArrayList<>();
 
-        for (CheckExecutor executor : this.getExecutors()) {
+        for (CheckRunner executor : this.getExecutors()) {
             double probability = executor.getExtremeProbability(this.lastDataType);
 
             if (PlayerEvidence.surpassedProbability(probability, threshold)) {
@@ -153,7 +153,7 @@ public class PlayerProfile {
     ) {
         Map<Enums.HackType, Double> set = new HashMap<>();
 
-        for (CheckExecutor executor : this.getExecutors()) {
+        for (CheckRunner executor : this.getExecutors()) {
             double probability = executor.getExtremeProbability(this.lastDataType);
 
             if (PlayerEvidence.surpassedProbability(probability, threshold)) {

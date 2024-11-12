@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements;
 
-import com.vagdedes.spartan.abstraction.check.CheckExecutor;
-import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.CheckRunner;
+import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.ProbabilityDetectionExecutor;
 import com.vagdedes.spartan.abstraction.check.def.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
@@ -11,9 +11,9 @@ import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 
 public class IrregularMovementsHorizontal extends ProbabilityDetectionExecutor {
 
-    private final DetectionExecutor horizontal_known, horizontal_abstract;
+    private final CheckDetection horizontal_known, horizontal_abstract;
 
-    IrregularMovementsHorizontal(CheckExecutor executor) {
+    IrregularMovementsHorizontal(CheckRunner executor) {
         super(executor, null, true);
         this.horizontal_known = new ImplementedProbabilityDetection(this, "horizontal_known", true);
         this.horizontal_abstract = new ImplementedProbabilityDetection(this, "horizontal_abstract", true);

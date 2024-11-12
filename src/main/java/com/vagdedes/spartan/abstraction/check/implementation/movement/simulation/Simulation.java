@@ -1,6 +1,6 @@
 package com.vagdedes.spartan.abstraction.check.implementation.movement.simulation;
 
-import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.simulation.modules.engine.motion.MotionVector;
 import com.vagdedes.spartan.abstraction.protocol.MCClient;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
@@ -12,7 +12,7 @@ import org.bukkit.event.player.PlayerVelocityEvent;
 
 import java.util.List;
 
-public class Simulation extends CheckExecutor {
+public class Simulation extends CheckRunner {
 
     public double diffVl = 0;
 

@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements;
 
-import com.vagdedes.spartan.abstraction.check.CheckExecutor;
-import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.CheckRunner;
+import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.ProbabilityDetectionExecutor;
 import com.vagdedes.spartan.abstraction.check.def.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
@@ -28,12 +28,12 @@ public class IrregularMovementsGravity extends ProbabilityDetectionExecutor {
 
     // Separator
 
-    private final DetectionExecutor
+    private final CheckDetection
             gravity_climb_stable,
             gravity_prediction;
     private boolean ignore, sensitive;
 
-    IrregularMovementsGravity(CheckExecutor executor) {
+    IrregularMovementsGravity(CheckRunner executor) {
         super(executor, null, true);
         this.gravity_climb_stable = new ImplementedProbabilityDetection(executor, "climb", true);
         this.gravity_prediction = new ImplementedProbabilityDetection(executor, "gravity", true);

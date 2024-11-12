@@ -1,6 +1,6 @@
 package com.vagdedes.spartan.abstraction.check.implementation.world.impossibleactions;
 
-import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.ProbabilityDetectionExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
@@ -20,7 +20,7 @@ public class ScaffoldAnalysis extends ProbabilityDetectionExecutor {
 
     private final Map<Integer, Buffer.IndividualSimpleBuffer> buffers;
 
-    ScaffoldAnalysis(CheckExecutor executor) {
+    ScaffoldAnalysis(CheckRunner executor) {
         super(executor, "scaffold_analysis", true);
         this.buffers = new OverflowMap<>(new LinkedHashMap<>(), 124);
     }

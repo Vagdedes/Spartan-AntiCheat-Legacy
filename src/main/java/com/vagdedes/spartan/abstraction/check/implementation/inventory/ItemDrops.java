@@ -1,6 +1,6 @@
 package com.vagdedes.spartan.abstraction.check.implementation.inventory;
 
-import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.def.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
@@ -10,7 +10,7 @@ import me.vagdedes.spartan.system.Enums;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ItemDrops extends CheckExecutor {
+public class ItemDrops extends CheckRunner {
 
     private final ImplementedProbabilityDetection detection;
     private long time;

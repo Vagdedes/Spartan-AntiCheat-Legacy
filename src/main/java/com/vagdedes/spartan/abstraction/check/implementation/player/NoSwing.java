@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.abstraction.check.implementation.player;
 
-import com.vagdedes.spartan.abstraction.check.CheckExecutor;
-import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.CheckRunner;
+import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.def.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
@@ -22,9 +22,9 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerAnimationEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-public class NoSwing extends CheckExecutor {
+public class NoSwing extends CheckRunner {
 
-    private final DetectionExecutor breaking, damage;
+    private final CheckDetection breaking, damage;
     private static final int refreshTime = 30 * 20;
     private long breakTime, animationTime;
     private final Buffer.IndividualBuffer damageBuffer;

@@ -1,6 +1,6 @@
 package com.vagdedes.spartan.abstraction.check.implementation.world.impossibleactions;
 
-import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.ProbabilityDetectionExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
@@ -21,7 +21,7 @@ public class Tower extends ProbabilityDetectionExecutor {
 
     private final Map<Integer, Buffer.IndividualBuffer> buffers;
 
-    Tower(CheckExecutor executor) {
+    Tower(CheckRunner executor) {
         super(executor, "tower", true);
         this.buffers = new OverflowMap<>(new LinkedHashMap<>(), 124);
     }

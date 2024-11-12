@@ -1,8 +1,8 @@
 package com.vagdedes.spartan.abstraction.check.implementation.inventory;
 
 import com.vagdedes.spartan.abstraction.check.Check;
-import com.vagdedes.spartan.abstraction.check.CheckExecutor;
-import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.CheckRunner;
+import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.def.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
@@ -18,9 +18,9 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class ImpossibleInventory extends CheckExecutor {
+public class ImpossibleInventory extends CheckRunner {
 
-    private final DetectionExecutor
+    private final CheckDetection
             autoTotemDetection,
             closedInventoryDetection,
             portalInventoryDetection,

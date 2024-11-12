@@ -1,6 +1,6 @@
 package com.vagdedes.spartan.abstraction.check.implementation.combat.killaura;
 
-import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.ProbabilityDetectionExecutor;
 import com.vagdedes.spartan.abstraction.event.EntityAttackPlayerEvent;
 import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
@@ -26,7 +26,7 @@ public class FightAnalysis extends ProbabilityDetectionExecutor {
             1.0 / (1.0 - desiredConfidence)
     );
 
-    FightAnalysis(CheckExecutor executor) {
+    FightAnalysis(CheckRunner executor) {
         super(executor, "fight_analysis", true);
     }
 

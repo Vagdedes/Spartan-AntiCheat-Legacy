@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.abstraction.check.implementation.world;
 
-import com.vagdedes.spartan.abstraction.check.CheckExecutor;
-import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.CheckRunner;
+import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.def.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
@@ -21,9 +21,9 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-public class BlockReach extends CheckExecutor {
+public class BlockReach extends CheckRunner {
 
-    private final DetectionExecutor
+    private final CheckDetection
             breaking,
             interact,
             place,

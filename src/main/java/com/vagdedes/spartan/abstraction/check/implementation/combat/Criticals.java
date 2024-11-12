@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.abstraction.check.implementation.combat;
 
-import com.vagdedes.spartan.abstraction.check.CheckExecutor;
-import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.CheckRunner;
+import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.def.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.utils.math.RayUtils;
@@ -10,9 +10,9 @@ import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.potion.PotionEffectType;
 
-public class Criticals extends CheckExecutor {
+public class Criticals extends CheckRunner {
 
-    private final DetectionExecutor detection;
+    private final CheckDetection detection;
 
     public Criticals(HackType hackType, SpartanProtocol protocol) {
         super(hackType, protocol);

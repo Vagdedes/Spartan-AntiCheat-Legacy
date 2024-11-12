@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.abstraction.check.implementation.combat.killaura.movedirection;
 
-import com.vagdedes.spartan.abstraction.check.CheckExecutor;
-import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.CheckRunner;
+import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.ProbabilityDetectionExecutor;
 import com.vagdedes.spartan.abstraction.check.def.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
@@ -20,7 +20,7 @@ import static java.lang.Math.PI;
 
 public class MoveDirection extends ProbabilityDetectionExecutor {
 
-    private final DetectionExecutor layer1, layer2;
+    private final CheckDetection layer1, layer2;
     private AttackHandle attackHandle;
     private final LinkedList<AttackData> aimAnalysis;
     private float vl, vlL2;
@@ -29,7 +29,7 @@ public class MoveDirection extends ProbabilityDetectionExecutor {
     private final List<UUID> targetsOnTheRow;
     private final LinkedList<Double> rayTraceAnalysis;
 
-    public MoveDirection(CheckExecutor executor) {
+    public MoveDirection(CheckRunner executor) {
         super(executor, null, true);
         this.layer1 = new ImplementedProbabilityDetection(executor, "move_direction_1", true);
         this.layer2 = new ImplementedProbabilityDetection(executor, "move_direction_2", true);

@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.abstraction.check.implementation.combat;
 
-import com.vagdedes.spartan.abstraction.check.CheckExecutor;
-import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.CheckRunner;
+import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.def.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
@@ -12,9 +12,9 @@ import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.PlayerInventory;
 
-public class FastBow extends CheckExecutor {
+public class FastBow extends CheckRunner {
 
-    private final DetectionExecutor
+    private final CheckDetection
             bowForceDetection,
             bowShotsDetection;
     private long interactTime;

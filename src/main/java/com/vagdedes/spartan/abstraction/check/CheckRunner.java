@@ -23,7 +23,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public abstract class CheckExecutor extends CheckDetection {
+public abstract class CheckRunner extends CheckProcess {
 
     private static final boolean v1_8 = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8);
     public static final String
@@ -35,9 +35,9 @@ public abstract class CheckExecutor extends CheckDetection {
     private CheckCancellation disableCause, silentCause;
     CheckPrevention prevention;
     private boolean cancelled;
-    final Map<String, DetectionExecutor> detections;
+    protected final Map<String, CheckDetection> detections;
 
-    public CheckExecutor(Enums.HackType hackType, SpartanProtocol protocol) {
+    public CheckRunner(Enums.HackType hackType, SpartanProtocol protocol) {
         super(hackType, protocol);
         this.creation = System.currentTimeMillis();
         this.prevention = new CheckPrevention();
@@ -47,7 +47,7 @@ public abstract class CheckExecutor extends CheckDetection {
     // Probability
 
     public boolean hasSufficientData(Check.DataType dataType) {
-        for (DetectionExecutor detectionExecutor : this.detections.values()) {
+        for (CheckDetection detectionExecutor : this.detections.values()) {
             if (detectionExecutor.hasSufficientData(dataType)) {
                 return true;
             }
@@ -58,7 +58,7 @@ public abstract class CheckExecutor extends CheckDetection {
     public double getExtremeProbability(Check.DataType dataType) {
         double num = PlayerEvidence.emptyProbability;
 
-        for (DetectionExecutor detectionExecutor : this.detections.values()) {
+        for (CheckDetection detectionExecutor : this.detections.values()) {
             if (PlayerEvidence.POSITIVE) {
                 num = Math.max(num, detectionExecutor.getProbability(dataType));
             } else {
@@ -70,20 +70,20 @@ public abstract class CheckExecutor extends CheckDetection {
 
     // Detections
 
-    public final DetectionExecutor getDetection(String detection) {
+    public final CheckDetection getDetection(String detection) {
         return detection == null
                 ? this.getDetection()
                 : this.detections.get(detection);
     }
 
-    public final DetectionExecutor getDetection() {
+    public final CheckDetection getDetection() {
         if (this.detections.isEmpty()) {
             new ImplementedProbabilityDetection(this, null, false);
         }
         return this.detections.values().iterator().next();
     }
 
-    public final Collection<DetectionExecutor> getDetections() {
+    public final Collection<CheckDetection> getDetections() {
         return this.detections.values();
     }
 

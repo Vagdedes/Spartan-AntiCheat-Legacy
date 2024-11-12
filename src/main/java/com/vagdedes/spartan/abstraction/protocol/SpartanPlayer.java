@@ -2,7 +2,7 @@ package com.vagdedes.spartan.abstraction.protocol;
 
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.Check;
-import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.necessary.BedrockCompatibility;
@@ -136,7 +136,7 @@ public class SpartanPlayer {
 
     // Separator
 
-    public CheckExecutor getExecutor(Enums.HackType hackType) {
+    public CheckRunner getExecutor(Enums.HackType hackType) {
         return this.protocol.getProfile().getExecutor(hackType);
     }
 

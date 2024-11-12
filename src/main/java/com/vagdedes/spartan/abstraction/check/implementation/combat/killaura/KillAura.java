@@ -1,6 +1,6 @@
 package com.vagdedes.spartan.abstraction.check.implementation.combat.killaura;
 
-import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.implementation.combat.killaura.movedirection.MoveDirection;
 import com.vagdedes.spartan.abstraction.event.EntityAttackPlayerEvent;
 import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
@@ -13,7 +13,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
 
-public class KillAura extends CheckExecutor {
+public class KillAura extends CheckRunner {
 
     private final Irregular irregular;
     private final EntityRaytrace entityRaytrace;

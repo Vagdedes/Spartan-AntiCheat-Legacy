@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.abstraction.check.implementation.world;
 
-import com.vagdedes.spartan.abstraction.check.CheckExecutor;
-import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.CheckRunner;
+import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.def.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.data.Buffer;
@@ -29,9 +29,9 @@ import org.bukkit.potion.PotionEffect;
 
 import java.util.*;
 
-public class FastBreak extends CheckExecutor {
+public class FastBreak extends CheckRunner {
 
-    private final DetectionExecutor
+    private final CheckDetection
             delay,
             breaksPerSecond,
             indirectSurroundingsPerSecond;

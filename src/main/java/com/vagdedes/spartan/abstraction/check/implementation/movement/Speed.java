@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.abstraction.check.implementation.movement;
 
-import com.vagdedes.spartan.abstraction.check.CheckExecutor;
-import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.CheckRunner;
+import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.def.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.protocol.ExtendedPotionEffect;
@@ -28,7 +28,7 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
-public class Speed extends CheckExecutor {
+public class Speed extends CheckRunner {
 
     /*
     Anticipate movements in advance = have good performance in the future
@@ -65,7 +65,7 @@ public class Speed extends CheckExecutor {
             -2.92, -2.94, -2.96, -2.98, -3.0
     };
 
-    private final DetectionExecutor
+    private final CheckDetection
             strafeLineSpeeding,
             strafeJumpSpeeding,
             straightLineSpeeding;
@@ -181,7 +181,7 @@ public class Speed extends CheckExecutor {
             this.vl /= 2;
 
             if (this.violation != null) {
-                ((DetectionExecutor) this.violation[1]).cancel(
+                ((CheckDetection) this.violation[1]).cancel(
                         (String) this.violation[0],
                         this.multiplyViolation
                 );

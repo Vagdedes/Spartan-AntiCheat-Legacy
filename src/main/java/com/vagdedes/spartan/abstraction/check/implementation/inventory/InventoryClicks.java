@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.abstraction.check.implementation.inventory;
 
-import com.vagdedes.spartan.abstraction.check.CheckExecutor;
-import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.CheckRunner;
+import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.def.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
@@ -13,9 +13,9 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class InventoryClicks extends CheckExecutor {
+public class InventoryClicks extends CheckRunner {
 
-    private final DetectionExecutor
+    private final CheckDetection
             shift,
             slow,
             medium,

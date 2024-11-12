@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.abstraction.check.implementation.combat;
 
-import com.vagdedes.spartan.abstraction.check.CheckExecutor;
-import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.CheckRunner;
+import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.def.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
@@ -13,17 +13,15 @@ import com.vagdedes.spartan.utils.minecraft.entity.CombatUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.util.Vector;
 
 import java.util.LinkedList;
 import java.util.List;
 
-public class HitReach extends CheckExecutor {
+public class HitReach extends CheckRunner {
 
-    private final DetectionExecutor
+    private final CheckDetection
             hitboxRaytrace,
             simple;
     private final LinkedList<Double> rayTraceAnalysis = new LinkedList<>();

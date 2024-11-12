@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements;
 
-import com.vagdedes.spartan.abstraction.check.CheckExecutor;
-import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.CheckRunner;
+import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.def.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.gravity.IrregularMovementsGravityNew;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
@@ -11,10 +11,10 @@ import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.world.GroundUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 
-public class IrregularMovements extends CheckExecutor {
+public class IrregularMovements extends CheckRunner {
 
     private long teleport;
-    public final DetectionExecutor limitServerFlying;
+    public final CheckDetection limitServerFlying;
     private final IrregularMovementsStep step;
     private final IrregularMovementsGravity gravityOld;
     private final IrregularMovementsGravityNew gravity;

@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.abstraction.check.implementation.movement.morepackets;
 
-import com.vagdedes.spartan.abstraction.check.CheckExecutor;
-import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.CheckRunner;
+import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.def.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.event.PlayerTickEvent;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
@@ -16,7 +16,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class MorePackets extends CheckExecutor {
+public class MorePackets extends CheckRunner {
 
     public static final byte TELEPORT = 0;
 
@@ -122,7 +122,7 @@ public class MorePackets extends CheckExecutor {
         }
     }
 
-    private void punish(DetectionExecutor executor, String info, double multiplier) {
+    private void punish(CheckDetection executor, String info, double multiplier) {
         packetVL += 70;
 
         if (packetVL > 100) {

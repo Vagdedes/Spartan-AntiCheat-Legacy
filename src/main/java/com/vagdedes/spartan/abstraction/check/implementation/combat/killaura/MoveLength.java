@@ -1,6 +1,6 @@
 package com.vagdedes.spartan.abstraction.check.implementation.combat.killaura;
 
-import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.ProbabilityDetectionExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.functionality.server.TPS;
@@ -20,7 +20,7 @@ public class MoveLength extends ProbabilityDetectionExecutor {
     private final Buffer.IndividualBuffer buffer, safeBuffer;
     private long hit, hitBy;
 
-    MoveLength(CheckExecutor executor) {
+    MoveLength(CheckRunner executor) {
         super(executor, "move_length", true);
         previousPitch = 0.0f;
         previousPitchDifference = 0.0f;

@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.abstraction.check.implementation.world;
 
-import com.vagdedes.spartan.abstraction.check.CheckExecutor;
-import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.CheckRunner;
+import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.def.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
@@ -16,9 +16,9 @@ import org.bukkit.block.Block;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-public class GhostHand extends CheckExecutor {
+public class GhostHand extends CheckRunner {
 
-    private final DetectionExecutor breaking, interact;
+    private final CheckDetection breaking, interact;
 
     public GhostHand(HackType hackType, SpartanProtocol protocol) {
         super(hackType, protocol);

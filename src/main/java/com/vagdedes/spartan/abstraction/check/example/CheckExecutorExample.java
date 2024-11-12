@@ -1,18 +1,18 @@
 package com.vagdedes.spartan.abstraction.check.example;
 
-import com.vagdedes.spartan.abstraction.check.CheckExecutor;
-import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.CheckRunner;
+import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.def.ImplementedHardcodedDetection;
 import com.vagdedes.spartan.abstraction.check.def.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import me.vagdedes.spartan.system.Enums;
 
-public class CheckExecutorExample extends CheckExecutor {
+public class CheckExecutorExample extends CheckRunner {
 
     private final DetectionExecutorProbabilityExample detection1;
     private final DetectionExecutorHardcodedExample detection2;
-    private final DetectionExecutor detection3;
-    private final DetectionExecutor detection4;
+    private final CheckDetection detection3;
+    private final CheckDetection detection4;
 
     public CheckExecutorExample(Enums.HackType hackType, SpartanProtocol protocol) {
         super(hackType, protocol);

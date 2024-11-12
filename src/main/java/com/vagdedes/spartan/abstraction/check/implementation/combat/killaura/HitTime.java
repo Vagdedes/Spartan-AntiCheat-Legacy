@@ -1,12 +1,12 @@
 package com.vagdedes.spartan.abstraction.check.implementation.combat.killaura;
 
-import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.ProbabilityDetectionExecutor;
 import com.vagdedes.spartan.listeners.protocol.standalone.Packet_LagCompensation;
 
 public class HitTime extends ProbabilityDetectionExecutor {
 
-    HitTime(CheckExecutor executor) {
+    HitTime(CheckRunner executor) {
         super(executor, "hit_time", true);
     }
 

@@ -22,6 +22,7 @@ public class CheckCancellation {
                 : System.currentTimeMillis() + (ticks * TPS.tickTime);
     }
 
+    // todo replace with list
     void merge(CheckCancellation other) {
         this.reason = other.reason;
         this.pointer = other.pointer;

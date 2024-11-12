@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.abstraction.check.implementation.combat;
 
-import com.vagdedes.spartan.abstraction.check.CheckExecutor;
-import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.CheckRunner;
+import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.def.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.TPS;
@@ -11,9 +11,9 @@ import me.vagdedes.spartan.system.Enums;
 import java.util.Collection;
 import java.util.Iterator;
 
-public class FastClicks extends CheckExecutor {
+public class FastClicks extends CheckRunner {
 
-    private final DetectionExecutor
+    private final CheckDetection
             clicksPerSecond,
             clicksPattern;
 

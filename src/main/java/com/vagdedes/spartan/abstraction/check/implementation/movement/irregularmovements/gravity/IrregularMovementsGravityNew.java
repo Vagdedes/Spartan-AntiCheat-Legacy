@@ -1,8 +1,7 @@
 package com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.gravity;
 
-import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.HardcodedDetectionExecutor;
-import com.vagdedes.spartan.abstraction.check.ProbabilityDetectionExecutor;
 import com.vagdedes.spartan.abstraction.protocol.ExtendedPotionEffect;
 import com.vagdedes.spartan.abstraction.protocol.PlayerMovement;
 import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
@@ -35,7 +34,7 @@ public class IrregularMovementsGravityNew extends HardcodedDetectionExecutor {
     private double vl = 0.0;
     private double fallDistance = 0.0;
 
-    public IrregularMovementsGravityNew(CheckExecutor executor) {
+    public IrregularMovementsGravityNew(CheckRunner executor) {
         super(executor, "gravity_new", true);
     }
 

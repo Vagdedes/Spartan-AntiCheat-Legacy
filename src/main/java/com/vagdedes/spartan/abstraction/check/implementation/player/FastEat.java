@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.abstraction.check.implementation.player;
 
-import com.vagdedes.spartan.abstraction.check.CheckExecutor;
-import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.CheckRunner;
+import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.def.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
@@ -17,9 +17,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffectType;
 
-public class FastEat extends CheckExecutor {
+public class FastEat extends CheckRunner {
 
-    private final DetectionExecutor interact, eat;
+    private final CheckDetection interact, eat;
     private static final Material cake = MaterialUtils.get("cake");
     private static final long
             delay = 1_000L,

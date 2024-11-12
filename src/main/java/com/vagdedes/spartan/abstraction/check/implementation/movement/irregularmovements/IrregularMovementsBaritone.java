@@ -1,6 +1,6 @@
 package com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements;
 
-import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.ProbabilityDetectionExecutor;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import com.vagdedes.spartan.utils.minecraft.vector.SpartanVector2F;
@@ -8,7 +8,7 @@ import org.bukkit.Location;
 
 public class IrregularMovementsBaritone extends ProbabilityDetectionExecutor {
 
-    IrregularMovementsBaritone(CheckExecutor executor) {
+    IrregularMovementsBaritone(CheckRunner executor) {
         super(executor, "baritone", true);
     }
 

@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.abstraction.check.implementation.world;
 
-import com.vagdedes.spartan.abstraction.check.CheckExecutor;
-import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.CheckRunner;
+import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.def.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.profiling.MiningHistory;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class XRay extends CheckExecutor {
+public class XRay extends CheckRunner {
 
     private static double getAverageDeviation(World.Environment environment, MiningHistory.MiningOre ore) {
         Collection<PlayerProfile> profiles = ResearchEngine.getPlayerProfiles();
@@ -54,7 +54,7 @@ public class XRay extends CheckExecutor {
 
     // Separator
 
-    private final DetectionExecutor detection;
+    private final CheckDetection detection;
 
     public XRay(Enums.HackType hackType, SpartanProtocol protocol) {
         super(hackType, protocol);

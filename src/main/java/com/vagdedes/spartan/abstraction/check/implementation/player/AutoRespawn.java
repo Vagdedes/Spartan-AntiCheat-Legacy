@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.abstraction.check.implementation.player;
 
-import com.vagdedes.spartan.abstraction.check.CheckExecutor;
-import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.CheckRunner;
+import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.def.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
@@ -11,9 +11,9 @@ import com.vagdedes.spartan.utils.minecraft.server.PluginUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.GameRule;
 
-public class AutoRespawn extends CheckExecutor {
+public class AutoRespawn extends CheckRunner {
 
-    private final DetectionExecutor detection;
+    private final CheckDetection detection;
     private long memory;
 
     public AutoRespawn(HackType hackType, SpartanProtocol protocol) {
