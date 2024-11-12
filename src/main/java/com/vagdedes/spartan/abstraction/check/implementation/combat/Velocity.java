@@ -30,6 +30,7 @@ public class Velocity extends CheckExecutor {
 
     private float vl = 0;
     private long oldTime = System.currentTimeMillis();
+    private double mostCloseYMotion = 1.0;
     private int timing = 0;
     private Vector velocity = null;
 
@@ -50,6 +51,7 @@ public class Velocity extends CheckExecutor {
             }
             if (allClear) {
                 this.velocity = event.getVelocity();
+                this.mostCloseYMotion = 1.0;
                 this.timing = 0;
             }
 
@@ -67,6 +69,8 @@ public class Velocity extends CheckExecutor {
 
             //this.protocol().bukkit.sendMessage("m: " + y);
             if (velocity != null) {
+                if (abs(abs(y) - abs(velocity.getY())) < mostCloseYMotion)
+                    mostCloseYMotion = y;
                 // time for vertical
                 if (abs(abs(y) - abs(velocity.getY())) < 0.0001) {
                     { // time for horizontal
@@ -77,21 +81,24 @@ public class Velocity extends CheckExecutor {
                         if ((!this.protocol().isOnGround() && !this.protocol().isOnGroundFrom())) {
                             // time for horizontal flag 1
                             if (total > 0.05 * multi) {
-                                this.flag("velocity manipulation [xz] (air)", 30, horizontal);
+                                this.flag("velocity manipulation [xz] (air deviance: " + total + ")", 30, horizontal);
                             }
                         } else if (total > 0.2 * multi) {
-                            this.flag("velocity manipulation [xz] (ground)", 30, horizontal);
+                            this.flag("velocity manipulation [xz] (ground deviance: " + total + ")", 30, horizontal);
                         }
                     }
                     //this.protocol().bukkit.sendMessage(x + " " + velocity.getX() + " | " + z + " " + velocity.getZ());
                     this.velocity = null;
                     this.timing = 0;
                 } else if (delay > 25) {
-                    if (timing < 1) {
+                    if (timing < 2) {
                         timing++;
                     } else {
                         // time for vertical flag
-                        this.flag("velocity manipulation [y]", 25, vertical);
+                        if (r(y) != 0.3332 && this.velocity.getY() != 0.003) {
+                            this.flag("velocity manipulation [y] (motion: " + r(this.mostCloseYMotion)
+                                            + ", velocity: " + r(this.velocity.getY()) + ")", 25, vertical);
+                        }
                         this.velocity = null;
                     }
                 }
@@ -102,8 +109,8 @@ public class Velocity extends CheckExecutor {
 
     private void flag(String reason, double vl, DetectionExecutor e) {
         this.vl += (float) vl;
-        //this.protocol().bukkit.sendMessage("flag: " + reason);
         if (this.vl > 60) {
+            //this.protocol().bukkit.sendMessage("flag: " + reason);
             e.cancel(reason);
             this.vl = 50;
         }
