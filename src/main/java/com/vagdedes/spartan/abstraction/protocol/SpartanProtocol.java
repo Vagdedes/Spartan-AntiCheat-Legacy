@@ -35,7 +35,7 @@ public class SpartanProtocol {
     public List<Packet_Teleport.TeleportData> teleportEngine;
     public final MCClient mcClient;
     public byte simulationDelayPerTP, keepEntity;
-    public LinkedList<Location> positionHistory;
+    public LinkedList<Location> positionHistory, positionHistoryLong;
     public PlayerVelocityEvent claimedVelocity;
     public List<PlayerVelocityEvent> claimedVeloGravity;
     public long tickTime;
@@ -75,6 +75,7 @@ public class SpartanProtocol {
 
         this.rightClickCounter = 0;
         this.positionHistory = new LinkedList<>();
+        this.positionHistoryLong = new LinkedList<>();
         this.hashPosBuffer = 0;
         this.claimedVelocity = null;
         this.claimedVeloGravity = new ArrayList<>();
@@ -183,8 +184,12 @@ public class SpartanProtocol {
 
     public void addRawLocation(Location location) {
         this.positionHistory.addLast(location.clone());
+        this.positionHistoryLong.addLast(location.clone());
         if (this.positionHistory.size() > 20) {
             this.positionHistory.removeFirst();
+        }
+        if (this.positionHistoryLong.size() > 50) {
+            this.positionHistoryLong.removeFirst();
         }
     }
 

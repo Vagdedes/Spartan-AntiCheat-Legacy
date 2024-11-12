@@ -8,11 +8,14 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.vagdedes.spartan.Register;
+import com.vagdedes.spartan.abstraction.event.PlayerUseEvent;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.listeners.bukkit.Event_Combat;
 import com.vagdedes.spartan.utils.java.OverflowMap;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
@@ -47,10 +50,27 @@ public class Packet_Combat_Legacy extends PacketAdapter {
             PacketContainer packet = event.getPacket();
             int entityId = packet.getIntegers().read(0);
 
+            Player target = null;
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                if (player.getEntityId() == entityId) {
+                    target = player;
+                    break;
+                }
+            }
+
             if ((!packet.getEntityUseActions().getValues().isEmpty()) ?
                             packet.getEntityUseActions().read(0).equals(EnumWrappers.EntityUseAction.ATTACK)
                             : packet.getEnumEntityUseActions().read(0).getAction().equals(
                             EnumWrappers.EntityUseAction.ATTACK)) {
+                if (target != null) {
+                    Event_Combat.use(
+                                    new PlayerUseEvent(
+                                                    event.getPlayer(),
+                                                    target,
+                                                    false
+                                    )
+                    );
+                }
                 pendingAttacks.put(protocol.getUUID(), entityId);
             }
         }

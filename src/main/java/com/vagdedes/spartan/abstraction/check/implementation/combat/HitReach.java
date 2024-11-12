@@ -1,13 +1,11 @@
 package com.vagdedes.spartan.abstraction.check.implementation.combat;
 
-import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
 import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
-import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.math.RayUtils;
@@ -15,9 +13,13 @@ import com.vagdedes.spartan.utils.minecraft.entity.CombatUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
 
 import java.util.LinkedList;
+import java.util.List;
 
 public class HitReach extends CheckExecutor {
 
@@ -37,51 +39,32 @@ public class HitReach extends CheckExecutor {
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
         PlayerAttackEvent event = (PlayerAttackEvent) object;
-        LivingEntity target = event.target;
-
+        if (!(event.target instanceof Player)) return;
         if (this.protocol().packetsEnabled()) {
-            if (CombatUtils.canCheck(this.protocol(), target)
+            if (CombatUtils.canCheck(this.protocol(), SpartanBukkit.getProtocol((Player) event.target).bukkit)
                     && !this.protocol().bukkit.getGameMode().equals(GameMode.CREATIVE)) {
-                SpartanProtocol targetProtocol = SpartanBukkit.getProtocol(ProtocolLib.getUUID(target));
-                if (targetProtocol == null) return;
-                double bruteforceRayTrace = 14.88;
-                double value;
-
+                SpartanProtocol target = SpartanBukkit.getProtocol((Player) event.target);
+                List<Location> h = target.positionHistory;
                 boolean is1_8 = this.protocol().isUsingVersion(MultiVersion.MCVersion.V1_8);
-                double hitbox = (is1_8) ? 0.4 : 0.3;
-                if (targetProtocol.getLocations() == null) return;
-                try {
-                    for (Location targetLocation : targetProtocol.getLocations()) {
-                        if (targetLocation != null) {
-                            value = RayUtils.bruteforceRayTraceWithCustomLocation(
-                                    this.protocol(),
-                                    targetLocation,
-                                    target
-                            );
-
-                            if (value < bruteforceRayTrace) {
-                                bruteforceRayTrace = value;
-                            }
-                        }
+                float hitbox = (is1_8) ? 0.4F : 0.3F;
+                boolean isHit = RayUtils.inHitbox(this.protocol(), target.getLocation(), event.target, hitbox)
+                                || RayUtils.inHitboxFrom(this.protocol(), target.getLocation(), event.target, hitbox);;
+                int i = 0;
+                for(Location l : h) {
+                    if (RayUtils.inHitbox(this.protocol(), l, event.target, hitbox)
+                                    || RayUtils.inHitboxFrom(this.protocol(), l, event.target, hitbox)) {
+                        break;
+                    } else {
+                        i++;
                     }
-                    if (bruteforceRayTrace > hitbox + 0.03 && bruteforceRayTrace != 14.88) {
-                        localVl += (int) (100 + ((bruteforceRayTrace - hitbox) * 50));
-                        if (localVl > 300) {
-                            this.hitboxRaytrace.cancel(
-                                    "type: hitbox-raytrace, reach: " + ((bruteforceRayTrace - hitbox) + 3),
-                                    vl / 100D,
-                                    this.protocol().spartan.movement.getDetectionLocation()
-                            );
-                        }
-                        localVl -= 25;
-                    } else if (localVl > 0) {
-                        localVl -= 40;
-                    }
-                } catch (Exception e) {
-                    Register.plugin.getLogger().warning("Failed to check RayTrace stack (" + this.protocol().bukkit.getName() + ")");
+                }
+               // this.protocol().bukkit.sendMessage("i: " + i);
+                if (!isHit && i == 20) {
+                  // this.protocol().bukkit.sendMessage("flag");
                 }
             }
         } else {
+            LivingEntity target = event.target;
             if (CombatUtils.canCheck(this.protocol(), target)
                     && !this.protocol().bukkit.getGameMode().equals(GameMode.CREATIVE)) {
                 double bruteforceRayTrace = RayUtils.bruteforceRayTrace(this.protocol(), target),

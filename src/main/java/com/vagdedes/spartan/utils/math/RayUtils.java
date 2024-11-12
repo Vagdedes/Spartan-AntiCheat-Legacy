@@ -267,6 +267,22 @@ public class RayUtils {
         exempt = target.isInsideVehicle();
         return intersection || exempt;
     }
+    public static boolean inHitboxFrom(SpartanProtocol protocol, Location locationIn, Entity target, float size) {
+        boolean intersection = false;
+        boolean exempt;
+        double targetX = locationIn.getX();
+        double targetY = locationIn.getY();
+        double targetZ = locationIn.getZ();
+
+        AxisAlignedBB boundingBox = new AxisAlignedBB(
+                        targetX - size, targetY - 0.1F, targetZ - size,
+                        targetX + size, targetY + 1.9F, targetZ + size
+        );
+        // boundingBox = boundingBox.expand(0.04, 0.03, 0.04);
+        intersection = isIntersection(protocol, protocol.spartan.movement.getPastTickRotation().bukkit(), intersection, boundingBox);
+        exempt = target.isInsideVehicle();
+        return intersection || exempt;
+    }
 
     public static boolean inHitbox(SpartanProtocol protocol, Location locationIn, float size) {
         Location location = protocol.getLocation();
