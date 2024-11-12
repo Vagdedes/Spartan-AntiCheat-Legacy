@@ -267,7 +267,7 @@ public abstract class DetectionExecutor extends CheckDetection {
                                 Register.manager.callEvent(event);
 
                                 if (!event.isCancelled()) {
-                                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), modifiedCommand);
+                                    SpartanBukkit.runCommand(modifiedCommand);
                                 }
                             };
 
@@ -277,7 +277,7 @@ public abstract class DetectionExecutor extends CheckDetection {
                                 SpartanBukkit.transferTask(this.protocol().spartan, runnable);
                             }
                         } else {
-                            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), modifiedCommand);
+                            SpartanBukkit.runCommand(modifiedCommand);
                         }
                     }
                     SpartanLocation location = this.protocol().spartan.movement.getLocation();

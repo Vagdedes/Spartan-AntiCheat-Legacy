@@ -194,6 +194,15 @@ public class SpartanBukkit {
 
     // Separator
 
+    public static void runCommand(String command) {
+        Bukkit.getScheduler().runTask(
+                Register.plugin,
+                () -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command)
+        );
+    }
+
+    // Separator
+
     public static void disable() {
         playerProtocol.clear();
         Threads.disable();

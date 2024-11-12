@@ -77,7 +77,7 @@ public class Messages extends ConfigurationBuilder {
 
         // Commands
         addOption("unknown_command", "&fUnknown command. Please type \"/help\" for help.");
-        addOption("failed_command", "&8[&2" + prefix + "&8]&c Command failed. Please check your arguments and try again.");
+        addOption("failed_command", "&8[&2" + prefix + "&8]&c Command failed ({command}). Please check your arguments and try again.");
         addOption("successful_command", "&8[&2" + prefix + "&8]&a Command successful.");
         addOption("massive_command_reason", "&8[&2" + prefix + "&8]&c The length of the reason is too big.");
     }

@@ -2,3 +2,5 @@
 [#] Increased the size of data Spartan can hold due to recent object optimizations.
 [#] Fixed a null location error caused by the protocol utils not returning an empty location.
 [#] Separated detections into probabilistic and hardcoded to differentiate functionality for developers.
+[#] All Spartan commands will now run synchronously so no issues are caused.
+[#] When a command fails, it will now appear in the failed message so the executor is not confused.
