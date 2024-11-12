@@ -2,6 +2,7 @@ package com.vagdedes.spartan.abstraction.check;
 
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
 import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
@@ -26,16 +27,19 @@ public abstract class HardcodedDetectionExecutor extends DetectionExecutor {
 
     public final void setHackingRatio(double ratio) {
         if (this.protocol() != null) {
+            AwarenessNotifications.forcefullySend("1");
             this.setProbability(
                     this.protocol().spartan.dataType,
                     PlayerEvidence.probabilityToCertainty(ratio)
             );
+        } else {
+            AwarenessNotifications.forcefullySend("2");
         }
     }
 
     @Override
     public void clearProbability(Check.DataType dataType) {
-        this.setProbability(dataType, PlayerEvidence.notificationProbability);
+
     }
 
     @Override

@@ -137,7 +137,11 @@ public abstract class DetectionExecutor extends CheckDetection {
     }
 
     public final void setProbability(Check.DataType dataType, double probability) {
-        this.probability.put(dataType, probability);
+        if (probability == PlayerEvidence.emptyProbability) {
+            this.probability.remove(dataType);
+        } else {
+            this.probability.put(dataType, probability);
+        }
     }
 
     final double getProbability(Check.DataType dataType) {
