@@ -8,7 +8,6 @@ import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.listeners.bukkit.standalone.chunks.Event_Chunks;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.CombatUtils;
-import com.vagdedes.spartan.utils.minecraft.world.BlockPatternUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Location;
@@ -27,6 +26,8 @@ public class Velocity extends CheckExecutor {
         this.vertical = new ImplementedDetectionExecutor(this, "vertical", true);
         this.horizontal = new ImplementedDetectionExecutor(this, "horizontal", true);
     }
+
+    private double[] jumpReset = new double[]{0.248136, 0.3332};
 
     private float vl = 0;
     private long oldTime = System.currentTimeMillis();
@@ -95,9 +96,9 @@ public class Velocity extends CheckExecutor {
                         timing++;
                     } else {
                         // time for vertical flag
-                        if (r(y) != 0.3332 && this.velocity.getY() != 0.003) {
+                        if (this.velocity.getY() != 0.003) {
                             this.flag("velocity manipulation [y] (motion: " + r(this.mostCloseYMotion)
-                                            + ", velocity: " + r(this.velocity.getY()) + ")", 25, vertical);
+                                            + ", velocity: " + r(this.velocity.getY()) + ")", this.isJumpReset(this.mostCloseYMotion) ? 12 : 25, vertical);
                         }
                         this.velocity = null;
                     }
@@ -114,6 +115,13 @@ public class Velocity extends CheckExecutor {
             e.cancel(reason);
             this.vl = 50;
         }
+    }
+
+    private boolean isJumpReset(double v) {
+        for (double d : this.jumpReset) {
+            if (d == r(v)) return true;
+        }
+        return false;
     }
 
     private static double abs(double v) {
