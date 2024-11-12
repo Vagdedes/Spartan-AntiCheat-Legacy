@@ -35,7 +35,7 @@ public abstract class ProbabilityDetectionExecutor extends DetectionExecutor {
     }
 
     @Override
-    public final void store(Check.DataType dataType, PlayerViolation playerViolation) {
+    public final void store(Check.DataType dataType, long time, double increase) {
         synchronized (this.data) {
             Map<Long, Double> map = this.data.computeIfAbsent(
                     dataType,
@@ -47,7 +47,7 @@ public abstract class ProbabilityDetectionExecutor extends DetectionExecutor {
                 iterator.next();
                 iterator.remove();
             }
-            map.put(playerViolation.time, playerViolation.increase);
+            map.put(time, increase);
         }
         ResearchEngine.queueToCache(this.hackType);
     }

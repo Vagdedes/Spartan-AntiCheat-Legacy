@@ -1,7 +1,6 @@
 package com.vagdedes.spartan.abstraction.check;
 
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
-import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
@@ -27,7 +26,7 @@ public abstract class HardcodedDetectionExecutor extends DetectionExecutor {
         long time = System.currentTimeMillis();
 
         if (this.notifications <= time) {
-            boolean player = detected instanceof SpartanPlayer;
+            boolean player = detected instanceof SpartanProtocol;
             int ticks = this.executor.getNotificationTicksCooldown(
                     player ? (SpartanProtocol) detected : null
             );
@@ -36,12 +35,12 @@ public abstract class HardcodedDetectionExecutor extends DetectionExecutor {
                 boolean access;
 
                 if (player) {
-                    access = ((SpartanPlayer) detected).getExecutor(
+                    access = ((SpartanProtocol) detected).spartan.getExecutor(
                             hackType
                     ).getDetection(
                             this.name
                     ).surpassedProbability(
-                            ((SpartanPlayer) detected).dataType,
+                            ((SpartanProtocol) detected).spartan.dataType,
                             PlayerEvidence.notificationProbability
                     );
                 } else {

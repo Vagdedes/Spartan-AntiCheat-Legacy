@@ -99,7 +99,7 @@ public abstract class DetectionExecutor extends CheckDetection {
         return false;
     }
 
-    public void store(Check.DataType dataType, PlayerViolation playerViolation) {
+    public void store(Check.DataType dataType, long time, double increase) {
     }
 
     public Double getTimeDifference(Check.DataType dataType) {
@@ -150,7 +150,7 @@ public abstract class DetectionExecutor extends CheckDetection {
 
     public abstract boolean canSendNotification(Object detected, int probability);
 
-    protected void notify(PlayerViolation playerViolation, String information) {
+    protected void notify(long time, double increase, String information) {
         double probability = this.getProbability(this.protocol().spartan.dataType),
                 certainty = PlayerEvidence.probabilityToCertainty(probability) * 100.0;
         int roundedCertainty = AlgebraUtils.integerRound(certainty);
@@ -159,7 +159,7 @@ public abstract class DetectionExecutor extends CheckDetection {
                 this.protocol(),
                 Config.messages.getColorfulString("detection_notification")
                         .replace("{info}", information)
-                        .replace("{vls:detection}", String.valueOf(AlgebraUtils.cut(playerViolation.increase, 2)))
+                        .replace("{vls:detection}", String.valueOf(AlgebraUtils.cut(increase, 2)))
                         .replace("{vls:percentage}",
                                 hasSufficientData && roundedCertainty > 0
                                         ? (roundedCertainty + "%")
@@ -170,7 +170,7 @@ public abstract class DetectionExecutor extends CheckDetection {
 
         SpartanLocation location = this.protocol().spartan.movement.getLocation();
         information = this.protocol().bukkit.getName() + " failed " + hackType
-                + " (" + CheckExecutor.violationLevelIdentifier + " " + playerViolation.increase + "), "
+                + " (" + CheckExecutor.violationLevelIdentifier + " " + increase + "), "
                 + "(Server-Version: " + MultiVersion.serverVersion.toString() + "), "
                 + "(Certainty: " + AlgebraUtils.cut(certainty, 2) + "), "
                 + "(Plugin-Version: " + API.getVersion() + "), "
@@ -192,7 +192,8 @@ public abstract class DetectionExecutor extends CheckDetection {
                 ),
                 null,
                 hackType,
-                playerViolation,
+                time,
+                increase,
                 !hasSufficientData
         );
 
@@ -297,7 +298,7 @@ public abstract class DetectionExecutor extends CheckDetection {
 
     // Prevention
 
-    public final void cancel(String information, double violations, SpartanLocation location,
+    public final void cancel(String information, double increase, SpartanLocation location,
                              int cancelTicks, boolean groundTeleport, double damage) {
         if (!this.isEnabled()) {
             return;
@@ -318,13 +319,10 @@ public abstract class DetectionExecutor extends CheckDetection {
         if (disableCause == null
                 || disableCause.hasExpired()
                 || !disableCause.pointerMatches(information)) {
-            if (violations < 1.0) {
-                violations = 1.0;
+            if (increase < 1.0) {
+                increase = 1.0;
             }
-            PlayerViolation playerViolation = new PlayerViolation(
-                    time,
-                    violations
-            );
+            double finalIncrease = increase;
             boolean event = Config.settings.getBoolean("Important.enable_developer_api");
             CheckCancellation silentCause = this.executor.getSilentCause();
 
@@ -333,7 +331,7 @@ public abstract class DetectionExecutor extends CheckDetection {
                     PlayerViolationEvent playerViolationEvent = new PlayerViolationEvent(
                             this.protocol().bukkit,
                             hackType,
-                            playerViolation.increase,
+                            finalIncrease,
                             information
                     );
                     Register.manager.callEvent(playerViolationEvent);
@@ -342,8 +340,12 @@ public abstract class DetectionExecutor extends CheckDetection {
                         return;
                     }
                 }
-                this.store(this.protocol().spartan.dataType, playerViolation);
-                this.notify(playerViolation, information);
+                this.store(
+                        this.protocol().spartan.dataType,
+                        time,
+                        finalIncrease
+                );
+                this.notify(time, finalIncrease, information);
                 this.punish();
                 this.executor.prevention = newPrevention;
                 this.executor.prevention.canPrevent =
@@ -364,22 +366,22 @@ public abstract class DetectionExecutor extends CheckDetection {
         }
     }
 
-    public final void cancel(String information, double violations, SpartanLocation location,
+    public final void cancel(String information, double increase, SpartanLocation location,
                              int cancelTicks, boolean groundTeleport) {
-        cancel(information, violations, location, cancelTicks, groundTeleport, 0.0);
+        cancel(information, increase, location, cancelTicks, groundTeleport, 0.0);
     }
 
-    public final void cancel(String information, double violations, SpartanLocation location,
+    public final void cancel(String information, double increase, SpartanLocation location,
                              int cancelTicks) {
-        cancel(information, violations, location, cancelTicks, false, 0.0);
+        cancel(information, increase, location, cancelTicks, false, 0.0);
     }
 
-    public final void cancel(String information, double violations, SpartanLocation location) {
-        cancel(information, violations, location, 0, false, 0.0);
+    public final void cancel(String information, double increase, SpartanLocation location) {
+        cancel(information, increase, location, 0, false, 0.0);
     }
 
-    public final void cancel(String information, double violations) {
-        cancel(information, violations, null, 0, false, 0.0);
+    public final void cancel(String information, double increase) {
+        cancel(information, increase, null, 0, false, 0.0);
     }
 
     public final void cancel(String information) {

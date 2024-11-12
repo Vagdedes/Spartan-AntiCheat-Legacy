@@ -4,7 +4,6 @@ import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
-import com.vagdedes.spartan.abstraction.check.PlayerViolation;
 import com.vagdedes.spartan.abstraction.inventory.implementation.MainMenu;
 import com.vagdedes.spartan.abstraction.pattern.Pattern;
 import com.vagdedes.spartan.abstraction.profiling.MiningHistory;
@@ -433,10 +432,8 @@ public class ResearchEngine {
                                                     SimpleDateFormat sdf = new SimpleDateFormat(AntiCheatLogs.dateFormat);
                                                     detectionExecutor.store(
                                                             getDataType(data),
-                                                            new PlayerViolation(
-                                                                    sdf.parse(fullDate).getTime(),
-                                                                    violationIncrease
-                                                            )
+                                                            sdf.parse(fullDate).getTime(),
+                                                            violationIncrease
                                                     );
                                                 }
                                             }
