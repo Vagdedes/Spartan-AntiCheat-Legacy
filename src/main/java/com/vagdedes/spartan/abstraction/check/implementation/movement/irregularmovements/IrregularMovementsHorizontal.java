@@ -2,14 +2,14 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.irregular
 
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
-import com.vagdedes.spartan.abstraction.check.ProbabilityDetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 
-public class IrregularMovementsHorizontal extends ProbabilityDetectionExecutor {
+public class IrregularMovementsHorizontal extends ProbabilityDetection {
 
     private final CheckDetection horizontal_known, horizontal_abstract;
 

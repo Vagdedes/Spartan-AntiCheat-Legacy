@@ -7,9 +7,9 @@ import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
 import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
 
-public abstract class HardcodedDetectionExecutor extends CheckDetection {
+public abstract class HardcodedDetection extends CheckDetection {
 
-    public HardcodedDetectionExecutor(CheckRunner executor, String name, boolean def) {
+    public HardcodedDetection(CheckRunner executor, String name, boolean def) {
         super(executor, name, def);
 
         for (Check.DataType dataType : Check.DataType.values()) {
@@ -17,12 +17,8 @@ public abstract class HardcodedDetectionExecutor extends CheckDetection {
         }
     }
 
-    public HardcodedDetectionExecutor(CheckDetection executor, String name, boolean def) {
-        super(executor, name, def);
-
-        for (Check.DataType dataType : Check.DataType.values()) {
-            this.setProbability(dataType, PlayerEvidence.notificationProbability);
-        }
+    public HardcodedDetection(CheckDetection executor, String name, boolean def) {
+        this(executor.executor, name, def);
     }
 
     public final void setHackingRatio(double ratio) {

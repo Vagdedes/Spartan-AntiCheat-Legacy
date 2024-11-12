@@ -1,9 +1,9 @@
 package com.vagdedes.spartan.abstraction.check.example;
 
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
-import com.vagdedes.spartan.abstraction.check.HardcodedDetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.HardcodedDetection;
 
-public class DetectionExecutorHardcodedExample extends HardcodedDetectionExecutor {
+public class DetectionExecutorHardcodedExample extends HardcodedDetection {
 
     DetectionExecutorHardcodedExample(CheckRunner executor) {
         super(

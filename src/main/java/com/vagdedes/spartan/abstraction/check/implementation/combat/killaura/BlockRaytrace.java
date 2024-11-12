@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.abstraction.check.implementation.combat.killaura;
 
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
-import com.vagdedes.spartan.abstraction.check.ProbabilityDetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
 import com.vagdedes.spartan.abstraction.data.CheckBoundData;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
@@ -17,7 +17,7 @@ import org.bukkit.util.Vector;
 
 import java.util.Set;
 
-public class BlockRaytrace extends ProbabilityDetectionExecutor {
+public class BlockRaytrace extends ProbabilityDetection {
 
     BlockRaytrace(CheckRunner executor) {
         super(executor, "block_raytrace", true);

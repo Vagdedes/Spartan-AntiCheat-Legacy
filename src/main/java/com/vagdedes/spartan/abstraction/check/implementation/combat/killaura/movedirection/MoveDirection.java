@@ -2,7 +2,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.combat.killaura.mo
 
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
-import com.vagdedes.spartan.abstraction.check.ProbabilityDetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
@@ -18,7 +18,7 @@ import java.util.UUID;
 
 import static java.lang.Math.PI;
 
-public class MoveDirection extends ProbabilityDetectionExecutor {
+public class MoveDirection extends ProbabilityDetection {
 
     private final CheckDetection layer1, layer2;
     private AttackHandle attackHandle;

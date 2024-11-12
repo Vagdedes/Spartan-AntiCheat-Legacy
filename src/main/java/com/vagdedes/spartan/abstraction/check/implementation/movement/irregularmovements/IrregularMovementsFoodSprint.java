@@ -1,11 +1,11 @@
 package com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements;
 
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
-import com.vagdedes.spartan.abstraction.check.ProbabilityDetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import org.bukkit.GameMode;
 
-public class IrregularMovementsFoodSprint extends ProbabilityDetectionExecutor {
+public class IrregularMovementsFoodSprint extends ProbabilityDetection {
 
     private final Buffer.IndividualBuffer buffer;
 

@@ -2,7 +2,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.irregular
 
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
-import com.vagdedes.spartan.abstraction.check.ProbabilityDetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
@@ -21,7 +21,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class IrregularMovementsStep extends ProbabilityDetectionExecutor {
+public class IrregularMovementsStep extends ProbabilityDetection {
 
     private static final double bedrockPlayerStepExtra = 1.0;
     private static final boolean abstractHorseClass = ReflectionUtils.classExists(

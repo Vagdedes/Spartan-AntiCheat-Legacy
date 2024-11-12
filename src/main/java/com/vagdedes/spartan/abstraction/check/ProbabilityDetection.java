@@ -9,23 +9,20 @@ import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
 
 import java.util.*;
 
-public abstract class ProbabilityDetectionExecutor extends CheckDetection {
+public abstract class ProbabilityDetection extends CheckDetection {
 
     private int lastProbability;
     private final Map<Check.DataType, Map<Long, Double>> data;
 
-    public ProbabilityDetectionExecutor(CheckProcess executor, String name, boolean def) {
+    public ProbabilityDetection(CheckRunner executor, String name, boolean def) {
         super(executor, name, def);
         this.data = Collections.synchronizedMap(
                 new LinkedHashMap<>(Check.DataType.values().length)
         );
     }
 
-    public ProbabilityDetectionExecutor(CheckProcess executor, String name, boolean def) {
-        super(executor, name, def);
-        this.data = Collections.synchronizedMap(
-                new LinkedHashMap<>(Check.DataType.values().length)
-        );
+    public ProbabilityDetection(CheckDetection executor, String name, boolean def) {
+       this(executor.executor, name, def);
     }
 
     @Override

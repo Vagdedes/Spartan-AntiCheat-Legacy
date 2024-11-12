@@ -2,7 +2,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.irregular
 
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
-import com.vagdedes.spartan.abstraction.check.ProbabilityDetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
@@ -20,7 +20,7 @@ import org.bukkit.potion.PotionEffectType;
 import java.util.ArrayList;
 import java.util.List;
 
-public class IrregularMovementsGravity extends ProbabilityDetectionExecutor {
+public class IrregularMovementsGravity extends ProbabilityDetection {
 
     private static final Material MACE = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_20)
             ? MaterialUtils.findMaterial("MACE")

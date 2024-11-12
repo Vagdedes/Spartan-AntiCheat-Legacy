@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.abstraction.check.implementation.world.impossibleactions;
 
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
-import com.vagdedes.spartan.abstraction.check.ProbabilityDetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
@@ -17,7 +17,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class Tower extends ProbabilityDetectionExecutor {
+public class Tower extends ProbabilityDetection {
 
     private final Map<Integer, Buffer.IndividualBuffer> buffers;
 
