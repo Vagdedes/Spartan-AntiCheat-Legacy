@@ -2,11 +2,12 @@ package com.vagdedes.spartan.abstraction.check.implementation.combat.killaura;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.ProbabilityDetectionExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 
-public class MoveLength extends DetectionExecutor {
+public class MoveLength extends ProbabilityDetectionExecutor {
 
     private static final double
             gcdMultiplier = Math.pow(2, 24), // 16777216

@@ -3,6 +3,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.combat.killaura.mo
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
 import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.ProbabilityDetectionExecutor;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.utils.math.RayUtils;
@@ -17,7 +18,7 @@ import java.util.UUID;
 
 import static java.lang.Math.PI;
 
-public class MoveDirection extends DetectionExecutor {
+public class MoveDirection extends ProbabilityDetectionExecutor {
 
     private final DetectionExecutor layer1, layer2;
     private AttackHandle attackHandle;
