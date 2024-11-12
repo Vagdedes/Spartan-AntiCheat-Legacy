@@ -11,7 +11,7 @@ public class ImplementedHardcodedDetection extends HardcodedDetection {
     }
 
     public ImplementedHardcodedDetection(CheckDetection executor, String name, boolean def) {
-        super(executor, name, def);
+        super(executor.executor, name, def);
     }
 
 }

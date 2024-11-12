@@ -17,10 +17,6 @@ public abstract class HardcodedDetection extends CheckDetection {
         }
     }
 
-    public HardcodedDetection(CheckDetection executor, String name, boolean def) {
-        this(executor.executor, name, def);
-    }
-
     public final void setHackingRatio(double ratio) {
         if (this.protocol() != null) {
             AwarenessNotifications.forcefullySend("1");

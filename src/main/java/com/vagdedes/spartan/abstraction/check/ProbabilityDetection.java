@@ -21,10 +21,6 @@ public abstract class ProbabilityDetection extends CheckDetection {
         );
     }
 
-    public ProbabilityDetection(CheckDetection executor, String name, boolean def) {
-       this(executor.executor, name, def);
-    }
-
     @Override
     protected final boolean hasDataToCompare(Check.DataType dataType) {
         Map<Long, Double> map = this.data.get(dataType);

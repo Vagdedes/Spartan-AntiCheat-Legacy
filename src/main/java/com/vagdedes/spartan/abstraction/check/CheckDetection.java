@@ -65,10 +65,6 @@ public abstract class CheckDetection extends CheckProcess {
         }
     }
 
-    protected CheckDetection(CheckDetection executor, String name, boolean def) {
-        this(executor.executor, name, def);
-    }
-
     @Override
     public int hashCode() {
         return this.hackType.hashCode() * SpartanBukkit.hashCodeMultiplier + this.random.hashCode();
