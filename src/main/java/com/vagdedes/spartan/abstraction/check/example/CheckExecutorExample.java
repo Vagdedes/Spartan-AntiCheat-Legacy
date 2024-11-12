@@ -2,23 +2,37 @@ package com.vagdedes.spartan.abstraction.check.example;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.def.ImplementedHardcodedDetection;
 import com.vagdedes.spartan.abstraction.check.def.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import me.vagdedes.spartan.system.Enums;
 
 public class CheckExecutorExample extends CheckExecutor {
 
-    private final DetectionExecutorExample detectionExecutorWithItsOwnClass;
-    private final DetectionExecutor detectionExecutorInTheBaseClass;
+    private final DetectionExecutorProbabilityExample detection1;
+    private final DetectionExecutorHardcodedExample detection2;
+    private final DetectionExecutor detection3;
+    private final DetectionExecutor detection4;
 
     public CheckExecutorExample(Enums.HackType hackType, SpartanProtocol protocol) {
         super(hackType, protocol);
 
-        this.detectionExecutorWithItsOwnClass = new DetectionExecutorExample(
+        this.detection2 = new DetectionExecutorHardcodedExample(
                 this
         );
 
-        this.detectionExecutorInTheBaseClass = new ImplementedProbabilityDetection(
+        this.detection1 = new DetectionExecutorProbabilityExample(
+                this
+        );
+
+
+        this.detection3 = new ImplementedHardcodedDetection(
+                this,
+                "detection_option_name_in_checks_yml",
+                true // Enabled By Default Or Not
+        );
+
+        this.detection4 = new ImplementedProbabilityDetection(
                 this,
                 "detection_option_name_in_checks_yml",
                 true // Enabled By Default Or Not
@@ -46,7 +60,7 @@ public class CheckExecutorExample extends CheckExecutor {
 
     @Override
     protected void runInternal(boolean cancelled) {
-        this.detectionExecutorWithItsOwnClass.customMethod1();
+        this.detection1.customMethod1();
         // This method should be used to run a check/detection when no information
         // needs to be inserted via the method being called and is all available in
         // the class or via methods of other classes.
@@ -57,7 +71,7 @@ public class CheckExecutorExample extends CheckExecutor {
 
     @Override
     protected boolean canRun() {
-        this.detectionExecutorWithItsOwnClass.customMethod2();
+        this.detection1.customMethod2();
         // This method should be used to judge whether a check should run or not.
         // However, each check/detection may have different requirements, so use
         // this method for the requirements all checks/detections have in common.

@@ -1,0 +1,23 @@
+package com.vagdedes.spartan.abstraction.check.example;
+
+import com.vagdedes.spartan.abstraction.check.CheckExecutor;
+import com.vagdedes.spartan.abstraction.check.ProbabilityDetectionExecutor;
+
+public class DetectionExecutorProbabilityExample extends ProbabilityDetectionExecutor {
+
+    DetectionExecutorProbabilityExample(CheckExecutor executor) {
+        super(
+                executor,
+                "detection_option_name_in_checks_yml",
+                true // Enabled By Default Or Not
+        );
+    }
+
+    void customMethod1() {
+
+    }
+
+    boolean customMethod2() {
+        return true;
+    }
+}
