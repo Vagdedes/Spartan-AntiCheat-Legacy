@@ -39,11 +39,10 @@ public abstract class HardcodedDetectionExecutor extends DetectionExecutor {
 
     @Override
     public void clearProbability(Check.DataType dataType) {
-
     }
 
     @Override
-    public final boolean hasDataToCompare(Check.DataType dataType) {
+    protected final boolean hasDataToCompare(Check.DataType dataType) {
         return true;
     }
 

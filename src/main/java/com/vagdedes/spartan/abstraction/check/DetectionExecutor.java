@@ -21,7 +21,6 @@ import me.vagdedes.spartan.api.API;
 import me.vagdedes.spartan.api.PlayerViolationCommandEvent;
 import me.vagdedes.spartan.api.PlayerViolationEvent;
 import me.vagdedes.spartan.system.Enums;
-import org.bukkit.Bukkit;
 
 import java.util.Collection;
 import java.util.List;
@@ -95,7 +94,7 @@ public abstract class DetectionExecutor extends CheckDetection {
 
     // Data
 
-    public boolean hasDataToCompare(Check.DataType dataType) {
+    protected boolean hasDataToCompare(Check.DataType dataType) {
         return false;
     }
 

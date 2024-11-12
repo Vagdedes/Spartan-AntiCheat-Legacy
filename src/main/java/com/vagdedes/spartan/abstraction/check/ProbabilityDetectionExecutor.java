@@ -29,9 +29,9 @@ public abstract class ProbabilityDetectionExecutor extends DetectionExecutor {
     }
 
     @Override
-    public final boolean hasDataToCompare(Check.DataType dataType) {
+    protected final boolean hasDataToCompare(Check.DataType dataType) {
         Map<Long, Double> map = this.data.get(dataType);
-        return map != null && map.size() > 1;
+        return map != null && !map.isEmpty();
     }
 
     @Override
@@ -55,26 +55,32 @@ public abstract class ProbabilityDetectionExecutor extends DetectionExecutor {
     @Override
     public final Double getTimeDifference(Check.DataType dataType) {
         if (this.hasDataToCompare(dataType)) {
-            double squareSum = 0.0;
-            int size;
-
-            synchronized (this.data) {
-                Map<Long, Double> map = this.data.get(dataType);
-                size = map.size();
-                Iterator<Map.Entry<Long, Double>> iterator = map.entrySet().iterator();
-                long previous = iterator.next().getKey();
-
-                while (iterator.hasNext()) {
-                    Map.Entry<Long, Double> entry = iterator.next();
-                    double difference = Math.min(
-                            (entry.getKey() - previous) / entry.getValue(),
-                            60_000L
-                    );
-                    previous = entry.getKey();
-                    squareSum += difference * difference;
+            if (this.data.size() == 1) {
+                synchronized (this.data) {
+                return this.data.values().iterator().next().values().iterator().next();
                 }
+            } else {
+                double squareSum = 0.0;
+                int size;
+
+                synchronized (this.data) {
+                    Map<Long, Double> map = this.data.get(dataType);
+                    size = map.size();
+                    Iterator<Map.Entry<Long, Double>> iterator = map.entrySet().iterator();
+                    long previous = iterator.next().getKey();
+
+                    while (iterator.hasNext()) {
+                        Map.Entry<Long, Double> entry = iterator.next();
+                        double difference = Math.min(
+                                (entry.getKey() - previous) / entry.getValue(),
+                                60_000L
+                        );
+                        previous = entry.getKey();
+                        squareSum += difference * difference;
+                    }
+                }
+                return Math.sqrt(squareSum / (size - 1.0));
             }
-            return Math.sqrt(squareSum / (size - 1.0));
         } else {
             return null;
         }

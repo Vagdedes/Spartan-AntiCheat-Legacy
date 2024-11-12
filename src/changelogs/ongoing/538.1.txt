@@ -1,3 +1,4 @@
+[#] Made learning 2x faster for every of player of every detection of every check.
 [#] Fixed an ImpossibleActions detection error caused by outdated block face bukkit object.
 [#] Increased the size of data Spartan can hold due to recent object optimizations.
 [#] Fixed a null location error caused by the protocol utils not returning an empty location.
