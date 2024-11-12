@@ -29,7 +29,7 @@ public class FastClicks extends CheckRunner {
                 "clicks_per_second_limit",
                 15
         );
-        boolean checkLimit = limit > 1,
+        boolean checkLimit = limit > 0,
                 checkPattern = this.clicksPattern.isEnabled();
 
         if (checkLimit || checkPattern) {
