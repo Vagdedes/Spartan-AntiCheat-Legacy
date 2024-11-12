@@ -2,8 +2,8 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.irregular
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
-import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
 import com.vagdedes.spartan.abstraction.check.ProbabilityDetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.def.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.TPS;
@@ -51,8 +51,8 @@ public class IrregularMovementsJump extends ProbabilityDetectionExecutor {
 
     IrregularMovementsJump(CheckExecutor executor) {
         super(executor, null, true);
-        this.jump_ticks = new ImplementedDetectionExecutor(this, "jump_ticks", true);
-        this.jump_height = new ImplementedDetectionExecutor(this, "jump_height", true);
+        this.jump_ticks = new ImplementedProbabilityDetection(this, "jump_ticks", true);
+        this.jump_height = new ImplementedProbabilityDetection(this, "jump_height", true);
     }
 
     void run(double vertical, double box) {

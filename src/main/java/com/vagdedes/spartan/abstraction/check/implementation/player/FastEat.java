@@ -2,7 +2,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.player;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
-import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.def.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
@@ -29,8 +29,8 @@ public class FastEat extends CheckExecutor {
 
     public FastEat(HackType hackType, SpartanProtocol protocol) {
         super(hackType, protocol);
-        this.interact = new ImplementedDetectionExecutor(this, "interact", true);
-        this.eat = new ImplementedDetectionExecutor(this, "eat", true);
+        this.interact = new ImplementedProbabilityDetection(this, "interact", true);
+        this.eat = new ImplementedProbabilityDetection(this, "eat", true);
     }
 
     private long getDelay() {

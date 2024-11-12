@@ -308,13 +308,13 @@ public abstract class DetectionExecutor extends CheckDetection {
                 || CloudBase.isInformationCancelled(this.hackType, information)) {
             return;
         }
-        HackPrevention newPrevention = new HackPrevention(
+        CheckPrevention newPrevention = new CheckPrevention(
                 location,
                 cancelTicks,
                 groundTeleport,
                 damage
         );
-        CancelCause disableCause = this.executor.getDisableCause();
+        CheckCancellation disableCause = this.executor.getDisableCause();
         if (disableCause == null
                 || disableCause.hasExpired()
                 || !disableCause.pointerMatches(information)) {
@@ -326,7 +326,7 @@ public abstract class DetectionExecutor extends CheckDetection {
                     violations
             );
             boolean event = Config.settings.getBoolean("Important.enable_developer_api");
-            CancelCause silentCause = this.executor.getSilentCause();
+            CheckCancellation silentCause = this.executor.getSilentCause();
 
             Runnable runnable = () -> {
                 if (event) {

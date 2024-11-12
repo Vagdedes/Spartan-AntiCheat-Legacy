@@ -2,8 +2,8 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.irregular
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
-import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
 import com.vagdedes.spartan.abstraction.check.ProbabilityDetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.def.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.java.ReflectionUtils;
@@ -85,13 +85,13 @@ public class IrregularMovementsStep extends ProbabilityDetectionExecutor {
 
     IrregularMovementsStep(CheckExecutor executor) {
         super(executor, null, true);
-        this.step_high = new ImplementedDetectionExecutor(this, "step_high", true);
-        this.step_combination = new ImplementedDetectionExecutor(this, "step_combination", true);
-        this.step_entity = new ImplementedDetectionExecutor(this, "step_entity", true);
-        this.step_abstract_up = new ImplementedDetectionExecutor(this, "step_abstract_up", true);
-        this.step_high_first_fall = new ImplementedDetectionExecutor(this, "step_high_first_fall", true);
-        this.step_landing = new ImplementedDetectionExecutor(this, "step_landing", true);
-        this.step_abstract_down = new ImplementedDetectionExecutor(this, "step_abstract_down", true);
+        this.step_high = new ImplementedProbabilityDetection(this, "step_high", true);
+        this.step_combination = new ImplementedProbabilityDetection(this, "step_combination", true);
+        this.step_entity = new ImplementedProbabilityDetection(this, "step_entity", true);
+        this.step_abstract_up = new ImplementedProbabilityDetection(this, "step_abstract_up", true);
+        this.step_high_first_fall = new ImplementedProbabilityDetection(this, "step_high_first_fall", true);
+        this.step_landing = new ImplementedProbabilityDetection(this, "step_landing", true);
+        this.step_abstract_down = new ImplementedProbabilityDetection(this, "step_abstract_down", true);
     }
 
     void run(boolean knownBox, boolean knownOldBox,

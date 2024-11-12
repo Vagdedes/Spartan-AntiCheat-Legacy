@@ -2,7 +2,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.morepacke
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
-import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.def.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.event.PlayerTickEvent;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.TPS;
@@ -24,7 +24,7 @@ public class MorePackets extends CheckExecutor {
 
     private final Map<Long, Integer> bukkitNmsMap;
     private int bukkitBuffer, packetVL;
-    private final ImplementedDetectionExecutor
+    private final ImplementedProbabilityDetection
             timer,
             positive_net,
             positive_latency,
@@ -37,27 +37,27 @@ public class MorePackets extends CheckExecutor {
         this.bukkitNmsMap = new LinkedHashMap<>(AlgebraUtils.integerCeil(TPS.maximum) + 1, 1.0f);
         this.bukkitBuffer = 0;
         this.packetVL = 0;
-        this.timer = new ImplementedDetectionExecutor(
+        this.timer = new ImplementedProbabilityDetection(
                 this,
                 "timer",
                 true
         );
-        this.positive_net = new ImplementedDetectionExecutor(
+        this.positive_net = new ImplementedProbabilityDetection(
                 this,
                 "positive_net",
                 true
         );
-        this.positive_latency = new ImplementedDetectionExecutor(
+        this.positive_latency = new ImplementedProbabilityDetection(
                 this,
                 "positive_latency",
                 true
         );
-        this.positive_balance = new ImplementedDetectionExecutor(
+        this.positive_balance = new ImplementedProbabilityDetection(
                 this,
                 "positive_balance",
                 true
         );
-        this.negative = new ImplementedDetectionExecutor(
+        this.negative = new ImplementedProbabilityDetection(
                 this,
                 "negative",
                 true

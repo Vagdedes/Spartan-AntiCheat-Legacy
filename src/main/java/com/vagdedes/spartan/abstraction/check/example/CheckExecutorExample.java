@@ -2,7 +2,7 @@ package com.vagdedes.spartan.abstraction.check.example;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
-import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.def.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import me.vagdedes.spartan.system.Enums;
 
@@ -18,7 +18,7 @@ public class CheckExecutorExample extends CheckExecutor {
                 this
         );
 
-        this.detectionExecutorInTheBaseClass = new ImplementedDetectionExecutor(
+        this.detectionExecutorInTheBaseClass = new ImplementedProbabilityDetection(
                 this,
                 "detection_option_name_in_checks_yml",
                 true // Enabled By Default Or Not

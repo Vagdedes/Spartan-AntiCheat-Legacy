@@ -347,41 +347,6 @@ public class Check {
         return false;
     }
 
-    public Collection<String> getOptionKeys() {
-        synchronized (options) {
-            return new ArrayList<>(options.keySet());
-        }
-    }
-
-    public Collection<Object> getOptionValues() {
-        synchronized (options) {
-            return new ArrayList<>(options.values());
-        }
-    }
-
-    public Collection<Map.Entry<String, Object>> getOptions() {
-        synchronized (options) {
-            return new ArrayList<>(options.entrySet());
-        }
-    }
-
-    public Set<String[]> getStoredOptions() {
-        Set<String[]> set = new LinkedHashSet<>(30);
-        YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
-        String hackTypeString = this.hackType.toString();
-
-        for (String key : configuration.getKeys(true)) {
-            if (key.split("\\.", 2)[0].equalsIgnoreCase(hackTypeString)) {
-                Object option = configuration.get(key, null);
-
-                if (option != null) {
-                    set.add(new String[]{key, option.toString()});
-                }
-            }
-        }
-        return set;
-    }
-
     public Object getOption(String option, Object def, boolean cache) {
         if (cache) {
             synchronized (options) {
@@ -438,10 +403,6 @@ public class Check {
             ex.printStackTrace();
         }
         return def;
-    }
-
-    public String getTextOption(String option, boolean def) {
-        return getOption(option, def, true).toString();
     }
 
     public boolean getBooleanOption(String option, Boolean def) {

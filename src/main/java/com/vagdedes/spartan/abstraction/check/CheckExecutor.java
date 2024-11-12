@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.abstraction.check;
 
 import com.vagdedes.spartan.Register;
+import com.vagdedes.spartan.abstraction.check.def.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
@@ -31,15 +32,15 @@ public abstract class CheckExecutor extends CheckDetection {
             detectionIdentifier = "Detection:";
 
     private final long creation;
-    private CancelCause disableCause, silentCause;
-    HackPrevention prevention;
+    private CheckCancellation disableCause, silentCause;
+    CheckPrevention prevention;
     private boolean cancelled;
     final Map<String, DetectionExecutor> detections;
 
     public CheckExecutor(Enums.HackType hackType, SpartanProtocol protocol) {
         super(hackType, protocol);
         this.creation = System.currentTimeMillis();
-        this.prevention = new HackPrevention();
+        this.prevention = new CheckPrevention();
         this.detections = new ConcurrentHashMap<>(2);
     }
 
@@ -77,7 +78,7 @@ public abstract class CheckExecutor extends CheckDetection {
 
     public final DetectionExecutor getDetection() {
         if (this.detections.isEmpty()) {
-            new ImplementedDetectionExecutor(this, null, false);
+            new ImplementedProbabilityDetection(this, null, false);
         }
         return this.detections.values().iterator().next();
     }
@@ -134,17 +135,17 @@ public abstract class CheckExecutor extends CheckDetection {
 
     // Causes
 
-    public final CancelCause getDisableCause() {
+    public final CheckCancellation getDisableCause() {
         if (disableCause == null || disableCause.hasExpired()) {
             if (this.protocol() != null) {
                 return MythicMobs.is(this.protocol())
-                        ? new CancelCause(Compatibility.CompatibilityType.MYTHIC_MOBS)
+                        ? new CheckCancellation(Compatibility.CompatibilityType.MYTHIC_MOBS)
                         : ItemsAdder.is(this.protocol())
-                        ? new CancelCause(Compatibility.CompatibilityType.ITEMS_ADDER)
+                        ? new CheckCancellation(Compatibility.CompatibilityType.ITEMS_ADDER)
                         : CustomEnchantsPlus.has(this.protocol())
-                        ? new CancelCause(Compatibility.CompatibilityType.CUSTOM_ENCHANTS_PLUS)
+                        ? new CheckCancellation(Compatibility.CompatibilityType.CUSTOM_ENCHANTS_PLUS)
                         : EcoEnchants.has(this.protocol())
-                        ? new CancelCause(Compatibility.CompatibilityType.ECO_ENCHANTS)
+                        ? new CheckCancellation(Compatibility.CompatibilityType.ECO_ENCHANTS)
                         : null;
             } else {
                 return null;
@@ -154,7 +155,7 @@ public abstract class CheckExecutor extends CheckDetection {
         }
     }
 
-    public final CancelCause getSilentCause() {
+    public final CheckCancellation getSilentCause() {
         return silentCause != null && silentCause.hasExpired() ? null : silentCause;
     }
 
@@ -163,9 +164,9 @@ public abstract class CheckExecutor extends CheckDetection {
             reason = this.hackType.getCheck().getName();
         }
         if (disableCause != null) {
-            disableCause.merge(new CancelCause(reason, pointer, ticks));
+            disableCause.merge(new CheckCancellation(reason, pointer, ticks));
         } else {
-            disableCause = new CancelCause(reason, pointer, ticks);
+            disableCause = new CheckCancellation(reason, pointer, ticks);
         }
         if (this.protocol() != null) {
             InteractiveInventory.playerInfo.refresh(this.protocol().bukkit.getName());
@@ -174,9 +175,9 @@ public abstract class CheckExecutor extends CheckDetection {
 
     public final void addSilentCause(String reason, String pointer, int ticks) {
         if (silentCause != null) {
-            silentCause.merge(new CancelCause(reason, pointer, ticks));
+            silentCause.merge(new CheckCancellation(reason, pointer, ticks));
         } else {
-            silentCause = new CancelCause(reason, pointer, ticks);
+            silentCause = new CheckCancellation(reason, pointer, ticks);
         }
         if (this.protocol() != null) {
             InteractiveInventory.playerInfo.refresh(this.protocol().bukkit.getName());
