@@ -10,10 +10,32 @@ public abstract class HardcodedDetectionExecutor extends DetectionExecutor {
 
     public HardcodedDetectionExecutor(CheckExecutor executor, String name, boolean def) {
         super(executor, name, def);
+
+        for (Check.DataType dataType : Check.DataType.values()) {
+            this.setProbability(dataType, PlayerEvidence.notificationProbability);
+        }
     }
 
     public HardcodedDetectionExecutor(DetectionExecutor executor, String name, boolean def) {
         super(executor, name, def);
+
+        for (Check.DataType dataType : Check.DataType.values()) {
+            this.setProbability(dataType, PlayerEvidence.notificationProbability);
+        }
+    }
+
+    public final void setHackingRatio(double ratio) {
+        if (this.protocol() != null) {
+            this.setProbability(
+                    this.protocol().spartan.dataType,
+                    PlayerEvidence.probabilityToCertainty(ratio)
+            );
+        }
+    }
+
+    @Override
+    public void clearProbability(Check.DataType dataType) {
+        this.setProbability(dataType, PlayerEvidence.notificationProbability);
     }
 
     @Override

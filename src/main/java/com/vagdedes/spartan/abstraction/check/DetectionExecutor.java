@@ -132,8 +132,8 @@ public abstract class DetectionExecutor extends CheckDetection {
         return PlayerEvidence.surpassedProbability(this.getProbability(dataType), threshold);
     }
 
-    public final void clearProbability(Check.DataType dataType) {
-        this.probability.put(dataType, PlayerEvidence.emptyProbability);
+    public void clearProbability(Check.DataType dataType) {
+        this.probability.remove(dataType);
     }
 
     public final void setProbability(Check.DataType dataType, double probability) {
