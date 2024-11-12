@@ -2,7 +2,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.player;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
-import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.def.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.TPS;
@@ -18,7 +18,7 @@ public class AutoRespawn extends CheckExecutor {
 
     public AutoRespawn(HackType hackType, SpartanProtocol protocol) {
         super(hackType, protocol);
-        this.detection = new ImplementedDetectionExecutor(this, null, true);
+        this.detection = new ImplementedProbabilityDetection(this, null, true);
     }
 
     @Override

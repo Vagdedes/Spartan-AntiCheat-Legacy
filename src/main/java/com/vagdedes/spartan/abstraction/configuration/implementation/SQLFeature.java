@@ -1,6 +1,5 @@
 package com.vagdedes.spartan.abstraction.configuration.implementation;
 
-import com.vagdedes.spartan.abstraction.check.PlayerViolation;
 import com.vagdedes.spartan.abstraction.configuration.ConfigurationBuilder;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
@@ -17,7 +16,9 @@ import org.bukkit.Material;
 
 import java.io.File;
 import java.sql.*;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 public class SQLFeature extends ConfigurationBuilder {
@@ -330,11 +331,12 @@ public class SQLFeature extends ConfigurationBuilder {
                         String information,
                         Material material,
                         Enums.HackType hackType,
-                        PlayerViolation playerViolation) {
+                        long time,
+                        double increase) {
         if (enabled) {
             String table = getTable();
             boolean hasPlayer = p != null,
-                    hasCheck = playerViolation != null,
+                    hasCheck = hackType != null,
                     hasMaterial = material != null;
             SpartanLocation location = hasPlayer ? p.spartan.movement.getLocation() : null;
             update(
@@ -344,7 +346,9 @@ public class SQLFeature extends ConfigurationBuilder {
                             + ", type, notification, information"
                             + ", player_uuid, player_name, player_latency, player_x, player_y, player_z"
                             + ", functionality, violation_increase) "
-                            + "VALUES (" + syntaxForColumn(DateTimeFormatter.ofPattern(AntiCheatLogs.dateFormat).format(LocalDateTime.now()))
+                            + "VALUES (" + syntaxForColumn(DateTimeFormatter.ofPattern(AntiCheatLogs.dateFormat).format(
+                            LocalDateTime.ofInstant(Instant.ofEpochMilli(time), ZoneId.systemDefault())
+                    ))
                             + ", " + syntaxForColumn(CrossServerNotifications.getServerName())
                             + ", " + syntaxForColumn(API.getVersion())
                             + ", " + syntaxForColumn(MultiVersion.serverVersion.toString())
@@ -359,7 +363,7 @@ public class SQLFeature extends ConfigurationBuilder {
                             + ", " + (hasPlayer ? syntaxForColumn(location.getBlockY()) : "NULL")
                             + ", " + (hasPlayer ? syntaxForColumn(location.getBlockZ()) : "NULL")
                             + ", " + (hasMaterial ? syntaxForColumn(material) : hasCheck ? syntaxForColumn(hackType) : "NULL")
-                            + ", " + (hasCheck ? syntaxForColumn(playerViolation.increase) : "NULL")
+                            + ", " + (hasCheck ? syntaxForColumn(increase) : "NULL")
                             + ");"
             );
         }

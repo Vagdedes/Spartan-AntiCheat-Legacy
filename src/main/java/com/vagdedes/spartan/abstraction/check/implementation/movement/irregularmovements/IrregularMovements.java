@@ -2,7 +2,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.irregular
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
-import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.def.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.gravity.IrregularMovementsGravityNew;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.TPS;
@@ -25,7 +25,7 @@ public class IrregularMovements extends CheckExecutor {
 
     public IrregularMovements(HackType hackType, SpartanProtocol protocol) {
         super(hackType, protocol);
-        limitServerFlying = new ImplementedDetectionExecutor(this, "limit_server_flying", false);
+        limitServerFlying = new ImplementedProbabilityDetection(this, "limit_server_flying", false);
         step = new IrregularMovementsStep(this);
         gravityOld = new IrregularMovementsGravity(this);
         gravity = new IrregularMovementsGravityNew(this);

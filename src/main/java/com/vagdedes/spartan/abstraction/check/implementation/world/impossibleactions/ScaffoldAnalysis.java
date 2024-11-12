@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.abstraction.check.implementation.world.impossibleactions;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
-import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.ProbabilityDetectionExecutor;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
@@ -16,7 +16,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ScaffoldAnalysis extends DetectionExecutor {
+public class ScaffoldAnalysis extends ProbabilityDetectionExecutor {
 
     private final Map<Integer, Buffer.IndividualSimpleBuffer> buffers;
 

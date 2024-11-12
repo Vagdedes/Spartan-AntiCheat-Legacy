@@ -2,7 +2,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.inventory;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
-import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.def.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
@@ -30,10 +30,10 @@ public class InventoryClicks extends CheckExecutor {
 
     public InventoryClicks(Enums.HackType hackType, SpartanProtocol protocol) {
         super(hackType, protocol);
-        this.shift = new ImplementedDetectionExecutor(this, "shift", true);
-        this.slow = new ImplementedDetectionExecutor(this, "slow", true);
-        this.medium = new ImplementedDetectionExecutor(this, "medium", true);
-        this.fast = new ImplementedDetectionExecutor(this, "fast", true);
+        this.shift = new ImplementedProbabilityDetection(this, "shift", true);
+        this.slow = new ImplementedProbabilityDetection(this, "slow", true);
+        this.medium = new ImplementedProbabilityDetection(this, "medium", true);
+        this.fast = new ImplementedProbabilityDetection(this, "fast", true);
         this.slowBuffer = new Buffer.IndividualBuffer();
         this.mediumBuffer = new Buffer.IndividualBuffer();
         this.fastBuffer = new Buffer.IndividualBuffer();

@@ -2,7 +2,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.combat;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
-import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.def.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -19,8 +19,8 @@ public class FastClicks extends CheckExecutor {
 
     public FastClicks(Enums.HackType hackType, SpartanProtocol protocol) {
         super(hackType, protocol);
-        this.clicksPerSecond = new ImplementedDetectionExecutor(this, null, true);
-        this.clicksPattern = new ImplementedDetectionExecutor(this, "click_pattern", true);
+        this.clicksPerSecond = new ImplementedProbabilityDetection(this, null, true);
+        this.clicksPattern = new ImplementedProbabilityDetection(this, "click_pattern", true);
     }
 
     @Override

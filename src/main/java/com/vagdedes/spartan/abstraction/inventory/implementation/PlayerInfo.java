@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.abstraction.inventory.implementation;
 
-import com.vagdedes.spartan.abstraction.check.CancelCause;
 import com.vagdedes.spartan.abstraction.check.Check;
+import com.vagdedes.spartan.abstraction.check.CheckCancellation;
 import com.vagdedes.spartan.abstraction.data.Cooldowns;
 import com.vagdedes.spartan.abstraction.inventory.InventoryMenu;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
@@ -212,7 +212,7 @@ public class PlayerInfo extends InventoryMenu {
         if (!check.isEnabled(dataType, worldName)) { // Do not put player because we calculate it below
             return "Disabled";
         }
-        CancelCause disabledCause = protocol.spartan.getExecutor(hackType).getDisableCause();
+        CheckCancellation disabledCause = protocol.spartan.getExecutor(hackType).getDisableCause();
         return Permissions.isBypassing(protocol.bukkit, hackType) ? "Permission Bypass" :
                 disabledCause != null ? "Cancelled (" + disabledCause.getReason() + ")" :
                         (check.isSilent(dataType, worldName) ? "Silent " : "") + "Checking";

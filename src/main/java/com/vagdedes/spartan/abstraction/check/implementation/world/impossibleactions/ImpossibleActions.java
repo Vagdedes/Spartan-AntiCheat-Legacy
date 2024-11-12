@@ -2,7 +2,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.world.impossibleac
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
-import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.def.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
@@ -32,10 +32,10 @@ public class ImpossibleActions extends CheckExecutor {
 
     public ImpossibleActions(Enums.HackType hackType, SpartanProtocol protocol) {
         super(hackType, protocol);
-        this.scaffoldDirection = new ImplementedDetectionExecutor(this, "scaffold_direction", true);
-        this.scaffoldUp = new ImplementedDetectionExecutor(this, "scaffold_up", true);
-        this.scaffoldYaw = new ImplementedDetectionExecutor(this, "scaffold_yaw", true);
-        this.actions = new ImplementedDetectionExecutor(this, "actions", true);
+        this.scaffoldDirection = new ImplementedProbabilityDetection(this, "scaffold_direction", true);
+        this.scaffoldUp = new ImplementedProbabilityDetection(this, "scaffold_up", true);
+        this.scaffoldYaw = new ImplementedProbabilityDetection(this, "scaffold_yaw", true);
+        this.actions = new ImplementedProbabilityDetection(this, "actions", true);
         this.tower = new Tower(this);
         this.scaffoldAnalysis = new ScaffoldAnalysis(this);
     }

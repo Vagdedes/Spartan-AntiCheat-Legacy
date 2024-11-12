@@ -2,7 +2,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.world;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
-import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.def.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
@@ -23,9 +23,9 @@ public class FastPlace extends CheckExecutor {
 
     public FastPlace(HackType hackType, SpartanProtocol protocol) {
         super(hackType, protocol);
-        this.fast = new ImplementedDetectionExecutor(this, "fast", true);
-        this.medium = new ImplementedDetectionExecutor(this, "medium", true);
-        this.slow = new ImplementedDetectionExecutor(this, "slow", true);
+        this.fast = new ImplementedProbabilityDetection(this, "fast", true);
+        this.medium = new ImplementedProbabilityDetection(this, "medium", true);
+        this.slow = new ImplementedProbabilityDetection(this, "slow", true);
         this.fastBuffer = new Buffer.IndividualBuffer();
         this.mediumBuffer = new Buffer.IndividualBuffer();
         this.slowBuffer = new Buffer.IndividualBuffer();

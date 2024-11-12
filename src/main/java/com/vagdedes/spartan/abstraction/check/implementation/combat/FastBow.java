@@ -2,7 +2,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.combat;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
-import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.def.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import me.vagdedes.spartan.system.Enums.HackType;
@@ -22,8 +22,8 @@ public class FastBow extends CheckExecutor {
 
     public FastBow(HackType hackType, SpartanProtocol protocol) {
         super(hackType, protocol);
-        this.bowForceDetection = new ImplementedDetectionExecutor(this, "bow_force", true);
-        this.bowShotsDetection = new ImplementedDetectionExecutor(this, "bow_shots", true);
+        this.bowForceDetection = new ImplementedProbabilityDetection(this, "bow_force", true);
+        this.bowShotsDetection = new ImplementedProbabilityDetection(this, "bow_shots", true);
         this.bowForce = new Buffer.IndividualBuffer();
         this.bowShots = new Buffer.IndividualBuffer();
     }

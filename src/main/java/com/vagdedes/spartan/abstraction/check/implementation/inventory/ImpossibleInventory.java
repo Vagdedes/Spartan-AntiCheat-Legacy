@@ -3,7 +3,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.inventory;
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
-import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.def.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
@@ -39,10 +39,10 @@ public class ImpossibleInventory extends CheckExecutor {
 
     public ImpossibleInventory(Enums.HackType hackType, SpartanProtocol protocol) {
         super(hackType, protocol);
-        this.autoTotemDetection = new ImplementedDetectionExecutor(this, "auto_totem", true);
-        this.closedInventoryDetection = new ImplementedDetectionExecutor(this, "closed_inventory", true);
-        this.portalInventoryDetection = new ImplementedDetectionExecutor(this, "portal_inventory", true);
-        this.cursorUsageDetection = new ImplementedDetectionExecutor(this, "cursor_usage", true);
+        this.autoTotemDetection = new ImplementedProbabilityDetection(this, "auto_totem", true);
+        this.closedInventoryDetection = new ImplementedProbabilityDetection(this, "closed_inventory", true);
+        this.portalInventoryDetection = new ImplementedProbabilityDetection(this, "portal_inventory", true);
+        this.cursorUsageDetection = new ImplementedProbabilityDetection(this, "cursor_usage", true);
     }
 
     @Override

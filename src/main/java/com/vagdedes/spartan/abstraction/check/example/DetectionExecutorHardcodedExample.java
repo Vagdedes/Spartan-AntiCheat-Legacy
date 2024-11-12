@@ -1,11 +1,11 @@
 package com.vagdedes.spartan.abstraction.check.example;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
-import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.HardcodedDetectionExecutor;
 
-public class DetectionExecutorExample extends DetectionExecutor {
+public class DetectionExecutorHardcodedExample extends HardcodedDetectionExecutor {
 
-    DetectionExecutorExample(CheckExecutor executor) {
+    DetectionExecutorHardcodedExample(CheckExecutor executor) {
         super(
                 executor,
                 "detection_option_name_in_checks_yml",
@@ -13,11 +13,4 @@ public class DetectionExecutorExample extends DetectionExecutor {
         );
     }
 
-    void customMethod1() {
-
-    }
-
-    boolean customMethod2() {
-        return true;
-    }
 }

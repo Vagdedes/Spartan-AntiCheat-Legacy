@@ -2,7 +2,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement;
 
 import com.vagdedes.spartan.abstraction.check.CheckExecutor;
 import com.vagdedes.spartan.abstraction.check.DetectionExecutor;
-import com.vagdedes.spartan.abstraction.check.ImplementedDetectionExecutor;
+import com.vagdedes.spartan.abstraction.check.def.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.protocol.ExtendedPotionEffect;
 import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
@@ -80,9 +80,9 @@ public class Speed extends CheckExecutor {
 
     public Speed(Enums.HackType hackType, SpartanProtocol protocol) {
         super(hackType, protocol);
-        this.strafeLineSpeeding = new ImplementedDetectionExecutor(this, "strafe_line_speeding", true);
-        this.strafeJumpSpeeding = new ImplementedDetectionExecutor(this, "strafe_jump_speeding", true);
-        this.straightLineSpeeding = new ImplementedDetectionExecutor(this, "straight_line_speeding", true);
+        this.strafeLineSpeeding = new ImplementedProbabilityDetection(this, "strafe_line_speeding", true);
+        this.strafeJumpSpeeding = new ImplementedProbabilityDetection(this, "strafe_jump_speeding", true);
+        this.straightLineSpeeding = new ImplementedProbabilityDetection(this, "straight_line_speeding", true);
     }
 
     @Override

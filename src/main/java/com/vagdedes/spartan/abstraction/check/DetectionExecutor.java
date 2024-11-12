@@ -2,7 +2,6 @@ package com.vagdedes.spartan.abstraction.check;
 
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
-import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
@@ -12,7 +11,6 @@ import com.vagdedes.spartan.functionality.notifications.clickable.ClickableMessa
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.AntiCheatLogs;
 import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
 import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
@@ -25,38 +23,33 @@ import me.vagdedes.spartan.api.PlayerViolationEvent;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Bukkit;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class DetectionExecutor extends CheckDetection {
 
     public final String name, random;
     private final boolean def;
-    private int lastProbability;
-    private long notifications;
     private final Map<Check.DataType, Double> probability;
-    private final Map<Check.DataType, Map<Long, Double>> data;
+    protected long notifications;
 
-    public DetectionExecutor(CheckExecutor executor, String name, boolean def) {
+    protected DetectionExecutor(CheckExecutor executor, String name, boolean def) {
         super(executor);
         this.name = name;
         this.def = def;
         this.probability = new ConcurrentHashMap<>(Check.DataType.values().length);
-        this.data = Collections.synchronizedMap(
-                new LinkedHashMap<>(Check.DataType.values().length)
-        );
         this.isEnabled();
         this.random = this.storeDetection(executor);
     }
 
-    public DetectionExecutor(DetectionExecutor executor, String name, boolean def) {
+    protected DetectionExecutor(DetectionExecutor executor, String name, boolean def) {
         super(executor.executor);
         this.name = name;
         this.def = def;
         this.probability = new ConcurrentHashMap<>(Check.DataType.values().length);
-        this.data = Collections.synchronizedMap(
-                new LinkedHashMap<>(Check.DataType.values().length)
-        );
         this.isEnabled();
         this.random = this.storeDetection(executor.executor);
     }
@@ -102,53 +95,15 @@ public abstract class DetectionExecutor extends CheckDetection {
 
     // Data
 
-    public final boolean hasDataToCompare(Check.DataType dataType) {
-        Map<Long, Double> map = this.data.get(dataType);
-        return map != null && map.size() > 1;
+    public boolean hasDataToCompare(Check.DataType dataType) {
+        return false;
     }
 
-    public final void store(Check.DataType dataType, PlayerViolation playerViolation) {
-        synchronized (this.data) {
-            Map<Long, Double> map = this.data.computeIfAbsent(
-                    dataType,
-                    k -> new TreeMap<>()
-            );
-
-            if (map.size() == 2_048) {
-                Iterator<Long> iterator = map.keySet().iterator();
-                iterator.next();
-                iterator.remove();
-            }
-            map.put(playerViolation.time, playerViolation.increase);
-        }
-        ResearchEngine.queueToCache(this.hackType);
+    public void store(Check.DataType dataType, long time, double increase) {
     }
 
-    public final Double getTimeDifference(Check.DataType dataType) {
-        if (this.hasDataToCompare(dataType)) {
-            double squareSum = 0.0;
-            int size;
-
-            synchronized (this.data) {
-                Map<Long, Double> map = this.data.get(dataType);
-                size = map.size();
-                Iterator<Map.Entry<Long, Double>> iterator = map.entrySet().iterator();
-                long previous = iterator.next().getKey();
-
-                while (iterator.hasNext()) {
-                    Map.Entry<Long, Double> entry = iterator.next();
-                    double difference = Math.min(
-                            (entry.getKey() - previous) / entry.getValue(),
-                            60_000L
-                    );
-                    previous = entry.getKey();
-                    squareSum += difference * difference;
-                }
-            }
-            return Math.sqrt(squareSum / (size - 1.0));
-        } else {
-            return null;
-        }
+    public Double getTimeDifference(Check.DataType dataType) {
+        return null;
     }
 
     // Probability
@@ -173,7 +128,7 @@ public abstract class DetectionExecutor extends CheckDetection {
         return false;
     }
 
-    private boolean surpassedProbability(Check.DataType dataType, double threshold) {
+    protected boolean surpassedProbability(Check.DataType dataType, double threshold) {
         return PlayerEvidence.surpassedProbability(this.getProbability(dataType), threshold);
     }
 
@@ -193,56 +148,9 @@ public abstract class DetectionExecutor extends CheckDetection {
 
     // Notification
 
-    public final boolean canSendNotification(Object detected, int probability) {
-        long time = System.currentTimeMillis();
+    public abstract boolean canSendNotification(Object detected, int probability);
 
-        if (this.notifications <= time
-                && (this.lastProbability != probability
-                || time - this.notifications >= 5_000L)) {
-            boolean player = detected instanceof SpartanPlayer;
-            int ticks = this.executor.getNotificationTicksCooldown(
-                    player ? (SpartanProtocol) detected : null
-            );
-
-            if (ticks > 0) {
-                boolean access;
-
-                if (player) {
-                    access = ((SpartanPlayer) detected).getExecutor(
-                            hackType
-                    ).getDetection(
-                            this.name
-                    ).surpassedProbability(
-                            ((SpartanPlayer) detected).dataType,
-                            PlayerEvidence.notificationProbability
-                    );
-                } else {
-                    PlayerProfile profile = ResearchEngine.getPlayerProfile(detected.toString(), true);
-                    access = profile.getExecutor(
-                            hackType
-                    ).getDetection(
-                            this.name
-                    ).surpassedProbability(
-                            profile.getLastDataType(),
-                            PlayerEvidence.notificationProbability
-                    );
-                }
-
-                if (access) {
-                    this.notifications = time + (ticks * TPS.tickTime);
-                    this.lastProbability = probability;
-                    return true;
-                }
-            } else {
-                this.notifications = time;
-                this.lastProbability = probability;
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private void notify(PlayerViolation playerViolation, String information) {
+    protected void notify(long time, double increase, String information) {
         double probability = this.getProbability(this.protocol().spartan.dataType),
                 certainty = PlayerEvidence.probabilityToCertainty(probability) * 100.0;
         int roundedCertainty = AlgebraUtils.integerRound(certainty);
@@ -251,7 +159,7 @@ public abstract class DetectionExecutor extends CheckDetection {
                 this.protocol(),
                 Config.messages.getColorfulString("detection_notification")
                         .replace("{info}", information)
-                        .replace("{vls:detection}", String.valueOf(AlgebraUtils.cut(playerViolation.increase, 2)))
+                        .replace("{vls:detection}", String.valueOf(AlgebraUtils.cut(increase, 2)))
                         .replace("{vls:percentage}",
                                 hasSufficientData && roundedCertainty > 0
                                         ? (roundedCertainty + "%")
@@ -262,7 +170,7 @@ public abstract class DetectionExecutor extends CheckDetection {
 
         SpartanLocation location = this.protocol().spartan.movement.getLocation();
         information = this.protocol().bukkit.getName() + " failed " + hackType
-                + " (" + CheckExecutor.violationLevelIdentifier + " " + playerViolation.increase + "), "
+                + " (" + CheckExecutor.violationLevelIdentifier + " " + increase + "), "
                 + "(Server-Version: " + MultiVersion.serverVersion.toString() + "), "
                 + "(Certainty: " + AlgebraUtils.cut(certainty, 2) + "), "
                 + "(Plugin-Version: " + API.getVersion() + "), "
@@ -284,7 +192,8 @@ public abstract class DetectionExecutor extends CheckDetection {
                 ),
                 null,
                 hackType,
-                playerViolation,
+                time,
+                increase,
                 !hasSufficientData
         );
 
@@ -316,7 +225,7 @@ public abstract class DetectionExecutor extends CheckDetection {
 
     // Punishment
 
-    private void punish() {
+    protected void punish() {
         Check check = hackType.getCheck();
         if (check.canPunish(this.protocol().spartan.dataType)) {
             List<String> commands = check.getPunishmentCommands();
@@ -389,7 +298,7 @@ public abstract class DetectionExecutor extends CheckDetection {
 
     // Prevention
 
-    public final void cancel(String information, double violations, SpartanLocation location,
+    public final void cancel(String information, double increase, SpartanLocation location,
                              int cancelTicks, boolean groundTeleport, double damage) {
         if (!this.isEnabled()) {
             return;
@@ -400,32 +309,29 @@ public abstract class DetectionExecutor extends CheckDetection {
                 || CloudBase.isInformationCancelled(this.hackType, information)) {
             return;
         }
-        HackPrevention newPrevention = new HackPrevention(
+        CheckPrevention newPrevention = new CheckPrevention(
                 location,
                 cancelTicks,
                 groundTeleport,
                 damage
         );
-        CancelCause disableCause = this.executor.getDisableCause();
+        CheckCancellation disableCause = this.executor.getDisableCause();
         if (disableCause == null
                 || disableCause.hasExpired()
                 || !disableCause.pointerMatches(information)) {
-            if (violations < 1.0) {
-                violations = 1.0;
+            if (increase < 1.0) {
+                increase = 1.0;
             }
-            PlayerViolation playerViolation = new PlayerViolation(
-                    time,
-                    violations
-            );
+            double finalIncrease = increase;
             boolean event = Config.settings.getBoolean("Important.enable_developer_api");
-            CancelCause silentCause = this.executor.getSilentCause();
+            CheckCancellation silentCause = this.executor.getSilentCause();
 
             Runnable runnable = () -> {
                 if (event) {
                     PlayerViolationEvent playerViolationEvent = new PlayerViolationEvent(
                             this.protocol().bukkit,
                             hackType,
-                            playerViolation.increase,
+                            finalIncrease,
                             information
                     );
                     Register.manager.callEvent(playerViolationEvent);
@@ -434,8 +340,12 @@ public abstract class DetectionExecutor extends CheckDetection {
                         return;
                     }
                 }
-                this.store(this.protocol().spartan.dataType, playerViolation);
-                this.notify(playerViolation, information);
+                this.store(
+                        this.protocol().spartan.dataType,
+                        time,
+                        finalIncrease
+                );
+                this.notify(time, finalIncrease, information);
                 this.punish();
                 this.executor.prevention = newPrevention;
                 this.executor.prevention.canPrevent =
@@ -456,22 +366,22 @@ public abstract class DetectionExecutor extends CheckDetection {
         }
     }
 
-    public final void cancel(String information, double violations, SpartanLocation location,
+    public final void cancel(String information, double increase, SpartanLocation location,
                              int cancelTicks, boolean groundTeleport) {
-        cancel(information, violations, location, cancelTicks, groundTeleport, 0.0);
+        cancel(information, increase, location, cancelTicks, groundTeleport, 0.0);
     }
 
-    public final void cancel(String information, double violations, SpartanLocation location,
+    public final void cancel(String information, double increase, SpartanLocation location,
                              int cancelTicks) {
-        cancel(information, violations, location, cancelTicks, false, 0.0);
+        cancel(information, increase, location, cancelTicks, false, 0.0);
     }
 
-    public final void cancel(String information, double violations, SpartanLocation location) {
-        cancel(information, violations, location, 0, false, 0.0);
+    public final void cancel(String information, double increase, SpartanLocation location) {
+        cancel(information, increase, location, 0, false, 0.0);
     }
 
-    public final void cancel(String information, double violations) {
-        cancel(information, violations, null, 0, false, 0.0);
+    public final void cancel(String information, double increase) {
+        cancel(information, increase, null, 0, false, 0.0);
     }
 
     public final void cancel(String information) {
