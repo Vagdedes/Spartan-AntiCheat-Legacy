@@ -82,7 +82,7 @@ public class Velocity extends CheckExecutor {
                         if ((!this.protocol().isOnGround() && !this.protocol().isOnGroundFrom())) {
                             // time for horizontal flag 1
                             if (total > 0.05 * multi) {
-                                this.flag("velocity manipulation [xz] (air deviance: " + total + ")", 30, horizontal);
+                                this.flag("velocity manipulation [xz] (air deviance: " + total + ")", 14, horizontal);
                             }
                         } else if (total > 0.2 * multi) {
                             this.flag("velocity manipulation [xz] (ground deviance: " + total + ")", 30, horizontal);
