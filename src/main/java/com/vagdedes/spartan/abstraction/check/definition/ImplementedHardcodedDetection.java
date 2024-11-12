@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.abstraction.check.def;
+package com.vagdedes.spartan.abstraction.check.definition;
 
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
