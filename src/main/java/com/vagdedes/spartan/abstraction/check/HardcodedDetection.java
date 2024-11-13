@@ -8,10 +8,6 @@ public abstract class HardcodedDetection extends CheckDetection {
 
     public HardcodedDetection(CheckRunner executor, String name, boolean def) {
         super(executor, name, def);
-
-        for (Check.DataType dataType : Check.DataType.values()) {
-            this.setProbability(dataType, PlayerEvidence.notificationProbability);
-        }
     }
 
     public final void setHackingRatio(double ratio) {
