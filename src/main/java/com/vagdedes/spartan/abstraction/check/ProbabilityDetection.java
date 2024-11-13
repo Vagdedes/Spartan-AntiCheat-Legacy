@@ -1,10 +1,8 @@
 package com.vagdedes.spartan.abstraction.check;
 
-import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.TPS;
-import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
 import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
 
 import java.util.*;
@@ -94,39 +92,12 @@ public abstract class ProbabilityDetection extends CheckDetection {
             );
 
             if (ticks > 0) {
-                boolean access;
-
-                if (player) {
-                    access = ((SpartanPlayer) detected).getRunner(
-                            hackType
-                    ).getDetection(
-                            this.name
-                    ).surpassedProbability(
-                            ((SpartanPlayer) detected).dataType,
-                            PlayerEvidence.notificationProbability
-                    );
-                } else {
-                    PlayerProfile profile = ResearchEngine.getPlayerProfile(detected.toString(), true);
-                    access = profile.getRunner(
-                            hackType
-                    ).getDetection(
-                            this.name
-                    ).surpassedProbability(
-                            profile.getLastDataType(),
-                            PlayerEvidence.notificationProbability
-                    );
-                }
-
-                if (access) {
-                    this.notifications = time + (ticks * TPS.tickTime);
-                    this.lastProbability = probability;
-                    return true;
-                }
+                this.notifications = time + (ticks * TPS.tickTime);
             } else {
                 this.notifications = time;
-                this.lastProbability = probability;
-                return true;
             }
+            this.lastProbability = probability;
+            return true;
         }
         return false;
     }

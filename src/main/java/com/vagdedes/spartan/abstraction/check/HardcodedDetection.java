@@ -1,10 +1,8 @@
 package com.vagdedes.spartan.abstraction.check;
 
-import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
-import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
 
 public abstract class HardcodedDetection extends CheckDetection {
 
@@ -50,37 +48,11 @@ public abstract class HardcodedDetection extends CheckDetection {
             );
 
             if (ticks > 0) {
-                boolean access;
-
-                if (player) {
-                    access = ((SpartanProtocol) detected).spartan.getRunner(
-                            hackType
-                    ).getDetection(
-                            this.name
-                    ).surpassedProbability(
-                            ((SpartanProtocol) detected).spartan.dataType,
-                            PlayerEvidence.notificationProbability
-                    );
-                } else {
-                    PlayerProfile profile = ResearchEngine.getPlayerProfile(detected.toString(), true);
-                    access = profile.getRunner(
-                            hackType
-                    ).getDetection(
-                            this.name
-                    ).surpassedProbability(
-                            profile.getLastDataType(),
-                            PlayerEvidence.notificationProbability
-                    );
-                }
-
-                if (access) {
-                    this.notifications = time + (ticks * TPS.tickTime);
-                    return true;
-                }
+                this.notifications = time + (ticks * TPS.tickTime);
             } else {
                 this.notifications = time;
-                return true;
             }
+            return true;
         }
         return false;
     }
