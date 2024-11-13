@@ -552,7 +552,7 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
                     if (material == null) {
                         continue;
                     }
-                    if (BlockUtils.isSolid(material) || material.name().contains("GRASS")) {
+                    if (BlockUtils.isSolid(material)) {
                         return true;
                     }
                 }

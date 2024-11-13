@@ -128,7 +128,7 @@ public class PlayerStateLists {
                             lore.add("§4" + hackType.getCheck().getName());
 
                             if (!missingData
-                                    && !playerProfile.getExecutor(
+                                    && !playerProfile.getRunner(
                                     hackType
                             ).hasSufficientData(
                                     playerProfile.getLastDataType()

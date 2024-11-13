@@ -4,10 +4,12 @@ import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.java.OverflowMap;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.util.Vector;
@@ -42,7 +44,9 @@ public class ScaffoldAnalysis extends ProbabilityDetection {
         Block b = e.getBlock();
         Location bL = b.getLocation();
         Block oldB = p.oldBlockEvent.getBlock();
-        Block downB = p.bukkit.getWorld().getBlockAt(bL.clone().add(0, -1, 0));
+        Material downBType = new SpartanLocation(
+                bL.clone().add(0, -1, 0)
+        ).getBlock().getTypeOrNull();
         {
             long delay = System.currentTimeMillis() - p.placeTime;
             boolean checkHash = false;
@@ -93,7 +97,7 @@ public class ScaffoldAnalysis extends ProbabilityDetection {
                  */
                 return;
             } else if (bL.getY() != oldB.getLocation().getY()
-                    || !BlockUtils.areAir(downB.getType())) {
+                    || !BlockUtils.areAir(downBType)) {
                 p.rightClickCounter = 0;
                 p.oldBlockEvent = e;
                 return;

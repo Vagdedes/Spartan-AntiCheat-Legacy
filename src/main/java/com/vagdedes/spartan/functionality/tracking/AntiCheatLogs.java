@@ -127,7 +127,7 @@ public class AntiCheatLogs {
                     if (miningHistory != null) {
                         String pluralKey = key.endsWith("s") ? (key + "es") : (key + "s");
                         miningHistory.increaseMines(environment, amount);
-                        protocol.spartan.getExecutor(Enums.HackType.XRay).handle(
+                        protocol.spartan.getRunner(Enums.HackType.XRay).handle(
                                 cancelled,
                                 new Object[]{environment, miningHistory, ore, pluralKey});
                     }

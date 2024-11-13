@@ -940,11 +940,7 @@ public class BlockUtils {
                 helper.add(Material.CRIMSON_FUNGUS);
                 helper.add(Material.NETHER_SPROUTS);
             }
-            Material material = MaterialUtils.findMaterial("SHORT_GRASS");
-
-            if (material != null) {
-                helper.add(material);
-            }
+            helper.add(Material.GRASS_BLOCK);
             helper.add(Material.REDSTONE_TORCH);
             helper.add(Material.REDSTONE_WALL_TORCH);
             helper.add(Material.WALL_TORCH);

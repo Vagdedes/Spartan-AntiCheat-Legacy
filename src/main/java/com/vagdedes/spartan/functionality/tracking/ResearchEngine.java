@@ -124,7 +124,7 @@ public class ResearchEngine {
 
                 if (!playerProfiles.isEmpty()) {
                     for (PlayerProfile playerProfile : playerProfiles.values()) {
-                        for (CheckDetection detectionExecutor : playerProfile.getExecutor(hackType).getDetections()) {
+                        for (CheckDetection detectionExecutor : playerProfile.getRunner(hackType).getDetections()) {
                             for (Check.DataType dataType : Check.DataType.values()) {
                                 detectionExecutor.clearProbability(dataType);
                             }
@@ -426,7 +426,7 @@ public class ResearchEngine {
 
                                             if (violationIncrease != null) {
                                                 PlayerProfile profile = getPlayerProfile(split[0], true);
-                                                CheckDetection detectionExecutor = profile.getExecutor(hackType).getDetection(detection);
+                                                CheckDetection detectionExecutor = profile.getRunner(hackType).getDetection(detection);
 
                                                 if (detectionExecutor != null) {
                                                     SimpleDateFormat sdf = new SimpleDateFormat(AntiCheatLogs.dateFormat);
@@ -485,7 +485,7 @@ public class ResearchEngine {
 
             if (force) {
                 for (PlayerProfile profile : profiles) {
-                    for (CheckRunner executor : profile.getExecutors()) {
+                    for (CheckRunner executor : profile.getRunners()) {
                         for (CheckDetection detectionExecutor : executor.getDetections()) {
                             for (Check.DataType dataType : Check.DataType.values()) {
                                 detectionExecutor.clearProbability(dataType);
@@ -505,7 +505,7 @@ public class ResearchEngine {
                     Map<String, Map<CheckDetection, Double>> wave = new LinkedHashMap<>();
 
                     for (PlayerProfile profile : profiles) {
-                        for (CheckDetection detectionExecutor : profile.getExecutor(hackType).getDetections()) {
+                        for (CheckDetection detectionExecutor : profile.getRunner(hackType).getDetections()) {
                             Double timeDifference = detectionExecutor.getTimeDifference(dataType);
 
                             if (timeDifference != null) {

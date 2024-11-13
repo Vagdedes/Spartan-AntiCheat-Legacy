@@ -29,9 +29,9 @@ public class Event_Velocity implements Listener {
 
             // Detections
             boolean cancelled = e.isCancelled();
-            p.getExecutor(Enums.HackType.Speed).handle(cancelled, e);
-            p.getExecutor(Enums.HackType.Velocity).handle(cancelled, e);
-            p.getExecutor(Enums.HackType.Simulation).handle(cancelled, e);
+            p.getRunner(Enums.HackType.Speed).handle(cancelled, e);
+            p.getRunner(Enums.HackType.Velocity).handle(cancelled, e);
+            p.getRunner(Enums.HackType.Simulation).handle(cancelled, e);
         }
     }
     public static void claim(CPlayerVelocityEvent e) {

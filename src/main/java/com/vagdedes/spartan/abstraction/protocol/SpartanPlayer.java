@@ -51,9 +51,9 @@ public class SpartanPlayer {
                     if (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
                         protocol.spartan.setStoredPotionEffects();
                     }
-                    protocol.spartan.getExecutor(Enums.HackType.AutoRespawn).run(false);
-                    protocol.spartan.getExecutor(Enums.HackType.MorePackets).run(false);
-                    protocol.spartan.getExecutor(Enums.HackType.Exploits).run(false);
+                    protocol.spartan.getRunner(Enums.HackType.AutoRespawn).run(false);
+                    protocol.spartan.getRunner(Enums.HackType.MorePackets).run(false);
+                    protocol.spartan.getRunner(Enums.HackType.Exploits).run(false);
                     protocol.spartan.movement.schedulerFrom = protocol.spartan.movement.getLocation();
                 }
             }
@@ -136,8 +136,8 @@ public class SpartanPlayer {
 
     // Separator
 
-    public CheckRunner getExecutor(Enums.HackType hackType) {
-        return this.protocol.getProfile().getExecutor(hackType);
+    public CheckRunner getRunner(Enums.HackType hackType) {
+        return this.protocol.getProfile().getRunner(hackType);
     }
 
     public void resetCrucialData() {
@@ -156,7 +156,7 @@ public class SpartanPlayer {
     public void calculateClicks(boolean run) {
         if (run) {
             clicks.calculate();
-            this.getExecutor(Enums.HackType.FastClicks).run(false);
+            this.getRunner(Enums.HackType.FastClicks).run(false);
             InteractiveInventory.playerInfo.refresh(this.protocol.bukkit.getName());
         }
     }

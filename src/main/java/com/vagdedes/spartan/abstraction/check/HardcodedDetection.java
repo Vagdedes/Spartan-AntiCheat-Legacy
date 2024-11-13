@@ -52,7 +52,7 @@ public abstract class HardcodedDetection extends CheckDetection {
                 boolean access;
 
                 if (player) {
-                    access = ((SpartanProtocol) detected).spartan.getExecutor(
+                    access = ((SpartanProtocol) detected).spartan.getRunner(
                             hackType
                     ).getDetection(
                             this.name
@@ -62,7 +62,7 @@ public abstract class HardcodedDetection extends CheckDetection {
                     );
                 } else {
                     PlayerProfile profile = ResearchEngine.getPlayerProfile(detected.toString(), true);
-                    access = profile.getExecutor(
+                    access = profile.getRunner(
                             hackType
                     ).getDetection(
                             this.name

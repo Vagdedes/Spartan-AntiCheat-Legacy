@@ -50,7 +50,7 @@ public class CrossServerNotifications {
                                             notification = "§l[" + serverName + "]§r " + notification;
 
                                             for (SpartanProtocol protocol : protocols) {
-                                                if (protocol.spartan.getExecutor(hackType).getDetection(detection).canSendNotification(playerName, 0)) {
+                                                if (protocol.spartan.getRunner(hackType).getDetection(detection).canSendNotification(playerName, 0)) {
                                                     protocol.bukkit.sendMessage(notification);
                                                     processed.put(id, true);
                                                 }

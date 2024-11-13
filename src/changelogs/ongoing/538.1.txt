@@ -5,3 +5,4 @@
 [#] Separated detections into probabilistic and hardcoded to differentiate functionality for developers.
 [#] All Spartan commands will now run synchronously so no issues are caused.
 [#] When a command fails, it will now appear in the failed message so the executor is not confused.
+[#] Added additional information to Discord Webhooks such as check certainty percentages.

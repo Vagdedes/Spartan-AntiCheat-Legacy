@@ -86,7 +86,7 @@ public class PlayerInfo extends InventoryMenu {
                     );
 
                     if (!missingData
-                            && !profile.getExecutor(
+                            && !profile.getRunner(
                             entry.getKey()
                     ).hasSufficientData(
                             profile.getLastDataType()
@@ -212,7 +212,7 @@ public class PlayerInfo extends InventoryMenu {
         if (!check.isEnabled(dataType, worldName)) { // Do not put player because we calculate it below
             return "Disabled";
         }
-        CheckCancellation disabledCause = protocol.spartan.getExecutor(hackType).getDisableCause();
+        CheckCancellation disabledCause = protocol.spartan.getRunner(hackType).getDisableCause();
         return Permissions.isBypassing(protocol.bukkit, hackType) ? "Permission Bypass" :
                 disabledCause != null ? "Cancelled (" + disabledCause.getReason() + ")" :
                         (check.isSilent(dataType, worldName) ? "Silent " : "") + "Checking";

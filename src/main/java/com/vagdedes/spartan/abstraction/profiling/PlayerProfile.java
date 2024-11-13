@@ -19,7 +19,7 @@ public class PlayerProfile {
     private final MiningHistory[] miningHistory;
     private ItemStack skull;
     private OfflinePlayer offlinePlayer;
-    private final CheckRunner[] executors;
+    private final CheckRunner[] runners;
     private Check.DataType lastDataType;
 
     // Separator
@@ -27,7 +27,7 @@ public class PlayerProfile {
     public PlayerProfile(String name) {
         this.name = name;
         this.skull = null;
-        this.executors = new CheckRunner[Enums.HackType.values().length];
+        this.runners = new CheckRunner[Enums.HackType.values().length];
         this.miningHistory = new MiningHistory[MiningHistory.MiningOre.values().length];
         this.lastDataType = Check.DataType.JAVA;
 
@@ -52,7 +52,7 @@ public class PlayerProfile {
         this.name = protocol.bukkit.getName();
         this.offlinePlayer = protocol.bukkit; // Attention
         this.skull = null;
-        this.executors = new CheckRunner[Enums.HackType.values().length];
+        this.runners = new CheckRunner[Enums.HackType.values().length];
         this.miningHistory = new MiningHistory[MiningHistory.MiningOre.values().length];
         this.lastDataType = protocol.spartan.dataType;
 
@@ -72,7 +72,7 @@ public class PlayerProfile {
         this.offlinePlayer = protocol.bukkit;
         this.lastDataType = protocol.spartan.dataType;
 
-        for (CheckRunner executor : this.getExecutors()) {
+        for (CheckRunner executor : this.getRunners()) {
             executor.setProtocol(protocol);
 
             for (CheckDetection detectionExecutor : executor.getDetections()) {
@@ -82,31 +82,31 @@ public class PlayerProfile {
     }
 
     public SpartanProtocol protocol() {
-        return this.executors[0].protocol();
+        return this.runners[0].protocol();
     }
 
-    public CheckRunner getExecutor(Enums.HackType hackType) {
+    public CheckRunner getRunner(Enums.HackType hackType) {
         int ordinal = hackType.ordinal();
 
-        synchronized (this.executors) {
-            return this.executors[ordinal];
+        synchronized (this.runners) {
+            return this.runners[ordinal];
         }
     }
 
-    public CheckRunner[] getExecutors() {
-        synchronized (this.executors) {
-            return this.executors;
+    public CheckRunner[] getRunners() {
+        synchronized (this.runners) {
+            return this.runners;
         }
     }
 
     private void registerExecutors(SpartanProtocol protocol) {
-        synchronized (this.executors) {
+        synchronized (this.runners) {
             for (Enums.HackType hackType : Enums.HackType.values()) {
                 try {
                     CheckRunner executor = (CheckRunner) hackType.executor
                             .getConstructor(hackType.getClass(), SpartanProtocol.class)
                             .newInstance(hackType, protocol);
-                    this.executors[hackType.ordinal()] = executor;
+                    this.runners[hackType.ordinal()] = executor;
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -138,7 +138,7 @@ public class PlayerProfile {
     public Collection<Enums.HackType> getEvidenceList(double threshold) {
         List<Enums.HackType> set = new ArrayList<>();
 
-        for (CheckRunner executor : this.getExecutors()) {
+        for (CheckRunner executor : this.getRunners()) {
             double probability = executor.getExtremeProbability(this.lastDataType);
 
             if (PlayerEvidence.surpassedProbability(probability, threshold)) {
@@ -153,7 +153,7 @@ public class PlayerProfile {
     ) {
         Map<Enums.HackType, Double> set = new HashMap<>();
 
-        for (CheckRunner executor : this.getExecutors()) {
+        for (CheckRunner executor : this.getRunners()) {
             double probability = executor.getExtremeProbability(this.lastDataType);
 
             if (PlayerEvidence.surpassedProbability(probability, threshold)) {

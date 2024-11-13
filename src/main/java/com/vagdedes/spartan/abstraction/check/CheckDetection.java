@@ -105,7 +105,7 @@ public abstract class CheckDetection extends CheckProcess {
             int count = 0;
 
             for (PlayerProfile profile : playerProfiles) {
-                if (profile.getExecutor(this.hackType).getDetection(this.name).hasDataToCompare(dataType)) {
+                if (profile.getRunner(this.hackType).getDetection(this.name).hasDataToCompare(dataType)) {
                     count++;
 
                     if (count == requirement) {
@@ -203,7 +203,7 @@ public abstract class CheckDetection extends CheckProcess {
 
             if (!protocols.isEmpty()) {
                 for (SpartanProtocol staff : protocols) {
-                    if (staff.spartan.getExecutor(this.hackType).getDetection(this.name).canSendNotification(this.protocol(), roundedCertainty)) {
+                    if (staff.spartan.getRunner(this.hackType).getDetection(this.name).canSendNotification(this.protocol(), roundedCertainty)) {
                         ClickableMessage.sendCommand(
                                 staff.bukkit,
                                 notification,

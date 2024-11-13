@@ -827,13 +827,13 @@ public class CommandExecution implements CommandExecutor {
                                         int seconds = noSeconds ? 0 : Integer.parseInt(sec);
 
                                         if (noSeconds) {
-                                            t.spartan.getExecutor(hackType).addDisableCause("Command-" + sender.getName(), null, 0);
+                                            t.spartan.getRunner(hackType).addDisableCause("Command-" + sender.getName(), null, 0);
                                         } else {
                                             if (seconds < 1 || seconds > 3600) {
                                                 sender.sendMessage(ChatColor.RED + "Seconds must be between 1 and 3600.");
                                                 return true;
                                             }
-                                            t.spartan.getExecutor(hackType).addDisableCause("Command-" + sender.getName(), null, seconds * (AlgebraUtils.integerCeil(TPS.maximum)));
+                                            t.spartan.getRunner(hackType).addDisableCause("Command-" + sender.getName(), null, seconds * (AlgebraUtils.integerCeil(TPS.maximum)));
                                         }
                                         String message = ConfigUtils.replaceWithSyntax(t, Config.messages.getColorfulString("bypass_message"), hackType)
                                                 .replace("{time}", noSeconds ? "infinite" : String.valueOf(seconds));

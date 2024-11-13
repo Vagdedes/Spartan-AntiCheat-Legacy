@@ -97,7 +97,7 @@ public abstract class ProbabilityDetection extends CheckDetection {
                 boolean access;
 
                 if (player) {
-                    access = ((SpartanPlayer) detected).getExecutor(
+                    access = ((SpartanPlayer) detected).getRunner(
                             hackType
                     ).getDetection(
                             this.name
@@ -107,7 +107,7 @@ public abstract class ProbabilityDetection extends CheckDetection {
                     );
                 } else {
                     PlayerProfile profile = ResearchEngine.getPlayerProfile(detected.toString(), true);
-                    access = profile.getExecutor(
+                    access = profile.getRunner(
                             hackType
                     ).getDetection(
                             this.name

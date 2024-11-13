@@ -1,11 +1,13 @@
 package com.vagdedes.spartan.functionality.notifications;
 
+import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudConnections;
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
+import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
 
 import java.util.ArrayList;
@@ -52,10 +54,16 @@ public class SuspicionNotifications {
                 StringBuilder evidence = new StringBuilder();
 
                 for (Enums.HackType hackType : list) {
+                    CheckRunner runner = protocol.spartan.getRunner(hackType);
                     evidence.append(
                             hackType.getCheck().getName()
-                                    + (protocol.spartan.getExecutor(hackType).hasSufficientData(protocol.spartan.dataType)
-                                    ? ""
+                                    + (runner.hasSufficientData(protocol.spartan.dataType)
+                                    ? " ("
+                                    + AlgebraUtils.integerRound(
+                                    PlayerEvidence.probabilityToCertainty(
+                                            runner.getExtremeProbability(protocol.spartan.dataType)
+                                    ) * 100.0)
+                                    + "%)"
                                     : " (Unlikely)")
                     ).append(
                             comma
