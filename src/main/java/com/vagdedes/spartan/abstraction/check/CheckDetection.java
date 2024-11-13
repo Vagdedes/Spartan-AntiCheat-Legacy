@@ -84,7 +84,7 @@ public abstract class CheckDetection extends CheckProcess {
 
     // Data
 
-    protected boolean hasDataToCompare(Check.DataType dataType) {
+    protected boolean hasData(Check.DataType dataType) {
         return false;
     }
 
@@ -97,7 +97,7 @@ public abstract class CheckDetection extends CheckProcess {
 
     // Probability
 
-    final boolean hasSufficientData(Check.DataType dataType) {
+    protected boolean hasSufficientData(Check.DataType dataType) {
         List<PlayerProfile> playerProfiles = ResearchEngine.getPlayerProfiles();
         int requirement = PlayerEvidence.probabilityToFactors(PlayerEvidence.punishmentProbability);
 
@@ -105,7 +105,7 @@ public abstract class CheckDetection extends CheckProcess {
             int count = 0;
 
             for (PlayerProfile profile : playerProfiles) {
-                if (profile.getRunner(this.hackType).getDetection(this.name).hasDataToCompare(dataType)) {
+                if (profile.getRunner(this.hackType).getDetection(this.name).hasData(dataType)) {
                     count++;
 
                     if (count == requirement) {

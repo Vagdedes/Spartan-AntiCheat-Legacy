@@ -22,7 +22,7 @@ public abstract class ProbabilityDetection extends CheckDetection {
     }
 
     @Override
-    protected final boolean hasDataToCompare(Check.DataType dataType) {
+    protected final boolean hasData(Check.DataType dataType) {
         Map<Long, Double> map = this.data.get(dataType);
         return map != null && !map.isEmpty();
     }
@@ -47,7 +47,7 @@ public abstract class ProbabilityDetection extends CheckDetection {
 
     @Override
     public final Double getTimeDifference(Check.DataType dataType) {
-        if (this.hasDataToCompare(dataType)) {
+        if (this.hasData(dataType)) {
             long timeLimit = 60_000L;
 
             if (this.data.size() == 1) {

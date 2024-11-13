@@ -2,7 +2,6 @@ package com.vagdedes.spartan.abstraction.check;
 
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
-import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
 import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
@@ -19,13 +18,10 @@ public abstract class HardcodedDetection extends CheckDetection {
 
     public final void setHackingRatio(double ratio) {
         if (this.protocol() != null) {
-            AwarenessNotifications.forcefullySend("1");
             this.setProbability(
                     this.protocol().spartan.dataType,
                     PlayerEvidence.probabilityToCertainty(ratio)
             );
-        } else {
-            AwarenessNotifications.forcefullySend("2");
         }
     }
 
@@ -34,7 +30,12 @@ public abstract class HardcodedDetection extends CheckDetection {
     }
 
     @Override
-    protected final boolean hasDataToCompare(Check.DataType dataType) {
+    protected final boolean hasData(Check.DataType dataType) {
+        return true;
+    }
+
+    @Override
+    protected final boolean hasSufficientData(Check.DataType dataType) {
         return true;
     }
 
