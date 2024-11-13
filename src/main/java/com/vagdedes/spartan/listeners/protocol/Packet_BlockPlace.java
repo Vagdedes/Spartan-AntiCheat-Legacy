@@ -55,7 +55,7 @@ public class Packet_BlockPlace extends PacketAdapter {
                     }
                 }
 
-                Location l = new Location(player.getWorld(), blockPosition.toVector().getBlockX(), blockPosition.toVector().getBlockY(),  blockPosition.toVector().getBlockZ());
+                Location l = new Location(protocol.spartan.getWorld(), blockPosition.toVector().getBlockX(), blockPosition.toVector().getBlockY(),  blockPosition.toVector().getBlockZ());
                 l.add(getDirection(BlockFace.valueOf(direction.name())));
                 World world = player.getWorld();
                 Block block = world.getBlockAt((int) l.getX(), (int) l.getY(), (int) l.getZ());

@@ -3,6 +3,7 @@ package com.vagdedes.spartan.utils.minecraft.protocol;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
+import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import org.bukkit.Location;
 
 public class ProtocolTools {
@@ -12,7 +13,7 @@ public class ProtocolTools {
 
         if (packet.getDoubles().size() >= 3) {
             return new Location(
-                    event.getPlayer().getWorld(),
+                    ProtocolLib.getWorld(event.getPlayer()),
                     packet.getDoubles().read(0),
                     packet.getDoubles().read(1),
                     packet.getDoubles().read(2)

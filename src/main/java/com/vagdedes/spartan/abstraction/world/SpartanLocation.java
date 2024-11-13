@@ -43,7 +43,7 @@ public class SpartanLocation implements Cloneable {
 
     public SpartanLocation(World world,
                            double x, double y, double z,
-                           float yaw, float pitch) { // Used for initiation
+                           float yaw, float pitch) {
         this.world = world;
         this.x = x;
         this.y = y;
@@ -53,7 +53,11 @@ public class SpartanLocation implements Cloneable {
         this.time = System.currentTimeMillis();
     }
 
-    public SpartanLocation(Location loc) { // Used globally
+    public SpartanLocation(World world, double x, double y, double z) {
+        this(world, x, y, z, 0.0f, 0.0f);
+    }
+
+    public SpartanLocation(Location loc) {
         this(loc.getWorld(), loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
     }
 

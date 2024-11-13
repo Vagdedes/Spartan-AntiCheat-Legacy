@@ -13,6 +13,7 @@ import com.vagdedes.spartan.abstraction.event.SuperPositionPacketEvent;
 import com.vagdedes.spartan.abstraction.protocol.MCClient;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
+import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.listeners.bukkit.Event_Movement;
 import com.vagdedes.spartan.listeners.bukkit.Event_Velocity;
@@ -143,7 +144,7 @@ public class Packet_Movement extends PacketAdapter {
             Location from = protocol.getLocation().clone();
             protocol.getLocation().setYaw(packet.getFloat().read(0));
             protocol.getLocation().setPitch(packet.getFloat().read(1));
-            protocol.getLocation().setWorld(player.getWorld());
+            protocol.getLocation().setWorld(ProtocolLib.getWorld(player));
 
             if (!from.getWorld().equals(protocol.getLocation().getWorld())
                     || ProtocolTools.invalidTeleport(protocol.getLocation())) {
@@ -167,7 +168,7 @@ public class Packet_Movement extends PacketAdapter {
             protocol.getLocation().setX(location.getX());
             protocol.getLocation().setY(location.getY());
             protocol.getLocation().setZ(location.getZ());
-            protocol.getLocation().setWorld(player.getWorld());
+            protocol.getLocation().setWorld(ProtocolLib.getWorld(player));
 
             if (type.equals(PacketType.Play.Client.POSITION_LOOK)) {
                 protocol.getLocation().setYaw(packet.getFloat().read(0));

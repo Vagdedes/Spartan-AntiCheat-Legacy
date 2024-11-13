@@ -6,6 +6,7 @@ import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.java.OverflowMap;
+import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -92,7 +93,7 @@ public class ScaffoldAnalysis extends ProbabilityDetection {
                  */
                 return;
             } else if (bL.getY() != oldB.getLocation().getY()
-                    || !downB.getType().name().equals("AIR")) {
+                    || !BlockUtils.areAir(downB.getType())) {
                 p.rightClickCounter = 0;
                 p.oldBlockEvent = e;
                 return;

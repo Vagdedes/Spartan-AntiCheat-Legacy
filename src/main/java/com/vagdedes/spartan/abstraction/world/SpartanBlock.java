@@ -7,10 +7,27 @@ import org.bukkit.block.data.BlockData;
 
 public class SpartanBlock {
 
-    public final Object block;
+    private final Object block;
 
     SpartanBlock(Object block) {
-        this.block = block == null ? Material.AIR : block;
+        this.block = block;
+    }
+
+    public boolean dataLoaded() {
+        return this.block != null;
+    }
+
+    public boolean isMaterial() {
+        return this.block instanceof Material;
+    }
+
+    public boolean isBlock() {
+        return this.block instanceof Block;
+    }
+
+    public boolean isBlockData() {
+        return BlockUtils.blockDataExists
+                && this.block instanceof BlockData;
     }
 
     public Material getType() {
@@ -18,10 +35,24 @@ public class SpartanBlock {
             return ((Block) this.block).getType();
         } else if (this.block instanceof Material) {
             return (Material) this.block;
-        } else if (BlockUtils.blockDataExists) {
+        } else if (BlockUtils.blockDataExists
+                && this.block instanceof BlockData) {
             return ((BlockData) this.block).getMaterial();
         } else {
             return Material.AIR;
+        }
+    }
+
+    public Material getTypeOrNull() {
+        if (this.block instanceof Block) {
+            return ((Block) this.block).getType();
+        } else if (this.block instanceof Material) {
+            return (Material) this.block;
+        } else if (BlockUtils.blockDataExists
+                && this.block instanceof BlockData) {
+            return ((BlockData) this.block).getMaterial();
+        } else {
+            return null;
         }
     }
 

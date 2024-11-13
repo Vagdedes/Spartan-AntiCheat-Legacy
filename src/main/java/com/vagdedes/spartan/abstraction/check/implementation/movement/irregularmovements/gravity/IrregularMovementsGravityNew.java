@@ -6,16 +6,16 @@ import com.vagdedes.spartan.abstraction.protocol.ExtendedPotionEffect;
 import com.vagdedes.spartan.abstraction.protocol.PlayerMovement;
 import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.abstraction.world.SpartanBlock;
+import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.MultiVersion.MCVersion;
-import com.vagdedes.spartan.listeners.bukkit.standalone.chunks.Event_Chunks;
 import com.vagdedes.spartan.utils.math.MathHelper;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.potion.PotionEffectType;
@@ -28,7 +28,7 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
     private int air = 0, ground = 0;
     private int top = 0, topReset = 0;
     private int levitation = 0, glideBlocks = 0, climbBlocks = 0,
-                slowFalling = 0, levitationA = 0, slowFallingA = 0;
+            slowFalling = 0, levitationA = 0, slowFallingA = 0;
     private boolean slime = false, slime0Tick = false, trident = false;
     private int slimePunch = 0, sub = 0;
     private double vl = 0.0;
@@ -39,7 +39,7 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
     }
 
     public void run() {
-       // if (true) return;
+        // if (true) return;
         if (this.protocol().spartan != null) {
             SpartanProtocol p = this.protocol();
             boolean isOnGround = p.isOnGround();
@@ -49,7 +49,7 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
             if (slimeEvent) slimePunch = 3;
             p.pistonHandle = false;
             if (to.getX() != from.getX() || to.getY() != from.getY() || to.getZ() != from.getZ()
-                            || to.getYaw() != from.getYaw() || to.getPitch() != from.getPitch()) {
+                    || to.getYaw() != from.getYaw() || to.getPitch() != from.getPitch()) {
                 double motion = to.getY() - from.getY();
                 double gravity = 0.08;
                 double jumpStartMotionY = this.jumpMotion();
@@ -62,9 +62,9 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
                     if (this.ground != 1) {
                         this.setPredict(0.0);
                         if (this.abs(motion) < 0.08 && this.abs(motion) > 0.0
-                                        && (this.isBlocksOnTop(to)
-                                        || this.isOnSlime(to)
-                                        || isNearGlideBlocks(to))) {
+                                && (this.isBlocksOnTop(to)
+                                || this.isOnSlime(to)
+                                || isNearGlideBlocks(to))) {
                             this.setPredict(motion);
                         }
                     } else {
@@ -140,8 +140,8 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
                 }
 
                 if (this.abs(this.abs(motion)
-                                - this.abs(this.predictY())) > 0.01
-                                && this.trident && motion < 4.2) {
+                        - this.abs(this.predictY())) > 0.01
+                        && this.trident && motion < 4.2) {
                     this.setPredict(motion);
                 }
 
@@ -157,10 +157,10 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
                     if (slowFalling != null || this.levitation > 0) {
                         if (slowFalling != null) {
                             this.levitation = 2;
-                            pr = 0.05 * (double)slowFalling.bukkitEffect.getAmplifier() + 1.0;
+                            pr = 0.05 * (double) slowFalling.bukkitEffect.getAmplifier() + 1.0;
                             this.levitationA = slowFalling.bukkitEffect.getAmplifier() + 1;
                         } else {
-                            pr = 0.05 * (double)this.levitationA;
+                            pr = 0.05 * (double) this.levitationA;
                         }
                         if (motion < pr && motion >= 0.0) {
                             this.setPredict(motion);
@@ -178,10 +178,10 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
                     if (slowFalling != null || this.slowFalling > 0) {
                         if (slowFalling != null) {
                             this.slowFalling = 2;
-                            pr = 0.02 * (double)slowFalling.bukkitEffect.getAmplifier() + 0.5;
+                            pr = 0.02 * (double) slowFalling.bukkitEffect.getAmplifier() + 0.5;
                             this.slowFallingA = slowFalling.bukkitEffect.getAmplifier() + 1;
                         } else {
-                            pr = 0.02 * (double)this.slowFallingA + 0.5;
+                            pr = 0.02 * (double) this.slowFallingA + 0.5;
                         }
                         if (motion < pr && motion < 0.0) {
                             this.setPredict(motion);
@@ -194,7 +194,7 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
                 }
 
                 if (this.protocol().bukkit.isFlying()
-                    || this.protocol().bukkit.isGliding()) {
+                        || this.protocol().bukkit.isGliding()) {
                     this.setPredict(motion);
                     this.levitation = 3;
                     this.levitationA = 3;
@@ -243,21 +243,21 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
                     }
                 }
                 if (this.abs(this.abs(motion) - this.abs(this.predictY())) > 0.005
-                                && boat && motion < 0.6 && motion > 0)
+                        && boat && motion < 0.6 && motion > 0)
                     this.setPredict(motion);
 
                 if (this.abs(this.abs(motion) - this.abs(this.predictY())) > 0.005
-                                && this.protocol().spartan.getVehicle() != null) {
+                        && this.protocol().spartan.getVehicle() != null) {
                     Entity v = this.protocol().spartan.getVehicle();
                     boolean isJumpingEntity = (v.getName().toLowerCase().contains("horse")
-                                    || v.getName().toLowerCase().contains("donkey")
-                                    || v.getName().toLowerCase().contains("mule")
-                                    || v.getName().toLowerCase().contains("llama"));
+                            || v.getName().toLowerCase().contains("donkey")
+                            || v.getName().toLowerCase().contains("mule")
+                            || v.getName().toLowerCase().contains("llama"));
 
                     if (this.isOnSolidGround(to) && this.abs(motion) <= ((isJumpingEntity || boat) ? 1.0 : 0.3)) {
                         this.setPredict(motion);
                     } else if (!this.isOnSolidGround(to)
-                                    && motion < this.predictY() / 2) {
+                            && motion < this.predictY() / 2) {
                         this.setPredict(motion);
                     }
                 }
@@ -267,8 +267,8 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
                 double devTotal = this.abs(this.abs(motion) - this.abs(this.predictY()));
                 if (devTotal > 0.009) {
                     if (this.protocol().spartan.trackers.has(
-                                    PlayerTrackers.TrackerType.VEHICLE, "exit_tp")
-                                    && devTotal < 1.0) {
+                            PlayerTrackers.TrackerType.VEHICLE, "exit_tp")
+                            && devTotal < 1.0) {
                         this.setPredict(0.0);
                     } else {
                         this.vl += devTotal;
@@ -315,6 +315,7 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
     public void teleport() {
         this.air = 0;
     }
+
     public void trident() {
         this.trident = true;
         this.levitation = 13;
@@ -331,7 +332,7 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
         }
 
         if (jumpEffect != null) {
-            jumpPower += 0.1 * (double)(jumpEffect.bukkitEffect.getAmplifier() + 1);
+            jumpPower += 0.1 * (double) (jumpEffect.bukkitEffect.getAmplifier() + 1);
         }
 
         return jumpPower;
@@ -373,12 +374,14 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
         double y = location.getY() - 0.1;
         double z = location.getZ();
 
-        for(int dx = -1; dx <= 1; ++dx) {
-            for(int dy = -1; dy <= 1; ++dy) {
-                for(int dz = -1; dz <= 1; ++dz) {
-                    Block block = this.getBlockAsync(new Location(this.protocol().spartan.getWorld(), x + (double)dx * 0.3, y + (double)dy * 0.5, z + (double)dz * 0.3));
-                    Material material = block != null ? block.getType() : null;
-                    if (material != null && BlockUtils.isLiquidOrWaterLogged(block, true)) {
+        for (int dx = -1; dx <= 1; ++dx) {
+            for (int dy = -1; dy <= 1; ++dy) {
+                for (int dz = -1; dz <= 1; ++dz) {
+                    SpartanBlock block = new SpartanLocation(
+                            new Location(this.protocol().spartan.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
+                    ).getBlock();
+
+                    if (BlockUtils.isLiquidOrWaterLogged(block, true)) {
                         return true;
                     }
                 }
@@ -392,13 +395,16 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
         double x = location.getX();
         double y = location.getY() - 0.1;
         double z = location.getZ();
-        for(int dx = -1; dx <= 1; ++dx) {
-            for(int dy = -1; dy <= 1; ++dy) {
-                for(int dz = -1; dz <= 1; ++dz) {
-                    Block block = this.getBlockAsync(new Location(this.protocol().spartan.getWorld(), x + (double)dx * 0.3, y + (double)dy * 0.5, z + (double)dz * 0.3));
-                    Material material = block != null ? block.getType() : null;
+
+        for (int dx = -1; dx <= 1; ++dx) {
+            for (int dy = -1; dy <= 1; ++dy) {
+                for (int dz = -1; dz <= 1; ++dz) {
+                    Material material = new SpartanLocation(
+                            new Location(this.protocol().spartan.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
+                    ).getBlock().getTypeOrNull();
+
                     if (material != null &&
-                                    (BlockUtils.isSemiSolid(material)
+                            (BlockUtils.isSemiSolid(material)
                                     || BlockUtils.areSlimeBlocks(material)
                                     || BlockUtils.areHoneyBlocks(material)
                                     || BlockUtils.areWebs(material))) {
@@ -415,16 +421,18 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
         double y = location.getY() - 0.1;
         double z = location.getZ();
 
-        for(int dx = -1; dx <= 1; ++dx) {
-            for(int dy = -1; dy <= 1; ++dy) {
-                for(int dz = -1; dz <= 1; ++dz) {
-                    Block block = this.getBlockAsync(new Location(this.protocol().spartan.getWorld(), x + (double)dx * 0.3, y + (double)dy * 0.5, z + (double)dz * 0.3));
-                    Material material = block != null ? block.getType() : null;
+        for (int dx = -1; dx <= 1; ++dx) {
+            for (int dy = -1; dy <= 1; ++dy) {
+                for (int dz = -1; dz <= 1; ++dz) {
+                    Material material = new SpartanLocation(
+                            new Location(this.protocol().spartan.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
+                    ).getBlock().getTypeOrNull();
+
                     if (material != null
-                                    && BlockUtils.isPowderSnow(material)
-                                    || BlockUtils.areHoneyBlocks(material)
-                                    || BlockUtils.areWebs(material)
-                                    || BlockUtils.areInteractiveBushes(material)) {
+                            && BlockUtils.isPowderSnow(material)
+                            || BlockUtils.areHoneyBlocks(material)
+                            || BlockUtils.areWebs(material)
+                            || BlockUtils.areInteractiveBushes(material)) {
                         return true;
                     }
                 }
@@ -439,13 +447,15 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
         double y = location.getY() - 0.1;
         double z = location.getZ();
 
-        for(int dx = -1; dx <= 1; ++dx) {
-            for(int dy = -1; dy <= 1; ++dy) {
-                for(int dz = -1; dz <= 1; ++dz) {
-                    Block block = this.getBlockAsync(new Location(this.protocol().spartan.getWorld(), x + (double)dx * 0.3, y + (double)dy * 0.5, z + (double)dz * 0.3));
-                    Material material = block != null ? block.getType() : null;
+        for (int dx = -1; dx <= 1; ++dx) {
+            for (int dy = -1; dy <= 1; ++dy) {
+                for (int dz = -1; dz <= 1; ++dz) {
+                    Material material = new SpartanLocation(
+                            new Location(this.protocol().spartan.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
+                    ).getBlock().getTypeOrNull();
+
                     if (material != null
-                                    && BlockUtils.canClimb(material, false) || BlockUtils.canClimb(material, true)) {
+                            && BlockUtils.canClimb(material, false)) {
                         return true;
                     }
                 }
@@ -460,13 +470,17 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
         double y = location.getY() - 0.1;
         double z = location.getZ();
 
-        for(int dx = -1; dx <= 1; ++dx) {
-            for(int dy = -1; dy <= 1; ++dy) {
-                for(int dz = -1; dz <= 1; ++dz) {
-                    Block block = this.getBlockAsync(new Location(this.protocol().spartan.getWorld(), x + (double)dx * 0.3, y + (double)dy * 0.5, z + (double)dz * 0.3));
-                    Material material = block != null ? block.getType() : null;
-                    if (material != null && (BlockUtils.areHoneyBlocks(material)
-                                    || BlockUtils.areBeds(material) || BlockUtils.areSlimeBlocks(material))) {
+        for (int dx = -1; dx <= 1; ++dx) {
+            for (int dy = -1; dy <= 1; ++dy) {
+                for (int dz = -1; dz <= 1; ++dz) {
+                    Material material = new SpartanLocation(
+                            new Location(this.protocol().spartan.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
+                    ).getBlock().getTypeOrNull();
+
+                    if (material != null
+                            && (BlockUtils.areHoneyBlocks(material)
+                            || BlockUtils.areBeds(material)
+                            || BlockUtils.areSlimeBlocks(material))) {
                         return true;
                     }
                 }
@@ -480,11 +494,13 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
         double y = location.getY() - 0.1;
         double z = location.getZ();
 
-        for(int dx = -2; dx <= 2; ++dx) {
-            for(int dy = -2; dy <= 2; ++dy) {
-                for(int dz = -2; dz <= 2; ++dz) {
-                    Block block = this.getBlockAsync(new Location(this.protocol().spartan.getWorld(), x + (double)dx, y + (double)dy, z + (double)dz));
-                    Material material = block != null ? block.getType() : null;
+        for (int dx = -2; dx <= 2; ++dx) {
+            for (int dy = -2; dy <= 2; ++dy) {
+                for (int dz = -2; dz <= 2; ++dz) {
+                    Material material = new SpartanLocation(
+                            new Location(this.protocol().spartan.getWorld(), x + (double) dx, y + (double) dy, z + (double) dz)
+                    ).getBlock().getTypeOrNull();
+
                     if (material != null && (BlockUtils.areSlimeBlocks(material))) {
                         return true;
                     }
@@ -499,12 +515,15 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
         double y = location.getY() - 0.1;
         double z = location.getZ();
 
-        for(int dx = -1; dx <= 1; ++dx) {
-            for(double dy = 1.0; dy <= 2.0; dy += 0.5) {
-                for(int dz = -1; dz <= 1; ++dz) {
-                    Block block = this.getBlockAsync(new Location(this.protocol().spartan.getWorld(), x + (double)dx * 0.3, y + dy, z + (double)dz * 0.3));
-                    Material material = block != null ? block.getType() : null;
-                    if (material != null && (BlockUtils.isSemiSolid(material) || material.isSolid())) {
+        for (int dx = -1; dx <= 1; ++dx) {
+            for (double dy = 1.0; dy <= 2.0; dy += 0.5) {
+                for (int dz = -1; dz <= 1; ++dz) {
+                    Material material = new SpartanLocation(
+                            new Location(this.protocol().spartan.getWorld(), x + (double) dx * 0.3, y + dy, z + (double) dz * 0.3)
+                    ).getBlock().getTypeOrNull();
+
+                    if (material != null
+                            && (BlockUtils.isSemiSolid(material) || material.isSolid())) {
                         return true;
                     }
                 }
@@ -516,20 +535,19 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
 
     private boolean isOnSolidGround(Location location) {
         double x = location.getX(),
-                        y = location.getY() - 0.1,
-                        z = location.getZ();
+                y = location.getY() - 0.1,
+                z = location.getZ();
 
         for (int dx = -1; dx <= 1; dx++) {
             for (int dy = -1; dy <= 1; dy++) {
                 for (int dz = -1; dz <= 1; dz++) {
-                    Block block = getBlockAsync(
-                                    new Location(
-                                                    this.protocol().spartan.getWorld(),
-                                                    x + dx,
-                                                    y + dy,
-                                                    z + dz)
-                    );
-                    Material material = block != null ? block.getType() : null;
+                    Material material = new SpartanLocation(
+                            new Location(
+                                    this.protocol().spartan.getWorld(),
+                                    x + dx,
+                                    y + dy,
+                                    z + dz)
+                    ).getBlock().getTypeOrNull();
 
                     if (material == null) {
                         continue;
@@ -543,7 +561,4 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
         return false;
     }
 
-    private Block getBlockAsync(Location location) {
-        return Event_Chunks.isLoaded(location.getWorld(), location.getBlockX() >> 4, location.getBlockZ() >> 4) ? location.getWorld().getBlockAt(location) : null;
-    }
 }

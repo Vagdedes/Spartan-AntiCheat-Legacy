@@ -7,8 +7,10 @@ import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.listeners.bukkit.standalone.chunks.Event_Chunks;
 import com.vagdedes.spartan.utils.java.ReflectionUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
@@ -112,6 +114,18 @@ public class ProtocolLib {
             }
         } else {
             return entity.getVehicle();
+        }
+    }
+
+    public static World getWorld(Entity entity) {
+        if (entity instanceof Player) {
+            if (ProtocolLib.isTemporary((Player) entity)) {
+                return Bukkit.getWorlds().get(0);
+            } else {
+                return entity.getWorld();
+            }
+        } else {
+            return entity.getWorld();
         }
     }
 

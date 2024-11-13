@@ -48,9 +48,11 @@ public abstract class ProbabilityDetection extends CheckDetection {
     @Override
     public final Double getTimeDifference(Check.DataType dataType) {
         if (this.hasDataToCompare(dataType)) {
+            long timeLimit = 60_000L;
+
             if (this.data.size() == 1) {
                 synchronized (this.data) {
-                return this.data.values().iterator().next().values().iterator().next();
+                    return timeLimit / this.data.values().iterator().next().values().iterator().next();
                 }
             } else {
                 double squareSum = 0.0;
@@ -66,7 +68,7 @@ public abstract class ProbabilityDetection extends CheckDetection {
                         Map.Entry<Long, Double> entry = iterator.next();
                         double difference = Math.min(
                                 (entry.getKey() - previous) / entry.getValue(),
-                                60_000L
+                                timeLimit
                         );
                         previous = entry.getKey();
                         squareSum += difference * difference;
