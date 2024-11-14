@@ -145,6 +145,11 @@ public class PlayerInfo extends InventoryMenu {
                                     "§3" + hackType.getCheck().getName() + "§8: §b" + showProbability + "%"
                                             + remainingDataPrompt
                             );
+                        } else {
+                            lore.add(
+                                    "§3" + hackType.getCheck().getName() + "§8: §b1%"
+                                            + remainingDataPrompt
+                            );
                         }
                     }
                 }
