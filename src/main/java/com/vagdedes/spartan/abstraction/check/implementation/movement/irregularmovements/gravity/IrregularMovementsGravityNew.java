@@ -522,8 +522,7 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
                             new Location(this.protocol().spartan.getWorld(), x + (double) dx * 0.3, y + dy, z + (double) dz * 0.3)
                     ).getBlock().getTypeOrNull();
 
-                    if (material != null
-                            && (BlockUtils.isSemiSolid(material) || material.isSolid())) {
+                    if (material != null && BlockUtils.isSolid(material)) {
                         return true;
                     }
                 }

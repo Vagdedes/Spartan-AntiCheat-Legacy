@@ -1508,7 +1508,7 @@ public class BlockUtils {
     }
 
     public static boolean isSolid(Material m) {
-        return solid.contains(m) || semi_solid.contains(m);
+        return solid.contains(m) || semi_solid.contains(m) || m.isSolid();
     }
 
     public static boolean isFullSolid(Material m) {
