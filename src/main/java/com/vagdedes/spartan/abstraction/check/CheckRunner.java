@@ -41,8 +41,8 @@ public abstract class CheckRunner extends CheckProcess {
         this.creation = System.currentTimeMillis();
         this.prevention = new CheckPrevention();
         this.detections = new ConcurrentHashMap<>(2);
-        this.disableCauses = Collections.synchronizedList(new ArrayList<>());
-        this.silentCauses = Collections.synchronizedList(new ArrayList<>());
+        this.disableCauses = Collections.synchronizedList(new ArrayList<>(1));
+        this.silentCauses = Collections.synchronizedList(new ArrayList<>(1));
     }
 
     // Probability
