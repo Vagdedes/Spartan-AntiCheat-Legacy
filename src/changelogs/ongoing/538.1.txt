@@ -9,3 +9,4 @@
 [#] Made notifications go through even if probability of hacking is super low.
 [#] Added remaining time to complete training in the inventory menus to avoid confusion.
 [#] Updated the configuration syntax to be more consistent language-wise.
+[#] Fixed a few inventory menu bugs.

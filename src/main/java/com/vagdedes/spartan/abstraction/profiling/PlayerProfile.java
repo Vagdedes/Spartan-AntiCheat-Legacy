@@ -121,10 +121,11 @@ public class PlayerProfile {
             if (this.offlinePlayer == null) {
                 return InventoryUtils.getSkull(null, name, false);
             } else {
-                this.skull = InventoryUtils.getSkull(offlinePlayer, name, false);
+                return this.skull = InventoryUtils.getSkull(offlinePlayer, name, false);
             }
+        } else {
+            return this.skull;
         }
-        return this.skull;
     }
 
     // Separator
