@@ -175,7 +175,7 @@ public class ManageChecks extends InventoryMenu {
         }
         lore.add("");
         lore.add((enabled ? "§a" : "§c") + "Enabled §8/ "
-                + (silent ? (!enoughData ? "§e" : "§a") : "§c") + "Silent §8/ "
+                + (silent ? "§a" : (!enoughData ? "§e" : "§c")) + "Silent §8/ "
                 + (punish ? (!enoughData ? "§e" : "§a") : "§c") + "Punishments §8/ "
                 + (bypassing ? "§a" : "§c") + "Bypassing");
         int counter = 0;
