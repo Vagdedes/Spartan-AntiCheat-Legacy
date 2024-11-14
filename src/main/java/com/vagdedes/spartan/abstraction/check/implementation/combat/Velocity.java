@@ -24,7 +24,7 @@ public class Velocity extends CheckRunner {
     public Velocity(Enums.HackType hackType, SpartanProtocol protocol) {
         super(hackType, protocol);
         this.vertical = new ImplementedProbabilityDetection(this, "vertical", true);
-        this.horizontal = new ImplementedHardcodedDetection(this, "horizontal", true);
+        this.horizontal = new ImplementedProbabilityDetection(this, "horizontal", true);
     }
 
     private double[] jumpReset = new double[]{0.248136, 0.3332};

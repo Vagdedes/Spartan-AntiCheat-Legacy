@@ -41,7 +41,7 @@ public class Settings extends ConfigurationBuilder {
         addOption("Important.bedrock_client_permission", false);
         addOption("Important.bedrock_player_prefix", ".");
         addOption("Important.enable_developer_api", true);
-        addOption("Important.enable_npc", true);
+        addOption("Important.enable_npc", false);
         addOption("Important.enable_watermark", true);
 
         addOption("Detections.ground_teleport_on_detection", true);

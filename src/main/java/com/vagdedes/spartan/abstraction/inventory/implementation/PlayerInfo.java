@@ -230,9 +230,11 @@ public class PlayerInfo extends InventoryMenu {
             return "Disabled";
         }
         CheckCancellation disabledCause = protocol.spartan.getRunner(hackType).getDisableCause();
-        return Permissions.isBypassing(protocol.bukkit, hackType) ? "Permission Bypass" :
-                disabledCause != null ? "Cancelled (" + disabledCause.getReason() + ")" :
-                        (check.isSilent(dataType, worldName) ? "Silent " : "") + "Checking";
+        return Permissions.isBypassing(protocol.bukkit, hackType)
+                ? "Permission Bypass"
+                : disabledCause != null
+                ? "Cancelled (" + disabledCause.getReason() + ")"
+                : (check.isSilent(dataType, worldName) ? "Silent " : "") + "Checking";
     }
 
     public void refresh(String targetName) {

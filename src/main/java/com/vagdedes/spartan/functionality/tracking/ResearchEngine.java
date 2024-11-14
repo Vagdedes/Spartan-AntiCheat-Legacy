@@ -473,10 +473,10 @@ public class ResearchEngine {
 
                     }
                 }
-                updateCache(true);
-                MainMenu.refresh();
             }
         }
+        updateCache(true);
+        MainMenu.refresh();
     }
 
     private static void updateCache(boolean force) {
