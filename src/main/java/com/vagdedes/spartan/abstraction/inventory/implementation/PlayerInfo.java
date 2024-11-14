@@ -218,7 +218,7 @@ public class PlayerInfo extends InventoryMenu {
                                      Check.DataType dataType,
                                      boolean hasPlayer) {
         if (!hasPlayer) {
-            return "Offline";
+            return "Offline Player";
         }
         if (!SpartanEdition.hasDetectionsPurchased(dataType)) {
             return "Detection Missing";
