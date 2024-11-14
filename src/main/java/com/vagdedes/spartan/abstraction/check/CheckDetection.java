@@ -147,10 +147,6 @@ public abstract class CheckDetection extends CheckProcess {
         return false;
     }
 
-    protected boolean surpassedProbability(Check.DataType dataType, double threshold) {
-        return PlayerEvidence.surpassedProbability(this.getProbability(dataType), threshold);
-    }
-
     public void clearProbability(Check.DataType dataType) {
         this.probability.remove(dataType);
     }
@@ -377,7 +373,7 @@ public abstract class CheckDetection extends CheckProcess {
                                 || silentCause.hasExpired()
                                 || !silentCause.pointerMatches(information))
                                 && this.hasSufficientData(this.protocol().spartan.dataType)
-                                && this.surpassedProbability(this.protocol().spartan.dataType, PlayerEvidence.preventionProbability);
+                                && PlayerEvidence.surpassedProbability(this.getProbability(this.protocol().spartan.dataType), PlayerEvidence.preventionProbability);
 
             };
 

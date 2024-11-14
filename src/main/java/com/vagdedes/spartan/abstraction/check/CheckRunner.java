@@ -101,6 +101,10 @@ public abstract class CheckRunner extends CheckProcess {
                     }
                 }
             }
+
+            if (size == 0) {
+                return null;
+            }
             averageTime = Math.sqrt(averageTime / size);
             averageCompletion = Math.sqrt(averageCompletion / size);
             return (long) ((1.0 - averageCompletion) * averageTime);

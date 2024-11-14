@@ -599,44 +599,4 @@ public class ResearchEngine {
         violationFired.put(hackType, true);
     }
 
-    // Separator
-
-    public static Long getRemainingCompletionTime(Check.DataType dataType, Enums.HackType hackType) {
-        if (playerProfiles.isEmpty()) {
-            return null;
-        } else {
-            double averageTime = 0.0,
-                    averageCompletion = 0.0;
-            int size = 0;
-
-            for (PlayerProfile profile : playerProfiles.values()) {
-                for (CheckDetection detection : profile.getRunner(hackType).getDetections()) {
-                    Long firstTime = detection.getFirstTime(dataType);
-
-                    if (firstTime != null) {
-                        Long lastTime = detection.getLastTime(dataType);
-
-                        if (lastTime != null) {
-                            if (firstTime == -1L || lastTime == -1L) {
-                                continue;
-                            }
-                            double completion = detection.getDataCompletion(dataType);
-                            averageCompletion += completion * completion;
-                            lastTime = lastTime - firstTime;
-                            averageTime += lastTime * lastTime;
-                            size += 1;
-                        }
-                    }
-                }
-            }
-            
-            if (size == 0) {
-                return null;
-            }
-            averageTime = Math.sqrt(averageTime / size);
-            averageCompletion = Math.sqrt(averageCompletion / size);
-            return (long) ((1.0 - averageCompletion) * averageTime);
-        }
-    }
-
 }
