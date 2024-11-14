@@ -95,6 +95,14 @@ public abstract class CheckDetection extends CheckProcess {
         return null;
     }
 
+    public Long getFirstTime(Check.DataType dataType) {
+        return null;
+    }
+
+    public Long getLastTime(Check.DataType dataType) {
+        return null;
+    }
+
     // Probability
 
     protected boolean hasSufficientData(Check.DataType dataType) {

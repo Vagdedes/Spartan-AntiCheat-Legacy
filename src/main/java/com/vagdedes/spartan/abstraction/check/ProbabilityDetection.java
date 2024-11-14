@@ -21,7 +21,11 @@ public abstract class ProbabilityDetection extends CheckDetection {
 
     @Override
     protected final boolean hasData(Check.DataType dataType) {
-        Map<Long, Double> map = this.data.get(dataType);
+        Map<Long, Double> map;
+
+        synchronized (this.data) {
+            map = this.data.get(dataType);
+        }
         return map != null && !map.isEmpty();
     }
 
@@ -80,13 +84,45 @@ public abstract class ProbabilityDetection extends CheckDetection {
     }
 
     @Override
+    public Long getFirstTime(Check.DataType dataType) {
+        Long time;
+
+        synchronized (this.data) {
+            Map<Long, Double> map = this.data.get(dataType);
+
+            if (map != null && !map.isEmpty()) {
+                time = map.keySet().iterator().next();
+            } else {
+                time = null;
+            }
+        }
+        return time;
+    }
+
+    @Override
+    public Long getLastTime(Check.DataType dataType) {
+        Long time;
+
+        synchronized (this.data) {
+            Map<Long, Double> map = this.data.get(dataType);
+
+            if (map != null && !map.isEmpty()) {
+                time = map.keySet().stream().reduce((first, second) -> second).orElse(null);
+            } else {
+                time = null;
+            }
+        }
+        return time;
+    }
+
+    @Override
     public final boolean canSendNotification(Object detected, int probability) {
         long time = System.currentTimeMillis();
 
         if (this.notifications <= time
                 && (this.lastProbability != probability
                 || time - this.notifications >= 5_000L)) {
-            boolean player = detected instanceof SpartanPlayer;
+            boolean player = detected instanceof SpartanProtocol;
             int ticks = this.executor.getNotificationTicksCooldown(
                     player ? (SpartanProtocol) detected : null
             );
