@@ -3,6 +3,7 @@ package com.vagdedes.spartan.abstraction.check;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
+import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import com.vagdedes.spartan.compatibility.manual.building.MythicMobs;
@@ -13,6 +14,7 @@ import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.server.*;
 import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
+import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import me.vagdedes.spartan.api.CheckCancelEvent;
@@ -67,6 +69,42 @@ public abstract class CheckRunner extends CheckProcess {
             }
         }
         return num;
+    }
+
+    public Long getRemainingCompletionTime(Check.DataType dataType) {
+        List<PlayerProfile> playerProfiles = ResearchEngine.getPlayerProfiles();
+
+        if (playerProfiles.isEmpty()) {
+            return null;
+        } else {
+            double averageTime = 0.0,
+                    averageCompletion = 0.0;
+            int size = 0;
+
+            for (PlayerProfile profile : playerProfiles) {
+                for (CheckDetection detection : profile.getRunner(this.hackType).getDetections()) {
+                    Long firstTime = detection.getFirstTime(dataType);
+
+                    if (firstTime != null) {
+                        Long lastTime = detection.getLastTime(dataType);
+
+                        if (lastTime != null) {
+                            if (firstTime == -1L || lastTime == -1L) {
+                                continue;
+                            }
+                            double completion = detection.getDataCompletion(dataType);
+                            averageCompletion += completion * completion;
+                            lastTime = lastTime - firstTime;
+                            averageTime += lastTime * lastTime;
+                            size += 1;
+                        }
+                    }
+                }
+            }
+            averageTime = Math.sqrt(averageTime / size);
+            averageCompletion = Math.sqrt(averageCompletion / size);
+            return (long) ((1.0 - averageCompletion) * averageTime);
+        }
     }
 
     // Detections

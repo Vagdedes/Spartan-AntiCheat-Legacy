@@ -1,6 +1,5 @@
 package com.vagdedes.spartan.abstraction.check;
 
-import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
@@ -90,7 +89,7 @@ public abstract class ProbabilityDetection extends CheckDetection {
         synchronized (this.data) {
             Map<Long, Double> map = this.data.get(dataType);
 
-            if (map != null && !map.isEmpty()) {
+            if (map != null) {
                 time = map.keySet().iterator().next();
             } else {
                 time = null;
@@ -106,7 +105,7 @@ public abstract class ProbabilityDetection extends CheckDetection {
         synchronized (this.data) {
             Map<Long, Double> map = this.data.get(dataType);
 
-            if (map != null && !map.isEmpty()) {
+            if (map != null) {
                 time = map.keySet().stream().reduce((first, second) -> second).orElse(null);
             } else {
                 time = null;

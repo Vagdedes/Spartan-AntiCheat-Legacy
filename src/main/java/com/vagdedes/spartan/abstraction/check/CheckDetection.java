@@ -96,14 +96,36 @@ public abstract class CheckDetection extends CheckProcess {
     }
 
     public Long getFirstTime(Check.DataType dataType) {
-        return null;
+        return -1L;
     }
 
     public Long getLastTime(Check.DataType dataType) {
-        return null;
+        return -1L;
     }
 
     // Probability
+
+    public final double getDataCompletion(Check.DataType dataType) {
+        List<PlayerProfile> playerProfiles = ResearchEngine.getPlayerProfiles();
+
+        if (!playerProfiles.isEmpty()) {
+            int requirement = PlayerEvidence.probabilityToFactors(PlayerEvidence.punishmentProbability);
+            int count = 0;
+
+            for (PlayerProfile profile : playerProfiles) {
+                if (profile.getRunner(this.hackType).getDetection(this.name).hasData(dataType)) {
+                    count++;
+
+                    if (count == requirement) {
+                        return 1.0;
+                    }
+                }
+            }
+            return count / (double) requirement;
+        } else {
+            return 0.0;
+        }
+    }
 
     protected boolean hasSufficientData(Check.DataType dataType) {
         List<PlayerProfile> playerProfiles = ResearchEngine.getPlayerProfiles();
