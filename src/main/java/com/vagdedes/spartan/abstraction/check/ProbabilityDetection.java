@@ -20,6 +20,8 @@ public abstract class ProbabilityDetection extends CheckDetection {
         );
     }
 
+    // Data
+
     @Override
     protected final boolean hasData(Check.DataType dataType) {
         Map<Long, Double> map;
@@ -161,6 +163,8 @@ public abstract class ProbabilityDetection extends CheckDetection {
             return 0.0;
         }
     }
+
+    // Notification
 
     @Override
     protected final boolean hasSufficientData(Check.DataType dataType) {

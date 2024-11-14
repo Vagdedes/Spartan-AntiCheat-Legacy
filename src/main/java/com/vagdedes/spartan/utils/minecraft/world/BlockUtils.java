@@ -910,6 +910,13 @@ public class BlockUtils {
         } else {
             helper.add(Material.getMaterial("SIGN"));
         }
+        for (Material m : materials) {
+            String s = m.toString();
+
+            if (endsWith(s, "GRASS")) {
+                helper.add(m);
+            }
+        }
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
             if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_16)) {
                 if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)) {

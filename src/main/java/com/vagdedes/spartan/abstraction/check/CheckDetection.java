@@ -101,8 +101,6 @@ public abstract class CheckDetection extends CheckProcess {
         return -1L;
     }
 
-    // Probability
-
     public double getDataCompletion(Check.DataType dataType) {
         return 1.0;
     }
@@ -110,6 +108,8 @@ public abstract class CheckDetection extends CheckProcess {
     protected boolean hasSufficientData(Check.DataType dataType) {
         return true;
     }
+
+    // Probability
 
     public void clearProbability(Check.DataType dataType) {
         this.probability.remove(dataType);
@@ -134,16 +134,18 @@ public abstract class CheckDetection extends CheckProcess {
     public abstract boolean canSendNotification(Object detected, int probability);
 
     protected void notify(long time, double increase, String information) {
-        double probability = this.getProbability(this.protocol().spartan.dataType),
-                certainty = PlayerEvidence.probabilityToCertainty(probability) * 100.0;
-        int roundedCertainty = AlgebraUtils.integerRound(certainty);
         boolean hasSufficientData = this.hasSufficientData(this.protocol().spartan.dataType);
+        double probability = this.getProbability(this.protocol().spartan.dataType),
+                certainty = PlayerEvidence.probabilityToCertainty(probability) * 100.0,
+                dataCompletion = hasSufficientData ? 100.0 : AlgebraUtils.cut(this.getDataCompletion(this.protocol.spartan.dataType) * 100.0, 2);
+        int roundedCertainty = AlgebraUtils.integerRound(certainty);
         String notification = ConfigUtils.replaceWithSyntax(
                 this.protocol(),
                 Config.messages.getColorfulString("detection_notification")
                         .replace("{info}", information)
-                        .replace("{vls:detection}", String.valueOf(AlgebraUtils.cut(increase, 2)))
-                        .replace("{vls:percentage}",
+                        .replace("{detection:data}", dataCompletion + "%")
+                        .replace("{detection:violations}", String.valueOf(AlgebraUtils.cut(increase, 2)))
+                        .replace("{detection:percentage}",
                                 hasSufficientData && roundedCertainty > 0
                                         ? (roundedCertainty + "%")
                                         : "unlikely"
@@ -157,7 +159,7 @@ public abstract class CheckDetection extends CheckProcess {
                 + "(" + CheckRunner.javaPlayerIdentifier + " " + (!this.protocol().spartan.isBedrockPlayer()) + ")" + ", "
                 + "(" + CheckRunner.detectionIdentifier + " " + this.name + ")" + ", "
                 + "(Certainty: " + AlgebraUtils.cut(certainty, 2) + "), "
-                + "(Data-Completion: " + AlgebraUtils.cut(certainty, 2) + "), "
+                + "(Data-Completion: " + dataCompletion + "), "
                 + "(Server-Version: " + MultiVersion.serverVersion.toString() + "), "
                 + "(Plugin-Version: " + API.getVersion() + "), "
                 + "(Silent: " + hackType.getCheck().isSilent(this.protocol().spartan.dataType, this.protocol().spartan.getWorld().getName()) + "), "

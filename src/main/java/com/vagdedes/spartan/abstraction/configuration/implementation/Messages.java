@@ -40,8 +40,8 @@ public class Messages extends ConfigurationBuilder {
         addOption("player_violation_reset_message", "&8[&2" + prefix + "&8]&a Violations successfully reset for player&8: &2{player}");
         addOption("player_stored_data_delete_message", "&8[&2" + prefix + "&8]&a Stored data successfully deleted for player&8: &2{player}");
         addOption("detection_notification", "&8[&2" + prefix + "&8] "
-                + "&4{player} &cis §4{vls:percentage} §cusing &4{detection} "
-                + "&8&b| &r&f{ping}ms &8&b| &r&fsilent: {silent:detection}, {info}");
+                + "&4{player} &cis §4{detection:percentage} §cusing &4{detection:real} "
+                + "&8&b| &r&fdata-completion: {detection:data} &8&b| &r&fsilent: {detection:silent} &8&b| &r&f{ping}ms, {info}");
 
         // Checks
         addOption("check_stored_data_delete_message", "&8[&2" + prefix + "&8]&a Stored data successfully deleted for check&8: &2{check}");
