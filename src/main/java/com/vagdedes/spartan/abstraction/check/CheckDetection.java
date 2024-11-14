@@ -1,7 +1,6 @@
 package com.vagdedes.spartan.abstraction.check;
 
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
@@ -13,7 +12,6 @@ import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.AntiCheatLogs;
 import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
-import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.server.ConfigUtils;
@@ -105,46 +103,12 @@ public abstract class CheckDetection extends CheckProcess {
 
     // Probability
 
-    public final double getDataCompletion(Check.DataType dataType) {
-        List<PlayerProfile> playerProfiles = ResearchEngine.getPlayerProfiles();
-
-        if (!playerProfiles.isEmpty()) {
-            int requirement = PlayerEvidence.probabilityToFactors(PlayerEvidence.punishmentProbability);
-            int count = 0;
-
-            for (PlayerProfile profile : playerProfiles) {
-                if (profile.getRunner(this.hackType).getDetection(this.name).hasData(dataType)) {
-                    count++;
-
-                    if (count == requirement) {
-                        return 1.0;
-                    }
-                }
-            }
-            return count / (double) requirement;
-        } else {
-            return 0.0;
-        }
+    public double getDataCompletion(Check.DataType dataType) {
+        return 1.0;
     }
 
     protected boolean hasSufficientData(Check.DataType dataType) {
-        List<PlayerProfile> playerProfiles = ResearchEngine.getPlayerProfiles();
-        int requirement = PlayerEvidence.probabilityToFactors(PlayerEvidence.punishmentProbability);
-
-        if (playerProfiles.size() >= requirement) {
-            int count = 0;
-
-            for (PlayerProfile profile : playerProfiles) {
-                if (profile.getRunner(this.hackType).getDetection(this.name).hasData(dataType)) {
-                    count++;
-
-                    if (count == requirement) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
+        return true;
     }
 
     public void clearProbability(Check.DataType dataType) {
@@ -190,12 +154,13 @@ public abstract class CheckDetection extends CheckProcess {
         SpartanLocation location = this.protocol().spartan.movement.getLocation();
         information = this.protocol().bukkit.getName() + " failed " + hackType
                 + " (" + CheckRunner.violationLevelIdentifier + " " + increase + "), "
-                + "(Server-Version: " + MultiVersion.serverVersion.toString() + "), "
-                + "(Certainty: " + AlgebraUtils.cut(certainty, 2) + "), "
-                + "(Plugin-Version: " + API.getVersion() + "), "
-                + "(Silent: " + hackType.getCheck().isSilent(this.protocol().spartan.dataType, this.protocol().spartan.getWorld().getName()) + "), "
                 + "(" + CheckRunner.javaPlayerIdentifier + " " + (!this.protocol().spartan.isBedrockPlayer()) + ")" + ", "
                 + "(" + CheckRunner.detectionIdentifier + " " + this.name + ")" + ", "
+                + "(Certainty: " + AlgebraUtils.cut(certainty, 2) + "), "
+                + "(Data-Completion: " + AlgebraUtils.cut(certainty, 2) + "), "
+                + "(Server-Version: " + MultiVersion.serverVersion.toString() + "), "
+                + "(Plugin-Version: " + API.getVersion() + "), "
+                + "(Silent: " + hackType.getCheck().isSilent(this.protocol().spartan.dataType, this.protocol().spartan.getWorld().getName()) + "), "
                 + "(Packets: " + this.protocol().packetsEnabled() + "), "
                 + "(Ping: " + this.protocol().getPing() + "ms), "
                 + "(W-XYZ: " + location.world.getName() + " " + location.getBlockX() + " " + location.getBlockY() + " " + location.getBlockZ() + "), "

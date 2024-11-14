@@ -1,7 +1,9 @@
 package com.vagdedes.spartan.abstraction.check;
 
+import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.TPS;
+import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
 import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
 
 import java.util.*;
@@ -133,6 +135,50 @@ public abstract class ProbabilityDetection extends CheckDetection {
             }
             this.lastProbability = probability;
             return true;
+        }
+        return false;
+    }
+
+    @Override
+    public final double getDataCompletion(Check.DataType dataType) {
+        List<PlayerProfile> playerProfiles = ResearchEngine.getPlayerProfiles();
+
+        if (!playerProfiles.isEmpty()) {
+            int requirement = PlayerEvidence.probabilityToFactors(PlayerEvidence.punishmentProbability);
+            int count = 0;
+
+            for (PlayerProfile profile : playerProfiles) {
+                if (profile.getRunner(this.hackType).getDetection(this.name).hasData(dataType)) {
+                    count++;
+
+                    if (count == requirement) {
+                        return 1.0;
+                    }
+                }
+            }
+            return count / (double) requirement;
+        } else {
+            return 0.0;
+        }
+    }
+
+    @Override
+    protected final boolean hasSufficientData(Check.DataType dataType) {
+        List<PlayerProfile> playerProfiles = ResearchEngine.getPlayerProfiles();
+        int requirement = PlayerEvidence.probabilityToFactors(PlayerEvidence.punishmentProbability);
+
+        if (playerProfiles.size() >= requirement) {
+            int count = 0;
+
+            for (PlayerProfile profile : playerProfiles) {
+                if (profile.getRunner(this.hackType).getDetection(this.name).hasData(dataType)) {
+                    count++;
+
+                    if (count == requirement) {
+                        return true;
+                    }
+                }
+            }
         }
         return false;
     }

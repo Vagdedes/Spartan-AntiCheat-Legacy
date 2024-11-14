@@ -138,7 +138,7 @@ public class PlayerStateLists {
                         }
                         if (missingData) {
                             lore.add("");
-                            lore.add("§eSome checks are still collecting data");
+                            lore.add("§eSome detections are still collecting data");
                             lore.add("§eand will fully enable in the future.");
                         }
                         fill(inventory, playerProfile, lore, freeSlots[slotPosition]);

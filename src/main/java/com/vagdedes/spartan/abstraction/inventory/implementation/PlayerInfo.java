@@ -97,6 +97,7 @@ public class PlayerInfo extends InventoryMenu {
                 for (Map.Entry<Double, HackType> entry : map.entrySet()) {
                     HackType hackType = entry.getValue();
                     double probability = entry.getKey();
+                    Long remainingTime = profile.getRunner(hackType).getRemainingCompletionTime(profile.getLastDataType());
 
                     if (PlayerEvidence.surpassedProbability(
                             probability,
@@ -138,7 +139,7 @@ public class PlayerInfo extends InventoryMenu {
                 }
                 if (missingData) {
                     lore.add("");
-                    lore.add("§eSome checks are still collecting data");
+                    lore.add("§eSome detections are still collecting data");
                     lore.add("§eand will fully enable in the future.");
                 }
                 lore.add("");
