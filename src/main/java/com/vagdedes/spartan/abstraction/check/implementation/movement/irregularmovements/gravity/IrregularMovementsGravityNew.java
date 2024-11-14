@@ -193,8 +193,8 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
                     }
                 }
 
-                if (this.protocol().bukkit.isFlying()
-                        || this.protocol().bukkit.isGliding()) {
+                if (this.protocol().spartan.movement.isFlying()
+                        || this.protocol().spartan.movement.isGliding()) {
                     this.setPredict(motion);
                     this.levitation = 3;
                     this.levitationA = 3;
