@@ -16,7 +16,8 @@ import java.util.List;
 public class SpartanEdition {
 
     private static final Check.DataType
-            currentType = IDs.resource.equals("25638")
+            currentType = false
+            || IDs.resource.equals("25638")
             || IDs.resource.equals("11196")
             || IDs.resource.equals("350")
             || Bukkit.getMotd().contains(Register.plugin.getName())
