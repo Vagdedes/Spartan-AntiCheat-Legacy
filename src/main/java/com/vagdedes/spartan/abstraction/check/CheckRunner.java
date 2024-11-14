@@ -49,7 +49,7 @@ public abstract class CheckRunner extends CheckProcess {
 
     // Probability
 
-    public boolean hasSufficientData(Check.DataType dataType) {
+    public final boolean hasSufficientData(Check.DataType dataType) {
         for (CheckDetection detectionExecutor : this.detections.values()) {
             if (detectionExecutor.hasSufficientData(dataType)) {
                 return true;
@@ -58,7 +58,7 @@ public abstract class CheckRunner extends CheckProcess {
         return false;
     }
 
-    public double getExtremeProbability(Check.DataType dataType) {
+    public final double getExtremeProbability(Check.DataType dataType) {
         double num = PlayerEvidence.emptyProbability;
 
         for (CheckDetection detectionExecutor : this.detections.values()) {
@@ -71,7 +71,7 @@ public abstract class CheckRunner extends CheckProcess {
         return num;
     }
 
-    public Long getRemainingCompletionTime(Check.DataType dataType) {
+    public final Long getRemainingCompletionTime(Check.DataType dataType) {
         List<PlayerProfile> playerProfiles = ResearchEngine.getPlayerProfiles();
 
         if (playerProfiles.isEmpty()) {
@@ -89,9 +89,6 @@ public abstract class CheckRunner extends CheckProcess {
                         Long lastTime = detection.getLastTime(dataType);
 
                         if (lastTime != null) {
-                            if (firstTime == -1L || lastTime == -1L) {
-                                continue;
-                            }
                             double completion = detection.getDataCompletion(dataType);
                             averageCompletion += completion * completion;
                             lastTime = lastTime - firstTime;

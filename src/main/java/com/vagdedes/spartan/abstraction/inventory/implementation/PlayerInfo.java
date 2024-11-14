@@ -18,6 +18,7 @@ import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
 import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
 import com.vagdedes.spartan.utils.java.OverflowMap;
+import com.vagdedes.spartan.utils.java.TimeUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.Enums.HackType;
@@ -77,7 +78,7 @@ public class PlayerInfo extends InventoryMenu {
                 Map<Double, HackType> map = PlayerEvidence.POSITIVE
                         ? new TreeMap<>(Collections.reverseOrder())
                         : new TreeMap<>();
-                boolean missingData = false;
+                Set<HackType> missingData = new HashSet<>();
 
                 for (Map.Entry<HackType, Double> entry : evidenceDetails) {
                     map.put(
@@ -85,20 +86,26 @@ public class PlayerInfo extends InventoryMenu {
                             entry.getKey()
                     );
 
-                    if (!missingData
+                    if (!missingData.contains(entry.getKey())
                             && !profile.getRunner(
                             entry.getKey()
                     ).hasSufficientData(
                             profile.getLastDataType()
                     )) {
-                        missingData = true;
+                        missingData.add(entry.getKey());
                     }
                 }
                 for (Map.Entry<Double, HackType> entry : map.entrySet()) {
                     HackType hackType = entry.getValue();
                     double probability = entry.getKey();
-                    Long remainingTime = profile.getRunner(hackType).getRemainingCompletionTime(profile.getLastDataType());
+                    Long remainingTime = missingData.contains(hackType)
+                            ? profile.getRunner(hackType).getRemainingCompletionTime(profile.getLastDataType())
+                            : null;
+                    String remainingDataPrompt = "";
 
+                    if (remainingTime != null) {
+                        remainingDataPrompt = " §8(§7Data pending: " + TimeUtils.convertMilliseconds(remainingTime) + "§8)";
+                    }
                     if (PlayerEvidence.surpassedProbability(
                             probability,
                             PlayerEvidence.punishmentProbability
@@ -107,6 +114,7 @@ public class PlayerInfo extends InventoryMenu {
                         lore.add(
                                 "§4" + hackType.getCheck().getName()
                                         + "§8: §c" + AlgebraUtils.integerRound(probability * 100.0) + "%"
+                                        + remainingDataPrompt
                         );
                     } else if (PlayerEvidence.surpassedProbability(
                             probability,
@@ -116,6 +124,7 @@ public class PlayerInfo extends InventoryMenu {
                         lore.add(
                                 "§6" + hackType.getCheck().getName()
                                         + "§8: §e" + AlgebraUtils.integerRound(probability * 100.0) + "%"
+                                        + remainingDataPrompt
                         );
                     } else if (PlayerEvidence.surpassedProbability(
                             probability,
@@ -125,6 +134,7 @@ public class PlayerInfo extends InventoryMenu {
                         lore.add(
                                 "§2" + hackType.getCheck().getName()
                                         + "§8: §a" + AlgebraUtils.integerRound(probability * 100.0) + "%"
+                                        + remainingDataPrompt
                         );
                     } else {
                         probability = PlayerEvidence.probabilityToCertainty(probability);
@@ -133,11 +143,12 @@ public class PlayerInfo extends InventoryMenu {
                         if (showProbability > 0) {
                             lore.add(
                                     "§3" + hackType.getCheck().getName() + "§8: §b" + showProbability + "%"
+                                            + remainingDataPrompt
                             );
                         }
                     }
                 }
-                if (missingData) {
+                if (!missingData.isEmpty()) {
                     lore.add("");
                     lore.add("§eSome detections are still collecting data");
                     lore.add("§eand will fully enable in the future.");
