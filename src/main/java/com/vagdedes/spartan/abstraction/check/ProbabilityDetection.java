@@ -64,19 +64,16 @@ public abstract class ProbabilityDetection extends CheckDetection {
             double averageTime;
 
             synchronized (this.data) {
-                long firstTime = this.data.get(dataType).iterator().next(),
+                Collection<Long> data = this.data.get(dataType);
+                long firstTime = data.iterator().next(),
                         lastTime = this.lastTime[dataType.ordinal()];
-                double violationsPerTime = this.data.size() /
+                double violationsPerTime = data.size() /
                         (lastTime == firstTime ? 1.0 : (double) (lastTime - firstTime));
 
-                if (this.data.size() == 1) {
+                if (data.size() == 1) {
                     averageTime = timeLimit / violationsPerTime;
                 } else {
                     double squareSum = 0.0;
-                    int size;
-
-                    Collection<Long> data = this.data.get(dataType);
-                    size = data.size();
                     Iterator<Long> iterator = data.iterator();
                     long previous = iterator.next();
 
@@ -89,7 +86,7 @@ public abstract class ProbabilityDetection extends CheckDetection {
                         previous = current;
                         squareSum += difference * difference;
                     }
-                    averageTime = Math.sqrt(squareSum / (size - 1.0)) / violationsPerTime;
+                    averageTime = Math.sqrt(squareSum / (data.size() - 1.0)) / violationsPerTime;
                 }
             }
             return averageTime;
