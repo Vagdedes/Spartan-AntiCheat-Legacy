@@ -11,6 +11,7 @@ import java.util.*;
 public abstract class ProbabilityDetection extends CheckDetection {
 
     private int lastProbability;
+    private Long lastTime;
     private final Map<Check.DataType, Collection<Long>> data;
 
     public ProbabilityDetection(CheckRunner executor, String name, boolean def) {
@@ -24,18 +25,16 @@ public abstract class ProbabilityDetection extends CheckDetection {
 
     @Override
     protected final boolean hasData(Check.DataType dataType) {
-        Collection<Long> data;
-
         synchronized (this.data) {
-            data = this.data.get(dataType);
+            return this.data.containsKey(dataType);
         }
-        return data != null && !data.isEmpty();
     }
 
     @Override
     public void clearData(Check.DataType dataType) {
         synchronized (this.data) {
             this.data.remove(dataType);
+            this.lastTime = null;
         }
     }
 
@@ -44,34 +43,35 @@ public abstract class ProbabilityDetection extends CheckDetection {
         synchronized (this.data) {
             Collection<Long> data = this.data.computeIfAbsent(
                     dataType,
-                    k -> new ArrayList<>()
+                    k -> new TreeSet<>()
             );
 
-            if (data.size() == 2_048) {
+            if (data.size() == 3_072) {
                 Iterator<Long> iterator = data.iterator();
                 iterator.next();
                 iterator.remove();
             }
             data.add(time);
+            this.lastTime = time;
         }
-        ResearchEngine.queueToCache(this.hackType);
     }
 
     @Override
-    public final Double getTimeDifference(Check.DataType dataType) {
+    public final Double getData(Check.DataType dataType) {
         if (this.hasData(dataType)) {
             long timeLimit = 60_000L;
+            double averageTime;
 
-            if (this.data.size() == 1) {
-                synchronized (this.data) {
-                    //return timeLimit / this.data.values().iterator().next().iterator().next();
-                    return 0.0;
-                }
-            } else {
-                double squareSum = 0.0;
-                int size;
+            synchronized (this.data) {
+                long firstTime = this.data.get(dataType).iterator().next();
+                double violationsPerTime = this.data.size() / (double) (this.lastTime - firstTime);
 
-                synchronized (this.data) {
+                if (this.data.size() == 1) {
+                    averageTime = timeLimit / violationsPerTime;
+                } else {
+                    double squareSum = 0.0;
+                    int size;
+
                     Collection<Long> data = this.data.get(dataType);
                     size = data.size();
                     Iterator<Long> iterator = data.iterator();
@@ -86,9 +86,10 @@ public abstract class ProbabilityDetection extends CheckDetection {
                         previous = current;
                         squareSum += difference * difference;
                     }
+                    averageTime = Math.sqrt(squareSum / (size - 1.0)) / violationsPerTime;
                 }
-                return Math.sqrt(squareSum / (size - 1.0));
             }
+            return averageTime;
         } else {
             return null;
         }
@@ -96,15 +97,13 @@ public abstract class ProbabilityDetection extends CheckDetection {
 
     @Override
     public Long getFirstTime(Check.DataType dataType) {
-        Long time;
+        Long time = null;
 
         synchronized (this.data) {
             Collection<Long> data = this.data.get(dataType);
 
             if (data != null) {
                 time = data.iterator().next();
-            } else {
-                time = null;
             }
         }
         return time;
@@ -112,18 +111,9 @@ public abstract class ProbabilityDetection extends CheckDetection {
 
     @Override
     public Long getLastTime(Check.DataType dataType) {
-        Long time;
-
         synchronized (this.data) {
-            Collection<Long> data = this.data.get(dataType);
-
-            if (data != null) {
-                time = data.stream().reduce((first, second) -> second).orElse(null);
-            } else {
-                time = null;
-            }
+            return this.lastTime;
         }
-        return time;
     }
 
     @Override

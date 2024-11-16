@@ -100,21 +100,21 @@ public class PlayerStateLists {
 
     public static void fill(UUID uuid, Inventory inventory) {
         Map<PlayerProfile, Collection<Enums.HackType>> selectedProfiles = getProfiles();
+        int listSize;
+        int slotPosition = 0,
+                limit = 15;
+        List<String> lore = new ArrayList<>();
+        Integer[] freeSlots = getFreeSlots(inventory);
 
         if (!selectedProfiles.isEmpty()) {
-            List<String> lore = new ArrayList<>();
-            int slotPosition = 0,
-                    limit = 15,
-                    page = getPage(uuid),
+            int page = getPage(uuid),
                     skip = ((page - 1) * limit);
-            ;
-            Integer[] freeSlots = getFreeSlots(inventory);
             List<PlayerProfile> selectedProfilesToReview = subList(
                     new ArrayList<>(selectedProfiles.keySet()),
                     skip,
                     skip + limit
             );
-            int listSize = selectedProfilesToReview.size();
+            listSize = selectedProfilesToReview.size();
 
             if (listSize > 0) {
                 for (PlayerProfile profile : selectedProfilesToReview) {
@@ -153,17 +153,19 @@ public class PlayerStateLists {
                     }
                 }
             }
+        } else {
+            listSize = 0;
+        }
 
-            if (listSize != limit) {
-                lore.clear();
-                lore.add("");
-                lore.add("§cEmpty items like this will be filled with");
-                lore.add("§csuspected players as they are found.");
+        if (listSize != limit) {
+            lore.clear();
+            lore.add("");
+            lore.add("§cEmpty items like this will be filled with");
+            lore.add("§csuspected players as they are found.");
 
-                for (int i = listSize; i < limit; i++) {
-                    InventoryUtils.add(inventory, inactiveColour + "Empty", lore, InventoryUtils.getHead(), freeSlots[slotPosition]);
-                    slotPosition++;
-                }
+            for (int i = listSize; i < limit; i++) {
+                InventoryUtils.add(inventory, inactiveColour + "Empty", lore, InventoryUtils.getHead(), freeSlots[slotPosition]);
+                slotPosition++;
             }
         }
     }

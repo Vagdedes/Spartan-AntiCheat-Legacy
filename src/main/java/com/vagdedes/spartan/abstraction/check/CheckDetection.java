@@ -12,6 +12,7 @@ import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.AntiCheatLogs;
 import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
+import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.server.ConfigUtils;
@@ -93,7 +94,7 @@ public abstract class CheckDetection extends CheckProcess {
     public void store(Check.DataType dataType, long time) {
     }
 
-    public Double getTimeDifference(Check.DataType dataType) {
+    public Double getData(Check.DataType dataType) {
         return null;
     }
 
@@ -326,6 +327,7 @@ public abstract class CheckDetection extends CheckProcess {
                         this.protocol().spartan.dataType,
                         time
                 );
+                ResearchEngine.queueToCache(this.hackType);
                 this.notify(time, information);
                 this.punish();
                 this.executor.prevention = newPrevention;

@@ -414,8 +414,8 @@ public class ResearchEngine {
                                                         sdf.parse(fullDate).getTime()
                                                 );
                                             }
-                                            break;
                                         }
+                                        break;
                                     }
                                 }
                             }
@@ -483,15 +483,15 @@ public class ResearchEngine {
 
                     for (PlayerProfile profile : profiles) {
                         for (CheckDetection detectionExecutor : profile.getRunner(hackType).getDetections()) {
-                            Double timeDifference = detectionExecutor.getTimeDifference(dataType);
+                            Double data = detectionExecutor.getData(dataType);
 
-                            if (timeDifference != null) {
+                            if (data != null) {
                                 wave.computeIfAbsent(
                                         detectionExecutor.name,
                                         k -> new LinkedHashMap<>()
                                 ).put(
                                         detectionExecutor,
-                                        timeDifference
+                                        data
                                 );
                             }
                         }
