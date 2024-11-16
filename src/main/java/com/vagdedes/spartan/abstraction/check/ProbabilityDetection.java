@@ -61,35 +61,34 @@ public abstract class ProbabilityDetection extends CheckDetection {
     public final Double getData(Check.DataType dataType) {
         if (this.hasData(dataType)) {
             long timeLimit = 60_000L;
-            double averageTime;
+            double averageTime, violationsPerTime;
 
             synchronized (this.data) {
                 Collection<Long> data = this.data.get(dataType);
-                long firstTime = data.iterator().next(),
-                        lastTime = this.lastTime[dataType.ordinal()];
-                double violationsPerTime = data.size() /
-                        (lastTime == firstTime ? 1.0 : (double) (lastTime - firstTime));
 
                 if (data.size() == 1) {
-                    averageTime = timeLimit / violationsPerTime;
+                    averageTime = timeLimit;
+                    violationsPerTime = data.size();
                 } else {
-                    double squareSum = 0.0;
+                    long sum = 0L, squareSum = 0;
                     Iterator<Long> iterator = data.iterator();
                     long previous = iterator.next();
 
                     while (iterator.hasNext()) {
                         Long current = iterator.next();
-                        double difference = Math.min(
+                        long difference = Math.min(
                                 current - previous,
                                 timeLimit
                         );
                         previous = current;
+                        sum += difference;
                         squareSum += difference * difference;
                     }
-                    averageTime = Math.sqrt(squareSum / (data.size() - 1.0)) / violationsPerTime;
+                    averageTime = Math.sqrt(squareSum / (data.size() - 1.0));
+                    violationsPerTime = data.size() / (double) sum;
                 }
             }
-            return averageTime;
+            return averageTime / violationsPerTime;
         } else {
             return null;
         }

@@ -6,9 +6,9 @@ public class PlayerEvidence {
 
     public static final boolean POSITIVE = false;
     public static final double
-            notificationProbability = createProbability(0.45),
-            preventionProbability = createProbability(0.3),
-            punishmentProbability = createProbability(0.1),
+            notificationProbability = createProbability(0.4),
+            preventionProbability = createProbability(0.25),
+            punishmentProbability = createProbability(0.05),
             emptyProbability = createProbability(1.0);
 
     private static double createProbability(double probability) {

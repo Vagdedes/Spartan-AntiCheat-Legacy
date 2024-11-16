@@ -142,13 +142,13 @@ public abstract class CheckDetection extends CheckProcess {
         boolean hasSufficientData = this.hasSufficientData(this.protocol().spartan.dataType);
         double probability = this.getProbability(this.protocol().spartan.dataType),
                 certainty = PlayerEvidence.probabilityToCertainty(probability) * 100.0,
-                dataCompletion = hasSufficientData ? 100.0 : AlgebraUtils.cut(this.getDataCompletion(this.protocol.spartan.dataType) * 100.0, 2);
+                dataCompletion = hasSufficientData ? 100.0 : this.getDataCompletion(this.protocol.spartan.dataType) * 100.0;
         int roundedCertainty = AlgebraUtils.integerRound(certainty);
         String notification = ConfigUtils.replaceWithSyntax(
                 this.protocol(),
                 Config.messages.getColorfulString("detection_notification")
                         .replace("{info}", information)
-                        .replace("{detection:data}", dataCompletion + "%")
+                        .replace("{detection:data}", AlgebraUtils.integerRound(dataCompletion) + "%")
                         .replace("{detection:percentage}",
                                 hasSufficientData
                                         ? ((roundedCertainty == 0 ? 1 : roundedCertainty) + "%")
@@ -162,7 +162,7 @@ public abstract class CheckDetection extends CheckProcess {
                 + " (" + CheckRunner.javaPlayerIdentifier + " " + (!this.protocol().spartan.isBedrockPlayer()) + ")" + ", "
                 + "(" + CheckRunner.detectionIdentifier + " " + this.name + ")" + ", "
                 + "(Certainty: " + AlgebraUtils.cut(certainty, 2) + "), "
-                + "(Data-Completion: " + dataCompletion + "), "
+                + "(Data-Completion: " + AlgebraUtils.cut(dataCompletion, 2) + "), "
                 + "(Server-Version: " + MultiVersion.serverVersion.toString() + "), "
                 + "(Plugin-Version: " + API.getVersion() + "), "
                 + "(Silent: " + hackType.getCheck().isSilent(this.protocol().spartan.dataType, this.protocol().spartan.getWorld().getName()) + "), "
