@@ -1,6 +1,6 @@
 [#] Made learning 2x faster for every of player of every detection of every check.
+[#] Spartan can now hold 2x the data with about 2x less space taken in memory.
 [#] Fixed an ImpossibleActions detection error caused by outdated block face bukkit object.
-[#] Increased the size of data Spartan can hold due to recent object optimizations & removals.
 [#] Fixed a null location error caused by the protocol utils not returning an empty location.
 [#] Separated detections into probabilistic and hardcoded to differentiate functionality for developers.
 [#] All Spartan commands will now run synchronously so no issues are caused.

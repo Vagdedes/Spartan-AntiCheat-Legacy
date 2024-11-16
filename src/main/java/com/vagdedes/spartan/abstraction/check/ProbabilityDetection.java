@@ -47,7 +47,7 @@ public abstract class ProbabilityDetection extends CheckDetection {
                     k -> new TreeSet<>()
             );
 
-            if (data.size() == 3_072) {
+            if (data.size() == 2_048) {
                 Iterator<Long> iterator = data.iterator();
                 iterator.next();
                 iterator.remove();
