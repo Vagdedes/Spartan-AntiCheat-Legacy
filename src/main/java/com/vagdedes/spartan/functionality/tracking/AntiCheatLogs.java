@@ -58,7 +58,6 @@ public class AntiCheatLogs {
                                Material material,
                                Enums.HackType hackType,
                                long time,
-                               double increase,
                                boolean unlikely) {
         if (console && Config.settings.getBoolean("Logs.log_console")) {
             Bukkit.getConsoleSender().sendMessage(information);
@@ -83,7 +82,7 @@ public class AntiCheatLogs {
                 });
             }
         }
-        Config.sql.logInfo(p, notification, information, material, hackType, time, increase);
+        Config.sql.logInfo(p, notification, information, material, hackType, time);
     }
 
     public static void logMining(SpartanProtocol protocol, Block block, boolean cancelled) {
@@ -119,7 +118,6 @@ public class AntiCheatLogs {
                             block.getType(),
                             null,
                             System.currentTimeMillis(),
-                            0,
                             false
                     );
                     MiningHistory miningHistory = protocol.getProfile().getMiningHistory(ore);

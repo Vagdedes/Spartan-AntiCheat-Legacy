@@ -127,6 +127,7 @@ public class ResearchEngine {
                         for (CheckDetection detectionExecutor : playerProfile.getRunner(hackType).getDetections()) {
                             for (Check.DataType dataType : Check.DataType.values()) {
                                 detectionExecutor.clearProbability(dataType);
+                                detectionExecutor.clearData(dataType);
                             }
                         }
                     }
@@ -231,25 +232,6 @@ public class ResearchEngine {
             s = s.substring(index + find.length());
             index = s.indexOf(")");
             return s.substring(0, index);
-        }
-        return null;
-    }
-
-    private static Double getViolationIncrease(String s) {
-        String search = "(" + CheckRunner.violationLevelIdentifier + " ";
-        int index1 = s.indexOf(search);
-
-        if (index1 > -1) {
-            s = s.substring(index1 + search.length());
-            int index2 = s.indexOf(")");
-
-            if (index2 != -1) {
-                String number = s.substring(0, index2);
-
-                if (AlgebraUtils.validDecimal(number)) {
-                    return Double.parseDouble(number);
-                }
-            }
         }
         return null;
     }
@@ -422,20 +404,15 @@ public class ResearchEngine {
                                         String detection = getDetectionInformation(data);
 
                                         if (detection != null) {
-                                            Double violationIncrease = getViolationIncrease(data);
+                                            PlayerProfile profile = getPlayerProfile(split[0], true);
+                                            CheckDetection detectionExecutor = profile.getRunner(hackType).getDetection(detection);
 
-                                            if (violationIncrease != null) {
-                                                PlayerProfile profile = getPlayerProfile(split[0], true);
-                                                CheckDetection detectionExecutor = profile.getRunner(hackType).getDetection(detection);
-
-                                                if (detectionExecutor != null) {
-                                                    SimpleDateFormat sdf = new SimpleDateFormat(AntiCheatLogs.dateFormat);
-                                                    detectionExecutor.store(
-                                                            getDataType(data),
-                                                            sdf.parse(fullDate).getTime(),
-                                                            violationIncrease
-                                                    );
-                                                }
+                                            if (detectionExecutor != null) {
+                                                SimpleDateFormat sdf = new SimpleDateFormat(AntiCheatLogs.dateFormat);
+                                                detectionExecutor.store(
+                                                        getDataType(data),
+                                                        sdf.parse(fullDate).getTime()
+                                                );
                                             }
                                             break;
                                         }

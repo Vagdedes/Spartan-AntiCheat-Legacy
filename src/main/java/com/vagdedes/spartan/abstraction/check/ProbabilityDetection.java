@@ -11,7 +11,7 @@ import java.util.*;
 public abstract class ProbabilityDetection extends CheckDetection {
 
     private int lastProbability;
-    private final Map<Check.DataType, Map<Long, Double>> data;
+    private final Map<Check.DataType, Collection<Long>> data;
 
     public ProbabilityDetection(CheckRunner executor, String name, boolean def) {
         super(executor, name, def);
@@ -24,28 +24,35 @@ public abstract class ProbabilityDetection extends CheckDetection {
 
     @Override
     protected final boolean hasData(Check.DataType dataType) {
-        Map<Long, Double> map;
+        Collection<Long> data;
 
         synchronized (this.data) {
-            map = this.data.get(dataType);
+            data = this.data.get(dataType);
         }
-        return map != null && !map.isEmpty();
+        return data != null && !data.isEmpty();
     }
 
     @Override
-    public final void store(Check.DataType dataType, long time, double increase) {
+    public void clearData(Check.DataType dataType) {
         synchronized (this.data) {
-            Map<Long, Double> map = this.data.computeIfAbsent(
+            this.data.remove(dataType);
+        }
+    }
+
+    @Override
+    public final void store(Check.DataType dataType, long time) {
+        synchronized (this.data) {
+            Collection<Long> data = this.data.computeIfAbsent(
                     dataType,
-                    k -> new TreeMap<>()
+                    k -> new ArrayList<>()
             );
 
-            if (map.size() == 2_048) {
-                Iterator<Long> iterator = map.keySet().iterator();
+            if (data.size() == 2_048) {
+                Iterator<Long> iterator = data.iterator();
                 iterator.next();
                 iterator.remove();
             }
-            map.put(time, increase);
+            data.add(time);
         }
         ResearchEngine.queueToCache(this.hackType);
     }
@@ -57,25 +64,26 @@ public abstract class ProbabilityDetection extends CheckDetection {
 
             if (this.data.size() == 1) {
                 synchronized (this.data) {
-                    return timeLimit / this.data.values().iterator().next().values().iterator().next();
+                    //return timeLimit / this.data.values().iterator().next().iterator().next();
+                    return 0.0;
                 }
             } else {
                 double squareSum = 0.0;
                 int size;
 
                 synchronized (this.data) {
-                    Map<Long, Double> map = this.data.get(dataType);
-                    size = map.size();
-                    Iterator<Map.Entry<Long, Double>> iterator = map.entrySet().iterator();
-                    long previous = iterator.next().getKey();
+                    Collection<Long> data = this.data.get(dataType);
+                    size = data.size();
+                    Iterator<Long> iterator = data.iterator();
+                    long previous = iterator.next();
 
                     while (iterator.hasNext()) {
-                        Map.Entry<Long, Double> entry = iterator.next();
+                        Long current = iterator.next();
                         double difference = Math.min(
-                                (entry.getKey() - previous) / entry.getValue(),
+                                current - previous,
                                 timeLimit
                         );
-                        previous = entry.getKey();
+                        previous = current;
                         squareSum += difference * difference;
                     }
                 }
@@ -91,10 +99,10 @@ public abstract class ProbabilityDetection extends CheckDetection {
         Long time;
 
         synchronized (this.data) {
-            Map<Long, Double> map = this.data.get(dataType);
+            Collection<Long> data = this.data.get(dataType);
 
-            if (map != null) {
-                time = map.keySet().iterator().next();
+            if (data != null) {
+                time = data.iterator().next();
             } else {
                 time = null;
             }
@@ -107,10 +115,10 @@ public abstract class ProbabilityDetection extends CheckDetection {
         Long time;
 
         synchronized (this.data) {
-            Map<Long, Double> map = this.data.get(dataType);
+            Collection<Long> data = this.data.get(dataType);
 
-            if (map != null) {
-                time = map.keySet().stream().reduce((first, second) -> second).orElse(null);
+            if (data != null) {
+                time = data.stream().reduce((first, second) -> second).orElse(null);
             } else {
                 time = null;
             }

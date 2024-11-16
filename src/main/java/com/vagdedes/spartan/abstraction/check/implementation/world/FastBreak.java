@@ -130,7 +130,6 @@ public class FastBreak extends CheckRunner {
                                         + ", effects: " + (!hasEffects ? "none" : "[" + effectsString + "]");
                                 this.delay.cancel(
                                         prevention,
-                                        limit / (double) time,
                                         null,
                                         seconds
                                 );
@@ -156,7 +155,6 @@ public class FastBreak extends CheckRunner {
                             "type: breaks-per-second"
                                     + ", type: " + BlockUtils.blockToString(block)
                                     + ", limit: " + limit,
-                            buffer / (double) limit,
                             null,
                             seconds
                     );
@@ -206,7 +204,6 @@ public class FastBreak extends CheckRunner {
                             + ", limit: " + limit;
                     this.indirectSurroundingsPerSecond.cancel(
                             prevention,
-                            bufferThreshold / (double) limit,
                             null,
                             seconds
                     );

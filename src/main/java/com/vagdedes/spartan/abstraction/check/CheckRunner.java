@@ -28,7 +28,6 @@ public abstract class CheckRunner extends CheckProcess {
 
     private static final boolean v1_8 = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8);
     public static final String
-            violationLevelIdentifier = "Violations:",
             javaPlayerIdentifier = "Java:",
             detectionIdentifier = "Detection:";
 

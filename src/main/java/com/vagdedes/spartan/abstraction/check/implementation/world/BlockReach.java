@@ -63,8 +63,7 @@ public class BlockReach extends CheckRunner {
                     this.breaking.cancel(
                             "type: breaking, distance: " + distance
                                     + ", limit: " + limit
-                                    + ", block: " + BlockUtils.blockToString(block),
-                            distance / limit
+                                    + ", block: " + BlockUtils.blockToString(block)
                     );
                 }
             }
@@ -80,8 +79,7 @@ public class BlockReach extends CheckRunner {
                     this.interact.cancel(
                             "type: interact, distance: " + distance
                                     + ", limit: " + limit
-                                    + ", block: " + BlockUtils.blockToString(block),
-                            distance / limit
+                                    + ", block: " + BlockUtils.blockToString(block)
                     );
                 }
             }
@@ -108,8 +106,7 @@ public class BlockReach extends CheckRunner {
                         this.unusual.cancel(
                                 "type: unusual, distance: " + distance
                                         + ", block-against-distance: " + ab_distance
-                                        + ", block: " + BlockUtils.blockToString(block),
-                                distance / ab_distance
+                                        + ", block: " + BlockUtils.blockToString(block)
                         );
                     } else {
                         double limit = getLimit();
@@ -118,8 +115,7 @@ public class BlockReach extends CheckRunner {
                             this.place.cancel(
                                     "type: place, distance: " + distance
                                             + ", limit: " + limit
-                                            + ", block: " + BlockUtils.blockToString(block),
-                                    distance / limit
+                                            + ", block: " + BlockUtils.blockToString(block)
                             );
                         }
                     }

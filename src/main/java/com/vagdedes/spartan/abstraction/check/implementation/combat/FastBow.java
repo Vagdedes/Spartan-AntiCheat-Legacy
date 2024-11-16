@@ -60,8 +60,7 @@ public class FastBow extends CheckRunner {
         if (buffer >= threshold) {
             bowForce.reset();
             this.bowForceDetection.cancel(
-                    "type: bow-force, ms: " + timePassed,
-                    buffer / (double) threshold
+                    "type: bow-force, ms: " + timePassed
             );
         }
     }
@@ -71,8 +70,7 @@ public class FastBow extends CheckRunner {
                 threshold = 7;
         if (buffer >= threshold) {
             this.bowShotsDetection.cancel(
-                    "type: bow-shots",
-                    buffer / (double) threshold
+                    "type: bow-shots"
             );
         }
     }

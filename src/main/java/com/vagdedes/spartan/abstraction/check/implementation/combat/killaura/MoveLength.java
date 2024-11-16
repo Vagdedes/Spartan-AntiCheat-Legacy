@@ -57,7 +57,6 @@ public class MoveLength extends ProbabilityDetection {
                                         + ", previous-pitch-difference: " + this.previousPitchDifference
                                         + ", greatest-common-divisor: " + gcd
                                         + ", limit: " + minimumGCD,
-                                minimumGCD / gcd,
                                 null,
                                 AlgebraUtils.integerCeil(TPS.maximum)
                         );

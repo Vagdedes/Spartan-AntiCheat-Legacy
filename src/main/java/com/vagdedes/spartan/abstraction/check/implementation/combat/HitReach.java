@@ -92,7 +92,6 @@ public class HitReach extends CheckRunner {
                     "type: " + punish + ", hitbox-size-analysis: "
                             + result + ", hitbox-size-last: " + bruteForce + ", percent-of-deviance: "
                             + percent + "%, reach: " + RayUtils.scaleVal((result / 0.4) * 3, 2) + " blocks",
-                    vl / 100D,
                     to
             );
         } else {

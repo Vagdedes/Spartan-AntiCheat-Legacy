@@ -182,7 +182,6 @@ public class MoveDirection extends ProbabilityDetection {
                             + ", gcd: " + gcd + ", aPI: " + aggressivePatternI
                             + ", aPD: " + aggressivePatternD + ", aPI2: " + aggressivePatternI2
                             + ", aPD2: " + aggressivePatternD2,
-                    punishValue,
                     to
             );
             vl -= 10;
@@ -191,7 +190,6 @@ public class MoveDirection extends ProbabilityDetection {
         if (!punishL2.isEmpty() && vlL2 > (priorityData(priorityType()).vlLimit / 2) + 50) {
             this.layer2.cancel(
                     "(layer2) type: " + punishL2 + ", infs: " + infinitives,
-                    punishValue,
                     to
             );
             vlL2 -= 10;

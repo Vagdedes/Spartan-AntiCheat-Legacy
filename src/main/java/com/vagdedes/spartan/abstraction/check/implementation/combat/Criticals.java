@@ -38,7 +38,7 @@ public class Criticals extends CheckRunner {
                     && this.protocol().spartan.movement.getTicksOnAir() == 1
                     && !this.protocol().spartan.movement.getLocation().getBlock().getType().isBlock()
                     && !RayUtils.onSolidBlock(this.protocol(), this.protocol().spartan.movement.getLocation().clone().add(0, 2, 0).bukkit())) {
-                this.detection.cancel("type: packet", 1);
+                this.detection.cancel("type: packet");
             }
         }
     }

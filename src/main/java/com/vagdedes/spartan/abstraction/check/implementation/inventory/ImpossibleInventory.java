@@ -73,7 +73,6 @@ public class ImpossibleInventory extends CheckRunner {
                 if (cases != 0) {
                     this.cursorUsageDetection.cancel(
                             "type: cursor-usage, case: " + cases,
-                            1.0,
                             this.protocol().spartan.movement.getDetectionLocation(),
                             0,
                             false

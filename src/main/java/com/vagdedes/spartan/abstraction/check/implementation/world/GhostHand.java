@@ -46,7 +46,6 @@ public class GhostHand extends CheckRunner {
                                         + ", blocking-block: " + BlockUtils.blockToString(t)
                                         + ", interacted-distance: " + bDistance
                                         + ", blocking-distance: " + tDistance,
-                                1.0,
                                 null,
                                 1
                         );
@@ -74,7 +73,6 @@ public class GhostHand extends CheckRunner {
                                             + ", blocking-block: " + BlockUtils.blockToString(t)
                                             + ", interacted-distance: " + bDistance
                                             + ", blocking-distance: " + tDistance,
-                                    1.0,
                                     null,
                                     1
                             );

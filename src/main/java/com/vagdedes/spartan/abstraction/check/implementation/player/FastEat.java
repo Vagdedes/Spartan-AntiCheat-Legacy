@@ -71,8 +71,7 @@ public class FastEat extends CheckRunner {
 
         if (delay > 0L && time <= delay) {
             this.eat.cancel(
-                    "type: eat, ms: " + time,
-                    delay / (double) time
+                    "type: eat, ms: " + time
             );
             bool = true;
         } else {
@@ -87,8 +86,7 @@ public class FastEat extends CheckRunner {
 
         if (delay > 0L && time <= delay) {
             this.interact.cancel(
-                    "type: interact, ms: " + time + ", delay: " + delay,
-                    delay / (double) time
+                    "type: interact, ms: " + time + ", delay: " + delay
             );
             return true;
         }

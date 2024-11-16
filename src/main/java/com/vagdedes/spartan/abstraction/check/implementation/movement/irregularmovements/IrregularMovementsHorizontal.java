@@ -5,7 +5,6 @@ import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
-import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 
@@ -38,7 +37,6 @@ public class IrregularMovementsHorizontal extends ProbabilityDetection {
                                         + ", vertical: " + vertical
                                         + ", air-ticks: " + airTicks
                                         + ", limit: " + limit,
-                                airTicks / (double) limit,
                                 this.protocol().spartan.movement.getDetectionLocation(),
                                 0,
                                 true
@@ -51,7 +49,6 @@ public class IrregularMovementsHorizontal extends ProbabilityDetection {
                                     + ", old-box: " + oldBox
                                     + ", vertical: " + vertical
                                     + ", air-ticks: " + airTicks,
-                            airTicks / TPS.maximum,
                             this.protocol().spartan.movement.getDetectionLocation(),
                             0,
                             true

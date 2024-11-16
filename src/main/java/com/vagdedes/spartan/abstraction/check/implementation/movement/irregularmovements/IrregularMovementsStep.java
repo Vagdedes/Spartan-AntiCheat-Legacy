@@ -116,7 +116,6 @@ public class IrregularMovementsStep extends ProbabilityDetection {
                                         + ", old-box: " + oldBox
                                         + ", vertical: " + vertical
                                         + ", limit: " + limit,
-                                vertical,
                                 this.protocol().spartan.movement.getDetectionLocation(),
                                 0,
                                 true
@@ -136,7 +135,6 @@ public class IrregularMovementsStep extends ProbabilityDetection {
                                         + ", vertical: " + vertical
                                         + ", down-limit: " + downLimit
                                         + ", up-limit: " + upLimit,
-                                Math.abs(vertical),
                                 this.protocol().spartan.movement.getDetectionLocation(),
                                 0,
                                 true
@@ -155,7 +153,6 @@ public class IrregularMovementsStep extends ProbabilityDetection {
                                     + ", old-box: " + oldBox
                                     + ", vertical: " + vertical
                                     + ", limit: " + limit,
-                            vertical / limit,
                             this.protocol().spartan.movement.getDetectionLocation(),
                             0,
                             true
@@ -212,7 +209,6 @@ public class IrregularMovementsStep extends ProbabilityDetection {
                                             + ", old-box: " + oldBox
                                             + ", vertical: " + vertical
                                             + ", limit: " + limit,
-                                    vertical / limit,
                                     this.protocol().spartan.movement.getDetectionLocation(),
                                     0,
                                     true
@@ -228,7 +224,6 @@ public class IrregularMovementsStep extends ProbabilityDetection {
                                         + ", box: " + box
                                         + ", old-box: " + oldBox
                                         + ", vertical: " + vertical,
-                                0.0d - vertical,
                                 this.protocol().spartan.movement.getDetectionLocation(),
                                 0,
                                 true
@@ -252,7 +247,6 @@ public class IrregularMovementsStep extends ProbabilityDetection {
                                                 + ", vertical: " + vertical
                                                 + ", vertical-prediction: " + verticalPrediction
                                                 + ", motion-remainder: " + motionRemainder,
-                                        1.0,
                                         this.protocol().spartan.movement.getDetectionLocation(),
                                         0,
                                         true
@@ -271,7 +265,6 @@ public class IrregularMovementsStep extends ProbabilityDetection {
                                             + ", old-box: " + oldBox
                                             + ", vertical: " + vertical
                                             + ", limit: " + limit,
-                                    0.0d - vertical,
                                     this.protocol().spartan.movement.getDetectionLocation(),
                                     0,
                                     true

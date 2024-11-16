@@ -44,7 +44,6 @@ public class ItemDrops extends CheckRunner {
                         if (timePassedStored > 0L) {
                             this.detection.cancel(
                                     "type: default",
-                                    count / threshold,
                                     null,
                                     10
                             );

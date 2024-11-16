@@ -34,7 +34,7 @@ public class BlockRaytrace extends ProbabilityDetection {
                 this.protocol().setCheckBoundData(new CheckBoundData(this.protocol(), target));
                 Vector result = isBoundThrough(this.protocol().getCheckBoundData());
                 if (result != null) {
-                    cancel("attack through block at " + result, 0.5F);
+                    cancel("attack through block at " + result);
                     this.protocol().setCheckBoundData(null);
                 }
             }

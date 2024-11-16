@@ -182,8 +182,7 @@ public class Speed extends CheckRunner {
 
             if (this.violation != null) {
                 ((CheckDetection) this.violation[1]).cancel(
-                        (String) this.violation[0],
-                        this.multiplyViolation
+                        (String) this.violation[0]
                 );
             }
             startSimulationFlag();

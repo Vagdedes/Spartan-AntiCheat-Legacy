@@ -58,8 +58,7 @@ public class FastClicks extends CheckRunner {
                                 "type: clicks-per-second"
                                         + ", count: " + count
                                         + ", limit: " + limit
-                                        + ", deviation: " + deviation,
-                                count
+                                        + ", deviation: " + deviation
                         );
                     }
                     if (checkPattern
@@ -72,8 +71,7 @@ public class FastClicks extends CheckRunner {
                                     "type: clicks-pattern"
                                             + ", count: " + count
                                             + ", difference: " + absolute
-                                            + ", deviation: " + deviation,
-                                    count
+                                            + ", deviation: " + deviation
                             );
                         }
                     }

@@ -54,7 +54,6 @@ public class FastPlace extends CheckRunner {
                                 "type: slow"
                                         + ", ms: " + timePassed
                                         + ", block: " + BlockUtils.materialToString(material),
-                                1.0,
                                 null,
                                 ticks
                         );
@@ -65,7 +64,6 @@ public class FastPlace extends CheckRunner {
                                     "type: medium"
                                             + ", ms: " + timePassed
                                             + ", block: " + BlockUtils.materialToString(material),
-                                    1.0,
                                     null,
                                     ticks
                             );
@@ -78,7 +76,6 @@ public class FastPlace extends CheckRunner {
                                     "type: fast"
                                             + ", ms: " + timePassed
                                             + ", block: " + BlockUtils.materialToString(material),
-                                    1.0,
                                     null,
                                     ticks
                             );

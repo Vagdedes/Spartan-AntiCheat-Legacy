@@ -86,7 +86,11 @@ public abstract class CheckDetection extends CheckProcess {
         return false;
     }
 
-    public void store(Check.DataType dataType, long time, double increase) {
+    public void clearData(Check.DataType dataType) {
+
+    }
+
+    public void store(Check.DataType dataType, long time) {
     }
 
     public Double getTimeDifference(Check.DataType dataType) {
@@ -133,7 +137,7 @@ public abstract class CheckDetection extends CheckProcess {
 
     public abstract boolean canSendNotification(Object detected, int probability);
 
-    protected void notify(long time, double increase, String information) {
+    protected void notify(long time, String information) {
         boolean hasSufficientData = this.hasSufficientData(this.protocol().spartan.dataType);
         double probability = this.getProbability(this.protocol().spartan.dataType),
                 certainty = PlayerEvidence.probabilityToCertainty(probability) * 100.0,
@@ -144,7 +148,6 @@ public abstract class CheckDetection extends CheckProcess {
                 Config.messages.getColorfulString("detection_notification")
                         .replace("{info}", information)
                         .replace("{detection:data}", dataCompletion + "%")
-                        .replace("{detection:violations}", String.valueOf(AlgebraUtils.cut(increase, 2)))
                         .replace("{detection:percentage}",
                                 hasSufficientData && roundedCertainty > 0
                                         ? (roundedCertainty + "%")
@@ -155,8 +158,7 @@ public abstract class CheckDetection extends CheckProcess {
 
         SpartanLocation location = this.protocol().spartan.movement.getLocation();
         information = this.protocol().bukkit.getName() + " failed " + hackType
-                + " (" + CheckRunner.violationLevelIdentifier + " " + increase + "), "
-                + "(" + CheckRunner.javaPlayerIdentifier + " " + (!this.protocol().spartan.isBedrockPlayer()) + ")" + ", "
+                + " (" + CheckRunner.javaPlayerIdentifier + " " + (!this.protocol().spartan.isBedrockPlayer()) + ")" + ", "
                 + "(" + CheckRunner.detectionIdentifier + " " + this.name + ")" + ", "
                 + "(Certainty: " + AlgebraUtils.cut(certainty, 2) + "), "
                 + "(Data-Completion: " + dataCompletion + "), "
@@ -179,7 +181,6 @@ public abstract class CheckDetection extends CheckProcess {
                 null,
                 hackType,
                 time,
-                increase,
                 !hasSufficientData
         );
 
@@ -284,7 +285,7 @@ public abstract class CheckDetection extends CheckProcess {
 
     // Prevention
 
-    public final void cancel(String information, double increase, SpartanLocation location,
+    public final void cancel(String information, SpartanLocation location,
                              int cancelTicks, boolean groundTeleport, double damage) {
         if (!this.isEnabled()) {
             return;
@@ -305,10 +306,6 @@ public abstract class CheckDetection extends CheckProcess {
         if (disableCause == null
                 || disableCause.hasExpired()
                 || !disableCause.pointerMatches(information)) {
-            if (increase < 1.0) {
-                increase = 1.0;
-            }
-            double finalIncrease = increase;
             boolean event = Config.settings.getBoolean("Important.enable_developer_api");
             CheckCancellation silentCause = this.executor.getSilentCause();
 
@@ -317,7 +314,6 @@ public abstract class CheckDetection extends CheckProcess {
                     PlayerViolationEvent playerViolationEvent = new PlayerViolationEvent(
                             this.protocol().bukkit,
                             hackType,
-                            finalIncrease,
                             information
                     );
                     Register.manager.callEvent(playerViolationEvent);
@@ -328,10 +324,9 @@ public abstract class CheckDetection extends CheckProcess {
                 }
                 this.store(
                         this.protocol().spartan.dataType,
-                        time,
-                        finalIncrease
+                        time
                 );
-                this.notify(time, finalIncrease, information);
+                this.notify(time, information);
                 this.punish();
                 this.executor.prevention = newPrevention;
                 this.executor.prevention.canPrevent =
@@ -352,26 +347,22 @@ public abstract class CheckDetection extends CheckProcess {
         }
     }
 
-    public final void cancel(String information, double increase, SpartanLocation location,
+    public final void cancel(String information, SpartanLocation location,
                              int cancelTicks, boolean groundTeleport) {
-        cancel(information, increase, location, cancelTicks, groundTeleport, 0.0);
+        cancel(information, location, cancelTicks, groundTeleport, 0.0);
     }
 
-    public final void cancel(String information, double increase, SpartanLocation location,
+    public final void cancel(String information, SpartanLocation location,
                              int cancelTicks) {
-        cancel(information, increase, location, cancelTicks, false, 0.0);
+        cancel(information, location, cancelTicks, false, 0.0);
     }
 
-    public final void cancel(String information, double increase, SpartanLocation location) {
-        cancel(information, increase, location, 0, false, 0.0);
-    }
-
-    public final void cancel(String information, double increase) {
-        cancel(information, increase, null, 0, false, 0.0);
+    public final void cancel(String information, SpartanLocation location) {
+        cancel(information, location, 0, false, 0.0);
     }
 
     public final void cancel(String information) {
-        cancel(information, 1.0, null, 0, false, 0.0);
+        cancel(information, null, 0, false, 0.0);
     }
 
 }
