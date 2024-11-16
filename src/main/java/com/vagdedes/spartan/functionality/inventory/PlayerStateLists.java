@@ -4,6 +4,7 @@ import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
 import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
+import com.vagdedes.spartan.utils.java.TimeUtils;
 import com.vagdedes.spartan.utils.minecraft.inventory.InventoryUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.inventory.Inventory;
@@ -116,8 +117,8 @@ public class PlayerStateLists {
             int listSize = selectedProfilesToReview.size();
 
             if (listSize > 0) {
-                for (PlayerProfile playerProfile : selectedProfilesToReview) {
-                    Collection<Enums.HackType> evidenceDetails = selectedProfiles.get(playerProfile);
+                for (PlayerProfile profile : selectedProfilesToReview) {
+                    Collection<Enums.HackType> evidenceDetails = selectedProfiles.get(profile);
 
                     if (!evidenceDetails.isEmpty()) {
                         boolean missingData = false;
@@ -125,14 +126,18 @@ public class PlayerStateLists {
                         lore.add("§7Suspected for§8:");
 
                         for (Enums.HackType hackType : evidenceDetails) {
-                            lore.add("§4" + hackType.getCheck().getName());
+                            boolean sufficientData = profile.getRunner(hackType).hasSufficientData(profile.getLastDataType());
+                            Long remainingTime = sufficientData
+                                    ? null
+                                    : profile.getRunner(hackType).getRemainingCompletionTime(profile.getLastDataType());
+                            String description = "§4" + hackType.getCheck().getName();
 
-                            if (!missingData
-                                    && !playerProfile.getRunner(
-                                    hackType
-                            ).hasSufficientData(
-                                    playerProfile.getLastDataType()
-                            )) {
+                            if (remainingTime != null) {
+                                description += " §8(§7Data pending: " + TimeUtils.convertMilliseconds(remainingTime) + "§8)";
+                            }
+                            lore.add(description);
+
+                            if (!sufficientData) {
                                 missingData = true;
                             }
                         }
@@ -141,7 +146,7 @@ public class PlayerStateLists {
                             lore.add("§eSome detections are still collecting data");
                             lore.add("§eand will fully enable in the future.");
                         }
-                        fill(inventory, playerProfile, lore, freeSlots[slotPosition]);
+                        fill(inventory, profile, lore, freeSlots[slotPosition]);
                         slotPosition++;
                     } else {
                         listSize--;

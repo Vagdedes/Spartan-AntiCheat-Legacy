@@ -148,7 +148,7 @@ public abstract class CheckDetection extends CheckProcess {
                         .replace("{detection:percentage}",
                                 hasSufficientData && roundedCertainty > 0
                                         ? (roundedCertainty + "%")
-                                        : "unlikely"
+                                        : "unlikely (data pending)"
                         ),
                 hackType
         );

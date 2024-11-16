@@ -113,7 +113,7 @@ public class SpartanEdition {
                 color = false;
             }
         }
-        return "Spartan: §a"
+        return "Spartan" + (currentVersion && alternativeVersion ? " One" : "") + ": §a"
                 + (currentVersion ? "§a" : "§c") + currentType
                 + "§8/"
                 + (alternativeVersion ? "§a" : "§c") + alternativeType
