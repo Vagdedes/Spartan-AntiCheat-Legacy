@@ -11,7 +11,7 @@ import java.util.*;
 public abstract class ProbabilityDetection extends CheckDetection {
 
     private int lastProbability;
-    private Long lastTime;
+    private final Long[] lastTime;
     private final Map<Check.DataType, Collection<Long>> data;
 
     public ProbabilityDetection(CheckRunner executor, String name, boolean def) {
@@ -19,6 +19,7 @@ public abstract class ProbabilityDetection extends CheckDetection {
         this.data = Collections.synchronizedMap(
                 new LinkedHashMap<>(Check.DataType.values().length)
         );
+        this.lastTime = new Long[Check.DataType.values().length];
     }
 
     // Data
@@ -34,7 +35,7 @@ public abstract class ProbabilityDetection extends CheckDetection {
     public void clearData(Check.DataType dataType) {
         synchronized (this.data) {
             this.data.remove(dataType);
-            this.lastTime = null;
+            this.lastTime[dataType.ordinal()] = null;
         }
     }
 
@@ -52,7 +53,7 @@ public abstract class ProbabilityDetection extends CheckDetection {
                 iterator.remove();
             }
             data.add(time);
-            this.lastTime = time;
+            this.lastTime[dataType.ordinal()] = time;
         }
     }
 
@@ -64,7 +65,7 @@ public abstract class ProbabilityDetection extends CheckDetection {
 
             synchronized (this.data) {
                 long firstTime = this.data.get(dataType).iterator().next();
-                double violationsPerTime = this.data.size() / (double) (this.lastTime - firstTime);
+                double violationsPerTime = this.data.size() / (double) (this.lastTime[dataType.ordinal()] - firstTime);
 
                 if (this.data.size() == 1) {
                     averageTime = timeLimit / violationsPerTime;
@@ -112,7 +113,7 @@ public abstract class ProbabilityDetection extends CheckDetection {
     @Override
     public Long getLastTime(Check.DataType dataType) {
         synchronized (this.data) {
-            return this.lastTime;
+            return this.lastTime[dataType.ordinal()];
         }
     }
 
