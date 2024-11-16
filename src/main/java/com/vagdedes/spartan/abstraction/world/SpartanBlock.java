@@ -83,7 +83,8 @@ public class SpartanBlock {
 
             if (this.block instanceof Material) {
                 material = (Material) this.block;
-            } else if (BlockUtils.blockDataExists) {
+            } else if (BlockUtils.blockDataExists
+                    && this.block instanceof BlockData) {
                 material = ((BlockData) this.block).getMaterial();
             } else {
                 return false;
