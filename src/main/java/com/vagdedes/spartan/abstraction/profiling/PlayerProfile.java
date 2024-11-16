@@ -5,6 +5,7 @@ import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.functionality.tracking.AntiCheatLogs;
 import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
 import com.vagdedes.spartan.utils.minecraft.inventory.InventoryUtils;
 import me.vagdedes.spartan.system.Enums;
@@ -14,6 +15,12 @@ import org.bukkit.inventory.ItemStack;
 import java.util.*;
 
 public class PlayerProfile {
+
+    public static final String
+            connected = " connected",
+            disconnected = " disconnected",
+            afk = " is AFK",
+            noAfk = " is not AFK";
 
     public final String name;
     private final MiningHistory[] miningHistory;
@@ -60,6 +67,86 @@ public class PlayerProfile {
             this.miningHistory[ore.ordinal()] = new MiningHistory(ore);
         }
         this.registerExecutors(protocol);
+    }
+
+    // Separator
+
+    public void setConnected(Long time) {
+        if (time == null) {
+            time = System.currentTimeMillis();
+            AntiCheatLogs.rawLogInfo(
+                    this.name + connected + ": " + time,
+                    false,
+                    true,
+                    true
+            );
+            setConnected(time);
+        } else {
+            for (CheckRunner runner : this.getRunners()) {
+                for (CheckDetection detection : runner.getDetections()) {
+                    detection.addDataContinuation(lastDataType, time, true);
+                }
+            }
+        }
+    }
+
+    public void setDisconnected(Long time) {
+        if (time == null) {
+            time = System.currentTimeMillis();
+            AntiCheatLogs.rawLogInfo(
+                    this.name + disconnected + ": " + time,
+                    false,
+                    true,
+                    true
+            );
+            setDisconnected(time);
+        } else {
+            for (CheckRunner runner : this.getRunners()) {
+                for (CheckDetection detection : runner.getDetections()) {
+                    detection.addDataContinuation(lastDataType, time, false);
+                }
+            }
+        }
+    }
+
+    // todo
+    public void setAFK(Long time) {
+        if (time == null) {
+            time = System.currentTimeMillis();
+            AntiCheatLogs.rawLogInfo(
+                    this.name + afk + ": " + time,
+                    false,
+                    true,
+                    true
+            );
+            setAFK(time);
+        } else {
+            for (CheckRunner runner : this.getRunners()) {
+                for (CheckDetection detection : runner.getDetections()) {
+                    detection.addDataContinuation(lastDataType, time, false);
+                }
+            }
+        }
+    }
+
+    // todo
+    public void setNoAFK(Long time) {
+        if (time == null) {
+            time = System.currentTimeMillis();
+            AntiCheatLogs.rawLogInfo(
+                    this.name + noAfk + ": " + time,
+                    false,
+                    true,
+                    true
+            );
+            setNoAFK(time);
+        } else {
+            for (CheckRunner runner : this.getRunners()) {
+                for (CheckDetection detection : runner.getDetections()) {
+                    detection.addDataContinuation(lastDataType, time, true);
+                }
+            }
+        }
     }
 
     // Separator

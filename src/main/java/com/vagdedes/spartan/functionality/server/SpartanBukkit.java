@@ -82,10 +82,14 @@ public class SpartanBukkit {
         if (ProtocolLib.isTemporary(player)) {
             return new SpartanProtocol(player);
         } else {
-            return playerProtocol.computeIfAbsent(
-                    player.getUniqueId(),
-                    k -> new SpartanProtocol(player)
-            );
+            SpartanProtocol protocol = playerProtocol.get(player.getUniqueId());
+
+            if (protocol == null) {
+                protocol = new SpartanProtocol(player);
+                protocol.getProfile().setConnected(null);
+                playerProtocol.put(player.getUniqueId(), protocol);
+            }
+            return protocol;
         }
     }
 
@@ -138,7 +142,12 @@ public class SpartanBukkit {
         if (ProtocolLib.isTemporary(player)) {
             return null;
         } else {
-            return playerProtocol.remove(player.getUniqueId());
+            SpartanProtocol protocol = playerProtocol.remove(player.getUniqueId());
+
+            if (protocol != null) {
+                protocol.getProfile().setDisconnected(null);
+            }
+            return protocol;
         }
     }
 

@@ -51,14 +51,7 @@ public class AntiCheatLogs {
 
     // Separator
 
-    public static void logInfo(SpartanProtocol p,
-                               String notification,
-                               String information,
-                               boolean console,
-                               Material material,
-                               Enums.HackType hackType,
-                               long time,
-                               boolean unlikely) {
+    public static void rawLogInfo(String information, boolean console, boolean store, boolean sql) {
         if (console && Config.settings.getBoolean("Logs.log_console")) {
             Bukkit.getConsoleSender().sendMessage(information);
         }
@@ -72,7 +65,7 @@ public class AntiCheatLogs {
                 AntiCheatLogs.time = now;
                 savedFile = createFile(AntiCheatLogs.time);
                 fileConfiguration = YamlConfiguration.loadConfiguration(savedFile);
-            } else if (fileConfiguration != null && !unlikely) {
+            } else if (store && fileConfiguration != null) {
                 SpartanBukkit.dataThread.executeIfSyncElseHere(() -> {
                     fileConfiguration.set(
                             DateTimeFormatter.ofPattern(dateFormat).format(LocalDateTime.now()),
@@ -82,6 +75,20 @@ public class AntiCheatLogs {
                 });
             }
         }
+        if (sql) {
+            Config.sql.logInfo(null, null, information, null, null, System.currentTimeMillis());
+        }
+    }
+
+    public static void logInfo(SpartanProtocol p,
+                               String notification,
+                               String information,
+                               boolean console,
+                               Material material,
+                               Enums.HackType hackType,
+                               long time,
+                               boolean unlikely) {
+        rawLogInfo(information, console, !unlikely, false);
         Config.sql.logInfo(p, notification, information, material, hackType, time);
     }
 
@@ -95,7 +102,7 @@ public class AntiCheatLogs {
                 World.Environment environment = location.world.getEnvironment();
                 int x = location.getBlockX(), y = location.getBlockY(), z = location.getBlockZ(), amount = 1;
                 String key = ore.toString(),
-                        log = protocol.bukkit.getName() + " found " + amount + " " + key
+                        log = protocol.bukkit.getName() + MiningHistory.found + amount + " " + key
                                 + " on " + x + ", " + y + ", " + z + ", " + BlockUtils.environmentToString(environment);
 
                 // API Event

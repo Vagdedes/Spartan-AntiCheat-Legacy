@@ -13,13 +13,29 @@ public abstract class ProbabilityDetection extends CheckDetection {
     private int lastProbability;
     private final Long[] lastTime;
     private final Map<Check.DataType, Collection<Long>> data;
+    private final Map<Check.DataType, Map<Long, Boolean>> continuity;
 
     public ProbabilityDetection(CheckRunner executor, String name, boolean def) {
         super(executor, name, def);
         this.data = Collections.synchronizedMap(
                 new LinkedHashMap<>(Check.DataType.values().length)
         );
+        this.continuity = Collections.synchronizedMap(
+                new LinkedHashMap<>(Check.DataType.values().length)
+        );
         this.lastTime = new Long[Check.DataType.values().length];
+    }
+
+    // Sync
+
+    @Override
+    public final void addDataContinuation(Check.DataType dataType, long time, boolean trueFalse) {
+        synchronized (this.continuity) {
+            this.continuity.computeIfAbsent(
+                    dataType,
+                    k -> new LinkedHashMap<>()
+            ).put(time, trueFalse);
+        }
     }
 
     // Data
@@ -63,7 +79,7 @@ public abstract class ProbabilityDetection extends CheckDetection {
             long timeLimit = 60_000L;
             double averageTime, violationsPerTime;
 
-            synchronized (this.data) {
+            synchronized (this.data) { // todo
                 Collection<Long> data = this.data.get(dataType);
 
                 if (data.size() == 1) {

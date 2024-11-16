@@ -27,9 +27,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public abstract class CheckRunner extends CheckProcess {
 
     private static final boolean v1_8 = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8);
-    public static final String
-            javaPlayerIdentifier = "Java:",
-            detectionIdentifier = "Detection:";
 
     private final long creation;
     private final Collection<CheckCancellation> disableCauses, silentCauses;
@@ -90,9 +87,9 @@ public abstract class CheckRunner extends CheckProcess {
                         if (lastTime != null) {
                             double completion = detection.getDataCompletion(dataType);
                             averageCompletion += completion * completion;
-                            lastTime = lastTime - firstTime;
+                            lastTime -= firstTime;
                             averageTime += lastTime * lastTime;
-                            size += 1;
+                            size++;
                         }
                     }
                 }

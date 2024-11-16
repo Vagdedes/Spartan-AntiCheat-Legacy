@@ -29,6 +29,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class CheckDetection extends CheckProcess {
 
+    public static final String
+            failed = " failed ",
+            javaPlayerIdentifier = "Java:",
+            detectionIdentifier = "Detection:";
+
     public final CheckRunner executor;
     public final String name, random;
     private final boolean def;
@@ -79,6 +84,11 @@ public abstract class CheckDetection extends CheckProcess {
         )
                 && (this.name == null
                 || this.hackType.getCheck().getBooleanOption("check_" + this.name, this.def));
+    }
+
+    // Sync
+
+    public void addDataContinuation(Check.DataType dataType, long time, boolean trueFalse) {
     }
 
     // Data
@@ -158,9 +168,9 @@ public abstract class CheckDetection extends CheckProcess {
         );
 
         SpartanLocation location = this.protocol().spartan.movement.getLocation();
-        information = this.protocol().bukkit.getName() + " failed " + hackType
-                + " (" + CheckRunner.javaPlayerIdentifier + " " + (!this.protocol().spartan.isBedrockPlayer()) + ")" + ", "
-                + "(" + CheckRunner.detectionIdentifier + " " + this.name + ")" + ", "
+        information = this.protocol().bukkit.getName() + failed + hackType
+                + " (" + javaPlayerIdentifier + " " + (!this.protocol().spartan.isBedrockPlayer()) + ")" + ", "
+                + "(" + detectionIdentifier + " " + this.name + ")" + ", "
                 + "(Certainty: " + AlgebraUtils.cut(certainty, 2) + "), "
                 + "(Data-Completion: " + AlgebraUtils.cut(dataCompletion, 2) + "), "
                 + "(Server-Version: " + MultiVersion.serverVersion.toString() + "), "

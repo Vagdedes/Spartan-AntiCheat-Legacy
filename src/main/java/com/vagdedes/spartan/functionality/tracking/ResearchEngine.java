@@ -225,7 +225,7 @@ public class ResearchEngine {
     // Separator
 
     public static String getDetectionInformation(String s) {
-        String find = "(" + CheckRunner.detectionIdentifier + " ";
+        String find = "(" + CheckDetection.detectionIdentifier + " ";
         int index = s.indexOf(find);
 
         if (index > -1) {
@@ -237,7 +237,7 @@ public class ResearchEngine {
     }
 
     private static Check.DataType getDataType(String s) {
-        String find = "(" + CheckRunner.javaPlayerIdentifier + " ";
+        String find = "(" + CheckDetection.javaPlayerIdentifier + " ";
         int index = s.indexOf(find);
 
         if (index > -1) {
@@ -393,7 +393,7 @@ public class ResearchEngine {
                                 partialDate = fullDate.substring(0, 10),
                                 data = entry.getValue();
 
-                        if (data.contains(" failed ")) {
+                        if (data.contains(CheckDetection.failed)) {
                             String[] split = data.split(" ");
 
                             if (split.length >= 3) {
@@ -419,7 +419,7 @@ public class ResearchEngine {
                                     }
                                 }
                             }
-                        } else if (data.contains(" found ")) {
+                        } else if (data.contains(MiningHistory.found)) {
                             String[] split = data.split(" ");
 
                             if (split.length >= 9) {
@@ -444,6 +444,54 @@ public class ResearchEngine {
                                     }
                                 } catch (Exception ignored) {
                                 }
+                            }
+                        } else if (data.contains(PlayerProfile.connected)) {
+                            try {
+                                String find = ": ";
+                                int index = data.indexOf(find);
+
+                                if (index > -1) {
+                                    ResearchEngine.getPlayerProfile(data.split(" ", 2)[0], true).setConnected(
+                                            Long.valueOf(data.substring(index + find.length()))
+                                    );
+                                }
+                            } catch (Exception ignored) {
+                            }
+                        } else if (data.contains(PlayerProfile.disconnected)) {
+                            try {
+                                String find = ": ";
+                                int index = data.indexOf(find);
+
+                                if (index > -1) {
+                                    ResearchEngine.getPlayerProfile(data.split(" ", 2)[0], true).setDisconnected(
+                                            Long.valueOf(data.substring(index + find.length()))
+                                    );
+                                }
+                            } catch (Exception ignored) {
+                            }
+                        } else if (data.contains(PlayerProfile.afk)) {
+                            try {
+                                String find = ": ";
+                                int index = data.indexOf(find);
+
+                                if (index > -1) {
+                                    ResearchEngine.getPlayerProfile(data.split(" ", 2)[0], true).setAFK(
+                                            Long.valueOf(data.substring(index + find.length()))
+                                    );
+                                }
+                            } catch (Exception ignored) {
+                            }
+                        } else if (data.contains(PlayerProfile.noAfk)) {
+                            try {
+                                String find = ": ";
+                                int index = data.indexOf(find);
+
+                                if (index > -1) {
+                                    ResearchEngine.getPlayerProfile(data.split(" ", 2)[0], true).setNoAFK(
+                                            Long.valueOf(data.substring(index + find.length()))
+                                    );
+                                }
+                            } catch (Exception ignored) {
                             }
                         }
                     } catch (Exception ignored) {
