@@ -4,12 +4,9 @@ import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
-import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.AntiCheatLogs;
 import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
-import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
 import com.vagdedes.spartan.utils.minecraft.inventory.InventoryUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.OfflinePlayer;
@@ -76,14 +73,13 @@ public class PlayerProfile {
 
     public void setConnected(Long time) {
         if (time == null) {
-            time = System.currentTimeMillis();
             AntiCheatLogs.rawLogInfo(
-                    this.name + connected + ": " + time,
+                    this.name + connected,
                     false,
                     true,
                     true
             );
-            setConnected(time);
+            setConnected(System.currentTimeMillis());
         } else {
             for (CheckRunner runner : this.getRunners()) {
                 for (CheckDetection detection : runner.getDetections()) {
@@ -95,14 +91,13 @@ public class PlayerProfile {
 
     public void setDisconnected(Long time) {
         if (time == null) {
-            time = System.currentTimeMillis();
             AntiCheatLogs.rawLogInfo(
-                    this.name + disconnected + ": " + time,
+                    this.name + disconnected,
                     false,
                     true,
                     true
             );
-            setDisconnected(time);
+            setDisconnected(System.currentTimeMillis());
         } else {
             for (CheckRunner runner : this.getRunners()) {
                 for (CheckDetection detection : runner.getDetections()) {
@@ -114,14 +109,13 @@ public class PlayerProfile {
 
     public void setAFK(Long time) {
         if (time == null) {
-            time = System.currentTimeMillis();
             AntiCheatLogs.rawLogInfo(
-                    this.name + afk + ": " + time,
+                    this.name + afk,
                     false,
                     true,
                     true
             );
-            setAFK(time);
+            setAFK(System.currentTimeMillis());
         } else {
             for (CheckRunner runner : this.getRunners()) {
                 for (CheckDetection detection : runner.getDetections()) {
@@ -133,14 +127,13 @@ public class PlayerProfile {
 
     public void setNoAFK(Long time) {
         if (time == null) {
-            time = System.currentTimeMillis();
             AntiCheatLogs.rawLogInfo(
-                    this.name + noAfk + ": " + time,
+                    this.name + noAfk,
                     false,
                     true,
                     true
             );
-            setNoAFK(time);
+            setNoAFK(System.currentTimeMillis());
         } else {
             for (CheckRunner runner : this.getRunners()) {
                 for (CheckDetection detection : runner.getDetections()) {

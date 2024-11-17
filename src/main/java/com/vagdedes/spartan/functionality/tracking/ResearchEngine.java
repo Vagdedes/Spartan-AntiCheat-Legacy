@@ -446,56 +446,27 @@ public class ResearchEngine {
                                 }
                             }
                         } else if (data.contains(PlayerProfile.connected)) {
-                            try {
-                                String find = ": ";
-                                int index = data.indexOf(find);
-
-                                if (index > -1) {
-                                    ResearchEngine.getPlayerProfile(data.split(" ", 2)[0], true).setConnected(
-                                            Long.valueOf(data.substring(index + find.length()))
-                                    );
-                                }
-                            } catch (Exception ignored) {
-                            }
+                            SimpleDateFormat sdf = new SimpleDateFormat(AntiCheatLogs.dateFormat);
+                            ResearchEngine.getPlayerProfile(data.split(" ", 2)[0], true).setConnected(
+                                    sdf.parse(fullDate).getTime()
+                            );
                         } else if (data.contains(PlayerProfile.disconnected)) {
-                            try {
-                                String find = ": ";
-                                int index = data.indexOf(find);
-
-                                if (index > -1) {
-                                    ResearchEngine.getPlayerProfile(data.split(" ", 2)[0], true).setDisconnected(
-                                            Long.valueOf(data.substring(index + find.length()))
-                                    );
-                                }
-                            } catch (Exception ignored) {
-                            }
+                            SimpleDateFormat sdf = new SimpleDateFormat(AntiCheatLogs.dateFormat);
+                            ResearchEngine.getPlayerProfile(data.split(" ", 2)[0], true).setDisconnected(
+                                    sdf.parse(fullDate).getTime()
+                            );
                         } else if (data.contains(PlayerProfile.afk)) {
-                            try {
-                                String find = ": ";
-                                int index = data.indexOf(find);
-
-                                if (index > -1) {
-                                    ResearchEngine.getPlayerProfile(data.split(" ", 2)[0], true).setAFK(
-                                            Long.valueOf(data.substring(index + find.length()))
-                                    );
-                                }
-                            } catch (Exception ignored) {
-                            }
+                            SimpleDateFormat sdf = new SimpleDateFormat(AntiCheatLogs.dateFormat);
+                            ResearchEngine.getPlayerProfile(data.split(" ", 2)[0], true).setAFK(
+                                    sdf.parse(fullDate).getTime()
+                            );
                         } else if (data.contains(PlayerProfile.noAfk)) {
-                            try {
-                                String find = ": ";
-                                int index = data.indexOf(find);
-
-                                if (index > -1) {
-                                    ResearchEngine.getPlayerProfile(data.split(" ", 2)[0], true).setNoAFK(
-                                            Long.valueOf(data.substring(index + find.length()))
-                                    );
-                                }
-                            } catch (Exception ignored) {
-                            }
+                            SimpleDateFormat sdf = new SimpleDateFormat(AntiCheatLogs.dateFormat);
+                            ResearchEngine.getPlayerProfile(data.split(" ", 2)[0], true).setNoAFK(
+                                    sdf.parse(fullDate).getTime()
+                            );
                         }
                     } catch (Exception ignored) {
-
                     }
                 }
             }

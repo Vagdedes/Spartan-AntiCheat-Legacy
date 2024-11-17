@@ -33,7 +33,7 @@ public abstract class ProbabilityDetection extends CheckDetection {
         synchronized (this.continuity) {
             this.continuity.computeIfAbsent(
                     dataType,
-                    k -> new LinkedHashMap<>()
+                    k -> new TreeMap<>()
             ).put(time, trueFalse);
         }
     }
@@ -44,8 +44,10 @@ public abstract class ProbabilityDetection extends CheckDetection {
 
             if (data != null) {
                 long previousTime = Long.MAX_VALUE;
+                Iterator<Map.Entry<Long, Boolean>> iterator = data.entrySet().iterator();
 
-                for (Map.Entry<Long, Boolean> entry : data.entrySet()) {
+                while (iterator.hasNext()) {
+                    Map.Entry<Long, Boolean> entry = iterator.next();
                     long currentTime = entry.getKey();
 
                     if (previous >= previousTime && current <= currentTime) {
@@ -96,8 +98,13 @@ public abstract class ProbabilityDetection extends CheckDetection {
     @Override
     protected final boolean hasData(Check.DataType dataType) {
         synchronized (this.data) {
-            return this.data.containsKey(dataType);
+            if (this.data.containsKey(dataType)) {
+                synchronized (this.continuity) {
+                    return this.continuity.containsKey(dataType);
+                }
+            }
         }
+        return false;
     }
 
     @Override
@@ -105,6 +112,10 @@ public abstract class ProbabilityDetection extends CheckDetection {
         synchronized (this.data) {
             this.data.remove(dataType);
             this.lastTime[dataType.ordinal()] = null;
+
+            synchronized (this.continuity) {
+                this.continuity.remove(dataType);
+            }
         }
     }
 
@@ -135,16 +146,15 @@ public abstract class ProbabilityDetection extends CheckDetection {
             synchronized (this.data) {
                 Collection<Long> data = this.data.get(dataType);
 
+                if (onlineTime != null) {
+                    violationsPerTime = data.size() / (double) onlineTime;
+                } else {
+                    violationsPerTime = data.size();
+                }
                 if (data.size() == 1) {
                     averageTime = Double.MAX_VALUE;
-
-                    if (onlineTime != null) {
-                        violationsPerTime = data.size() / (double) onlineTime;
-                    } else {
-                        violationsPerTime = data.size();
-                    }
                 } else {
-                    long backupSum = 0L, squareSum = 0;
+                    long squareSum = 0;
                     Iterator<Long> iterator = data.iterator();
                     long previous = iterator.next();
                     int subtractInvalids = 1;
@@ -155,7 +165,6 @@ public abstract class ProbabilityDetection extends CheckDetection {
                         if (this.wasOnline(dataType, current, previous)) {
                             long difference = current - previous;
                             previous = current;
-                            backupSum += difference;
                             squareSum += difference * difference;
                         } else {
                             subtractInvalids++;
@@ -165,20 +174,8 @@ public abstract class ProbabilityDetection extends CheckDetection {
 
                     if (division == 0) {
                         averageTime = Double.MAX_VALUE;
-
-                        if (onlineTime != null) {
-                            violationsPerTime = data.size() / (double) onlineTime;
-                        } else {
-                            violationsPerTime = data.size();
-                        }
                     } else {
                         averageTime = Math.sqrt(squareSum / (double) division);
-
-                        if (onlineTime != null) {
-                            violationsPerTime = data.size() / (double) onlineTime;
-                        } else {
-                            violationsPerTime = data.size() / (double) backupSum;
-                        }
                     }
                 }
             }
@@ -212,14 +209,17 @@ public abstract class ProbabilityDetection extends CheckDetection {
     @Override
     public final boolean canSendNotification(Object detected, int probability) {
         long time = System.currentTimeMillis();
+        SpartanProtocol protocol = detected instanceof SpartanProtocol
+                ? (SpartanProtocol) detected
+                : null;
 
         if (this.notifications <= time
                 && (this.lastProbability != probability
-                || time - this.notifications >= 5_000L)) {
-            boolean player = detected instanceof SpartanProtocol;
-            int ticks = this.executor.getNotificationTicksCooldown(
-                    player ? (SpartanProtocol) detected : null
-            );
+                || time - this.notifications >= 5_000L
+                || (protocol != null
+                ? protocol.spartan.equals(this.protocol().spartan)
+                : this.protocol.bukkit.getName().equals(detected.toString())))) {
+            int ticks = this.executor.getNotificationTicksCooldown(protocol);
 
             if (ticks > 0) {
                 this.notifications = time + (ticks * TPS.tickTime);
