@@ -108,11 +108,11 @@ public abstract class CheckDetection extends CheckProcess {
         return null;
     }
 
-    public Long getFirstTime(Check.DataType dataType) {
+    Long getFirstTime(Check.DataType dataType) {
         return null;
     }
 
-    public Long getLastTime(Check.DataType dataType) {
+    Long getLastTime(Check.DataType dataType) {
         return null;
     }
 

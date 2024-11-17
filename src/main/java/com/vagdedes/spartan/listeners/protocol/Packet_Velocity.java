@@ -33,15 +33,18 @@ public class Packet_Velocity extends PacketAdapter {
             return;
         }
         PacketContainer packet = event.getPacket();
-        int id = packet.getIntegers().getValues().get(0);
-        if (protocol.spartan.getEntityId() == id) {
 
-            double x = packet.getIntegers().read(1).doubleValue() / 8000.0D,
-                    y = packet.getIntegers().read(2).doubleValue() / 8000.0D,
-                    z = packet.getIntegers().read(3).doubleValue() / 8000.0D;
-            PlayerVelocityEvent bukkitEvent = new PlayerVelocityEvent(player, new Vector(x, y, z));
-            bukkitEvent.setCancelled(event.isCancelled());
-            Event_Velocity.event(bukkitEvent, true);
+        if (!packet.getIntegers().getValues().isEmpty()) {
+            int id = packet.getIntegers().getValues().get(0);
+            if (protocol.spartan.getEntityId() == id) {
+
+                double x = packet.getIntegers().read(1).doubleValue() / 8000.0D,
+                        y = packet.getIntegers().read(2).doubleValue() / 8000.0D,
+                        z = packet.getIntegers().read(3).doubleValue() / 8000.0D;
+                PlayerVelocityEvent bukkitEvent = new PlayerVelocityEvent(player, new Vector(x, y, z));
+                bukkitEvent.setCancelled(event.isCancelled());
+                Event_Velocity.event(bukkitEvent, true);
+            }
         }
     }
 

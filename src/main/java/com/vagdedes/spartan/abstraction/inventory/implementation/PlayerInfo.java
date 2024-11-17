@@ -67,99 +67,12 @@ public class PlayerInfo extends InventoryMenu {
             return false;
         } else {
             setTitle(protocol, menu + (isOnline ? target.bukkit.getName() : profile.name));
-            Set<Map.Entry<HackType, Double>> evidenceDetails = profile.getEvidenceEntries(
-                    PlayerEvidence.emptyProbability
-            );
             List<String> lore = new ArrayList<>();
             lore.add("");
 
-            if (!evidenceDetails.isEmpty()) {
-                lore.add("§7Certainty of cheating§8:");
-                Map<Double, HackType> map = PlayerEvidence.POSITIVE
-                        ? new TreeMap<>(Collections.reverseOrder())
-                        : new TreeMap<>();
-                Set<HackType> missingData = new HashSet<>();
-
-                for (Map.Entry<HackType, Double> entry : evidenceDetails) {
-                    map.put(
-                            entry.getValue(),
-                            entry.getKey()
-                    );
-
-                    if (!missingData.contains(entry.getKey())
-                            && !profile.getRunner(
-                            entry.getKey()
-                    ).hasSufficientData(
-                            profile.getLastDataType()
-                    )) {
-                        missingData.add(entry.getKey());
-                    }
-                }
-                for (Map.Entry<Double, HackType> entry : map.entrySet()) {
-                    HackType hackType = entry.getValue();
-                    double probability = entry.getKey();
-                    Long remainingTime = missingData.contains(hackType)
-                            ? profile.getRunner(hackType).getRemainingCompletionTime(profile.getLastDataType())
-                            : null;
-                    String remainingDataPrompt = "";
-
-                    if (remainingTime != null) {
-                        remainingDataPrompt = " §8(§7Data pending: " + TimeUtils.convertMilliseconds(remainingTime) + "§8)";
-                    }
-                    if (PlayerEvidence.surpassedProbability(
-                            probability,
-                            PlayerEvidence.punishmentProbability
-                    )) {
-                        probability = PlayerEvidence.probabilityToCertainty(probability);
-                        lore.add(
-                                "§4" + hackType.getCheck().getName()
-                                        + "§8: §c" + AlgebraUtils.integerRound(probability * 100.0) + "%"
-                                        + remainingDataPrompt
-                        );
-                    } else if (PlayerEvidence.surpassedProbability(
-                            probability,
-                            PlayerEvidence.preventionProbability
-                    )) {
-                        probability = PlayerEvidence.probabilityToCertainty(probability);
-                        lore.add(
-                                "§6" + hackType.getCheck().getName()
-                                        + "§8: §e" + AlgebraUtils.integerRound(probability * 100.0) + "%"
-                                        + remainingDataPrompt
-                        );
-                    } else if (PlayerEvidence.surpassedProbability(
-                            probability,
-                            PlayerEvidence.notificationProbability
-                    )) {
-                        probability = PlayerEvidence.probabilityToCertainty(probability);
-                        lore.add(
-                                "§2" + hackType.getCheck().getName()
-                                        + "§8: §a" + AlgebraUtils.integerRound(probability * 100.0) + "%"
-                                        + remainingDataPrompt
-                        );
-                    } else {
-                        probability = PlayerEvidence.probabilityToCertainty(probability);
-                        int showProbability = AlgebraUtils.integerRound(probability * 100.0);
-
-                        if (showProbability > 0) {
-                            lore.add(
-                                    "§3" + hackType.getCheck().getName() + "§8: §b" + showProbability + "%"
-                                            + remainingDataPrompt
-                            );
-                        } else {
-                            lore.add(
-                                    "§3" + hackType.getCheck().getName() + "§8: §b1%"
-                                            + remainingDataPrompt
-                            );
-                        }
-                    }
-                }
-                if (!missingData.isEmpty()) {
-                    lore.add("");
-                    lore.add("§eSome detections are still collecting data");
-                    lore.add("§eand will fully enable in the future.");
-                }
-                lore.add("");
-            }
+            Set<Map.Entry<HackType, Double>> evidenceDetails = profile.getEvidenceEntries(
+                    PlayerEvidence.emptyProbability
+            );
 
             if (isOnline) {
                 lore.add("§7Version§8:§c " + target.version.toString());
@@ -176,7 +89,7 @@ public class PlayerInfo extends InventoryMenu {
                     4
             );
             for (Enums.HackCategoryType checkType : Enums.HackCategoryType.values()) {
-                addChecks(slots[checkType.ordinal()], isOnline, target, profile, lore, checkType);
+                addChecks(slots[checkType.ordinal()], isOnline, target, profile, lore, checkType, evidenceDetails);
             }
 
             add("§c" + (back ? "Back" : "Close"), null, new ItemStack(Material.ARROW), 40);
@@ -184,12 +97,18 @@ public class PlayerInfo extends InventoryMenu {
         }
     }
 
-    private void addChecks(int slot, boolean isOnline,
+    private void addChecks(int slot,
+                           boolean isOnline,
                            SpartanProtocol protocol,
                            PlayerProfile profile,
-                           List<String> lore, Enums.HackCategoryType checkType) {
+                           List<String> lore,
+                           Enums.HackCategoryType checkType,
+                           Set<Map.Entry<HackType, Double>> evidenceDetails) {
+        Map<Double, HackType> map = PlayerEvidence.POSITIVE
+                ? new TreeMap<>(Collections.reverseOrder())
+                : new TreeMap<>();
+        Set<HackType> missingData = new HashSet<>();
         lore.clear();
-        lore.add("");
 
         // Separator
 
@@ -197,44 +116,148 @@ public class PlayerInfo extends InventoryMenu {
 
         // Separator
 
-        for (HackType hackType : Enums.HackType.values()) {
+        if (!evidenceDetails.isEmpty()) {
+            for (Map.Entry<HackType, Double> entry : evidenceDetails) {
+                if (entry.getKey().category == checkType) {
+                    map.put(
+                            entry.getValue(),
+                            entry.getKey()
+                    );
+
+                    if (!missingData.contains(entry.getKey())
+                            && !profile.getRunner(
+                            entry.getKey()
+                    ).hasSufficientData(
+                            profile.getLastDataType()
+                    )) {
+                        missingData.add(entry.getKey());
+                    }
+                }
+            }
+        }
+
+        // Separator
+
+        boolean space = false;
+
+        for (HackType hackType : HackType.values()) {
             if (hackType.category == checkType) {
-                String state = getDetectionState(
+                String state = getDetectionNotification(
                         protocol,
                         hackType,
                         profile.getLastDataType(),
                         isOnline
                 );
-                lore.add(
-                        "§7" + hackType.getCheck().getName() + "§8:§e " + state
-                );
+
+                if (state != null) {
+                    if (!space) {
+                        lore.add("");
+                        lore.add("§7Important information§8:");
+                        space = true;
+                    }
+                    lore.add("§7" + hackType.getCheck().getName() + "§8:§f " + state);
+                }
             }
         }
+
+        // Separator
+
+        if (!map.isEmpty()) {
+            lore.add("");
+            lore.add("§7Certainty of cheating§8:");
+
+            for (Map.Entry<Double, HackType> entry : map.entrySet()) {
+                HackType hackType = entry.getValue();
+                double probability = entry.getKey();
+                Long remainingTime = missingData.contains(hackType)
+                        ? profile.getRunner(hackType).getRemainingCompletionTime(profile.getLastDataType())
+                        : null;
+                String remainingDataPrompt = "";
+
+                if (remainingTime != null) {
+                    remainingDataPrompt = " §8(§7Data pending: " + TimeUtils.convertMilliseconds(remainingTime) + "§8)";
+                }
+                if (PlayerEvidence.surpassedProbability(
+                        probability,
+                        PlayerEvidence.punishmentProbability
+                )) {
+                    probability = PlayerEvidence.probabilityToCertainty(probability);
+                    lore.add(
+                            "§4" + hackType.getCheck().getName()
+                                    + "§8: §c" + AlgebraUtils.integerRound(probability * 100.0) + "%"
+                                    + remainingDataPrompt
+                    );
+                } else if (PlayerEvidence.surpassedProbability(
+                        probability,
+                        PlayerEvidence.preventionProbability
+                )) {
+                    probability = PlayerEvidence.probabilityToCertainty(probability);
+                    lore.add(
+                            "§6" + hackType.getCheck().getName()
+                                    + "§8: §e" + AlgebraUtils.integerRound(probability * 100.0) + "%"
+                                    + remainingDataPrompt
+                    );
+                } else if (PlayerEvidence.surpassedProbability(
+                        probability,
+                        PlayerEvidence.notificationProbability
+                )) {
+                    probability = PlayerEvidence.probabilityToCertainty(probability);
+                    lore.add(
+                            "§2" + hackType.getCheck().getName()
+                                    + "§8: §a" + AlgebraUtils.integerRound(probability * 100.0) + "%"
+                                    + remainingDataPrompt
+                    );
+                } else {
+                    probability = PlayerEvidence.probabilityToCertainty(probability);
+                    int showProbability = AlgebraUtils.integerRound(probability * 100.0);
+
+                    if (showProbability > 0) {
+                        lore.add(
+                                "§3" + hackType.getCheck().getName() + "§8: §b" + showProbability + "%"
+                                        + remainingDataPrompt
+                        );
+                    } else {
+                        lore.add(
+                                "§3" + hackType.getCheck().getName() + "§8: §b1%"
+                                        + remainingDataPrompt
+                        );
+                    }
+                }
+            }
+            if (!missingData.isEmpty()) {
+                lore.add("");
+                lore.add("§eSome detections are still collecting data");
+                lore.add("§eand will fully enable in the future.");
+            }
+        }
+
+        // Separator
+
         add("§2" + checkType + " Checks", lore, item, slot);
     }
 
-    private String getDetectionState(SpartanProtocol protocol,
-                                     HackType hackType,
-                                     Check.DataType dataType,
-                                     boolean hasPlayer) {
+    private String getDetectionNotification(SpartanProtocol protocol,
+                                            HackType hackType,
+                                            Check.DataType dataType,
+                                            boolean hasPlayer) {
         if (!hasPlayer) {
-            return "Offline Player";
+            return "Player is offline";
         }
         if (!SpartanEdition.hasDetectionsPurchased(dataType)) {
-            return "Detection Missing";
+            return "Detection is missing";
         }
         String worldName = protocol.spartan.getWorld().getName();
         Check check = hackType.getCheck();
 
         if (!check.isEnabled(dataType, worldName)) { // Do not put player because we calculate it below
-            return "Disabled";
+            return "Check is disabled";
         }
         CheckCancellation disabledCause = protocol.spartan.getRunner(hackType).getDisableCause();
         return Permissions.isBypassing(protocol.bukkit, hackType)
-                ? "Permission Bypass"
+                ? "Player has permission bypass"
                 : disabledCause != null
-                ? "Cancelled (" + disabledCause.getReason() + ")"
-                : (check.isSilent(dataType, worldName) ? "Silent " : "") + "Checking";
+                ? "Custom: " + disabledCause.getReason()
+                : null;
     }
 
     public void refresh(String targetName) {

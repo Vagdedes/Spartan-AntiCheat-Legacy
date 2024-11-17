@@ -182,6 +182,7 @@ public abstract class CheckRunner extends CheckProcess {
                 iterator.remove();
             } else {
                 lastCause = cause;
+                break;
             }
         }
         return lastCause;

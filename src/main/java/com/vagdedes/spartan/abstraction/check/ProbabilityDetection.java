@@ -38,6 +38,65 @@ public abstract class ProbabilityDetection extends CheckDetection {
         }
     }
 
+    private boolean wasOnline(Check.DataType dataType, long current, long previous) {
+        synchronized (this.continuity) {
+            Map<Long, Boolean> data = this.continuity.get(dataType);
+
+            if (data != null) {
+                long previousTime = Long.MAX_VALUE;
+
+                for (Map.Entry<Long, Boolean> entry : data.entrySet()) {
+                    long currentTime = entry.getKey();
+
+                    if (previous >= previousTime && current <= currentTime) {
+                        if (entry.getValue()) {
+                            previousTime = currentTime;
+                        } else {
+                            return true;
+                        }
+                    } else if (entry.getValue()) {
+                        if (currentTime > current) {
+                            return true;
+                        }
+                        previousTime = currentTime;
+                    } else {
+                        if (currentTime > current) {
+                            return false;
+                        }
+                        previousTime = Long.MAX_VALUE;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    private Long getOnlineTime(Check.DataType dataType) {
+        synchronized (this.continuity) {
+            Map<Long, Boolean> data = this.continuity.get(dataType);
+
+            if (data != null) {
+                boolean track = true;
+                long sum = 0L, previous = -1L;
+
+                for (Map.Entry<Long, Boolean> entry : data.entrySet()) {
+                    if (entry.getValue() == track) {
+                        if (track) {
+                            previous = entry.getKey();
+                        } else if (previous != -1L) {
+                            sum += entry.getKey() - previous;
+                        }
+                        track = !track;
+                    } else if (track) {
+                        previous = entry.getKey();
+                    }
+                }
+                return sum == 0L ? null : sum;
+            }
+            return null;
+        }
+    }
+
     // Data
 
     @Override
@@ -76,32 +135,57 @@ public abstract class ProbabilityDetection extends CheckDetection {
     @Override
     public final Double getData(Check.DataType dataType) {
         if (this.hasData(dataType)) {
-            long timeLimit = 60_000L;
             double averageTime, violationsPerTime;
+            Long onlineTime = this.getOnlineTime(dataType);
 
-            synchronized (this.data) { // todo
+            synchronized (this.data) {
                 Collection<Long> data = this.data.get(dataType);
 
                 if (data.size() == 1) {
-                    averageTime = timeLimit;
-                    violationsPerTime = data.size();
+                    averageTime = Double.MAX_VALUE;
+
+                    if (onlineTime != null) {
+                        violationsPerTime = data.size() / (double) onlineTime;
+                    } else {
+                        violationsPerTime = data.size();
+                    }
                 } else {
-                    long sum = 0L, squareSum = 0;
+                    long backupSum = 0L, squareSum = 0;
                     Iterator<Long> iterator = data.iterator();
                     long previous = iterator.next();
+                    int subtractInvalids = 1;
 
                     while (iterator.hasNext()) {
                         Long current = iterator.next();
-                        long difference = Math.min(
-                                current - previous,
-                                timeLimit
-                        );
-                        previous = current;
-                        sum += difference;
-                        squareSum += difference * difference;
+
+                        if (this.wasOnline(dataType, current, previous)) {
+                            long difference = current - previous;
+                            previous = current;
+                            backupSum += difference;
+                            squareSum += difference * difference;
+                        } else {
+                            subtractInvalids++;
+                        }
                     }
-                    averageTime = Math.sqrt(squareSum / (data.size() - 1.0));
-                    violationsPerTime = data.size() / (double) sum;
+                    int division = data.size() - subtractInvalids;
+
+                    if (division == 0) {
+                        averageTime = Double.MAX_VALUE;
+
+                        if (onlineTime != null) {
+                            violationsPerTime = data.size() / (double) onlineTime;
+                        } else {
+                            violationsPerTime = data.size();
+                        }
+                    } else {
+                        averageTime = Math.sqrt(squareSum / (double) division);
+
+                        if (onlineTime != null) {
+                            violationsPerTime = data.size() / (double) onlineTime;
+                        } else {
+                            violationsPerTime = data.size() / (double) backupSum;
+                        }
+                    }
                 }
             }
             return averageTime / violationsPerTime;
@@ -111,7 +195,7 @@ public abstract class ProbabilityDetection extends CheckDetection {
     }
 
     @Override
-    public Long getFirstTime(Check.DataType dataType) {
+    final Long getFirstTime(Check.DataType dataType) {
         Long time = null;
 
         synchronized (this.data) {
@@ -125,7 +209,7 @@ public abstract class ProbabilityDetection extends CheckDetection {
     }
 
     @Override
-    public Long getLastTime(Check.DataType dataType) {
+    final Long getLastTime(Check.DataType dataType) {
         synchronized (this.data) {
             return this.lastTime[dataType.ordinal()];
         }

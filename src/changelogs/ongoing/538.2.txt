@@ -1,1 +1,4 @@
 [#] Balanced the probability positions that judge notifications, preventions & punishments.
+[#] Fixed packets console error caused by reading the ProtocolLib handlers.
+[#] Updated the Player Info inventory menu to be more easily understood.
+[#] Added tracking for players connecting and disconnecting but also AFK to improve statistical accuracy.
