@@ -158,11 +158,10 @@ public abstract class CheckDetection extends CheckProcess {
                 this.protocol(),
                 Config.messages.getColorfulString("detection_notification")
                         .replace("{info}", information)
-                        .replace("{detection:data}", AlgebraUtils.integerRound(dataCompletion) + "%")
                         .replace("{detection:percentage}",
                                 hasSufficientData
                                         ? ((roundedCertainty == 0 ? 1 : roundedCertainty) + "%")
-                                        : "unlikely (data pending)"
+                                        : "unlikely (data " + AlgebraUtils.integerRound(dataCompletion) + "% complete)"
                         ),
                 hackType
         );

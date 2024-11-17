@@ -134,6 +134,8 @@ public class PlayerStateLists {
 
                             if (remainingTime != null) {
                                 description += " §8(§7Data pending: " + TimeUtils.convertMilliseconds(remainingTime) + "§8)";
+                            } else if (!sufficientData) {
+                                description += " §8(§7Data pending§8)";
                             }
                             lore.add(description);
 

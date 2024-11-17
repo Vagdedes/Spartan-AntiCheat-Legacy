@@ -71,7 +71,7 @@ public class SuspicionNotifications {
                                     ) * 100.0) + "%)"
                                     : remainingTime != null
                                     ? " (Data pending: " + TimeUtils.convertMilliseconds(remainingTime) + ")"
-                                    : " (Unlikely)")
+                                    : " [Unlikely (Data pending)]")
                     ).append(
                             comma
                     );

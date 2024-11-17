@@ -44,10 +44,9 @@ public abstract class ProbabilityDetection extends CheckDetection {
 
             if (data != null) {
                 long previousTime = Long.MAX_VALUE;
-                Iterator<Map.Entry<Long, Boolean>> iterator = data.entrySet().iterator();
+                Set<Map.Entry<Long, Boolean>> entries = data.entrySet();
 
-                while (iterator.hasNext()) {
-                    Map.Entry<Long, Boolean> entry = iterator.next();
+                for (Map.Entry<Long, Boolean> entry : entries) {
                     long currentTime = entry.getKey();
 
                     if (previous >= previousTime && current <= currentTime) {
@@ -62,6 +61,7 @@ public abstract class ProbabilityDetection extends CheckDetection {
                         previousTime = Long.MAX_VALUE;
                     }
                 }
+                return previous >= previousTime;
             }
         }
         return false;

@@ -176,6 +176,8 @@ public class PlayerInfo extends InventoryMenu {
 
                 if (remainingTime != null) {
                     remainingDataPrompt = " §8(§7Data pending: " + TimeUtils.convertMilliseconds(remainingTime) + "§8)";
+                } else if (missingData.contains(hackType)) {
+                    remainingDataPrompt = " §8(§7Data pending§8)";
                 }
                 if (PlayerEvidence.surpassedProbability(
                         probability,
