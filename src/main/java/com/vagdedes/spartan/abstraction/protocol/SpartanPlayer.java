@@ -58,7 +58,7 @@ public class SpartanPlayer {
                     protocol.spartan.getRunner(Enums.HackType.Exploits).run(false);
                     protocol.spartan.movement.schedulerFrom = protocol.spartan.movement.getLocation();
 
-                    if (System.currentTimeMillis() - protocol.spartan.lastInteraction >= 120_000L) {
+                    if (System.currentTimeMillis() - protocol.spartan.lastInteraction >= 60_000L) {
                         if (!protocol.spartan.afk) {
                             protocol.spartan.afk = true;
                             protocol.getProfile().setAFK(System.currentTimeMillis());
