@@ -4,9 +4,12 @@ import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.AntiCheatLogs;
 import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
+import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
 import com.vagdedes.spartan.utils.minecraft.inventory.InventoryUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.OfflinePlayer;
@@ -109,7 +112,6 @@ public class PlayerProfile {
         }
     }
 
-    // todo
     public void setAFK(Long time) {
         if (time == null) {
             time = System.currentTimeMillis();
@@ -129,7 +131,6 @@ public class PlayerProfile {
         }
     }
 
-    // todo
     public void setNoAFK(Long time) {
         if (time == null) {
             time = System.currentTimeMillis();
@@ -236,9 +237,7 @@ public class PlayerProfile {
         return set;
     }
 
-    public Set<Map.Entry<Enums.HackType, Double>> getEvidenceEntries(
-            double threshold
-    ) {
+    public Set<Map.Entry<Enums.HackType, Double>> getEvidenceEntries(double threshold) {
         Map<Enums.HackType, Double> set = new HashMap<>();
 
         for (CheckRunner executor : this.getRunners()) {

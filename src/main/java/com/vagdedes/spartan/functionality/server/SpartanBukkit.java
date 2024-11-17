@@ -89,6 +89,7 @@ public class SpartanBukkit {
                 protocol.getProfile().setConnected(null);
                 playerProtocol.put(player.getUniqueId(), protocol);
             }
+            protocol.spartan.setLastInteraction();
             return protocol;
         }
     }
@@ -136,6 +137,10 @@ public class SpartanBukkit {
         } else {
             return playerProtocol.get(uuid);
         }
+    }
+
+    public static boolean isOnline(UUID uuid) {
+        return playerProtocol.containsKey(uuid);
     }
 
     public static SpartanProtocol deleteProtocol(Player player) {

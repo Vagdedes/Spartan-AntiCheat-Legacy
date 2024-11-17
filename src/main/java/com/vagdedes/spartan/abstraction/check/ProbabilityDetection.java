@@ -55,20 +55,14 @@ public abstract class ProbabilityDetection extends CheckDetection {
                             return true;
                         }
                     } else if (entry.getValue()) {
-                        if (currentTime > current) {
-                            return true;
-                        }
                         previousTime = currentTime;
                     } else {
-                        if (currentTime > current) {
-                            return false;
-                        }
                         previousTime = Long.MAX_VALUE;
                     }
                 }
             }
         }
-        return true;
+        return false;
     }
 
     private Long getOnlineTime(Check.DataType dataType) {

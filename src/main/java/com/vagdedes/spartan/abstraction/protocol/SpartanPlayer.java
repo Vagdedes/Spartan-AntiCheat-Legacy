@@ -41,6 +41,8 @@ public class SpartanPlayer {
     public final PlayerPunishments punishments;
     public final PlayerTrackers trackers;
     public final PlayerClicks clicks;
+    private long lastInteraction;
+    private boolean afk;
 
     static {
         SpartanBukkit.runRepeatingTask(() -> {
@@ -55,6 +57,16 @@ public class SpartanPlayer {
                     protocol.spartan.getRunner(Enums.HackType.MorePackets).run(false);
                     protocol.spartan.getRunner(Enums.HackType.Exploits).run(false);
                     protocol.spartan.movement.schedulerFrom = protocol.spartan.movement.getLocation();
+
+                    if (System.currentTimeMillis() - protocol.spartan.lastInteraction >= 120_000L) {
+                        if (!protocol.spartan.afk) {
+                            protocol.spartan.afk = true;
+                            protocol.getProfile().setAFK(System.currentTimeMillis());
+                        }
+                    } else if (protocol.spartan.afk) {
+                        protocol.spartan.afk = false;
+                        protocol.getProfile().setNoAFK(System.currentTimeMillis());
+                    }
                 }
             }
         }, 1L, 1L);
@@ -75,6 +87,13 @@ public class SpartanPlayer {
         this.clicks = new PlayerClicks();
         this.movement = new PlayerMovement(this);
         this.punishments = new PlayerPunishments(this);
+
+        this.setLastInteraction();
+        this.afk = false;
+    }
+
+    public void setLastInteraction() {
+        this.lastInteraction = System.currentTimeMillis();
     }
 
     public boolean isBedrockPlayer() {
