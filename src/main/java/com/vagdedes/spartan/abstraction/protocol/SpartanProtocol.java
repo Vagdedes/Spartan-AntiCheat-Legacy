@@ -28,7 +28,7 @@ public class SpartanProtocol {
     private int hashPosBuffer;
     public int rightClickCounter;
     public boolean mutateTeleport, sprinting, sneaking, vehicleStatus;
-    public boolean loaded, simulationFlag, teleported, pistonHandle;
+    public boolean loaded, simulationFlag, teleported, pistonHandle, explosionHandle;
     private Location location;
     public Location simulationStartPoint;
     private PlayerProfile profile;

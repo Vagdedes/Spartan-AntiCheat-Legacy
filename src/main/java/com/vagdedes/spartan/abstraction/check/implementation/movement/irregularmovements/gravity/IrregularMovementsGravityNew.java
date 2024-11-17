@@ -39,12 +39,15 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
     }
 
     public void run() {
-        // if (true) return;
+        if (true) return;
         if (this.protocol().spartan != null) {
             SpartanProtocol p = this.protocol();
             boolean isOnGround = p.isOnGround();
             Location to = p.getLocation();
             Location from = this.protocol().spartan.movement.getEventFromLocation().bukkit();
+            double dx = to.getX() - from.getX();
+            double dz = to.getZ() - from.getZ();
+            double speed = Math.sqrt(dx * dx + dz * dz);
             boolean slimeEvent = (p.pistonHandle && this.slime0Tick);
             if (slimeEvent) slimePunch = 3;
             p.pistonHandle = false;
@@ -262,9 +265,44 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
                     }
                 }
 
-                //this.protocol().bukkit.sendMessage("m: " + slimeEvent + " " + motion + " p: " + this.predictY());
+
+                /*
+                Brainrot 1.18< version cringe fix...
+                 */
+                if (!this.protocol().isUsingVersionOrGreater(MCVersion.V1_18)
+                                && (air > 5 && air < 10)
+                                && (motion < this.predictY() + 0.04)
+                                && speed < 0.1) {
+                    double allowedDeviantity = 0.076;
+                    ExtendedPotionEffect jumpEffect;
+                    if (PotionEffectType.getByName("JUMP_BOOST") != null) {
+                        jumpEffect = this.protocol().spartan.getPotionEffect(PotionEffectType.getByName("JUMP_BOOST"), 1L);
+                    } else {
+                        jumpEffect = this.protocol().spartan.getPotionEffect(PotionEffectType.getByName("JUMP"), 1L);
+                    }
+
+                    if (jumpEffect != null) {
+                        allowedDeviantity += 0.04 * (double) (jumpEffect.bukkitEffect.getAmplifier() + 1);
+                        if (allowedDeviantity > 0.16) allowedDeviantity = 0.16;
+                    }
+
+                    if (this.getDeviantity(motion) < allowedDeviantity)
+                        this.setPredict(motion);
+                }
+
+                /*
+                Sometimes after the explosion comes first
+                the recoil from the explosion,
+                and then with in the next tick already from the recoil,
+                let's take into account this nonsense
+                 */
+                if (this.protocol().explosionHandle && this.getDeviantity(motion) < 1.2)
+                    this.setPredict(motion);
 
                 double devTotal = this.abs(this.abs(motion) - this.abs(this.predictY()));
+
+                //this.protocol().bukkit.sendMessage("m: " + slimeEvent + " " + motion + " p: " + this.predictY());
+
                 if (devTotal > 0.009) {
                     if (this.protocol().spartan.trackers.has(
                             PlayerTrackers.TrackerType.VEHICLE, "exit_tp")
@@ -294,6 +332,10 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
             }
             slime0Tick = (this.isOnSlimeWide(to) || this.isOnSlimeWide(from));
         }
+    }
+
+    private double getDeviantity(double motion) {
+        return this.abs(this.abs(motion) - this.abs(this.predictY()));
     }
 
     private void velocity(double motion) {
@@ -381,7 +423,8 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
                             new Location(this.protocol().spartan.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
                     ).getBlock();
 
-                    if (BlockUtils.isLiquidOrWaterLogged(block, true)) {
+                    if (BlockUtils.isLiquidOrWaterLogged(block, true)
+                                    || BlockUtils.isLiquid(block.getType())) {
                         return true;
                     }
                 }
