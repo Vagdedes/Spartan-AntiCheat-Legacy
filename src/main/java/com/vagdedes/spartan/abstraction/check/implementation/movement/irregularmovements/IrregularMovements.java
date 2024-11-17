@@ -4,6 +4,7 @@ import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.gravity.IrregularMovementsGravityNew;
+import com.vagdedes.spartan.abstraction.event.SuperPositionPacketEvent;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
@@ -77,6 +78,9 @@ public class IrregularMovements extends CheckRunner {
     protected void handleInternal(boolean cancelled, Object object) {
         if (object instanceof Integer) {
             gravity.trident();
+        } else if (object instanceof SuperPositionPacketEvent) {
+            SuperPositionPacketEvent e = (SuperPositionPacketEvent) object;
+            gravity.ground(e.packetEvent.getPacket().getBooleans().read(0));
         } else {
             gravity.teleport();
             baritone.teleport();

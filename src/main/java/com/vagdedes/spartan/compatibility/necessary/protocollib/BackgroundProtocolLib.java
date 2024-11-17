@@ -31,6 +31,7 @@ public class BackgroundProtocolLib {
         p.addPacketListener(new Packet_Clicks());
         p.addPacketListener(new Packet_PistonHandle());
         p.addPacketListener(new Packet_ExplosionHandle());
+        p.addPacketListener(new Packet_ServerBlockHandle());
 
         if (PlayerUtils.trident) {
             p.addPacketListener(new Packet_Trident());

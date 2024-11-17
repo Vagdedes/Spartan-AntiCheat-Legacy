@@ -113,7 +113,9 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
                     }
                     this.slime = false;
                 }
-
+                if ((this.isOnSemi(to) || this.isOnSlimeHeight(to)) && motion != 0.0 && motion < 0.51) {
+                    this.setPredict(motion);
+                }
                 pr2 = this.abs(this.abs(motion) - this.abs(this.predictY()));
                 if (!this.protocol().claimedVeloGravity.isEmpty() && pr2 > 0.001) {
                     this.velocity(motion);
@@ -269,7 +271,7 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
                 /*
                 Brainrot 1.18< version cringe fix...
                  */
-                if (!this.protocol().isUsingVersionOrGreater(MCVersion.V1_18)
+                if (!this.protocol().isUsingVersionOrGreater(MCVersion.V1_19)
                                 && (air > 5 && air < 10)
                                 && (motion < this.predictY() + 0.04)
                                 && speed < 0.1) {
@@ -300,8 +302,7 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
                     this.setPredict(motion);
 
                 double devTotal = this.abs(this.abs(motion) - this.abs(this.predictY()));
-
-                //this.protocol().bukkit.sendMessage("m: " + slimeEvent + " " + motion + " p: " + this.predictY());
+                //this.protocol().bukkit.sendMessage("m: " + motion + " p: " + this.predictY() + " air: " + air);
 
                 if (devTotal > 0.009) {
                     if (this.protocol().spartan.trackers.has(
@@ -315,8 +316,13 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
                             if (devTotal < 1.0) {
                                 alertBuilder.deleteCharAt(0);
                             }
-                            this.cancel("simulation[y], " + alertBuilder);
-                            //this.protocol().bukkit.sendMessage("hacks: " + devTotal);
+                            //this.cancel("simulation[y], " + alertBuilder);
+                            this.protocol().bukkit.sendMessage("hacks: " + devTotal);
+                            /*
+                            Bukkit.getScheduler().runTask(Register.plugin, () -> {
+                                this.protocol().bukkit.teleport(from);
+                            });
+                             */
                         }
 
                         this.setPredict(motion);
@@ -356,6 +362,11 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
 
     public void teleport() {
         this.air = 0;
+    }
+
+    public void ground(boolean isOnGround) {
+        this.air = isOnGround ? 0 : this.air + 1;
+        this.ground = isOnGround ? this.ground + 1 : 0;
     }
 
     public void trident() {
@@ -553,14 +564,35 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
         return false;
     }
 
-    private boolean isBlocksOnTop(Location location) {
+    private boolean isOnSlimeHeight(Location location) {
         double x = location.getX();
         double y = location.getY() - 0.1;
         double z = location.getZ();
 
         for (int dx = -1; dx <= 1; ++dx) {
-            for (double dy = 1.0; dy <= 2.0; dy += 0.5) {
+            for (int dy = -2; dy <= 2; ++dy) {
                 for (int dz = -1; dz <= 1; ++dz) {
+                    Material material = new SpartanLocation(
+                                    new Location(this.protocol().spartan.getWorld(), x + (double) dx, y + (double) dy, z + (double) dz)
+                    ).getBlock().getTypeOrNull();
+
+                    if (material != null && (BlockUtils.areSlimeBlocks(material))) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isBlocksOnTop(Location location) {
+        double x = location.getX();
+        double y = location.getY() - 0.1;
+        double z = location.getZ();
+
+        for (int dx = -2; dx <= 2; ++dx) {
+            for (double dy = 1.0; dy <= 2.0; dy += 0.5) {
+                for (int dz = -2; dz <= 2; ++dz) {
                     Material material = new SpartanLocation(
                             new Location(this.protocol().spartan.getWorld(), x + (double) dx * 0.3, y + dy, z + (double) dz * 0.3)
                     ).getBlock().getTypeOrNull();

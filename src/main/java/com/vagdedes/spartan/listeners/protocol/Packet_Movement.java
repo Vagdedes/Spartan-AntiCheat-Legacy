@@ -197,6 +197,7 @@ public class Packet_Movement extends PacketAdapter {
     private static void superPosition(SuperPositionPacketEvent packet) {
         boolean cancelled = packet.packetEvent.isCancelled();
         packet.protocol.spartan.getRunner(Enums.HackType.Exploits).handle(cancelled, packet);
+        packet.protocol.spartan.getRunner(Enums.HackType.IrregularMovements).handle(cancelled, packet);
     }
 
 }

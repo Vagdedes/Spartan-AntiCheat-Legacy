@@ -2,6 +2,8 @@ package com.vagdedes.spartan.abstraction.protocol;
 
 import com.vagdedes.spartan.abstraction.check.implementation.movement.morepackets.TimerBalancer;
 import com.vagdedes.spartan.abstraction.data.CheckBoundData;
+import com.vagdedes.spartan.abstraction.data.PacketWorld;
+import com.vagdedes.spartan.abstraction.event.PlayerTickEvent;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.connection.Latency;
@@ -43,13 +45,16 @@ public class SpartanProtocol {
 
     private Set<AxisAlignedBB> axisMatrixCache;
     private CheckBoundData checkBoundData;
+    public PacketWorld packetWorld;
     public long placeTime, placeHash;
     public BlockPlaceEvent oldBlockEvent;
+    public PlayerTickEvent lastTickEvent;
 
     public SpartanProtocol(Player player) {
         long time = System.currentTimeMillis();
         this.bukkit = player;
         this.version = MultiVersion.get(player);
+        this.packetWorld = new PacketWorld(player);
 
         this.placeTime = time;
         this.placeHash = 0;
@@ -84,6 +89,7 @@ public class SpartanProtocol {
         this.checkBoundData = null;
         this.oldBlockEvent = null;
         this.pistonHandle = false;
+        this.lastTickEvent = null;
 
         this.setProfile(ResearchEngine.getPlayerProfile(this, false));
     }

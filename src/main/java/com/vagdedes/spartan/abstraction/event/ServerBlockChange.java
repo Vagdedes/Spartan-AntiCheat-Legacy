@@ -1,0 +1,27 @@
+package com.vagdedes.spartan.abstraction.event;
+
+import com.comphenix.protocol.wrappers.BlockPosition;
+import com.comphenix.protocol.wrappers.WrappedBlockData;
+import org.bukkit.Material;
+
+public class ServerBlockChange {
+    private final BlockPosition position;
+    private final Material data;
+    public int tick;
+    public ServerBlockChange(BlockPosition position, Material data) {
+        this.position = position;
+        this.data = data;
+        this.tick = 2;
+    }
+    public BlockPosition getPosition() {
+        return this.position;
+    }
+    public Material getData() {
+        return this.data;
+    }
+    public long generateHash() {
+        return (this.position.getX() * 2L)
+                + (this.position.getY())
+                        * (this.position.getZ() / 2L);
+    }
+}

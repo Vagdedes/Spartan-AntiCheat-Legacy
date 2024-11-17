@@ -8,10 +8,13 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.BlockPosition;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.vagdedes.spartan.Register;
+import com.vagdedes.spartan.abstraction.event.ServerBlockChange;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.listeners.bukkit.Event_BlockPlace;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -59,13 +62,17 @@ public class Packet_BlockPlace extends PacketAdapter {
                 l.add(getDirection(BlockFace.valueOf(direction.name())));
                 World world = player.getWorld();
                 Block block = world.getBlockAt((int) l.getX(), (int) l.getY(), (int) l.getZ());
-                if (player.getInventory().getItemInHand() instanceof Block
-                                && !isInPlayer(protocol.getLocation(), block.getLocation())) {
+                if (!isInPlayer(protocol.getLocation(), block.getLocation())) {
                     BlockPlaceEvent blockPlaceEvent =
                                     new BlockPlaceEvent(
                                                     block,
                                                     block.getState(), player.getLocation().getBlock(),
-                                                    player.getInventory().getItemInMainHand(), player, true);
+                                                    MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_19)
+                                                                    ? player.getInventory().getItemInMainHand()
+                                                                    : player.getInventory().getItemInHand(), player, true);
+                    protocol.packetWorld.worldChange(new ServerBlockChange(blockPosition, Material.STONE));
+                    protocol.packetWorld.worldChange(new ServerBlockChange(new BlockPosition(
+                                    blockPosition.getX(), blockPosition.getY() + 1, blockPosition.getZ()), Material.STONE));
                     Event_BlockPlace.event(blockPlaceEvent);
                     protocol.rightClickCounter = 0;
                 } else {
