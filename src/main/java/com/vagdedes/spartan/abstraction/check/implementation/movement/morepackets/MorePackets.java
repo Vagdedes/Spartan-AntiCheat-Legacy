@@ -89,7 +89,7 @@ public class MorePackets extends CheckRunner {
         double multiply = RayUtils.scaleVal((double) TPS.tickTime / delay, 2);
 
         if (timerBalancer.isNegativeTimer() && delay > 50) {
-            if (multiply >= 1.1) {
+            if (multiply < 1.0) {
                 punish(this.negative,
                         "type: negative, multiply: " + multiply,
                         multiply

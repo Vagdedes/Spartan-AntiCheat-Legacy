@@ -20,6 +20,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 public class Packet_BlockPlace extends PacketAdapter {
@@ -58,26 +59,51 @@ public class Packet_BlockPlace extends PacketAdapter {
                     }
                 }
 
-                Location l = new Location(protocol.spartan.getWorld(), blockPosition.toVector().getBlockX(), blockPosition.toVector().getBlockY(),  blockPosition.toVector().getBlockZ());
+                Location l = new Location(
+                                protocol.spartan.getWorld(),
+                                blockPosition.toVector().getBlockX(),
+                                blockPosition.toVector().getBlockY(),
+                                blockPosition.toVector().getBlockZ()
+                );
+                if (direction == null) return;
                 l.add(getDirection(BlockFace.valueOf(direction.name())));
+
                 World world = player.getWorld();
                 Block block = world.getBlockAt((int) l.getX(), (int) l.getY(), (int) l.getZ());
-                if (!isInPlayer(protocol.getLocation(), block.getLocation())) {
-                    BlockPlaceEvent blockPlaceEvent =
-                                    new BlockPlaceEvent(
-                                                    block,
-                                                    block.getState(), player.getLocation().getBlock(),
-                                                    MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_19)
-                                                                    ? player.getInventory().getItemInMainHand()
-                                                                    : player.getInventory().getItemInHand(), player, true);
-                    protocol.packetWorld.worldChange(new ServerBlockChange(blockPosition, Material.STONE));
-                    protocol.packetWorld.worldChange(new ServerBlockChange(new BlockPosition(
-                                    blockPosition.getX(), blockPosition.getY() + 1, blockPosition.getZ()), Material.STONE));
-                    Event_BlockPlace.event(blockPlaceEvent);
-                    protocol.rightClickCounter = 0;
+
+                boolean isMainHand = !MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)
+                                || event.getPacket().getHands().read(0) == EnumWrappers.Hand.MAIN_HAND;
+
+                ItemStack itemInHand = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)
+                                ? (isMainHand ? player.getInventory().getItemInMainHand()
+                                : player.getInventory().getItemInOffHand()) : player.getItemInHand();
+
+                if (itemInHand.getType().isBlock()) {
+                    if (!isInPlayer(protocol.getLocation(), block.getLocation())) {
+                        BlockPlaceEvent blockPlaceEvent = new BlockPlaceEvent(
+                                        block,
+                                        block.getState(),
+                                        player.getLocation().getBlock(),
+                                        itemInHand,
+                                        player,
+                                        true
+                        );
+                        Material material = itemInHand.getType();
+                        protocol.packetWorld.worldChange(new ServerBlockChange(blockPosition, material));
+                        protocol.packetWorld.worldChange(new ServerBlockChange(
+                                        new BlockPosition(blockPosition.getX(), blockPosition.getY() + 1, blockPosition.getZ()),
+                                        material
+                        ));
+
+                        Event_BlockPlace.event(blockPlaceEvent);
+                        protocol.rightClickCounter = 0;
+                    } else {
+                        protocol.rightClickCounter++;
+                    }
                 } else {
                     protocol.rightClickCounter++;
                 }
+
             }
         } else {
             protocol.rightClickCounter++;

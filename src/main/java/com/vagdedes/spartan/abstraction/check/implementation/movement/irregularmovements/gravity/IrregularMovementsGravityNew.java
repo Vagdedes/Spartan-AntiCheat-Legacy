@@ -434,8 +434,15 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
                             new Location(this.protocol().spartan.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
                     ).getBlock();
 
+                    Material m = this.protocol().packetWorld.getBlock(
+                                    new Location(this.protocol().spartan.getWorld(),
+                                                    x + (double) dx * 0.3,
+                                                    y + (double) dy * 0.5,
+                                                    z + (double) dz * 0.3)
+                    );
+
                     if (BlockUtils.isLiquidOrWaterLogged(block, true)
-                                    || BlockUtils.isLiquid(block.getType())) {
+                                    || BlockUtils.isLiquid(m)) {
                         return true;
                     }
                 }
@@ -453,9 +460,9 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
         for (int dx = -1; dx <= 1; ++dx) {
             for (int dy = -1; dy <= 1; ++dy) {
                 for (int dz = -1; dz <= 1; ++dz) {
-                    Material material = new SpartanLocation(
+                    Material material = this.protocol().packetWorld.getBlock(
                             new Location(this.protocol().spartan.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
-                    ).getBlock().getTypeOrNull();
+                    );
 
                     if (material != null &&
                             (BlockUtils.isSemiSolid(material)
@@ -478,9 +485,9 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
         for (int dx = -1; dx <= 1; ++dx) {
             for (int dy = -1; dy <= 1; ++dy) {
                 for (int dz = -1; dz <= 1; ++dz) {
-                    Material material = new SpartanLocation(
+                    Material material = this.protocol().packetWorld.getBlock(
                             new Location(this.protocol().spartan.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
-                    ).getBlock().getTypeOrNull();
+                    );
 
                     if (material != null
                             && BlockUtils.isPowderSnow(material)
@@ -504,9 +511,9 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
         for (int dx = -1; dx <= 1; ++dx) {
             for (int dy = -1; dy <= 1; ++dy) {
                 for (int dz = -1; dz <= 1; ++dz) {
-                    Material material = new SpartanLocation(
+                    Material material = this.protocol().packetWorld.getBlock(
                             new Location(this.protocol().spartan.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
-                    ).getBlock().getTypeOrNull();
+                    );
 
                     if (material != null
                             && BlockUtils.canClimb(material, false)) {
@@ -527,9 +534,9 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
         for (int dx = -1; dx <= 1; ++dx) {
             for (int dy = -1; dy <= 1; ++dy) {
                 for (int dz = -1; dz <= 1; ++dz) {
-                    Material material = new SpartanLocation(
+                    Material material = this.protocol().packetWorld.getBlock(
                             new Location(this.protocol().spartan.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
-                    ).getBlock().getTypeOrNull();
+                    );
 
                     if (material != null
                             && (BlockUtils.areHoneyBlocks(material)
@@ -551,9 +558,9 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
         for (int dx = -2; dx <= 2; ++dx) {
             for (int dy = -2; dy <= 2; ++dy) {
                 for (int dz = -2; dz <= 2; ++dz) {
-                    Material material = new SpartanLocation(
+                    Material material = this.protocol().packetWorld.getBlock(
                             new Location(this.protocol().spartan.getWorld(), x + (double) dx, y + (double) dy, z + (double) dz)
-                    ).getBlock().getTypeOrNull();
+                    );
 
                     if (material != null && (BlockUtils.areSlimeBlocks(material))) {
                         return true;
@@ -572,9 +579,9 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
         for (int dx = -1; dx <= 1; ++dx) {
             for (int dy = -2; dy <= 2; ++dy) {
                 for (int dz = -1; dz <= 1; ++dz) {
-                    Material material = new SpartanLocation(
+                    Material material = this.protocol().packetWorld.getBlock(
                                     new Location(this.protocol().spartan.getWorld(), x + (double) dx, y + (double) dy, z + (double) dz)
-                    ).getBlock().getTypeOrNull();
+                    );
 
                     if (material != null && (BlockUtils.areSlimeBlocks(material))) {
                         return true;
@@ -593,9 +600,9 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
         for (int dx = -2; dx <= 2; ++dx) {
             for (double dy = 1.0; dy <= 2.0; dy += 0.5) {
                 for (int dz = -2; dz <= 2; ++dz) {
-                    Material material = new SpartanLocation(
+                    Material material = this.protocol().packetWorld.getBlock(
                             new Location(this.protocol().spartan.getWorld(), x + (double) dx * 0.3, y + dy, z + (double) dz * 0.3)
-                    ).getBlock().getTypeOrNull();
+                    );
 
                     if (material != null && BlockUtils.isSolid(material)) {
                         return true;
@@ -615,13 +622,13 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
         for (int dx = -1; dx <= 1; dx++) {
             for (int dy = -1; dy <= 1; dy++) {
                 for (int dz = -1; dz <= 1; dz++) {
-                    Material material = new SpartanLocation(
+                    Material material = this.protocol().packetWorld.getBlock(
                             new Location(
                                     this.protocol().spartan.getWorld(),
                                     x + dx,
                                     y + dy,
                                     z + dz)
-                    ).getBlock().getTypeOrNull();
+                    );
 
                     if (material == null) {
                         continue;
