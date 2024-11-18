@@ -3,3 +3,4 @@
 [#] Updated the Player Info inventory menu to be more easily understood.
 [#] Added tracking for players connecting and disconnecting but also AFK to improve statistical accuracy.
 [#] Made data pending mentions clearer to understand.
+[#] Added new configuration named advanced.yml for more generalized options.
