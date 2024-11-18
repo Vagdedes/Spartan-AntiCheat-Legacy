@@ -316,8 +316,8 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
                             if (devTotal < 1.0) {
                                 alertBuilder.deleteCharAt(0);
                             }
-                            //this.cancel("simulation[y], " + alertBuilder);
-                            this.protocol().bukkit.sendMessage("hacks: " + devTotal);
+                            this.cancel("simulation[y], " + alertBuilder);
+                            //this.protocol().bukkit.sendMessage("hacks: " + devTotal);
                             /*
                             Bukkit.getScheduler().runTask(Register.plugin, () -> {
                                 this.protocol().bukkit.teleport(from);

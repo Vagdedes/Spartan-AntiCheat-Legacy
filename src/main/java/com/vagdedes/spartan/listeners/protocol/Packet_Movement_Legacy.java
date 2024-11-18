@@ -21,6 +21,11 @@ public class Packet_Movement_Legacy extends PacketAdapter {
 
     @Override
     public void onPacketReceiving (PacketEvent event){
+        /*
+        event.getPlayer().sendMessage("p: " + event.getPacket().getType()
+                        + " " + ProtocolTools.readLocation(event).toVector());
+
+         */
         Packet_Movement.receivePacket(event);
     }
 
