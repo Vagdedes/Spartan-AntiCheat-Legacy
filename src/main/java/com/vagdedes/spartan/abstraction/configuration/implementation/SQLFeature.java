@@ -33,11 +33,6 @@ public class SQLFeature extends ConfigurationBuilder {
 
     // Separator
 
-    @Override
-    public void clear() {
-        internalClear();
-    }
-
     public String getHost() {
         String result = getString("host");
 
@@ -122,9 +117,9 @@ public class SQLFeature extends ConfigurationBuilder {
 
     // Separator
 
-    public void refreshConfiguration() {
-        clear();
-        // Always after cache is cleared
+    @Override
+    public void clear() {
+        super.clear();
         enabled = !getHost().isEmpty()
                 && !getUser().isEmpty()
                 && !getPassword().isEmpty()
@@ -151,7 +146,6 @@ public class SQLFeature extends ConfigurationBuilder {
 
     @Override
     public void create() {
-        file = new File(directory);
         addOption("host", "");
         addOption("user", "");
         addOption("password", "");
@@ -163,7 +157,7 @@ public class SQLFeature extends ConfigurationBuilder {
         addOption("use_SSL", true);
         addOption("allow_public_key_retrieval", false);
         addOption("escape_special_characters", false);
-        refreshConfiguration();
+        clear();
 
         SpartanBukkit.sqlThread.executeWithPriority(this::connect);
     }

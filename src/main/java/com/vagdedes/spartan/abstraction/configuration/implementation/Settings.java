@@ -17,13 +17,7 @@ public class Settings extends ConfigurationBuilder {
     public static final String crossServerNotificationsName = "Important.server_name";
 
     @Override
-    public void clear() {
-        internalClear();
-    }
-
-    @Override
     public void create() {
-        file = new File(directory);
         clear();
 
         addOption("Punishments.broadcast_on_punishment", true);
