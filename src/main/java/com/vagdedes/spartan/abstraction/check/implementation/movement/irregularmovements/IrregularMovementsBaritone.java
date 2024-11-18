@@ -29,18 +29,19 @@ public class IrregularMovementsBaritone extends ProbabilityDetection {
             float jiffDeltaYaw = (float) RayUtils.scaleVal(Math.abs(deltaYaw - oldDeltaMap.x), 3);
             float jiffDeltaPitch = (float) RayUtils.scaleVal(Math.abs(deltaPitch - oldDeltaMap.y), 3);
             {
-                yawMoved += (Math.abs(l.getPitch()) > 89) ? 0 : (deltaPitch == 0.0F) ? deltaYaw : -yawMoved;
-                yawMoved = (float) RayUtils.scaleVal(yawMoved, 2);
-                if (yawMoved > 45) {
-                    vl += 3;
-                    if (vl > 14)
-                        punish(3, "type: baritone[rotation], euler-y-total: " + yawMoved);
+                if (this.protocol().bukkit.getVehicle() != null) return;
+                this.yawMoved += (Math.abs(l.getPitch()) > 89) ? 0 : (deltaPitch == 0.0F) ? deltaYaw : -yawMoved;
+                this.yawMoved = (float) RayUtils.scaleVal(yawMoved, 2);
+                if (this.yawMoved > 45 && Math.abs(yawMoved % 360.0 - 1.0) < 1e-9) {
+                    this.vl += 3;
+                    if (this.vl > 14)
+                        punish(3, "type: baritone[rotation], euler-y-total: " + this.yawMoved);
                 }
                 //player.getInstance().sendMessage(jiffDeltaYaw + " " + jiffDeltaPitch);
             }
-            if (vl > 0) vl--;
-            oldV2 = v2;
-            oldDeltaMap = deltaMap;
+            if (this.vl > 0) this.vl--;
+            this.oldV2 = v2;
+            this.oldDeltaMap = deltaMap;
         }
     }
 
@@ -49,10 +50,10 @@ public class IrregularMovementsBaritone extends ProbabilityDetection {
     }
 
     private void punish(int v, String s) {
-        vl += v;
-        if (vl > 10) {
+        this.vl += v;
+        if (this.vl > 10) {
             cancel(s);
-            vl -= 4;
+            this.vl -= 4;
         }
     }
 
