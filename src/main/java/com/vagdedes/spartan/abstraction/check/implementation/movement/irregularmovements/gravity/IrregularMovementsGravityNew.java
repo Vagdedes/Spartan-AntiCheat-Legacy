@@ -29,7 +29,7 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
     private int top = 0, topReset = 0;
     private int levitation = 0, glideBlocks = 0, climbBlocks = 0,
             slowFalling = 0, levitationA = 0, slowFallingA = 0;
-    private boolean slime = false, slime0Tick = false, trident = false;
+    private boolean slime = false, slime0Tick = false, trident = false, cringeBlockClimb = false;
     private int slimePunch = 0, sub = 0;
     private double vl = 0.0;
     private double fallDistance = 0.0;
@@ -51,11 +51,13 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
             boolean slimeEvent = (p.pistonHandle && this.slime0Tick);
             if (slimeEvent) slimePunch = 3;
             p.pistonHandle = false;
-            if (to.getX() != from.getX() || to.getY() != from.getY() || to.getZ() != from.getZ()
-                    || to.getYaw() != from.getYaw() || to.getPitch() != from.getPitch()) {
+            if (to.getX() != from.getX() || to.getY() != from.getY() || to.getZ() != from.getZ()) {
                 double motion = to.getY() - from.getY();
                 double gravity = 0.08;
-                double jumpStartMotionY = this.jumpMotion();
+                double jumpStartMotionY =
+                                (atJumpModifyBlock(to)
+                                && this.jumpMotion() * 1.5 > motion)
+                                ? motion : this.jumpMotion();
                 this.air = isOnGround ? 0 : this.air + 1;
                 this.ground = isOnGround ? this.ground + 1 : 0;
                 boolean isOnWater = this.isOnWater(p.getLocation());
@@ -75,6 +77,9 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
                         pr2 = playerMovement.motionY -= gravity;
                         pr2 *= 0.9800000190734863;
                         if (motion > pr2 && motion < 0.0) {
+                            this.setPredict(motion);
+                        } else if (cringeBlockClimb && motion < 0.5) {
+                            // skull
                             this.setPredict(motion);
                         } else {
                             this.setPredict(0.0);
@@ -104,6 +109,7 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
                         }
                     }
                 } else {
+                    this.cringeBlockClimb = (this.air == 14);
                     playerMovement = this.protocol().spartan.movement;
                     playerMovement.motionY -= gravity;
                     playerMovement = this.protocol().spartan.movement;
@@ -141,7 +147,7 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
 
                 if (dev1 > 0.01 && isOnWater && motion > -3.92 && motion < 0.41) {
                     this.setPredict(motion);
-                    this.sub = 3;
+                    this.sub = 5;
                 }
 
                 if (this.abs(this.abs(motion)
@@ -502,6 +508,30 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
 
         return false;
     }
+
+    private boolean atJumpModifyBlock(Location location) {
+        double x = location.getX();
+        double y = location.getY();
+        double z = location.getZ();
+
+        for (int dx = -1; dx <= 1; ++dx) {
+            for (int dy = -2; dy <= 2; ++dy) {
+                for (int dz = -1; dz <= 1; ++dz) {
+                    Material material = this.protocol().packetWorld.getBlock(
+                                    new Location(this.protocol().spartan.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
+                    );
+
+                    if (material != null && material
+                                    .toString().equalsIgnoreCase("SWEET_BERRY_BUSH")
+                                    || BlockUtils.isPowderSnow(material)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
 
     private boolean isNearClimbBlocks(Location location) {
         double x = location.getX();
