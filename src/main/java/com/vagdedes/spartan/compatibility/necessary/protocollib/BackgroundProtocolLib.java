@@ -18,11 +18,11 @@ public class BackgroundProtocolLib {
         p.addPacketListener(new Packet_Velocity());
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)) {
             p.addPacketListener(new Packet_Combat());
-            p.addPacketListener(new Packet_Movement());
+            //p.addPacketListener(new Packet_Movement());
         } else {
             p.addPacketListener(new Packet_Combat_Legacy());
-            p.addPacketListener(new Packet_Movement_Legacy());
         }
+        p.addPacketListener(new PacketMovementListener());
         p.addPacketListener(new Packet_Teleport());
         p.addPacketListener(new Packet_Vehicle());
         p.addPacketListener(new Packet_Death());

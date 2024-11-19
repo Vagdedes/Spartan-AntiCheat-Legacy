@@ -12,6 +12,7 @@ import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
 import com.vagdedes.spartan.listeners.protocol.Packet_Teleport;
 import com.vagdedes.spartan.utils.minecraft.entity.AxisAlignedBB;
+import com.vagdedes.spartan.utils.minecraft.protocol.ProtocolTools;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -31,7 +32,8 @@ public class SpartanProtocol {
     public int rightClickCounter;
     public boolean mutateTeleport, sprinting, sneaking, vehicleStatus;
     public boolean loaded, simulationFlag, teleported, pistonHandle, explosionHandle;
-    private Location location;
+    private Location location, from, teleport;
+    public String fromWorld;
     public Location simulationStartPoint;
     private PlayerProfile profile;
     public List<Packet_Teleport.TeleportData> teleportEngine;
@@ -64,14 +66,17 @@ public class SpartanProtocol {
         this.sneaking = false;
         this.mutateTeleport = false;
         this.loaded = false;
-        this.location = ProtocolLib.getLocation(player);
+        this.location = ProtocolTools.getLoadLocation(player);
+        this.from = null;
+        this.fromWorld = "";
+        this.teleport = null;
         this.teleportEngine = new LinkedList<>();
         this.simulationFlag = false;
 
         this.spartan = new SpartanPlayer(this);
         this.timerBalancer = new TimerBalancer();
         this.mcClient = new MCClient(player);
-        this.simulationStartPoint = this.location.clone();
+        this.simulationStartPoint = null;
         this.simulationDelayPerTP = 1;
         this.teleported = false;
         this.vehicleStatus = true;
@@ -147,6 +152,12 @@ public class SpartanProtocol {
                 ? this.location
                 : ProtocolLib.getLocation(this.bukkit);
     }
+    public Location getTeleport() {
+        return this.teleport;
+    }
+    public void setTeleport(Location teleport) {
+        this.teleport = teleport;
+    }
 
     public int getPing() {
         return Latency.ping(this.bukkit);
@@ -186,6 +197,13 @@ public class SpartanProtocol {
 
     public void setLocation(Location location) {
         this.location = location;
+    }
+    public void setFromLocation(Location location) {
+        this.from = location;
+    }
+
+    public Location getFromLocation() {
+        return this.from;
     }
 
     public void addRawLocation(Location location) {
