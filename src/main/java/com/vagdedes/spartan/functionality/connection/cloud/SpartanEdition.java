@@ -207,7 +207,7 @@ public class SpartanEdition {
         if (dataType == null) {
             message = AwarenessNotifications.getNotification(noVersionNotificationMessage);
         } else {
-            message = AwarenessNotifications.getNotification(
+            message = AwarenessNotifications.getOptionalNotification(
                     (versionNotificationMessage
                             + (IDs.canAdvertise()
                             ? " Click §n" + product + "§r§c to §lfix this§r§c."

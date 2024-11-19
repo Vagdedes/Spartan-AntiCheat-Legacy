@@ -165,11 +165,11 @@ public class ManageChecks extends InventoryMenu {
         }
 
         // Separator
-        boolean enoughData = false;
+        boolean enoughData = true;
 
         for (Check.DataType dataType : Check.DataType.values()) {
-            if (protocol.spartan.getRunner(hackType).hasSufficientData(dataType)) {
-                enoughData = true;
+            if (!protocol.spartan.getRunner(hackType).hasSufficientData(dataType)) {
+                enoughData = false;
                 break;
             }
         }

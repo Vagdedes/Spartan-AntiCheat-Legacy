@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.listeners.bukkit;
+package com.vagdedes.spartan.listeners.bukkit.test;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

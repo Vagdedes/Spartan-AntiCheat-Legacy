@@ -5,7 +5,7 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
-import com.vagdedes.spartan.listeners.protocol.PacketMovementListener;
+import com.vagdedes.spartan.listeners.protocol.movement.PacketMovementListener;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
