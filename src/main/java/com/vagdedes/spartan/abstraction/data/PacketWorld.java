@@ -67,7 +67,13 @@ public class PacketWorld {
     }
 
     public void worldChange(ServerBlockChange blockChange) {
-        if (BlockUtils.areAir(blockChange.getData())) return;
+        if (BlockUtils.areAir(blockChange.getData())) {
+            Block b = this.getBlockAsync(blockChange
+                            .getPosition()
+                            .toLocation(this.player.getWorld()));
+            if (b == null) return;
+            blockChange.setData(b.getType());
+        }
         long hash = blockChange.hashCode();
         ServerBlockChange toDelete = null;
         for (ServerBlockChange c : this.query) {

@@ -6,7 +6,7 @@ import org.bukkit.Material;
 
 public class ServerBlockChange {
     private final BlockPosition position;
-    private final Material data;
+    private Material data;
     public int tick;
     public ServerBlockChange(BlockPosition position, Material data) {
         this.position = position;
@@ -18,6 +18,9 @@ public class ServerBlockChange {
     }
     public Material getData() {
         return this.data;
+    }
+    public void setData(Material data) {
+        this.data = data;
     }
     public long generateHash() {
         return (this.position.getX() * 2L)
