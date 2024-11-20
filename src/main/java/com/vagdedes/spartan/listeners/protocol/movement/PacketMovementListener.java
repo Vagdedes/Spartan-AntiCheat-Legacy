@@ -139,7 +139,6 @@ public class PacketMovementListener extends PacketAdapter {
         } else {
             superPosition(new SuperPositionPacketEvent(p, event));
         }
-        p.explosionHandle = false;
     }
 
     private static void superPosition(SuperPositionPacketEvent packet) {

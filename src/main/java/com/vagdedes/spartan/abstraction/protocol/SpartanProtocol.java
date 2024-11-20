@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.abstraction.protocol;
 
+import com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.component.ComponentY;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.morepackets.TimerBalancer;
 import com.vagdedes.spartan.abstraction.data.CheckBoundData;
 import com.vagdedes.spartan.abstraction.data.PacketWorld;
@@ -31,7 +32,7 @@ public class SpartanProtocol {
     private int hashPosBuffer;
     public int rightClickCounter;
     public boolean mutateTeleport, sprinting, sneaking, vehicleStatus;
-    public boolean loaded, simulationFlag, teleported, pistonHandle, explosionHandle;
+    public boolean loaded, simulationFlag, teleported, pistonTick;
     private Location location, from, teleport;
     public String fromWorld;
     public Location simulationStartPoint;
@@ -51,6 +52,8 @@ public class SpartanProtocol {
     public long placeTime, placeHash;
     public BlockPlaceEvent oldBlockEvent;
     public PlayerTickEvent lastTickEvent;
+
+    private ComponentY componentY;
 
     public SpartanProtocol(Player player) {
         long time = System.currentTimeMillis();
@@ -93,8 +96,10 @@ public class SpartanProtocol {
         this.axisMatrixCache = new HashSet<>();
         this.checkBoundData = null;
         this.oldBlockEvent = null;
-        this.pistonHandle = false;
+        this.pistonTick = false;
         this.lastTickEvent = null;
+
+        this.componentY = new ComponentY();
 
         this.setProfile(ResearchEngine.getPlayerProfile(this, false));
     }
@@ -167,6 +172,10 @@ public class SpartanProtocol {
         return ProtocolLib.isTemporary(this.bukkit)
                 ? UUID.randomUUID()
                 : this.bukkit.getUniqueId();
+    }
+
+    public ComponentY getComponentY() {
+        return this.componentY;
     }
 
     public void startSimulationFlag() {

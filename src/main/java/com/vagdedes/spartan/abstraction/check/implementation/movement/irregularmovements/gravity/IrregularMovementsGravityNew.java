@@ -30,7 +30,7 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
     private int levitation = 0, glideBlocks = 0, climbBlocks = 0,
             slowFalling = 0, levitationA = 0, slowFallingA = 0;
     private boolean slime = false, slime0Tick = false, trident = false, cringeBlockClimb = false;
-    private int slimePunch = 0, sub = 0;
+    private int slimePunch = 0, slimeTicks = 0, pistonTicks = 0, sub = 0;
     private double vl = 0.0;
     private double fallDistance = 0.0;
 
@@ -39,7 +39,7 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
     }
 
     public void run() {
-        if (true) return;
+        //if (true) return;
         if (this.protocol().spartan != null) {
             SpartanProtocol p = this.protocol();
             boolean isOnGround = p.isOnGround();
@@ -48,9 +48,7 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
             double dx = to.getX() - from.getX();
             double dz = to.getZ() - from.getZ();
             double speed = Math.sqrt(dx * dx + dz * dz);
-            boolean slimeEvent = (p.pistonHandle && this.slime0Tick);
-            if (slimeEvent) slimePunch = 3;
-            p.pistonHandle = false;
+            //this.protocol().bukkit.sendMessage(protocol().pistonHandle + " " + protocol().pistonTick + " " + protocol().explosionHandle);
             if (to.getX() != from.getX() || to.getY() != from.getY() || to.getZ() != from.getZ()) {
                 double motion = to.getY() - from.getY();
                 double gravity = 0.08;
@@ -76,15 +74,13 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
                         playerMovement = this.protocol().spartan.movement;
                         pr2 = playerMovement.motionY -= gravity;
                         pr2 *= 0.9800000190734863;
+                        this.setPredict(0.0);
                         if (motion > pr2 && motion < 0.0) {
                             this.setPredict(motion);
                         } else if (cringeBlockClimb && motion < 0.5) {
                             // skull
                             this.setPredict(motion);
-                        } else {
-                            this.setPredict(0.0);
                         }
-
                         if (this.isOnSlime(to)) {
                             this.slime = true;
                         }
@@ -101,12 +97,16 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
                     }
 
                     if (this.slime) {
+                        this.slimeTicks = 3;
+                    }
+                    if (this.slimeTicks > 0) {
                         pr2 = this.jumpMotion() + this.abs(this.fallDistance) * 0.09;
                         if (motion == 0.0) {
                             this.setPredict(0.0);
                         } else if (pr2 > motion) {
                             this.setPredict(motion);
                         }
+                        this.slimeTicks--;
                     }
                 } else {
                     this.cringeBlockClimb = (this.air == 14);
@@ -118,6 +118,27 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
                         this.protocol().spartan.movement.motionY = -3.92;
                     }
                     this.slime = false;
+                }
+                if (p.getComponentY().pistonTick)
+                    this.pistonTicks = 2;
+                if (this.getDeviantity(motion) > 0.01
+                                && p.getComponentY().pistonTick
+                                && motion <= 0.25) {
+                    this.setPredict(motion);
+                }
+                if (pistonTicks > 0) pistonTicks--;
+                if (this.getDeviantity(motion) > 0.01
+                                && p.getComponentY().pistonTick
+                                && motion <= 1.0) {
+                    this.setPredict(motion);
+                    p.getComponentY().pistonTick = false;
+                }
+                boolean slimeEvent = (this.getDeviantity(motion) > 0.001)
+                                && (p.getComponentY().pistonHandle
+                                && this.slime0Tick);
+                if (slimeEvent) {
+                    p.getComponentY().pistonHandle = false;
+                    slimePunch = 4;
                 }
                 if ((this.isOnSemi(to) || this.isOnSlimeHeight(to)) && motion != 0.0 && motion < 0.51) {
                     this.setPredict(motion);
@@ -223,9 +244,9 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
                 }
                 double devPreTotal = this.abs(this.abs(motion) - this.abs(this.predictY()));
 
-                if (glideBlocks > 0 && devPreTotal > 0.001 && motion < 0 && motion > -0.16) {
+                if (this.glideBlocks > 0 && devPreTotal > 0.001 && motion < 0 && motion > -0.16) {
                     this.setPredict(motion);
-                    glideBlocks--;
+                    this.glideBlocks--;
                 } else if (devPreTotal > 0.001 && motion < 0 && motion > -0.16 && isNearGlideBlocks(to)) {
                     this.setPredict(motion);
                     this.glideBlocks = 2;
@@ -241,7 +262,9 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
                     this.climbBlocks = 2;
                 }
 
-                if (this.slimePunch > 0 && motion > 0 && motion < 1.52) {
+                if (this.getDeviantity(motion) > 0.001
+                                && this.slimePunch > 0
+                                && motion > 0 && motion < 1.52) {
                     this.setPredict(motion);
                     this.slimePunch--;
                 }
@@ -304,8 +327,10 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
                 and then with in the next tick already from the recoil,
                 let's take into account this nonsense
                  */
-                if (this.protocol().explosionHandle && this.getDeviantity(motion) < 1.2)
+                if (this.protocol().getComponentY().explosionTick && this.getDeviantity(motion) < 1.2) {
                     this.setPredict(motion);
+                    this.protocol().getComponentY().explosionTick = false;
+                }
 
                 double devTotal = this.abs(this.abs(motion) - this.abs(this.predictY()));
                 //this.protocol().bukkit.sendMessage("m: " + motion + " p: " + this.predictY() + " air: " + air);

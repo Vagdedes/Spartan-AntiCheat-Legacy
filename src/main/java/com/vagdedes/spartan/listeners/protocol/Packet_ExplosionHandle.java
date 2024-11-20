@@ -28,7 +28,7 @@ public class Packet_ExplosionHandle extends PacketAdapter {
         List<Double> d = packet.getDoubles().getValues();
         Location l = new Location(player.getWorld(), d.get(0), d.get(1), d.get(2));
         if (l.distanceSquared(protocol.getLocation()) < 10)
-            protocol.explosionHandle = true;
+            protocol.getComponentY().explosionTick = true;
     }
 
 }

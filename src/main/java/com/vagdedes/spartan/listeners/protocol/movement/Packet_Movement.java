@@ -191,7 +191,6 @@ public class Packet_Movement extends PacketAdapter {
         } else {
             superPosition(new SuperPositionPacketEvent(protocol, event));
         }
-        protocol.explosionHandle = false;
     }
 
     private static void superPosition(SuperPositionPacketEvent packet) {
