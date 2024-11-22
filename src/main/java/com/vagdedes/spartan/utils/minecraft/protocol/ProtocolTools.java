@@ -5,7 +5,7 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
-import com.vagdedes.spartan.listeners.protocol.movement.PacketMovementListener;
+import com.vagdedes.spartan.listeners.protocol.Packet_Movement;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -46,13 +46,13 @@ public class ProtocolTools {
                 && packet.getBooleans().read(0);
     }
 
-    public static Set<PacketMovementListener.tpFlags> getTeleportFlags(PacketEvent event) {
+    public static Set<Packet_Movement.tpFlags> getTeleportFlags(PacketEvent event) {
         String s = event.getPacket().getStructures().getValues().get(0).toString();
-        Set<PacketMovementListener.tpFlags> flags = new HashSet<>();
+        Set<Packet_Movement.tpFlags> flags = new HashSet<>();
         s = s.replace("X_ROT", "").replace("Y_ROT", "");
-        if (s.contains("X")) flags.add(PacketMovementListener.tpFlags.X);
-        if (s.contains("Y")) flags.add(PacketMovementListener.tpFlags.Y);
-        if (s.contains("Z")) flags.add(PacketMovementListener.tpFlags.Z);
+        if (s.contains("X")) flags.add(Packet_Movement.tpFlags.X);
+        if (s.contains("Y")) flags.add(Packet_Movement.tpFlags.Y);
+        if (s.contains("Z")) flags.add(Packet_Movement.tpFlags.Z);
         return flags;
     }
 

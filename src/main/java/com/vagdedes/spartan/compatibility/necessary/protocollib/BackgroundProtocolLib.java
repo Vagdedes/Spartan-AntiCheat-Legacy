@@ -6,7 +6,7 @@ import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.listeners.protocol.*;
 import com.vagdedes.spartan.listeners.protocol.combat.Packet_Combat;
 import com.vagdedes.spartan.listeners.protocol.combat.Packet_Combat_Legacy;
-import com.vagdedes.spartan.listeners.protocol.movement.PacketMovementListener;
+import com.vagdedes.spartan.listeners.protocol.Packet_Movement;
 import com.vagdedes.spartan.listeners.protocol.standalone.Packet_BlockPlaceP;
 import com.vagdedes.spartan.listeners.protocol.standalone.Packet_EntityAction;
 import com.vagdedes.spartan.listeners.protocol.standalone.Packet_Join;
@@ -25,7 +25,7 @@ public class BackgroundProtocolLib {
         } else {
             p.addPacketListener(new Packet_Combat_Legacy());
         }
-        p.addPacketListener(new PacketMovementListener());
+        p.addPacketListener(new Packet_Movement());
         p.addPacketListener(new Packet_Teleport());
         p.addPacketListener(new Packet_Vehicle());
         p.addPacketListener(new Packet_Death());

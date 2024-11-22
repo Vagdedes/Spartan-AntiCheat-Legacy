@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.listeners.protocol.movement;
+package com.vagdedes.spartan.listeners.protocol;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.ListenerPriority;
@@ -22,8 +22,8 @@ import org.bukkit.event.player.PlayerMoveEvent;
 
 import java.util.Set;
 
-public class PacketMovementListener extends PacketAdapter {
-    public PacketMovementListener() {
+public class Packet_Movement extends PacketAdapter {
+    public Packet_Movement() {
         super(
                         Register.plugin,
                         ListenerPriority.LOWEST,
