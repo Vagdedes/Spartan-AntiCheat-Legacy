@@ -237,19 +237,18 @@ public abstract class ProbabilityDetection extends CheckDetection {
         List<PlayerProfile> playerProfiles = ResearchEngine.getPlayerProfiles();
 
         if (!playerProfiles.isEmpty()) {
-            int requirement = PlayerEvidence.probabilityToFactors(PlayerEvidence.punishmentProbability);
             int count = 0;
 
             for (PlayerProfile profile : playerProfiles) {
                 if (profile.getRunner(this.hackType).getDetection(this.name).hasData(dataType)) {
                     count++;
 
-                    if (count == requirement) {
+                    if (count == PlayerEvidence.factorRequirement) {
                         return 1.0;
                     }
                 }
             }
-            return count / (double) requirement;
+            return count / (double) PlayerEvidence.factorRequirement;
         } else {
             return 0.0;
         }
@@ -260,16 +259,15 @@ public abstract class ProbabilityDetection extends CheckDetection {
     @Override
     protected final boolean hasSufficientData(Check.DataType dataType) {
         List<PlayerProfile> playerProfiles = ResearchEngine.getPlayerProfiles();
-        int requirement = PlayerEvidence.probabilityToFactors(PlayerEvidence.punishmentProbability);
 
-        if (playerProfiles.size() >= requirement) {
+        if (playerProfiles.size() >= PlayerEvidence.factorRequirement) {
             int count = 0;
 
             for (PlayerProfile profile : playerProfiles) {
                 if (profile.getRunner(this.hackType).getDetection(this.name).hasData(dataType)) {
                     count++;
 
-                    if (count == requirement) {
+                    if (count == PlayerEvidence.factorRequirement) {
                         return true;
                     }
                 }

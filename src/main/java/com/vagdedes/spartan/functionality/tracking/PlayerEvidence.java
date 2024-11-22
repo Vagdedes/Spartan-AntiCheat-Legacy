@@ -5,6 +5,7 @@ import com.vagdedes.spartan.utils.math.AlgebraUtils;
 public class PlayerEvidence {
 
     public static final boolean POSITIVE = false;
+    public static final int factorRequirement = 10;
     public static final double
             notificationProbability = createProbability(0.4),
             preventionProbability = createProbability(0.25),
