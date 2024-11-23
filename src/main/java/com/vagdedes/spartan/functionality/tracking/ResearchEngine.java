@@ -375,23 +375,22 @@ public class ResearchEngine {
         };
 
         if (firstLoad) {
-            if (!enabledPlugin) {
-                for (PlayerProfile profile : playerProfiles.values()) {
-                    profile.setDisconnected(null);
-                }
-            }
             SpartanBukkit.analysisThread.executeIfFree(runnable);
         } else {
             SpartanBukkit.analysisThread.execute(runnable);
             firstLoad = true;
+        }
 
-            if (enabledPlugin) {
-                for (PlayerProfile profile : playerProfiles.values()) {
-                    profile.setConnected(null);
-                }
-            } else {
-                for (PlayerProfile profile : playerProfiles.values()) {
-                    profile.setDisconnected(null);
+        if (!enabledPlugin) {
+            for (PlayerProfile profile : playerProfiles.values()) {
+                SpartanProtocol protocol = profile.protocol();
+
+                if (protocol != null) {
+                    profile.setOnlineFor(
+                            System.currentTimeMillis(),
+                            protocol.getTimePlayed(),
+                            true
+                    );
                 }
             }
         }
@@ -460,26 +459,32 @@ public class ResearchEngine {
                                 } catch (Exception ignored) {
                                 }
                             }
-                        } else if (data.contains(PlayerProfile.connected)) {
-                            SimpleDateFormat sdf = new SimpleDateFormat(AntiCheatLogs.dateFormat);
-                            ResearchEngine.getPlayerProfile(data.split(" ", 2)[0], true).setConnected(
-                                    sdf.parse(fullDate).getTime()
-                            );
-                        } else if (data.contains(PlayerProfile.disconnected)) {
-                            SimpleDateFormat sdf = new SimpleDateFormat(AntiCheatLogs.dateFormat);
-                            ResearchEngine.getPlayerProfile(data.split(" ", 2)[0], true).setDisconnected(
-                                    sdf.parse(fullDate).getTime()
-                            );
-                        } else if (data.contains(PlayerProfile.afk)) {
-                            SimpleDateFormat sdf = new SimpleDateFormat(AntiCheatLogs.dateFormat);
-                            ResearchEngine.getPlayerProfile(data.split(" ", 2)[0], true).setAFK(
-                                    sdf.parse(fullDate).getTime()
-                            );
-                        } else if (data.contains(PlayerProfile.noAfk)) {
-                            SimpleDateFormat sdf = new SimpleDateFormat(AntiCheatLogs.dateFormat);
-                            ResearchEngine.getPlayerProfile(data.split(" ", 2)[0], true).setNoAFK(
-                                    sdf.parse(fullDate).getTime()
-                            );
+                        } else {
+                            int index = data.indexOf(PlayerProfile.onlineFor);
+
+                            if (index != -1) {
+                                SimpleDateFormat sdf = new SimpleDateFormat(AntiCheatLogs.dateFormat);
+
+                                try {
+                                    ResearchEngine.getPlayerProfile(data.split(" ", 2)[0], true).setOnlineFor(
+                                            sdf.parse(fullDate).getTime(),
+                                            Long.parseLong(data.substring(index + PlayerProfile.onlineFor.length())),
+                                            false
+                                    );
+                                } catch (Exception ignored) {
+                                }
+                            } else {
+                                index = data.indexOf(PlayerProfile.afkFor);
+
+                                if (index != -1) {
+                                    SimpleDateFormat sdf = new SimpleDateFormat(AntiCheatLogs.dateFormat);
+                                    ResearchEngine.getPlayerProfile(data.split(" ", 2)[0], true).setAFKFor(
+                                            sdf.parse(fullDate).getTime(),
+                                            Long.parseLong(data.substring(index + PlayerProfile.afkFor.length())),
+                                            false
+                                    );
+                                }
+                            }
                         }
                     } catch (Exception ignored) {
                     }

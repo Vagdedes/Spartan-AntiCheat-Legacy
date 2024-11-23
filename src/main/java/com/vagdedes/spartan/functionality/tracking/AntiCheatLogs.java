@@ -51,12 +51,12 @@ public class AntiCheatLogs {
 
     // Separator
 
-    public static void rawLogInfo(String information, boolean console, boolean store, boolean sql) {
+    public static void rawLogInfo(long time, String information, boolean console, boolean store, boolean sql) {
         if (console && Config.settings.getBoolean("Logs.log_console")) {
             Bukkit.getConsoleSender().sendMessage(information);
         }
         if (Config.settings.getBoolean("Logs.log_file")) {
-            Timestamp now = new Timestamp(System.currentTimeMillis());
+            Timestamp now = new Timestamp(time);
 
             if (AntiCheatLogs.time.getDay() != now.getDay()) {
                 if (fileConfiguration != null) {
@@ -88,7 +88,7 @@ public class AntiCheatLogs {
                                Enums.HackType hackType,
                                long time,
                                boolean unlikely) {
-        rawLogInfo(information, console, !unlikely, false);
+        rawLogInfo(time, information, console, !unlikely, false);
         Config.sql.logInfo(p, notification, information, material, hackType, time);
     }
 

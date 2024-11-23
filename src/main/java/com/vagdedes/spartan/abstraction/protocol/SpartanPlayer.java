@@ -41,8 +41,7 @@ public class SpartanPlayer {
     public final PlayerPunishments punishments;
     public final PlayerTrackers trackers;
     public final PlayerClicks clicks;
-    private long lastInteraction;
-    private boolean afk;
+    private long lastInteraction, afk;
 
     static {
         SpartanBukkit.runRepeatingTask(() -> {
@@ -57,16 +56,7 @@ public class SpartanPlayer {
                     protocol.spartan.getRunner(Enums.HackType.MorePackets).run(false);
                     protocol.spartan.getRunner(Enums.HackType.Exploits).run(false);
                     protocol.spartan.movement.schedulerFrom = protocol.spartan.movement.getLocation();
-
-                    if (System.currentTimeMillis() - protocol.spartan.lastInteraction >= 60_000L) {
-                        if (!protocol.spartan.afk) {
-                            protocol.spartan.afk = true;
-                            protocol.getProfile().setAFK(System.currentTimeMillis());
-                        }
-                    } else if (protocol.spartan.afk) {
-                        protocol.spartan.afk = false;
-                        protocol.getProfile().setNoAFK(System.currentTimeMillis());
-                    }
+                    protocol.spartan.checkForAFK();
                 }
             }
         }, 1L, 1L);
@@ -89,11 +79,27 @@ public class SpartanPlayer {
         this.punishments = new PlayerPunishments(this);
 
         this.setLastInteraction();
-        this.afk = false;
+        this.afk = -1L;
     }
 
     public void setLastInteraction() {
+        this.checkForAFK();
         this.lastInteraction = System.currentTimeMillis();
+    }
+
+    private void checkForAFK() {
+        if (System.currentTimeMillis() - protocol.spartan.lastInteraction >= 60_000L) {
+            if (protocol.spartan.afk == -1L) {
+                protocol.spartan.afk = protocol.spartan.lastInteraction;
+            }
+        } else if (protocol.spartan.afk != -1L) {
+            protocol.getProfile().setAFKFor(
+                    System.currentTimeMillis(),
+                    System.currentTimeMillis() - protocol.spartan.afk,
+                    true
+            );
+            protocol.spartan.afk = -1L;
+        }
     }
 
     public boolean isBedrockPlayer() {

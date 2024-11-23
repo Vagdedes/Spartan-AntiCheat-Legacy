@@ -86,11 +86,6 @@ public abstract class CheckDetection extends CheckProcess {
                 || this.hackType.getCheck().getBooleanOption("check_" + this.name, this.def));
     }
 
-    // Sync
-
-    public void addDataContinuation(Check.DataType dataType, long time, boolean trueFalse) {
-    }
-
     // Data
 
     protected boolean hasData(Check.DataType dataType) {
@@ -116,7 +111,7 @@ public abstract class CheckDetection extends CheckProcess {
         return null;
     }
 
-    public double getDataCompletion(Check.DataType dataType) {
+    double getDataCompletion(Check.DataType dataType) {
         return 1.0;
     }
 

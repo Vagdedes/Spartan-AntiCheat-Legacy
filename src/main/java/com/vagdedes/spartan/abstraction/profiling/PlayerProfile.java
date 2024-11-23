@@ -17,10 +17,8 @@ import java.util.*;
 public class PlayerProfile {
 
     public static final String
-            connected = " connected",
-            disconnected = " disconnected",
-            afk = " is AFK",
-            noAfk = " is not AFK";
+            onlineFor = " was online for: ",
+            afkFor = " was AFK for: ";
 
     public final String name;
     private final MiningHistory[] miningHistory;
@@ -48,10 +46,10 @@ public class PlayerProfile {
 
         if (protocol != null) {
             this.offlinePlayer = protocol.bukkit;
-            this.registerExecutors(protocol);
+            this.registerChecks(protocol);
         } else {
             this.offlinePlayer = null;
-            this.registerExecutors(null);
+            this.registerChecks(null);
         }
     }
 
@@ -66,80 +64,38 @@ public class PlayerProfile {
         for (MiningHistory.MiningOre ore : MiningHistory.MiningOre.values()) {
             this.miningHistory[ore.ordinal()] = new MiningHistory(ore);
         }
-        this.registerExecutors(protocol);
+        this.registerChecks(protocol);
     }
 
     // Separator
 
-    public void setConnected(Long time) {
-        if (time == null) {
+    public void setOnlineFor(long time, long count, boolean log) {
+        if (log) {
             AntiCheatLogs.rawLogInfo(
-                    this.name + connected,
+                    time,
+                    this.name + onlineFor + count,
                     false,
                     true,
                     true
             );
-            setConnected(System.currentTimeMillis());
-        } else {
-            for (CheckRunner runner : this.getRunners()) {
-                for (CheckDetection detection : runner.getDetections()) {
-                    detection.addDataContinuation(lastDataType, time, true);
-                }
-            }
+        }
+        for (CheckRunner runner : this.getRunners()) {
+            runner.addDataContinuation(lastDataType, time, count);
         }
     }
 
-    public void setDisconnected(Long time) {
-        if (time == null) {
+    public void setAFKFor(long time, long count, boolean log) {
+        if (log) {
             AntiCheatLogs.rawLogInfo(
-                    this.name + disconnected,
+                    time,
+                    this.name + afkFor + count,
                     false,
                     true,
                     true
             );
-            setDisconnected(System.currentTimeMillis());
-        } else {
-            for (CheckRunner runner : this.getRunners()) {
-                for (CheckDetection detection : runner.getDetections()) {
-                    detection.addDataContinuation(lastDataType, time, false);
-                }
-            }
         }
-    }
-
-    public void setAFK(Long time) {
-        if (time == null) {
-            AntiCheatLogs.rawLogInfo(
-                    this.name + afk,
-                    false,
-                    true,
-                    true
-            );
-            setAFK(System.currentTimeMillis());
-        } else {
-            for (CheckRunner runner : this.getRunners()) {
-                for (CheckDetection detection : runner.getDetections()) {
-                    detection.addDataContinuation(lastDataType, time, false);
-                }
-            }
-        }
-    }
-
-    public void setNoAFK(Long time) {
-        if (time == null) {
-            AntiCheatLogs.rawLogInfo(
-                    this.name + noAfk,
-                    false,
-                    true,
-                    true
-            );
-            setNoAFK(System.currentTimeMillis());
-        } else {
-            for (CheckRunner runner : this.getRunners()) {
-                for (CheckDetection detection : runner.getDetections()) {
-                    detection.addDataContinuation(lastDataType, time, true);
-                }
-            }
+        for (CheckRunner runner : this.getRunners()) {
+            runner.addDataContinuation(lastDataType, time, -count);
         }
     }
 
@@ -180,7 +136,7 @@ public class PlayerProfile {
         }
     }
 
-    private void registerExecutors(SpartanProtocol protocol) {
+    private void registerChecks(SpartanProtocol protocol) {
         synchronized (this.runners) {
             for (Enums.HackType hackType : Enums.HackType.values()) {
                 try {

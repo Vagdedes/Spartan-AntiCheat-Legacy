@@ -86,7 +86,6 @@ public class SpartanBukkit {
 
             if (protocol == null) {
                 protocol = new SpartanProtocol(player);
-                protocol.getProfile().setConnected(null);
                 playerProtocol.put(player.getUniqueId(), protocol);
             }
             protocol.spartan.setLastInteraction();
@@ -150,7 +149,12 @@ public class SpartanBukkit {
             SpartanProtocol protocol = playerProtocol.remove(player.getUniqueId());
 
             if (protocol != null) {
-                protocol.getProfile().setDisconnected(null);
+                protocol.spartan.setLastInteraction();
+                protocol.getProfile().setOnlineFor(
+                        System.currentTimeMillis(),
+                        protocol.getTimePlayed(),
+                        true
+                );
             }
             return protocol;
         }

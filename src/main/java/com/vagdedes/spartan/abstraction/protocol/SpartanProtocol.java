@@ -23,6 +23,7 @@ import java.util.*;
 
 public class SpartanProtocol {
 
+    public final long creationTime;
     public final Player bukkit;
     public final SpartanPlayer spartan;
     public final TimerBalancer timerBalancer;
@@ -57,6 +58,7 @@ public class SpartanProtocol {
 
     public SpartanProtocol(Player player) {
         long time = System.currentTimeMillis();
+        this.creationTime = time;
         this.bukkit = player;
         this.version = MultiVersion.get(player);
         this.packetWorld = new PacketWorld(player);
@@ -102,6 +104,10 @@ public class SpartanProtocol {
         this.componentY = new ComponentY();
 
         this.setProfile(ResearchEngine.getPlayerProfile(this, false));
+    }
+
+    public long getTimePlayed() {
+        return System.currentTimeMillis() - this.creationTime;
     }
 
     public boolean isUsingVersion(MultiVersion.MCVersion trialVersion) {
@@ -157,9 +163,11 @@ public class SpartanProtocol {
                 ? this.location
                 : ProtocolLib.getLocation(this.bukkit);
     }
+
     public Location getTeleport() {
         return this.teleport;
     }
+
     public void setTeleport(Location teleport) {
         this.teleport = teleport;
     }
@@ -207,6 +215,7 @@ public class SpartanProtocol {
     public void setLocation(Location location) {
         this.location = location;
     }
+
     public void setFromLocation(Location location) {
         this.from = location;
     }

@@ -33,6 +33,7 @@ public abstract class CheckRunner extends CheckProcess {
     CheckPrevention prevention;
     private boolean cancelled;
     protected final Map<String, CheckDetection> detections;
+    final Map<Check.DataType, Map<Long, Long>> continuity;
 
     public CheckRunner(Enums.HackType hackType, SpartanProtocol protocol) {
         super(hackType, protocol);
@@ -41,6 +42,9 @@ public abstract class CheckRunner extends CheckProcess {
         this.detections = new ConcurrentHashMap<>(2);
         this.disableCauses = Collections.synchronizedList(new ArrayList<>(1));
         this.silentCauses = Collections.synchronizedList(new ArrayList<>(1));
+        this.continuity = Collections.synchronizedMap(
+                new LinkedHashMap<>(Check.DataType.values().length)
+        );
     }
 
     // Probability
@@ -318,6 +322,61 @@ public abstract class CheckRunner extends CheckProcess {
             return AlgebraUtils.integerRound(Math.sqrt(TPS.maximum));
         } else {
             return AlgebraUtils.integerCeil(TPS.maximum);
+        }
+    }
+
+    // Sync
+
+    public final void addDataContinuation(Check.DataType dataType, long time, long count) {
+        synchronized (this.continuity) {
+            this.continuity.computeIfAbsent(
+                    dataType,
+                    k -> new TreeMap<>()
+            ).put(time, count);
+        }
+    }
+
+    final boolean wasOnline(Check.DataType dataType, long current, long previous) {
+        SpartanProtocol protocol = this.protocol();
+
+        if (protocol != null
+                && current >= protocol.creationTime
+                && previous >= protocol.creationTime) {
+            return true;
+        } else {
+            synchronized (this.continuity) {
+                Map<Long, Long> data = this.continuity.get(dataType);
+
+                if (data != null) {
+                    // todo
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }
+    }
+
+    final long getOnlineTime(Check.DataType dataType) {
+        synchronized (this.continuity) {
+            Map<Long, Long> data = this.continuity.get(dataType);
+
+            if (data != null) {
+                long sum = 0L;
+
+                for (long value : data.values()) {
+                    sum += value;
+                }
+                SpartanProtocol protocol = this.protocol();
+                return protocol == null
+                        ? sum
+                        : protocol.getTimePlayed() + sum;
+            } else {
+                SpartanProtocol protocol = this.protocol();
+                return protocol == null
+                        ? 0L
+                        : protocol.getTimePlayed();
+            }
         }
     }
 
