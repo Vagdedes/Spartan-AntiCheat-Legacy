@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.gravity;
+package com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.simulation;
 
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.HardcodedDetection;
@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class IrregularMovementsGravityNew extends HardcodedDetection {
+public class SimulationGravity extends HardcodedDetection {
     private int air = 0, ground = 0;
     private int top = 0, topReset = 0;
     private int levitation = 0, glideBlocks = 0, climbBlocks = 0,
@@ -34,7 +34,7 @@ public class IrregularMovementsGravityNew extends HardcodedDetection {
     private double vl = 0.0;
     private double fallDistance = 0.0;
 
-    public IrregularMovementsGravityNew(CheckRunner executor) {
+    public SimulationGravity(CheckRunner executor) {
         super(executor, "gravity_new", true);
     }
 
