@@ -77,13 +77,8 @@ public abstract class CheckDetection extends CheckProcess {
     // Check
 
     public final boolean isEnabled() {
-        boolean a = this.protocol() == null;
-        return this.hackType.getCheck().isEnabled(
-                a ? null : this.protocol().spartan.dataType,
-                a ? null : this.protocol().spartan.getWorld().getName()
-        )
-                && (this.name == null
-                || this.hackType.getCheck().getBooleanOption("check_" + this.name, this.def));
+        return this.name == null
+                || this.hackType.getCheck().getBooleanOption("check_" + this.name, this.def);
     }
 
     // Data

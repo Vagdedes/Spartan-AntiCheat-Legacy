@@ -515,28 +515,33 @@ public class ResearchEngine {
                     ? Arrays.asList(Enums.HackType.values())
                     : violationFired.keySet())) {
                 for (Check.DataType dataType : Check.DataType.values()) {
-                    if (!hackType.getCheck().isEnabled(dataType, null)) {
-                        continue;
-                    }
                     Map<String, Map<CheckDetection, Double>> wave = new LinkedHashMap<>();
 
-                    for (PlayerProfile profile : profiles) {
-                        for (CheckDetection detectionExecutor : profile.getRunner(hackType).getDetections()) {
-                            Double data = detectionExecutor.getData(dataType);
+                    if (hackType.getCheck().isEnabled(dataType, null)) {
+                        for (PlayerProfile profile : profiles) {
+                            for (CheckDetection detectionExecutor : profile.getRunner(hackType).getDetections()) {
+                                Double data = detectionExecutor.getData(dataType);
 
-                            if (data != null) {
-                                wave.computeIfAbsent(
-                                        detectionExecutor.name,
-                                        k -> new LinkedHashMap<>()
-                                ).put(
-                                        detectionExecutor,
-                                        data
-                                );
+                                if (data != null) {
+                                    wave.computeIfAbsent(
+                                            detectionExecutor.name,
+                                            k -> new LinkedHashMap<>()
+                                    ).put(
+                                            detectionExecutor,
+                                            data
+                                    );
+                                }
                             }
                         }
                     }
 
-                    if (!wave.isEmpty()) {
+                    if (wave.isEmpty()) {
+                        for (PlayerProfile profile : profiles) {
+                            for (CheckDetection detectionExecutor : profile.getRunner(hackType).getDetections()) {
+                                detectionExecutor.clearProbability(dataType);
+                            }
+                        }
+                    } else {
                         for (Map<CheckDetection, Double> map : wave.values()) {
                             double sum = 0,
                                     squareSum = 0,

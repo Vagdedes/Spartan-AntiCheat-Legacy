@@ -379,7 +379,7 @@ public abstract class CheckRunner extends CheckProcess {
                 SpartanProtocol protocol = this.protocol();
                 return protocol == null
                         ? sum
-                        : protocol.getTimePlayed() + sum;
+                        : Math.max(protocol.getTimePlayed() + sum, 0L);
             } else {
                 SpartanProtocol protocol = this.protocol();
                 return protocol == null

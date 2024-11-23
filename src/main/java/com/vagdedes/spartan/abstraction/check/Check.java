@@ -3,6 +3,7 @@ package com.vagdedes.spartan.abstraction.check;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.server.Config;
+import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.server.ConfigUtils;
 import me.vagdedes.spartan.api.CheckPunishmentToggleEvent;
@@ -295,6 +296,7 @@ public class Check {
 
             if (event == null || !event.isCancelled()) {
                 this.enabled[type.ordinal()] = b;
+                ResearchEngine.queueToCache(this.hackType);
                 setOption("enabled." + type.toString().toLowerCase(), b);
 
                 synchronized (options) {

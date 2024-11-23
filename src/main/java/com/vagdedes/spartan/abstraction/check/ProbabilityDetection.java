@@ -88,7 +88,7 @@ public abstract class ProbabilityDetection extends CheckDetection {
             Collection<Long> data = this.data.get(dataType);
 
             if (data == null || data.size() == 1) {
-                return Double.MAX_VALUE;
+                return null;
             } else {
                 long squareSum = 0;
                 Iterator<Long> iterator = data.iterator();
@@ -122,7 +122,7 @@ public abstract class ProbabilityDetection extends CheckDetection {
             }
         }
         return violationCount == 0.0
-                ? Double.MAX_VALUE
+                ? null
                 : averageViolationSpread / violationCount;
     }
 
