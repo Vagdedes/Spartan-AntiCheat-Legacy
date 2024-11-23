@@ -375,10 +375,25 @@ public class ResearchEngine {
         };
 
         if (firstLoad) {
+            if (!enabledPlugin) {
+                for (PlayerProfile profile : playerProfiles.values()) {
+                    profile.setDisconnected(null);
+                }
+            }
             SpartanBukkit.analysisThread.executeIfFree(runnable);
         } else {
             SpartanBukkit.analysisThread.execute(runnable);
             firstLoad = true;
+
+            if (enabledPlugin) {
+                for (PlayerProfile profile : playerProfiles.values()) {
+                    profile.setConnected(null);
+                }
+            } else {
+                for (PlayerProfile profile : playerProfiles.values()) {
+                    profile.setDisconnected(null);
+                }
+            }
         }
     }
 
