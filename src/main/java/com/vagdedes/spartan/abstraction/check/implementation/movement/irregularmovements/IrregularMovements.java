@@ -3,7 +3,8 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.irregular
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
-import com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.gravity.IrregularMovementsGravityNew;
+import com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.simulation.SimulationGravity;
+import com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.simulation.SimulationSpeed;
 import com.vagdedes.spartan.abstraction.event.SuperPositionPacketEvent;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.TPS;
@@ -17,8 +18,9 @@ public class IrregularMovements extends CheckRunner {
     private long teleport;
     public final CheckDetection limitServerFlying;
     private final IrregularMovementsStep step;
-    private final IrregularMovementsGravity gravityOld;
-    private final IrregularMovementsGravityNew gravity;
+    private final IrregularMovementsGravityOld gravityOld;
+    private final SimulationGravity gravity;
+    private final SimulationSpeed speed;
     private final IrregularMovementsJump jump;
     private final IrregularMovementsHorizontal horizontal;
     private final IrregularMovementsFoodSprint foodSprint;
@@ -28,8 +30,9 @@ public class IrregularMovements extends CheckRunner {
         super(hackType, protocol);
         limitServerFlying = new ImplementedProbabilityDetection(this, "limit_server_flying", false);
         step = new IrregularMovementsStep(this);
-        gravityOld = new IrregularMovementsGravity(this);
-        gravity = new IrregularMovementsGravityNew(this);
+        gravityOld = new IrregularMovementsGravityOld(this);
+        gravity = new SimulationGravity(this);
+        speed = new SimulationSpeed(this);
         jump = new IrregularMovementsJump(this);
         horizontal = new IrregularMovementsHorizontal(this);
         foodSprint = new IrregularMovementsFoodSprint(this);
@@ -85,7 +88,7 @@ public class IrregularMovements extends CheckRunner {
             gravity.teleport();
             baritone.teleport();
             this.teleport = System.currentTimeMillis()
-                            + (AlgebraUtils.integerCeil(TPS.maximum / 2.0) * TPS.tickTime);
+                    + (AlgebraUtils.integerCeil(TPS.maximum / 2.0) * TPS.tickTime);
         }
     }
 

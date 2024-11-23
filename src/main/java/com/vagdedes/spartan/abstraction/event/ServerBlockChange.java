@@ -1,7 +1,6 @@
 package com.vagdedes.spartan.abstraction.event;
 
 import com.comphenix.protocol.wrappers.BlockPosition;
-import com.comphenix.protocol.wrappers.WrappedBlockData;
 import org.bukkit.Material;
 
 public class ServerBlockChange {

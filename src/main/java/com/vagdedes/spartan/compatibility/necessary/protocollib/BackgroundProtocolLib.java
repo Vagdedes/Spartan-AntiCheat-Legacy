@@ -6,7 +6,6 @@ import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.listeners.protocol.*;
 import com.vagdedes.spartan.listeners.protocol.combat.Packet_Combat;
 import com.vagdedes.spartan.listeners.protocol.combat.Packet_Combat_Legacy;
-import com.vagdedes.spartan.listeners.protocol.Packet_Movement;
 import com.vagdedes.spartan.listeners.protocol.standalone.Packet_BlockPlaceP;
 import com.vagdedes.spartan.listeners.protocol.standalone.Packet_EntityAction;
 import com.vagdedes.spartan.listeners.protocol.standalone.Packet_Join;

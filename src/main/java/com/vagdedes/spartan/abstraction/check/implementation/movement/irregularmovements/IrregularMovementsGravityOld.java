@@ -20,7 +20,7 @@ import org.bukkit.potion.PotionEffectType;
 import java.util.ArrayList;
 import java.util.List;
 
-public class IrregularMovementsGravity extends ProbabilityDetection {
+public class IrregularMovementsGravityOld extends ProbabilityDetection {
 
     private static final Material MACE = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_20)
             ? MaterialUtils.findMaterial("MACE")
@@ -33,7 +33,7 @@ public class IrregularMovementsGravity extends ProbabilityDetection {
             gravity_prediction;
     private boolean ignore, sensitive;
 
-    IrregularMovementsGravity(CheckRunner executor) {
+    IrregularMovementsGravityOld(CheckRunner executor) {
         super(executor, null, true);
         this.gravity_climb_stable = new ImplementedProbabilityDetection(executor, "climb", true);
         this.gravity_prediction = new ImplementedProbabilityDetection(executor, "gravity", true);

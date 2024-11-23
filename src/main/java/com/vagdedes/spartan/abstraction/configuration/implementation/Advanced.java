@@ -2,8 +2,6 @@ package com.vagdedes.spartan.abstraction.configuration.implementation;
 
 import com.vagdedes.spartan.abstraction.configuration.ConfigurationBuilder;
 
-import java.io.File;
-
 public class Advanced extends ConfigurationBuilder {
 
     public Advanced() {

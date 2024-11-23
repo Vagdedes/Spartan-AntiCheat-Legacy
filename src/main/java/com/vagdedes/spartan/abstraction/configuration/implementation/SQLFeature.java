@@ -14,7 +14,6 @@ import me.vagdedes.spartan.api.API;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Material;
 
-import java.io.File;
 import java.sql.*;
 import java.time.Instant;
 import java.time.LocalDateTime;

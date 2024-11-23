@@ -5,7 +5,6 @@ import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 
-import java.io.File;
 import java.util.List;
 
 public class Settings extends ConfigurationBuilder {

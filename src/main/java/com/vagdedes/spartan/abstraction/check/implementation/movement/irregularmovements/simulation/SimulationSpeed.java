@@ -24,7 +24,7 @@ public class SimulationSpeed extends HardcodedDetection {
     public int ground = 0, air = 0;
 
     public SimulationSpeed(CheckRunner executor) {
-        super(executor, "gravity_new", true);
+        super(executor, "speed", true);
     }
 
     public void run() {
