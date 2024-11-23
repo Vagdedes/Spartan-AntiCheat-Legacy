@@ -327,7 +327,7 @@ public abstract class CheckRunner extends CheckProcess {
 
     // Sync
 
-    public final void addDataContinuation(Check.DataType dataType, long time, long count) {
+    public final void trackTime(Check.DataType dataType, long time, long count) {
         synchronized (this.continuity) {
             this.continuity.computeIfAbsent(
                     dataType,
@@ -348,12 +348,21 @@ public abstract class CheckRunner extends CheckProcess {
                 Map<Long, Long> data = this.continuity.get(dataType);
 
                 if (data != null) {
-                    // todo
-                    return true;
-                } else {
-                    return false;
+                    for (Map.Entry<Long, Long> entry : data.entrySet()) {
+                        long connectedTime = entry.getValue();
+
+                        if (connectedTime > 0L) {
+                            long disconnectedMoment = entry.getKey();
+
+                            if (previous >= (disconnectedMoment - connectedTime)
+                                    && current <= disconnectedMoment) {
+                                return true;
+                            }
+                        }
+                    }
                 }
             }
+            return false;
         }
     }
 
@@ -376,6 +385,16 @@ public abstract class CheckRunner extends CheckProcess {
                 return protocol == null
                         ? 0L
                         : protocol.getTimePlayed();
+            }
+        }
+    }
+
+    final boolean hasOnlineTime(Check.DataType dataType) {
+        if (this.protocol() != null) {
+            return true;
+        } else {
+            synchronized (this.continuity) {
+                return this.continuity.containsKey(dataType);
             }
         }
     }

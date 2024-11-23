@@ -78,7 +78,7 @@ public class SpartanPlayer {
         this.movement = new PlayerMovement(this);
         this.punishments = new PlayerPunishments(this);
 
-        this.setLastInteraction();
+        this.lastInteraction = System.currentTimeMillis();
         this.afk = -1L;
     }
 

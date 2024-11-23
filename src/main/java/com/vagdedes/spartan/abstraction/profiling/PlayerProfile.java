@@ -80,7 +80,7 @@ public class PlayerProfile {
             );
         }
         for (CheckRunner runner : this.getRunners()) {
-            runner.addDataContinuation(lastDataType, time, count);
+            runner.trackTime(lastDataType, time, count);
         }
     }
 
@@ -95,7 +95,7 @@ public class PlayerProfile {
             );
         }
         for (CheckRunner runner : this.getRunners()) {
-            runner.addDataContinuation(lastDataType, time, -count);
+            runner.trackTime(lastDataType, time, -count);
         }
     }
 

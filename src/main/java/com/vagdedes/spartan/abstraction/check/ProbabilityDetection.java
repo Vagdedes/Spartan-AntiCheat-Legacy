@@ -27,8 +27,31 @@ public abstract class ProbabilityDetection extends CheckDetection {
     @Override
     protected final boolean hasData(Check.DataType dataType) {
         synchronized (this.data) {
-            return this.data.containsKey(dataType);
+            if (this.data.containsKey(dataType)) {
+                return this.executor.hasOnlineTime(dataType);
+            }
         }
+        return false;
+    }
+
+    @Override
+    protected final boolean hasSufficientData(Check.DataType dataType) {
+        List<PlayerProfile> playerProfiles = ResearchEngine.getPlayerProfiles();
+
+        if (playerProfiles.size() >= PlayerEvidence.factorRequirement) {
+            int count = 0;
+
+            for (PlayerProfile profile : playerProfiles) {
+                if (profile.getRunner(this.hackType).getDetection(this.name).hasData(dataType)) {
+                    count++;
+
+                    if (count == PlayerEvidence.factorRequirement) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     @Override
@@ -125,32 +148,6 @@ public abstract class ProbabilityDetection extends CheckDetection {
     }
 
     @Override
-    public final boolean canSendNotification(Object detected, int probability) {
-        long time = System.currentTimeMillis();
-        SpartanProtocol protocol = detected instanceof SpartanProtocol
-                ? (SpartanProtocol) detected
-                : null;
-
-        if (this.notifications <= time
-                && (this.lastProbability != probability
-                || time - this.notifications >= 5_000L
-                || (protocol != null
-                ? protocol.spartan.equals(this.protocol().spartan)
-                : this.protocol.bukkit.getName().equals(detected.toString())))) {
-            int ticks = this.executor.getNotificationTicksCooldown(protocol);
-
-            if (ticks > 0) {
-                this.notifications = time + (ticks * TPS.tickTime);
-            } else {
-                this.notifications = time;
-            }
-            this.lastProbability = probability;
-            return true;
-        }
-        return false;
-    }
-
-    @Override
     final double getDataCompletion(Check.DataType dataType) {
         List<PlayerProfile> playerProfiles = ResearchEngine.getPlayerProfiles();
 
@@ -175,21 +172,27 @@ public abstract class ProbabilityDetection extends CheckDetection {
     // Notification
 
     @Override
-    protected final boolean hasSufficientData(Check.DataType dataType) {
-        List<PlayerProfile> playerProfiles = ResearchEngine.getPlayerProfiles();
+    public final boolean canSendNotification(Object detected, int probability) {
+        long time = System.currentTimeMillis();
+        SpartanProtocol protocol = detected instanceof SpartanProtocol
+                ? (SpartanProtocol) detected
+                : null;
 
-        if (playerProfiles.size() >= PlayerEvidence.factorRequirement) {
-            int count = 0;
+        if (this.notifications <= time
+                && (this.lastProbability != probability
+                || time - this.notifications >= 5_000L
+                || (protocol != null
+                ? protocol.spartan.equals(this.protocol().spartan)
+                : this.protocol.bukkit.getName().equals(detected.toString())))) {
+            int ticks = this.executor.getNotificationTicksCooldown(protocol);
 
-            for (PlayerProfile profile : playerProfiles) {
-                if (profile.getRunner(this.hackType).getDetection(this.name).hasData(dataType)) {
-                    count++;
-
-                    if (count == PlayerEvidence.factorRequirement) {
-                        return true;
-                    }
-                }
+            if (ticks > 0) {
+                this.notifications = time + (ticks * TPS.tickTime);
+            } else {
+                this.notifications = time;
             }
+            this.lastProbability = probability;
+            return true;
         }
         return false;
     }

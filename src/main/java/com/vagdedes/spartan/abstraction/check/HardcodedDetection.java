@@ -24,16 +24,6 @@ public abstract class HardcodedDetection extends CheckDetection {
     }
 
     @Override
-    protected final boolean hasData(Check.DataType dataType) {
-        return true;
-    }
-
-    @Override
-    protected final boolean hasSufficientData(Check.DataType dataType) {
-        return true;
-    }
-
-    @Override
     public final boolean canSendNotification(Object detected, int probability) {
         long time = System.currentTimeMillis();
 
