@@ -32,11 +32,11 @@ public class IrregularMovements extends CheckRunner {
         step = new IrregularMovementsStep(this);
         gravityOld = new IrregularMovementsGravityOld(this);
         gravity = new SimulationGravity(this);
-        speed = new SimulationSpeed(this);
         jump = new IrregularMovementsJump(this);
         horizontal = new IrregularMovementsHorizontal(this);
         foodSprint = new IrregularMovementsFoodSprint(this);
         baritone = new IrregularMovementsBaritone(this);
+        speed = new SimulationSpeed(this);
     }
 
     @Override
@@ -75,20 +75,24 @@ public class IrregularMovements extends CheckRunner {
         }
         baritone.run();
         gravity.run();
+        speed.run();
     }
 
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
         if (object instanceof Integer) {
             gravity.trident();
+            speed.trident();
         } else if (object instanceof SuperPositionPacketEvent) {
             SuperPositionPacketEvent e = (SuperPositionPacketEvent) object;
             gravity.ground(e.packetEvent.getPacket().getBooleans().read(0));
+            speed.ground(e.packetEvent.getPacket().getBooleans().read(0));
         } else {
             gravity.teleport();
+            speed.teleport();
             baritone.teleport();
             this.teleport = System.currentTimeMillis()
-                    + (AlgebraUtils.integerCeil(TPS.maximum / 2.0) * TPS.tickTime);
+                            + (AlgebraUtils.integerCeil(TPS.maximum / 2.0) * TPS.tickTime);
         }
     }
 

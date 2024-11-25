@@ -3,8 +3,10 @@ package com.vagdedes.spartan.utils.minecraft.protocol;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
+import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
+import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.listeners.protocol.Packet_Movement;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -28,9 +30,12 @@ public class ProtocolTools {
             return SpartanLocation.bukkitDefault.clone();
         }
     }
-    public static boolean isFlying(PacketEvent event) {
+    public static boolean isFlying(PacketEvent event, Location to, Location from) {
         PacketType p = event.getPacket().getType();
-        return
+        SpartanProtocol protocol = SpartanBukkit.getProtocol(event.getPlayer());
+        if (p.equals(PacketType.Play.Client.POSITION) && to.toVector().equals(from.toVector()))
+            return true;
+        else return
         (
         p.equals(
         PacketType.Play.Client.FLYING)

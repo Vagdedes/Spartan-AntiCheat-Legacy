@@ -39,7 +39,7 @@ public class SimulationSpeed extends HardcodedDetection {
             double speed = Math.sqrt(dx * dx + dz * dz);
             //this.protocol().bukkit.sendMessage(protocol().pistonHandle + " " + protocol().pistonTick + " " + protocol().explosionHandle);
             if (to.getX() != from.getX() || to.getY() != from.getY() || to.getZ() != from.getZ()) {
-
+               // p.bukkit.sendMessage("dx: " + dx + " dz: " + dz);
             }
         }
     }

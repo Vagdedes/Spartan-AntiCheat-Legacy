@@ -72,15 +72,14 @@ public class Packet_Movement extends PacketAdapter {
         boolean onGround = ProtocolTools.onGroundPacketLevel(event);
         p.setOnGround(onGround);
 
-        boolean legacy = ProtocolTools.isFlying(event)
-                        && p.isSameWithHash(ProtocolTools.readLocation(event));
+        boolean legacy = ProtocolTools.isFlying(event, l, ProtocolTools.readLocation(event));
         Event_Movement.tick(new PlayerTickEvent(p, legacy).build());
 
         if (!ProtocolLib.getWorld(player).getName().equals(p.fromWorld)) {
             p.fromWorld = ProtocolLib.getWorld(player).getName();
             p.setLocation(ProtocolTools.getLoadLocation(player));
         }
-        if (!ProtocolTools.isFlying(event)) {
+        if (!legacy) {
             boolean hasPosition = ProtocolTools.hasPosition(packet.getType());
             boolean hasRotation = ProtocolTools.hasRotation(packet.getType());
             if (hasPosition) {
