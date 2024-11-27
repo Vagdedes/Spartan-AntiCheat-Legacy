@@ -8,6 +8,7 @@ import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 
@@ -28,7 +29,7 @@ public class Piston {
 
             for (SpartanProtocol protocol : protocols) {
                 if (protocol.spartan.getWorld().equals(world)) {
-                    SpartanLocation location = protocol.spartan.movement.getLocation();
+                    Location location = protocol.getLocationOrVehicle();
                     double preX = AlgebraUtils.getSquare(location.getX(), block.getX()),
                             diffY = location.getY() - block.getY(),
                             preZ = AlgebraUtils.getSquare(location.getZ(), block.getZ());

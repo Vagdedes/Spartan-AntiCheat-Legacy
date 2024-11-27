@@ -10,6 +10,7 @@ import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PotionEffectUtils;
 import com.vagdedes.spartan.utils.minecraft.world.GroundUtils;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
@@ -27,7 +28,7 @@ public class Tower extends ProbabilityDetection {
     }
 
     void run(Block block,
-             SpartanLocation playerLocation,
+             Location playerLocation,
              int playerY,
              int blockY) {
         Double deltaXZ = this.protocol().spartan.movement.getEventHorizontal();
@@ -36,7 +37,7 @@ public class Tower extends ProbabilityDetection {
             return;
         }
         if (AlgebraUtils.getHorizontalDistance(
-                playerLocation.getBlockLocation(),
+                SpartanLocation.getBlockLocation(playerLocation),
                 block.getLocation()
         ) <= 1.0) {
             ItemStack handItem = this.protocol().spartan.getItemInHand();

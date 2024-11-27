@@ -41,9 +41,9 @@ public class Event_Movement implements Listener {
                 p.movement.judgeGround();
                 return;
             }
-            SpartanLocation vehicle = p.movement.getVehicleLocation();
+            Location vehicle = protocol.getVehicleLocation();
             SpartanLocation
-                    to = vehicle != null ? vehicle : new SpartanLocation(nto),
+                    to = vehicle != null ? new SpartanLocation(vehicle) : new SpartanLocation(nto),
                     from = new SpartanLocation(e.getFrom());
 
             // Values

@@ -15,6 +15,7 @@ import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import com.vagdedes.spartan.utils.minecraft.world.GroundUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -56,7 +57,7 @@ public class BlockReach extends CheckRunner {
 
             if (canDo(block)
                     && !TreeFeller.canCancel(block)) {
-                double distance = this.protocol().spartan.movement.getLocation().distance(block),
+                double distance = this.protocol().getLocationOrVehicle().distance(block.getLocation()),
                         limit = getLimit();
 
                 if (distance >= limit) {
@@ -72,7 +73,7 @@ public class BlockReach extends CheckRunner {
 
             if (canDo(block)
                     && BlockUtils.isChangeable(block.getType())) {
-                double distance = this.protocol().spartan.movement.getLocation().distance(block),
+                double distance = this.protocol().getLocationOrVehicle().distance(block.getLocation()),
                         limit = getLimit();
 
                 if (distance >= limit) {
@@ -93,9 +94,9 @@ public class BlockReach extends CheckRunner {
                 if (canDo(block)
                         && BlockUtils.isSolid(block.getType())
                         && !BlockUtils.isScaffoldingBlock(block.getType())) {
-                    SpartanLocation to = this.protocol().spartan.movement.getLocation();
-                    double distance = to.distance(block),
-                            ab_distance = to.distance(blockAgainst);
+                    Location to = this.protocol().getLocationOrVehicle();
+                    double distance = to.distance(block.getLocation()),
+                            ab_distance = to.distance(blockAgainst.getLocation());
 
                     if (!this.protocol().spartan.isBedrockPlayer()
                             && BlockUtils.isFullSolid(block.getType())

@@ -315,27 +315,8 @@ public class PlayerMovement {
 
     // Separator
 
-    public SpartanLocation getVehicleLocation() {
-        Entity vehicle = this.parent.getVehicle();
-
-        if (vehicle instanceof LivingEntity || vehicle instanceof Vehicle) {
-            Location vehicleLoc = ProtocolLib.getLocationOrNull(vehicle);
-            return vehicleLoc == null
-                    ? null
-                    : new SpartanLocation(vehicleLoc);
-        }
-        return null;
-    }
-
     public SpartanLocation getLocation() {
-        SpartanLocation vehicleLocation = getVehicleLocation();
-        this.refreshLocation(this.parent.protocol.getLocation());
-
-        if (vehicleLocation == null) {
-            return this.location;
-        } else {
-            return vehicleLocation;
-        }
+        return this.location;
     }
 
     // Separator
@@ -364,7 +345,7 @@ public class PlayerMovement {
 
     // Separator
 
-    public boolean processLastMoveEvent(Location originalTo, SpartanLocation vehicle,
+    public boolean processLastMoveEvent(Location originalTo, Location vehicle,
                                         SpartanLocation to, SpartanLocation from,
                                         double distance, double horizontal,
                                         double vertical, double xDiff, double zDiff,

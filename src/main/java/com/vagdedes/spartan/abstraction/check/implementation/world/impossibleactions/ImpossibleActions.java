@@ -10,6 +10,7 @@ import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import me.vagdedes.spartan.system.Enums;
+import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.event.block.Action;
@@ -45,7 +46,7 @@ public class ImpossibleActions extends CheckRunner {
         if (object instanceof BlockPlaceEvent) {
             BlockPlaceEvent event = (BlockPlaceEvent) object;
             Block block = event.getBlock();
-            SpartanLocation playerLocation = this.protocol().spartan.movement.getLocation();
+            Location playerLocation = this.protocol().getLocationOrVehicle();
             int playerY = playerLocation.getBlockY(),
                     blockY = event.getBlock().getY();
             this.scaffoldAnalysis.run(event);

@@ -158,13 +158,13 @@ public class CombatUtils {
         return e.getType().toString().toLowerCase().replace("_", "-");
     }
 
-    public static boolean hasBlockBehind(SpartanPlayer p, LivingEntity entity) {
+    public static boolean hasBlockBehind(SpartanProtocol p, LivingEntity entity) {
         Location entityLoc = ProtocolLib.getLocationOrNull(entity);
 
         if (entityLoc == null) {
             return false;
         }
-        SpartanLocation location = p.movement.getLocation().clone();
+        Location location = p.getLocationOrVehicle().clone();
         location.setPitch(0.0f);
         SpartanLocation multipliedLocation = new SpartanLocation(
                 entityLoc.clone().add(location.getDirection().multiply(1.0))

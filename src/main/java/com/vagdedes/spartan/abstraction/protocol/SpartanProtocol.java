@@ -16,7 +16,10 @@ import com.vagdedes.spartan.listeners.protocol.Packet_Teleport;
 import com.vagdedes.spartan.utils.minecraft.entity.AxisAlignedBB;
 import com.vagdedes.spartan.utils.minecraft.protocol.ProtocolTools;
 import org.bukkit.Location;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Vehicle;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerVelocityEvent;
 
@@ -162,6 +165,27 @@ public class SpartanProtocol {
             return loc != null
                     ? loc
                     : SpartanLocation.bukkitDefault.clone();
+        }
+    }
+
+    public Location getVehicleLocation() {
+        Entity vehicle = this.spartan.getVehicle();
+
+        if (vehicle instanceof LivingEntity || vehicle instanceof Vehicle) {
+            Location vehicleLoc = ProtocolLib.getLocationOrNull(vehicle);
+            return vehicleLoc;
+        } else {
+            return null;
+        }
+    }
+
+    public Location getLocationOrVehicle() {
+        Location vehicleLocation = getVehicleLocation();
+
+        if (vehicleLocation == null) {
+            return this.location;
+        } else {
+            return vehicleLocation;
         }
     }
 

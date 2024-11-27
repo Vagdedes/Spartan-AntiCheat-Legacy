@@ -26,7 +26,7 @@ public class Criticals extends CheckRunner {
         if (verticalMaxAccuracy != null) {
             if (RayUtils.onBlock(
                     this.protocol(),
-                    this.protocol().spartan.movement.getLocation().bukkit(),
+                    this.protocol().getLocationOrVehicle(),
                     BlockUtils.web
             )
             ) {

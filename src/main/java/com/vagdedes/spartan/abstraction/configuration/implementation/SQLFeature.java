@@ -12,6 +12,7 @@ import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.api.API;
 import me.vagdedes.spartan.system.Enums;
+import org.bukkit.Location;
 import org.bukkit.Material;
 
 import java.sql.*;
@@ -329,7 +330,7 @@ public class SQLFeature extends ConfigurationBuilder {
             boolean hasPlayer = p != null,
                     hasCheck = hackType != null,
                     hasMaterial = material != null;
-            SpartanLocation location = hasPlayer ? p.spartan.movement.getLocation() : null;
+            Location location = hasPlayer ? p.getLocationOrVehicle() : null;
             update(
                     "INSERT INTO " + table
                             + " (creation_date"

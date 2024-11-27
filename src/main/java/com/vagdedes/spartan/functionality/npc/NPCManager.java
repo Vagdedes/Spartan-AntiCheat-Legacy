@@ -8,6 +8,7 @@ import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
@@ -83,15 +84,15 @@ public class NPCManager implements Listener {
         }
     }
 
-    public static void create(SpartanPlayer player) {
+    public static void create(SpartanProtocol protocol) {
         if (supported) {
-            SpartanLocation location = player.movement.getLocation();
+            Location location = protocol.getLocation();
 
             if (!list.isEmpty()) {
                 synchronized (list) {
                     for (SpartanNPC npc : list) {
                         if (npc.location.distance(location) <= PlayerUtils.chunk) {
-                            player.teleport(npc.location);
+                            protocol.spartan.teleport(npc.location);
                             return;
                         }
                     }

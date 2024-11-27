@@ -83,8 +83,8 @@ public class FastBreak extends CheckRunner {
                                     limit -= BlockUtils.sensitiveBlockBreakTime;
                                 }
                             }
-                            if (AlgebraUtils.getHorizontalDistance(this.protocol().spartan.movement.getLocation(), block.getLocation()) <= 1.0
-                                    && this.protocol().spartan.movement.getLocation().getBlockY() >= block.getY()) { // Above block
+                            if (AlgebraUtils.getHorizontalDistance(this.protocol().getLocationOrVehicle(), block.getLocation()) <= 1.0
+                                    && this.protocol().getLocationOrVehicle().getBlockY() >= block.getY()) { // Above block
                                 limit = AlgebraUtils.integerRound(limit / 4.0);
                             }
 

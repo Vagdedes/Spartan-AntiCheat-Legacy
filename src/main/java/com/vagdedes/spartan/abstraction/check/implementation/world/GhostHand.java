@@ -12,6 +12,7 @@ import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -32,12 +33,12 @@ public class GhostHand extends CheckRunner {
             Block b = (Block) object;
 
             if (canDo(b)) {
-                SpartanLocation location = this.protocol().spartan.movement.getLocation();
-                double bDistance = location.distance(b);
+                Location location = this.protocol().getLocationOrVehicle();
+                double bDistance = location.distance(b.getLocation());
                 Block t = this.protocol().spartan.getTargetBlock(bDistance, PlayerUtils.chunk);
 
                 if (t != null) {
-                    double tDistance = location.distance(t);
+                    double tDistance = location.distance(t.getLocation());
 
                     if (tDistance < bDistance) {
                         this.breaking.cancel(
@@ -59,12 +60,12 @@ public class GhostHand extends CheckRunner {
                 Block b = event.getClickedBlock();
 
                 if (canDo(b) && BlockUtils.isChangeable(b.getType())) {
-                    SpartanLocation location = this.protocol().spartan.movement.getLocation();
-                    double bDistance = location.distance(b);
+                    Location location = this.protocol().getLocationOrVehicle();
+                    double bDistance = location.distance(b.getLocation());
                     Block t = this.protocol().spartan.getTargetBlock(bDistance, PlayerUtils.chunk);
 
                     if (t != null) {
-                        double tDistance = location.distance(t);
+                        double tDistance = location.distance(t.getLocation());
 
                         if (tDistance < bDistance) {
                             this.interact.cancel(

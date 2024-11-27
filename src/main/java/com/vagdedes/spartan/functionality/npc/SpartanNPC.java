@@ -29,16 +29,16 @@ public class SpartanNPC {
     private static final String backupName = "IdealisticAI";
 
     final ArmorStand armorStand;
-    final SpartanLocation location;
+    final Location location;
     private double handPose, headPose;
 
-    public SpartanNPC(SpartanLocation location) {
-        SpartanLocation loc = location.clone();
+    public SpartanNPC(Location location) {
+        Location loc = location.clone();
         loc.setX(loc.getBlockX() + 0.5);
         loc.setZ(loc.getBlockZ() + 0.5);
         this.location = loc;
-        this.armorStand = (ArmorStand) loc.world.spawnEntity(
-                loc.bukkit(),
+        this.armorStand = (ArmorStand) loc.getWorld().spawnEntity(
+                loc,
                 EntityType.ARMOR_STAND
         );
         armorStand.setGravity(false);
@@ -143,8 +143,8 @@ public class SpartanNPC {
 
             for (SpartanProtocol protocol : protocols) {
                 if (closest == null
-                        || protocol.spartan.movement.getLocation().distance(location)
-                        < closest.spartan.movement.getLocation().distance(location)) {
+                        || protocol.getLocationOrVehicle().distance(location)
+                        < closest.getLocationOrVehicle().distance(location)) {
                     closest = protocol;
                 }
             }

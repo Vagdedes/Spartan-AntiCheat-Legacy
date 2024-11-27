@@ -26,6 +26,15 @@ public class SpartanLocation implements Cloneable {
         return pos >> 4;
     }
 
+    public static Location getBlockLocation(Location location) {
+        return new Location(
+                location.getWorld(),
+                location.getBlockX(),
+                location.getBlockY(),
+                location.getBlockZ()
+        );
+    }
+
     private static int locationIdentifier(int x, int y, int z) {
         x = (SpartanBukkit.hashCodeMultiplier * x) + y;
         return (SpartanBukkit.hashCodeMultiplier * x) + z;
