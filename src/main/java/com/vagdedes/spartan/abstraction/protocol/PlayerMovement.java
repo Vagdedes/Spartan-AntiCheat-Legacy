@@ -194,7 +194,7 @@ public class PlayerMovement {
     // Separator
 
     public double getAirAcceleration() {
-        return new SpartanLocation(this.parent.protocol.getLocation()).isChunkLoaded()
+        return new SpartanLocation(this.parent.protocol.getLocationOrVehicle()).isChunkLoaded()
                 ? PlayerUtils.airAcceleration
                 : PlayerUtils.airAccelerationUnloaded;
     }
@@ -365,9 +365,10 @@ public class PlayerMovement {
     // Separator
 
     public boolean isInVoid() {
+        Location loc = this.parent.protocol.getLocationOrVehicle();
         return MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)
-                ? this.parent.protocol.getLocation().getY() < this.parent.protocol.getLocation().getWorld().getMinHeight()
-                : this.parent.protocol.getLocation().getY() < 0;
+                ? loc.getY() < loc.getWorld().getMinHeight()
+                : loc.getY() < 0;
     }
 
 }

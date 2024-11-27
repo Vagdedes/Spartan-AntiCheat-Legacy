@@ -55,7 +55,7 @@ public class IrregularMovementsJump extends ProbabilityDetection {
         this.jump_height = new ImplementedProbabilityDetection(this, "jump_height", true);
     }
 
-    void run(double vertical, double box) {
+    final void run(double vertical, double box) {
         if (this.protocol().spartan.trackers.has(PlayerTrackers.TrackerFamily.VELOCITY)
                 ? this.protocol().spartan.movement.justJumped(vertical)
                 : this.protocol().spartan.movement.isJumping(vertical)) {
@@ -87,7 +87,7 @@ public class IrregularMovementsJump extends ProbabilityDetection {
                     }
                     if (!BlockPatternUtils.isBlockPattern(
                             patterns,
-                            this.protocol().getLocation(),
+                            this.protocol().getLocationOrVehicle(),
                             true,
                             GroundUtils.abstractMaterials
                     )) {

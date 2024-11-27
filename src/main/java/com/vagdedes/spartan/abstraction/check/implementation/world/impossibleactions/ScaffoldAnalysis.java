@@ -28,7 +28,7 @@ public class ScaffoldAnalysis extends ProbabilityDetection {
         this.buffers = new OverflowMap<>(new LinkedHashMap<>(), 124);
     }
 
-    void run(BlockPlaceEvent e) {
+    final void run(BlockPlaceEvent e) {
         SpartanProtocol p = this.protocol();
 
         if (p.oldBlockEvent == null) {

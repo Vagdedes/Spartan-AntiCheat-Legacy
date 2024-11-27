@@ -12,7 +12,7 @@ public class TimerBalancer {
         latency = 0;
     }
 
-    public void pushDelay(long delay) {
+    final void pushDelay(long delay) {
         forced = ((delay > 15 && delay < 48) ? forced + 1 : 0);
         latency = ((delay > 40 && delay < 48) ? latency + 10 : latency / 2);
         if (delay > 50) {
@@ -35,27 +35,27 @@ public class TimerBalancer {
         }
     }
 
-    public int getForced() {
+    final int getForced() {
         return this.forced;
     }
 
-    public int getLatency() {
+    final int getLatency() {
         return this.latency;
     }
 
-    public long getBalancer() {
+    final long getBalancer() {
         return this.balancer;
     }
 
-    public boolean isNegativeTimer() {
+    final boolean isNegativeTimer() {
         return this.negative > 15;
     }
 
-    public long getResult() {
+    final long getResult() {
         return this.result;
     }
 
-    public void addBalance(long balance) {
+    public final void addBalance(long balance) {
         this.balancer += balance;
     }
 }

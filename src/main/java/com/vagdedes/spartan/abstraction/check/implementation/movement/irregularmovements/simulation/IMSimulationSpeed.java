@@ -19,16 +19,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class SimulationSpeed extends HardcodedDetection {
+public class IMSimulationSpeed extends HardcodedDetection {
 
     public int ground = 0, air = 0;
 
-    public SimulationSpeed(CheckRunner executor) {
+    public IMSimulationSpeed(CheckRunner executor) {
         super(executor, "speed", true);
     }
 
-    public void run() {
-        //if (true) return;
+    public final void run() {
+        if (true) {
+            return;
+        }
         if (this.protocol().spartan != null) {
             SpartanProtocol p = this.protocol();
             boolean isOnGround = p.isOnGround();

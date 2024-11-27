@@ -6,9 +6,9 @@ import com.vagdedes.spartan.utils.math.RayUtils;
 import com.vagdedes.spartan.utils.minecraft.vector.SpartanVector2F;
 import org.bukkit.Location;
 
-public class IrregularMovementsBaritone extends ProbabilityDetection {
+public class IMBaritone extends ProbabilityDetection {
 
-    IrregularMovementsBaritone(CheckRunner executor) {
+    IMBaritone(CheckRunner executor) {
         super(executor, "baritone", true);
     }
 
@@ -17,7 +17,7 @@ public class IrregularMovementsBaritone extends ProbabilityDetection {
     private float yawMoved = 0;
     private int vl = 0;
 
-    void run() {
+    final void run() {
         if (!this.protocol().spartan.isBedrockPlayer()) {
             Location l = this.protocol().getLocation();
             SpartanVector2F v2 = new SpartanVector2F(l.getYaw(), l.getPitch());
@@ -45,7 +45,7 @@ public class IrregularMovementsBaritone extends ProbabilityDetection {
         }
     }
 
-    void teleport() {
+    final void teleport() {
         this.yawMoved = 0;
     }
 

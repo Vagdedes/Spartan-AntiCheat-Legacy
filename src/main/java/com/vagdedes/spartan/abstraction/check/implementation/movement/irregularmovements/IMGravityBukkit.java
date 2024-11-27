@@ -20,7 +20,7 @@ import org.bukkit.potion.PotionEffectType;
 import java.util.ArrayList;
 import java.util.List;
 
-public class IrregularMovementsGravityBukkit extends ProbabilityDetection {
+public class IMGravityBukkit extends ProbabilityDetection {
 
     private static final Material MACE = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_20)
             ? MaterialUtils.findMaterial("MACE")
@@ -33,13 +33,13 @@ public class IrregularMovementsGravityBukkit extends ProbabilityDetection {
             gravity_prediction;
     private boolean ignore, sensitive;
 
-    IrregularMovementsGravityBukkit(CheckRunner executor) {
+    IMGravityBukkit(CheckRunner executor) {
         super(executor, null, true);
         this.gravity_climb_stable = new ImplementedProbabilityDetection(executor, "climb", true);
         this.gravity_prediction = new ImplementedProbabilityDetection(executor, "gravity_bukkit", true);
     }
 
-    void run(double vertical, double oldVertical, double box, double oldBox) {
+    final void run(double vertical, double oldVertical, double box, double oldBox) {
         if (this.protocol().packetsEnabled()
                 || isUsingMace()) {
             return;
@@ -235,7 +235,7 @@ public class IrregularMovementsGravityBukkit extends ProbabilityDetection {
         }
     }
 
-    private boolean canClimb(SpartanLocation location) {
+    private static boolean canClimb(SpartanLocation location) {
         Material material = location.getBlock().getType();
         return BlockUtils.canClimb(material, false)
                 || BlockUtils.areTrapdoors(material)

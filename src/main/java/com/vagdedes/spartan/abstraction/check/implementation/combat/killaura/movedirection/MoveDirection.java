@@ -45,7 +45,7 @@ public class MoveDirection extends ProbabilityDetection {
         this.rayTraceAnalysis = new LinkedList<>();
     }
 
-    public void run() {
+    public final void run() {
         if (attackHandle.time + 3000 > System.currentTimeMillis()) {
             // main
             Entity target = attackHandle.target;
@@ -210,7 +210,7 @@ public class MoveDirection extends ProbabilityDetection {
 
     }
 
-    public void run(Entity targetHandle) {
+    public final void run(Entity targetHandle) {
         if (targetHandle instanceof Player
                 || targetHandle instanceof Zombie
                 || targetHandle instanceof Creeper

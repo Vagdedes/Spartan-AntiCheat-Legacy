@@ -27,7 +27,7 @@ public class Tower extends ProbabilityDetection {
         this.buffers = new OverflowMap<>(new LinkedHashMap<>(), 124);
     }
 
-    void run(Block block,
+    final void run(Block block,
              Location playerLocation,
              int playerY,
              int blockY) {

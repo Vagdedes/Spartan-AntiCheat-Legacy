@@ -28,7 +28,7 @@ public class MoveLength extends ProbabilityDetection {
         this.safeBuffer = new Buffer.IndividualBuffer();
     }
 
-    void run() {
+    final void run() {
         if (!this.protocol().spartan.isBedrockPlayer()
                 && this.hit - System.currentTimeMillis() <= 2_000L
                 && this.hitBy - System.currentTimeMillis() <= 1_000L) {
@@ -70,11 +70,11 @@ public class MoveLength extends ProbabilityDetection {
         }
     }
 
-    public void runHit() {
+    final void runHit() {
         this.hit = System.currentTimeMillis();
     }
 
-    public void runHitBy() {
+    final void runHitBy() {
         this.hitBy = System.currentTimeMillis();
     }
 

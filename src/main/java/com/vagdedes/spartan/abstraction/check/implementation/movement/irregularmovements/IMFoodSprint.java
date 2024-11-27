@@ -5,16 +5,16 @@ import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import org.bukkit.GameMode;
 
-public class IrregularMovementsFoodSprint extends ProbabilityDetection {
+public class IMFoodSprint extends ProbabilityDetection {
 
     private final Buffer.IndividualBuffer buffer;
 
-    IrregularMovementsFoodSprint(CheckRunner executor) {
+    IMFoodSprint(CheckRunner executor) {
         super(executor, "food_sprint", true);
         this.buffer = new Buffer.IndividualBuffer();
     }
 
-    void run() {
+    final void run() {
         if (this.protocol().isSprinting()) {
             GameMode gameMode = this.protocol().bukkit.getGameMode();
             int food = this.protocol().bukkit.getFoodLevel(),

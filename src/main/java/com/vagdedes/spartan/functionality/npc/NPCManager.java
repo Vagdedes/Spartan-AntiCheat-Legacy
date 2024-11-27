@@ -84,7 +84,7 @@ public class NPCManager implements Listener {
 
     public static void create(SpartanProtocol protocol) {
         if (supported) {
-            Location location = protocol.getLocation();
+            Location location = protocol.getLocationOrVehicle();
 
             if (!list.isEmpty()) {
                 synchronized (list) {

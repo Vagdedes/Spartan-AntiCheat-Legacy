@@ -9,7 +9,7 @@ public class HitDirection extends ProbabilityDetection {
         super(executor, "hit_direction", true);
     }
 
-    void run() {
+    final void run() {
         // todo
     }
 

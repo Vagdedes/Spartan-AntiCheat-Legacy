@@ -30,7 +30,7 @@ public class FightAnalysis extends ProbabilityDetection {
         super(executor, "fight_analysis", true);
     }
 
-    void runDealDamage(PlayerAttackEvent e) {
+    final void runDealDamage(PlayerAttackEvent e) {
         LivingEntity target = e.target;
         int identifier;
 
@@ -56,7 +56,7 @@ public class FightAnalysis extends ProbabilityDetection {
         }
     }
 
-    void runReceiveDamage(EntityAttackPlayerEvent e) {
+    final void runReceiveDamage(EntityAttackPlayerEvent e) {
         LivingEntity damager = e.damager;
         int identifier;
 
@@ -77,7 +77,7 @@ public class FightAnalysis extends ProbabilityDetection {
         subData.put(identifier, hitsDamages);
     }
 
-    double probability(int identifier, double selfRatio) {
+    private double probability(int identifier, double selfRatio) {
         double sum = 0.0,
                 squareSum = 0.0;
         int count = 0;

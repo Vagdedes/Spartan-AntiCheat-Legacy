@@ -2,6 +2,7 @@ package me.vagdedes.spartan.system;
 
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.Check;
+import com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.IMSpeedBukkit;
 import com.vagdedes.spartan.utils.minecraft.inventory.MaterialUtils;
 import org.bukkit.Material;
 
@@ -163,15 +164,6 @@ public class Enums {
                         "This check will prevent client modules",
                         "that allow a player to break one or multiple",
                         "blocks irregularly fast."
-                }
-        ),
-        Speed( // todo remove
-                HackCategoryType.MOVEMENT,
-                com.vagdedes.spartan.abstraction.check.implementation.movement.Speed.class,
-                new String[]{
-                        "This check will prevent client modules",
-                        "that allow a player to travel faster",
-                        "than what is physically allowed."
                 }
         ),
         FastPlace(

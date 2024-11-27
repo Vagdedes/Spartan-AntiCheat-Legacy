@@ -82,7 +82,7 @@ public class Event_Movement implements Listener {
             p.getRunner(Enums.HackType.Exploits).handle(cancelled, e);
             p.getRunner(Enums.HackType.ImpossibleInventory).run(cancelled);
             p.getRunner(Enums.HackType.IrregularMovements).run(cancelled);
-            p.getRunner(Enums.HackType.Speed).handle(cancelled, e);
+            p.getRunner(Enums.HackType.IrregularMovements).handle(cancelled, e);
             p.getRunner(Enums.HackType.Velocity).handle(cancelled, e);
             p.getRunner(Enums.HackType.KillAura).handle(cancelled, e);
             p.getRunner(Enums.HackType.Criticals).handle(cancelled, e);

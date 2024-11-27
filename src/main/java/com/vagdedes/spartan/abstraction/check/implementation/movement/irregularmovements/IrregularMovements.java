@@ -3,8 +3,8 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.irregular
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
-import com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.simulation.SimulationGravity;
-import com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.simulation.SimulationSpeed;
+import com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.simulation.IMSimulationGravity;
+import com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.simulation.IMSimulationSpeed;
 import com.vagdedes.spartan.abstraction.event.SuperPositionPacketEvent;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.TPS;
@@ -12,31 +12,35 @@ import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.world.GroundUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerVelocityEvent;
 
 public class IrregularMovements extends CheckRunner {
 
     private long teleport;
     public final CheckDetection limitServerFlying;
-    private final IrregularMovementsStep step;
-    private final IrregularMovementsGravityBukkit gravityBukkit;
-    private final SimulationGravity gravityPackets;
-    private final SimulationSpeed speed;
+    private final IMStep step;
+    private final IMGravityBukkit gravityBukkit;
+    private final IMSimulationGravity gravityPackets;
+    private final IMSpeedBukkit speedBukkit;
+    private final IMSimulationSpeed speedPackets;
     private final IrregularMovementsJump jump;
-    private final IrregularMovementsHorizontal horizontal;
-    private final IrregularMovementsFoodSprint foodSprint;
-    private final IrregularMovementsBaritone baritone;
+    private final IMHorizontal horizontal;
+    private final IMFoodSprint foodSprint;
+    private final IMBaritone baritone;
 
     public IrregularMovements(HackType hackType, SpartanProtocol protocol) {
         super(hackType, protocol);
         limitServerFlying = new ImplementedProbabilityDetection(this, "limit_server_flying", false);
-        step = new IrregularMovementsStep(this);
-        gravityBukkit = new IrregularMovementsGravityBukkit(this);
-        gravityPackets = new SimulationGravity(this);
+        step = new IMStep(this);
+        gravityBukkit = new IMGravityBukkit(this);
+        gravityPackets = new IMSimulationGravity(this);
         jump = new IrregularMovementsJump(this);
-        horizontal = new IrregularMovementsHorizontal(this);
-        foodSprint = new IrregularMovementsFoodSprint(this);
-        baritone = new IrregularMovementsBaritone(this);
-        speed = new SimulationSpeed(this);
+        horizontal = new IMHorizontal(this);
+        foodSprint = new IMFoodSprint(this);
+        baritone = new IMBaritone(this);
+        speedBukkit = new IMSpeedBukkit(this);
+        speedPackets = new IMSimulationSpeed(this);
     }
 
     @Override
@@ -75,24 +79,29 @@ public class IrregularMovements extends CheckRunner {
         }
         baritone.run();
         gravityPackets.run();
-        speed.run();
+        speedPackets.run();
     }
 
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
         if (object instanceof Integer) {
             gravityPackets.trident();
-            speed.trident();
+            speedPackets.trident();
+            speedBukkit.trident((int) object);
         } else if (object instanceof SuperPositionPacketEvent) {
             SuperPositionPacketEvent e = (SuperPositionPacketEvent) object;
             gravityPackets.ground(e.packetEvent.getPacket().getBooleans().read(0));
-            speed.ground(e.packetEvent.getPacket().getBooleans().read(0));
+            speedPackets.ground(e.packetEvent.getPacket().getBooleans().read(0));
+        } else if (object instanceof PlayerMoveEvent) {
+            speedBukkit.run((PlayerMoveEvent) object);
+        } else if (object instanceof PlayerVelocityEvent) {
+            speedBukkit.velocity((PlayerVelocityEvent) object);
         } else {
             gravityPackets.teleport();
-            speed.teleport();
+            speedPackets.teleport();
             baritone.teleport();
             this.teleport = System.currentTimeMillis()
-                            + (AlgebraUtils.integerCeil(TPS.maximum / 2.0) * TPS.tickTime);
+                    + (AlgebraUtils.integerCeil(TPS.maximum / 2.0) * TPS.tickTime);
         }
     }
 

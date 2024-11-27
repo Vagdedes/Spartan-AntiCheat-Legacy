@@ -22,7 +22,7 @@ public class HitTime extends ProbabilityDetection {
             lastHitTime = 0,
             oldHitTiming = 0;
 
-    void run() {
+    final void run() {
         if (!this.protocol().packetsEnabled()) {
             return;
         }

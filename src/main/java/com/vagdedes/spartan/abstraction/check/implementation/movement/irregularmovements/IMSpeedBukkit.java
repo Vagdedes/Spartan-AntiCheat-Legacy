@@ -1,22 +1,19 @@
-package com.vagdedes.spartan.abstraction.check.implementation.movement;
+package com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements;
 
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
+import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.protocol.ExtendedPotionEffect;
 import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
-import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanBlock;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
-import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.math.RayLine;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
-import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.enchantments.Enchantment;
@@ -28,7 +25,7 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
-public class Speed extends CheckRunner {
+public class IMSpeedBukkit extends ProbabilityDetection {
 
     /*
     Anticipate movements in advance = have good performance in the future
@@ -78,33 +75,40 @@ public class Speed extends CheckRunner {
     private Location f = null;
     private boolean simulationFlag = false;
 
-    public Speed(Enums.HackType hackType, SpartanProtocol protocol) {
-        super(hackType, protocol);
-        this.strafeLineSpeeding = new ImplementedProbabilityDetection(this, "strafe_line_speeding", true);
-        this.strafeJumpSpeeding = new ImplementedProbabilityDetection(this, "strafe_jump_speeding", true);
-        this.straightLineSpeeding = new ImplementedProbabilityDetection(this, "straight_line_speeding", true);
+    public IMSpeedBukkit(CheckRunner executor) {
+        super(executor, null, true);
+        this.strafeLineSpeeding = new ImplementedProbabilityDetection(this, "speed_strafe_line_speeding", true);
+        this.strafeJumpSpeeding = new ImplementedProbabilityDetection(this, "speed_strafe_jump_speeding", true);
+        this.straightLineSpeeding = new ImplementedProbabilityDetection(this, "speed_straight_line_speeding", true);
     }
 
-    @Override
-    public void handleInternal(boolean cancelled, Object object) {
-        if (object instanceof PlayerMoveEvent) {
-            moveTick((PlayerMoveEvent) object);
-        } else if (object instanceof PlayerVelocityEvent) {
-            PlayerVelocityEvent e = (PlayerVelocityEvent) object;
-            Vector v = e.getVelocity();
-            double dx = v.getX();
-            double dz = v.getZ();
-            multiplyVelo = Math.sqrt(dx * dx + dz * dz) * 2.5;
-            if (Compatibility.CompatibilityType.OLD_COMBAT_MECHANICS.isFunctional()) {
-                multiplyVelo += 0.2; multiplyVelo *= 2;
-            }
-            velocity = 2;
-        } else if (object instanceof Integer) {
-            multiply = ((Integer) object) * 5;
+    final void velocity(PlayerVelocityEvent e) {
+        if (false && this.protocol().packetsEnabled()) {
+            return;
         }
+        Vector v = e.getVelocity();
+        double dx = v.getX();
+        double dz = v.getZ();
+        multiplyVelo = Math.sqrt(dx * dx + dz * dz) * 2.5;
+        if (Compatibility.CompatibilityType.OLD_COMBAT_MECHANICS.isFunctional()) {
+            multiplyVelo += 0.2;
+            multiplyVelo *= 2;
+        }
+        velocity = 2;
     }
 
-    private void moveTick(PlayerMoveEvent e) {
+    final void trident(int level) {
+        if (false && this.protocol().packetsEnabled()) {
+            return;
+        }
+        multiply = level * 5;
+    }
+
+    final void run(PlayerMoveEvent e) {
+        if (false && this.protocol().packetsEnabled()
+                || this.protocol().spartan.trackers.has(PlayerTrackers.TrackerType.PISTON)) {
+            return;
+        }
         Location location = this.protocol().getLocation().clone();
         if (f == null) f = location.clone();
         Location from = e.getFrom();
@@ -232,13 +236,13 @@ public class Speed extends CheckRunner {
             }
         }
         if (dolphinEffect != null) if (this.multiply < 5.0D) this.multiply = 5.0D;
-        if (slimeBlockCause(this.protocol().spartan, new SpartanLocation(this.protocol().getLocation()))) {
+        if (slimeBlockCause(new SpartanLocation(this.protocol().getLocation()))) {
             if (this.multiply < 3) this.multiply = 3D;
         }
         if (solidBlockOnTop) {
             if (this.multiply < 0.6) this.multiply = 0.6D;
         }
-        if ((this.onIce(this.protocol().spartan, this.protocol().getLocation().clone()))) {
+        if ((this.onIce(this.protocol().getLocation().clone()))) {
             double m1 = (solidBlockOnTop) ? 1.5 : 0.7;
             if (this.multiply < m1) multiply = m1;
 
@@ -266,7 +270,7 @@ public class Speed extends CheckRunner {
         }
 
         m *= 1 + (((speedEffect != null ? (speedEffect.bukkitEffect.getAmplifier() + 1) * 0.4 : 0))
-                + (this.onIce(this.protocol().spartan, this.protocol().getLocation().clone()) ? 0.66 : 0)
+                + (this.onIce(this.protocol().getLocation().clone()) ? 0.66 : 0)
                 + multiply + multiplyVelo
                 + ((this.protocol().isOnGround()) ? multiplyFriction : 0));
         if (levitationEffect != null || glideEffect != null) m *= 1.3;
@@ -279,9 +283,9 @@ public class Speed extends CheckRunner {
     }
 
 
-    private boolean slimeBlockCause(SpartanPlayer player, SpartanLocation location) {
+    private boolean slimeBlockCause(SpartanLocation location) {
         boolean slime = false;
-        World world = player.getWorld();
+        World world = this.protocol().spartan.getWorld();
 
         for (int x = location.getBlockX() - 1; x <= location.getBlockX() + 1; x++) {
             for (int y2 = location.getBlockY() - 1; y2 <= location.getBlockY() + 1; y2++) {
@@ -296,8 +300,8 @@ public class Speed extends CheckRunner {
         return slime;
     }
 
-    private boolean onIce(SpartanPlayer player, Location location) {
-        World world = player.getWorld();
+    private boolean onIce(Location location) {
+        World world = this.protocol().spartan.getWorld();
         for (int x = location.getBlockX() - 1; x <= location.getBlockX() + 1; x++) {
             for (int y2 = location.getBlockY() - 2; y2 <= location.getBlockY() + 1; y2++) {
                 for (int z = location.getBlockZ() - 1; z <= location.getBlockZ() + 1; z++) {
@@ -320,26 +324,15 @@ public class Speed extends CheckRunner {
         this.simulationFlag = true;
     }
 
-    private boolean allowedAngle(double angle) {
+    private static boolean allowedAngle(double angle) {
         double a = angle / 45;
         int wrapGoodMath = (int) Math.floor(a);
         double b = a - wrapGoodMath;
         return (b < 0.3 || b > 0.7);
     }
 
-    private double r(double v) {
+    private static double r(double v) {
         return RayUtils.scaleVal(v, 2);
-    }
-
-    @Override
-    protected boolean canRun() {
-        return MovementProcessing.canCheck(
-                this.protocol(),
-                true,
-                false,
-                true,
-                false
-        ) && !this.protocol().spartan.trackers.has(PlayerTrackers.TrackerType.PISTON);
     }
 
 }

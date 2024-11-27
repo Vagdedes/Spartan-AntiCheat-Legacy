@@ -9,7 +9,7 @@ public class ResponseTime extends ProbabilityDetection {
         super(executor, "response_time", true);
     }
 
-    void run() {
+    final void run() {
         // todo
     }
 }

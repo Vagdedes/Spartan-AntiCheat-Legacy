@@ -25,8 +25,7 @@ public class MineTinker implements Listener {
                             Enums.HackType.KillAura,
                             Enums.HackType.FastClicks,
                             Enums.HackType.HitReach,
-                            Enums.HackType.FastPlace,
-                            Enums.HackType.Speed
+                            Enums.HackType.FastPlace
                     },
                     40
             );

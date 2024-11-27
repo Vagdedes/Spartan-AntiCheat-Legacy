@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class SimulationGravity extends ProbabilityDetection {
+public class IMSimulationGravity extends ProbabilityDetection {
 
     private int air = 0, ground = 0;
     private int top = 0, topReset = 0;
@@ -35,11 +35,11 @@ public class SimulationGravity extends ProbabilityDetection {
     private double vl = 0.0;
     private double fallDistance = 0.0;
 
-    public SimulationGravity(CheckRunner executor) {
+    public IMSimulationGravity(CheckRunner executor) {
         super(executor, "gravity_packets", true);
     }
 
-    public void run() {
+    public final void run() {
         if (!this.protocol().packetsEnabled()) {
             return;
         }

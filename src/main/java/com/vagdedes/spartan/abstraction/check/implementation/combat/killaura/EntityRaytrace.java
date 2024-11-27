@@ -9,7 +9,7 @@ public class EntityRaytrace extends ProbabilityDetection {
         super(executor, "entity_raytrace", true);
     }
 
-    void run() {
+    final void run() {
         // todo
     }
 

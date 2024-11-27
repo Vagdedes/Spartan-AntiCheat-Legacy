@@ -12,7 +12,7 @@ public class Irregular extends ProbabilityDetection {
         super(executor, "irregular", true);
     }
 
-    void run() {
+    final void run() {
         if (this.protocol().bukkit.isDead()) {
             cancel("type: irregular, scenario: death");
         } else if (this.protocol().bukkit.isSleeping()) {
@@ -27,4 +27,5 @@ public class Irregular extends ProbabilityDetection {
             }
         }
     }
+
 }

@@ -74,7 +74,7 @@ public class HitReach extends CheckRunner {
         }
     }
 
-    public void analyze(Location to, double bruteForce) {
+    private void analyze(Location to, double bruteForce) {
         String punish = null;
         double globalValue = 0;
 
