@@ -4,6 +4,7 @@ import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.CombatUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
@@ -36,7 +37,7 @@ public class Criticals extends CheckRunner {
             if ((verticalMaxAccuracy < 0.079 || Math.abs(verticalMaxAccuracy) == 0.0625)
                     && verticalMaxAccuracy > 0
                     && this.protocol().spartan.movement.getTicksOnAir() == 1
-                    && !this.protocol().spartan.movement.getLocation().getBlock().getType().isBlock()
+                    && !new SpartanLocation(this.protocol().getLocation()).getBlock().getType().isBlock()
                     && !RayUtils.onSolidBlock(this.protocol(), this.protocol().spartan.movement.getLocation().clone().add(0, 2, 0).bukkit())) {
                 this.detection.cancel("type: packet");
             }

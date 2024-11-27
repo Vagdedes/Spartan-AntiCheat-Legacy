@@ -60,17 +60,17 @@ public class MoveDirection extends ProbabilityDetection {
                 double diff = bruteforceRayTrace - 0.4;
                 double predict = RayUtils.castTo360(
                         calculate(
-                                this.protocol().spartan.movement.getLocation().toVector(),
+                                this.protocol().getLocation().toVector(),
                                 new SpartanLocation(targetLoc).toVector()
                         ).x
                 );
-                double yaw360 = RayUtils.castTo360(this.protocol().spartan.movement.getLocation().getYaw());
+                double yaw360 = RayUtils.castTo360(this.protocol().getLocation().getYaw());
                 rayTraceAnalysis.addLast(bruteforceRayTrace);
                 aimAnalysis.addLast(
                         new AttackData(
                                 Math.abs(predict - yaw360),
-                                this.protocol().spartan.movement.getLocation().getYaw(),
-                                this.protocol().spartan.movement.getLocation().getPitch(),
+                                this.protocol().getLocation().getYaw(),
+                                this.protocol().getLocation().getPitch(),
                                 System.currentTimeMillis(),
                                 ProtocolLib.getUUID(target)
                         )

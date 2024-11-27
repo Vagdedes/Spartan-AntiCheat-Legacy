@@ -101,7 +101,7 @@ public class ImpossibleInventory extends CheckRunner {
                 && this.protocol().bukkit.getOpenInventory().countSlots() > PlayerUtils.playerInventorySlots
                 && !BlockPatternUtils.isBlockPattern(
                 belowBlocks,
-                this.protocol().spartan.movement.getLocation(),
+                this.protocol().getLocationOrVehicle(),
                 true,
                 BlockUtils.ice, BlockUtils.blue_ice)) {
             this.closedInventoryDetection.cancel("type: closed-inventory, case: " + cases);
@@ -110,7 +110,7 @@ public class ImpossibleInventory extends CheckRunner {
 
     private void runPortalInventory(ItemStack item) {
         if (BlockUtils.hasMaterial(item)) {
-            SpartanLocation loc = this.protocol().spartan.movement.getLocation();
+            SpartanLocation loc = new SpartanLocation(this.protocol().getLocation());
 
             if (loc.getBlock().getType() == nether_portal
                     || loc.clone().add(0, 1, 0).getBlock().getType() == nether_portal) {
