@@ -18,8 +18,8 @@ public class IrregularMovements extends CheckRunner {
     private long teleport;
     public final CheckDetection limitServerFlying;
     private final IrregularMovementsStep step;
-    private final IrregularMovementsGravityOld gravityOld;
-    private final SimulationGravity gravity;
+    private final IrregularMovementsGravityBukkit gravityBukkit;
+    private final SimulationGravity gravityPackets;
     private final SimulationSpeed speed;
     private final IrregularMovementsJump jump;
     private final IrregularMovementsHorizontal horizontal;
@@ -30,8 +30,8 @@ public class IrregularMovements extends CheckRunner {
         super(hackType, protocol);
         limitServerFlying = new ImplementedProbabilityDetection(this, "limit_server_flying", false);
         step = new IrregularMovementsStep(this);
-        gravityOld = new IrregularMovementsGravityOld(this);
-        gravity = new SimulationGravity(this);
+        gravityBukkit = new IrregularMovementsGravityBukkit(this);
+        gravityPackets = new SimulationGravity(this);
         jump = new IrregularMovementsJump(this);
         horizontal = new IrregularMovementsHorizontal(this);
         foodSprint = new IrregularMovementsFoodSprint(this);
@@ -68,27 +68,27 @@ public class IrregularMovements extends CheckRunner {
                 step.run(knownBox, knownOldBox, box, oldBox, vertical, teleported);
             }
         } else {
-            gravityOld.run(vertical, oldVertical, box, oldBox);
+            gravityBukkit.run(vertical, oldVertical, box, oldBox);
         }
         if (!teleported) {
             jump.run(vertical, box);
         }
         baritone.run();
-        gravity.run();
+        gravityPackets.run();
         speed.run();
     }
 
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
         if (object instanceof Integer) {
-            gravity.trident();
+            gravityPackets.trident();
             speed.trident();
         } else if (object instanceof SuperPositionPacketEvent) {
             SuperPositionPacketEvent e = (SuperPositionPacketEvent) object;
-            gravity.ground(e.packetEvent.getPacket().getBooleans().read(0));
+            gravityPackets.ground(e.packetEvent.getPacket().getBooleans().read(0));
             speed.ground(e.packetEvent.getPacket().getBooleans().read(0));
         } else {
-            gravity.teleport();
+            gravityPackets.teleport();
             speed.teleport();
             baritone.teleport();
             this.teleport = System.currentTimeMillis()

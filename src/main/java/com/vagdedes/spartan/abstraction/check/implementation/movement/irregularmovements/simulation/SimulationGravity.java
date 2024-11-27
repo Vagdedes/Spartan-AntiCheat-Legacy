@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.simulation;
 
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
-import com.vagdedes.spartan.abstraction.check.HardcodedDetection;
+import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
 import com.vagdedes.spartan.abstraction.protocol.ExtendedPotionEffect;
 import com.vagdedes.spartan.abstraction.protocol.PlayerMovement;
 import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
@@ -24,7 +24,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class SimulationGravity extends HardcodedDetection {
+public class SimulationGravity extends ProbabilityDetection {
+
     private int air = 0, ground = 0;
     private int top = 0, topReset = 0;
     private int levitation = 0, glideBlocks = 0, climbBlocks = 0,
@@ -35,11 +36,13 @@ public class SimulationGravity extends HardcodedDetection {
     private double fallDistance = 0.0;
 
     public SimulationGravity(CheckRunner executor) {
-        super(executor, "gravity_new", true);
+        super(executor, "gravity_packets", true);
     }
 
     public void run() {
-        //if (true) return;
+        if (!this.protocol().packetsEnabled()) {
+            return;
+        }
         if (this.protocol().spartan != null) {
             SpartanProtocol p = this.protocol();
             boolean isOnGround = p.isOnGround();
@@ -53,7 +56,7 @@ public class SimulationGravity extends HardcodedDetection {
                 double motion = to.getY() - from.getY();
                 double gravity = 0.08;
                 double jumpStartMotionY =
-                                (atJumpModifyBlock(to)
+                        (atJumpModifyBlock(to)
                                 && this.jumpMotion() * 1.5 > motion)
                                 ? motion : this.jumpMotion();
                 this.air = isOnGround ? 0 : this.air + 1;
@@ -122,20 +125,20 @@ public class SimulationGravity extends HardcodedDetection {
                 if (p.getComponentY().pistonTick)
                     this.pistonTicks = 2;
                 if (this.getDeviantity(motion) > 0.01
-                                && p.getComponentY().pistonTick
-                                && motion <= 0.25) {
+                        && p.getComponentY().pistonTick
+                        && motion <= 0.25) {
                     this.setPredict(motion);
                 }
                 if (pistonTicks > 0) pistonTicks--;
                 if (this.getDeviantity(motion) > 0.01
-                                && p.getComponentY().pistonTick
-                                && motion <= 1.0) {
+                        && p.getComponentY().pistonTick
+                        && motion <= 1.0) {
                     this.setPredict(motion);
                     p.getComponentY().pistonTick = false;
                 }
                 boolean slimeEvent = (this.getDeviantity(motion) > 0.001)
-                                && (p.getComponentY().pistonHandle
-                                && this.slime0Tick);
+                        && (p.getComponentY().pistonHandle
+                        && this.slime0Tick);
                 if (slimeEvent) {
                     p.getComponentY().pistonHandle = false;
                     slimePunch = 4;
@@ -263,8 +266,8 @@ public class SimulationGravity extends HardcodedDetection {
                 }
 
                 if (this.getDeviantity(motion) > 0.001
-                                && this.slimePunch > 0
-                                && motion > 0 && motion < 1.52) {
+                        && this.slimePunch > 0
+                        && motion > 0 && motion < 1.52) {
                     this.setPredict(motion);
                     this.slimePunch--;
                 }
@@ -301,9 +304,9 @@ public class SimulationGravity extends HardcodedDetection {
                 Brainrot 1.18< version cringe fix...
                  */
                 if (!this.protocol().isUsingVersionOrGreater(MCVersion.V1_19)
-                                && (air > 5 && air < 10)
-                                && (motion < this.predictY() + 0.04)
-                                && speed < 0.1) {
+                        && (air > 5 && air < 10)
+                        && (motion < this.predictY() + 0.04)
+                        && speed < 0.1) {
                     double allowedDeviantity = 0.076;
                     ExtendedPotionEffect jumpEffect;
                     if (PotionEffectType.getByName("JUMP_BOOST") != null) {
@@ -392,15 +395,24 @@ public class SimulationGravity extends HardcodedDetection {
     }
 
     public void teleport() {
+        if (!this.protocol().packetsEnabled()) {
+            return;
+        }
         this.air = 0;
     }
 
     public void ground(boolean isOnGround) {
+        if (!this.protocol().packetsEnabled()) {
+            return;
+        }
         this.air = isOnGround ? 0 : this.air + 1;
         this.ground = isOnGround ? this.ground + 1 : 0;
     }
 
     public void trident() {
+        if (!this.protocol().packetsEnabled()) {
+            return;
+        }
         this.trident = true;
         this.levitation = 13;
         this.levitationA = 4;
@@ -466,14 +478,14 @@ public class SimulationGravity extends HardcodedDetection {
                     ).getBlock();
 
                     Material m = this.protocol().packetWorld.getBlock(
-                                    new Location(this.protocol().spartan.getWorld(),
-                                                    x + (double) dx * 0.3,
-                                                    y + (double) dy * 0.5,
-                                                    z + (double) dz * 0.3)
+                            new Location(this.protocol().spartan.getWorld(),
+                                    x + (double) dx * 0.3,
+                                    y + (double) dy * 0.5,
+                                    z + (double) dz * 0.3)
                     );
 
                     if (BlockUtils.isLiquidOrWaterLogged(block, true)
-                                    || BlockUtils.isLiquid(m)) {
+                            || BlockUtils.isLiquid(m)) {
                         return true;
                     }
                 }
@@ -543,12 +555,12 @@ public class SimulationGravity extends HardcodedDetection {
             for (int dy = -2; dy <= 2; ++dy) {
                 for (int dz = -1; dz <= 1; ++dz) {
                     Material material = this.protocol().packetWorld.getBlock(
-                                    new Location(this.protocol().spartan.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
+                            new Location(this.protocol().spartan.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
                     );
 
                     if (material != null && material
-                                    .toString().equalsIgnoreCase("SWEET_BERRY_BUSH")
-                                    || BlockUtils.isPowderSnow(material)) {
+                            .toString().equalsIgnoreCase("SWEET_BERRY_BUSH")
+                            || BlockUtils.isPowderSnow(material)) {
                         return true;
                     }
                 }
@@ -635,7 +647,7 @@ public class SimulationGravity extends HardcodedDetection {
             for (int dy = -2; dy <= 2; ++dy) {
                 for (int dz = -1; dz <= 1; ++dz) {
                     Material material = this.protocol().packetWorld.getBlock(
-                                    new Location(this.protocol().spartan.getWorld(), x + (double) dx, y + (double) dy, z + (double) dz)
+                            new Location(this.protocol().spartan.getWorld(), x + (double) dx, y + (double) dy, z + (double) dz)
                     );
 
                     if (material != null && (BlockUtils.areSlimeBlocks(material))) {
