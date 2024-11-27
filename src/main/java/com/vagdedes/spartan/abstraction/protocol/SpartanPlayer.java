@@ -55,7 +55,7 @@ public class SpartanPlayer {
                     protocol.spartan.getRunner(Enums.HackType.AutoRespawn).run(false);
                     protocol.spartan.getRunner(Enums.HackType.MorePackets).run(false);
                     protocol.spartan.getRunner(Enums.HackType.Exploits).run(false);
-                    protocol.spartan.movement.schedulerFrom = protocol.spartan.movement.getLocation();
+                    protocol.spartan.movement.schedulerFrom = protocol.getLocation();
                     protocol.spartan.checkForAFK();
                 }
             }
@@ -457,7 +457,7 @@ public class SpartanPlayer {
                     loopLocation.setY(Math.floor(progressiveY) + Math.max(blockBox, box));
                 }
                 if (this.protocol.packetsEnabled()) {
-                    teleport(loopLocation);
+                    this.protocol.teleport(loopLocation.bukkit());
                 }
                 break;
             }
@@ -470,25 +470,6 @@ public class SpartanPlayer {
                     && iterations > PlayerUtils.fallDamageAboveBlocks) { // Damage
                 damage(Math.max(this.protocol.bukkit.getFallDistance(), iterations));
             }
-        }
-    }
-
-    public boolean teleport(SpartanLocation location) {
-        if (this.getWorld().equals(location.world)) {
-            if (SpartanBukkit.isSynchronised()) {
-                this.protocol.bukkit.leaveVehicle();
-            }
-            this.movement.removeLastLiquidTime();
-            this.trackers.removeMany(PlayerTrackers.TrackerFamily.VELOCITY);
-
-            if (MultiVersion.folia) {
-                this.protocol.bukkit.teleportAsync(location.bukkit());
-            } else {
-                SpartanBukkit.transferTask(this, () -> this.protocol.bukkit.teleport(location.bukkit()));
-            }
-            return true;
-        } else {
-            return false;
         }
     }
 

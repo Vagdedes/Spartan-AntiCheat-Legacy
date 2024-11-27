@@ -68,7 +68,7 @@ public class Tower extends ProbabilityDetection {
                                 + ", placements: " + possiblePlacements
                                 + ", horizontal: " + deltaXZ
                                 + ", vertical: " + deltaYMinus1,
-                        this.protocol().spartan.movement.getDetectionLocation(),
+                        this.protocol().getFromLocation(),
                         0,
                         true
                 );

@@ -25,10 +25,10 @@ public class ServerFlying {
             Double nmsDistance = p.spartan.movement.getEventDistance();
 
             if (nmsDistance != null && nmsDistance >= limit
-                    || p.spartan.movement.getLocation().distance(
+                    || p.getLocation().distance(
                     p.spartan.movement.getSchedulerFromLocation()
             ) >= limit) {
-                p.spartan.teleport(p.spartan.movement.getDetectionLocation());
+                p.teleport(p.getFromLocation());
             }
         }
     }

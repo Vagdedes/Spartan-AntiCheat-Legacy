@@ -69,13 +69,13 @@ public class HitReach extends CheckRunner {
                         diff = bruteforceRayTrace - 0.4;
                 rayTraceAnalysis.addLast(bruteforceRayTrace);
                 if (rayTraceAnalysis.size() >= 10) {
-                    analyze(this.protocol().spartan.movement.getLocation(), bruteforceRayTrace);
+                    analyze(this.protocol().getLocation(), bruteforceRayTrace);
                 }
             }
         }
     }
 
-    public void analyze(SpartanLocation to, double bruteForce) {
+    public void analyze(Location to, double bruteForce) {
         String punish = null;
         double globalValue = 0;
 

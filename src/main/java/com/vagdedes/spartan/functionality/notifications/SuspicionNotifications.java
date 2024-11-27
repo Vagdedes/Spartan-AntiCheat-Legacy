@@ -11,6 +11,7 @@ import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
 import com.vagdedes.spartan.utils.java.TimeUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
+import org.bukkit.Location;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -80,7 +81,7 @@ public class SuspicionNotifications {
                 if (evidence.length() > 0) {
                     size++;
                     players.append(protocol.bukkit.getName()).append(comma);
-                    SpartanLocation location = protocol.spartan.movement.getLocation();
+                    Location location = protocol.getLocation();
                     CloudConnections.executeDiscordWebhook(
                             "checks",
                             protocol.getUUID(),

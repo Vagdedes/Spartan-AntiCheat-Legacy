@@ -128,7 +128,7 @@ public class MorePackets extends CheckRunner {
         if (packetVL > 100) {
             executor.cancel(
                     info,
-                    this.protocol().spartan.movement.getDetectionLocation(),
+                    this.protocol().getFromLocation(),
                     0,
                     true
             );
@@ -212,7 +212,7 @@ public class MorePackets extends CheckRunner {
                                         + ", sum: " + sum
                                         + ", collections: " + collections
                                         + ", ratio: " + ratioSum,
-                                this.protocol().spartan.movement.getDetectionLocation(),
+                                this.protocol().getFromLocation(),
                                 0,
                                 true
                         );

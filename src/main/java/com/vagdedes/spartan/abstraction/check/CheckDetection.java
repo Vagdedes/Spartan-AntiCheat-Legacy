@@ -20,6 +20,7 @@ import me.vagdedes.spartan.api.API;
 import me.vagdedes.spartan.api.PlayerViolationCommandEvent;
 import me.vagdedes.spartan.api.PlayerViolationEvent;
 import me.vagdedes.spartan.system.Enums;
+import org.bukkit.Location;
 
 import java.util.Collection;
 import java.util.List;
@@ -285,7 +286,7 @@ public abstract class CheckDetection extends CheckProcess {
 
     // Prevention
 
-    public final void cancel(String information, SpartanLocation location,
+    public final void cancel(String information, Location location,
                              int cancelTicks, boolean groundTeleport, double damage) {
         if (!this.isEnabled()) {
             return;
@@ -348,17 +349,17 @@ public abstract class CheckDetection extends CheckProcess {
         }
     }
 
-    public final void cancel(String information, SpartanLocation location,
+    public final void cancel(String information, Location location,
                              int cancelTicks, boolean groundTeleport) {
         cancel(information, location, cancelTicks, groundTeleport, 0.0);
     }
 
-    public final void cancel(String information, SpartanLocation location,
+    public final void cancel(String information, Location location,
                              int cancelTicks) {
         cancel(information, location, cancelTicks, false, 0.0);
     }
 
-    public final void cancel(String information, SpartanLocation location) {
+    public final void cancel(String information, Location location) {
         cancel(information, location, 0, false, 0.0);
     }
 

@@ -5,11 +5,12 @@ import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
+import org.bukkit.Location;
 
 public class CheckPrevention {
 
     boolean canPrevent;
-    private final SpartanLocation location;
+    private final Location location;
     private final boolean groundTeleport;
     private final double damage;
     private final long expiration;
@@ -22,7 +23,7 @@ public class CheckPrevention {
         this.expiration = 0L;
     }
 
-    CheckPrevention(SpartanLocation location, int cancelTicks, boolean groundTeleport, double damage) {
+    CheckPrevention(Location location, int cancelTicks, boolean groundTeleport, double damage) {
         this.canPrevent = false;
         this.location = location;
         this.groundTeleport = groundTeleport;
@@ -40,7 +41,7 @@ public class CheckPrevention {
         Runnable runnable = () -> {
             if (this.location != null
                     && protocol.packetsEnabled()) {
-                protocol.spartan.teleport(this.location);
+                protocol.teleport(this.location);
             }
             if (this.groundTeleport) {
                 protocol.spartan.groundTeleport();

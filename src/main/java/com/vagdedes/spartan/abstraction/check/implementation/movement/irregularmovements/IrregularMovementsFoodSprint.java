@@ -29,7 +29,7 @@ public class IrregularMovementsFoodSprint extends ProbabilityDetection {
                         "type: food-sprint"
                                 + ", game-mode: " + gameMode.toString().toLowerCase().replace("_", "-")
                                 + ", food: " + food,
-                        this.protocol().spartan.movement.getDetectionLocation(),
+                        this.protocol().getFromLocation(),
                         0,
                         true
                 );

@@ -35,7 +35,7 @@ public class AutoRespawn extends CheckRunner {
             memory = 0L;
             this.detection.cancel(
                     "type: default, ms: " + time,
-                    this.protocol().spartan.movement.getDetectionLocation(),
+                    this.protocol().getFromLocation(),
                     AlgebraUtils.integerCeil(TPS.maximum)
             );
         }

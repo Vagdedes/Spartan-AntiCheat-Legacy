@@ -76,13 +76,13 @@ public class MoveDirection extends ProbabilityDetection {
                         )
                 );
                 if (rayTraceAnalysis.size() >= 10) {
-                    analyze(this.protocol().spartan.movement.getLocation());
+                    analyze(this.protocol().getLocation());
                 }
             }
         }
     }
 
-    private void analyze(SpartanLocation to) {
+    private void analyze(Location to) {
         targetsOnTheRow.clear();
         punish = "";
         punishL2 = "";

@@ -149,7 +149,7 @@ public class IrregularMovementsGravityOld extends ProbabilityDetection {
                                         + ", box: " + box
                                         + ", old-box: " + oldBox
                                         + ", air-ticks: " + airTicks,
-                                this.protocol().spartan.movement.getDetectionLocation(),
+                                this.protocol().getFromLocation(),
                                 0,
                                 true
                         );
@@ -224,7 +224,7 @@ public class IrregularMovementsGravityOld extends ProbabilityDetection {
                 } else {
                     this.gravity_prediction.cancel(
                             violation,
-                            this.protocol().spartan.movement.getDetectionLocation(),
+                            this.protocol().getFromLocation(),
                             0,
                             true
                     );

@@ -1,7 +1,6 @@
 package com.vagdedes.spartan.abstraction.protocol;
 
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
-import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
@@ -11,9 +10,7 @@ import com.vagdedes.spartan.utils.minecraft.world.GroundUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Vehicle;
 import org.bukkit.util.Vector;
 
 import java.util.*;
@@ -42,9 +39,8 @@ public class PlayerMovement {
     private Material lastLiquidMaterial;
     private SpartanLocation
             location,
-            eventFrom,
-            detectionLocation;
-    SpartanLocation schedulerFrom;
+            eventFrom;
+    Location schedulerFrom;
     private Vector clampVector;
     public double motionY;
 
@@ -52,16 +48,14 @@ public class PlayerMovement {
         this.parent = parent;
         this.lastLiquidMaterial = Material.AIR;
 
-        SpartanLocation location = new SpartanLocation(
-                ProtocolTools.getLoadLocation(this.parent.protocol.bukkit)
-        );
+        Location bukkit = ProtocolTools.getLoadLocation(this.parent.protocol.bukkit);
+        SpartanLocation location = new SpartanLocation(bukkit);
         this.locations = Collections.synchronizedMap(new LinkedHashMap<>());
         this.locations.put(System.currentTimeMillis(), location);
 
         this.location = location;
         this.eventFrom = location;
-        this.schedulerFrom = location;
-        this.detectionLocation = location;
+        this.schedulerFrom = bukkit;
 
         this.clampVector = new Vector();
         this.motionY = 0;
@@ -268,7 +262,7 @@ public class PlayerMovement {
 
     // Separator
 
-    public SpartanLocation getSchedulerFromLocation() {
+    public Location getSchedulerFromLocation() {
         return schedulerFrom;
     }
 
@@ -297,24 +291,6 @@ public class PlayerMovement {
 
     // Separator
 
-    public SpartanLocation getDetectionLocation() {
-        return detectionLocation;
-    }
-
-    public void setDetectionLocation() {
-        this.setDetectionLocation(this.getLocation(), true);
-    }
-
-    private void setDetectionLocation(SpartanLocation location, boolean force) {
-        if (force
-                || !location.world.equals(this.detectionLocation.world)
-                || location.distance(this.detectionLocation) > 4.0) {
-            this.detectionLocation = location;
-        }
-    }
-
-    // Separator
-
     public SpartanLocation getLocation() {
         return this.location;
     }
@@ -338,7 +314,6 @@ public class PlayerMovement {
                 this.locations.put(System.currentTimeMillis(), spartanLocation);
             }
             this.location = spartanLocation;
-            this.setDetectionLocation(spartanLocation, false);
         }
         return location;
     }

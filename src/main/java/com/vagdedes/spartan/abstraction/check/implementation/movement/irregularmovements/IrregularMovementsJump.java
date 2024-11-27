@@ -96,7 +96,7 @@ public class IrregularMovementsJump extends ProbabilityDetection {
                                         + ", vertical: " + vertical
                                         + ", jump-effect: " + jumpEffect
                                         + ", air-ticks: " + airTicks,
-                                this.protocol().spartan.movement.getDetectionLocation(),
+                                this.protocol().getFromLocation(),
                                 0,
                                 true
                         );
@@ -119,7 +119,7 @@ public class IrregularMovementsJump extends ProbabilityDetection {
                                         + ", jump-effect: " + jumpEffect
                                         + ", air-ticks: " + airTicks
                                         + ", limit: " + limit,
-                                this.protocol().spartan.movement.getDetectionLocation(),
+                                this.protocol().getFromLocation(),
                                 0,
                                 true
                         );

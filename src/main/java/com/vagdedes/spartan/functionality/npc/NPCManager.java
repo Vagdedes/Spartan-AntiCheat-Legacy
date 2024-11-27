@@ -1,8 +1,6 @@
 package com.vagdedes.spartan.functionality.npc;
 
-import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
-import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.Permissions;
@@ -40,7 +38,7 @@ public class NPCManager implements Listener {
                         boolean animate = false;
 
                         for (SpartanProtocol player : staff) {
-                            if (npc.location.distance(player.spartan.movement.getLocation()) <= PlayerUtils.chunk) {
+                            if (npc.location.distance(player.getLocationOrVehicle()) <= PlayerUtils.chunk) {
                                 animate = true;
                                 break;
                             }
@@ -92,7 +90,7 @@ public class NPCManager implements Listener {
                 synchronized (list) {
                     for (SpartanNPC npc : list) {
                         if (npc.location.distance(location) <= PlayerUtils.chunk) {
-                            protocol.spartan.teleport(npc.location);
+                            protocol.teleport(npc.location);
                             return;
                         }
                     }

@@ -189,6 +189,28 @@ public class SpartanProtocol {
         }
     }
 
+    public boolean teleport(Location location) {
+        if (this.spartan.getWorld().equals(location.getWorld())) {
+            if (SpartanBukkit.isSynchronised()) {
+                this.bukkit.leaveVehicle();
+            }
+            this.spartan.movement.removeLastLiquidTime();
+            this.spartan.trackers.removeMany(PlayerTrackers.TrackerFamily.VELOCITY);
+
+            if (MultiVersion.folia) {
+                this.bukkit.teleportAsync(location);
+            } else {
+                SpartanBukkit.transferTask(
+                        this.spartan,
+                        () -> this.bukkit.teleport(location)
+                );
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public Location getTeleport() {
         return this.teleport;
     }
@@ -212,7 +234,7 @@ public class SpartanProtocol {
     }
 
     public void startSimulationFlag() {
-        this.spartan.teleport(this.spartan.movement.getEventFromLocation());
+        this.teleport(this.getFromLocation());
         this.simulationStartPoint = this.spartan.movement.getEventFromLocation().bukkit().clone();
         this.simulationFlag = true;
         this.simulationDelayPerTP = 1;

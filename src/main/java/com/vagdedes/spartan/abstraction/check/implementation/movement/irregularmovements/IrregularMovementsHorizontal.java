@@ -37,7 +37,7 @@ public class IrregularMovementsHorizontal extends ProbabilityDetection {
                                         + ", vertical: " + vertical
                                         + ", air-ticks: " + airTicks
                                         + ", limit: " + limit,
-                                this.protocol().spartan.movement.getDetectionLocation(),
+                                this.protocol().getFromLocation(),
                                 0,
                                 true
                         );
@@ -49,7 +49,7 @@ public class IrregularMovementsHorizontal extends ProbabilityDetection {
                                     + ", old-box: " + oldBox
                                     + ", vertical: " + vertical
                                     + ", air-ticks: " + airTicks,
-                            this.protocol().spartan.movement.getDetectionLocation(),
+                            this.protocol().getFromLocation(),
                             0,
                             true
                     );
