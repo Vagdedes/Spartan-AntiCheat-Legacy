@@ -5,6 +5,7 @@ import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
+import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.java.ReflectionUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -162,7 +163,7 @@ public class IrregularMovementsStep extends ProbabilityDetection {
         } else {
             if (vertical > 0.0) {
                 if (!this.protocol().spartan.movement.isJumping(vertical)
-                        && !BlockUtils.isInteractiveAndPassable(this.protocol().spartan, this.protocol().spartan.movement.getLocation().getBlock().getType())) {
+                        && !BlockUtils.isInteractiveAndPassable(this.protocol().spartan, new SpartanLocation(this.protocol().getLocation()).getBlock().getType())) {
                     double limit = (this.protocol().spartan.isBedrockPlayer() ? bedrockPlayerStepExtra : 0.0)
                             + (this.protocol().spartan.trackers.has(PlayerTrackers.TrackerFamily.VELOCITY) ? 1.0 : 0.0)
                             + PlayerUtils.getJumpMotion(
@@ -253,8 +254,8 @@ public class IrregularMovementsStep extends ProbabilityDetection {
                                 );
                             }
                         }
-                    } else if (!this.protocol().spartan.isOnGround(this.protocol().spartan.movement.getLocation(), true)
-                            && !BlockUtils.isInteractiveAndPassable(this.protocol().spartan, this.protocol().spartan.movement.getLocation().getBlock().getType())) {
+                    } else if (!this.protocol().spartan.isOnGround(this.protocol().getLocation(), true)
+                            && !BlockUtils.isInteractiveAndPassable(this.protocol().spartan, new SpartanLocation(this.protocol().getLocation()).getBlock().getType())) {
                         double limit = (this.protocol().spartan.isBedrockPlayer() ? bedrockPlayerStepExtra : 0.0)
                                 + this.protocol().spartan.movement.getAirAcceleration();
 

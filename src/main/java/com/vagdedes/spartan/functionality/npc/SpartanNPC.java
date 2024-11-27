@@ -1,7 +1,6 @@
 package com.vagdedes.spartan.functionality.npc;
 
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
-import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import com.vagdedes.spartan.utils.minecraft.inventory.EnchantmentUtils;
@@ -148,7 +147,7 @@ public class SpartanNPC {
                     closest = protocol;
                 }
             }
-            Vector playerVec = closest.spartan.movement.getLocation().toVector().clone();
+            Vector playerVec = closest.getLocation().toVector();
             Vector sheepVec = armorStand.getLocation().toVector();
             Vector toLookAtVec = playerVec.subtract(sheepVec);
             armorStand.teleport(armorStand.getLocation().setDirection(toLookAtVec));

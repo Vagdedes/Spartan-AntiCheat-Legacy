@@ -33,7 +33,7 @@ public class SimulationSpeed extends HardcodedDetection {
             SpartanProtocol p = this.protocol();
             boolean isOnGround = p.isOnGround();
             Location to = p.getLocation();
-            Location from = this.protocol().spartan.movement.getEventFromLocation().bukkit();
+            Location from = this.protocol().getFromLocation();
             double dx = to.getX() - from.getX();
             double dz = to.getZ() - from.getZ();
             double speed = Math.sqrt(dx * dx + dz * dz);

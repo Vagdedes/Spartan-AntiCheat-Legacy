@@ -40,7 +40,7 @@ public class MainMenu extends InventoryMenu {
 
         if (!protocols.isEmpty()) {
             for (SpartanProtocol protocol : protocols) {
-                SpartanBukkit.transferTask(protocol.spartan, () -> {
+                SpartanBukkit.transferTask(protocol, () -> {
                     String title = protocol.bukkit.getOpenInventory().getTitle();
 
                     if (title.startsWith(name)) {

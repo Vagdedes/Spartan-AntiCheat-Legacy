@@ -198,7 +198,7 @@ public class SpartanPlayer {
         if (message != null) {
             this.protocol.bukkit.sendMessage(message);
         }
-        SpartanBukkit.transferTask(this, this.protocol.bukkit::closeInventory);
+        SpartanBukkit.transferTask(protocol, this.protocol.bukkit::closeInventory);
     }
 
     public void sendImportantMessage(String message) {
@@ -221,7 +221,7 @@ public class SpartanPlayer {
 
     // Separator
 
-    public boolean isOnGround(SpartanLocation location, boolean checkEntities) {
+    public boolean isOnGround(Location location, boolean checkEntities) {
         return GroundUtils.isOnGround(
                 this.protocol,
                 location,
@@ -238,7 +238,7 @@ public class SpartanPlayer {
         } else {
             return this.protocol.isOnGround()
                     || custom
-                    && GroundUtils.isOnGround(this.protocol, movement.getLocation(), false, true);
+                    && GroundUtils.isOnGround(this.protocol, protocol.getLocation(), false, true);
         }
     }
 
@@ -311,7 +311,7 @@ public class SpartanPlayer {
     private void setStoredPotionEffects() {
         if (!ProtocolLib.isTemporary(this.protocol.bukkit)) {
             SpartanBukkit.transferTask(
-                    protocol.spartan,
+                    protocol,
                     () -> {
                         for (PotionEffect effect : this.protocol.bukkit.getActivePotionEffects()) {
                             this.potionEffects.put(effect.getType(), new ExtendedPotionEffect(effect));
@@ -356,7 +356,7 @@ public class SpartanPlayer {
 
             if (perChunk != null) {
                 List<Entity> nearbyEntities = new ArrayList<>();
-                SpartanLocation current = this.movement.getLocation();
+                SpartanLocation current = new SpartanLocation(this.protocol.getLocation());
                 Collection<SpartanLocation> surrounding = current.getSurroundingLocations(x, y, z),
                         locations = new ArrayList<>(surrounding.size() + 1);
                 locations.add(current);
@@ -390,7 +390,7 @@ public class SpartanPlayer {
             List<Entity> nearbyEntities = new ArrayList<>();
             boolean[] booleans = new boolean[1];
             SpartanBukkit.transferTask(
-                    this,
+                    protocol,
                     () -> {
                         nearbyEntities.addAll(this.protocol.bukkit.getNearbyEntities(x, y, z));
                         booleans[0] = true;
@@ -418,12 +418,12 @@ public class SpartanPlayer {
         if (!Config.settings.getBoolean("Detections.ground_teleport_on_detection")) {
             return;
         }
-        SpartanLocation location = this.movement.getLocation();
+        Location location = this.protocol.getLocation();
 
         if (this.isOnGround(location, true)) {
             return;
         }
-        SpartanLocation locationP1 = location.clone().add(0, 1, 0);
+        SpartanLocation locationP1 = new SpartanLocation(location.clone().add(0, 1, 0));
 
         if (BlockUtils.isSolid(locationP1.getBlock().getType())
                 && !(BlockUtils.areWalls(locationP1.getBlock().getType())
@@ -440,7 +440,9 @@ public class SpartanPlayer {
         }
 
         for (double progressiveY = startY; startY > BlockUtils.getMinHeight(world); progressiveY--) {
-            SpartanLocation loopLocation = location.clone().add(0.0, -(startY - progressiveY), 0.0);
+            SpartanLocation loopLocation = new SpartanLocation(
+                    location.clone().add(0.0, -(startY - progressiveY), 0.0)
+            );
             Material material = loopLocation.getBlock().getType();
 
             if (iterations != PlayerUtils.chunk
@@ -482,11 +484,11 @@ public class SpartanPlayer {
     // Separator
 
     public World getWorld() {
-        return movement.getLocation().world;
+        return protocol.getLocation().getWorld();
     }
 
     public boolean isOutsideOfTheBorder(double deviation) {
-        SpartanLocation loc = movement.getLocation();
+        Location loc = protocol.getLocation();
         WorldBorder border = getWorld().getWorldBorder();
         double size = (border.getSize() / 2.0) + deviation;
         Location center = border.getCenter();

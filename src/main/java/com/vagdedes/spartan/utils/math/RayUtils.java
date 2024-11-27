@@ -252,7 +252,7 @@ public class RayUtils {
             );
             // boundingBox = boundingBox.expand(0.04, 0.03, 0.04);
             intersection = isIntersection(protocol, location, intersection, boundingBox);
-            intersection2 = isIntersection(protocol, protocol.spartan.movement.getEventFromLocation().bukkit(), intersection2, boundingBox);
+            intersection2 = isIntersection(protocol, protocol.getFromLocation(), intersection2, boundingBox);
             exempt = target.isInsideVehicle() || !(target instanceof Villager || target instanceof Zombie || target instanceof Skeleton || target instanceof Creeper);
         }
         return intersection || intersection2 || exempt;
@@ -288,7 +288,7 @@ public class RayUtils {
                 targetX + size, targetY + 1.9F, targetZ + size
         );
         // boundingBox = boundingBox.expand(0.04, 0.03, 0.04);
-        intersection = isIntersection(protocol, protocol.spartan.movement.getPastTickRotation().bukkit(), intersection, boundingBox);
+        intersection = isIntersection(protocol, protocol.getPastTickRotation().bukkit(), intersection, boundingBox);
         exempt = target.isInsideVehicle();
         return intersection || exempt;
     }
@@ -522,7 +522,7 @@ public class RayUtils {
         boolean intersection2 = false;
         // boundingBox = boundingBox.expand(0.04, 0.03, 0.04);
         intersection = isIntersection(protocol, protocol.getLocation(), intersection, boundingBox, dist);
-        intersection2 = isIntersection(protocol, protocol.spartan.movement.getEventFromLocation().bukkit(), intersection, boundingBox, dist);
+        intersection2 = isIntersection(protocol, protocol.getFromLocation(), intersection, boundingBox, dist);
         return intersection || intersection2;
     }
 }

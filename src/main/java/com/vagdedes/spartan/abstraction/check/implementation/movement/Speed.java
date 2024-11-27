@@ -238,7 +238,7 @@ public class Speed extends CheckRunner {
         if (solidBlockOnTop) {
             if (this.multiply < 0.6) this.multiply = 0.6D;
         }
-        if ((this.onIce(this.protocol().spartan, this.protocol().spartan.movement.getLocation().clone()))) {
+        if ((this.onIce(this.protocol().spartan, this.protocol().getLocation().clone()))) {
             double m1 = (solidBlockOnTop) ? 1.5 : 0.7;
             if (this.multiply < m1) multiply = m1;
 
@@ -266,7 +266,7 @@ public class Speed extends CheckRunner {
         }
 
         m *= 1 + (((speedEffect != null ? (speedEffect.bukkitEffect.getAmplifier() + 1) * 0.4 : 0))
-                + (this.onIce(this.protocol().spartan, this.protocol().spartan.movement.getLocation().clone()) ? 0.66 : 0)
+                + (this.onIce(this.protocol().spartan, this.protocol().getLocation().clone()) ? 0.66 : 0)
                 + multiply + multiplyVelo
                 + ((this.protocol().isOnGround()) ? multiplyFriction : 0));
         if (levitationEffect != null || glideEffect != null) m *= 1.3;
@@ -296,7 +296,7 @@ public class Speed extends CheckRunner {
         return slime;
     }
 
-    private boolean onIce(SpartanPlayer player, SpartanLocation location) {
+    private boolean onIce(SpartanPlayer player, Location location) {
         World world = player.getWorld();
         for (int x = location.getBlockX() - 1; x <= location.getBlockX() + 1; x++) {
             for (int y2 = location.getBlockY() - 2; y2 <= location.getBlockY() + 1; y2++) {
@@ -316,7 +316,7 @@ public class Speed extends CheckRunner {
     }
 
     private void startSimulationFlag() {
-        this.f = this.protocol().spartan.movement.getEventFromLocation().bukkit();
+        this.f = this.protocol().getFromLocation();
         this.simulationFlag = true;
     }
 

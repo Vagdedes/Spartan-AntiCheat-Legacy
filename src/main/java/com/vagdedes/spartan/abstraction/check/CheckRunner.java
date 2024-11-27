@@ -279,7 +279,7 @@ public abstract class CheckRunner extends CheckProcess {
                 Thread thread = Thread.currentThread();
                 Boolean[] cancelled = new Boolean[1];
 
-                SpartanBukkit.transferTask(this.protocol().spartan, () -> {
+                SpartanBukkit.transferTask(this.protocol(), () -> {
                     CheckCancelEvent checkCancelEvent = new CheckCancelEvent(this.protocol().bukkit, hackType);
                     Register.manager.callEvent(checkCancelEvent);
                     cancelled[0] = checkCancelEvent.isCancelled();
@@ -319,7 +319,7 @@ public abstract class CheckRunner extends CheckProcess {
         } else if (detected != null
                 && (detected.bukkit.equals(this.protocol().bukkit)
                 || detected.spartan.getWorld().equals(this.protocol().spartan.getWorld())
-                && detected.spartan.movement.getLocation().distance(this.protocol().spartan.movement.getLocation()) <= PlayerUtils.chunk)) {
+                && detected.getLocation().distance(this.protocol().getLocation()) <= PlayerUtils.chunk)) {
             return AlgebraUtils.integerRound(Math.sqrt(TPS.maximum));
         } else {
             return AlgebraUtils.integerCeil(TPS.maximum);

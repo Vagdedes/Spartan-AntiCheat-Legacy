@@ -37,9 +37,6 @@ public class PlayerMovement {
             artificialSwimming,
             lastLiquidTicks;
     private Material lastLiquidMaterial;
-    private SpartanLocation
-            location,
-            eventFrom;
     Location schedulerFrom;
     private Vector clampVector;
     public double motionY;
@@ -53,8 +50,6 @@ public class PlayerMovement {
         this.locations = Collections.synchronizedMap(new LinkedHashMap<>());
         this.locations.put(System.currentTimeMillis(), location);
 
-        this.location = location;
-        this.eventFrom = location;
         this.schedulerFrom = bukkit;
 
         this.clampVector = new Vector();
@@ -199,7 +194,7 @@ public class PlayerMovement {
     // Separator
 
     public double getAirAcceleration() {
-        return this.location.isChunkLoaded()
+        return new SpartanLocation(this.parent.protocol.getLocation()).isChunkLoaded()
                 ? PlayerUtils.airAcceleration
                 : PlayerUtils.airAccelerationUnloaded;
     }
@@ -266,19 +261,6 @@ public class PlayerMovement {
         return schedulerFrom;
     }
 
-    public SpartanLocation getEventFromLocation() {
-        return eventFrom;
-    }
-
-    public SpartanLocation getPastTickRotation() {
-        Location l = this.location.bukkit().clone();
-        l.setYaw(eventFrom.getYaw());
-        l.setPitch(eventFrom.getPitch());
-        return new SpartanLocation(l);
-    }
-
-    // Separator
-
     public List<SpartanLocation> getLocations() {
         return new ArrayList<>(this.locations.values());
     }
@@ -291,18 +273,14 @@ public class PlayerMovement {
 
     // Separator
 
-    public SpartanLocation getLocation() {
-        return this.location;
-    }
-
-    // Separator
-
     public Location refreshLocation(Location location) {
-        if (this.location.getX() != location.getX()
-                || this.location.getY() != location.getY()
-                || this.location.getZ() != location.getZ()
-                || this.location.getYaw() != location.getYaw()
-                || this.location.getPitch() != location.getPitch()) {
+        Location known = this.parent.protocol.getLocation();
+
+        if (known.getX() != location.getX()
+                || known.getY() != location.getY()
+                || known.getZ() != location.getZ()
+                || known.getYaw() != location.getYaw()
+                || known.getPitch() != location.getPitch()) {
             SpartanLocation spartanLocation = new SpartanLocation(location);
 
             synchronized (this.locations) {
@@ -313,7 +291,6 @@ public class PlayerMovement {
                 }
                 this.locations.put(System.currentTimeMillis(), spartanLocation);
             }
-            this.location = spartanLocation;
         }
         return location;
     }
@@ -321,10 +298,11 @@ public class PlayerMovement {
     // Separator
 
     public boolean processLastMoveEvent(Location originalTo, Location vehicle,
-                                        SpartanLocation to, SpartanLocation from,
+                                        Location to, Location from,
                                         double distance, double horizontal,
                                         double vertical, double xDiff, double zDiff,
-                                        double box) {
+                                        double box,
+                                        boolean packets) {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)) {
             double x = clampMin(to.getX(), -3.0E7D, 3.0E7D),
                     y = clampMin(to.getY(), -2.0E7D, 2.0E7D),
@@ -340,7 +318,9 @@ public class PlayerMovement {
         if (vehicle == null) {
             this.refreshLocation(originalTo);
         }
-        this.eventFrom = from;
+        if (!packets) {
+            this.parent.protocol.setFromLocation(from);
+        }
         this.eventDistance = distance;
         this.eventPreviousHorizontal = this.eventHorizontal;
         this.eventHorizontal = horizontal;
@@ -386,8 +366,8 @@ public class PlayerMovement {
 
     public boolean isInVoid() {
         return MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)
-                ? this.location.getY() < this.location.world.getMinHeight()
-                : this.location.getY() < 0;
+                ? this.parent.protocol.getLocation().getY() < this.parent.protocol.getLocation().getWorld().getMinHeight()
+                : this.parent.protocol.getLocation().getY() < 0;
     }
 
 }

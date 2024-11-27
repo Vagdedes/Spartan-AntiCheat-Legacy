@@ -41,10 +41,11 @@ public class Event_Movement implements Listener {
                 p.movement.judgeGround();
                 return;
             }
-            Location vehicle = protocol.getVehicleLocation();
+            Location vehicle = protocol.getVehicleLocation(),
+                    nfrom = e.getFrom();
             SpartanLocation
                     to = vehicle != null ? new SpartanLocation(vehicle) : new SpartanLocation(nto),
-                    from = new SpartanLocation(e.getFrom());
+                    from = new SpartanLocation(nfrom);
 
             // Values
             double xDiff = to.getX() - from.getX(),
@@ -60,14 +61,15 @@ public class Event_Movement implements Listener {
             if (!p.movement.processLastMoveEvent(
                     nto,
                     vehicle,
-                    to,
-                    from,
+                    nto,
+                    nfrom,
                     dis,
                     hor,
                     ver,
                     xDiff,
                     zDiff,
-                    box
+                    box,
+                    packets
             )) {
                 p.movement.judgeGround();
                 return;

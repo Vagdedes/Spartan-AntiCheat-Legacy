@@ -42,8 +42,8 @@ public class IrregularMovementsGravityOld extends ProbabilityDetection {
     void run(double vertical, double oldVertical, double box, double oldBox) {
         if (!isUsingMace()) {
             int airTicks = this.protocol().spartan.movement.getTicksOnAir();
-            SpartanLocation to = this.protocol().spartan.movement.getLocation(),
-                    from = this.protocol().spartan.movement.getEventFromLocation();
+            SpartanLocation to = new SpartanLocation(this.protocol().getLocation()),
+                    from = new SpartanLocation(this.protocol().getFromLocation());
             int levitationLevel = PlayerUtils.levitation
                     ? PlayerUtils.getPotionLevel(this.protocol().spartan, PotionEffectType.LEVITATION)
                     : -1;
@@ -129,7 +129,7 @@ public class IrregularMovementsGravityOld extends ProbabilityDetection {
             }
             if (climb) {
                 if (vertical == 0.0 && oldVertical == 0.0) {
-                    if (!this.protocol().spartan.isOnGround(to, true)
+                    if (!this.protocol().spartan.isOnGround(to.bukkit(), true)
                             && !this.protocol().isSneaking()
                             && this.protocol().spartan.getNearbyEntities(1.0, 1.0, 1.0).isEmpty()
                             && !BlockPatternUtils.isBlockPattern(

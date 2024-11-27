@@ -70,10 +70,14 @@ public class Event_Chunks implements Listener {
                     && SpartanBukkit.hasPlayerCount()
                     && isEmptyQueue()) {
                 for (SpartanProtocol protocol : SpartanBukkit.getProtocols()) {
-                    SpartanLocation location = protocol.spartan.movement.getLocation();
+                    Location location = protocol.getLocation();
 
-                    if (isLoaded(location.world, location.getChunkX(), location.getChunkZ())
-                            && cache(location.bukkit().getChunk(), true)) {
+                    if (isLoaded(
+                            location.getWorld(),
+                            SpartanLocation.getChunkPos(location.getBlockX()),
+                            SpartanLocation.getChunkPos(location.getBlockZ())
+                    )
+                            && cache(location.getChunk(), true)) {
                         break;
                     }
                 }

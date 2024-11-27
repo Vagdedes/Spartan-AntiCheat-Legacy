@@ -168,6 +168,10 @@ public class SpartanProtocol {
         }
     }
 
+    public Location getFromLocation() {
+        return this.from;
+    }
+
     public Location getVehicleLocation() {
         Entity vehicle = this.spartan.getVehicle();
 
@@ -189,6 +193,13 @@ public class SpartanProtocol {
         }
     }
 
+    public SpartanLocation getPastTickRotation() {
+        Location l = this.location.clone();
+        l.setYaw(this.from.getYaw());
+        l.setPitch(this.from.getPitch());
+        return new SpartanLocation(l);
+    }
+
     public boolean teleport(Location location) {
         if (this.spartan.getWorld().equals(location.getWorld())) {
             if (SpartanBukkit.isSynchronised()) {
@@ -201,7 +212,7 @@ public class SpartanProtocol {
                 this.bukkit.teleportAsync(location);
             } else {
                 SpartanBukkit.transferTask(
-                        this.spartan,
+                        this,
                         () -> this.bukkit.teleport(location)
                 );
             }
@@ -235,7 +246,7 @@ public class SpartanProtocol {
 
     public void startSimulationFlag() {
         this.teleport(this.getFromLocation());
-        this.simulationStartPoint = this.spartan.movement.getEventFromLocation().bukkit().clone();
+        this.simulationStartPoint = this.getFromLocation().clone();
         this.simulationFlag = true;
         this.simulationDelayPerTP = 1;
     }
@@ -265,10 +276,6 @@ public class SpartanProtocol {
 
     public void setFromLocation(Location location) {
         this.from = location;
-    }
-
-    public Location getFromLocation() {
-        return this.from;
     }
 
     public void addRawLocation(Location location) {

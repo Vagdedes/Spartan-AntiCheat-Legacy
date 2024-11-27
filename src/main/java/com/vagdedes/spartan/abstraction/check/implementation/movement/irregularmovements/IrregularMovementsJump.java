@@ -87,7 +87,7 @@ public class IrregularMovementsJump extends ProbabilityDetection {
                     }
                     if (!BlockPatternUtils.isBlockPattern(
                             patterns,
-                            this.protocol().spartan.movement.getLocation(),
+                            this.protocol().getLocation(),
                             true,
                             GroundUtils.abstractMaterials
                     )) {
@@ -106,8 +106,8 @@ public class IrregularMovementsJump extends ProbabilityDetection {
                     || this.protocol().isUsingVersionOrGreater(MultiVersion.serverVersion)) {
                 int limit = Math.max(jumpTicks, AlgebraUtils.integerCeil(TPS.maximum));
 
-                if (!this.protocol().spartan.isOnGround(this.protocol().spartan.movement.getLocation(), true)
-                        && !this.protocol().spartan.isOnGround(this.protocol().spartan.movement.getEventFromLocation(), false)
+                if (!this.protocol().spartan.isOnGround(this.protocol().getLocation(), true)
+                        && !this.protocol().spartan.isOnGround(this.protocol().getFromLocation(), false)
                         && !this.protocol().spartan.movement.isInLiquids()) {
                     int airTicks = this.protocol().spartan.movement.getTicksOnAir();
 

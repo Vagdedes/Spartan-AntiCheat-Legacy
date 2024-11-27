@@ -5,6 +5,7 @@ import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
+import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 
@@ -23,8 +24,8 @@ public class IrregularMovementsHorizontal extends ProbabilityDetection {
             int airTicks = this.protocol().spartan.movement.getTicksOnAir();
 
             if (airTicks > 0
-                    && !BlockUtils.canClimb(this.protocol().spartan.movement.getLocation().getBlock().getType(), false)
-                    && !BlockUtils.canClimb(this.protocol().spartan.movement.getEventFromLocation().getBlock().getType(), false)) {
+                    && !BlockUtils.canClimb(new SpartanLocation(this.protocol().getLocation()).getBlock().getType(), false)
+                    && !BlockUtils.canClimb(new SpartanLocation(this.protocol().getFromLocation()).getBlock().getType(), false)) {
                 if (knownBox || knownOldBox) {
                     int limit = PlayerUtils.getJumpTicks(0) * (this.protocol().spartan.isBedrockPlayer() ? PlayerUtils.getJumpTicks(0) : 1);
 

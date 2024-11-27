@@ -9,7 +9,6 @@ import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
 
 public class Packet_PistonHandle extends PacketAdapter {
 
