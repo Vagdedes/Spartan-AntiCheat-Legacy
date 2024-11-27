@@ -19,15 +19,14 @@ public class Packet_PistonHandle extends PacketAdapter {
 
     @Override
     public void onPacketSending(PacketEvent event) {
-        Player player = event.getPlayer();
-        SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
+        SpartanProtocol protocol = SpartanBukkit.getProtocol(event.getPlayer());
         PacketContainer packet = event.getPacket();
         if (packet.getStructures().getValues().toString().contains("piston")) {
             protocol.getComponentY().pistonHandle = true;
             Location blockLocation = packet.getBlockPositionModifier()
                             .read(0)
-                            .toLocation(player.getWorld());
-            if (isPlayerInBox(player.getLocation(), blockLocation, 3)) {
+                            .toLocation(protocol.spartan.getWorld());
+            if (isPlayerInBox(protocol.getLocation(), blockLocation, 3)) {
                 protocol.getComponentY().pistonTick = true;
                 protocol.pistonTick = true;
             }
