@@ -6,6 +6,7 @@ import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PotionEffectUtils;
+import com.vagdedes.spartan.utils.minecraft.protocol.ProtocolTools;
 import com.vagdedes.spartan.utils.minecraft.world.GroundUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -52,7 +53,7 @@ public class PlayerMovement {
         this.lastLiquidMaterial = Material.AIR;
 
         SpartanLocation location = new SpartanLocation(
-                this.parent.protocol.getLocation()
+                ProtocolTools.getLoadLocation(this.parent.protocol.bukkit)
         );
         this.locations = Collections.synchronizedMap(new LinkedHashMap<>());
         this.locations.put(System.currentTimeMillis(), location);
