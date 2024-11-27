@@ -6,6 +6,7 @@ import com.vagdedes.spartan.abstraction.data.CheckBoundData;
 import com.vagdedes.spartan.abstraction.data.PacketWorld;
 import com.vagdedes.spartan.abstraction.event.PlayerTickEvent;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
+import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.connection.Latency;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
@@ -154,9 +155,14 @@ public class SpartanProtocol {
     }
 
     public Location getLocation() {
-        return packetsEnabled()
-                ? this.location
-                : ProtocolLib.getLocation(this.bukkit);
+        if (packetsEnabled()) {
+            return this.location;
+        } else {
+            Location loc = ProtocolLib.getLocationOrNull(this.bukkit);
+            return loc != null
+                    ? loc
+                    : SpartanLocation.bukkitDefault.clone();
+        }
     }
 
     public Location getTeleport() {

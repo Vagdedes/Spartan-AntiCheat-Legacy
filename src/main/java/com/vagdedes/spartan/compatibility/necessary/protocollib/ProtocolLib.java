@@ -97,14 +97,6 @@ public class ProtocolLib {
         }
     }
 
-    public static Location getLocation(Player player) {
-        if (ProtocolLib.isTemporary(player)) {
-            return SpartanLocation.bukkitDefault.clone();
-        } else {
-            return player.getLocation();
-        }
-    }
-
     public static Location getLocationOrNull(Player player) {
         if (ProtocolLib.isTemporary(player)) {
             return null;
