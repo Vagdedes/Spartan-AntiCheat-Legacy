@@ -31,7 +31,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Event_World implements Listener {
 
-    private static final boolean v1_21 = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_21);
     private static final Map<World, Map<Long, List<Entity>>> entities = new LinkedHashMap<>();
 
     static {
@@ -47,15 +46,18 @@ public class Event_World implements Listener {
                         Map<Long, List<Entity>> perChunkEntities = new LinkedHashMap<>();
 
                         for (Entity entity : world.getEntities()) {
-                            Location location = ProtocolLib.getLocation(entity);
-                            long hash = Event_Chunks.hashCoordinates(
-                                    SpartanLocation.getChunkPos(location.getBlockX()),
-                                    SpartanLocation.getChunkPos(location.getBlockZ())
-                            );
-                            perChunkEntities.computeIfAbsent(
-                                    hash,
-                                    k -> new CopyOnWriteArrayList<>()
-                            ).add(entity);
+                            Location location = ProtocolLib.getLocationOrNull(entity);
+
+                            if (location != null) {
+                                long hash = Event_Chunks.hashCoordinates(
+                                        SpartanLocation.getChunkPos(location.getBlockX()),
+                                        SpartanLocation.getChunkPos(location.getBlockZ())
+                                );
+                                perChunkEntities.computeIfAbsent(
+                                        hash,
+                                        k -> new CopyOnWriteArrayList<>()
+                                ).add(entity);
+                            }
                         }
                         entities.put(world, perChunkEntities);
                     }

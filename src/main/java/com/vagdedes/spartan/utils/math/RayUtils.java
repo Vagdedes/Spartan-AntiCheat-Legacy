@@ -207,7 +207,7 @@ public class RayUtils {
     }
 
     private static float[] getRotation(Player player1, Entity entity2) {
-        Location entityLoc = ProtocolLib.getLocation(entity2);
+        Location entityLoc = ProtocolLib.getLocationOrNull(entity2);
 
         if (entityLoc == null) {
             return null;

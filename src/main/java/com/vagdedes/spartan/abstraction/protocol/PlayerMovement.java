@@ -318,9 +318,10 @@ public class PlayerMovement {
         Entity vehicle = this.parent.getVehicle();
 
         if (vehicle instanceof LivingEntity || vehicle instanceof Vehicle) {
-            return new SpartanLocation(
-                    ProtocolLib.getLocation(vehicle)
-            );
+            Location vehicleLoc = ProtocolLib.getLocationOrNull(vehicle);
+            return vehicleLoc == null
+                    ? null
+                    : new SpartanLocation(vehicleLoc);
         }
         return null;
     }

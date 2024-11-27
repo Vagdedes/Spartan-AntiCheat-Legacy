@@ -89,9 +89,9 @@ public class ProtocolLib {
         }
     }
 
-    public static Location getLocation(Entity entity) {
+    public static Location getLocationOrNull(Entity entity) {
         if (entity instanceof Player) {
-            return getLocation((Player) entity);
+            return getLocationOrNull((Player) entity);
         } else {
             return entity.getLocation();
         }

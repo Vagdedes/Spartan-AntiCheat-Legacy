@@ -10,6 +10,7 @@ import com.vagdedes.spartan.compatibility.manual.building.MythicMobs;
 import com.vagdedes.spartan.compatibility.manual.enchants.CustomEnchantsPlus;
 import com.vagdedes.spartan.compatibility.manual.enchants.EcoEnchants;
 import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
+import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.server.*;
@@ -169,6 +170,7 @@ public abstract class CheckRunner extends CheckProcess {
                 && (!v1_8 || this.protocol().bukkit.getGameMode() != GameMode.SPECTATOR)
                 && hackType.getCheck().isEnabled(this.protocol().spartan.dataType, this.protocol().spartan.getWorld().getName())
                 && Attributes.getAmount(this.protocol(), Attributes.GENERIC_SCALE) == 0.0
+                && !ProtocolLib.isTemporary(this.protocol().bukkit)
                 && canRun()
                 && !Permissions.isBypassing(this.protocol().bukkit, hackType);
     }

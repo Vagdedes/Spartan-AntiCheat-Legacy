@@ -370,9 +370,10 @@ public class SpartanPlayer {
 
                     if (list != null) {
                         for (Entity entity : list) {
-                            Location entityLocation = ProtocolLib.getLocation(entity);
+                            Location entityLocation = ProtocolLib.getLocationOrNull(entity);
 
-                            if (Math.abs(entityLocation.getX() - current.getX()) <= x
+                            if (entityLocation != null
+                                    && Math.abs(entityLocation.getX() - current.getX()) <= x
                                     && Math.abs(entityLocation.getY() - current.getY()) <= y
                                     && Math.abs(entityLocation.getZ() - current.getZ()) <= z) {
                                 nearbyEntities.add(entity);

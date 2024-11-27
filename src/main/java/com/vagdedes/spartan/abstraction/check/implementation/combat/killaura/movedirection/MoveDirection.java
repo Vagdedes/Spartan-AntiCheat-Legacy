@@ -8,6 +8,7 @@ import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import com.vagdedes.spartan.utils.minecraft.vector.SpartanVector2F;
+import org.bukkit.Location;
 import org.bukkit.entity.*;
 import org.bukkit.util.Vector;
 
@@ -50,12 +51,17 @@ public class MoveDirection extends ProbabilityDetection {
             Entity target = attackHandle.target;
 
             if (target != null) {
+                Location targetLoc = ProtocolLib.getLocationOrNull(target);
+
+                if (targetLoc == null) {
+                    return;
+                }
                 double bruteforceRayTrace = RayUtils.bruteforceRayTrace(this.protocol(), target);
                 double diff = bruteforceRayTrace - 0.4;
                 double predict = RayUtils.castTo360(
                         calculate(
                                 this.protocol().spartan.movement.getLocation().toVector(),
-                                new SpartanLocation(ProtocolLib.getLocation(target)).toVector()
+                                new SpartanLocation(targetLoc).toVector()
                         ).x
                 );
                 double yaw360 = RayUtils.castTo360(this.protocol().spartan.movement.getLocation().getYaw());
