@@ -207,7 +207,12 @@ public class RayUtils {
     }
 
     private static float[] getRotation(Player player1, Entity entity2) {
-        Vector direction = ProtocolLib.getLocation(entity2).toVector().subtract(ProtocolLib.getLocation(player1).toVector());
+        Location entityLoc = ProtocolLib.getLocation(entity2);
+
+        if (entityLoc == null) {
+            return null;
+        }
+        Vector direction = entityLoc.toVector().subtract(SpartanBukkit.getProtocol(player1).getLocation().toVector());
         float yaw = (float) Math.toDegrees(Math.atan2(direction.getX(), direction.getZ())),
                 pitch = (float) Math.toDegrees(Math.asin(-direction.getY()));
         return new float[]{castTo360(yaw), pitch};
@@ -220,7 +225,11 @@ public class RayUtils {
         boolean exempt;
 
         if (target instanceof Player) {
-            Location playerLocation = ProtocolLib.getLocation((Player) target);
+            Location playerLocation = ProtocolLib.getLocationOrNull((Player) target);
+
+            if (playerLocation == null) {
+                return false;
+            }
             double targetX = playerLocation.getX();
             double targetY = playerLocation.getY();
             double targetZ = playerLocation.getZ();

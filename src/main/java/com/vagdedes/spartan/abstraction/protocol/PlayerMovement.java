@@ -52,7 +52,7 @@ public class PlayerMovement {
         this.lastLiquidMaterial = Material.AIR;
 
         SpartanLocation location = new SpartanLocation(
-                ProtocolLib.getLocation(parent.protocol.bukkit)
+                this.parent.protocol.getLocation()
         );
         this.locations = Collections.synchronizedMap(new LinkedHashMap<>());
         this.locations.put(System.currentTimeMillis(), location);

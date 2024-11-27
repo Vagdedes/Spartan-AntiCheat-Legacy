@@ -166,8 +166,6 @@ public class SpartanPlayer {
     }
 
     public void resetCrucialData() {
-        this.protocol.loaded = false;
-
         for (PlayerTrackers.TrackerType handlerType : PlayerTrackers.TrackerType.values()) {
             this.trackers.remove(handlerType);
         }

@@ -27,7 +27,7 @@ public class ProtocolTools {
                     packet.getDoubles().read(2)
             );
         } else {
-            return SpartanLocation.bukkitDefault.clone();
+            return null;
         }
     }
     public static boolean isFlying(PacketEvent event, Location to, Location from) {
@@ -53,7 +53,7 @@ public class ProtocolTools {
 
     public static Set<Packet_Movement.tpFlags> getTeleportFlags(PacketEvent event) {
         String s = event.getPacket().getStructures().getValues().get(0).toString();
-        Set<Packet_Movement.tpFlags> flags = new HashSet<>();
+        Set<Packet_Movement.tpFlags> flags = new HashSet<>(3);
         s = s.replace("X_ROT", "").replace("Y_ROT", "");
         if (s.contains("X")) flags.add(Packet_Movement.tpFlags.X);
         if (s.contains("Y")) flags.add(Packet_Movement.tpFlags.Y);

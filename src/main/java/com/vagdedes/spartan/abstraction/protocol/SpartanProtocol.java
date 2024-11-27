@@ -33,7 +33,7 @@ public class SpartanProtocol {
     private int hashPosBuffer;
     public int rightClickCounter;
     public boolean mutateTeleport, sprinting, sneaking, vehicleStatus;
-    public boolean loaded, simulationFlag, teleported, pistonTick;
+    public boolean simulationFlag, teleported, pistonTick;
     private Location location, from, teleport;
     public String fromWorld;
     public Location simulationStartPoint;
@@ -70,7 +70,6 @@ public class SpartanProtocol {
         this.sprinting = false;
         this.sneaking = false;
         this.mutateTeleport = false;
-        this.loaded = false;
         this.location = ProtocolTools.getLoadLocation(player);
         this.from = null;
         this.fromWorld = "";
@@ -152,10 +151,6 @@ public class SpartanProtocol {
         return packetsEnabled()
                 ? this.sneaking
                 : this.bukkit.isSneaking();
-    }
-
-    public boolean isLoading() {
-        return packetsEnabled() && !this.loaded;
     }
 
     public Location getLocation() {

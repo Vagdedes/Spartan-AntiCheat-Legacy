@@ -41,10 +41,18 @@ public class Packet_Movement extends PacketAdapter {
     public void onPacketSending(PacketEvent event) {
         Player player = event.getPlayer();
         SpartanProtocol p = SpartanBukkit.getProtocol(player);
-        Set<tpFlags> flags = ProtocolTools.getTeleportFlags(event);
         Location tp = ProtocolTools.readLocation(event);
+
+        if (tp == null) {
+            return;
+        }
         Location loc = p.getLocation().clone();
-        Location result = ProtocolTools.readLocation(event);
+        Location result = tp.clone();
+
+        if (result == null) {
+            return;
+        }
+        Set<tpFlags> flags = ProtocolTools.getTeleportFlags(event);
         for (tpFlags flag : flags) {
             if (flag.equals(tpFlags.X))
                 result.setX(loc.getX() + tp.getX());
@@ -63,7 +71,6 @@ public class Packet_Movement extends PacketAdapter {
         PacketContainer packet = event.getPacket();
 
         // Always loaded if you use this listener
-        p.loaded = true;
         if (p.spartan.isBedrockPlayer()) {
             return;
         }
@@ -71,8 +78,12 @@ public class Packet_Movement extends PacketAdapter {
         p.setFromLocation(l.clone());
         boolean onGround = ProtocolTools.onGroundPacketLevel(event);
         p.setOnGround(onGround);
+        Location r = ProtocolTools.readLocation(event);
 
-        boolean legacy = ProtocolTools.isFlying(event, l, ProtocolTools.readLocation(event));
+        if (r == null) {
+            return;
+        }
+        boolean legacy = ProtocolTools.isFlying(event, l, r);
         Event_Movement.tick(new PlayerTickEvent(p, legacy).build());
 
         if (!ProtocolLib.getWorld(player).getName().equals(p.fromWorld)) {
@@ -83,20 +94,19 @@ public class Packet_Movement extends PacketAdapter {
             boolean hasPosition = ProtocolTools.hasPosition(packet.getType());
             boolean hasRotation = ProtocolTools.hasRotation(packet.getType());
             if (hasPosition) {
-                p.addRawLocation(ProtocolTools.readLocation(event));
-                p.pushHashPosition(ProtocolTools.readLocation(event));
+                p.addRawLocation(r);
+                p.pushHashPosition(r);
             }
             if (ProtocolTools.isLoadLocation(p.getLocation())) {
-                p.setLocation(ProtocolTools.readLocation(event));
-                p.setFromLocation(ProtocolTools.readLocation(event));
+                p.setLocation(r);
+                p.setFromLocation(r);
             } else {
                 if (hasPosition) {
-                    if (p.getTeleport() != null) {
-                        Location from = ProtocolTools.readLocation(event);
+                    if (p.getTeleport() != null) { // From
                         Location to = p.getTeleport();
 
                         // Let's check guys with bad internet
-                        if (to.getX() == from.getX() && to.getY() == from.getY() && to.getZ() == from.getZ()) {
+                        if (to.getX() == r.getX() && to.getY() == r.getY() && to.getZ() == r.getZ()) {
                             p.setLocation(p.getTeleport().clone());
                             p.setFromLocation(p.getTeleport().clone());
                             p.setTeleport(null);
@@ -113,11 +123,10 @@ public class Packet_Movement extends PacketAdapter {
                             });
                             return;
                         }
-                    } else {
-                        Location build = ProtocolTools.readLocation(event);
-                        l.setX(build.getX());
-                        l.setY(build.getY());
-                        l.setZ(build.getZ());
+                    } else { // Build
+                        l.setX(r.getX());
+                        l.setY(r.getY());
+                        l.setZ(r.getZ());
                     }
                 }
                 if (hasRotation) {

@@ -166,7 +166,6 @@ public abstract class CheckRunner extends CheckProcess {
         return this.protocol() != null
                 && (System.currentTimeMillis() - this.creation) > TPS.maximum * TPS.tickTime
                 && (!cancelled || hackType.getCheck().handleCancelledEvents)
-                && !this.protocol().isLoading()
                 && (!v1_8 || this.protocol().bukkit.getGameMode() != GameMode.SPECTATOR)
                 && hackType.getCheck().isEnabled(this.protocol().spartan.dataType, this.protocol().spartan.getWorld().getName())
                 && Attributes.getAmount(this.protocol(), Attributes.GENERIC_SCALE) == 0.0
