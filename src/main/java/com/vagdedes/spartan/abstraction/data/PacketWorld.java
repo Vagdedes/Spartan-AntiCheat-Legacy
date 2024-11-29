@@ -37,7 +37,16 @@ public class PacketWorld {
             this.lagTick--;
         } else {
             synchronized (this.query) {
-                this.query.removeIf(change -> --change.tick == 0);
+                Iterator<ServerBlockChange> iterator = this.query.iterator();
+
+                while (iterator.hasNext()) {
+                    ServerBlockChange change = iterator.next();
+                    change.tick--;
+
+                    if (change.tick == 0) {
+                        iterator.remove();
+                    }
+                }
             }
         }
     }
