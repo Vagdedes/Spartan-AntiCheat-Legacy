@@ -79,7 +79,6 @@ public class PacketWorld {
         }
         long hash = blockChange.hashCode();
         ServerBlockChange toDelete = null;
-
         synchronized (this.query) {
             for (ServerBlockChange c : this.query) {
                 if (c.generateHash() == hash) {
@@ -89,8 +88,8 @@ public class PacketWorld {
             }
             if (toDelete != null) {
                 this.query.remove(toDelete);
-                this.query.add(blockChange);
             }
+            this.query.add(blockChange);
         }
     }
 
