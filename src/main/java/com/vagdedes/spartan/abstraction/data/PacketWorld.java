@@ -12,18 +12,20 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 
 public class PacketWorld {
 
-    private List<ServerBlockChange> query;
+    private final List<ServerBlockChange> query;
     private final Player player;
     private int lagTick;
 
     public PacketWorld(Player player) {
         this.player = player;
-        this.query = new ArrayList<>();
+        this.query = Collections.synchronizedList(new ArrayList<>());
         this.lagTick = 0;
     }
 
@@ -34,33 +36,38 @@ public class PacketWorld {
         } else if (lagTick > 0) {
             this.lagTick--;
         } else {
-            List<ServerBlockChange> toDelete = new ArrayList<>();
-            for (ServerBlockChange change : this.query) {
-                change.tick--;
-                if (change.tick == 0) {
-                    toDelete.add(change);
+            synchronized (this.query) {
+                Iterator<ServerBlockChange> iterator = this.query.iterator();
+
+                while (iterator.hasNext()) {
+                    ServerBlockChange change = iterator.next();
+
+                    if (--change.tick == 0) {
+                        iterator.remove();
+                    }
                 }
             }
-            for (ServerBlockChange change : toDelete) {
-                this.query.remove(change);
-            }
-            toDelete.clear();
         }
     }
 
     public List<ServerBlockChange> getLocalWorld() {
-        return this.query;
+        synchronized (this.query) {
+            return new ArrayList<>(this.query);
+        }
     }
 
     public Material getBlock(Location location) {
         SpartanProtocol p = SpartanBukkit.getProtocol(this.player);
-        for (ServerBlockChange change : this.query) {
-            Location lL = change.getPosition().toLocation(this.player.getWorld());
 
-            if (Math.abs(lL.getX() - location.getX()) <= 1.0 &&
-                    Math.abs(lL.getY() - location.getY()) <= 1.0 &&
-                    Math.abs(lL.getZ() - location.getZ()) <= 1.0) {
-                return change.getData();
+        synchronized (this.query) {
+            for (ServerBlockChange change : this.query) {
+                Location lL = change.getPosition().toLocation(this.player.getWorld());
+
+                if (Math.abs(lL.getX() - location.getX()) <= 1.0 &&
+                        Math.abs(lL.getY() - location.getY()) <= 1.0 &&
+                        Math.abs(lL.getZ() - location.getZ()) <= 1.0) {
+                    return change.getData();
+                }
             }
         }
 
@@ -72,23 +79,27 @@ public class PacketWorld {
         if (BlockUtils.areAir(blockChange.getData())) {
             Block b = Event_Chunks.getBlockAsync(
                     blockChange
-                    .getPosition()
-                    .toLocation(this.player.getWorld())
+                            .getPosition()
+                            .toLocation(this.player.getWorld())
             );
             if (b == null) return;
             blockChange.setData(b.getType());
         }
         long hash = blockChange.hashCode();
         ServerBlockChange toDelete = null;
-        for (ServerBlockChange c : this.query) {
-            if (c.generateHash() == hash) {
-                toDelete = c;
-                break;
+
+        synchronized (this.query) {
+            for (ServerBlockChange c : this.query) {
+                if (c.generateHash() == hash) {
+                    toDelete = c;
+                    break;
+                }
+            }
+            if (toDelete != null) {
+                this.query.remove(toDelete);
+                this.query.add(blockChange);
             }
         }
-        if (toDelete != null)
-            this.query.remove(toDelete);
-        this.query.add(blockChange);
     }
 
 }
