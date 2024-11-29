@@ -12,9 +12,8 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 
 public class PacketWorld {
@@ -25,7 +24,7 @@ public class PacketWorld {
 
     public PacketWorld(Player player) {
         this.player = player;
-        this.query = Collections.synchronizedList(new ArrayList<>());
+        this.query = new CopyOnWriteArrayList<>();
         this.lagTick = 0;
     }
 
@@ -36,42 +35,37 @@ public class PacketWorld {
         } else if (lagTick > 0) {
             this.lagTick--;
         } else {
-            synchronized (this.query) {
-                Iterator<ServerBlockChange> iterator = this.query.iterator();
+            List<ServerBlockChange> toDelete = new ArrayList<>();
 
-                while (iterator.hasNext()) {
-                    ServerBlockChange change = iterator.next();
-                    change.tick--;
-
-                    if (change.tick == 0) {
-                        iterator.remove();
-                    }
+            for (ServerBlockChange change : this.query) {
+                change.tick--;
+                if (change.tick == 0) {
+                    toDelete.add(change);
                 }
             }
+            for (ServerBlockChange change : toDelete) {
+                this.query.remove(change);
+            }
+            toDelete.clear();
         }
     }
 
     public List<ServerBlockChange> getLocalWorld() {
-        synchronized (this.query) {
-            return new ArrayList<>(this.query);
-        }
+        return this.query;
     }
 
     public Material getBlock(Location location) {
         SpartanProtocol p = SpartanBukkit.getProtocol(this.player);
 
-        synchronized (this.query) {
-            for (ServerBlockChange change : this.query) {
-                Location lL = change.getPosition().toLocation(this.player.getWorld());
+        for (ServerBlockChange change : this.query) {
+            Location lL = change.getPosition().toLocation(this.player.getWorld());
 
-                if (Math.abs(lL.getX() - location.getX()) <= 1.3 &&
-                        Math.abs(lL.getY() - location.getY()) <= 1.3 &&
-                        Math.abs(lL.getZ() - location.getZ()) <= 1.3) {
-                    return change.getData();
-                }
+            if (Math.abs(lL.getX() - location.getX()) <= 1.3 &&
+                    Math.abs(lL.getY() - location.getY()) <= 1.3 &&
+                    Math.abs(lL.getZ() - location.getZ()) <= 1.3) {
+                return change.getData();
             }
         }
-
         Block b = Event_Chunks.getBlockAsync(location);
         return (b == null) ? null : b.getType();
     }
@@ -87,15 +81,17 @@ public class PacketWorld {
             blockChange.setData(b.getType());
         }
         long hash = blockChange.hashCode();
+        ServerBlockChange toDelete = null;
 
-        synchronized (this.query) {
-            for (ServerBlockChange c : this.query) {
-                if (c.generateHash() == hash) {
-                    this.query.remove(c);
-                    this.query.add(blockChange);
-                    break;
-                }
+        for (ServerBlockChange c : this.query) {
+            if (c.generateHash() == hash) {
+                toDelete = c;
+                break;
             }
+        }
+        if (toDelete != null) {
+            this.query.remove(toDelete);
+            this.query.add(blockChange);
         }
     }
 
