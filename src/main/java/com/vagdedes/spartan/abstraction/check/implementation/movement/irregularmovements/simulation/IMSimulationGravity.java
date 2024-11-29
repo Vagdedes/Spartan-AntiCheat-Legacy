@@ -12,6 +12,7 @@ import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.MultiVersion.MCVersion;
 import com.vagdedes.spartan.utils.math.MathHelper;
 import com.vagdedes.spartan.utils.math.RayUtils;
+import com.vagdedes.spartan.utils.minecraft.entity.PotionEffectUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -308,12 +309,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
                         && (motion < this.predictY() + 0.04)
                         && speed < 0.1) {
                     double allowedDeviantity = 0.076;
-                    ExtendedPotionEffect jumpEffect;
-                    if (PotionEffectType.getByName("JUMP_BOOST") != null) {
-                        jumpEffect = this.protocol().spartan.getPotionEffect(PotionEffectType.getByName("JUMP_BOOST"), 1L);
-                    } else {
-                        jumpEffect = this.protocol().spartan.getPotionEffect(PotionEffectType.getByName("JUMP"), 1L);
-                    }
+                    ExtendedPotionEffect jumpEffect = this.protocol().spartan.getPotionEffect(PotionEffectUtils.JUMP, 1L);
 
                     if (jumpEffect != null) {
                         allowedDeviantity += 0.04 * (double) (jumpEffect.bukkitEffect.getAmplifier() + 1);
@@ -420,12 +416,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
 
     private double jumpMotion() {
         double jumpPower = 0.42;
-        ExtendedPotionEffect jumpEffect;
-        if (PotionEffectType.getByName("JUMP_BOOST") != null) {
-            jumpEffect = this.protocol().spartan.getPotionEffect(PotionEffectType.getByName("JUMP_BOOST"), 1L);
-        } else {
-            jumpEffect = this.protocol().spartan.getPotionEffect(PotionEffectType.getByName("JUMP"), 1L);
-        }
+        ExtendedPotionEffect jumpEffect = this.protocol().spartan.getPotionEffect(PotionEffectUtils.JUMP, 1L);
 
         if (jumpEffect != null) {
             jumpPower += 0.1 * (double) (jumpEffect.bukkitEffect.getAmplifier() + 1);

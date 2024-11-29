@@ -7,13 +7,13 @@ import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanBlock;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.utils.math.MathHelper;
+import com.vagdedes.spartan.utils.minecraft.entity.PotionEffectUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.player.PlayerVelocityEvent;
-import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,7 +41,7 @@ public class IMSimulationSpeed extends HardcodedDetection {
             double speed = Math.sqrt(dx * dx + dz * dz);
             //this.protocol().bukkit.sendMessage(protocol().pistonHandle + " " + protocol().pistonTick + " " + protocol().explosionHandle);
             if (to.getX() != from.getX() || to.getY() != from.getY() || to.getZ() != from.getZ()) {
-               // p.bukkit.sendMessage("dx: " + dx + " dz: " + dz);
+                // p.bukkit.sendMessage("dx: " + dx + " dz: " + dz);
             }
         }
     }
@@ -81,12 +81,7 @@ public class IMSimulationSpeed extends HardcodedDetection {
 
     private double jumpMotion() {
         double jumpPower = 0.42;
-        ExtendedPotionEffect jumpEffect;
-        if (PotionEffectType.getByName("JUMP_BOOST") != null) {
-            jumpEffect = this.protocol().spartan.getPotionEffect(PotionEffectType.getByName("JUMP_BOOST"), 1L);
-        } else {
-            jumpEffect = this.protocol().spartan.getPotionEffect(PotionEffectType.getByName("JUMP"), 1L);
-        }
+        ExtendedPotionEffect jumpEffect = this.protocol().spartan.getPotionEffect(PotionEffectUtils.JUMP, 1L);
 
         if (jumpEffect != null) {
             jumpPower += 0.1 * (double) (jumpEffect.bukkitEffect.getAmplifier() + 1);
@@ -139,14 +134,14 @@ public class IMSimulationSpeed extends HardcodedDetection {
                     ).getBlock();
 
                     Material m = this.protocol().packetWorld.getBlock(
-                                    new Location(this.protocol().spartan.getWorld(),
-                                                    x + (double) dx * 0.3,
-                                                    y + (double) dy * 0.5,
-                                                    z + (double) dz * 0.3)
+                            new Location(this.protocol().spartan.getWorld(),
+                                    x + (double) dx * 0.3,
+                                    y + (double) dy * 0.5,
+                                    z + (double) dz * 0.3)
                     );
 
                     if (BlockUtils.isLiquidOrWaterLogged(block, true)
-                                    || BlockUtils.isLiquid(m)) {
+                            || BlockUtils.isLiquid(m)) {
                         return true;
                     }
                 }
@@ -216,12 +211,12 @@ public class IMSimulationSpeed extends HardcodedDetection {
             for (int dy = -2; dy <= 2; ++dy) {
                 for (int dz = -1; dz <= 1; ++dz) {
                     Material material = this.protocol().packetWorld.getBlock(
-                                    new Location(this.protocol().spartan.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
+                            new Location(this.protocol().spartan.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
                     );
 
                     if (material != null && material
-                                    .toString().equalsIgnoreCase("SWEET_BERRY_BUSH")
-                                    || BlockUtils.isPowderSnow(material)) {
+                            .toString().equalsIgnoreCase("SWEET_BERRY_BUSH")
+                            || BlockUtils.isPowderSnow(material)) {
                         return true;
                     }
                 }
@@ -308,7 +303,7 @@ public class IMSimulationSpeed extends HardcodedDetection {
             for (int dy = -2; dy <= 2; ++dy) {
                 for (int dz = -1; dz <= 1; ++dz) {
                     Material material = this.protocol().packetWorld.getBlock(
-                                    new Location(this.protocol().spartan.getWorld(), x + (double) dx, y + (double) dy, z + (double) dz)
+                            new Location(this.protocol().spartan.getWorld(), x + (double) dx, y + (double) dy, z + (double) dz)
                     );
 
                     if (material != null && (BlockUtils.areSlimeBlocks(material))) {
