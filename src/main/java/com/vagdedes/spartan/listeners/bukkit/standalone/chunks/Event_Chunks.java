@@ -233,7 +233,7 @@ public class Event_Chunks implements Listener {
     }
 
     public static Block getBlockAsync(final Location location) {
-        if (isLoaded(
+        if (Event_Chunks.isLoaded(
                         location.getWorld(),
                         location.getBlockX() >> 4,
                         location.getBlockZ() >> 4
