@@ -37,15 +37,7 @@ public class PacketWorld {
             this.lagTick--;
         } else {
             synchronized (this.query) {
-                Iterator<ServerBlockChange> iterator = this.query.iterator();
-
-                while (iterator.hasNext()) {
-                    ServerBlockChange change = iterator.next();
-
-                    if (--change.tick == 0) {
-                        iterator.remove();
-                    }
-                }
+                this.query.removeIf(change -> --change.tick == 0);
             }
         }
     }
@@ -63,9 +55,9 @@ public class PacketWorld {
             for (ServerBlockChange change : this.query) {
                 Location lL = change.getPosition().toLocation(this.player.getWorld());
 
-                if (Math.abs(lL.getX() - location.getX()) <= 1.0 &&
-                        Math.abs(lL.getY() - location.getY()) <= 1.0 &&
-                        Math.abs(lL.getZ() - location.getZ()) <= 1.0) {
+                if (Math.abs(lL.getX() - location.getX()) <= 1.3 &&
+                                Math.abs(lL.getY() - location.getY()) <= 1.3 &&
+                                Math.abs(lL.getZ() - location.getZ()) <= 1.3) {
                     return change.getData();
                 }
             }
@@ -78,9 +70,9 @@ public class PacketWorld {
     public void worldChange(ServerBlockChange blockChange) {
         if (BlockUtils.areAir(blockChange.getData())) {
             Block b = Event_Chunks.getBlockAsync(
-                    blockChange
-                            .getPosition()
-                            .toLocation(this.player.getWorld())
+                            blockChange
+                                            .getPosition()
+                                            .toLocation(this.player.getWorld())
             );
             if (b == null) return;
             blockChange.setData(b.getType());

@@ -39,7 +39,6 @@ public class Packet_BlockPlace extends PacketAdapter {
         Player player = event.getPlayer();
         SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
         PacketContainer packet = event.getPacket();
-
         if (isPlacingBlock(packet)) {
             if (packet.getBlockPositionModifier().getValues().isEmpty() && packet.getMovingBlockPositions().getValues().isEmpty()) {
                 // stub for debug
@@ -79,7 +78,6 @@ public class Packet_BlockPlace extends PacketAdapter {
                 ItemStack itemInHand = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)
                         ? (isMainHand ? player.getInventory().getItemInMainHand()
                         : player.getInventory().getItemInOffHand()) : player.getItemInHand();
-
                 if (itemInHand.getType().isBlock()) {
                     if (!isInPlayer(protocol.getLocation(), block.getLocation())) {
                         BlockPlaceEvent blockPlaceEvent = new BlockPlaceEvent(
@@ -121,9 +119,12 @@ public class Packet_BlockPlace extends PacketAdapter {
             if (!packet.getBlockPositionModifier().getValues().isEmpty()) {
                 blockPosition = packet.getBlockPositionModifier().read(0);
             }
+
             return (blockPosition.getY() != -1);
         } else {
-            return (packet.getType().equals(PacketType.Play.Client.USE_ITEM)
+            return ((packet.getType().equals(PacketType.Play.Client.USE_ITEM)
+                            || (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_21)
+                            && packet.getType().equals(PacketType.Play.Client.USE_ITEM_ON)))
                     && packet.getHands().read(0).equals(EnumWrappers.Hand.MAIN_HAND));
         }
     }
