@@ -149,9 +149,12 @@ public class MCClient {
         for (int x = location.getBlockX() - 1; x <= location.getBlockX() + 1; x++) {
             for (int y = location.getBlockY() - 1; y <= location.getBlockY() + 1; y++) {
                 for (int z = location.getBlockZ() - 1; z <= location.getBlockZ() + 1; z++) {
-                    SpartanBlock block = new SpartanLocation(location.getWorld(), x, y, z).getBlock();
+                    Material material = new SpartanLocation(location.getWorld(), x, y, z).getBlock().getTypeOrNull();
 
-                    if (ignore(block.getType())) {
+                    if (material == null) {
+                        continue;
+                    }
+                    if (ignore(material)) {
                         return true;
                     }
                 }

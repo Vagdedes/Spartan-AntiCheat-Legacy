@@ -236,7 +236,7 @@ public class IMSpeedBukkit extends ProbabilityDetection {
             }
         }
         if (dolphinEffect != null) if (this.multiply < 5.0D) this.multiply = 5.0D;
-        if (slimeBlockCause(new SpartanLocation(this.protocol().getLocation()))) {
+        if (slimeBlockCause(this.protocol().getLocation())) {
             if (this.multiply < 3) this.multiply = 3D;
         }
         if (solidBlockOnTop) {
@@ -283,7 +283,7 @@ public class IMSpeedBukkit extends ProbabilityDetection {
     }
 
 
-    private boolean slimeBlockCause(SpartanLocation location) {
+    private boolean slimeBlockCause(Location location) {
         boolean slime = false;
         World world = this.protocol().spartan.getWorld();
 
@@ -291,6 +291,7 @@ public class IMSpeedBukkit extends ProbabilityDetection {
             for (int y2 = location.getBlockY() - 1; y2 <= location.getBlockY() + 1; y2++) {
                 for (int z = location.getBlockZ() - 1; z <= location.getBlockZ() + 1; z++) {
                     SpartanBlock block = new SpartanLocation(world, x, y2, z).getBlock();
+
                     if (BlockUtils.areSlimeBlocks(block.getType())) {
                         slime = true;
                     }

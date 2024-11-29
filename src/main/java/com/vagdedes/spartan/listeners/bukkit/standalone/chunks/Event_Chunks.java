@@ -232,7 +232,7 @@ public class Event_Chunks implements Listener {
         }
     }
 
-    private static Block getBlockAsync(final Location location) {
+    public static Block getBlockAsync(final Location location) {
         if (Event_Chunks.isLoaded(
                         location.getWorld(),
                         location.getBlockX() >> 4,

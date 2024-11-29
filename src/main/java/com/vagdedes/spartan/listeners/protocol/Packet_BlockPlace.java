@@ -13,6 +13,7 @@ import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.listeners.bukkit.Event_BlockPlace;
+import com.vagdedes.spartan.listeners.bukkit.standalone.chunks.Event_Chunks;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -27,8 +28,8 @@ public class Packet_BlockPlace extends PacketAdapter {
 
     public Packet_BlockPlace() {
         super(Register.plugin, ListenerPriority.HIGHEST,
-                        PacketType.Play.Client.USE_ITEM,
-                        PacketType.Play.Client.BLOCK_PLACE
+                PacketType.Play.Client.USE_ITEM,
+                PacketType.Play.Client.BLOCK_PLACE
         );
         // Method: Event_BlockPlace.event()
     }
@@ -60,39 +61,40 @@ public class Packet_BlockPlace extends PacketAdapter {
                 }
 
                 Location l = new Location(
-                                protocol.spartan.getWorld(),
-                                blockPosition.toVector().getBlockX(),
-                                blockPosition.toVector().getBlockY(),
-                                blockPosition.toVector().getBlockZ()
+                        protocol.spartan.getWorld(),
+                        blockPosition.toVector().getBlockX(),
+                        blockPosition.toVector().getBlockY(),
+                        blockPosition.toVector().getBlockZ()
                 );
                 if (direction == null) return;
                 l.add(getDirection(BlockFace.valueOf(direction.name())));
 
                 World world = player.getWorld();
-                Block block = world.getBlockAt((int) l.getX(), (int) l.getY(), (int) l.getZ());
+                Block block = Event_Chunks.getBlockAsync(new Location(world, (int) l.getX(), (int) l.getY(), (int) l.getZ()));
 
+                if (block == null) return;
                 boolean isMainHand = !MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)
-                                || event.getPacket().getHands().read(0) == EnumWrappers.Hand.MAIN_HAND;
+                        || event.getPacket().getHands().read(0) == EnumWrappers.Hand.MAIN_HAND;
 
                 ItemStack itemInHand = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)
-                                ? (isMainHand ? player.getInventory().getItemInMainHand()
-                                : player.getInventory().getItemInOffHand()) : player.getItemInHand();
+                        ? (isMainHand ? player.getInventory().getItemInMainHand()
+                        : player.getInventory().getItemInOffHand()) : player.getItemInHand();
 
                 if (itemInHand.getType().isBlock()) {
                     if (!isInPlayer(protocol.getLocation(), block.getLocation())) {
                         BlockPlaceEvent blockPlaceEvent = new BlockPlaceEvent(
-                                        block,
-                                        block.getState(),
-                                        player.getLocation().getBlock(),
-                                        itemInHand,
-                                        player,
-                                        true
+                                block,
+                                block.getState(),
+                                player.getLocation().getBlock(),
+                                itemInHand,
+                                player,
+                                true
                         );
                         Material material = itemInHand.getType();
                         protocol.packetWorld.worldChange(new ServerBlockChange(blockPosition, material));
                         protocol.packetWorld.worldChange(new ServerBlockChange(
-                                        new BlockPosition(blockPosition.getX(), blockPosition.getY() + 1, blockPosition.getZ()),
-                                        material
+                                new BlockPosition(blockPosition.getX(), blockPosition.getY() + 1, blockPosition.getZ()),
+                                material
                         ));
 
                         Event_BlockPlace.event(blockPlaceEvent);
@@ -122,7 +124,7 @@ public class Packet_BlockPlace extends PacketAdapter {
             return (blockPosition.getY() != -1);
         } else {
             return (packet.getType().equals(PacketType.Play.Client.USE_ITEM)
-                            && packet.getHands().read(0).equals(EnumWrappers.Hand.MAIN_HAND));
+                    && packet.getHands().read(0).equals(EnumWrappers.Hand.MAIN_HAND));
         }
     }
 
@@ -146,8 +148,8 @@ public class Packet_BlockPlace extends PacketAdapter {
         double blockZ = block.getZ();
 
         return (blockX >= minX && blockX <= maxX) &&
-                        (blockY >= minY && blockY <= maxY) &&
-                        (blockZ >= minZ && blockZ <= maxZ);
+                (blockY >= minY && blockY <= maxY) &&
+                (blockZ >= minZ && blockZ <= maxZ);
     }
 
     public Vector getDirection(BlockFace face) {

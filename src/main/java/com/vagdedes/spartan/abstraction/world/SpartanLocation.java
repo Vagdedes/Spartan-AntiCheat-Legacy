@@ -5,7 +5,6 @@ import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.listeners.bukkit.standalone.chunks.Event_Chunks;
 import com.vagdedes.spartan.listeners.bukkit.standalone.chunks.Event_Chunks_v1_13;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
-import com.vagdedes.spartan.utils.minecraft.entity.CombatUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -46,7 +45,6 @@ public class SpartanLocation implements Cloneable {
     public final World world;
     private double x, y, z;
     private float yaw, pitch;
-    private Vector vector;
 
     // Base
 
@@ -110,16 +108,10 @@ public class SpartanLocation implements Cloneable {
 
     public void setYaw(float yaw) {
         this.yaw = yaw;
-        this.vector = null;
     }
 
     public void setPitch(float pitch) {
         this.pitch = pitch;
-        this.vector = null;
-    }
-
-    public void setDirection(Vector vector) {
-        this.vector = vector;
     }
 
     public int getBlockX() {
@@ -164,12 +156,6 @@ public class SpartanLocation implements Cloneable {
 
     public int getLocalZ() {
         return getBlockZ() & 15;
-    }
-
-    public Vector getDirection() {
-        return this.vector == null
-                ? this.vector = CombatUtils.getDirection(this.yaw, this.pitch)
-                : this.vector;
     }
 
     public Vector toVector() {
