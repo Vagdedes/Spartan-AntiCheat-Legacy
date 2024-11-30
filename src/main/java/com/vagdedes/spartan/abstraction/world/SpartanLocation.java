@@ -45,6 +45,17 @@ public class SpartanLocation implements Cloneable {
         );
     }
 
+    public static double distanceSquared(Location loc1, Location loc2) {
+        return AlgebraUtils.getSquaredDistance(
+                loc1.getX(),
+                loc2.getX(),
+                loc1.getY(),
+                loc2.getY(),
+                loc1.getZ(),
+                loc2.getZ()
+        );
+    }
+
     private static int locationIdentifier(int x, int y, int z) {
         x = (SpartanBukkit.hashCodeMultiplier * x) + y;
         return (SpartanBukkit.hashCodeMultiplier * x) + z;

@@ -117,7 +117,7 @@ public class IMSimulationSpeed extends HardcodedDetection {
                 }
             }
         }
-        entities.removeIf(entity -> entity.getLocation().distanceSquared(location) > radius * radius);
+        entities.removeIf(entity -> SpartanLocation.distanceSquared(entity.getLocation(), location) > radius * radius);
         return entities;
     }
 

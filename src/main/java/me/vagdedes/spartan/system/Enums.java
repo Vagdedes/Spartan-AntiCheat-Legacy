@@ -2,7 +2,6 @@ package me.vagdedes.spartan.system;
 
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.Check;
-import com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.IMSpeedBukkit;
 import com.vagdedes.spartan.utils.minecraft.inventory.MaterialUtils;
 import org.bukkit.Material;
 

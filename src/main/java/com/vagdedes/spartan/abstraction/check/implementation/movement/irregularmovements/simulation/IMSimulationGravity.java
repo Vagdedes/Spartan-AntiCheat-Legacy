@@ -452,7 +452,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
                 }
             }
         }
-        entities.removeIf(entity -> entity.getLocation().distanceSquared(location) > radius * radius);
+        entities.removeIf(entity -> SpartanLocation.distanceSquared(entity.getLocation(), location) > radius * radius);
         return entities;
     }
 
