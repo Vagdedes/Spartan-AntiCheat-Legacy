@@ -4,6 +4,7 @@ import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.manual.building.PrinterMode;
 import com.vagdedes.spartan.compatibility.manual.entity.Vehicles;
 import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
@@ -33,11 +34,11 @@ public class GhostHand extends CheckRunner {
 
             if (canDo(b)) {
                 Location location = this.protocol().getLocationOrVehicle();
-                double bDistance = location.distance(b.getLocation());
+                double bDistance = SpartanLocation.distance(location, b.getLocation());
                 Block t = this.protocol().spartan.getTargetBlock(bDistance, PlayerUtils.chunk);
 
                 if (t != null) {
-                    double tDistance = location.distance(t.getLocation());
+                    double tDistance = SpartanLocation.distance(location, t.getLocation());
 
                     if (tDistance < bDistance) {
                         this.breaking.cancel(
@@ -60,11 +61,11 @@ public class GhostHand extends CheckRunner {
 
                 if (canDo(b) && BlockUtils.isChangeable(b.getType())) {
                     Location location = this.protocol().getLocationOrVehicle();
-                    double bDistance = location.distance(b.getLocation());
+                    double bDistance = SpartanLocation.distance(location, b.getLocation());
                     Block t = this.protocol().spartan.getTargetBlock(bDistance, PlayerUtils.chunk);
 
                     if (t != null) {
-                        double tDistance = location.distance(t.getLocation());
+                        double tDistance = SpartanLocation.distance(location, t.getLocation());
 
                         if (tDistance < bDistance) {
                             this.interact.cancel(

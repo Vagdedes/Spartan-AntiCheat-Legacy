@@ -3,6 +3,7 @@ package com.vagdedes.spartan.functionality.tracking;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.IrregularMovements;
 import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
 import com.vagdedes.spartan.functionality.server.Permissions;
 import me.vagdedes.spartan.system.Enums;
@@ -25,7 +26,8 @@ public class ServerFlying {
             Double nmsDistance = p.spartan.movement.getEventDistance();
 
             if (nmsDistance != null && nmsDistance >= limit
-                    || p.getLocation().distance(
+                    || SpartanLocation.distance(
+                    p.getLocation(),
                     p.spartan.movement.getSchedulerFromLocation()
             ) >= limit) {
                 p.teleport(p.getFromLocation());

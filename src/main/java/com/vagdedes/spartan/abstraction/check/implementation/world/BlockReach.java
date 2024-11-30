@@ -5,6 +5,7 @@ import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.manual.abilities.AureliumSkills;
 import com.vagdedes.spartan.compatibility.manual.building.MineBomb;
 import com.vagdedes.spartan.compatibility.manual.building.PrinterMode;
@@ -56,7 +57,7 @@ public class BlockReach extends CheckRunner {
 
             if (canDo(block)
                     && !TreeFeller.canCancel(block)) {
-                double distance = this.protocol().getLocationOrVehicle().distance(block.getLocation()),
+                double distance = SpartanLocation.distance(this.protocol().getLocationOrVehicle(), block.getLocation()),
                         limit = getLimit();
 
                 if (distance >= limit) {
@@ -72,7 +73,7 @@ public class BlockReach extends CheckRunner {
 
             if (canDo(block)
                     && BlockUtils.isChangeable(block.getType())) {
-                double distance = this.protocol().getLocationOrVehicle().distance(block.getLocation()),
+                double distance = SpartanLocation.distance(this.protocol().getLocationOrVehicle(), block.getLocation()),
                         limit = getLimit();
 
                 if (distance >= limit) {
@@ -94,8 +95,8 @@ public class BlockReach extends CheckRunner {
                         && BlockUtils.isSolid(block.getType())
                         && !BlockUtils.isScaffoldingBlock(block.getType())) {
                     Location to = this.protocol().getLocationOrVehicle();
-                    double distance = to.distance(block.getLocation()),
-                            ab_distance = to.distance(blockAgainst.getLocation());
+                    double distance = SpartanLocation.distance(to, block.getLocation()),
+                            ab_distance = SpartanLocation.distance(to, blockAgainst.getLocation());
 
                     if (!this.protocol().spartan.isBedrockPlayer()
                             && BlockUtils.isFullSolid(block.getType())

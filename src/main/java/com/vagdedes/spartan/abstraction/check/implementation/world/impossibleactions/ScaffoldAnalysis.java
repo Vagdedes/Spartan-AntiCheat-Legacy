@@ -65,7 +65,7 @@ public class ScaffoldAnalysis extends ProbabilityDetection {
                 );
                 for (Long v : hashList) {
                     if (p.isOnGround()) {
-                        if (v == placeHash || bL.distance(l) < 1.2) {
+                        if (v == placeHash || SpartanLocation.distance(bL, l) < 1.2) {
                             checkHash = true;
                             break;
                         } else if (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
@@ -76,7 +76,7 @@ public class ScaffoldAnalysis extends ProbabilityDetection {
                                 break;
                             }
                         }
-                    } else if (bL.distance(l) < 2.35) {
+                    } else if (SpartanLocation.distance(bL, l) < 2.35) {
                         checkHash = true;
                         break;
                     }

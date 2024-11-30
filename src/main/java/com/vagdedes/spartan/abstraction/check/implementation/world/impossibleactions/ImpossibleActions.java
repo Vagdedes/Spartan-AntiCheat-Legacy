@@ -77,7 +77,7 @@ public class ImpossibleActions extends CheckRunner {
                                 this.scaffoldDirection.cancel(
                                         "type: scaffold(direction)"
                                                 + ", vector-distance: " + directionDistance
-                                                + ", block-distance: " + playerLocation.distance(blockAgainst.getLocation())
+                                                + ", block-distance: " + SpartanLocation.distance(playerLocation, blockAgainst.getLocation())
                                 );
                             } else if (!this.protocol().spartan.isBedrockPlayer()) {
                                 float pitch = playerLocation.getPitch();
@@ -86,7 +86,7 @@ public class ImpossibleActions extends CheckRunner {
                                     this.scaffoldUp.cancel(
                                             "type: scaffold(up)"
                                                     + ", pitch: " + pitch
-                                                    + ", block-distance: " + playerLocation.distance(blockAgainst.getLocation())
+                                                    + ", block-distance: " + SpartanLocation.distance(playerLocation, blockAgainst.getLocation())
                                     );
                                 } else {
                                     List<SpartanLocation> fromLocations = this.protocol().spartan.movement.getLocations();
@@ -115,7 +115,7 @@ public class ImpossibleActions extends CheckRunner {
                                             this.scaffoldYaw.cancel(
                                                     "type: scaffold(yaw)"
                                                             + ", deviation: " + yawDeviation
-                                                            + ", block-distance: " + playerLocation.distance(blockAgainst.getLocation())
+                                                            + ", block-distance: " + SpartanLocation.distance(playerLocation, blockAgainst.getLocation())
                                             );
                                         }
                                     }

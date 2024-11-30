@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.functionality.npc;
 
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import com.vagdedes.spartan.utils.minecraft.inventory.EnchantmentUtils;
@@ -142,8 +143,8 @@ public class SpartanNPC {
 
             for (SpartanProtocol protocol : protocols) {
                 if (closest == null
-                        || protocol.getLocationOrVehicle().distance(location)
-                        < closest.getLocationOrVehicle().distance(location)) {
+                        || SpartanLocation.distance(protocol.getLocationOrVehicle(), location)
+                        < SpartanLocation.distance(closest.getLocationOrVehicle(), location)) {
                     closest = protocol;
                 }
             }
