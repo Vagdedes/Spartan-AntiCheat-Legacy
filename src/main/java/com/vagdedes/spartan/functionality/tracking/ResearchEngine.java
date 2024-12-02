@@ -588,32 +588,6 @@ public class ResearchEngine {
             }
             violationFired.clear();
         }
-        if (SpartanBukkit.packetsEnabled()) {
-            for (Enums.HackType hackType : Enums.HackType.values()) {
-                Check check = hackType.getCheck();
-
-                if (check.isEnabled(null, null)
-                        && !check.isSilent(null, null)) {
-                    String message = AwarenessNotifications.getOptionalNotification(
-                            "Spartan does not support Java full player preventions when running on the packet level."
-                                    + " This is due to problems risen from trying to implement this functionality with packets."
-                    );
-
-                    if (message != null) {
-                        List<SpartanProtocol> protocols = Permissions.getStaff();
-
-                        if (!protocols.isEmpty()) {
-                            for (SpartanProtocol p : protocols) {
-                                if (AwarenessNotifications.canSend(p.getUUID(), "packet-preventions", 60 * 60)) {
-                                    p.bukkit.sendMessage(message);
-                                }
-                            }
-                        }
-                    }
-                    break;
-                }
-            }
-        }
     }
 
     public static void queueToCache(Enums.HackType hackType) {
