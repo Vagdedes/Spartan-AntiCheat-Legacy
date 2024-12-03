@@ -10,6 +10,8 @@ import java.util.Map;
 public class Event_Chunks_v1_13 {
 
     public static BlockData getBlockData(World world, int x, int y, int z) {
+        Event_Chunks.enable();
+
         if (y < (Event_Chunks.heightSupport ? world.getMinHeight() : 0)
                 || y >= (Event_Chunks.heightSupport ? world.getMaxHeight() : PlayerUtils.height)) {
             return null;

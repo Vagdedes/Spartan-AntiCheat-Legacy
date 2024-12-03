@@ -24,6 +24,7 @@ import java.util.Map;
 
 public class Event_Chunks implements Listener {
 
+    private static boolean enabled = false;
     private static final Map<Long, Boolean> loaded = new LinkedHashMap<>();
     static final Map<World, Map<Long, ChunkData>> map = new LinkedHashMap<>();
     public static final boolean heightSupport = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17);
@@ -66,7 +67,8 @@ public class Event_Chunks implements Listener {
 
     static {
         SpartanBukkit.runRepeatingTask(() -> {
-            if (SpartanBukkit.packetsEnabled()
+            if (enabled
+                    && SpartanBukkit.packetsEnabled()
                     && SpartanBukkit.hasPlayerCount()
                     && isEmptyQueue()) {
                 for (SpartanProtocol protocol : SpartanBukkit.getProtocols()) {
@@ -77,7 +79,7 @@ public class Event_Chunks implements Listener {
                             SpartanLocation.getChunkPos(location.getBlockX()),
                             SpartanLocation.getChunkPos(location.getBlockZ())
                     )
-                            && cache(location.getChunk(), true)) {
+                            && rawCache(location.getChunk(), true)) {
                         break;
                     }
                 }
@@ -87,11 +89,15 @@ public class Event_Chunks implements Listener {
 
     // Separator
 
+    static void enable() {
+        enabled = true;
+    }
+
     public static long hashCoordinates(int x, int z) {
         return (31L * x) + z;
     }
 
-    public static long hash(World world, int x, int z) {
+    private static long hash(World world, int x, int z) {
         return (hashCoordinates(x, z) * 31L) + world.getName().hashCode();
     }
 
@@ -99,6 +105,7 @@ public class Event_Chunks implements Listener {
 
     public static void clear() {
         map.clear();
+        enabled = false;
     }
 
     public static boolean isLoaded(World world, int x, int z) {
@@ -115,6 +122,8 @@ public class Event_Chunks implements Listener {
     }
 
     public static Material getBlockType(World world, int x, int y, int z) {
+        Event_Chunks.enable();
+
         if (y < (heightSupport ? world.getMinHeight() : 0)
                 || y >= (heightSupport ? world.getMaxHeight() : PlayerUtils.height)) {
             return null;
@@ -154,7 +163,7 @@ public class Event_Chunks implements Listener {
         return false;
     }
 
-    public static boolean cache(Chunk chunk, boolean force) {
+    private static boolean rawCache(Chunk chunk, boolean force) {
         World world = chunk.getWorld();
 
         if (!force && !hasPlayers(world, chunk.getX(), chunk.getZ())) {
@@ -168,6 +177,14 @@ public class Event_Chunks implements Listener {
                 hashCoordinates(chunk.getX(), chunk.getZ()),
                 k -> new ChunkData()
         ).refresh(chunk);
+    }
+
+    public static boolean cache(Chunk chunk, boolean force) {
+        if (enabled) {
+            return rawCache(chunk, force);
+        } else {
+            return false;
+        }
     }
 
     private static boolean isEmptyQueue() {
@@ -232,11 +249,11 @@ public class Event_Chunks implements Listener {
         }
     }
 
-    public static Block getBlockAsync(final Location location) {
+    public static Block getBlockAsync(Location location) {
         if (Event_Chunks.isLoaded(
-                        location.getWorld(),
-                        location.getBlockX() >> 4,
-                        location.getBlockZ() >> 4
+                location.getWorld(),
+                location.getBlockX() >> 4,
+                location.getBlockZ() >> 4
         )) {
             return location.getWorld().getBlockAt(location);
         } else {
