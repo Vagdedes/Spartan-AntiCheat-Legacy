@@ -28,7 +28,12 @@ public class Event_Chunks_v1_13 {
                 )
         );
 
-        if (data == null || data.snapshot == null) {
+        if (data == null) {
+            return null;
+        }
+        data.tick();
+
+        if (data.snapshot == null) {
             return null;
         }
         return data.snapshot.getBlockData(x & 0xF, y, z & 0xF);

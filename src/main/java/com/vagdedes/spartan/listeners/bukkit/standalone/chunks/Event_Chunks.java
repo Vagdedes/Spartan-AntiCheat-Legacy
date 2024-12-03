@@ -18,6 +18,7 @@ import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
 
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,12 +34,15 @@ public class Event_Chunks implements Listener {
 
     static final class ChunkData {
 
-        private long creation;
+        private long creation, lastAccess;
         private boolean queued;
         ChunkSnapshot snapshot;
 
         private ChunkData() {
+        }
 
+        void tick() {
+            this.lastAccess = System.currentTimeMillis();
         }
 
         private boolean refresh(Chunk chunk) {
@@ -141,7 +145,12 @@ public class Event_Chunks implements Listener {
         }
         ChunkData data = subMap.get(hashCoordinates(SpartanLocation.getChunkPos(x), SpartanLocation.getChunkPos(z)));
 
-        if (data == null || data.snapshot == null) {
+        if (data == null) {
+            return null;
+        }
+        data.tick();
+
+        if (data.snapshot == null) {
             return null;
         }
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_10)) {
@@ -179,10 +188,12 @@ public class Event_Chunks implements Listener {
                 world,
                 k -> new LinkedHashMap<>()
         );
-        return subMap.computeIfAbsent(
+        ChunkData data = subMap.computeIfAbsent(
                 hashCoordinates(chunk.getX(), chunk.getZ()),
                 k -> new ChunkData()
-        ).refresh(chunk);
+        );
+        data.tick();
+        return data.refresh(chunk);
     }
 
     public static boolean cache(Chunk chunk, boolean force) {
@@ -196,9 +207,15 @@ public class Event_Chunks implements Listener {
     private static boolean isEmptyQueue() {
         if (!map.isEmpty()) {
             for (Map<Long, ChunkData> subMap : map.values()) {
-                for (ChunkData data : subMap.values()) {
+                Iterator<ChunkData> iterator = subMap.values().iterator();
+
+                while (iterator.hasNext()) {
+                    ChunkData data = iterator.next();
+
                     if (data.isQueued()) {
                         return false;
+                    } else if (System.currentTimeMillis() - data.lastAccess >= 60_000L) {
+                        iterator.remove();
                     }
                 }
             }
