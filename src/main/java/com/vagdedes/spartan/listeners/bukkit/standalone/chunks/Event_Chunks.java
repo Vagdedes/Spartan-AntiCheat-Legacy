@@ -42,14 +42,18 @@ public class Event_Chunks implements Listener {
         }
 
         private boolean refresh(Chunk chunk) {
-            synchronized (this) {
-                if (!this.queued
-                        && System.currentTimeMillis() - this.creation > 500L) {
+            if (!this.queued) {
+                synchronized (this) {
                     this.queued = true;
-                    this.creation = System.currentTimeMillis();
-                    this.snapshot = chunk.getChunkSnapshot();
-                    this.queued = false;
-                    return true;
+
+                    if (System.currentTimeMillis() - this.creation > 500L) {
+                        this.creation = System.currentTimeMillis();
+                        this.snapshot = chunk.getChunkSnapshot();
+                        this.queued = false;
+                        return true;
+                    } else {
+                        this.queued = false;
+                    }
                 }
             }
             return false;
