@@ -71,22 +71,24 @@ public class Event_Chunks implements Listener {
 
     static {
         SpartanBukkit.runRepeatingTask(() -> {
-            if (enabled
-                    && SpartanBukkit.packetsEnabled()
-                    && SpartanBukkit.hasPlayerCount()
-                    && isEmptyQueue()) {
-                for (SpartanProtocol protocol : SpartanBukkit.getProtocols()) {
-                    Location location = protocol.getLocation();
+            if (SpartanBukkit.packetsEnabled()
+                    && SpartanBukkit.hasPlayerCount()) {
+                if (enabled && isEmptyQueue()) {
+                    for (SpartanProtocol protocol : SpartanBukkit.getProtocols()) {
+                        Location location = protocol.getLocation();
 
-                    if (isLoaded(
-                            location.getWorld(),
-                            SpartanLocation.getChunkPos(location.getBlockX()),
-                            SpartanLocation.getChunkPos(location.getBlockZ())
-                    )
-                            && rawCache(location.getChunk(), true)) {
-                        break;
+                        if (isLoaded(
+                                location.getWorld(),
+                                SpartanLocation.getChunkPos(location.getBlockX()),
+                                SpartanLocation.getChunkPos(location.getBlockZ())
+                        )
+                                && rawCache(location.getChunk(), true)) {
+                            break;
+                        }
                     }
                 }
+            } else {
+                enabled = false;
             }
         }, 1L, 1L);
     }
