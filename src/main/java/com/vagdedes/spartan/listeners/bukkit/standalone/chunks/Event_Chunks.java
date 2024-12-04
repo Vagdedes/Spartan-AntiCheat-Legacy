@@ -25,7 +25,7 @@ import java.util.Map;
 
 public class Event_Chunks implements Listener {
 
-    private static boolean enabled = false;
+    private static long enabled = 0L;
     private static final Map<Long, Boolean> loaded = new LinkedHashMap<>();
     static final Map<World, Map<Long, ChunkData>> map = new LinkedHashMap<>();
     public static final boolean heightSupport = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17);
@@ -50,9 +50,9 @@ public class Event_Chunks implements Listener {
                 synchronized (this) {
                     this.queued = true;
 
-                    if (System.currentTimeMillis() - this.creation > 500L) {
-                        this.creation = System.currentTimeMillis();
+                    if (System.currentTimeMillis() - this.creation >= 500L) {
                         this.snapshot = chunk.getChunkSnapshot();
+                        this.creation = System.currentTimeMillis();
                         this.queued = false;
                         return true;
                     } else {
@@ -77,7 +77,7 @@ public class Event_Chunks implements Listener {
         SpartanBukkit.runRepeatingTask(() -> {
             if (SpartanBukkit.packetsEnabled()
                     && SpartanBukkit.hasPlayerCount()) {
-                if (enabled && isEmptyQueue()) {
+                if (isEnabled() && isEmptyQueue()) {
                     for (SpartanProtocol protocol : SpartanBukkit.getProtocols()) {
                         Location location = protocol.getLocation();
 
@@ -92,7 +92,7 @@ public class Event_Chunks implements Listener {
                     }
                 }
             } else {
-                enabled = false;
+                enabled = 0L;
             }
         }, 1L, 1L);
     }
@@ -100,7 +100,11 @@ public class Event_Chunks implements Listener {
     // Separator
 
     static void enable() {
-        enabled = true;
+        enabled = System.currentTimeMillis();
+    }
+
+    private static boolean isEnabled() {
+        return System.currentTimeMillis() - enabled <= 60_000L;
     }
 
     public static long hashCoordinates(int x, int z) {
@@ -115,7 +119,7 @@ public class Event_Chunks implements Listener {
 
     public static void clear() {
         map.clear();
-        enabled = false;
+        enabled = 0L;
     }
 
     public static boolean isLoaded(World world, int x, int z) {
@@ -197,7 +201,7 @@ public class Event_Chunks implements Listener {
     }
 
     public static boolean cache(Chunk chunk, boolean force) {
-        if (enabled) {
+        if (isEnabled()) {
             return rawCache(chunk, force);
         } else {
             return false;
