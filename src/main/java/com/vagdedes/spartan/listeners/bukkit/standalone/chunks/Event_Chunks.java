@@ -184,7 +184,7 @@ public class Event_Chunks implements Listener {
                 }
             }
         } else {
-            Collection<SpartanProtocol> players = SpartanBukkit.getProtocols();
+            List<SpartanProtocol> players = SpartanBukkit.getProtocols();
 
             if (!players.isEmpty()) {
                 for (SpartanProtocol protocol : players) {
