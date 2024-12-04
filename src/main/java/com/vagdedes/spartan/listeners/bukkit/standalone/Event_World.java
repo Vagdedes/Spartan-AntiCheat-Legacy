@@ -35,41 +35,38 @@ public class Event_World implements Listener {
 
     static {
         SpartanBukkit.runRepeatingTask(() -> {
-            if (SpartanBukkit.hasPlayerCount()) {
-                if (MultiVersion.folia || SpartanBukkit.packetsEnabled()) {
-                    Set<World> worlds = new HashSet<>();
+            if (MultiVersion.folia
+                    && SpartanBukkit.hasPlayerCount()) {
+                Set<World> worlds = new HashSet<>();
 
-                    for (SpartanProtocol protocol : SpartanBukkit.getProtocols()) {
-                        worlds.add(protocol.spartan.getWorld());
-                    }
-                    for (World world : worlds) {
-                        Map<Long, List<Entity>> perChunkEntities = new LinkedHashMap<>();
+                for (SpartanProtocol protocol : SpartanBukkit.getProtocols()) {
+                    worlds.add(protocol.spartan.getWorld());
+                }
+                for (World world : worlds) {
+                    Map<Long, List<Entity>> perChunkEntities = new LinkedHashMap<>();
 
-                        for (Entity entity : world.getEntities()) {
-                            Location location = ProtocolLib.getLocationOrNull(entity);
+                    for (Entity entity : world.getEntities()) {
+                        Location location = ProtocolLib.getLocationOrNull(entity);
 
-                            if (location != null) {
-                                long hash = Event_Chunks.hashCoordinates(
-                                        SpartanLocation.getChunkPos(location.getBlockX()),
-                                        SpartanLocation.getChunkPos(location.getBlockZ())
-                                );
-                                perChunkEntities.computeIfAbsent(
-                                        hash,
-                                        k -> new CopyOnWriteArrayList<>()
-                                ).add(entity);
-                            }
-                        }
-                        entities.put(world, perChunkEntities);
-                    }
-                    Iterator<World> iterator = entities.keySet().iterator();
-
-                    while (iterator.hasNext()) {
-                        if (!worlds.contains(iterator.next())) {
-                            iterator.remove();
+                        if (location != null) {
+                            long hash = Event_Chunks.hashCoordinates(
+                                    SpartanLocation.getChunkPos(location.getBlockX()),
+                                    SpartanLocation.getChunkPos(location.getBlockZ())
+                            );
+                            perChunkEntities.computeIfAbsent(
+                                    hash,
+                                    k -> new CopyOnWriteArrayList<>()
+                            ).add(entity);
                         }
                     }
-                } else {
-                    entities.clear();
+                    entities.put(world, perChunkEntities);
+                }
+                Iterator<World> iterator = entities.keySet().iterator();
+
+                while (iterator.hasNext()) {
+                    if (!worlds.contains(iterator.next())) {
+                        iterator.remove();
+                    }
                 }
             }
         }, 1L, 1L);

@@ -18,13 +18,11 @@ import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
 
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Event_Chunks implements Listener {
 
+    private static final long enabledPastTime = 60_000L;
     private static long enabled = 0L;
     private static final Map<Long, Boolean> loaded = new LinkedHashMap<>();
     static final Map<World, Map<Long, ChunkData>> map = new LinkedHashMap<>();
@@ -104,7 +102,7 @@ public class Event_Chunks implements Listener {
     }
 
     private static boolean isEnabled() {
-        return System.currentTimeMillis() - enabled <= 60_000L;
+        return System.currentTimeMillis() - enabled <= enabledPastTime;
     }
 
     public static long hashCoordinates(int x, int z) {
@@ -123,16 +121,21 @@ public class Event_Chunks implements Listener {
     }
 
     public static boolean isLoaded(World world, int x, int z) {
-        if (loaded.containsKey(hash(world, x, z))) {
-            return true;
-        }
-        for (Chunk chunk : world.getLoadedChunks()) {
-            if (chunk.getX() == x && chunk.getZ() == z) {
-                loaded.put(hash(chunk.getWorld(), chunk.getX(), chunk.getZ()), true);
-                return true;
+        long hash = hash(world, x, z);
+        Boolean state = loaded.get(hash);
+
+        if (state != null) {
+            return state;
+        } else {
+            for (Chunk chunk : world.getLoadedChunks()) {
+                if (chunk.getX() == x && chunk.getZ() == z) {
+                    loaded.put(hash, true);
+                    return true;
+                }
             }
+            loaded.put(hash, false);
+            return false;
         }
-        return false;
     }
 
     public static Material getBlockType(World world, int x, int y, int z) {
@@ -166,15 +169,32 @@ public class Event_Chunks implements Listener {
     }
 
     private static boolean hasPlayers(World world, int x, int z) {
-        Map<Long, List<Entity>> perChunk = Event_World.getEntities(world);
+        if (MultiVersion.folia) {
+            Map<Long, List<Entity>> perChunk = Event_World.getEntities(world);
 
-        if (perChunk != null) {
-            List<Entity> list = perChunk.get(Event_Chunks.hashCoordinates(x, z));
+            if (perChunk != null) {
+                List<Entity> list = perChunk.get(Event_Chunks.hashCoordinates(x, z));
 
-            if (list != null) {
-                for (Entity entity : list) {
-                    if (entity instanceof Player) {
-                        return true;
+                if (list != null) {
+                    for (Entity entity : list) {
+                        if (entity instanceof Player) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        } else {
+            Collection<SpartanProtocol> players = SpartanBukkit.getProtocols();
+
+            if (!players.isEmpty()) {
+                for (SpartanProtocol protocol : players) {
+                    if (protocol.spartan.getWorld().equals(world)) {
+                        Location location = protocol.getLocation();
+
+                        if (SpartanLocation.getChunkPos(location.getBlockX()) == x
+                                && SpartanLocation.getChunkPos(location.getBlockZ()) == z) {
+                            return true;
+                        }
                     }
                 }
             }
@@ -218,7 +238,7 @@ public class Event_Chunks implements Listener {
 
                     if (data.isQueued()) {
                         return false;
-                    } else if (System.currentTimeMillis() - data.lastAccess >= 60_000L) {
+                    } else if (System.currentTimeMillis() - data.lastAccess >= enabledPastTime) {
                         iterator.remove();
                     }
                 }
