@@ -14,9 +14,11 @@ import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.listeners.bukkit.Event_Movement;
 import com.vagdedes.spartan.utils.minecraft.protocol.ProtocolTools;
+import dev.lone.itemsadder.e.D;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
 
@@ -82,6 +84,20 @@ public class Packet_Movement extends PacketAdapter {
 
         if (r == null) {
             return;
+        }
+
+        Location c = ProtocolTools.readLocation(event);
+        if (ProtocolTools.hasRotation(event.getPacket().getType())) {
+            c.setYaw(event.getPacket().getFloat().read(0));
+            c.setPitch(event.getPacket().getFloat().read(1));
+        }
+        double[] v = new double[]{c.getX(), c.getY(), c.getZ(), c.getYaw(), c.getPitch()};
+        for (Double check : v) {
+            if (check.isNaN() || check.isInfinite() || Math.abs(check) > 3E8) {
+                SpartanBukkit.getProtocol(player)
+                                .spartan.punishments.kick(Bukkit.getConsoleSender(), "Invalid packet");
+                return;
+            }
         }
         boolean legacy = ProtocolTools.isFlying(event, l, r);
         Event_Movement.tick(new PlayerTickEvent(p, legacy).build());
