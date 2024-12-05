@@ -128,20 +128,19 @@ public class Event_Chunks implements Listener {
         Long time = loaded.get(hash);
 
         if (time != null) {
-            if (time > System.currentTimeMillis()) {
+            if (time == -1L) {
                 return true;
-            } else if (time < 0L
-                    && -time > System.currentTimeMillis()) {
+            } else if (time > System.currentTimeMillis()) {
                 return false;
             }
         }
         for (Chunk chunk : world.getLoadedChunks()) {
             if (chunk.getX() == x && chunk.getZ() == z) {
-                loaded.put(hash, Long.MAX_VALUE);
+                loaded.put(hash, -1L);
                 return true;
             }
         }
-        loaded.put(hash, -(System.currentTimeMillis() + enabledPastTime));
+        loaded.put(hash, System.currentTimeMillis() + enabledPastTime);
         return false;
     }
 
@@ -259,7 +258,7 @@ public class Event_Chunks implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     private void ChunkLoad(ChunkLoadEvent e) {
         Chunk chunk = e.getChunk();
-        loaded.put(hash(chunk.getWorld(), chunk.getX(), chunk.getZ()), Long.MAX_VALUE);
+        loaded.put(hash(chunk.getWorld(), chunk.getX(), chunk.getZ()), -1L);
 
         if (SpartanBukkit.packetsEnabled()) {
             cache(chunk, false);
