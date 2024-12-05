@@ -1,1 +1,2 @@
 [#] Optimized the plugin's chunk collector for getting block data asynchronously.
+[#] Fixed a few ProtocolLib related console errors.

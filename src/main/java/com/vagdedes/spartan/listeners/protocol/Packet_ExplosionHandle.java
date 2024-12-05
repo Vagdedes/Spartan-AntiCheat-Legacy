@@ -23,13 +23,18 @@ public class Packet_ExplosionHandle extends PacketAdapter {
 
     @Override
     public void onPacketSending(PacketEvent event) {
-        Player player = event.getPlayer();
-        SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
         PacketContainer packet = event.getPacket();
         List<Double> d = packet.getDoubles().getValues();
-        Location l = new Location(player.getWorld(), d.get(0), d.get(1), d.get(2));
-        if (SpartanLocation.distanceSquared(l, protocol.getLocation()) < 10)
-            protocol.getComponentY().explosionTick = true;
+
+        if (d.size() >= 3) {
+            Player player = event.getPlayer();
+            SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
+            Location l = new Location(player.getWorld(), d.get(0), d.get(1), d.get(2));
+
+            if (SpartanLocation.distanceSquared(l, protocol.getLocation()) < 10) {
+                protocol.getComponentY().explosionTick = true;
+            }
+        }
     }
 
 }
