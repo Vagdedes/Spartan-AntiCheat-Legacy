@@ -59,8 +59,8 @@ public class SpartanProtocol {
     public PlayerTickEvent lastTickEvent;
 
     public short transactionId;
-    public long transactionTime, transactionPing;
-    public boolean transactionBoot;
+    public long transactionTime, transactionLastTime, transactionPing;
+    public boolean transactionBoot, transactionLocal, transactionSentKeep;
 
     private ComponentY componentY;
 
@@ -109,8 +109,11 @@ public class SpartanProtocol {
         this.lastTickEvent = null;
         this.transactionId = (short) 1939;
         this.transactionTime = System.currentTimeMillis();
+        this.transactionLastTime = System.currentTimeMillis();
         this.transactionPing = 0;
         this.transactionBoot = false;
+        this.transactionLocal = false;
+        this.transactionSentKeep = false;
         this.componentY = new ComponentY();
 
         this.setProfile(ResearchEngine.getPlayerProfile(this, false));
@@ -122,6 +125,10 @@ public class SpartanProtocol {
 
     public boolean isUsingVersion(MultiVersion.MCVersion trialVersion) {
         return version.ordinal() == trialVersion.ordinal();
+    }
+
+    public boolean isDesync() {
+        return this.transactionSentKeep && (System.currentTimeMillis() - this.transactionTime > 50);
     }
 
     public boolean isUsingVersionOrGreater(MultiVersion.MCVersion trialVersion) {
