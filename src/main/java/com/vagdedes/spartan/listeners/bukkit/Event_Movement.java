@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.listeners.bukkit;
 
 import com.vagdedes.spartan.abstraction.event.PlayerTickEvent;
+import com.vagdedes.spartan.abstraction.event.PlayerTransactionEvent;
 import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
@@ -97,6 +98,10 @@ public class Event_Movement implements Listener {
         protocol.packetWorld.tick(tickEvent);
         SpartanPlayer p = protocol.spartan;
         p.getRunner(Enums.HackType.MorePackets).handle(false, tickEvent);
+    }
+    public static void transaction(PlayerTransactionEvent event) {
+        SpartanProtocol protocol = event.protocol;
+        // stub
     }
 
 }

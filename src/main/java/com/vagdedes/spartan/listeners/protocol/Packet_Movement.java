@@ -100,6 +100,9 @@ public class Packet_Movement extends PacketAdapter {
         boolean legacy = ProtocolTools.isFlying(event, l, r);
         Event_Movement.tick(new PlayerTickEvent(p, legacy).build());
 
+        if (p.transactionBoot)
+            LatencyHandler.startChecking(p);
+
         if (!ProtocolLib.getWorld(player).getName().equals(p.fromWorld)) {
             p.fromWorld = ProtocolLib.getWorld(player).getName();
             p.setLocation(ProtocolTools.getLoadLocation(player));

@@ -17,6 +17,7 @@ import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.potion.PotionEffectType;
@@ -476,7 +477,8 @@ public class IMSimulationGravity extends ProbabilityDetection {
                     );
 
                     if (BlockUtils.isLiquidOrWaterLogged(block, true)
-                            || BlockUtils.isLiquid(m)) {
+                            || BlockUtils.isLiquid(m)
+                            || BlockUtils.isWaterLogged(block)) {
                         return true;
                     }
                 }

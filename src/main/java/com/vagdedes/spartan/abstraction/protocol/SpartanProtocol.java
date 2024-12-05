@@ -58,6 +58,10 @@ public class SpartanProtocol {
     public BlockPlaceEvent oldBlockEvent;
     public PlayerTickEvent lastTickEvent;
 
+    public short transactionId;
+    public long transactionTime, transactionPing;
+    public boolean transactionBoot;
+
     private ComponentY componentY;
 
     public SpartanProtocol(Player player) {
@@ -103,7 +107,10 @@ public class SpartanProtocol {
         this.oldBlockEvent = null;
         this.pistonTick = false;
         this.lastTickEvent = null;
-
+        this.transactionId = (short) 1939;
+        this.transactionTime = System.currentTimeMillis();
+        this.transactionPing = 0;
+        this.transactionBoot = false;
         this.componentY = new ComponentY();
 
         this.setProfile(ResearchEngine.getPlayerProfile(this, false));
