@@ -3,7 +3,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.world;
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
-import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
+import com.vagdedes.spartan.compatibility.Compatibility;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.compatibility.manual.abilities.AureliumSkills;

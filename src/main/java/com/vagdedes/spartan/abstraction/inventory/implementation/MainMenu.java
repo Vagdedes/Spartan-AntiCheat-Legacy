@@ -2,7 +2,7 @@ package com.vagdedes.spartan.abstraction.inventory.implementation;
 
 import com.vagdedes.filegui.api.FileGUIAPI;
 import com.vagdedes.spartan.abstraction.check.Check;
-import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
+import com.vagdedes.spartan.compatibility.Compatibility;
 import com.vagdedes.spartan.abstraction.inventory.InventoryMenu;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.command.CommandExecution;

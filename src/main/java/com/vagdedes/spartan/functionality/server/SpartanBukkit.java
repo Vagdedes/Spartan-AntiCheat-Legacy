@@ -2,7 +2,7 @@ package com.vagdedes.spartan.functionality.server;
 
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.Threads;
-import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
+import com.vagdedes.spartan.compatibility.Compatibility;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.npc.NPCManager;

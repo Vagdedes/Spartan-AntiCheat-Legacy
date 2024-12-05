@@ -4,7 +4,7 @@ import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
-import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
+import com.vagdedes.spartan.compatibility.Compatibility;
 import com.vagdedes.spartan.abstraction.protocol.ExtendedPotionEffect;
 import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
 import com.vagdedes.spartan.abstraction.world.SpartanBlock;

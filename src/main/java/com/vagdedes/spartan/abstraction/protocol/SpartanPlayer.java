@@ -3,7 +3,7 @@ package com.vagdedes.spartan.abstraction.protocol;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
-import com.vagdedes.spartan.abstraction.configuration.implementation.Compatibility;
+import com.vagdedes.spartan.compatibility.Compatibility;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.necessary.BedrockCompatibility;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
