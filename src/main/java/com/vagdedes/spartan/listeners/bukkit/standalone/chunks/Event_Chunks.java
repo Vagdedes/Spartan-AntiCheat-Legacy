@@ -27,7 +27,7 @@ public class Event_Chunks implements Listener {
 
     private static final long enabledPastTime = 60_000L;
     private static long enabled = 0L;
-    private static final Map<Long, Boolean> loaded = new LinkedHashMap<>();
+    private static final Map<Long, Long> loaded = new LinkedHashMap<>();
     static final Map<World, Map<Long, ChunkData>> map = new LinkedHashMap<>();
     public static final boolean heightSupport = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17);
 
@@ -125,20 +125,20 @@ public class Event_Chunks implements Listener {
 
     public static boolean isLoaded(World world, int x, int z) {
         long hash = hash(world, x, z);
-        Boolean state = loaded.get(hash);
+        Long time = loaded.get(hash);
 
-        if (state != null) {
-            return state;
-        } else {
-            for (Chunk chunk : world.getLoadedChunks()) {
-                if (chunk.getX() == x && chunk.getZ() == z) {
-                    loaded.put(hash, true);
-                    return true;
-                }
-            }
-            loaded.put(hash, false);
-            return false;
+        if (time != null
+                && time > System.currentTimeMillis()) {
+            return true;
         }
+        for (Chunk chunk : world.getLoadedChunks()) {
+            if (chunk.getX() == x && chunk.getZ() == z) {
+                loaded.put(hash, Long.MAX_VALUE);
+                return true;
+            }
+        }
+        loaded.put(hash, System.currentTimeMillis() + enabledPastTime);
+        return false;
     }
 
     public static Material getBlockType(World world, int x, int y, int z) {
@@ -255,7 +255,7 @@ public class Event_Chunks implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     private void ChunkLoad(ChunkLoadEvent e) {
         Chunk chunk = e.getChunk();
-        loaded.put(hash(chunk.getWorld(), chunk.getX(), chunk.getZ()), true);
+        loaded.put(hash(chunk.getWorld(), chunk.getX(), chunk.getZ()), Long.MAX_VALUE);
 
         if (SpartanBukkit.packetsEnabled()) {
             cache(chunk, false);
