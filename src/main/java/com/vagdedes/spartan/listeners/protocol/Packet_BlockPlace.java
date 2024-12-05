@@ -19,6 +19,7 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
@@ -80,9 +81,29 @@ public class Packet_BlockPlace extends PacketAdapter {
                         : player.getInventory().getItemInOffHand()) : player.getItemInHand();
                 if (itemInHand.getType().isBlock()) {
                     if (!isInPlayer(protocol.getLocation(), block.getLocation())) {
+                        Thread thread = Thread.currentThread();
+                        BlockState[] blockState = new BlockState[1];
+                        SpartanBukkit.transferTask(
+                                protocol,
+                                () -> {
+                                    blockState[0] = block.getState();
+
+                                    synchronized (thread) {
+                                        thread.notifyAll();
+                                    }
+                                }
+                        );
+                        synchronized (thread) {
+                            if (blockState[0] == null) {
+                                try {
+                                    thread.wait();
+                                } catch (Exception ignored) {
+                                }
+                            }
+                        }
                         BlockPlaceEvent blockPlaceEvent = new BlockPlaceEvent(
                                 block,
-                                block.getState(),
+                                blockState[0],
                                 player.getLocation().getBlock(),
                                 itemInHand,
                                 player,
@@ -123,8 +144,8 @@ public class Packet_BlockPlace extends PacketAdapter {
             return (blockPosition.getY() != -1);
         } else {
             return ((packet.getType().equals(PacketType.Play.Client.USE_ITEM)
-                            || (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_21)
-                            && packet.getType().equals(PacketType.Play.Client.USE_ITEM_ON)))
+                    || (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_21)
+                    && packet.getType().equals(PacketType.Play.Client.USE_ITEM_ON)))
                     && packet.getHands().read(0).equals(EnumWrappers.Hand.MAIN_HAND));
         }
     }
@@ -164,8 +185,8 @@ public class Packet_BlockPlace extends PacketAdapter {
 
     public static PacketType via21blockPlace() {
         return MultiVersion.isOrGreater(
-                        MultiVersion.MCVersion.V1_21) ? PacketType.Play.Client.USE_ITEM_ON
-                        : PacketType.Play.Client.BLOCK_PLACE;
+                MultiVersion.MCVersion.V1_21) ? PacketType.Play.Client.USE_ITEM_ON
+                : PacketType.Play.Client.BLOCK_PLACE;
     }
 
 
