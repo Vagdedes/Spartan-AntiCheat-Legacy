@@ -127,9 +127,13 @@ public class Event_Chunks implements Listener {
         long hash = hash(world, x, z);
         Long time = loaded.get(hash);
 
-        if (time != null
-                && time > System.currentTimeMillis()) {
-            return true;
+        if (time != null) {
+            if (time > System.currentTimeMillis()) {
+                return true;
+            } else if (time < 0L
+                    && -time > System.currentTimeMillis()) {
+                return false;
+            }
         }
         for (Chunk chunk : world.getLoadedChunks()) {
             if (chunk.getX() == x && chunk.getZ() == z) {
@@ -137,7 +141,7 @@ public class Event_Chunks implements Listener {
                 return true;
             }
         }
-        loaded.put(hash, System.currentTimeMillis() + enabledPastTime);
+        loaded.put(hash, -(System.currentTimeMillis() + enabledPastTime));
         return false;
     }
 
