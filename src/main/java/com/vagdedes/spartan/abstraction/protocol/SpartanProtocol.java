@@ -128,7 +128,7 @@ public class SpartanProtocol {
     }
 
     public boolean isDesync() {
-        return this.transactionSentKeep && (System.currentTimeMillis() - this.transactionTime > 50);
+        return this.transactionSentKeep && (System.currentTimeMillis() - this.transactionTime > 55);
     }
 
     public boolean isUsingVersionOrGreater(MultiVersion.MCVersion trialVersion) {

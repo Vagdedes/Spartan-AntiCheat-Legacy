@@ -10,6 +10,7 @@ import com.vagdedes.spartan.abstraction.event.PlayerTickEvent;
 import com.vagdedes.spartan.abstraction.event.SuperPositionPacketEvent;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
+import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.listeners.bukkit.Event_Movement;
@@ -98,8 +99,18 @@ public class Packet_Movement extends PacketAdapter {
             }
         }
         boolean legacy = ProtocolTools.isFlying(event, l, r);
-        Event_Movement.tick(new PlayerTickEvent(p, legacy).build());
-
+        PlayerTickEvent tickEvent = new PlayerTickEvent(p, legacy).build();
+        Event_Movement.tick(tickEvent);
+        if (p.isDesync() && tickEvent.getDelay() > 40 && tickEvent.getDelay() < 60) {
+            Bukkit.getScheduler().runTask(Register.plugin,
+                            () -> player.teleport(p.getLocation()));
+            AwarenessNotifications.forcefullySend("&e" + player.getName()
+                            + " &cmoves faster than the transaction response &8("
+                            + tickEvent.getDelay() + "ms > "
+                            + (System.currentTimeMillis() - p.transactionTime) + "ms)");
+            event.setCancelled(true);
+            return;
+        }
         if (p.transactionBoot)
             LatencyHandler.startChecking(p);
 
