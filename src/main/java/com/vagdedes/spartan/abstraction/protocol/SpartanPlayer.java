@@ -12,10 +12,9 @@ import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
-import com.vagdedes.spartan.listeners.bukkit.standalone.Event_World;
-import com.vagdedes.spartan.listeners.bukkit.standalone.chunks.Event_Chunks;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
+import com.vagdedes.spartan.utils.math.MathHelper;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import com.vagdedes.spartan.utils.minecraft.server.PluginUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
@@ -350,65 +349,42 @@ public class SpartanPlayer {
 
     // Separator
 
+    public List<Entity> getNearbyEntities(Location location, double x, double y, double z) {
+        List<Entity> entities = new ArrayList<>();
+        World world = location.getWorld();
+        int smallX = MathHelper.floor_double((location.getX() - x) / PlayerUtils.chunk);
+        int bigX = MathHelper.floor_double((location.getX() + x) / PlayerUtils.chunk);
+        int smallZ = MathHelper.floor_double((location.getZ() - z) / PlayerUtils.chunk);
+        int bigZ = MathHelper.floor_double((location.getZ() + z) / PlayerUtils.chunk);
+
+        for (int xx = smallX; xx <= bigX; xx++) {
+            for (int zz = smallZ; zz <= bigZ; zz++) {
+                if (world.isChunkLoaded(xx, zz)) {
+                    entities.addAll(Arrays.asList(world.getChunkAt(xx, zz).getEntities())); // Add all entities from this chunk to the list
+                }
+            }
+        }
+        if (!entities.isEmpty()) {
+            Iterator<Entity> iterator = entities.iterator();
+
+            while (iterator.hasNext()) {
+                Location eLoc = iterator.next().getLocation();
+
+                if (Math.abs(eLoc.getX() - location.getX()) > x
+                        || Math.abs(eLoc.getY() - location.getY()) > y
+                        || Math.abs(eLoc.getZ() - location.getZ()) > z) {
+                    iterator.remove();
+                }
+            }
+        }
+        return entities;
+    }
+
     public List<Entity> getNearbyEntities(double x, double y, double z) {
-        if (MultiVersion.folia) {
-            Map<Long, List<Entity>> perChunk = Event_World.getEntities(this.getWorld());
-
-            if (perChunk != null) {
-                List<Entity> nearbyEntities = new ArrayList<>();
-                SpartanLocation current = new SpartanLocation(this.protocol.getLocation());
-                Collection<SpartanLocation> surrounding = current.getSurroundingLocations(x, y, z),
-                        locations = new ArrayList<>(surrounding.size() + 1);
-                locations.add(current);
-                locations.addAll(surrounding);
-
-                for (SpartanLocation location : locations) {
-                    List<Entity> list = perChunk.get(Event_Chunks.hashCoordinates(
-                            location.getChunkX(),
-                            location.getChunkZ()
-                    ));
-
-                    if (list != null) {
-                        for (Entity entity : list) {
-                            Location entityLocation = ProtocolLib.getLocationOrNull(entity);
-
-                            if (entityLocation != null
-                                    && Math.abs(entityLocation.getX() - current.getX()) <= x
-                                    && Math.abs(entityLocation.getY() - current.getY()) <= y
-                                    && Math.abs(entityLocation.getZ() - current.getZ()) <= z) {
-                                nearbyEntities.add(entity);
-                            }
-                        }
-                    }
-                }
-                return nearbyEntities;
-            } else {
-                return new ArrayList<>(0);
-            }
+        if (SpartanBukkit.isSynchronised()) {
+            return this.protocol.bukkit.getNearbyEntities(x, y, z);
         } else {
-            Thread thread = Thread.currentThread();
-            List<Entity> nearbyEntities = new ArrayList<>();
-            boolean[] booleans = new boolean[1];
-            SpartanBukkit.transferTask(
-                    protocol,
-                    () -> {
-                        nearbyEntities.addAll(this.protocol.bukkit.getNearbyEntities(x, y, z));
-                        booleans[0] = true;
-
-                        synchronized (thread) {
-                            thread.notifyAll();
-                        }
-                    }
-            );
-            synchronized (thread) {
-                if (!booleans[0]) {
-                    try {
-                        thread.wait();
-                    } catch (Exception ignored) {
-                    }
-                }
-            }
-            return nearbyEntities;
+            return this.getNearbyEntities(this.protocol.getLocation(), x, y, z);
         }
     }
 

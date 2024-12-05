@@ -5,12 +5,9 @@ import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.npc.NPCManager;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.listeners.bukkit.standalone.Event_World;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -175,32 +172,16 @@ public class Event_Chunks implements Listener {
     }
 
     private static boolean hasPlayers(World world, int x, int z) {
-        if (MultiVersion.folia) {
-            Map<Long, List<Entity>> perChunk = Event_World.getEntities(world);
+        List<SpartanProtocol> players = SpartanBukkit.getProtocols();
 
-            if (perChunk != null) {
-                List<Entity> list = perChunk.get(Event_Chunks.hashCoordinates(x, z));
+        if (!players.isEmpty()) {
+            for (SpartanProtocol protocol : players) {
+                if (protocol.spartan.getWorld().equals(world)) {
+                    Location location = protocol.getLocation();
 
-                if (list != null) {
-                    for (Entity entity : list) {
-                        if (entity instanceof Player) {
-                            return true;
-                        }
-                    }
-                }
-            }
-        } else {
-            List<SpartanProtocol> players = SpartanBukkit.getProtocols();
-
-            if (!players.isEmpty()) {
-                for (SpartanProtocol protocol : players) {
-                    if (protocol.spartan.getWorld().equals(world)) {
-                        Location location = protocol.getLocation();
-
-                        if (SpartanLocation.getChunkPos(location.getBlockX()) == x
-                                && SpartanLocation.getChunkPos(location.getBlockZ()) == z) {
-                            return true;
-                        }
+                    if (SpartanLocation.getChunkPos(location.getBlockX()) == x
+                            && SpartanLocation.getChunkPos(location.getBlockZ()) == z) {
+                        return true;
                     }
                 }
             }
