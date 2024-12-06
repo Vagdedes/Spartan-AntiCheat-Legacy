@@ -10,6 +10,7 @@ import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.event.PlayerUseEvent;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.listeners.bukkit.Event_Combat;
 import com.vagdedes.spartan.utils.java.OverflowMap;
@@ -55,6 +56,15 @@ public class Packet_Combat_Legacy extends PacketAdapter {
                     target = player;
                     break;
                 }
+            }
+
+            if (protocol.isDesync()) {
+                Bukkit.getScheduler().runTask(Register.plugin,
+                                () -> protocol.bukkit.teleport(protocol.getLocation()));
+                AwarenessNotifications.forcefullySend(protocol.bukkit.getName()
+                                + " attack faster than the transaction response");
+                event.setCancelled(true);
+                return;
             }
 
             if ((!packet.getEntityUseActions().getValues().isEmpty()) ?

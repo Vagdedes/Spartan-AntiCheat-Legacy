@@ -104,8 +104,8 @@ public class Packet_Movement extends PacketAdapter {
         if (p.isDesync() && tickEvent.getDelay() > 40 && tickEvent.getDelay() < 60) {
             Bukkit.getScheduler().runTask(Register.plugin,
                             () -> player.teleport(p.getLocation()));
-            AwarenessNotifications.forcefullySend("&e" + player.getName()
-                            + " &cmoves faster than the transaction response &8("
+            AwarenessNotifications.forcefullySend(player.getName()
+                            + " moves faster than the transaction response ("
                             + tickEvent.getDelay() + "ms > "
                             + (System.currentTimeMillis() - p.transactionTime) + "ms)");
             event.setCancelled(true);
