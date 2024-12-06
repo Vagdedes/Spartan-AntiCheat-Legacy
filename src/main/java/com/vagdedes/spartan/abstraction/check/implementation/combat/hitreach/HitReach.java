@@ -107,7 +107,7 @@ public class HitReach extends CheckRunner {
 
                     if (minDistance.get() > HIT_BOX_VAL) {
                         if (++hitBoxVL > 3D) {
-                            hitboxRaytrace.cancel("Missing HitBox of" + target.bukkit.getName());
+                            hitboxRaytrace.cancel("Missing HitBox of " + target.bukkit.getName());
                         }
                     } else {
                         hitBoxVL = Math.max(hitBoxVL - 5D, 0);
