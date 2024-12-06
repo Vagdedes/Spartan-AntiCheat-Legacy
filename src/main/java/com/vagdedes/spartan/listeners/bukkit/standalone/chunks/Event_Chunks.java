@@ -19,13 +19,14 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Event_Chunks implements Listener {
 
     private static final long enabledPastTime = 60_000L;
     private static long enabled = 0L;
-    private static final Map<Long, Long> loaded = new LinkedHashMap<>();
-    static final Map<World, Map<Long, ChunkData>> map = new LinkedHashMap<>();
+    private static final Map<Long, Long> loaded = new ConcurrentHashMap<>();
+    static final Map<World, Map<Long, ChunkData>> map = new ConcurrentHashMap<>();
     public static final boolean heightSupport = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17);
 
     // Separator
@@ -217,19 +218,22 @@ public class Event_Chunks implements Listener {
 
     private static boolean isEmptyQueue() {
         if (!map.isEmpty()) {
+            boolean result = true;
+
             for (Map<Long, ChunkData> subMap : map.values()) {
                 Iterator<ChunkData> iterator = subMap.values().iterator();
 
                 while (iterator.hasNext()) {
                     ChunkData data = iterator.next();
 
-                    if (data.isQueued()) {
-                        return false;
-                    } else if (System.currentTimeMillis() - data.lastAccess >= enabledPastTime) {
+                    if (System.currentTimeMillis() - data.lastAccess >= enabledPastTime) {
                         iterator.remove();
+                    } else if (result && data.isQueued()) {
+                        result = false;
                     }
                 }
             }
+            return result;
         }
         return true;
     }
