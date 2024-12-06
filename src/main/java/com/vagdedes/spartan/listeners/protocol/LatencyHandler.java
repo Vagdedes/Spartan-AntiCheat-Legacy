@@ -47,7 +47,7 @@ public class LatencyHandler extends PacketAdapter {
         } else if (!packet.getLongs().getFields().isEmpty()) {
             id = Math.toIntExact(packet.getLongs().read(0));
         } else return;
-        if (id >= 1939 && id <= 1945) {
+        if (id <= -1939 && id >= -1945) {
             protocol.transactionPing = System.currentTimeMillis() - protocol.transactionTime;
             protocol.transactionLastTime = System.currentTimeMillis();
             protocol.transactionSentKeep = false;
@@ -66,7 +66,7 @@ public class LatencyHandler extends PacketAdapter {
     }
 
     public static void startChecking(SpartanProtocol protocol) {
-        protocol.transactionId = 1939;
+        protocol.transactionId = -1939;
         protocol.transactionBoot = false;
         sendTransaction(protocol, protocol.transactionId);
     }
@@ -92,8 +92,8 @@ public class LatencyHandler extends PacketAdapter {
         } else return;
 
         ProtocolLibrary.getProtocolManager().sendServerPacket(protocol.bukkit, packet);
-        protocol.transactionId++;
-        if (protocol.transactionId > 1945)
-            protocol.transactionId = 1939;
+        protocol.transactionId--;
+        if (protocol.transactionId < -1945)
+            protocol.transactionId = -1939;
     }
 }

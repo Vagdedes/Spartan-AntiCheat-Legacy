@@ -107,7 +107,7 @@ public class SpartanProtocol {
         this.oldBlockEvent = null;
         this.pistonTick = false;
         this.lastTickEvent = null;
-        this.transactionId = (short) 1939;
+        this.transactionId = (short) -1939;
         this.transactionTime = System.currentTimeMillis();
         this.transactionLastTime = System.currentTimeMillis();
         this.transactionPing = 0;

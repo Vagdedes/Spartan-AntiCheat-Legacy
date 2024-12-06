@@ -169,7 +169,7 @@ public class MoveDirection extends ProbabilityDetection {
             if (machineKnownMovement > 4) addNewPunish("heuristic(aim)", 100);
             if (aggressiveAim > 8) addNewPunish("heuristic(aggressive)", 65);
             if (constantRotations > 2) addNewPunish("heuristic(constant)", 60);
-            if (infinitives > 1) addNewPunishL2("heuristic(interpolation)", (infinitives > 2) ? 90 : 50);
+            if (infinitives > 1) addNewPunishL2("heuristic(interpolation)", (infinitives > 2) ? 60 : 40);
             if (gcd > 2) addNewPunish("pattern(gcd)", 210);
             if (aggressivePatternI > 3 && aggressivePatternD > 3) addNewPunish("pattern(random)", 40);
             if (aggressivePatternI2 > 3 && aggressivePatternD2 > 3
@@ -204,7 +204,7 @@ public class MoveDirection extends ProbabilityDetection {
         if (vl > 0) vl -= priorityData(priorityType()).vlFader;
         if (vl > priorityData(priorityType()).vlLimit) vl -= 10;
         if (vlL2 > 0) vlL2 -= (float) (priorityData(priorityType()).vlFader * 1.5);
-        if (vlL2 > priorityData(priorityType()).vlLimit) vlL2 -= 10;
+        if (vlL2 > priorityData(priorityType()).vlLimit * 1.5) vlL2 -= 10;
         rayTraceAnalysis.clear();
         aimAnalysis.clear();
 
