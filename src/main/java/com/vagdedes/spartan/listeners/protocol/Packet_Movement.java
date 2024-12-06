@@ -101,6 +101,11 @@ public class Packet_Movement extends PacketAdapter {
         boolean legacy = ProtocolTools.isFlying(event, l, r);
         PlayerTickEvent tickEvent = new PlayerTickEvent(p, legacy).build();
         Event_Movement.tick(tickEvent);
+        if (tickEvent.getDelay() > 65) {
+            p.lagTick = tickEvent.getDelay();
+        } else if (tickEvent.getDelay() > 10 && p.lagTick != 0)
+            p.lagTick = 0;
+
         if (p.isDesync() && tickEvent.getDelay() > 40 && tickEvent.getDelay() < 60) {
             Bukkit.getScheduler().runTask(Register.plugin,
                             () -> player.teleport(p.getLocation()));

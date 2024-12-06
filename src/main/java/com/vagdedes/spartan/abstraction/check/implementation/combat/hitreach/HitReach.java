@@ -29,8 +29,8 @@ import java.util.concurrent.atomic.AtomicReference;
 public class HitReach extends CheckRunner {
 
     private final CheckDetection
-            hitboxRaytrace,
-            simple;
+                    hitboxRaytrace,
+                    simple;
     private final LinkedList<Double> rayTraceAnalysis = new LinkedList<>();
     private int vl = 0;
     private static final boolean[] BOOLEANS = {true, false};
@@ -52,7 +52,7 @@ public class HitReach extends CheckRunner {
         if (!(event.target instanceof Player)) return;
         if (this.protocol().packetsEnabled()) {
             if (CombatUtils.canCheck(this.protocol(), SpartanBukkit.getProtocol((Player) event.target).bukkit)
-                    && !this.protocol().bukkit.getGameMode().equals(GameMode.CREATIVE)) {
+                            && !this.protocol().bukkit.getGameMode().equals(GameMode.CREATIVE)) {
                 SpartanProtocol target = SpartanBukkit.getProtocol((Player) event.target);
                 List<Location> h = target.positionHistory;
                 boolean is1_8 = this.protocol().isUsingVersion(MultiVersion.MCVersion.V1_8);
@@ -126,9 +126,9 @@ public class HitReach extends CheckRunner {
         } else {
             LivingEntity target = event.target;
             if (CombatUtils.canCheck(this.protocol(), target)
-                    && !this.protocol().bukkit.getGameMode().equals(GameMode.CREATIVE)) {
+                            && !this.protocol().bukkit.getGameMode().equals(GameMode.CREATIVE)) {
                 double bruteforceRayTrace = RayUtils.bruteforceRayTrace(this.protocol(), target),
-                        diff = bruteforceRayTrace - 0.4;
+                                diff = bruteforceRayTrace - 0.4;
                 rayTraceAnalysis.addLast(bruteforceRayTrace);
                 if (rayTraceAnalysis.size() >= 10) {
                     analyze(this.protocol().getLocation(), bruteforceRayTrace);
@@ -167,10 +167,10 @@ public class HitReach extends CheckRunner {
         if (punish != null) {
             vl += 100;
             this.simple.cancel( // ATTENTION: Add more detections to the check if you write more definitions for the 'punish' String field
-                    "type: " + punish + ", hitbox-size-analysis: "
-                            + result + ", hitbox-size-last: " + bruteForce + ", percent-of-deviance: "
-                            + percent + "%, reach: " + RayUtils.scaleVal((result / 0.4) * 3, 2) + " blocks",
-                    to
+                            "type: " + punish + ", hitbox-size-analysis: "
+                                            + result + ", hitbox-size-last: " + bruteForce + ", percent-of-deviance: "
+                                            + percent + "%, reach: " + RayUtils.scaleVal((result / 0.4) * 3, 2) + " blocks",
+                            to
             );
         } else {
             if (vl > 0) vl -= 50;

@@ -45,7 +45,7 @@ public class SpartanProtocol {
     public List<Packet_Teleport.TeleportData> teleportEngine;
     public final MCClient mcClient;
     public byte simulationDelayPerTP, keepEntity;
-    public LinkedList<Location> positionHistory, positionHistoryLong;
+    public LinkedList<Location> positionHistory, positionHistoryLong, positionHistoryShort;
     public PlayerVelocityEvent claimedVelocity;
     public List<PlayerVelocityEvent> claimedVeloGravity;
     public long tickTime;
@@ -59,7 +59,7 @@ public class SpartanProtocol {
     public PlayerTickEvent lastTickEvent;
 
     public short transactionId;
-    public long transactionTime, transactionLastTime, transactionPing;
+    public long transactionTime, transactionLastTime, transactionPing, lagTick;
     public boolean transactionBoot, transactionLocal, transactionSentKeep;
 
     private ComponentY componentY;
@@ -96,6 +96,7 @@ public class SpartanProtocol {
         this.tickTime = time;
 
         this.rightClickCounter = 0;
+        this.positionHistoryShort = new LinkedList<>();
         this.positionHistory = new LinkedList<>();
         this.positionHistoryLong = new LinkedList<>();
         this.hashPosBuffer = 0;
@@ -114,6 +115,7 @@ public class SpartanProtocol {
         this.transactionBoot = false;
         this.transactionLocal = false;
         this.transactionSentKeep = false;
+        this.lagTick = 0;
         this.componentY = new ComponentY();
 
         this.setProfile(ResearchEngine.getPlayerProfile(this, false));
@@ -295,8 +297,12 @@ public class SpartanProtocol {
     public void addRawLocation(Location location) {
         this.positionHistory.addLast(location.clone());
         this.positionHistoryLong.addLast(location.clone());
+        this.positionHistoryShort.addLast(location.clone());
         if (this.positionHistory.size() > 20) {
             this.positionHistory.removeFirst();
+        }
+        if (this.positionHistoryShort.size() > 5) {
+            this.positionHistoryShort.removeFirst();
         }
         if (this.positionHistoryLong.size() > 50) {
             this.positionHistoryLong.removeFirst();
