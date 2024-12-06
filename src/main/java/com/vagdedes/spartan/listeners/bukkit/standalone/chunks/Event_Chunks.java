@@ -63,9 +63,7 @@ public class Event_Chunks implements Listener {
         }
 
         private boolean isQueued() {
-            synchronized (this) {
-                return this.queued;
-            }
+            return this.queued;
         }
 
     }
