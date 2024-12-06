@@ -38,14 +38,24 @@ public class LatencyHandler extends PacketAdapter {
     public void onPacketReceiving(PacketEvent event) {
         Player player = event.getPlayer();
         SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
-        protocol.transactionPing = System.currentTimeMillis() - protocol.transactionTime;
-        protocol.transactionLastTime = System.currentTimeMillis();
-        protocol.transactionSentKeep = false;
-        PlayerTransactionEvent transactionEvent = new PlayerTransactionEvent(protocol);
-        Event_Movement.transaction(transactionEvent);
-        Bukkit.getScheduler().runTaskLaterAsynchronously(Register.plugin,
-                        () -> sendTransaction(protocol, protocol.transactionId), 10L);
-
+        PacketContainer packet = event.getPacket();
+        int id;
+        if (!packet.getShorts().getFields().isEmpty()) {
+            id = packet.getShorts().read(0);
+        } else if (!packet.getIntegers().getFields().isEmpty()) {
+            id = packet.getIntegers().read(0);
+        } else if (!packet.getLongs().getFields().isEmpty()) {
+            id = Math.toIntExact(packet.getLongs().read(0));
+        } else return;
+        if (id >= 1939 && id <= 1945) {
+            protocol.transactionPing = System.currentTimeMillis() - protocol.transactionTime;
+            protocol.transactionLastTime = System.currentTimeMillis();
+            protocol.transactionSentKeep = false;
+            PlayerTransactionEvent transactionEvent = new PlayerTransactionEvent(protocol);
+            Event_Movement.transaction(transactionEvent);
+            Bukkit.getScheduler().runTaskLaterAsynchronously(Register.plugin,
+                            () -> sendTransaction(protocol, protocol.transactionId), 10L);
+        }
     }
     @Override
     public void onPacketSending(PacketEvent event) {
