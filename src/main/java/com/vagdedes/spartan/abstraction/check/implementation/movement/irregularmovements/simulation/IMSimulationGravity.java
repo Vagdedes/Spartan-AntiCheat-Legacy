@@ -17,6 +17,7 @@ import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.player.PlayerVelocityEvent;
@@ -476,8 +477,10 @@ public class IMSimulationGravity extends ProbabilityDetection {
                                     z + (double) dz * 0.3)
                     );
 
+                    Material m2 = block.getType();
+
                     if (BlockUtils.isLiquidOrWaterLogged(block, true)
-                            || BlockUtils.isLiquid(m)
+                            || BlockUtils.isLiquid(m) || BlockUtils.isLiquid(m2)
                             || BlockUtils.isWaterLogged(block)) {
                         return true;
                     }
@@ -493,15 +496,24 @@ public class IMSimulationGravity extends ProbabilityDetection {
         double y = location.getY() - 0.1;
         double z = location.getZ();
 
+        double xF = this.protocol().getFromLocation().getX();
+        double yF = this.protocol().getFromLocation().getY() - 0.1;
+        double zF = this.protocol().getFromLocation().getZ();
+
         for (int dx = -1; dx <= 1; ++dx) {
             for (int dy = -1; dy <= 1; ++dy) {
                 for (int dz = -1; dz <= 1; ++dz) {
                     Material material = this.protocol().packetWorld.getBlock(
                             new Location(this.protocol().spartan.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
                     );
+                    Material materialFrom = this.protocol().packetWorld.getBlock(
+                                    new Location(this.protocol().spartan.getWorld(), xF + (double) dx * 0.3, yF + (double) dy * 0.5, zF + (double) dz * 0.3)
+                    );
 
                     if (material != null &&
                             (BlockUtils.isSemiSolid(material)
+                                            || BlockUtils.areWalls(materialFrom)
+                                            || BlockUtils.areCobbleWalls(materialFrom)
                                     || BlockUtils.areSlimeBlocks(material)
                                     || BlockUtils.areHoneyBlocks(material)
                                     || BlockUtils.areWebs(material))) {
