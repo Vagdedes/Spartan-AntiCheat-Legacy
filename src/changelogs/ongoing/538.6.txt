@@ -1,4 +1,4 @@
 [#] Fixed rare async chunk Spartan data accessing console error.
-[+] Added transactions
-[#] Improved velocity handling in lag conditions
-[#] Improved ghost blocks handling
+[#] Added packet notification via the optional Awareness Notification feature.
+[#] Corrected Velocity false positives caused by lag delay.
+[#] Improved handling of Ghost blocks.
