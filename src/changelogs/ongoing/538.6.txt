@@ -1,1 +1,4 @@
 [#] Fixed rare async chunk Spartan data accessing console error.
+[+] Added transactions
+[#] Improved velocity handling in lag conditions
+[#] Improved ghost blocks handling
