@@ -53,6 +53,7 @@ public class LatencyHandler extends PacketAdapter {
             protocol.transactionSentKeep = false;
             PlayerTransactionEvent transactionEvent = new PlayerTransactionEvent(protocol);
             Event_Movement.transaction(transactionEvent);
+            protocol.packetWorld.transactionLock = false;
             Bukkit.getScheduler().runTaskLaterAsynchronously(Register.plugin,
                             () -> sendTransaction(protocol, protocol.transactionId), 10L);
         }

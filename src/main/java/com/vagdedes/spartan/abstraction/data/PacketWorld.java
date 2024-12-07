@@ -21,6 +21,7 @@ public class PacketWorld {
     private final List<ServerBlockChange> query;
     private final Player player;
     private int lagTick;
+    public boolean transactionLock;
 
     public PacketWorld(Player player) {
         this.player = player;
@@ -31,9 +32,9 @@ public class PacketWorld {
 
     public void tick(PlayerTickEvent tickEvent) {
         if (tickEvent.getDelay() < 12) {
-            this.lagTick = 2;
+            this.lagTick = 3;
         } else if (lagTick > 0) {
-            this.lagTick--;
+           if (!this.transactionLock) this.lagTick--;
         } else {
             synchronized (this.query) {
                 this.query.removeIf(change -> --change.tick == 0);
@@ -73,7 +74,7 @@ public class PacketWorld {
                                             .getPosition()
                                             .toLocation(this.player.getWorld())
             );
-            if (b == null) return;
+            if (b == null || BlockUtils.areAir(b.getType())) return;
             blockChange.setData(b.getType());
         }
         long hash = blockChange.hashCode();
@@ -89,6 +90,8 @@ public class PacketWorld {
                 this.query.remove(toDelete);
             }
             this.query.add(blockChange);
+            this.transactionLock = true;
+            this.lagTick = 3;
         }
     }
 
