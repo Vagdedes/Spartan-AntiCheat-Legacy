@@ -116,12 +116,10 @@ public class CloudBase {
 
         if (connectionFailedCooldown >= ms) {
             connectionFailedCooldown = ms + refreshTime;
-
-            if (AwarenessNotifications.areEnabled()) {
-                AwarenessNotifications.forcefullySend("(" + function + ") Failed to connect to the Game Cloud.");
-                AwarenessNotifications.forcefullySend("Error: " + object.getMessage());
-                AwarenessNotifications.forcefullySend("In Depth: " + object);
-            }
+            String message = "(" + function + ") Failed to connect to the Game Cloud."
+                    + "\nError: " + object.getMessage()
+                    + "\nIn Depth: " + object;
+            AwarenessNotifications.optionallySend(message);
         }
     }
 

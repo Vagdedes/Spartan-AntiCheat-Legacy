@@ -22,7 +22,7 @@ public class AwarenessNotifications {
         map.remove(uuid);
     }
 
-    public static boolean areEnabled() {
+    private static boolean areEnabled() {
         return Config.settings.getBoolean("Notifications.awareness_notifications");
     }
 
@@ -57,7 +57,7 @@ public class AwarenessNotifications {
         return send;
     }
 
-    public static String getNotification(String s, boolean disableMessage) {
+    private static String getNotification(String s, boolean disableMessage) {
         return Config.messages.getColorfulString("awareness_notification").replace(":", "§8:§7").replace("{info}", s)
                 + (disableMessage ? AwarenessNotifications.disableMessage : "");
     }
@@ -89,6 +89,11 @@ public class AwarenessNotifications {
     }
 
     public static void optionallySend(String message) {
-        Bukkit.getConsoleSender().sendMessage(getNotification(message));
+        message = getOptionalNotification(message);
+
+        if (message != null) {
+            Bukkit.getConsoleSender().sendMessage(message);
+        }
     }
+    
 }
