@@ -87,4 +87,8 @@ public class AwarenessNotifications {
     public static void forcefullySend(String message) {
         Bukkit.getConsoleSender().sendMessage(getNotification(message));
     }
+
+    public static void optionallySend(String message) {
+        Bukkit.getConsoleSender().sendMessage(getNotification(message));
+    }
 }

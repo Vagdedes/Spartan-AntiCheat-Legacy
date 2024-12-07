@@ -53,7 +53,7 @@ public class Packet_Combat extends PacketAdapter {
             if (protocol.isDesync()) {
                 Bukkit.getScheduler().runTask(Register.plugin,
                                 () -> protocol.bukkit.teleport(protocol.getLocation()));
-                AwarenessNotifications.forcefullySend(protocol.bukkit.getName()
+                AwarenessNotifications.optionallySend(protocol.bukkit.getName()
                                 + " attack faster than the transaction response");
                 event.setCancelled(true);
                 return;
