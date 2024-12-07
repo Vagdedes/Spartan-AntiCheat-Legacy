@@ -101,6 +101,7 @@ public class Event_Movement implements Listener {
     }
     public static void transaction(PlayerTransactionEvent event) {
         SpartanProtocol protocol = event.protocol;
+        protocol.spartan.getRunner(Enums.HackType.Velocity).handle(false, event);
         //protocol.bukkit.sendMessage("delay: " + event.delay);
         // stub
     }

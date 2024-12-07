@@ -3,6 +3,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.combat;
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedHardcodedDetection;
+import com.vagdedes.spartan.abstraction.event.PlayerTransactionEvent;
 import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
@@ -32,12 +33,17 @@ public class Velocity extends CheckRunner {
     private long oldTime = System.currentTimeMillis();
     private double mostCloseYMotion = 1.0;
     private int timing = 0;
+    private boolean transactionLock = false;
     private Vector velocity = null;
 
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
-        if (object instanceof PlayerVelocityEvent) {
+        if (object instanceof PlayerTransactionEvent) {
+            transactionLock = false;
+        }
+        else if (object instanceof PlayerVelocityEvent) {
             PlayerVelocityEvent event = (PlayerVelocityEvent) object;
+            transactionLock = true;
             Location[] locationsToCheck = {
                     this.protocol().getLocation().clone().add(event.getVelocity()),
                     this.protocol().getLocation().clone().add(event.getVelocity()).add(0, 1, 0)
@@ -56,8 +62,7 @@ public class Velocity extends CheckRunner {
             }
 
             if (vl > 0) vl -= 5;
-        }
-        if (object instanceof PlayerMoveEvent) {
+        } else if (object instanceof PlayerMoveEvent) {
             long delay = System.currentTimeMillis() - oldTime;
             PlayerMoveEvent event = (PlayerMoveEvent) object;
             Location from = event.getFrom();
@@ -91,7 +96,7 @@ public class Velocity extends CheckRunner {
                     this.velocity = null;
                     this.timing = 0;
                 } else if (delay > 25) {
-                    if (timing < 2) {
+                    if (timing < 2 && !transactionLock) {
                         timing++;
                     } else {
                         // time for vertical flag
