@@ -2,26 +2,34 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.irregular
 
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.HardcodedDetection;
-import com.vagdedes.spartan.abstraction.protocol.ExtendedPotionEffect;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanBlock;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.utils.math.MathHelper;
-import com.vagdedes.spartan.utils.minecraft.entity.PotionEffectUtils;
+import com.vagdedes.spartan.utils.minecraft.vector.SpartanVector2F;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.player.PlayerVelocityEvent;
+import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static java.lang.Math.PI;
+
 public class IMSimulationSpeed extends HardcodedDetection {
 
     public int ground = 0, air = 0;
+
+    private static final double FRICTION = 0.91;
+    private static final double ICE_FRICTION = 0.98;
+    private static final double ACCELERATION = 0.02;
+    private double motionX = 0, motionZ = 0;
+    private double lastDx = 0, lastDz = 0;
 
     public IMSimulationSpeed(CheckRunner executor) {
         super(executor, "speed", true);
@@ -29,7 +37,7 @@ public class IMSimulationSpeed extends HardcodedDetection {
 
     public final void run() {
         if (true) {
-            return;
+            //return;
         }
         if (this.protocol().spartan != null) {
             SpartanProtocol p = this.protocol();
@@ -39,22 +47,30 @@ public class IMSimulationSpeed extends HardcodedDetection {
             double dx = to.getX() - from.getX();
             double dz = to.getZ() - from.getZ();
             double speed = Math.sqrt(dx * dx + dz * dz);
-            //this.protocol().bukkit.sendMessage(protocol().pistonHandle + " " + protocol().pistonTick + " " + protocol().explosionHandle);
             if (to.getX() != from.getX() || to.getY() != from.getY() || to.getZ() != from.getZ()) {
-                // p.bukkit.sendMessage("dx: " + dx + " dz: " + dz);
+                {
+
+                }
+                this.lastDx = dx;
+                this.lastDz = dz;
             }
         }
     }
 
-    private double getDeviantity(double motion) {
-        return this.abs(this.abs(motion) - this.abs(this.predictY()));
+    private void applyAccel(double yawDelta, double accelMulti) {
+        this.motionX += -Math.sin(Math.toRadians(this.protocol().getLocation().getYaw() + yawDelta)) * (ACCELERATION * accelMulti);
+        this.motionZ += Math.cos(Math.toRadians(this.protocol().getLocation().getYaw() + yawDelta)) * (ACCELERATION * accelMulti);
+    }
+
+    private double getDeviantity(double a, double b) {
+        return this.abs(this.abs(a) - this.abs(b));
     }
 
     private void velocity(double motion) {
         PlayerVelocityEvent claimed = null;
         for (PlayerVelocityEvent velo : this.protocol().claimedVeloGravity) {
             if (this.veloIsValid(motion, velo.getVelocity().getY())) {
-                this.setPredict(motion);
+                // stub
                 claimed = velo;
                 break;
             }
@@ -79,27 +95,13 @@ public class IMSimulationSpeed extends HardcodedDetection {
 
     }
 
-    private double jumpMotion() {
-        double jumpPower = 0.42;
-        ExtendedPotionEffect jumpEffect = this.protocol().spartan.getPotionEffect(PotionEffectUtils.JUMP, 1L);
-
-        if (jumpEffect != null) {
-            jumpPower += 0.1 * (double) (jumpEffect.bukkitEffect.getAmplifier() + 1);
-        }
-
-        return jumpPower;
-    }
-
     private double abs(double v) {
         return Math.abs(v);
     }
 
-    private double predictY() {
-        return this.protocol().spartan.movement.motionY;
-    }
-
-    private void setPredict(double v) {
-        this.protocol().spartan.movement.motionY = v;
+    private void setPredict(double x, double z) {
+        this.motionX = x;
+        this.motionZ = z;
     }
 
     private List<Entity> getEntitiesAroundPoint(Location location, double radius) {
@@ -363,6 +365,14 @@ public class IMSimulationSpeed extends HardcodedDetection {
             }
         }
         return false;
+    }
+
+    public static SpartanVector2F calculateVec2Vec(final Vector from, final Vector to) {
+        final Vector diff = to.subtract(from);
+        final double distance = Math.hypot(diff.getX(), diff.getZ());
+        final float yaw = (float) (Math.atan2(diff.getZ(), diff.getX()) * 180.0F / PI) - 90.0F;
+        final float pitch = (float) (-(Math.atan2(diff.getY(), distance) * 180.0F / PI));
+        return new SpartanVector2F(yaw, pitch);
     }
 
 }
