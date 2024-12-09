@@ -35,13 +35,11 @@ public class CloudBase {
     private static final long refreshTime = 60_000L;
 
     // Parameters
-    static String identification = "", token = null;
+    static String identification = identification(), token = null;
     static final String version = calculateVersion();
     static final String separator = ">@#&!%<;=";
 
     static {
-        clear(false);
-
         SpartanBukkit.runRepeatingTask(() -> SpartanBukkit.connectionThread.execute(CloudBase::refresh), 1L, refreshTime);
     }
 
@@ -127,8 +125,12 @@ public class CloudBase {
         if (cache) {
             disabledDetections.clear();
         } else {
-            identification = "identification=" + IDs.platform() + "|" + IDs.user() + "|" + IDs.file();
+            identification = identification();
         }
+    }
+
+    private static String identification() {
+        return "identification=" + IDs.platform() + "|" + IDs.user() + "|" + IDs.file();
     }
 
     public static void refresh() {
