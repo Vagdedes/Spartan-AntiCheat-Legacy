@@ -22,7 +22,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class IMStep extends ProbabilityDetection {
+public class IMStepBukkit extends ProbabilityDetection {
 
     private static final double bedrockPlayerStepExtra = 1.0;
     private static final boolean abstractHorseClass = ReflectionUtils.classExists(
@@ -84,7 +84,7 @@ public class IMStep extends ProbabilityDetection {
             step_landing,
             step_abstract_down;
 
-    IMStep(CheckRunner executor) {
+    IMStepBukkit(CheckRunner executor) {
         super(executor, null, true);
         this.step_high = new ImplementedProbabilityDetection(this, "step_high", true);
         this.step_combination = new ImplementedProbabilityDetection(this, "step_combination", true);
@@ -98,6 +98,9 @@ public class IMStep extends ProbabilityDetection {
     final void run(boolean knownBox, boolean knownOldBox,
              double box, double oldBox,
              double vertical, boolean teleported) {
+        if (this.protocol().packetsEnabled()) {
+            return;
+        }
         Entity vehicle = this.protocol().spartan.getVehicle();
 
         if (knownBox && knownOldBox) {
