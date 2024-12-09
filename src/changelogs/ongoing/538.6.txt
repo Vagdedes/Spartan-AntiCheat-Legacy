@@ -2,4 +2,5 @@
 [#] Added packet notification via the optional Awareness Notification feature.
 [#] Corrected Velocity false positives caused by lag delay.
 [#] Improved handling of Ghost blocks.
-[#] Fixed some falsest
+[#] Fixed some false positives related to the IrregularMovements Gravity detection.
+[#] Potentially fixed a Folia console error.
