@@ -3,4 +3,5 @@
 [#] Corrected Velocity false positives caused by lag delay.
 [#] Improved handling of Ghost blocks.
 [#] Fixed some false positives related to the IrregularMovements Gravity detection.
+[#] Fixed falsest with boats
 [#] Potentially fixed a Folia console error.
