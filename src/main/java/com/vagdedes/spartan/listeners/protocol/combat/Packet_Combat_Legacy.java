@@ -58,19 +58,18 @@ public class Packet_Combat_Legacy extends PacketAdapter {
                 }
             }
 
-            if (protocol.isDesync()) {
-                Bukkit.getScheduler().runTask(Register.plugin,
-                                () -> protocol.bukkit.teleport(protocol.getLocation()));
-                AwarenessNotifications.optionallySend(protocol.bukkit.getName()
-                                + " attack faster than the transaction response");
-                event.setCancelled(true);
-                return;
-            }
-
             if ((!packet.getEntityUseActions().getValues().isEmpty()) ?
                             packet.getEntityUseActions().read(0).equals(EnumWrappers.EntityUseAction.ATTACK)
                             : packet.getEnumEntityUseActions().read(0).getAction().equals(
                             EnumWrappers.EntityUseAction.ATTACK)) {
+                if (protocol.isDesync()) {
+                    Bukkit.getScheduler().runTask(Register.plugin,
+                                    () -> protocol.bukkit.teleport(protocol.getLocation()));
+                    AwarenessNotifications.optionallySend(protocol.bukkit.getName()
+                                    + " attack faster than the transaction response");
+                    event.setCancelled(true);
+                    return;
+                }
                 if (target != null) {
                     Event_Combat.use(
                                     new PlayerUseEvent(

@@ -55,6 +55,7 @@ public class SpartanProtocol {
     private CheckBoundData checkBoundData;
     public PacketWorld packetWorld;
     public long placeTime, placeHash;
+    public int transactionVl;
     public BlockPlaceEvent oldBlockEvent;
     public PlayerTickEvent lastTickEvent;
 
@@ -84,7 +85,7 @@ public class SpartanProtocol {
         this.teleport = null;
         this.teleportEngine = new LinkedList<>();
         this.simulationFlag = false;
-
+        this.transactionVl = 0;
         this.spartan = new SpartanPlayer(this);
         this.timerBalancer = new TimerBalancer();
         this.mcClient = new MCClient(player);
@@ -131,6 +132,9 @@ public class SpartanProtocol {
 
     public boolean isDesync() {
         return this.transactionSentKeep && (System.currentTimeMillis() - this.transactionTime > 55);
+    }
+    public boolean isBlatantDesync() {
+        return this.transactionSentKeep && (System.currentTimeMillis() - this.transactionTime > 150);
     }
 
     public boolean isUsingVersionOrGreater(MultiVersion.MCVersion trialVersion) {

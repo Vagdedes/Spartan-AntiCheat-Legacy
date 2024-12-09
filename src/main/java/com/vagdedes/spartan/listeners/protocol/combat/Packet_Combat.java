@@ -50,14 +50,6 @@ public class Packet_Combat extends PacketAdapter {
             PacketContainer packet = event.getPacket();
             int entityId = packet.getIntegers().read(0);
 
-            if (protocol.isDesync()) {
-                Bukkit.getScheduler().runTask(Register.plugin,
-                                () -> protocol.bukkit.teleport(protocol.getLocation()));
-                AwarenessNotifications.optionallySend(protocol.bukkit.getName()
-                                + " attack faster than the transaction response");
-                event.setCancelled(true);
-                return;
-            }
             Player target = null;
             for (Player player : Bukkit.getOnlinePlayers()) {
                 if (player.getEntityId() == entityId) {
@@ -69,6 +61,14 @@ public class Packet_Combat extends PacketAdapter {
                             packet.getEntityUseActions().read(0).equals(EnumWrappers.EntityUseAction.ATTACK)
                             : packet.getEnumEntityUseActions().read(0).getAction().equals(
                             EnumWrappers.EntityUseAction.ATTACK)) {
+                if (protocol.isDesync()) {
+                    Bukkit.getScheduler().runTask(Register.plugin,
+                                    () -> protocol.bukkit.teleport(protocol.getLocation()));
+                    AwarenessNotifications.optionallySend(protocol.bukkit.getName()
+                                    + " attack faster than the transaction response");
+                    event.setCancelled(true);
+                    return;
+                }
                 if (target != null) {
                     Event_Combat.use(
                                     new PlayerUseEvent(
