@@ -117,7 +117,7 @@ public class Packet_Movement extends PacketAdapter {
 
         if (p.isDesync() && tickEvent.getDelay() > 40 && tickEvent.getDelay() < 60) {
             p.transactionVl += (p.isBlatantDesync() ? 2 : 1);
-            if (p.transactionVl > 12) {
+            if (p.transactionVl > 40) {
                 Bukkit.getScheduler().runTask(Register.plugin,
                                 () -> player.teleport(p.getLocation()));
                 AwarenessNotifications.optionallySend(player.getName()
@@ -128,7 +128,7 @@ public class Packet_Movement extends PacketAdapter {
                 return;
             }
         } else if (p.transactionVl > 0)
-            p.transactionVl--;
+            p.transactionVl -= 3;
 
         if (p.transactionBoot)
             LatencyHandler.startChecking(p);
