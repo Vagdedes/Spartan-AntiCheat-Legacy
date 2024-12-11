@@ -96,8 +96,8 @@ public class Velocity extends CheckRunner {
                     this.velocity = null;
                     this.timing = 0;
                 } else if (delay > 25) {
-                    if (timing < 2 && !transactionLock) {
-                        timing++;
+                    if (timing < 2) {
+                        if (!transactionLock) timing++;
                     } else {
                         // time for vertical flag
                         if (this.velocity.getY() != 0.003) {

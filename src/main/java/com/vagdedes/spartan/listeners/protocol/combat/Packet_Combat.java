@@ -61,7 +61,7 @@ public class Packet_Combat extends PacketAdapter {
                             packet.getEntityUseActions().read(0).equals(EnumWrappers.EntityUseAction.ATTACK)
                             : packet.getEnumEntityUseActions().read(0).getAction().equals(
                             EnumWrappers.EntityUseAction.ATTACK)) {
-                if (protocol.isBlatantDesync()) {
+                if (protocol.isSDesync()) {
                     Bukkit.getScheduler().runTask(Register.plugin,
                                     () -> protocol.bukkit.teleport(protocol.getLocation()));
                     AwarenessNotifications.optionallySend(protocol.bukkit.getName()
