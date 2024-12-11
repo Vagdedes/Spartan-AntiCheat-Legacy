@@ -348,7 +348,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
                             if (devTotal < 1.0) {
                                 alertBuilder.deleteCharAt(0);
                             }
-                            this.cancel("simulation[y], " + alertBuilder);
+                            this.cancel("type: gravity(simulation), y: " + alertBuilder);
                             //this.protocol().bukkit.sendMessage("hacks: " + devTotal);
                             /*
                             Bukkit.getScheduler().runTask(Register.plugin, () -> {

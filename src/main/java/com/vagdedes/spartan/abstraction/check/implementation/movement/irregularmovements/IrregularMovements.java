@@ -19,7 +19,7 @@ public class IrregularMovements extends CheckRunner {
 
     private long teleport;
     public final CheckDetection limitServerFlying;
-    private final IMStep step;
+    private final IMStepBukkit step;
     private final IMGravityBukkit gravityBukkit;
     private final IMSimulationGravity gravityPackets;
     private final IMSpeedBukkit speedBukkit;
@@ -32,7 +32,7 @@ public class IrregularMovements extends CheckRunner {
     public IrregularMovements(HackType hackType, SpartanProtocol protocol) {
         super(hackType, protocol);
         limitServerFlying = new ImplementedProbabilityDetection(this, "limit_server_flying", false);
-        step = new IMStep(this);
+        step = new IMStepBukkit(this);
         gravityBukkit = new IMGravityBukkit(this);
         gravityPackets = new IMSimulationGravity(this);
         jump = new IrregularMovementsJump(this);
