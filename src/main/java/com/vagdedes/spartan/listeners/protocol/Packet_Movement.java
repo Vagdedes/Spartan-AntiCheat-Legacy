@@ -128,7 +128,7 @@ public class Packet_Movement extends PacketAdapter {
                 return;
             }
         } else if (p.transactionVl > 0)
-            p.transactionVl -= 3;
+            p.transactionVl -= 2;
 
         if (p.transactionBoot)
             LatencyHandler.startChecking(p);
