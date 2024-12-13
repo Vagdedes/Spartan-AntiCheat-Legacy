@@ -126,8 +126,6 @@ public class MoveDirection extends ProbabilityDetection {
             double switchPitch = Math.abs(pitchChange - pitchDiff);
             double switchDiffOnYaw = Math.abs(switchYaw - lastSwitchYaw);
             double interpolation;
-            if (switchDiffOnYaw > 26 && (aimAnalysis.get(i).time
-                    + 75 > attackHandle.time)) addNewPunish("heuristic(switch)", 35);
 
             double robotized = Math.abs(yawChange - yawChangeFirst);
             double diffBetweenYawChanges = yawChange - oldYawChange;
@@ -169,7 +167,7 @@ public class MoveDirection extends ProbabilityDetection {
             if (machineKnownMovement > 4) addNewPunish("heuristic(aim)", 100);
             if (aggressiveAim > 8) addNewPunish("heuristic(aggressive)", 65);
             if (constantRotations > 2) addNewPunish("heuristic(constant)", 60);
-            if (infinitives > 1) addNewPunishL2("heuristic(interpolation)", (infinitives > 2) ? 60 : 40);
+            if (infinitives > 1) addNewPunishL2("heuristic(interpolation)", (infinitives > 2) ? 40 : 35);
             if (gcd > 2) addNewPunish("pattern(gcd)", 210);
             if (aggressivePatternI > 3 && aggressivePatternD > 3) addNewPunish("pattern(random)", 40);
             if (aggressivePatternI2 > 3 && aggressivePatternD2 > 3

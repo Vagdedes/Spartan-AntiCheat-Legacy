@@ -23,6 +23,9 @@ public class Event_Velocity implements Listener {
         protocol.claimedVeloGravity.add(e);
         if (protocol.claimedVeloGravity.size() > 2)
             protocol.claimedVeloGravity.remove(0);
+        protocol.claimedVeloSpeed.add(e);
+        if (protocol.claimedVeloSpeed.size() > 2)
+            protocol.claimedVeloSpeed.remove(0);
 
         if (protocol.packetsEnabled() == packets) {
             SpartanPlayer p = protocol.spartan;
