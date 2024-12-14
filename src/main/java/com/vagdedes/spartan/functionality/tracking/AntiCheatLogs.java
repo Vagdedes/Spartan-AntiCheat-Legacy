@@ -19,13 +19,13 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class AntiCheatLogs {
 
     public static final String
-            dateFormat = "yyyy/MM/dd HH:mm:ss:SSSSSSSSS",
+            dateFormat = "yyyy/MM/dd HH:mm:ss:SSSXXX",
             folderPath = Register.plugin.getDataFolder() + "/logs";
 
     private static Timestamp time = new Timestamp(System.currentTimeMillis());
@@ -67,7 +67,9 @@ public class AntiCheatLogs {
             } else if (store && fileConfiguration != null) {
                 SpartanBukkit.dataThread.executeIfSyncElseHere(() -> {
                     fileConfiguration.set(
-                            DateTimeFormatter.ofPattern(dateFormat).format(LocalDateTime.now()),
+                            ZonedDateTime.now().format(
+                                    DateTimeFormatter.ofPattern(dateFormat)
+                            ),
                             information
                     );
                     save();
@@ -85,9 +87,8 @@ public class AntiCheatLogs {
                                boolean console,
                                Material material,
                                Enums.HackType hackType,
-                               long time,
-                               boolean unlikely) {
-        rawLogInfo(time, information, console, !unlikely, false);
+                               long time) {
+        rawLogInfo(time, information, console, true, false);
         Config.sql.logInfo(p, notification, information, material, hackType, time);
     }
 
@@ -122,8 +123,7 @@ public class AntiCheatLogs {
                             false,
                             block.getType(),
                             null,
-                            System.currentTimeMillis(),
-                            false
+                            System.currentTimeMillis()
                     );
                     MiningHistory miningHistory = protocol.getProfile().getMiningHistory(ore);
 

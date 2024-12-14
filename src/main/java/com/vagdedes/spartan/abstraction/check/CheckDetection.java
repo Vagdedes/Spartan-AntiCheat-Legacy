@@ -180,8 +180,7 @@ public abstract class CheckDetection extends CheckProcess {
                 ),
                 null,
                 hackType,
-                time,
-                !hasSufficientData
+                time
         );
 
         // Local Notifications
