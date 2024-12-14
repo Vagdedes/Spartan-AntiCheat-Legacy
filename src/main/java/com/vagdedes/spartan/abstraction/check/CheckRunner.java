@@ -12,6 +12,7 @@ import com.vagdedes.spartan.compatibility.manual.enchants.EcoEnchants;
 import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
+import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.server.*;
 import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
@@ -341,24 +342,21 @@ public abstract class CheckRunner extends CheckProcess {
         SpartanProtocol protocol = this.protocol();
 
         if (protocol != null
-                && current >= protocol.creationTime
-                && previous >= protocol.creationTime) {
-            return true;
+                && current >= protocol.getActiveCreationTime()
+                && previous >= protocol.getActiveCreationTime()) {
+            return !protocol.spartan.isAFK();
         } else {
             synchronized (this.continuity) {
                 Map<Long, Long> data = this.continuity.get(dataType);
 
                 if (data != null) {
                     for (Map.Entry<Long, Long> entry : data.entrySet()) {
-                        long connectedTime = entry.getValue();
+                        long connectedTime = entry.getValue(),
+                                disconnectedMoment = entry.getKey();
 
-                        if (connectedTime > 0L) {
-                            long disconnectedMoment = entry.getKey();
-
-                            if (previous >= (disconnectedMoment - connectedTime)
-                                    && current <= disconnectedMoment) {
-                                return true;
-                            }
+                        if (previous >= (disconnectedMoment - connectedTime)
+                                && current <= disconnectedMoment) {
+                            return true;
                         }
                     }
                 }
@@ -378,14 +376,14 @@ public abstract class CheckRunner extends CheckProcess {
                     sum += value;
                 }
                 SpartanProtocol protocol = this.protocol();
-                return protocol == null
+                return protocol == null || protocol.spartan.isAFK()
                         ? sum
-                        : Math.max(protocol.getTimePlayed() + sum, 0L);
+                        : Math.max(protocol.getActiveTimePlayed() + sum, 0L);
             } else {
                 SpartanProtocol protocol = this.protocol();
-                return protocol == null
+                return protocol == null || protocol.spartan.isAFK()
                         ? 0L
-                        : protocol.getTimePlayed();
+                        : protocol.getActiveTimePlayed();
             }
         }
     }

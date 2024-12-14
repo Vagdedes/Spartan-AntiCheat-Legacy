@@ -2,6 +2,7 @@ package com.vagdedes.spartan.abstraction.check;
 
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
 import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
@@ -88,26 +89,32 @@ public abstract class ProbabilityDetection extends CheckDetection {
             if (data == null || data.size() == 1) {
                 return null;
             } else {
-                double violationCount = data.size(), comparisonCount = 0.0;
-                long squareSum = 0;
+                double averageViolationVelocity,
+                        violationCount = data.size(),
+                        comparisonCount = 0.0;
+                long violationVelocitySquareSum = 0;
                 Iterator<Long> iterator = data.iterator();
                 long previous = iterator.next();
 
                 while (iterator.hasNext()) {
-                    Long current = iterator.next();
+                    long current = iterator.next();
 
                     if (this.executor.wasOnline(dataType, current, previous)) {
                         comparisonCount++;
                         long difference = current - previous;
                         previous = current;
-                        squareSum += difference * difference;
+                        violationVelocitySquareSum += difference * difference;
                     }
                 }
-                double averageViolationVelocity = Math.sqrt(squareSum / comparisonCount);
                 long onlineTime = this.executor.getOnlineTime(dataType);
 
                 if (onlineTime != 0L) {
                     violationCount /= (double) onlineTime;
+                }
+                if (comparisonCount == 0.0) {
+                    averageViolationVelocity = Double.MAX_VALUE;
+                } else {
+                    averageViolationVelocity = Math.sqrt(violationVelocitySquareSum / comparisonCount);
                 }
                 return averageViolationVelocity / violationCount;
             }

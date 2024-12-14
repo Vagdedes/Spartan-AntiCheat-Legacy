@@ -84,21 +84,6 @@ public class PlayerProfile {
         }
     }
 
-    public void setAFKFor(long time, long count, boolean log) {
-        if (log) {
-            AntiCheatLogs.rawLogInfo(
-                    time,
-                    this.name + afkFor + count,
-                    false,
-                    true,
-                    true
-            );
-        }
-        for (CheckRunner runner : this.getRunners()) {
-            runner.trackTime(lastDataType, time, -count);
-        }
-    }
-
     // Separator
 
     public Check.DataType getLastDataType() {

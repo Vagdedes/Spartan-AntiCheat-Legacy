@@ -147,11 +147,10 @@ public class SpartanBukkit {
         } else {
             SpartanProtocol protocol = playerProtocol.remove(player.getUniqueId());
 
-            if (protocol != null) {
-                protocol.spartan.setLastInteraction();
+            if (protocol != null && !protocol.spartan.isAFK()) {
                 protocol.getProfile().setOnlineFor(
                         System.currentTimeMillis(),
-                        protocol.getTimePlayed(),
+                        protocol.getActiveTimePlayed(),
                         true
                 );
             }

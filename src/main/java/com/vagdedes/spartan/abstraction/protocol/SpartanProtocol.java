@@ -27,7 +27,7 @@ import java.util.*;
 
 public class SpartanProtocol {
 
-    public final long creationTime;
+    private long creationTime;
     public final Player bukkit;
     public final SpartanPlayer spartan;
     public final TimerBalancer timerBalancer;
@@ -123,7 +123,15 @@ public class SpartanProtocol {
         this.setProfile(ResearchEngine.getPlayerProfile(this, false));
     }
 
-    public long getTimePlayed() {
+    public long getActiveCreationTime() {
+        return this.creationTime;
+    }
+
+    void resetCreationTime() {
+        this.creationTime = System.currentTimeMillis();
+    }
+
+    public long getActiveTimePlayed() {
         return System.currentTimeMillis() - this.creationTime;
     }
 
@@ -134,6 +142,7 @@ public class SpartanProtocol {
     public boolean isDesync() {
         return this.transactionSentKeep && (System.currentTimeMillis() - this.transactionTime > 55);
     }
+
     public boolean isBlatantDesync() {
         return this.transactionSentKeep && (System.currentTimeMillis() - this.transactionTime > 150);
     }

@@ -383,10 +383,10 @@ public class ResearchEngine {
             for (PlayerProfile profile : playerProfiles.values()) {
                 SpartanProtocol protocol = profile.protocol();
 
-                if (protocol != null) {
+                if (protocol != null && !protocol.spartan.isAFK()) {
                     profile.setOnlineFor(
                             System.currentTimeMillis(),
-                            protocol.getTimePlayed(),
+                            protocol.getActiveTimePlayed(),
                             true
                     );
                 }
@@ -470,17 +470,6 @@ public class ResearchEngine {
                                             false
                                     );
                                 } catch (Exception ignored) {
-                                }
-                            } else {
-                                index = data.indexOf(PlayerProfile.afkFor);
-
-                                if (index != -1) {
-                                    SimpleDateFormat sdf = new SimpleDateFormat(AntiCheatLogs.dateFormat);
-                                    ResearchEngine.getPlayerProfile(data.split(" ", 2)[0], true).setAFKFor(
-                                            sdf.parse(fullDate).getTime(),
-                                            Long.parseLong(data.substring(index + PlayerProfile.afkFor.length())),
-                                            false
-                                    );
                                 }
                             }
                         }
