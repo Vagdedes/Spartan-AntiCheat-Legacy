@@ -93,31 +93,22 @@ public abstract class ProbabilityDetection extends CheckDetection {
                 long squareSum = 0;
                 Iterator<Long> iterator = data.iterator();
                 long previous = iterator.next();
-                violationCount = 0.0;
+                violationCount = data.size();
 
                 while (iterator.hasNext()) {
                     Long current = iterator.next();
 
                     if (this.executor.wasOnline(dataType, current, previous)) {
-                        violationCount++;
                         long difference = current - previous;
                         previous = current;
                         squareSum += difference * difference;
-                    } else {
-                        iterator.remove();
                     }
                 }
-                if (violationCount == 0.0) {
-                    averageViolationSpread = Double.MAX_VALUE;
-                } else {
-                    averageViolationSpread = Math.sqrt(squareSum / violationCount);
-                    long onlineTime = this.executor.getOnlineTime(dataType);
+                averageViolationSpread = Math.sqrt(squareSum / violationCount);
+                long onlineTime = this.executor.getOnlineTime(dataType);
 
-                    if (onlineTime != 0L) {
-                        violationCount = (violationCount + 1.0) / (double) onlineTime;
-                    } else {
-                        violationCount++;
-                    }
+                if (onlineTime != 0L) {
+                    violationCount /= (double) onlineTime;
                 }
             }
         }
