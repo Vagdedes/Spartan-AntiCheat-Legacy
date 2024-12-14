@@ -82,39 +82,36 @@ public abstract class ProbabilityDetection extends CheckDetection {
 
     @Override
     public final Double getData(Check.DataType dataType) {
-        double violationCount, averageViolationSpread;
-
         synchronized (this.data) {
             Collection<Long> data = this.data.get(dataType);
 
             if (data == null || data.size() == 1) {
                 return null;
             } else {
+                double violationCount = data.size(), comparisonCount = 0.0;
                 long squareSum = 0;
                 Iterator<Long> iterator = data.iterator();
                 long previous = iterator.next();
-                violationCount = data.size();
 
                 while (iterator.hasNext()) {
                     Long current = iterator.next();
 
                     if (this.executor.wasOnline(dataType, current, previous)) {
+                        comparisonCount++;
                         long difference = current - previous;
                         previous = current;
                         squareSum += difference * difference;
                     }
                 }
-                averageViolationSpread = Math.sqrt(squareSum / violationCount);
+                double averageViolationVelocity = Math.sqrt(squareSum / comparisonCount);
                 long onlineTime = this.executor.getOnlineTime(dataType);
 
                 if (onlineTime != 0L) {
                     violationCount /= (double) onlineTime;
                 }
+                return averageViolationVelocity / violationCount;
             }
         }
-        return violationCount == 0.0
-                ? null
-                : averageViolationSpread / violationCount;
     }
 
     @Override
