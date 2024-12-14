@@ -16,7 +16,6 @@ import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
 
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -196,7 +195,7 @@ public class Event_Chunks implements Listener {
         }
         Map<Long, ChunkData> subMap = map.computeIfAbsent(
                 world,
-                k -> new LinkedHashMap<>()
+                k -> new ConcurrentHashMap<>()
         );
         ChunkData data = subMap.computeIfAbsent(
                 hashCoordinates(chunk.getX(), chunk.getZ()),
