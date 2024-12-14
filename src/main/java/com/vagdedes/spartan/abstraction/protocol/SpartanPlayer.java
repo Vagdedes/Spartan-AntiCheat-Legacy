@@ -193,16 +193,9 @@ public class SpartanPlayer {
                         100;
     }
 
-    public void sendInventoryCloseMessage(String message) {
-        if (message != null) {
-            this.protocol.bukkit.sendMessage(message);
-        }
-        SpartanBukkit.transferTask(protocol, this.protocol.bukkit::closeInventory);
-    }
-
     public void sendImportantMessage(String message) {
         this.protocol.bukkit.sendMessage("");
-        this.sendInventoryCloseMessage(message);
+        this.protocol.bukkit.sendMessage(message);
         this.protocol.bukkit.sendMessage("");
     }
 
