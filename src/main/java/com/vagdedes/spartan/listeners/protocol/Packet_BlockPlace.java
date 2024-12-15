@@ -13,7 +13,7 @@ import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.listeners.bukkit.Event_BlockPlace;
-import com.vagdedes.spartan.listeners.bukkit.standalone.chunks.Event_Chunks;
+import com.vagdedes.spartan.listeners.bukkit.standalone.Event_Chunks;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;

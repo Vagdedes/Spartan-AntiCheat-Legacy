@@ -6,7 +6,6 @@ import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.AntiCheatLogs;
 import com.vagdedes.spartan.functionality.tracking.Piston;
-import com.vagdedes.spartan.listeners.bukkit.standalone.chunks.Event_Chunks;
 import com.vagdedes.spartan.utils.minecraft.entity.CombatUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.block.Block;
@@ -26,7 +25,6 @@ public class Event_World implements Listener {
     private void BlockBreak(BlockBreakEvent e) {
         SpartanProtocol protocol = SpartanBukkit.getProtocol(e.getPlayer());
         Block nb = e.getBlock();
-        Event_Chunks.cache(nb.getChunk(), false);
         boolean cancelled = e.isCancelled();
         protocol.spartan.movement.judgeGround();
 

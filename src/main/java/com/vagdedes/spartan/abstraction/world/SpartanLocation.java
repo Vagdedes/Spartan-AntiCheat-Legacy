@@ -2,8 +2,7 @@ package com.vagdedes.spartan.abstraction.world;
 
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.listeners.bukkit.standalone.chunks.Event_Chunks;
-import com.vagdedes.spartan.listeners.bukkit.standalone.chunks.Event_Chunks_v1_13;
+import com.vagdedes.spartan.listeners.bukkit.standalone.Event_Chunks;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import org.bukkit.Bukkit;
@@ -221,15 +220,9 @@ public class SpartanLocation implements Cloneable {
     }
 
     private SpartanBlock setAsyncBlock() {
-        if (SpartanLocation.v_1_13) {
-            return new SpartanBlock(
-                    Event_Chunks_v1_13.getBlockData(this.world, this.getBlockX(), this.getBlockY(), this.getBlockZ())
-            );
-        } else {
-            return new SpartanBlock(
-                    Event_Chunks.getBlockType(this.world, this.getBlockX(), this.getBlockY(), this.getBlockZ())
-            );
-        }
+        return new SpartanBlock(
+                Event_Chunks.getBlockAsync(this.bukkit())
+        );
     }
 
     public SpartanBlock getBlock() {
