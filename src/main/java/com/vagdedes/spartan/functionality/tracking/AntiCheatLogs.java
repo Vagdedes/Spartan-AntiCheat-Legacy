@@ -62,7 +62,7 @@ public class AntiCheatLogs {
         if (Config.settings.getBoolean("Logs.log_file")) {
             File file = getFile();
 
-            if (file.getName().equals(todayFile.getName())) {
+            if (!file.getName().equals(todayFile.getName())) {
                 if (fileConfiguration != null) {
                     save();
                 }
