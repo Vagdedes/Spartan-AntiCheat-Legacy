@@ -121,7 +121,6 @@ public class PlayerStateLists {
                     Collection<Enums.HackType> evidenceDetails = selectedProfiles.get(profile);
 
                     if (!evidenceDetails.isEmpty()) {
-                        boolean missingData = false;
                         lore.clear();
                         lore.add("§7Suspected for§8:");
 
@@ -138,15 +137,6 @@ public class PlayerStateLists {
                                 description += " §8(§7Data pending§8)";
                             }
                             lore.add(description);
-
-                            if (!sufficientData) {
-                                missingData = true;
-                            }
-                        }
-                        if (missingData) {
-                            lore.add("");
-                            lore.add("§eSome detections are still collecting data");
-                            lore.add("§eand will fully enable in the future.");
                         }
                         fill(inventory, profile, lore, freeSlots[slotPosition]);
                         slotPosition++;

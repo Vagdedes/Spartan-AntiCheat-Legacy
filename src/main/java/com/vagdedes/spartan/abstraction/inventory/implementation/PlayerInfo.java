@@ -107,7 +107,6 @@ public class PlayerInfo extends InventoryMenu {
         Map<Double, HackType> map = PlayerEvidence.POSITIVE
                 ? new TreeMap<>(Collections.reverseOrder())
                 : new TreeMap<>();
-        Set<HackType> missingData = new HashSet<>();
         lore.clear();
 
         // Separator
@@ -123,15 +122,6 @@ public class PlayerInfo extends InventoryMenu {
                             entry.getValue(),
                             entry.getKey()
                     );
-
-                    if (!missingData.contains(entry.getKey())
-                            && !profile.getRunner(
-                            entry.getKey()
-                    ).hasSufficientData(
-                            profile.getLastDataType()
-                    )) {
-                        missingData.add(entry.getKey());
-                    }
                 }
             }
         }
@@ -169,14 +159,19 @@ public class PlayerInfo extends InventoryMenu {
             for (Map.Entry<Double, HackType> entry : map.entrySet()) {
                 HackType hackType = entry.getValue();
                 double probability = entry.getKey();
-                Long remainingTime = missingData.contains(hackType)
-                        ? profile.getRunner(hackType).getRemainingCompletionTime(profile.getLastDataType())
-                        : null;
+                boolean sufficientData = profile.getRunner(
+                        hackType
+                ).hasSufficientData(
+                        profile.getLastDataType()
+                );
+                Long remainingTime = sufficientData
+                        ? null
+                        : profile.getRunner(hackType).getRemainingCompletionTime(profile.getLastDataType());
                 String remainingDataPrompt = "";
 
                 if (remainingTime != null) {
                     remainingDataPrompt = " §8(§7Data pending: " + TimeUtils.convertMilliseconds(remainingTime) + "§8)";
-                } else if (missingData.contains(hackType)) {
+                } else if (!sufficientData) {
                     remainingDataPrompt = " §8(§7Data pending§8)";
                 }
                 if (PlayerEvidence.surpassedProbability(
@@ -225,11 +220,6 @@ public class PlayerInfo extends InventoryMenu {
                         );
                     }
                 }
-            }
-            if (!missingData.isEmpty()) {
-                lore.add("");
-                lore.add("§eSome detections are still collecting data");
-                lore.add("§eand will fully enable in the future.");
             }
         }
 
