@@ -106,6 +106,10 @@ public class PlayerProfile {
         return this.runners[0].protocol();
     }
 
+    public long getOnlineTime() {
+        return this.runners[0].getOnlineTime(this.lastDataType);
+    }
+
     public CheckRunner getRunner(Enums.HackType hackType) {
         int ordinal = hackType.ordinal();
 

@@ -77,7 +77,7 @@ public class SpartanBukkit {
         return Compatibility.CompatibilityType.PROTOCOL_LIB.isFunctional();
     }
 
-    public static SpartanProtocol getProtocol(Player player) {
+    public static SpartanProtocol getProtocol(Player player, boolean updateLastInteraction) {
         if (ProtocolLib.isTemporary(player)) {
             return new SpartanProtocol(player);
         } else {
@@ -87,9 +87,15 @@ public class SpartanBukkit {
                 protocol = new SpartanProtocol(player);
                 playerProtocol.put(player.getUniqueId(), protocol);
             }
-            protocol.spartan.setLastInteraction();
+            if (updateLastInteraction) {
+                protocol.spartan.setLastInteraction();
+            }
             return protocol;
         }
+    }
+
+    public static SpartanProtocol getProtocol(Player player) {
+        return getProtocol(player, false);
     }
 
     public static SpartanProtocol getProtocol(String name) {

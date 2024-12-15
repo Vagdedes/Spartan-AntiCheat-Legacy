@@ -382,7 +382,7 @@ public abstract class CheckRunner extends CheckProcess {
         }
     }
 
-    final long getOnlineTime(Check.DataType dataType) {
+    public final long getOnlineTime(Check.DataType dataType) {
         synchronized (this.continuity) {
             Map<Long, Long> data = this.continuity.get(dataType);
 

@@ -23,7 +23,7 @@ public class Event_World implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void BlockBreak(BlockBreakEvent e) {
-        SpartanProtocol protocol = SpartanBukkit.getProtocol(e.getPlayer());
+        SpartanProtocol protocol = SpartanBukkit.getProtocol(e.getPlayer(), true);
         Block nb = e.getBlock();
         boolean cancelled = e.isCancelled();
         protocol.spartan.movement.judgeGround();
@@ -50,7 +50,7 @@ public class Event_World implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Sign(SignChangeEvent e) {
-        SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartan;
+        SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer(), true).spartan;
 
         // Detections
         p.getRunner(Enums.HackType.Exploits).handle(e.isCancelled(), e.getLines());
@@ -62,7 +62,7 @@ public class Event_World implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Animation(PlayerAnimationEvent e) {
-        SpartanProtocol protocol = SpartanBukkit.getProtocol(e.getPlayer());
+        SpartanProtocol protocol = SpartanBukkit.getProtocol(e.getPlayer(), true);
 
         // Detections
         protocol.spartan.getRunner(Enums.HackType.NoSwing).handle(e.isCancelled(), e);
@@ -70,7 +70,7 @@ public class Event_World implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Interact(PlayerInteractEvent e) {
-        SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartan;
+        SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer(), true).spartan;
         Block nb = e.getClickedBlock();
         Action action = e.getAction();
         boolean notNull = nb != null,

@@ -79,6 +79,13 @@ public class PlayerInfo extends InventoryMenu {
                 lore.add("§7CPS (Clicks Per Second)§8:§c " + target.spartan.clicks.getCount());
                 lore.add("§7Latency§8:§c " + target.getPing() + "ms");
                 lore.add("§7Edition§8:§c " + target.spartan.dataType);
+            }
+            long onlineTime = profile.getOnlineTime();
+
+            if (onlineTime > 0L) {
+                lore.add("§7Online Time§8:§c " + TimeUtils.convertMilliseconds(onlineTime));
+                lore.add("");
+            } else if (isOnline) {
                 lore.add("");
             }
             lore.add("§cClick to delete the player's stored data.");

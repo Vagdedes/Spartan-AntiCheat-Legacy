@@ -21,14 +21,14 @@ public class Event_Movement implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     private void MoveEvent(PlayerMoveEvent e) {
         event(e, false);
-        SpartanBukkit.getProtocol(e.getPlayer()).spartan.getRunner(
+        SpartanBukkit.getProtocol(e.getPlayer(), true).spartan.getRunner(
                 Enums.HackType.MorePackets
         ).handle(e.isCancelled(), null);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void WorldEvent(PlayerChangedWorldEvent e) {
-        SpartanBukkit.getProtocol(e.getPlayer()).spartan.resetCrucialData();
+        SpartanBukkit.getProtocol(e.getPlayer(), true).spartan.resetCrucialData();
     }
 
     public static void event(PlayerMoveEvent e, boolean packets) {

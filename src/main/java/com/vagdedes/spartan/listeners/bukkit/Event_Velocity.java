@@ -1,6 +1,5 @@
 package com.vagdedes.spartan.listeners.bukkit;
 
-import com.vagdedes.spartan.abstraction.event.CPlayerVelocityEvent;
 import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
@@ -36,9 +35,6 @@ public class Event_Velocity implements Listener {
             p.getRunner(Enums.HackType.Velocity).handle(cancelled, e);
             p.getRunner(Enums.HackType.Simulation).handle(cancelled, e);
         }
-    }
-    public static void claim(CPlayerVelocityEvent e) {
-        // gravity
     }
 
 }
