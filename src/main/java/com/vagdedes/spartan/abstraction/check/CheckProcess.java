@@ -21,7 +21,7 @@ public abstract class CheckProcess {
         return this.protocol;
     }
 
-    final String playerName() {
+    protected final String playerName() {
         return this.playerName;
     }
 
