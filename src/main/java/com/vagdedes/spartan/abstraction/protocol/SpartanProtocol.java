@@ -27,7 +27,7 @@ import java.util.*;
 
 public class SpartanProtocol {
 
-    private long creationTime;
+    private long activeCreationTime;
     public final Player bukkit;
     public final SpartanPlayer spartan;
     public final TimerBalancer timerBalancer;
@@ -67,7 +67,7 @@ public class SpartanProtocol {
 
     public SpartanProtocol(Player player) {
         long time = System.currentTimeMillis();
-        this.creationTime = time;
+        this.activeCreationTime = time;
         this.bukkit = player;
         this.version = MultiVersion.get(player);
         this.packetWorld = new PacketWorld(player);
@@ -124,15 +124,15 @@ public class SpartanProtocol {
     }
 
     public long getActiveCreationTime() {
-        return this.creationTime;
+        return this.activeCreationTime;
     }
 
-    void resetCreationTime() {
-        this.creationTime = System.currentTimeMillis();
+    void resetActiveCreationTime() {
+        this.activeCreationTime = System.currentTimeMillis();
     }
 
     public long getActiveTimePlayed() {
-        return System.currentTimeMillis() - this.creationTime;
+        return System.currentTimeMillis() - this.activeCreationTime;
     }
 
     public boolean isUsingVersion(MultiVersion.MCVersion trialVersion) {

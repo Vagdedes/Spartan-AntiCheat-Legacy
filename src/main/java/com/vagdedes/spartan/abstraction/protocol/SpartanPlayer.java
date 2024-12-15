@@ -99,7 +99,7 @@ public class SpartanPlayer {
                 this.afk = true;
             }
         } else if (this.afk) {
-            this.protocol.resetCreationTime();
+            this.protocol.resetActiveCreationTime();
             this.afk = false;
         }
     }
