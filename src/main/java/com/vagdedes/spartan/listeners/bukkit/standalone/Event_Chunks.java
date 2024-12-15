@@ -22,14 +22,8 @@ public class Event_Chunks implements Listener {
     private static final Map<Long, Long> loaded = new ConcurrentHashMap<>();
     public static final boolean heightSupport = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17);
 
-    // Separator
-
-    public static long hashCoordinates(int x, int z) {
-        return (31L * x) + z;
-    }
-
     private static long hash(World world, int x, int z) {
-        return (hashCoordinates(x, z) * 31L) + world.getName().hashCode();
+        return (((31L * x) + z) * 31L) + world.getName().hashCode();
     }
 
     public static boolean isLoaded(World world, int x, int z) {

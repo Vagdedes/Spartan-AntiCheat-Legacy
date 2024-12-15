@@ -1,0 +1,6 @@
+[#] Improved how certain statistical outcomes are calculated.
+[#] Improved when certain logs are stored that lead to additional statistical improvements.
+[#] Added timezone support to log dates so that when time changes, statistics don't break.
+[#] Removed Chunk snapshots and instead relied on checking if a chunk is loaded to get data needed.
+[#] Optimized and at the same time improved the measurement of online and AFK time.
+[-] As a result of this update, your statistics will start from scratch, but that is for the better good.

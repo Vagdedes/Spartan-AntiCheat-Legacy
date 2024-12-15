@@ -17,8 +17,7 @@ import java.util.*;
 public class PlayerProfile {
 
     public static final String
-            onlineFor = " was online for: ",
-            afkFor = " was AFK for: ";
+            onlineFor = " was active for: ";
 
     public final String name;
     private final MiningHistory[] miningHistory;
