@@ -129,12 +129,12 @@ public class PlayerStateLists {
                                     profile.getLastDataType(),
                                     PlayerEvidence.dataRatio
                             );
-                            Long remainingTime = sufficientData
-                                    ? null
+                            long remainingTime = sufficientData
+                                    ? 0L
                                     : profile.getRunner(hackType).getRemainingCompletionTime(profile.getLastDataType());
                             String description = "§4" + hackType.getCheck().getName();
 
-                            if (remainingTime != null) {
+                            if (remainingTime > 0L) {
                                 description += " §8(§7Data pending: " + TimeUtils.convertMilliseconds(remainingTime) + "§8)";
                             } else if (!sufficientData) {
                                 description += " §8(§7Data pending§8)";

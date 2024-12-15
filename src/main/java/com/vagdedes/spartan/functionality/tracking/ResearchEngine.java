@@ -546,7 +546,7 @@ public class ResearchEngine {
                                 sum += value;
                                 squareSum += value * value;
                             }
-                            double divisor = wave.size(),
+                            double divisor = map.size(),
                                     mean = sum / divisor,
                                     deviation = Math.sqrt(squareSum / divisor);
 

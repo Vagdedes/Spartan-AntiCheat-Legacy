@@ -10,6 +10,8 @@ import java.util.*;
 
 public abstract class ProbabilityDetection extends CheckDetection {
 
+
+
     private int lastProbability;
     private final Long[] lastTime;
     private final Map<Check.DataType, Collection<Long>> data;
@@ -27,11 +29,12 @@ public abstract class ProbabilityDetection extends CheckDetection {
     @Override
     protected final boolean hasData(Check.DataType dataType) {
         synchronized (this.data) {
-            if (this.data.containsKey(dataType)) {
-                return this.executor.hasOnlineTime(dataType);
-            }
+            return this.hasData(this.data.get(dataType));
         }
-        return false;
+    }
+
+    private boolean hasData(Collection<Long> data) {
+        return data != null && data.size() > 1;
     }
 
     @Override
@@ -85,7 +88,7 @@ public abstract class ProbabilityDetection extends CheckDetection {
         synchronized (this.data) {
             Collection<Long> data = this.data.get(dataType);
 
-            if (data == null || data.size() == 1) {
+            if (!this.hasData(data)) {
                 return null;
             } else {
                 double averageViolationVelocity,
@@ -108,10 +111,11 @@ public abstract class ProbabilityDetection extends CheckDetection {
                 long onlineTime = this.executor.getOnlineTime(dataType);
 
                 if (onlineTime != 0L) {
+                    onlineTime /= 1_000L; // Convert to seconds
                     violationCount /= (double) onlineTime;
                 }
                 if (comparisonCount == 0.0) {
-                    averageViolationVelocity = Double.MAX_VALUE;
+                    averageViolationVelocity = Float.MAX_VALUE;
                 } else {
                     averageViolationVelocity = Math.sqrt(violationVelocitySquareSum / comparisonCount);
                 }

@@ -62,8 +62,8 @@ public class SuspicionNotifications {
                             protocol.spartan.dataType,
                             PlayerEvidence.dataRatio
                     );
-                    Long remainingTime = sufficientData
-                            ? null
+                    long remainingTime = sufficientData
+                            ? 0L
                             : profile.getRunner(hackType).getRemainingCompletionTime(profile.getLastDataType());
                     evidence.append(
                             hackType.getCheck().getName()
@@ -72,7 +72,7 @@ public class SuspicionNotifications {
                                     PlayerEvidence.probabilityToCertainty(
                                             runner.getExtremeProbability(protocol.spartan.dataType)
                                     ) * 100.0) + "%)"
-                                    : remainingTime != null
+                                    : remainingTime > 0L
                                     ? " (Data pending: " + TimeUtils.convertMilliseconds(remainingTime) + ")"
                                     : " [Unlikely (Data pending)]")
                     ).append(

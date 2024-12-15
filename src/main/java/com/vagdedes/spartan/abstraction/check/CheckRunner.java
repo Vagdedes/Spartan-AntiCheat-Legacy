@@ -88,11 +88,11 @@ public abstract class CheckRunner extends CheckProcess {
         return num;
     }
 
-    public final Long getRemainingCompletionTime(Check.DataType dataType) {
+    public final long getRemainingCompletionTime(Check.DataType dataType) {
         List<PlayerProfile> playerProfiles = ResearchEngine.getPlayerProfiles();
 
         if (playerProfiles.isEmpty()) {
-            return null;
+            return 0L;
         } else {
             double averageTime = 0.0,
                     averageCompletion = 0.0;
@@ -117,12 +117,14 @@ public abstract class CheckRunner extends CheckProcess {
             }
 
             if (size == 0) {
-                return null;
+                return 0L;
             }
             averageTime = Math.sqrt(averageTime / size);
             averageCompletion = Math.sqrt(averageCompletion / size);
             long time = (long) ((1.0 - averageCompletion) * averageTime);
-            return time == 0L ? null : time;
+            return time < 1_000L // Less than a second is quite irrelevant
+                    ? 0L
+                    : time;
         }
     }
 
@@ -393,22 +395,12 @@ public abstract class CheckRunner extends CheckProcess {
                 SpartanProtocol protocol = this.protocol();
                 return protocol == null || protocol.spartan.isAFK()
                         ? sum
-                        : Math.max(protocol.getActiveTimePlayed() + sum, 0L);
+                        : protocol.getActiveTimePlayed() + sum;
             } else {
                 SpartanProtocol protocol = this.protocol();
                 return protocol == null || protocol.spartan.isAFK()
                         ? 0L
                         : protocol.getActiveTimePlayed();
-            }
-        }
-    }
-
-    final boolean hasOnlineTime(Check.DataType dataType) {
-        if (this.protocol() != null) {
-            return true;
-        } else {
-            synchronized (this.continuity) {
-                return this.continuity.containsKey(dataType);
             }
         }
     }

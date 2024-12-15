@@ -210,10 +210,10 @@ public class ManageChecks extends InventoryMenu {
         // Separator
 
         if (notEnoughData != null && (!silent || punish)) {
-            Long remainingTime = protocol.getProfile().getRunner(hackType).getRemainingCompletionTime(notEnoughData);
+            long remainingTime = protocol.getProfile().getRunner(hackType).getRemainingCompletionTime(notEnoughData);
             lore.add("");
 
-            if (remainingTime != null) {
+            if (remainingTime > 0L) {
                 lore.add("§eData pending to enable preventions & punishments:");
                 lore.add("§e" + TimeUtils.convertMilliseconds(remainingTime));
             } else {
