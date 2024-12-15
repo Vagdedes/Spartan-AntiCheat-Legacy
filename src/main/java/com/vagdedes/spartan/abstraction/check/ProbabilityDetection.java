@@ -110,7 +110,7 @@ public abstract class ProbabilityDetection extends CheckDetection {
                 }
                 long onlineTime = this.executor.getOnlineTime(dataType);
 
-                if (onlineTime != 0L) {
+                if (onlineTime > 0L) {
                     onlineTime /= 1_000L; // Convert to seconds
                     violationCount /= (double) onlineTime;
                 }
@@ -119,7 +119,10 @@ public abstract class ProbabilityDetection extends CheckDetection {
                 } else {
                     averageViolationVelocity = Math.sqrt(violationVelocitySquareSum / comparisonCount);
                 }
-                return averageViolationVelocity / violationCount;
+                double result = averageViolationVelocity / violationCount;
+                return result == Double.POSITIVE_INFINITY || result == Double.NEGATIVE_INFINITY
+                        ? null
+                        : result;
             }
         }
     }

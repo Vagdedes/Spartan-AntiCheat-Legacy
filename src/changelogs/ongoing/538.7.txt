@@ -6,5 +6,6 @@
 [#] Changed the structure of certain logs to make them easier and faster to decode and understand.
 [#] Data collection remaining time is now available in all inventory menus of the plugin.
 [#] Data collection of a check will now be true only if at least half of its detections have collected data.
+[#] Fixed bugs with the Player Info menu where some data would not show.
 [-] Removed time precision from log dates that led to extra space and potential reading flaws.
 [-] As a result of this update, your statistics will start from scratch, but that is for the better good.

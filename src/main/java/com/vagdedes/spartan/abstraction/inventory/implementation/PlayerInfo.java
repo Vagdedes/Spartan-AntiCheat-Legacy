@@ -104,7 +104,7 @@ public class PlayerInfo extends InventoryMenu {
                            List<String> lore,
                            Enums.HackCategoryType checkType,
                            Set<Map.Entry<HackType, Double>> evidenceDetails) {
-        Map<Double, HackType> map = PlayerEvidence.POSITIVE
+        Map<Double, Collection<HackType>> map = PlayerEvidence.POSITIVE
                 ? new TreeMap<>(Collections.reverseOrder())
                 : new TreeMap<>();
         lore.clear();
@@ -118,10 +118,10 @@ public class PlayerInfo extends InventoryMenu {
         if (!evidenceDetails.isEmpty()) {
             for (Map.Entry<HackType, Double> entry : evidenceDetails) {
                 if (entry.getKey().category == checkType) {
-                    map.put(
+                    map.computeIfAbsent(
                             entry.getValue(),
-                            entry.getKey()
-                    );
+                            k -> new ArrayList<>()
+                    ).add(entry.getKey());
                 }
             }
         }
@@ -156,69 +156,70 @@ public class PlayerInfo extends InventoryMenu {
             lore.add("");
             lore.add("§7Certainty of cheating§8:");
 
-            for (Map.Entry<Double, HackType> entry : map.entrySet()) {
-                HackType hackType = entry.getValue();
-                double probability = entry.getKey();
-                boolean sufficientData = profile.getRunner(
-                        hackType
-                ).hasSufficientData(
-                        profile.getLastDataType(),
-                        PlayerEvidence.dataRatio
-                );
-                long remainingTime = sufficientData
-                        ? 0L
-                        : profile.getRunner(hackType).getRemainingCompletionTime(profile.getLastDataType());
-                String remainingDataPrompt = "";
+            for (Map.Entry<Double, Collection<HackType>> entry : map.entrySet()) {
+                for (HackType hackType : entry.getValue()) {
+                    double probability = entry.getKey();
+                    boolean sufficientData = profile.getRunner(
+                            hackType
+                    ).hasSufficientData(
+                            profile.getLastDataType(),
+                            PlayerEvidence.dataRatio
+                    );
+                    long remainingTime = sufficientData
+                            ? 0L
+                            : profile.getRunner(hackType).getRemainingCompletionTime(profile.getLastDataType());
+                    String remainingDataPrompt = "";
 
-                if (remainingTime > 0L) {
-                    remainingDataPrompt = " §8(§7Data pending: " + TimeUtils.convertMilliseconds(remainingTime) + "§8)";
-                } else if (!sufficientData) {
-                    remainingDataPrompt = " §8(§7Data pending§8)";
-                }
-                if (PlayerEvidence.surpassedProbability(
-                        probability,
-                        PlayerEvidence.punishmentProbability
-                )) {
-                    probability = PlayerEvidence.probabilityToCertainty(probability);
-                    lore.add(
-                            "§4" + hackType.getCheck().getName()
-                                    + "§8: §c" + AlgebraUtils.integerRound(probability * 100.0) + "%"
-                                    + remainingDataPrompt
-                    );
-                } else if (PlayerEvidence.surpassedProbability(
-                        probability,
-                        PlayerEvidence.preventionProbability
-                )) {
-                    probability = PlayerEvidence.probabilityToCertainty(probability);
-                    lore.add(
-                            "§6" + hackType.getCheck().getName()
-                                    + "§8: §e" + AlgebraUtils.integerRound(probability * 100.0) + "%"
-                                    + remainingDataPrompt
-                    );
-                } else if (PlayerEvidence.surpassedProbability(
-                        probability,
-                        PlayerEvidence.notificationProbability
-                )) {
-                    probability = PlayerEvidence.probabilityToCertainty(probability);
-                    lore.add(
-                            "§2" + hackType.getCheck().getName()
-                                    + "§8: §a" + AlgebraUtils.integerRound(probability * 100.0) + "%"
-                                    + remainingDataPrompt
-                    );
-                } else {
-                    probability = PlayerEvidence.probabilityToCertainty(probability);
-                    int showProbability = AlgebraUtils.integerRound(probability * 100.0);
-
-                    if (showProbability > 0) {
+                    if (remainingTime > 0L) {
+                        remainingDataPrompt = " §8(§7Data pending: " + TimeUtils.convertMilliseconds(remainingTime) + "§8)";
+                    } else if (!sufficientData) {
+                        remainingDataPrompt = " §8(§7Data pending§8)";
+                    }
+                    if (PlayerEvidence.surpassedProbability(
+                            probability,
+                            PlayerEvidence.punishmentProbability
+                    )) {
+                        probability = PlayerEvidence.probabilityToCertainty(probability);
                         lore.add(
-                                "§3" + hackType.getCheck().getName() + "§8: §b" + showProbability + "%"
+                                "§4" + hackType.getCheck().getName()
+                                        + "§8: §c" + AlgebraUtils.integerRound(probability * 100.0) + "%"
+                                        + remainingDataPrompt
+                        );
+                    } else if (PlayerEvidence.surpassedProbability(
+                            probability,
+                            PlayerEvidence.preventionProbability
+                    )) {
+                        probability = PlayerEvidence.probabilityToCertainty(probability);
+                        lore.add(
+                                "§6" + hackType.getCheck().getName()
+                                        + "§8: §e" + AlgebraUtils.integerRound(probability * 100.0) + "%"
+                                        + remainingDataPrompt
+                        );
+                    } else if (PlayerEvidence.surpassedProbability(
+                            probability,
+                            PlayerEvidence.notificationProbability
+                    )) {
+                        probability = PlayerEvidence.probabilityToCertainty(probability);
+                        lore.add(
+                                "§2" + hackType.getCheck().getName()
+                                        + "§8: §a" + AlgebraUtils.integerRound(probability * 100.0) + "%"
                                         + remainingDataPrompt
                         );
                     } else {
-                        lore.add(
-                                "§3" + hackType.getCheck().getName() + "§8: §b1%"
-                                        + remainingDataPrompt
-                        );
+                        probability = PlayerEvidence.probabilityToCertainty(probability);
+                        int showProbability = AlgebraUtils.integerRound(probability * 100.0);
+
+                        if (showProbability > 0) {
+                            lore.add(
+                                    "§3" + hackType.getCheck().getName() + "§8: §b" + showProbability + "%"
+                                            + remainingDataPrompt
+                            );
+                        } else {
+                            lore.add(
+                                    "§3" + hackType.getCheck().getName() + "§8: §b1%"
+                                            + remainingDataPrompt
+                            );
+                        }
                     }
                 }
             }
