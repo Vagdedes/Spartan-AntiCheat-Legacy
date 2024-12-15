@@ -168,7 +168,7 @@ public class HitReach extends CheckRunner {
             vl += 100;
             this.simple.cancel( // ATTENTION: Add more detections to the check if you write more definitions for the 'punish' String field
                             "type: " + punish + ", hitbox-size-analysis: "
-                                            + result + ", hitbox-size-last: " + bruteForce + ", percent-of-deviance: "
+                                            + result + ", hitbox-size-last: " + bruteForce + ", percent-of-deviation: "
                                             + percent + "%, reach: " + RayUtils.scaleVal((result / 0.4) * 3, 2) + " blocks",
                             to
             );
