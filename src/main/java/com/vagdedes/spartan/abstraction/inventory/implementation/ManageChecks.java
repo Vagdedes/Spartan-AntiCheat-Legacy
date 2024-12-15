@@ -210,7 +210,7 @@ public class ManageChecks extends InventoryMenu {
         // Separator
 
         if (notEnoughData != null && (!silent || punish)) {
-            long remainingTime = protocol.getProfile().getRunner(hackType).getRemainingCompletionTime(notEnoughData);
+            long remainingTime = protocol.profile().getRunner(hackType).getRemainingCompletionTime(notEnoughData);
             lore.add("");
 
             if (remainingTime > 0L) {
@@ -219,9 +219,6 @@ public class ManageChecks extends InventoryMenu {
             } else {
                 lore.add("§eData pending to enable preventions & punishments.");
             }
-            lore.add("§eYellow text in preventions & punishments");
-            lore.add("§eindicate the check is still collecting");
-            lore.add("§edata and will fully enable in the future.");
         }
         if (enabled && silent) {
             item.addUnsafeEnchantment(EnchantmentUtils.DURABILITY, 1);

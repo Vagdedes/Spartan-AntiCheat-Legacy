@@ -41,7 +41,7 @@ public abstract class CheckDetection extends CheckProcess {
     protected long notifications;
 
     protected CheckDetection(CheckRunner executor, String name, boolean def) {
-        super(executor.hackType, executor.protocol());
+        super(executor.hackType, executor.protocol(), executor.playerName());
         this.executor = executor;
         this.name = name;
         this.def = def;
@@ -327,7 +327,7 @@ public abstract class CheckDetection extends CheckProcess {
                         this.protocol().spartan.dataType,
                         time
                 );
-                ResearchEngine.queueToCache(this.hackType);
+                ResearchEngine.queueToCache(this.hackType, this.protocol().spartan.dataType);
                 this.notify(time, information);
                 this.punish();
                 this.executor.prevention = newPrevention;

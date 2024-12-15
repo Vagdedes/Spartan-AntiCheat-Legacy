@@ -20,7 +20,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Vehicle;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerVelocityEvent;
 
 import java.util.*;
@@ -56,7 +55,6 @@ public class SpartanProtocol {
     public PacketWorld packetWorld;
     public long placeTime, placeHash;
     public int transactionVl;
-    public BlockPlaceEvent oldBlockEvent;
     public PlayerTickEvent lastTickEvent;
 
     public short transactionId;
@@ -107,7 +105,6 @@ public class SpartanProtocol {
 
         this.axisMatrixCache = new HashSet<>();
         this.checkBoundData = null;
-        this.oldBlockEvent = null;
         this.pistonTick = false;
         this.lastTickEvent = null;
         this.transactionId = (short) -1939;
@@ -289,7 +286,7 @@ public class SpartanProtocol {
         this.simulationFlag = false;
     }
 
-    public PlayerProfile getProfile() {
+    public PlayerProfile profile() {
         return this.profile;
     }
 

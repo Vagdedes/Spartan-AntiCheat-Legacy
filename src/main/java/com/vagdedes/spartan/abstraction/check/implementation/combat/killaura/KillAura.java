@@ -25,8 +25,8 @@ public class KillAura extends CheckRunner {
     private final FightAnalysis analysis;
     private final MoveLength moveLength;
 
-    public KillAura(Enums.HackType hackType, SpartanProtocol protocol) {
-        super(hackType, protocol);
+    public KillAura(Enums.HackType hackType, SpartanProtocol protocol, String playerName) {
+        super(hackType, protocol, playerName);
         irregular = new Irregular(this);
         entityRaytrace = new EntityRaytrace(this);
         blockRaytrace = new BlockRaytrace(this);

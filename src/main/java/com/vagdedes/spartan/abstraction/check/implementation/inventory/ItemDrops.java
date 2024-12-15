@@ -17,8 +17,8 @@ public class ItemDrops extends CheckRunner {
     private final Buffer.IndividualBuffer buffer;
     private final List<Long> times;
 
-    public ItemDrops(Enums.HackType hackType, SpartanProtocol protocol) {
-        super(hackType, protocol);
+    public ItemDrops(Enums.HackType hackType, SpartanProtocol protocol, String playerName) {
+        super(hackType, protocol, playerName);
         this.detection = new ImplementedProbabilityDetection(this, null, true);
         this.buffer = new Buffer.IndividualBuffer();
         this.times = new LinkedList<>();

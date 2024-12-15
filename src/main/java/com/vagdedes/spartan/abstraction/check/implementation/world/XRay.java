@@ -56,8 +56,8 @@ public class XRay extends CheckRunner {
 
     private final CheckDetection detection;
 
-    public XRay(Enums.HackType hackType, SpartanProtocol protocol) {
-        super(hackType, protocol);
+    public XRay(Enums.HackType hackType, SpartanProtocol protocol, String playerName) {
+        super(hackType, protocol, playerName);
         this.detection = new ImplementedProbabilityDetection(this, null, true);
     }
 

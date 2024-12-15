@@ -16,8 +16,8 @@ public class AutoRespawn extends CheckRunner {
     private final CheckDetection detection;
     private long memory;
 
-    public AutoRespawn(HackType hackType, SpartanProtocol protocol) {
-        super(hackType, protocol);
+    public AutoRespawn(HackType hackType, SpartanProtocol protocol, String playerName) {
+        super(hackType, protocol, playerName);
         this.detection = new ImplementedProbabilityDetection(this, null, true);
     }
 

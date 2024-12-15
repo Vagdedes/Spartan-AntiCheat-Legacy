@@ -246,27 +246,7 @@ public class SpartanLocation implements Cloneable {
                 if (isChunkLoaded(x, z)) {
                     return setBlock();
                 } else {
-                    SpartanBlock[] block = new SpartanBlock[1];
-                    Thread thread = Thread.currentThread();
-
-                    SpartanBukkit.transferTask(this.world, x, z, () -> {
-                        block[0] = setBlock();
-
-                        synchronized (thread) {
-                            thread.notifyAll();
-                        }
-                    });
-                    synchronized (thread) {
-                        if (block[0] == null) {
-                            try {
-                                thread.wait();
-                            } catch (Exception ex) {
-                                block[0] = new SpartanBlock(Material.AIR);
-                                SpartanBukkit.transferTask(this.world, x, z, () -> block[0] = setBlock());
-                            }
-                        }
-                    }
-                    return block[0];
+                    return new SpartanBlock(null);
                 }
             }
         } else {

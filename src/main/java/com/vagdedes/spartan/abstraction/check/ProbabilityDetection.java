@@ -99,14 +99,14 @@ public abstract class ProbabilityDetection extends CheckDetection {
                 while (iterator.hasNext()) {
                     long current = iterator.next();
 
-                    if (this.profile().getContinuity().wasOnline(this.protocol(), current, previous)) {
+                    if (this.profile().getContinuity().wasOnline(current, previous)) {
                         comparisonCount++;
                         long difference = current - previous;
                         previous = current;
                         violationVelocitySquareSum += difference * difference;
                     }
                 }
-                long onlineTime = this.profile().getContinuity().getOnlineTime(this.protocol());
+                long onlineTime = this.profile().getContinuity().getOnlineTime();
 
                 if (onlineTime > 0L) {
                     onlineTime /= 1_000L; // Convert to seconds

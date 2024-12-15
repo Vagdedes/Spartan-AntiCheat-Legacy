@@ -53,7 +53,7 @@ public class PlayerInfo extends InventoryMenu {
         SpartanProtocol target = SpartanBukkit.getAnyCaseProtocol(object.toString());
         boolean isOnline = target != null;
         PlayerProfile profile = isOnline
-                ? target.getProfile()
+                ? target.profile()
                 : ResearchEngine.getAnyCasePlayerProfile(object.toString());
 
         if (profile == null) {
@@ -80,12 +80,10 @@ public class PlayerInfo extends InventoryMenu {
                 lore.add("§7Latency§8:§c " + target.getPing() + "ms");
                 lore.add("§7Edition§8:§c " + target.spartan.dataType);
             }
-            long onlineTime = profile.getContinuity().getOnlineTime(
-                    isOnline ? target : null
-            );
+            long time = profile.getContinuity().getOnlineTime();
 
-            if (onlineTime > 0L) {
-                lore.add("§7Online Time§8:§c " + TimeUtils.convertMilliseconds(onlineTime));
+            if (time > 0L) {
+                lore.add("§7Total Active Time§8:§c " + TimeUtils.convertMilliseconds(time));
                 lore.add("");
             } else if (isOnline) {
                 lore.add("");

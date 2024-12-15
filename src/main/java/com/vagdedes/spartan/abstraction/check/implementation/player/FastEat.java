@@ -27,8 +27,8 @@ public class FastEat extends CheckRunner {
 
     private long delayTime, eatTime;
 
-    public FastEat(HackType hackType, SpartanProtocol protocol) {
-        super(hackType, protocol);
+    public FastEat(HackType hackType, SpartanProtocol protocol, String playerName) {
+        super(hackType, protocol, playerName);
         this.interact = new ImplementedProbabilityDetection(this, "interact", true);
         this.eat = new ImplementedProbabilityDetection(this, "eat", true);
     }

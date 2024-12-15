@@ -1,6 +1,6 @@
 package com.vagdedes.spartan.listeners.bukkit;
 
-import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import me.vagdedes.spartan.system.Enums;
@@ -14,27 +14,40 @@ public class Event_BlockPlace implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public static void event(BlockPlaceEvent e) {
-        SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer(), true).spartan;
-        Block nb = e.getBlock();
-        p.movement.judgeGround();
+        SpartanProtocol protocol = SpartanBukkit.getProtocol(e.getPlayer(), true);
 
-        if (p.getWorld() != nb.getWorld()) {
-            return;
-        }
-        boolean cancelled = e.isCancelled();
-
-        // Detections
-        if (!ItemsAdder.is(nb)) {
-            p.getRunner(Enums.HackType.ImpossibleActions).handle(cancelled, e);
-            p.getRunner(Enums.HackType.BlockReach).handle(cancelled, e);
-            p.getRunner(Enums.HackType.FastPlace).handle(cancelled, e);
-        }
-
-        if (p.getRunner(Enums.HackType.FastPlace).prevent()
-                || p.getRunner(Enums.HackType.BlockReach).prevent()
-                || p.getRunner(Enums.HackType.ImpossibleActions).prevent()) {
+        if (event(protocol, e.getBlock(), e.getBlockAgainst(), e.isCancelled())) {
             e.setCancelled(true);
         }
+    }
+
+    public static boolean event(
+            SpartanProtocol protocol,
+            Block block,
+            Block blockAgainst,
+            boolean cancelled
+    ) {
+        protocol.spartan.movement.judgeGround();
+
+        if (protocol.spartan.getWorld() != block.getWorld()) {
+            return false;
+        }
+
+        // Detections
+        if (!ItemsAdder.is(block)) {
+            protocol.spartan.getRunner(Enums.HackType.ImpossibleActions).handle(
+                    cancelled,
+                    new Block[]{block, blockAgainst}
+            );
+            protocol.spartan.getRunner(Enums.HackType.BlockReach).handle(
+                    cancelled,
+                    new Block[]{block, blockAgainst}
+            );
+            protocol.spartan.getRunner(Enums.HackType.FastPlace).handle(cancelled, block);
+        }
+        return protocol.spartan.getRunner(Enums.HackType.FastPlace).prevent()
+                || protocol.spartan.getRunner(Enums.HackType.BlockReach).prevent()
+                || protocol.spartan.getRunner(Enums.HackType.ImpossibleActions).prevent();
     }
 
 }

@@ -91,7 +91,7 @@ public class SpartanPlayer {
 
         if (lastInteraction >= 30_000L) {
             if (!afk) {
-                this.protocol.getProfile().getContinuity().setActiveTime(
+                this.protocol.profile().getContinuity().setActiveTime(
                         System.currentTimeMillis(),
                         this.protocol.getActiveTimePlayed() - lastInteraction,
                         true
@@ -168,7 +168,7 @@ public class SpartanPlayer {
     // Separator
 
     public CheckRunner getRunner(Enums.HackType hackType) {
-        return this.protocol.getProfile().getRunner(hackType);
+        return this.protocol.profile().getRunner(hackType);
     }
 
     public void resetCrucialData() {

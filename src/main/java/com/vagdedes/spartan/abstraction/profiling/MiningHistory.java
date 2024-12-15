@@ -64,7 +64,7 @@ public class MiningHistory {
                             null,
                             System.currentTimeMillis()
                     );
-                    MiningHistory miningHistory = protocol.getProfile().getMiningHistory(ore);
+                    MiningHistory miningHistory = protocol.profile().getMiningHistory(ore);
 
                     if (miningHistory != null) {
                         String pluralKey = key.endsWith("s") ? (key + "es") : (key + "s");

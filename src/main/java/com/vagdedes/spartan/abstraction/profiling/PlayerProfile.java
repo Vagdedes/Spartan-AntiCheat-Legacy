@@ -16,7 +16,7 @@ import java.util.*;
 public class PlayerProfile {
 
     public static final String
-            onlineFor = " was active for: ";
+            activeFor = " was active for: ";
 
     public final String name;
     private final MiningHistory[] miningHistory;
@@ -87,35 +87,31 @@ public class PlayerProfile {
         }
     }
 
+    SpartanProtocol protocol() {
+        return this.runners[0].protocol();
+    }
+
     public ProfileContinuity getContinuity() {
         return this.continuity;
     }
 
     public CheckRunner getRunner(Enums.HackType hackType) {
-        int ordinal = hackType.ordinal();
-
-        synchronized (this.runners) {
-            return this.runners[ordinal];
-        }
+        return this.runners[hackType.ordinal()];
     }
 
     public CheckRunner[] getRunners() {
-        synchronized (this.runners) {
-            return this.runners;
-        }
+        return this.runners;
     }
 
     private void registerChecks(SpartanProtocol protocol) {
-        synchronized (this.runners) {
-            for (Enums.HackType hackType : Enums.HackType.values()) {
-                try {
-                    CheckRunner executor = (CheckRunner) hackType.executor
-                            .getConstructor(hackType.getClass(), SpartanProtocol.class)
-                            .newInstance(hackType, protocol);
-                    this.runners[hackType.ordinal()] = executor;
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
+        for (Enums.HackType hackType : Enums.HackType.values()) {
+            try {
+                CheckRunner executor = (CheckRunner) hackType.executor
+                        .getConstructor(hackType.getClass(), SpartanProtocol.class, String.class)
+                        .newInstance(hackType, protocol, this.name);
+                this.runners[hackType.ordinal()] = executor;
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
         }
     }

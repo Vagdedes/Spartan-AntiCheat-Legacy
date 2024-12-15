@@ -12,7 +12,7 @@ public class Event_Chat implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Event(AsyncPlayerChatEvent e) {
-        SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer(), true).spartan;
+        SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartan;
 
         // Detections
         p.getRunner(Enums.HackType.Exploits).handle(e.isCancelled(), e.getMessage());

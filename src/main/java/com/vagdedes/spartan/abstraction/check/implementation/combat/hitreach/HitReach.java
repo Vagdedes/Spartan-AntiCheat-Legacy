@@ -40,8 +40,8 @@ public class HitReach extends CheckRunner {
     private final OptifineMath optifineMath = new OptifineMath();
     private final VanillaMath vanillaMath = new VanillaMath();
 
-    public HitReach(HackType hackType, SpartanProtocol protocol) {
-        super(hackType, protocol);
+    public HitReach(HackType hackType, SpartanProtocol protocol, String playerName) {
+        super(hackType, protocol, playerName);
         hitboxRaytrace = new ImplementedProbabilityDetection(this, "hitbox_raytrace", true);
         simple = new ImplementedProbabilityDetection(this, "simple", true);
     }

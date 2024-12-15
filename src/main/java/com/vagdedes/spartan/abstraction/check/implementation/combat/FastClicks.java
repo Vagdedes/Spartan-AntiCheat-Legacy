@@ -17,8 +17,8 @@ public class FastClicks extends CheckRunner {
             clicksPerSecond,
             clicksPattern;
 
-    public FastClicks(Enums.HackType hackType, SpartanProtocol protocol) {
-        super(hackType, protocol);
+    public FastClicks(Enums.HackType hackType, SpartanProtocol protocol, String playerName) {
+        super(hackType, protocol, playerName);
         this.clicksPerSecond = new ImplementedProbabilityDetection(this, null, true);
         this.clicksPattern = new ImplementedProbabilityDetection(this, "click_pattern", true);
     }

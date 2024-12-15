@@ -30,8 +30,8 @@ public class NoSwing extends CheckRunner {
     private final Buffer.IndividualBuffer damageBuffer;
     private long checkDamage;
 
-    public NoSwing(Enums.HackType hackType, SpartanProtocol protocol) {
-        super(hackType, protocol);
+    public NoSwing(Enums.HackType hackType, SpartanProtocol protocol, String playerName) {
+        super(hackType, protocol, playerName);
         this.breakTime = Long.MAX_VALUE;
         this.animationTime = Long.MAX_VALUE;
         this.damageBuffer = new Buffer.IndividualBuffer();

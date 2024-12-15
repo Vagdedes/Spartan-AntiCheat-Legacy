@@ -14,7 +14,6 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.Vector;
 
@@ -31,8 +30,8 @@ public class ImpossibleActions extends CheckRunner {
     private final Tower tower;
     private final ScaffoldAnalysis scaffoldAnalysis;
 
-    public ImpossibleActions(Enums.HackType hackType, SpartanProtocol protocol) {
-        super(hackType, protocol);
+    public ImpossibleActions(Enums.HackType hackType, SpartanProtocol protocol, String playerName) {
+        super(hackType, protocol, playerName);
         this.scaffoldDirection = new ImplementedProbabilityDetection(this, "scaffold_direction", true);
         this.scaffoldUp = new ImplementedProbabilityDetection(this, "scaffold_up", true);
         this.scaffoldYaw = new ImplementedProbabilityDetection(this, "scaffold_yaw", true);
@@ -43,17 +42,17 @@ public class ImpossibleActions extends CheckRunner {
 
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
-        if (object instanceof BlockPlaceEvent) {
-            BlockPlaceEvent event = (BlockPlaceEvent) object;
-            Block block = event.getBlock();
+        if (object instanceof Block[]) {
+            Block[] blocks = (Block[]) object;
+            Block block = blocks[0];
             Location playerLocation = this.protocol().getLocationOrVehicle();
             int playerY = playerLocation.getBlockY(),
-                    blockY = event.getBlock().getY();
-            this.scaffoldAnalysis.run(event);
+                    blockY = block.getY();
+            this.scaffoldAnalysis.run(block);
 
             if (blockY < playerY) {
-                Block blockAgainst = event.getBlockAgainst();
-                BlockFace blockFace = blockAgainst.getFace(event.getBlock());
+                Block blockAgainst = blocks[1];
+                BlockFace blockFace = blockAgainst.getFace(block);
 
                 if (blockFace != null) {
                     switch (blockFace) {

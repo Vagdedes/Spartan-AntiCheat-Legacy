@@ -24,8 +24,8 @@ public class FastHeal extends CheckRunner {
     private long time;
     private final Buffer.IndividualBuffer buffer;
 
-    public FastHeal(HackType hackType, SpartanProtocol protocol) {
-        super(hackType, protocol);
+    public FastHeal(HackType hackType, SpartanProtocol protocol, String playerName) {
+        super(hackType, protocol, playerName);
         this.detection = new ImplementedProbabilityDetection(this, null, true);
         this.buffer = new Buffer.IndividualBuffer();
     }

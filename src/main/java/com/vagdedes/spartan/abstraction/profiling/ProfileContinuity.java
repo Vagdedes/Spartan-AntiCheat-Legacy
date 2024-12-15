@@ -25,7 +25,7 @@ public class ProfileContinuity {
         if (log) {
             AntiCheatLogs.rawLogInfo(
                     moment,
-                    this.profile.name + PlayerProfile.onlineFor + length,
+                    this.profile.name + PlayerProfile.activeFor + length,
                     false,
                     true,
                     true
@@ -39,22 +39,28 @@ public class ProfileContinuity {
         }
     }
 
-    public boolean wasOnline(SpartanProtocol protocol, long current, long previous) {
+    public boolean wasOnline(long current, long previous) {
+        SpartanProtocol protocol = this.profile.protocol();
+
         if (protocol != null
                 && current >= protocol.getActiveCreationTime()
                 && previous >= protocol.getActiveCreationTime()) {
             return !protocol.spartan.isAFK();
         } else {
             synchronized (this.continuity) {
-                Map<Long, Long> data = this.continuity.get(profile.getLastDataType());
+                Map<Long, Long> data = this.continuity.get(
+                        protocol == null
+                                ? profile.getLastDataType()
+                                : protocol.spartan.dataType
+                );
 
                 if (data != null) {
                     for (Map.Entry<Long, Long> entry : data.entrySet()) {
-                        long connectedTime = entry.getValue(),
-                                disconnectedMoment = entry.getKey();
+                        long length = entry.getValue(),
+                                moment = entry.getKey();
 
-                        if (previous >= (disconnectedMoment - connectedTime)
-                                && current <= disconnectedMoment) {
+                        if (previous >= (moment - length)
+                                && current <= moment) {
                             return true;
                         }
                     }
@@ -64,25 +70,26 @@ public class ProfileContinuity {
         }
     }
 
-    public long getOnlineTime(SpartanProtocol protocol) {
+    public long getOnlineTime() {
+        SpartanProtocol protocol = this.profile.protocol();
+        long sum = 0L;
+
         synchronized (this.continuity) {
-            Map<Long, Long> data = this.continuity.get(this.profile.getLastDataType());
+            Map<Long, Long> data = this.continuity.get(
+                    protocol == null
+                            ? profile.getLastDataType()
+                            : protocol.spartan.dataType
+            );
 
             if (data != null) {
-                long sum = 0L;
-
                 for (long value : data.values()) {
                     sum += value;
                 }
-                return protocol == null || protocol.spartan.isAFK()
-                        ? sum
-                        : protocol.getActiveTimePlayed() + sum;
-            } else {
-                return protocol == null || protocol.spartan.isAFK()
-                        ? 0L
-                        : protocol.getActiveTimePlayed();
             }
         }
+        return protocol == null || protocol.spartan.isAFK()
+                ? sum
+                : protocol.getActiveTimePlayed() + sum;
     }
 
 }

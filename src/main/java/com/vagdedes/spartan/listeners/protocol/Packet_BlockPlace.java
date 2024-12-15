@@ -19,9 +19,7 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
@@ -81,34 +79,7 @@ public class Packet_BlockPlace extends PacketAdapter {
                         : player.getInventory().getItemInOffHand()) : player.getItemInHand();
                 if (itemInHand.getType().isBlock()) {
                     if (!isInPlayer(protocol.getLocation(), block.getLocation())) {
-                        Thread thread = Thread.currentThread();
-                        BlockState[] blockState = new BlockState[1];
-                        SpartanBukkit.transferTask(
-                                protocol,
-                                () -> {
-                                    blockState[0] = block.getState();
-
-                                    synchronized (thread) {
-                                        thread.notifyAll();
-                                    }
-                                }
-                        );
-                        synchronized (thread) {
-                            if (blockState[0] == null) {
-                                try {
-                                    thread.wait();
-                                } catch (Exception ignored) {
-                                }
-                            }
-                        }
-                        BlockPlaceEvent blockPlaceEvent = new BlockPlaceEvent(
-                                block,
-                                blockState[0],
-                                player.getLocation().getBlock(),
-                                itemInHand,
-                                player,
-                                true
-                        );
+                        Block blockAgainst = player.getLocation().getBlock();
                         Material material = itemInHand.getType();
                         protocol.packetWorld.worldChange(new ServerBlockChange(blockPosition, material));
                         protocol.packetWorld.worldChange(new ServerBlockChange(
@@ -116,7 +87,7 @@ public class Packet_BlockPlace extends PacketAdapter {
                                 material
                         ));
 
-                        Event_BlockPlace.event(blockPlaceEvent);
+                        Event_BlockPlace.event(protocol, block, blockAgainst, event.isCancelled());
                         protocol.rightClickCounter = 0;
                     } else {
                         protocol.rightClickCounter++;

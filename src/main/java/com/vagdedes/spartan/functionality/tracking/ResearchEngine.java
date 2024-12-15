@@ -27,11 +27,12 @@ import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ResearchEngine {
 
     private static boolean firstLoad = false;
-    public static Map<Enums.HackType, Boolean> violationFired = new ConcurrentHashMap<>();
+    public static Map<Enums.HackType, Collection<Check.DataType>> violationFired = new ConcurrentHashMap<>();
     private static long schedulerTicks = 0L;
     private static final Map<String, PlayerProfile> playerProfiles = new ConcurrentHashMap<>();
 
@@ -175,7 +176,7 @@ public class ResearchEngine {
             if (player == null) {
                 profile = getAnyCasePlayerProfile(playerName);
             } else {
-                profile = player.getProfile();
+                profile = player.profile();
             }
             Pattern.deleteFromFile(profile);
 
@@ -372,22 +373,6 @@ public class ResearchEngine {
             SpartanBukkit.analysisThread.execute(runnable);
             firstLoad = true;
         }
-
-        if (!enabledPlugin) {
-            List<SpartanProtocol> protocols = SpartanBukkit.getProtocols();
-
-            if (!protocols.isEmpty()) {
-                for (SpartanProtocol protocol : protocols) {
-                    if (protocol != null && !protocol.spartan.isAFK()) {
-                        protocol.getProfile().getContinuity().setActiveTime(
-                                System.currentTimeMillis(),
-                                protocol.getActiveTimePlayed(),
-                                true
-                        );
-                    }
-                }
-            }
-        }
     }
 
     private static void buildCache() {
@@ -489,7 +474,7 @@ public class ResearchEngine {
                                     }
                                 }
                             } else {
-                                int index = data.indexOf(PlayerProfile.onlineFor);
+                                int index = data.indexOf(PlayerProfile.activeFor);
 
                                 if (index != -1) {
                                     SimpleDateFormat sdf = new SimpleDateFormat(AntiCheatLogs.dateFormat);
@@ -500,7 +485,7 @@ public class ResearchEngine {
                                                 true
                                         ).getContinuity().setActiveTime(
                                                 sdf.parse(fullDate).getTime(),
-                                                Long.parseLong(data.substring(index + PlayerProfile.onlineFor.length())),
+                                                Long.parseLong(data.substring(index + PlayerProfile.activeFor.length())),
                                                 false
                                         );
                                     } catch (Exception ignored) {
@@ -536,7 +521,13 @@ public class ResearchEngine {
             for (Enums.HackType hackType : (force
                     ? Arrays.asList(Enums.HackType.values())
                     : violationFired.keySet())) {
-                for (Check.DataType dataType : Check.DataType.values()) {
+                Collection<Check.DataType> dataTypes = violationFired.get(hackType);
+
+                for (Check.DataType dataType : (force
+                        ? Arrays.asList(Check.DataType.values())
+                        : (dataTypes == null || dataTypes.isEmpty()
+                        ? Arrays.asList(Check.DataType.values()) :
+                        dataTypes))) {
                     Map<String, Map<CheckDetection, Double>> wave = new LinkedHashMap<>();
 
                     if (hackType.getCheck().isEnabled(dataType, null)) {
@@ -612,8 +603,11 @@ public class ResearchEngine {
         }
     }
 
-    public static void queueToCache(Enums.HackType hackType) {
-        violationFired.put(hackType, true);
+    public static void queueToCache(Enums.HackType hackType, Check.DataType dataType) {
+        violationFired.computeIfAbsent(
+                hackType,
+                k -> new CopyOnWriteArrayList<>()
+        ).add(dataType);
     }
 
 }

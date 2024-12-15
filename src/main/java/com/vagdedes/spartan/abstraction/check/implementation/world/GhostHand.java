@@ -21,8 +21,8 @@ public class GhostHand extends CheckRunner {
 
     private final CheckDetection breaking, interact;
 
-    public GhostHand(HackType hackType, SpartanProtocol protocol) {
-        super(hackType, protocol);
+    public GhostHand(HackType hackType, SpartanProtocol protocol, String playerName) {
+        super(hackType, protocol, playerName);
         this.breaking = new ImplementedProbabilityDetection(this, "breaking", true);
         this.interact = new ImplementedProbabilityDetection(this, "interact", true);
     }

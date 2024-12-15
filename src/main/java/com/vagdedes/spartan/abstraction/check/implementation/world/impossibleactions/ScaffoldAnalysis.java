@@ -11,7 +11,6 @@ import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.util.Vector;
 
 import java.util.Arrays;
@@ -22,17 +21,18 @@ import java.util.Map;
 public class ScaffoldAnalysis extends ProbabilityDetection {
 
     private final Map<Integer, Buffer.IndividualSimpleBuffer> buffers;
+    private Block oldBlock;
 
     ScaffoldAnalysis(CheckRunner executor) {
         super(executor, "scaffold_analysis", true);
         this.buffers = new OverflowMap<>(new LinkedHashMap<>(), 124);
     }
 
-    final void run(BlockPlaceEvent e) {
+    final void run(Block currentBlock) {
         SpartanProtocol p = this.protocol();
 
-        if (p.oldBlockEvent == null) {
-            p.oldBlockEvent = e;
+        if (this.oldBlock == null) {
+            this.oldBlock = currentBlock;
             return;
         }
         Location l = p.getLocation();
@@ -41,9 +41,8 @@ public class ScaffoldAnalysis extends ProbabilityDetection {
         long placeHash = (long) ((lB.getX() * 31) + lB.getZ());
         Buffer.IndividualSimpleBuffer buffer = buffers.computeIfAbsent(
                 101, k -> new Buffer.IndividualSimpleBuffer());
-        Block b = e.getBlock();
-        Location bL = b.getLocation();
-        Block oldB = p.oldBlockEvent.getBlock();
+        Location bL = currentBlock.getLocation();
+        Block oldB = this.oldBlock;
         Material downBType = new SpartanLocation(
                 bL.clone().add(0, -1, 0)
         ).getBlock().getTypeOrNull();
@@ -88,7 +87,7 @@ public class ScaffoldAnalysis extends ProbabilityDetection {
                     || p.bukkit.isFlying() || !checkHash) {
                 p.rightClickCounter = 0;
                 p.placeTime = System.currentTimeMillis();
-                p.oldBlockEvent = e;
+                this.oldBlock = currentBlock;
                 /*
                 p.player.sendMessage("c 1 " + (delay < 5)
                                 + " " + (placeHash == p.placeHash) + " "
@@ -99,7 +98,7 @@ public class ScaffoldAnalysis extends ProbabilityDetection {
             } else if (bL.getY() != oldB.getLocation().getY()
                     || !BlockUtils.areAir(downBType)) {
                 p.rightClickCounter = 0;
-                p.oldBlockEvent = e;
+                this.oldBlock = currentBlock;
                 return;
             }
 
@@ -123,7 +122,7 @@ public class ScaffoldAnalysis extends ProbabilityDetection {
 
         }
 
-        p.oldBlockEvent = e;
+        this.oldBlock = currentBlock;
         p.placeHash = placeHash;
         p.placeTime = System.currentTimeMillis();
         p.rightClickCounter = 0;

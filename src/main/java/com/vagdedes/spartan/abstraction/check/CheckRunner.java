@@ -35,8 +35,8 @@ public abstract class CheckRunner extends CheckProcess {
     private boolean cancelled;
     protected final Map<String, CheckDetection> detections;
 
-    public CheckRunner(Enums.HackType hackType, SpartanProtocol protocol) {
-        super(hackType, protocol);
+    public CheckRunner(Enums.HackType hackType, SpartanProtocol protocol, String playerName) {
+        super(hackType, protocol, playerName);
         this.creation = System.currentTimeMillis();
         this.prevention = new CheckPrevention();
         this.detections = new ConcurrentHashMap<>(2);

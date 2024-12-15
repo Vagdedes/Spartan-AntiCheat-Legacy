@@ -154,7 +154,7 @@ public class SpartanBukkit {
             SpartanProtocol protocol = playerProtocol.remove(player.getUniqueId());
 
             if (protocol != null && !protocol.spartan.isAFK()) {
-                protocol.getProfile().getContinuity().setActiveTime(
+                protocol.profile().getContinuity().setActiveTime(
                         System.currentTimeMillis(),
                         protocol.getActiveTimePlayed(),
                         true
@@ -218,6 +218,18 @@ public class SpartanBukkit {
     // Separator
 
     public static void disable() {
+        if (!playerProtocol.isEmpty()) {
+            for (SpartanProtocol protocol : playerProtocol.values()) {
+                if (protocol != null && !protocol.spartan.isAFK()) {
+                    protocol.profile().getContinuity().setActiveTime(
+                            System.currentTimeMillis(),
+                            protocol.getActiveTimePlayed(),
+                            true
+                    );
+                }
+            }
+        }
+
         playerProtocol.clear();
         Threads.disable();
         NPCManager.clear();

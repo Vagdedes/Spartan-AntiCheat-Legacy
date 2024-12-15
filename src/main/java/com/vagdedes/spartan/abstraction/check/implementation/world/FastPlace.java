@@ -13,7 +13,6 @@ import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.event.block.BlockPlaceEvent;
 
 public class FastPlace extends CheckRunner {
 
@@ -21,8 +20,8 @@ public class FastPlace extends CheckRunner {
     private long time;
     private final Buffer.IndividualBuffer fastBuffer, mediumBuffer, slowBuffer;
 
-    public FastPlace(HackType hackType, SpartanProtocol protocol) {
-        super(hackType, protocol);
+    public FastPlace(HackType hackType, SpartanProtocol protocol, String playerName) {
+        super(hackType, protocol, playerName);
         this.fast = new ImplementedProbabilityDetection(this, "fast", true);
         this.medium = new ImplementedProbabilityDetection(this, "medium", true);
         this.slow = new ImplementedProbabilityDetection(this, "slow", true);
@@ -33,7 +32,7 @@ public class FastPlace extends CheckRunner {
 
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
-        Block b = ((BlockPlaceEvent) object).getBlock();
+        Block b = (Block) object;
 
         if (!BlockUtils.isScaffoldingBlock(b.getType())) {
             Material material = b.getType();

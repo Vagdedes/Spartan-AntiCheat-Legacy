@@ -20,8 +20,8 @@ public class FastBow extends CheckRunner {
     private long interactTime;
     private final Buffer.IndividualBuffer bowForce, bowShots;
 
-    public FastBow(HackType hackType, SpartanProtocol protocol) {
-        super(hackType, protocol);
+    public FastBow(HackType hackType, SpartanProtocol protocol, String playerName) {
+        super(hackType, protocol, playerName);
         this.bowForceDetection = new ImplementedProbabilityDetection(this, "bow_force", true);
         this.bowShotsDetection = new ImplementedProbabilityDetection(this, "bow_shots", true);
         this.bowForce = new Buffer.IndividualBuffer();

@@ -19,7 +19,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 public class BlockReach extends CheckRunner {
@@ -30,8 +29,8 @@ public class BlockReach extends CheckRunner {
             place,
             unusual;
 
-    public BlockReach(HackType hackType, SpartanProtocol protocol) {
-        super(hackType, protocol);
+    public BlockReach(HackType hackType, SpartanProtocol protocol, String playerName) {
+        super(hackType, protocol, playerName);
         this.breaking = new ImplementedProbabilityDetection(this, "breaking", true);
         this.interact = new ImplementedProbabilityDetection(this, "interact", true);
         this.place = new ImplementedProbabilityDetection(this, "place", true);
@@ -85,11 +84,11 @@ public class BlockReach extends CheckRunner {
                 }
             }
         } else {
-            BlockPlaceEvent event = (BlockPlaceEvent) object;
-            Block blockAgainst = event.getBlockAgainst();
+            Block[] blocks = (Block[]) object;
+            Block blockAgainst = blocks[1];
 
             if (BlockUtils.isSolid(blockAgainst.getType())) {
-                Block block = event.getBlock();
+                Block block = blocks[0];
 
                 if (canDo(block)
                         && BlockUtils.isSolid(block.getType())

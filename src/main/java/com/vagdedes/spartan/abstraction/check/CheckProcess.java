@@ -9,41 +9,35 @@ public abstract class CheckProcess {
 
     public final Enums.HackType hackType;
     private SpartanProtocol protocol;
-    private String lastName;
-    private final Object synchronizer;
+    private String playerName;
 
-    protected CheckProcess(Enums.HackType hackType, SpartanProtocol protocol) {
+    protected CheckProcess(Enums.HackType hackType, SpartanProtocol protocol, String playerName) {
         this.hackType = hackType;
         this.protocol = protocol;
-        this.synchronizer = new Object();
+        this.playerName = protocol == null ? playerName : protocol.bukkit.getName();
     }
 
     public final SpartanProtocol protocol() {
-        synchronized (this.synchronizer) {
-            return this.protocol;
-        }
+        return this.protocol;
     }
 
-    public final String lastName() {
-        synchronized (this.synchronizer) {
-            return this.lastName;
-        }
+    final String playerName() {
+        return this.playerName;
     }
 
     public final PlayerProfile profile() {
-        synchronized (this.synchronizer) {
-            if (this.protocol != null) {
-                return this.protocol.getProfile();
-            } else {
-                return ResearchEngine.getPlayerProfile(this.lastName, true);
-            }
+        if (this.protocol != null) {
+            return this.protocol.profile();
+        } else {
+            return ResearchEngine.getPlayerProfile(this.playerName, true);
         }
     }
 
     public final void setProtocol(SpartanProtocol protocol) {
-        synchronized (this.synchronizer) {
-            this.protocol = protocol;
-            this.lastName = protocol.bukkit.getName();
+        this.protocol = protocol;
+
+        if (this.protocol != null) {
+            this.playerName = this.protocol.bukkit.getName();
         }
     }
 
