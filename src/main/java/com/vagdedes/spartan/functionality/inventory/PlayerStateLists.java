@@ -125,7 +125,10 @@ public class PlayerStateLists {
                         lore.add("§7Suspected for§8:");
 
                         for (Enums.HackType hackType : evidenceDetails) {
-                            boolean sufficientData = profile.getRunner(hackType).hasSufficientData(profile.getLastDataType());
+                            boolean sufficientData = profile.getRunner(hackType).hasSufficientData(
+                                    profile.getLastDataType(),
+                                    PlayerEvidence.dataRatio
+                            );
                             Long remainingTime = sufficientData
                                     ? null
                                     : profile.getRunner(hackType).getRemainingCompletionTime(profile.getLastDataType());

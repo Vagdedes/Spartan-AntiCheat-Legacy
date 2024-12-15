@@ -12,6 +12,7 @@ import com.vagdedes.spartan.functionality.notifications.clickable.ClickableMessa
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.Permissions;
+import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
 import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
 import com.vagdedes.spartan.utils.java.TimeUtils;
 import com.vagdedes.spartan.utils.minecraft.inventory.EnchantmentUtils;
@@ -171,7 +172,10 @@ public class ManageChecks extends InventoryMenu {
 
         for (Check.DataType dataType : Check.DataType.values()) {
             if (SpartanEdition.hasDetectionsPurchased(dataType)
-                    && !protocol.spartan.getRunner(hackType).hasSufficientData(dataType)) {
+                    && !protocol.spartan.getRunner(hackType).hasSufficientData(
+                    dataType,
+                    PlayerEvidence.dataRatio
+            )) {
                 notEnoughData = dataType;
                 break;
             }

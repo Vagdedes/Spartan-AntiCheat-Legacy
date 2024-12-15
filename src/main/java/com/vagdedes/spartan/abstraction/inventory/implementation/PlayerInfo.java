@@ -162,7 +162,8 @@ public class PlayerInfo extends InventoryMenu {
                 boolean sufficientData = profile.getRunner(
                         hackType
                 ).hasSufficientData(
-                        profile.getLastDataType()
+                        profile.getLastDataType(),
+                        PlayerEvidence.dataRatio
                 );
                 Long remainingTime = sufficientData
                         ? null

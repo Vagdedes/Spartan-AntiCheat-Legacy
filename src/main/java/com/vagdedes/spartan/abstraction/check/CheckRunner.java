@@ -50,13 +50,29 @@ public abstract class CheckRunner extends CheckProcess {
 
     // Probability
 
-    public final boolean hasSufficientData(Check.DataType dataType) {
-        for (CheckDetection detectionExecutor : this.detections.values()) {
-            if (detectionExecutor.hasSufficientData(dataType)) {
-                return true;
+    public final boolean hasSufficientData(Check.DataType dataType, double ratio) {
+        if (ratio > 0.0) {
+            int count = 0,
+                    total = this.detections.size();
+
+            for (CheckDetection detectionExecutor : this.detections.values()) {
+                if (detectionExecutor.hasSufficientData(dataType)) {
+                    count++;
+
+                    if (count / (double) total >= ratio) {
+                        return true;
+                    }
+                }
             }
+            return false;
+        } else {
+            for (CheckDetection detectionExecutor : this.detections.values()) {
+                if (detectionExecutor.hasSufficientData(dataType)) {
+                    return true;
+                }
+            }
+            return false;
         }
-        return false;
     }
 
     public final double getExtremeProbability(Check.DataType dataType) {

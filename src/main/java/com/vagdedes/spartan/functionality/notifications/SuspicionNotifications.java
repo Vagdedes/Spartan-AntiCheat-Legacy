@@ -58,7 +58,10 @@ public class SuspicionNotifications {
 
                 for (Enums.HackType hackType : list) {
                     CheckRunner runner = protocol.spartan.getRunner(hackType);
-                    boolean sufficientData = runner.hasSufficientData(protocol.spartan.dataType);
+                    boolean sufficientData = runner.hasSufficientData(
+                            protocol.spartan.dataType,
+                            PlayerEvidence.dataRatio
+                    );
                     Long remainingTime = sufficientData
                             ? null
                             : profile.getRunner(hackType).getRemainingCompletionTime(profile.getLastDataType());
