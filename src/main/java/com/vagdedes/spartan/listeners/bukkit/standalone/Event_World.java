@@ -1,10 +1,10 @@
 package com.vagdedes.spartan.listeners.bukkit.standalone;
 
+import com.vagdedes.spartan.abstraction.profiling.MiningHistory;
 import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.functionality.tracking.AntiCheatLogs;
 import com.vagdedes.spartan.functionality.tracking.Piston;
 import com.vagdedes.spartan.utils.minecraft.entity.CombatUtils;
 import me.vagdedes.spartan.system.Enums;
@@ -37,7 +37,7 @@ public class Event_World implements Listener {
         }
         protocol.spartan.getRunner(Enums.HackType.Exploits).handle(cancelled, e);
         protocol.spartan.getRunner(Enums.HackType.FastClicks).handle(cancelled, null);
-        AntiCheatLogs.logMining(protocol, nb, cancelled);
+        MiningHistory.log(protocol, nb, cancelled);
 
         if (protocol.spartan.getRunner(Enums.HackType.NoSwing).prevent()
                 || protocol.spartan.getRunner(Enums.HackType.BlockReach).prevent()

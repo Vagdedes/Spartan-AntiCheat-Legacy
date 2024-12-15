@@ -16,6 +16,7 @@ import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.math.statistics.StatisticsMath;
+import com.vagdedes.spartan.utils.minecraft.inventory.MaterialUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -411,7 +412,7 @@ public class ResearchEngine {
                             if (hackTypeString != null) {
                                 String player = findInformation(
                                         data,
-                                        CheckDetection.playerIdentifier
+                                        AntiCheatLogs.playerIdentifier
                                 );
 
                                 if (player != null) {
@@ -438,45 +439,67 @@ public class ResearchEngine {
                                     }
                                 }
                             }
-                        } else if (data.contains(MiningHistory.found)) {
-                            String[] split = data.split(" ");
+                        } else {
+                            String oreString = findInformation(
+                                    data,
+                                    MiningHistory.oreIdentifier
+                            );
 
-                            if (split.length >= 9) {
-                                String name = split[0];
+                            if (oreString != null) {
+                                String player = findInformation(
+                                        data,
+                                        AntiCheatLogs.playerIdentifier
+                                );
 
-                                try {
-                                    MiningHistory.MiningOre ore = MiningHistory.getMiningOre(
-                                            Material.getMaterial(
-                                                    split[3].toUpperCase().replace("-", "_")
-                                            )
+                                if (player != null) {
+                                    String environmentString = findInformation(
+                                            data,
+                                            MiningHistory.environmentIdentifier
                                     );
 
-                                    if (ore != null) {
-                                        MiningHistory miningHistory = getPlayerProfile(name, true).getMiningHistory(ore);
+                                    if (environmentString != null) {
+                                        Material material = MaterialUtils.findMaterial(
+                                                oreString.toUpperCase().replace("-", "_")
+                                        );
 
-                                        if (miningHistory != null) {
-                                            World.Environment environment = World.Environment.valueOf(
-                                                    split[8].toUpperCase().replace("-", "_")
-                                            );
-                                            miningHistory.increaseMines(environment, 1, partialDate);
+                                        if (material != null) {
+                                            MiningHistory.MiningOre ore = MiningHistory.getMiningOre(material);
+
+                                            if (ore != null) {
+                                                World.Environment environment = MaterialUtils.findEnvironment(
+                                                        environmentString.toUpperCase().replace("-", "_")
+                                                );
+
+                                                if (environment != null) {
+                                                    getPlayerProfile(
+                                                            player,
+                                                            true
+                                                    ).getMiningHistory(
+                                                            ore
+                                                    ).increaseMines(
+                                                            environment,
+                                                            1,
+                                                            partialDate
+                                                    );
+                                                }
+                                            }
                                         }
                                     }
-                                } catch (Exception ignored) {
                                 }
-                            }
-                        } else {
-                            int index = data.indexOf(PlayerProfile.onlineFor);
+                            } else {
+                                int index = data.indexOf(PlayerProfile.onlineFor);
 
-                            if (index != -1) {
-                                SimpleDateFormat sdf = new SimpleDateFormat(AntiCheatLogs.dateFormat);
+                                if (index != -1) {
+                                    SimpleDateFormat sdf = new SimpleDateFormat(AntiCheatLogs.dateFormat);
 
-                                try {
-                                    ResearchEngine.getPlayerProfile(data.split(" ", 2)[0], true).setOnlineFor(
-                                            sdf.parse(fullDate).getTime(),
-                                            Long.parseLong(data.substring(index + PlayerProfile.onlineFor.length())),
-                                            false
-                                    );
-                                } catch (Exception ignored) {
+                                    try {
+                                        ResearchEngine.getPlayerProfile(data.split(" ", 2)[0], true).setOnlineFor(
+                                                sdf.parse(fullDate).getTime(),
+                                                Long.parseLong(data.substring(index + PlayerProfile.onlineFor.length())),
+                                                false
+                                        );
+                                    } catch (Exception ignored) {
+                                    }
                                 }
                             }
                         }

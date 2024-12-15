@@ -30,7 +30,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public abstract class CheckDetection extends CheckProcess {
 
     public static final String
-            playerIdentifier = "Player:",
             javaPlayerIdentifier = "Java:",
             checkIdentifier = "Check:",
             detectionIdentifier = "Detection:";
@@ -158,7 +157,7 @@ public abstract class CheckDetection extends CheckProcess {
         );
 
         Location location = this.protocol().getLocation();
-        information = "(" + playerIdentifier + " " + this.protocol().bukkit.getName() + "), "
+        information = "(" + AntiCheatLogs.playerIdentifier + " " + this.protocol().bukkit.getName() + "), "
                 + "(" + checkIdentifier + " " + this.hackType + "), "
                 + "(" + javaPlayerIdentifier + " " + (!this.protocol().spartan.isBedrockPlayer()) + ")" + ", "
                 + "(" + detectionIdentifier + " " + this.name + ")" + ", "
