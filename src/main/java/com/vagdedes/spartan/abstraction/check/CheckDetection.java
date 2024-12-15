@@ -30,8 +30,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public abstract class CheckDetection extends CheckProcess {
 
     public static final String
-            failed = " failed ",
+            playerIdentifier = "Player:",
             javaPlayerIdentifier = "Java:",
+            checkIdentifier = "Check:",
             detectionIdentifier = "Detection:";
 
     public final CheckRunner executor;
@@ -157,18 +158,20 @@ public abstract class CheckDetection extends CheckProcess {
         );
 
         Location location = this.protocol().getLocation();
-        information = this.protocol().bukkit.getName() + failed + hackType
-                + " (" + javaPlayerIdentifier + " " + (!this.protocol().spartan.isBedrockPlayer()) + ")" + ", "
+        information = "(" + playerIdentifier + " " + this.protocol().bukkit.getName() + "), "
+                + "(" + checkIdentifier + " " + this.hackType + "), "
+                + "(" + javaPlayerIdentifier + " " + (!this.protocol().spartan.isBedrockPlayer()) + ")" + ", "
                 + "(" + detectionIdentifier + " " + this.name + ")" + ", "
                 + "(Certainty: " + AlgebraUtils.cut(certainty, 2) + "), "
                 + "(Data-Completion: " + AlgebraUtils.cut(dataCompletion, 2) + "), "
                 + "(Server-Version: " + MultiVersion.serverVersion.toString() + "), "
                 + "(Plugin-Version: " + API.getVersion() + "), "
                 + "(Silent: " + hackType.getCheck().isSilent(this.protocol().spartan.dataType, this.protocol().spartan.getWorld().getName()) + "), "
+                + "(Punish: " + hackType.getCheck().canPunish(this.protocol().spartan.dataType) + "), "
                 + "(Packets: " + this.protocol().packetsEnabled() + "), "
                 + "(Ping: " + this.protocol().getPing() + "ms), "
                 + "(W-XYZ: " + location.getWorld().getName() + " " + location.getBlockX() + " " + location.getBlockY() + " " + location.getBlockZ() + "), "
-                + "[Information: " + information + "]";
+                + "(Data: " + information + ")";
         AntiCheatLogs.logInfo(
                 this.protocol(),
                 notification,

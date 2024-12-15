@@ -5,7 +5,6 @@ import com.vagdedes.spartan.abstraction.profiling.MiningHistory;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.utils.java.TimeUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import me.vagdedes.spartan.api.PlayerFoundOreEvent;
@@ -18,32 +17,38 @@ import org.bukkit.block.Block;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
-import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class AntiCheatLogs {
 
+    private static final String dateOnlyFormat = "yyyyMMdd";
     public static final String
             dateFormat = "yyyy/MM/dd HH:mm:ss:SSSXXX",
             folderPath = Register.plugin.getDataFolder() + "/logs";
 
-    private static Timestamp time = new Timestamp(System.currentTimeMillis());
-    private static File savedFile = createFile(time);
-    private static YamlConfiguration fileConfiguration = YamlConfiguration.loadConfiguration(savedFile);
+    private static File todayFile = getFile();
+    private static YamlConfiguration fileConfiguration = YamlConfiguration.loadConfiguration(todayFile);
 
-    private static File createFile(Timestamp timestamp) {
+    public static String getDate(String pattern, long time) {
+        return DateTimeFormatter.ofPattern(pattern).format(
+                Instant.ofEpochMilli(time).atZone(ZoneId.systemDefault())
+        );
+    }
+
+    private static File getFile() {
         return new File(
                 folderPath + "/log"
-                        + TimeUtils.getYearMonthDay(timestamp)
-                        .replace(TimeUtils.dateSeparator, "")
+                        + ZonedDateTime.now().format(DateTimeFormatter.ofPattern(dateOnlyFormat))
                         + ".yml"
         );
     }
 
     private static void save() {
         try {
-            fileConfiguration.save(savedFile);
+            fileConfiguration.save(todayFile);
         } catch (Exception ignored) {
         }
     }
@@ -55,21 +60,19 @@ public class AntiCheatLogs {
             Bukkit.getConsoleSender().sendMessage(information);
         }
         if (Config.settings.getBoolean("Logs.log_file")) {
-            Timestamp now = new Timestamp(time);
+            File file = getFile();
 
-            if (AntiCheatLogs.time.getDay() != now.getDay()) {
+            if (file.getName().equals(todayFile.getName())) {
                 if (fileConfiguration != null) {
                     save();
                 }
-                AntiCheatLogs.time = now;
-                savedFile = createFile(AntiCheatLogs.time);
-                fileConfiguration = YamlConfiguration.loadConfiguration(savedFile);
-            } else if (store && fileConfiguration != null) {
+                AntiCheatLogs.todayFile = file;
+                fileConfiguration = YamlConfiguration.loadConfiguration(file);
+            }
+            if (store && fileConfiguration != null) {
                 SpartanBukkit.dataThread.executeIfSyncElseHere(() -> {
                     fileConfiguration.set(
-                            ZonedDateTime.now().format(
-                                    DateTimeFormatter.ofPattern(dateFormat)
-                            ),
+                            AntiCheatLogs.getDate(AntiCheatLogs.dateFormat, time),
                             information
                     );
                     save();

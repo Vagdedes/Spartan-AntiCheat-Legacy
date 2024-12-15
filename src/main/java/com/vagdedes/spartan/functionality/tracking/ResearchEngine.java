@@ -14,7 +14,6 @@ import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
-import com.vagdedes.spartan.utils.java.TimeUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.math.statistics.StatisticsMath;
 import me.vagdedes.spartan.system.Enums;
@@ -222,8 +221,8 @@ public class ResearchEngine {
 
     // Separator
 
-    public static String getDetectionInformation(String s) {
-        String find = "(" + CheckDetection.detectionIdentifier + " ";
+    public static String findInformation(String s, String pattern) {
+        String find = "(" + pattern + " ";
         int index = s.indexOf(find);
 
         if (index > -1) {
@@ -234,15 +233,10 @@ public class ResearchEngine {
         return null;
     }
 
-    private static Check.DataType getDataType(String s) {
-        String find = "(" + CheckDetection.javaPlayerIdentifier + " ";
-        int index = s.indexOf(find);
+    private static Check.DataType findDataType(String s) {
+        s = findInformation(s, CheckDetection.javaPlayerIdentifier);
 
-        if (index > -1) {
-            s = s.substring(index + find.length());
-            index = s.indexOf(")");
-            s = s.substring(0, index);
-
+        if (s != null) {
             for (Check.DataType dataType : Check.DataType.values()) {
                 if (s.equals(dataType.toString())) {
                     return dataType;
@@ -298,9 +292,8 @@ public class ResearchEngine {
 
                 if (rs != null) {
                     while (rs.next()) {
-                        String data = rs.getString("information");
-                        String[] all = TimeUtils.getAll(rs.getTimestamp("creation_date"));
-                        String date = all[0] + " " + all[1];
+                        String data = rs.getString("information"),
+                                date = rs.getString("creation_date");
                         cache.put(date, data);
                         byteSize += date.length() + data.length();
 
@@ -404,30 +397,44 @@ public class ResearchEngine {
                         String fullDate = entry.getKey(),
                                 partialDate = fullDate.substring(0, 10),
                                 data = entry.getValue();
+                        String detection = findInformation(
+                                data,
+                                CheckDetection.detectionIdentifier
+                        );
 
-                        if (data.contains(CheckDetection.failed)) {
-                            String[] split = data.split(" ");
+                        if (detection != null) {
+                            String hackTypeString = findInformation(
+                                    data,
+                                    CheckDetection.checkIdentifier
+                            );
 
-                            if (split.length >= 3) {
-                                String hackTypeString = split[2];
+                            if (hackTypeString != null) {
+                                String player = findInformation(
+                                        data,
+                                        CheckDetection.playerIdentifier
+                                );
 
-                                for (Enums.HackType hackType : Enums.HackType.values()) {
-                                    if (hackTypeString.equals(hackType.toString())) {
-                                        String detection = getDetectionInformation(data);
-
-                                        if (detection != null) {
-                                            PlayerProfile profile = getPlayerProfile(split[0], true);
-                                            CheckDetection detectionExecutor = profile.getRunner(hackType).getDetection(detection);
+                                if (player != null) {
+                                    for (Enums.HackType hackType : Enums.HackType.values()) {
+                                        if (hackTypeString.equals(hackType.toString())) {
+                                            CheckDetection detectionExecutor = getPlayerProfile(
+                                                    player,
+                                                    true
+                                            ).getRunner(
+                                                    hackType
+                                            ).getDetection(
+                                                    detection
+                                            );
 
                                             if (detectionExecutor != null) {
                                                 SimpleDateFormat sdf = new SimpleDateFormat(AntiCheatLogs.dateFormat);
                                                 detectionExecutor.store(
-                                                        getDataType(data),
+                                                        findDataType(data),
                                                         sdf.parse(fullDate).getTime()
                                                 );
                                             }
+                                            break;
                                         }
-                                        break;
                                     }
                                 }
                             }
