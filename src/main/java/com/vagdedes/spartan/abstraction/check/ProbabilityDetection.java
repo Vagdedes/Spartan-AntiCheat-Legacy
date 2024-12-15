@@ -10,8 +10,6 @@ import java.util.*;
 
 public abstract class ProbabilityDetection extends CheckDetection {
 
-
-
     private int lastProbability;
     private final Long[] lastTime;
     private final Map<Check.DataType, Collection<Long>> data;
@@ -101,14 +99,14 @@ public abstract class ProbabilityDetection extends CheckDetection {
                 while (iterator.hasNext()) {
                     long current = iterator.next();
 
-                    if (this.executor.wasOnline(dataType, current, previous)) {
+                    if (this.profile().getContinuity().wasOnline(this.protocol(), current, previous)) {
                         comparisonCount++;
                         long difference = current - previous;
                         previous = current;
                         violationVelocitySquareSum += difference * difference;
                     }
                 }
-                long onlineTime = this.executor.getOnlineTime(dataType);
+                long onlineTime = this.profile().getContinuity().getOnlineTime(this.protocol());
 
                 if (onlineTime > 0L) {
                     onlineTime /= 1_000L; // Convert to seconds
@@ -184,7 +182,7 @@ public abstract class ProbabilityDetection extends CheckDetection {
                 || time - this.notifications >= 5_000L
                 || (protocol != null
                 ? protocol.spartan.equals(this.protocol().spartan)
-                : this.protocol.bukkit.getName().equals(detected.toString())))) {
+                : this.protocol().bukkit.getName().equals(detected.toString())))) {
             int ticks = this.executor.getNotificationTicksCooldown(protocol);
 
             if (ticks > 0) {

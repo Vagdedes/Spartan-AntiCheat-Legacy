@@ -91,7 +91,7 @@ public class SpartanPlayer {
 
         if (lastInteraction >= 30_000L) {
             if (!afk) {
-                this.protocol.getProfile().setOnlineFor(
+                this.protocol.getProfile().getContinuity().setActiveTime(
                         System.currentTimeMillis(),
                         this.protocol.getActiveTimePlayed() - lastInteraction,
                         true

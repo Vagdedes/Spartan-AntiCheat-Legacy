@@ -374,15 +374,17 @@ public class ResearchEngine {
         }
 
         if (!enabledPlugin) {
-            for (PlayerProfile profile : playerProfiles.values()) {
-                SpartanProtocol protocol = profile.protocol();
+            List<SpartanProtocol> protocols = SpartanBukkit.getProtocols();
 
-                if (protocol != null && !protocol.spartan.isAFK()) {
-                    profile.setOnlineFor(
-                            System.currentTimeMillis(),
-                            protocol.getActiveTimePlayed(),
-                            true
-                    );
+            if (!protocols.isEmpty()) {
+                for (SpartanProtocol protocol : protocols) {
+                    if (protocol != null && !protocol.spartan.isAFK()) {
+                        protocol.getProfile().getContinuity().setActiveTime(
+                                System.currentTimeMillis(),
+                                protocol.getActiveTimePlayed(),
+                                true
+                        );
+                    }
                 }
             }
         }
@@ -493,7 +495,10 @@ public class ResearchEngine {
                                     SimpleDateFormat sdf = new SimpleDateFormat(AntiCheatLogs.dateFormat);
 
                                     try {
-                                        ResearchEngine.getPlayerProfile(data.split(" ", 2)[0], true).setOnlineFor(
+                                        ResearchEngine.getPlayerProfile(
+                                                data.split(" ", 2)[0],
+                                                true
+                                        ).getContinuity().setActiveTime(
                                                 sdf.parse(fullDate).getTime(),
                                                 Long.parseLong(data.substring(index + PlayerProfile.onlineFor.length())),
                                                 false

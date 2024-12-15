@@ -80,7 +80,9 @@ public class PlayerInfo extends InventoryMenu {
                 lore.add("§7Latency§8:§c " + target.getPing() + "ms");
                 lore.add("§7Edition§8:§c " + target.spartan.dataType);
             }
-            long onlineTime = profile.getOnlineTime();
+            long onlineTime = profile.getContinuity().getOnlineTime(
+                    isOnline ? target : null
+            );
 
             if (onlineTime > 0L) {
                 lore.add("§7Online Time§8:§c " + TimeUtils.convertMilliseconds(onlineTime));

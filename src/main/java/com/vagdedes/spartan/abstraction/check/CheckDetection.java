@@ -142,7 +142,7 @@ public abstract class CheckDetection extends CheckProcess {
         boolean hasSufficientData = this.hasSufficientData(this.protocol().spartan.dataType);
         double probability = this.getProbability(this.protocol().spartan.dataType),
                 certainty = PlayerEvidence.probabilityToCertainty(probability) * 100.0,
-                dataCompletion = hasSufficientData ? 100.0 : this.getDataCompletion(this.protocol.spartan.dataType) * 100.0;
+                dataCompletion = hasSufficientData ? 100.0 : this.getDataCompletion(this.protocol().spartan.dataType) * 100.0;
         int roundedCertainty = AlgebraUtils.integerRound(certainty);
         String notification = ConfigUtils.replaceWithSyntax(
                 this.protocol(),
@@ -220,7 +220,7 @@ public abstract class CheckDetection extends CheckProcess {
 
             if (!commands.isEmpty()
                     && this.hasSufficientData(this.protocol().spartan.dataType)) {
-                Collection<Enums.HackType> detectedHacks = this.protocol().getProfile().getEvidenceList(
+                Collection<Enums.HackType> detectedHacks = this.profile().getEvidenceList(
                         PlayerEvidence.punishmentProbability
                 );
                 detectedHacks.removeIf(loopHackType -> !loopHackType.getCheck().canPunish(this.protocol().spartan.dataType));

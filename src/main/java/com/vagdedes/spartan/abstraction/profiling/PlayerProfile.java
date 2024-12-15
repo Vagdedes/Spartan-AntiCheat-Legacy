@@ -5,7 +5,6 @@ import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.functionality.tracking.AntiCheatLogs;
 import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
 import com.vagdedes.spartan.utils.minecraft.inventory.InventoryUtils;
 import me.vagdedes.spartan.system.Enums;
@@ -25,6 +24,7 @@ public class PlayerProfile {
     private OfflinePlayer offlinePlayer;
     private final CheckRunner[] runners;
     private Check.DataType lastDataType;
+    private final ProfileContinuity continuity;
 
     // Separator
 
@@ -34,6 +34,7 @@ public class PlayerProfile {
         this.runners = new CheckRunner[Enums.HackType.values().length];
         this.miningHistory = new MiningHistory[MiningHistory.MiningOre.values().length];
         this.lastDataType = Check.DataType.JAVA;
+        this.continuity = new ProfileContinuity(this);
 
         for (MiningHistory.MiningOre ore : MiningHistory.MiningOre.values()) {
             this.miningHistory[ore.ordinal()] = new MiningHistory(ore);
@@ -59,28 +60,12 @@ public class PlayerProfile {
         this.runners = new CheckRunner[Enums.HackType.values().length];
         this.miningHistory = new MiningHistory[MiningHistory.MiningOre.values().length];
         this.lastDataType = protocol.spartan.dataType;
+        this.continuity = new ProfileContinuity(this);
 
         for (MiningHistory.MiningOre ore : MiningHistory.MiningOre.values()) {
             this.miningHistory[ore.ordinal()] = new MiningHistory(ore);
         }
         this.registerChecks(protocol);
-    }
-
-    // Separator
-
-    public void setOnlineFor(long time, long count, boolean log) {
-        if (log) {
-            AntiCheatLogs.rawLogInfo(
-                    time,
-                    this.name + onlineFor + count,
-                    false,
-                    true,
-                    true
-            );
-        }
-        for (CheckRunner runner : this.getRunners()) {
-            runner.trackTime(lastDataType, time, count);
-        }
     }
 
     // Separator
@@ -102,12 +87,8 @@ public class PlayerProfile {
         }
     }
 
-    public SpartanProtocol protocol() {
-        return this.runners[0].protocol();
-    }
-
-    public long getOnlineTime() {
-        return this.runners[0].getOnlineTime(this.lastDataType);
+    public ProfileContinuity getContinuity() {
+        return this.continuity;
     }
 
     public CheckRunner getRunner(Enums.HackType hackType) {
