@@ -31,7 +31,6 @@ public class ConfigUtils {
     public static String replaceWithSyntax(String message, HackType hackType) {
         message = replace(message, "{space}", " ");
         message = replace(message, "{online}", String.valueOf(SpartanBukkit.getPlayerCount()));
-        message = replace(message, "{staff}", String.valueOf(Permissions.getStaff().size()));
         message = replace(message, "{motd}", Bukkit.getMotd());
         message = replace(message, "{server:name}", CrossServerNotifications.getServerName());
         message = replace(message, "{plugin:version}", API.getVersion());
