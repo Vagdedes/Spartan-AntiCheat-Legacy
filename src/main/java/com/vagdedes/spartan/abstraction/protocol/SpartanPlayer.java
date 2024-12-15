@@ -83,7 +83,6 @@ public class SpartanPlayer {
     }
 
     public void setLastInteraction() {
-        this.checkForAFK();
         this.lastInteraction = System.currentTimeMillis();
     }
 
