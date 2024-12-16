@@ -60,6 +60,7 @@ public class SpartanProtocol {
     public short transactionId;
     public long transactionTime, transactionLastTime, transactionPing, lagTick;
     public boolean transactionBoot, transactionLocal, transactionSentKeep;
+    public boolean entityHandle;
 
     private ComponentY componentY;
 
@@ -102,6 +103,7 @@ public class SpartanProtocol {
         this.claimedVelocity = null;
         this.claimedVeloGravity = new ArrayList<>();
         this.claimedVeloSpeed = new ArrayList<>();
+        this.entityHandle = false;
 
         this.axisMatrixCache = new HashSet<>();
         this.checkBoundData = null;
