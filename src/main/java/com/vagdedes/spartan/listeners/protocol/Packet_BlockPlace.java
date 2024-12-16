@@ -7,7 +7,6 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.BlockPosition;
 import com.comphenix.protocol.wrappers.EnumWrappers;
-import com.sun.org.apache.xpath.internal.operations.Mult;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.event.ServerBlockChange;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
@@ -28,8 +27,8 @@ public class Packet_BlockPlace extends PacketAdapter {
 
     public Packet_BlockPlace() {
         super(Register.plugin, ListenerPriority.HIGHEST,
-                        via8blockPlace(),
-                        via21blockPlace());
+                via8blockPlace(),
+                via21blockPlace());
         // Method: Event_BlockPlace.event()
     }
 
@@ -156,16 +155,16 @@ public class Packet_BlockPlace extends PacketAdapter {
         return direction;
     }
 
-    public static PacketType via21blockPlace() {
-        return MultiVersion.isOrGreater(
-                MultiVersion.MCVersion.V1_21) ? PacketType.Play.Client.USE_ITEM_ON
+    private static PacketType via21blockPlace() {
+        return MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_21)
+                ? PacketType.Play.Client.USE_ITEM_ON
                 : PacketType.Play.Client.BLOCK_PLACE;
     }
-    public static PacketType via8blockPlace() {
-        return MultiVersion.isOrGreater(
-                        MultiVersion.MCVersion.V1_9)
-                        ? PacketType.Play.Client.USE_ITEM
-                        : PacketType.Play.Client.BLOCK_DIG;
+
+    private static PacketType via8blockPlace() {
+        return MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)
+                ? PacketType.Play.Client.USE_ITEM
+                : PacketType.Play.Client.BLOCK_DIG;
     }
 
 
