@@ -131,7 +131,7 @@ public class Packet_Movement extends PacketAdapter {
             p.transactionVl -= 2;
 
         if (p.transactionBoot)
-            LatencyHandler.startChecking(p);
+            Packet_LatencyHandler.startChecking(p);
 
         if (!ProtocolLib.getWorld(player).getName().equals(p.fromWorld)) {
             p.fromWorld = ProtocolLib.getWorld(player).getName();
