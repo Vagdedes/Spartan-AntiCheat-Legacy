@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.abstraction.protocol;
 
+import com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.component.ComponentXZ;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.component.ComponentY;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.morepackets.TimerBalancer;
 import com.vagdedes.spartan.abstraction.data.CheckBoundData;
@@ -63,6 +64,7 @@ public class SpartanProtocol {
     public boolean entityHandle;
 
     private ComponentY componentY;
+    private ComponentXZ componentXZ;
 
     public SpartanProtocol(Player player) {
         long time = System.currentTimeMillis();
@@ -118,6 +120,7 @@ public class SpartanProtocol {
         this.transactionSentKeep = false;
         this.lagTick = 0;
         this.componentY = new ComponentY();
+        this.componentXZ = new ComponentXZ();
 
         this.setProfile(ResearchEngine.getPlayerProfile(this, false));
     }
@@ -275,6 +278,9 @@ public class SpartanProtocol {
 
     public ComponentY getComponentY() {
         return this.componentY;
+    }
+    public ComponentXZ getComponentXZ() {
+        return this.componentXZ;
     }
 
     public void startSimulationFlag() {

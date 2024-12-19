@@ -90,7 +90,7 @@ public class IrregularMovements extends CheckRunner {
             speedBukkit.trident((int) object);
         } else if (object instanceof SuperPositionPacketEvent) {
             SuperPositionPacketEvent e = (SuperPositionPacketEvent) object;
-            gravityPackets.ground(e.packetEvent.getPacket().getBooleans().read(0));
+            gravityPackets.groundSp(e.packetEvent.getPacket().getBooleans().read(0));
             speedPackets.ground(e.packetEvent.getPacket().getBooleans().read(0));
         } else if (object instanceof PlayerMoveEvent) {
             speedBukkit.run((PlayerMoveEvent) object);

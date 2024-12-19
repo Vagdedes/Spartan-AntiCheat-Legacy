@@ -8,6 +8,7 @@ import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
+import com.vagdedes.spartan.utils.math.Sensitivity;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
@@ -42,6 +43,17 @@ public class Event_Movement implements Listener {
                 p.movement.judgeGround();
                 return;
             }
+
+            /*
+            int sens = Sensitivity.calculateSensitivity(
+                            Math.abs(Math.abs(e.getTo().getYaw())
+                                            - Math.abs(e.getFrom().getYaw())));
+            e.getPlayer().sendMessage("s: " + sens + " "
+                            + Math.abs(Math.abs(e.getTo().getYaw())
+                            - Math.abs(e.getFrom().getYaw())));
+
+             */
+
             Location vehicle = protocol.getVehicleLocation(),
                     nfrom = e.getFrom();
             SpartanLocation

@@ -6,11 +6,20 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.listeners.bukkit.Event_Vehicle;
+import com.vagdedes.spartan.utils.math.MathHelper;
 import com.vagdedes.spartan.utils.minecraft.protocol.ProtocolTools;
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.entity.Entity;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class Packet_Vehicle extends PacketAdapter {
 
@@ -31,6 +40,7 @@ public class Packet_Vehicle extends PacketAdapter {
         if (protocol.spartan.isBedrockPlayer()) {
             return;
         }
+        if (getEntitiesAroundPoint(protocol.getLocation(), 4).size() < 2) return;
         if (ProtocolTools.hasPosition(event.getPacket().getType()) && protocol.entityHandle) {
             protocol.timerBalancer.addBalance(50);
             VehicleExitEvent bukkitEvent = new VehicleExitEvent(null, protocol.bukkit);
@@ -44,5 +54,24 @@ public class Packet_Vehicle extends PacketAdapter {
             Event_Vehicle.enter(bukkitEvent);
             protocol.entityHandle = true;
         }
+    }
+
+    private static List<Entity> getEntitiesAroundPoint(Location location, double radius) {
+        List<Entity> entities = new ArrayList<>();
+        World world = location.getWorld();
+        int smallX = MathHelper.floor_double((location.getX() - radius) / 16.0D);
+        int bigX = MathHelper.floor_double((location.getX() + radius) / 16.0D);
+        int smallZ = MathHelper.floor_double((location.getZ() - radius) / 16.0D);
+        int bigZ = MathHelper.floor_double((location.getZ() + radius) / 16.0D);
+
+        for (int x = smallX; x <= bigX; x++) {
+            for (int z = smallZ; z <= bigZ; z++) {
+                if (world.isChunkLoaded(x, z)) {
+                    entities.addAll(Arrays.asList(world.getChunkAt(x, z).getEntities())); // Add all entities from this chunk to the list
+                }
+            }
+        }
+        entities.removeIf(entity -> SpartanLocation.distanceSquared(entity.getLocation(), location) > radius * radius);
+        return entities;
     }
 }

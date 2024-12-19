@@ -341,12 +341,12 @@ public class IMSimulationGravity extends ProbabilityDetection {
                         this.setPredict(0.0);
                     } else {
                         this.vl += devTotal;
-                        if (this.vl > 0.09) {
+                        if (this.vl > 0.02) {
                             StringBuilder alertBuilder = new StringBuilder(String.valueOf(RayUtils.scaleVal(devTotal, 6.0)));
                             if (devTotal < 1.0) {
                                 alertBuilder.deleteCharAt(0);
                             }
-                            this.cancel("type: gravity(simulation), y: " + alertBuilder);
+                            this.cancel("type: simulation[gravity], y: " + alertBuilder);
                             //this.protocol().bukkit.sendMessage("hacks: " + devTotal);
                             /*
                             Bukkit.getScheduler().runTask(Register.plugin, () -> {
@@ -403,6 +403,13 @@ public class IMSimulationGravity extends ProbabilityDetection {
         }
         this.air = isOnGround ? 0 : this.air + 1;
         this.ground = isOnGround ? this.ground + 1 : 0;
+    }
+
+    public void groundSp(boolean isOnGround) {
+        if (!this.protocol().packetsEnabled()) {
+            return;
+        }
+        if (isOnGround) this.ground(true);
     }
 
     public void trident() {

@@ -55,9 +55,9 @@ public class PacketWorld {
             for (ServerBlockChange change : this.query) {
                 Location lL = change.getPosition().toLocation(this.player.getWorld());
 
-                if (Math.abs(lL.getX() - location.getX()) <= 1.0 &&
-                                Math.abs(lL.getY() - location.getY()) <= 1.0 &&
-                                Math.abs(lL.getZ() - location.getZ()) <= 1.0) {
+                if (Math.abs(lL.getX() - location.getX()) <= 1.3 &&
+                                Math.abs(lL.getY() - location.getY()) <= 1.3 &&
+                                Math.abs(lL.getZ() - location.getZ()) <= 1.3) {
                     return change.getData();
                 }
             }
