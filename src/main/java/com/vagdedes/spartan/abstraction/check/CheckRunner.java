@@ -49,25 +49,35 @@ public abstract class CheckRunner extends CheckProcess {
     public final boolean hasSufficientData(Check.DataType dataType, double ratio) {
         if (ratio > 0.0) {
             int count = 0,
-                    total = this.detections.size();
+                    total = 0;
 
             for (CheckDetection detectionExecutor : this.detections.values()) {
-                if (detectionExecutor.hasSufficientData(dataType)) {
-                    count++;
+                if (detectionExecutor instanceof ProbabilityDetection) {
+                    total++;
 
-                    if (count / (double) total >= ratio) {
+                    if (detectionExecutor.hasSufficientData(dataType)) {
+                        count++;
+
+                        if (count / (double) total >= ratio) {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return total == 0;
+        } else {
+            boolean found = false;
+
+            for (CheckDetection detectionExecutor : this.detections.values()) {
+                if (detectionExecutor instanceof ProbabilityDetection) {
+                    found = true;
+
+                    if (detectionExecutor.hasSufficientData(dataType)) {
                         return true;
                     }
                 }
             }
-            return false;
-        } else {
-            for (CheckDetection detectionExecutor : this.detections.values()) {
-                if (detectionExecutor.hasSufficientData(dataType)) {
-                    return true;
-                }
-            }
-            return false;
+            return !found;
         }
     }
 
