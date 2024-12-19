@@ -25,7 +25,7 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
-public class IMSpeedBukkit extends ProbabilityDetection {
+public class IMBukkitSpeed extends ProbabilityDetection {
 
     /*
     Anticipate movements in advance = have good performance in the future
@@ -75,7 +75,7 @@ public class IMSpeedBukkit extends ProbabilityDetection {
     private Location f = null;
     private boolean simulationFlag = false;
 
-    public IMSpeedBukkit(CheckRunner executor) {
+    public IMBukkitSpeed(CheckRunner executor) {
         super(executor, null, true);
         this.strafeLineSpeeding = new ImplementedProbabilityDetection(this, "speed_strafe_line_speeding", true);
         this.strafeJumpSpeeding = new ImplementedProbabilityDetection(this, "speed_strafe_jump_speeding", true);
@@ -83,7 +83,7 @@ public class IMSpeedBukkit extends ProbabilityDetection {
     }
 
     final void velocity(PlayerVelocityEvent e) {
-        if (false && this.protocol().packetsEnabled()) {
+        if (this.protocol().packetsEnabled()) {
             return;
         }
         Vector v = e.getVelocity();
@@ -98,14 +98,14 @@ public class IMSpeedBukkit extends ProbabilityDetection {
     }
 
     final void trident(int level) {
-        if (false && this.protocol().packetsEnabled()) {
+        if (this.protocol().packetsEnabled()) {
             return;
         }
         multiply = level * 5;
     }
 
     final void run(PlayerMoveEvent e) {
-        if (false && this.protocol().packetsEnabled()
+        if (this.protocol().packetsEnabled()
                 || this.protocol().spartan.trackers.has(PlayerTrackers.TrackerType.PISTON)) {
             return;
         }

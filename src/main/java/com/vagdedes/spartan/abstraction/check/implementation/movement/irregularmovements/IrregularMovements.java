@@ -20,9 +20,9 @@ public class IrregularMovements extends CheckRunner {
     private long teleport;
     public final CheckDetection limitServerFlying;
     private final IMStepBukkit step;
-    private final IMGravityBukkit gravityBukkit;
+    private final IMBukkitGravity gravityBukkit;
     private final IMSimulationGravity gravityPackets;
-    private final IMSpeedBukkit speedBukkit;
+    private final IMBukkitSpeed speedBukkit;
     private final IMSimulationSpeed speedPackets;
     private final IrregularMovementsJump jump;
     private final IMHorizontal horizontal;
@@ -33,13 +33,13 @@ public class IrregularMovements extends CheckRunner {
         super(hackType, protocol, playerName);
         limitServerFlying = new ImplementedProbabilityDetection(this, "limit_server_flying", false);
         step = new IMStepBukkit(this);
-        gravityBukkit = new IMGravityBukkit(this);
+        gravityBukkit = new IMBukkitGravity(this);
         gravityPackets = new IMSimulationGravity(this);
         jump = new IrregularMovementsJump(this);
         horizontal = new IMHorizontal(this);
         foodSprint = new IMFoodSprint(this);
         baritone = new IMBaritone(this);
-        speedBukkit = new IMSpeedBukkit(this);
+        speedBukkit = new IMBukkitSpeed(this);
         speedPackets = new IMSimulationSpeed(this);
     }
 
