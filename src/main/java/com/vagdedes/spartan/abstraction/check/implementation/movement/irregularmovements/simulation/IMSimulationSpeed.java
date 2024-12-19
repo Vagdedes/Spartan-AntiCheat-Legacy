@@ -168,8 +168,8 @@ public class IMSimulationSpeed extends HardcodedDetection {
                         pr = Math.sqrt(predictX * predictX + predictZ * predictZ);
                         d = getDeviantity(pr, speed);
                         if (!(dx == predictX && dz == predictZ)) {
-                            this.vl += (d * 3) + (air == 1 ? 0.3 : 0.1);
-                            if (this.vl > 0.4) {
+                            this.vl += (d * 2) + (air == 1 ? 0.3 : 0.1);
+                            if (this.vl > 0.45) {
                                 this.cancel("type: simulation[accel], diff: " + d);
                                 this.vl -= 0.1;
                             }
