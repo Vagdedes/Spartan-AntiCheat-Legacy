@@ -53,7 +53,7 @@ public class IMSimulationSpeed extends HardcodedDetection {
     }
 
     public final void run() {
-        if (false) {
+        if (!this.protocol().packetsEnabled()) {
             return;
         }
         if (this.protocol().spartan != null) {
@@ -245,15 +245,24 @@ public class IMSimulationSpeed extends HardcodedDetection {
     }
 
     public void teleport() {
+        if (!this.protocol().packetsEnabled()) {
+            return;
+        }
         this.air = 0;
     }
 
     public void ground(boolean isOnGround) {
+        if (!this.protocol().packetsEnabled()) {
+            return;
+        }
         this.air = isOnGround ? 0 : this.air + 1;
         this.ground = isOnGround ? this.ground + 1 : 0;
     }
 
     public void trident() {
+        if (!this.protocol().packetsEnabled()) {
+            return;
+        }
         this.tridentBoostApply = 10;
     }
 
