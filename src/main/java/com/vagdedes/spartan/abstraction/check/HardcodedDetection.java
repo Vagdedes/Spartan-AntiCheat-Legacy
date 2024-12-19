@@ -11,16 +11,18 @@ public abstract class HardcodedDetection extends CheckDetection {
     }
 
     public final void setHackingRatio(double ratio) {
-        if (this.protocol() != null) {
+        SpartanProtocol protocol = this.protocol();
+
+        if (protocol != null && protocol.bukkit.isOnline()) {
             this.setProbability(
-                    this.protocol().spartan.dataType,
+                    protocol.spartan.dataType,
                     PlayerEvidence.probabilityToCertainty(ratio)
             );
         }
     }
 
     @Override
-    public void clearProbability(Check.DataType dataType) {
+    public final void clearProbability(Check.DataType dataType) {
     }
 
     @Override
