@@ -88,7 +88,7 @@ public abstract class CheckDetection extends CheckProcess {
     }
 
     protected boolean hasSufficientData(Check.DataType dataType) {
-        return true;
+        return false;
     }
 
     public void clearData(Check.DataType dataType) {

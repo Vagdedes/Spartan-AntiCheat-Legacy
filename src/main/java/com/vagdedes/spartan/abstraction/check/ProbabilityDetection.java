@@ -27,12 +27,8 @@ public abstract class ProbabilityDetection extends CheckDetection {
     @Override
     protected final boolean hasData(Check.DataType dataType) {
         synchronized (this.data) {
-            return this.hasData(this.data.get(dataType));
+            return this.data.get(dataType) != null;
         }
-    }
-
-    private boolean hasData(Collection<Long> data) {
-        return data != null && data.size() > 1;
     }
 
     @Override
@@ -86,7 +82,7 @@ public abstract class ProbabilityDetection extends CheckDetection {
         synchronized (this.data) {
             Collection<Long> data = this.data.get(dataType);
 
-            if (!this.hasData(data)) {
+            if (data == null) {
                 return null;
             } else {
                 double averageViolationVelocity,
@@ -94,16 +90,19 @@ public abstract class ProbabilityDetection extends CheckDetection {
                         comparisonCount = 0.0;
                 long violationVelocitySquareSum = 0;
                 Iterator<Long> iterator = data.iterator();
-                long previous = iterator.next();
 
-                while (iterator.hasNext()) {
-                    long current = iterator.next();
+                if (iterator.hasNext()) {
+                    long previous = iterator.next();
 
-                    if (this.profile().getContinuity().wasOnline(current, previous)) {
-                        comparisonCount++;
-                        long difference = current - previous;
-                        previous = current;
-                        violationVelocitySquareSum += difference * difference;
+                    while (iterator.hasNext()) {
+                        long current = iterator.next();
+
+                        if (this.profile().getContinuity().wasOnline(current, previous)) {
+                            comparisonCount++;
+                            long difference = current - previous;
+                            previous = current;
+                            violationVelocitySquareSum += difference * difference;
+                        }
                     }
                 }
                 long onlineTime = this.profile().getContinuity().getOnlineTime();

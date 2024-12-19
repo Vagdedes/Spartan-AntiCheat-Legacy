@@ -24,6 +24,16 @@ public abstract class HardcodedDetection extends CheckDetection {
     }
 
     @Override
+    protected final boolean hasSufficientData(Check.DataType dataType) {
+        return this.getProbability(dataType) != PlayerEvidence.emptyProbability;
+    }
+
+    @Override
+    final double getDataCompletion(Check.DataType dataType) {
+        return this.hasSufficientData(dataType) ? 1.0 : 0.0;
+    }
+
+    @Override
     public final boolean canSendNotification(Object detected, int probability) {
         long time = System.currentTimeMillis();
 
