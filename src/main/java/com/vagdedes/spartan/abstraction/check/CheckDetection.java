@@ -87,12 +87,9 @@ public abstract class CheckDetection extends CheckProcess {
         return true;
     }
 
-    protected boolean hasSufficientData(Check.DataType dataType) {
-        return false;
-    }
+    abstract protected boolean hasSufficientData(Check.DataType dataType);
 
     public void clearData(Check.DataType dataType) {
-
     }
 
     public void store(Check.DataType dataType, long time) {
@@ -110,9 +107,7 @@ public abstract class CheckDetection extends CheckProcess {
         return null;
     }
 
-    double getDataCompletion(Check.DataType dataType) {
-        return 1.0;
-    }
+    abstract double getDataCompletion(Check.DataType dataType);
 
     // Probability
 
