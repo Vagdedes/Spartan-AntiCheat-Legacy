@@ -76,7 +76,7 @@ public class IMSimulationSpeed extends HardcodedDetection {
                         if (limit < limit * this.multiplex())
                             this.ACCELERATION_MOTION = (limit * this.multiplex()) - limit;
                         if (this.ground == 1 && lastSpeed > limitAccel)
-                            this.ACCELERATION_MOTION += lastSpeed - limitAccel;
+                            this.ACCELERATION_MOTION = lastSpeed - limitAccel;
                         limit *= this.multiplex();
                         limit += this.ACCELERATION_MOTION;
                         if (this.protocol().getComponentXZ().pistonTick) limit += 1.0;
@@ -184,7 +184,7 @@ public class IMSimulationSpeed extends HardcodedDetection {
 
     private double multiplex() {
         double m = 1.0;
-        ExtendedPotionEffect speedEffect = this.protocol().spartan.getPotionEffect(PotionEffectType.SPEED, 0);
+        ExtendedPotionEffect speedEffect = this.protocol().spartan.getPotionEffect(PotionEffectType.SPEED, 5);
         Location l = this.protocol().getLocation().clone().add(0, -0.5, 0);
         Location lF = this.protocol().getFromLocation().clone().add(0, -0.5, 0);
         if (PlayerUtils.soulSpeed && this.protocol().bukkit.getInventory().getBoots() != null) {
@@ -210,6 +210,7 @@ public class IMSimulationSpeed extends HardcodedDetection {
         if (this.isOnSemi(l)) m *= 1.4;
         if (this.protocol().spartan.movement.isGliding()) m *= 18.0;
         if (this.protocol().spartan.movement.isFlying()) m *= 25.0;
+        m *= (this.protocol().bukkit.getWalkSpeed() * 5);
         return m;
     }
 
@@ -363,8 +364,8 @@ public class IMSimulationSpeed extends HardcodedDetection {
                             new Location(this.protocol().spartan.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
                     );
 
-                    if (material != null &&
-                            (BlockUtils.isSemiSolid(material))) {
+                    if (material != null && !material.toString().contains("GRASS")
+                                    && (BlockUtils.isSemiSolid(material))) {
                         return true;
                     }
                 }
