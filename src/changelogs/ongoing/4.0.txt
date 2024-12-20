@@ -2,11 +2,11 @@
  - IrregularMovements: Speed, Gravity/Flight & Strafe
  - MorePackets: Timer & Blink
  - KillAura
- - Velocity: 99% Anti-Knockback
+ - Velocity: Anti-Knockback
  - FastClicks: Auto-Clicker
- - HitReach: 3.0001+ Reach
+ - HitReach: Reach
  - ImpossibleActions: Scaffold & Tower
  - Exploits: BackTrack, Ground-Spoof & Movement-Spoof
-[#] 80% LESS PERFORMANCE RESOURCES USED (SYNC & ASYNC) COMPARED TO Phase 500 UPDATE SERIES
+[#] 80% LESS PERFORMANCE RESOURCES USED (SYNC & ASYNC!) COMPARED TO Phase 500 UPDATE SERIES
 [#] MORE ACCURATE STATISTICS WITH 2x FASTER LEARNING SPEED COMPARED TO Phase 500 UPDATE SERIES
 [#] CALCULATION OF REMAINING TIME FOR STATISTICAL DATA COMPLETION IN MENUS/GUIs

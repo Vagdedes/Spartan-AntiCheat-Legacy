@@ -31,6 +31,9 @@ public class Tower extends ProbabilityDetection {
              Location playerLocation,
              int playerY,
              int blockY) {
+        if (this.protocol().packetsEnabled()) {
+            return;
+        }
         Double deltaXZ = this.protocol().spartan.movement.getEventHorizontal();
 
         if (deltaXZ == null) {
