@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.simulation;
 
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
-import com.vagdedes.spartan.abstraction.check.HardcodedDetection;
+import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
 import com.vagdedes.spartan.abstraction.protocol.ExtendedPotionEffect;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanBlock;
@@ -22,7 +22,7 @@ import org.bukkit.util.Vector;
 
 import static java.lang.Math.PI;
 
-public class IMSimulationSpeed extends HardcodedDetection {
+public class IMSimulationSpeed extends ProbabilityDetection {
 
     private double vl = 0;
 
