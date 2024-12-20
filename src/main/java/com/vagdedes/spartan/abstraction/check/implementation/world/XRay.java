@@ -2,52 +2,47 @@ package com.vagdedes.spartan.abstraction.check.implementation.world;
 
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
-import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
+import com.vagdedes.spartan.abstraction.check.definition.ImplementedHardcodedDetection;
 import com.vagdedes.spartan.abstraction.profiling.MiningHistory;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
-import com.vagdedes.spartan.functionality.server.TPS;
+import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
 import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
+import com.vagdedes.spartan.utils.math.statistics.StatisticsMath;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.World;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 
 public class XRay extends CheckRunner {
 
-    private static double getAverageDeviation(World.Environment environment, MiningHistory.MiningOre ore) {
+    private static double[] getStatistics(World.Environment environment, MiningHistory.MiningOre ore) {
         Collection<PlayerProfile> profiles = ResearchEngine.getPlayerProfiles();
 
-        if (profiles.size() <= TPS.maximum) {
-            return 0.0;
+        if (profiles.size() < PlayerEvidence.factorRequirement) {
+            return new double[]{};
         } else {
             int profileCount = 0;
-            Map<String, Integer> count = new HashMap<>();
+            double mean = 0.0,
+                    stdDev = 0.0;
 
             for (PlayerProfile profile : profiles) {
-                Set<Map.Entry<String, Integer>> entries = profile.getMiningHistory(ore).getMinesEntry(environment);
+                double minesToTimeRatio = profile.getMiningHistory(ore).getMinesToTimeRatio(environment);
 
-                if (!entries.isEmpty()) {
+                if (minesToTimeRatio > 0.0) {
                     profileCount++;
-
-                    for (Map.Entry<String, Integer> entry : entries) {
-                        count.put(entry.getKey(), count.getOrDefault(entry.getKey(), 0) + entry.getValue());
-                    }
+                    mean += minesToTimeRatio;
+                    stdDev += minesToTimeRatio * minesToTimeRatio;
                 }
             }
-            if (profileCount >= TPS.maximum) {
-                int mines = 0;
-
-                for (Map.Entry<String, Integer> entry : count.entrySet()) {
-                    mines += entry.getValue() * entry.getValue();
-                }
-                return Math.sqrt(mines / ((double) count.size()));
+            if (profileCount >= PlayerEvidence.factorRequirement) {
+                return new double[]{
+                        mean / profileCount,
+                        Math.sqrt(stdDev / profileCount)
+                };
             } else {
-                return 0.0;
+                return new double[]{};
             }
         }
     }
@@ -58,25 +53,28 @@ public class XRay extends CheckRunner {
 
     public XRay(Enums.HackType hackType, SpartanProtocol protocol, String playerName) {
         super(hackType, protocol, playerName);
-        this.detection = new ImplementedProbabilityDetection(this, null, true);
+        this.detection = new ImplementedHardcodedDetection(this, null, true);
     }
 
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
         Object[] objects = (Object[]) object;
-        MiningHistory miningHistory = (MiningHistory) objects[1];
         World.Environment environment = World.Environment.valueOf(objects[0].toString());
-        double minesDeviation = miningHistory.getMinesDeviation(environment);
+        double[] statistics = getStatistics(environment, (MiningHistory.MiningOre) objects[2]);
 
-        if (minesDeviation > 0.0) {
-            double averageDeviation = getAverageDeviation(environment, (MiningHistory.MiningOre) objects[2]);
+        if (statistics.length > 0) {
+            double individual = ((MiningHistory) objects[1]).getMinesToTimeRatio(environment);
 
-            if (averageDeviation > 0.0) {
-                double points = AlgebraUtils.cut(minesDeviation - averageDeviation, 2);
+            if (individual > 0.0) {
+                double probability = StatisticsMath.getCumulativeProbability(
+                        (individual - statistics[0]) / statistics[1]
+                );
 
-                if (points > 0.0) {
+                if (probability >= 0.85) {
                     this.detection.cancel(
-                            "Unfair gathering of " + objects[3] + ", surpassed others by " + points + " " + (points == 1.0 ? "point" : "points")
+                            "Unfair gathering of " + objects[3]
+                                    + ", surpassed " + AlgebraUtils.cut(probability * 100.0, 2)
+                                    + "% of players"
                     );
                 }
             }

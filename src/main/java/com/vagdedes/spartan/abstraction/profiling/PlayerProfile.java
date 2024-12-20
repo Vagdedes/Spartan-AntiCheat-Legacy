@@ -37,7 +37,7 @@ public class PlayerProfile {
         this.continuity = new ProfileContinuity(this);
 
         for (MiningHistory.MiningOre ore : MiningHistory.MiningOre.values()) {
-            this.miningHistory[ore.ordinal()] = new MiningHistory(ore);
+            this.miningHistory[ore.ordinal()] = new MiningHistory(this, ore);
         }
 
         // Separator
@@ -63,7 +63,7 @@ public class PlayerProfile {
         this.continuity = new ProfileContinuity(this);
 
         for (MiningHistory.MiningOre ore : MiningHistory.MiningOre.values()) {
-            this.miningHistory[ore.ordinal()] = new MiningHistory(ore);
+            this.miningHistory[ore.ordinal()] = new MiningHistory(this, ore);
         }
         this.registerChecks(protocol);
     }

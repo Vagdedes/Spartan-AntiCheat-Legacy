@@ -435,41 +435,48 @@ public class ResearchEngine {
                         );
 
                         if (oreString != null) {
-                            String player = findInformation(
+                            String amount = findInformation(
                                     data,
-                                    AntiCheatLogs.playerIdentifier
+                                    MiningHistory.amountIdentifier
                             );
 
-                            if (player != null) {
-                                String environmentString = findInformation(
+                            if (amount != null
+                                    && AlgebraUtils.validInteger(amount)) {
+                                String player = findInformation(
                                         data,
-                                        MiningHistory.environmentIdentifier
+                                        AntiCheatLogs.playerIdentifier
                                 );
 
-                                if (environmentString != null) {
-                                    Material material = MaterialUtils.findMaterial(
-                                            oreString.toUpperCase().replace("-", "_")
+                                if (player != null) {
+                                    String environmentString = findInformation(
+                                            data,
+                                            MiningHistory.environmentIdentifier
                                     );
 
-                                    if (material != null) {
-                                        MiningHistory.MiningOre ore = MiningHistory.getMiningOre(material);
+                                    if (environmentString != null) {
+                                        Material material = MaterialUtils.findMaterial(
+                                                oreString.toUpperCase().replace("-", "_")
+                                        );
 
-                                        if (ore != null) {
-                                            World.Environment environment = MaterialUtils.findEnvironment(
-                                                    environmentString.toUpperCase().replace("-", "_")
-                                            );
+                                        if (material != null) {
+                                            MiningHistory.MiningOre ore = MiningHistory.getMiningOre(material);
 
-                                            if (environment != null) {
-                                                getPlayerProfile(
-                                                        player,
-                                                        true
-                                                ).getMiningHistory(
-                                                        ore
-                                                ).increaseMines(
-                                                        environment,
-                                                        1,
-                                                        fullDate.substring(0, 10) // Partial date
+                                            if (ore != null) {
+                                                World.Environment environment = MaterialUtils.findEnvironment(
+                                                        environmentString.toUpperCase().replace("-", "_")
                                                 );
+
+                                                if (environment != null) {
+                                                    getPlayerProfile(
+                                                            player,
+                                                            true
+                                                    ).getMiningHistory(
+                                                            ore
+                                                    ).increaseMines(
+                                                            environment,
+                                                            Integer.parseInt(amount)
+                                                    );
+                                                }
                                             }
                                         }
                                     }
