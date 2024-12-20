@@ -30,6 +30,7 @@ public class MoveLength extends ProbabilityDetection {
 
     final void run() {
         if (!this.protocol().spartan.isBedrockPlayer()
+                && !this.protocol().packetsEnabled()
                 && this.hit - System.currentTimeMillis() <= 2_000L
                 && this.hitBy - System.currentTimeMillis() <= 1_000L) {
             float pitch = this.protocol().getLocation().getPitch(),
