@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.abstraction.check.implementation.world;
 
-import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
+import com.vagdedes.spartan.abstraction.check.HardcodedDetection;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedHardcodedDetection;
 import com.vagdedes.spartan.abstraction.profiling.MiningHistory;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
@@ -16,6 +16,8 @@ import org.bukkit.World;
 import java.util.Collection;
 
 public class XRay extends CheckRunner {
+
+    private static final double threshold = 2.0 / 3.0;
 
     private static double[] getStatistics(World.Environment environment, MiningHistory.MiningOre ore) {
         Collection<PlayerProfile> profiles = ResearchEngine.getPlayerProfiles();
@@ -47,13 +49,19 @@ public class XRay extends CheckRunner {
         }
     }
 
-    // Separator
-
-    private final CheckDetection detection;
+    private final HardcodedDetection[] detections;
 
     public XRay(Enums.HackType hackType, SpartanProtocol protocol, String playerName) {
         super(hackType, protocol, playerName);
-        this.detection = new ImplementedHardcodedDetection(this, null, true);
+        this.detections = new HardcodedDetection[World.Environment.values().length];
+
+        for (World.Environment environment : World.Environment.values()) {
+            this.detections[environment.ordinal()] = new ImplementedHardcodedDetection(
+                    this,
+                    "check_" + environment.name().toLowerCase(),
+                    true
+            );
+        }
     }
 
     @Override
@@ -70,12 +78,16 @@ public class XRay extends CheckRunner {
                         (individual - statistics[0]) / statistics[1]
                 );
 
-                if (probability >= 0.85) {
-                    this.detection.cancel(
+                if (probability >= threshold) {
+                    this.detections[environment.ordinal()].setHackingRatio(probability);
+                    this.detections[environment.ordinal()].cancel(
                             "Unfair gathering of " + objects[3]
+                                    + " in " + environment.name().toLowerCase() + " world"
                                     + ", surpassed " + AlgebraUtils.cut(probability * 100.0, 2)
                                     + "% of players"
                     );
+                } else {
+                    this.detections[environment.ordinal()].setHackingRatio(probability);
                 }
             }
         }
