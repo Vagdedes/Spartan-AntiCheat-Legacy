@@ -381,119 +381,119 @@ public class ResearchEngine {
 
             if (!logs.isEmpty()) {
                 for (Map.Entry<String, String> entry : logs.entrySet()) {
-                    try {
-                        String fullDate = entry.getKey(),
-                                partialDate = fullDate.substring(0, 10),
-                                data = entry.getValue();
-                        String detection = findInformation(
+                    String fullDate = entry.getKey(),
+                            data = entry.getValue();
+                    String detection = findInformation(
+                            data,
+                            CheckDetection.detectionIdentifier
+                    );
+
+                    if (detection != null) {
+                        String hackTypeString = findInformation(
                                 data,
-                                CheckDetection.detectionIdentifier
+                                CheckDetection.checkIdentifier
                         );
 
-                        if (detection != null) {
-                            String hackTypeString = findInformation(
+                        if (hackTypeString != null) {
+                            String player = findInformation(
                                     data,
-                                    CheckDetection.checkIdentifier
+                                    AntiCheatLogs.playerIdentifier
                             );
 
-                            if (hackTypeString != null) {
-                                String player = findInformation(
-                                        data,
-                                        AntiCheatLogs.playerIdentifier
-                                );
+                            if (player != null) {
+                                for (Enums.HackType hackType : Enums.HackType.values()) {
+                                    if (hackTypeString.equals(hackType.toString())) {
+                                        CheckDetection detectionExecutor = getPlayerProfile(
+                                                player,
+                                                true
+                                        ).getRunner(
+                                                hackType
+                                        ).getDetection(
+                                                detection
+                                        );
 
-                                if (player != null) {
-                                    for (Enums.HackType hackType : Enums.HackType.values()) {
-                                        if (hackTypeString.equals(hackType.toString())) {
-                                            CheckDetection detectionExecutor = getPlayerProfile(
-                                                    player,
-                                                    true
-                                            ).getRunner(
-                                                    hackType
-                                            ).getDetection(
-                                                    detection
-                                            );
+                                        if (detectionExecutor != null) {
+                                            SimpleDateFormat sdf = new SimpleDateFormat(AntiCheatLogs.dateFormat);
 
-                                            if (detectionExecutor != null) {
-                                                SimpleDateFormat sdf = new SimpleDateFormat(AntiCheatLogs.dateFormat);
+                                            try {
                                                 detectionExecutor.store(
                                                         findDataType(data),
                                                         sdf.parse(fullDate).getTime()
                                                 );
+                                            } catch (Exception ignored) {
                                             }
-                                            break;
+                                        }
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        String oreString = findInformation(
+                                data,
+                                MiningHistory.oreIdentifier
+                        );
+
+                        if (oreString != null) {
+                            String player = findInformation(
+                                    data,
+                                    AntiCheatLogs.playerIdentifier
+                            );
+
+                            if (player != null) {
+                                String environmentString = findInformation(
+                                        data,
+                                        MiningHistory.environmentIdentifier
+                                );
+
+                                if (environmentString != null) {
+                                    Material material = MaterialUtils.findMaterial(
+                                            oreString.toUpperCase().replace("-", "_")
+                                    );
+
+                                    if (material != null) {
+                                        MiningHistory.MiningOre ore = MiningHistory.getMiningOre(material);
+
+                                        if (ore != null) {
+                                            World.Environment environment = MaterialUtils.findEnvironment(
+                                                    environmentString.toUpperCase().replace("-", "_")
+                                            );
+
+                                            if (environment != null) {
+                                                getPlayerProfile(
+                                                        player,
+                                                        true
+                                                ).getMiningHistory(
+                                                        ore
+                                                ).increaseMines(
+                                                        environment,
+                                                        1,
+                                                        fullDate.substring(0, 10) // Partial date
+                                                );
+                                            }
                                         }
                                     }
                                 }
                             }
                         } else {
-                            String oreString = findInformation(
-                                    data,
-                                    MiningHistory.oreIdentifier
-                            );
+                            int index = data.indexOf(PlayerProfile.activeFor);
 
-                            if (oreString != null) {
-                                String player = findInformation(
-                                        data,
-                                        AntiCheatLogs.playerIdentifier
-                                );
+                            if (index != -1) {
+                                SimpleDateFormat sdf = new SimpleDateFormat(AntiCheatLogs.dateFormat);
 
-                                if (player != null) {
-                                    String environmentString = findInformation(
-                                            data,
-                                            MiningHistory.environmentIdentifier
+                                try {
+                                    ResearchEngine.getPlayerProfile(
+                                            data.split(" ", 2)[0],
+                                            true
+                                    ).getContinuity().setActiveTime(
+                                            sdf.parse(fullDate).getTime(),
+                                            Long.parseLong(data.substring(index + PlayerProfile.activeFor.length())),
+                                            false
                                     );
-
-                                    if (environmentString != null) {
-                                        Material material = MaterialUtils.findMaterial(
-                                                oreString.toUpperCase().replace("-", "_")
-                                        );
-
-                                        if (material != null) {
-                                            MiningHistory.MiningOre ore = MiningHistory.getMiningOre(material);
-
-                                            if (ore != null) {
-                                                World.Environment environment = MaterialUtils.findEnvironment(
-                                                        environmentString.toUpperCase().replace("-", "_")
-                                                );
-
-                                                if (environment != null) {
-                                                    getPlayerProfile(
-                                                            player,
-                                                            true
-                                                    ).getMiningHistory(
-                                                            ore
-                                                    ).increaseMines(
-                                                            environment,
-                                                            1,
-                                                            partialDate
-                                                    );
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            } else {
-                                int index = data.indexOf(PlayerProfile.activeFor);
-
-                                if (index != -1) {
-                                    SimpleDateFormat sdf = new SimpleDateFormat(AntiCheatLogs.dateFormat);
-
-                                    try {
-                                        ResearchEngine.getPlayerProfile(
-                                                data.split(" ", 2)[0],
-                                                true
-                                        ).getContinuity().setActiveTime(
-                                                sdf.parse(fullDate).getTime(),
-                                                Long.parseLong(data.substring(index + PlayerProfile.activeFor.length())),
-                                                false
-                                        );
-                                    } catch (Exception ignored) {
-                                    }
+                                } catch (Exception ignored) {
                                 }
                             }
                         }
-                    } catch (Exception ignored) {
                     }
                 }
             }

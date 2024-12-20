@@ -267,7 +267,7 @@ public class IMSimulationSpeed extends HardcodedDetection {
         this.predictX = x;
         this.predictZ = z;
     }
-    
+
     private boolean isOnWater(Location location) {
         double x = location.getX();
         double y = location.getY() - 0.1;
