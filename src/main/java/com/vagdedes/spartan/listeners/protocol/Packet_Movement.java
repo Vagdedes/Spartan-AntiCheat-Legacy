@@ -35,15 +35,15 @@ import java.util.Set;
 public class Packet_Movement extends PacketAdapter {
     public Packet_Movement() {
         super(
-                        Register.plugin,
-                        ListenerPriority.LOWEST,
-                        PacketType.Play.Server.POSITION,
-                        PacketType.Play.Client.POSITION,
-                        PacketType.Play.Client.POSITION_LOOK,
-                        PacketType.Play.Client.LOOK,
-                        (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17))
-                                        ? PacketType.Play.Client.GROUND
-                                        : PacketType.Play.Client.FLYING
+                Register.plugin,
+                ListenerPriority.LOWEST,
+                PacketType.Play.Server.POSITION,
+                PacketType.Play.Client.POSITION,
+                PacketType.Play.Client.POSITION_LOOK,
+                PacketType.Play.Client.LOOK,
+                (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17))
+                        ? PacketType.Play.Client.GROUND
+                        : PacketType.Play.Client.FLYING
         );
     }
 
@@ -103,7 +103,7 @@ public class Packet_Movement extends PacketAdapter {
         for (Double check : v) {
             if (check.isNaN() || check.isInfinite() || Math.abs(check) > 3E8) {
                 SpartanBukkit.getProtocol(player)
-                                .spartan.punishments.kick(Bukkit.getConsoleSender(), "Invalid packet");
+                        .spartan.punishments.kick(Bukkit.getConsoleSender(), "Invalid packet");
                 return;
             }
         }
@@ -119,11 +119,11 @@ public class Packet_Movement extends PacketAdapter {
             p.transactionVl += (p.isBlatantDesync() ? 2 : 1);
             if (p.transactionVl > 40) {
                 Bukkit.getScheduler().runTask(Register.plugin,
-                                () -> player.teleport(p.getLocation()));
+                        () -> player.teleport(p.getLocation()));
                 AwarenessNotifications.optionallySend(player.getName()
-                                + " moves faster than the transaction response ("
-                                + tickEvent.getDelay() + "ms > "
-                                + (System.currentTimeMillis() - p.transactionTime) + "ms)");
+                        + " moves faster than the transaction response ("
+                        + tickEvent.getDelay() + "ms > "
+                        + (System.currentTimeMillis() - p.transactionTime) + "ms)");
                 event.setCancelled(true);
                 return;
             }
@@ -159,7 +159,7 @@ public class Packet_Movement extends PacketAdapter {
                             p.setTeleport(null);
                         } else {
                             if (p.spartan.trackers.has(PlayerTrackers.TrackerType.VEHICLE, "enter")) return;
-                            for (Entity entity : getEntitiesAroundPoint(p.getLocation(), 5))
+                            for (Entity entity : p.spartan.getNearbyEntities(5))
                                 if (entity instanceof Boat) return;
 
                             // Force packet stop if your packet are shit
@@ -187,9 +187,9 @@ public class Packet_Movement extends PacketAdapter {
             }
 
             PlayerMoveEvent moveEvent = new PlayerMoveEvent(
-                            player,
-                            p.getFromLocation(),
-                            p.getLocation()
+                    player,
+                    p.getFromLocation(),
+                    p.getLocation()
             );
             moveEvent.setCancelled(event.isCancelled());
             Event_Movement.event(moveEvent, true);
@@ -205,26 +205,8 @@ public class Packet_Movement extends PacketAdapter {
         packet.protocol.spartan.getRunner(Enums.HackType.Exploits).handle(cancelled, packet);
         packet.protocol.spartan.getRunner(Enums.HackType.IrregularMovements).handle(cancelled, packet);
     }
-    private static List<Entity> getEntitiesAroundPoint(Location location, double radius) {
-        List<Entity> entities = new ArrayList<>();
-        World world = location.getWorld();
-        int smallX = MathHelper.floor_double((location.getX() - radius) / 16.0D);
-        int bigX = MathHelper.floor_double((location.getX() + radius) / 16.0D);
-        int smallZ = MathHelper.floor_double((location.getZ() - radius) / 16.0D);
-        int bigZ = MathHelper.floor_double((location.getZ() + radius) / 16.0D);
-
-        for (int x = smallX; x <= bigX; x++) {
-            for (int z = smallZ; z <= bigZ; z++) {
-                if (world.isChunkLoaded(x, z)) {
-                    entities.addAll(Arrays.asList(world.getChunkAt(x, z).getEntities())); // Add all entities from this chunk to the list
-                }
-            }
-        }
-        entities.removeIf(entity -> SpartanLocation.distanceSquared(entity.getLocation(), location) > radius * radius);
-        return entities;
-    }
 
     public enum tpFlags {
-         X, Y, Z
+        X, Y, Z
     }
 }

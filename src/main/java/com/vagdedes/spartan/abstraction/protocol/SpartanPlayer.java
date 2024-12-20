@@ -349,31 +349,25 @@ public class SpartanPlayer {
 
     // Separator
 
-    public List<Entity> getNearbyEntities(Location location, double x, double y, double z) {
+    public List<Entity> getNearbyEntities(double radius) {
         List<Entity> entities = new ArrayList<>();
+        Location location = protocol.getLocation();
         World world = location.getWorld();
-        int smallX = MathHelper.floor_double((location.getX() - x) / PlayerUtils.chunk);
-        int bigX = MathHelper.floor_double((location.getX() + x) / PlayerUtils.chunk);
-        int smallZ = MathHelper.floor_double((location.getZ() - z) / PlayerUtils.chunk);
-        int bigZ = MathHelper.floor_double((location.getZ() + z) / PlayerUtils.chunk);
+        int smallX = MathHelper.floor_double((location.getX() - radius) / PlayerUtils.chunk);
+        int bigX = MathHelper.floor_double((location.getX() + radius) / PlayerUtils.chunk);
+        int smallZ = MathHelper.floor_double((location.getZ() - radius) / PlayerUtils.chunk);
+        int bigZ = MathHelper.floor_double((location.getZ() + radius) / PlayerUtils.chunk);
 
         for (int xx = smallX; xx <= bigX; xx++) {
             for (int zz = smallZ; zz <= bigZ; zz++) {
                 if (world.isChunkLoaded(xx, zz)) {
-                    entities.addAll(Arrays.asList(world.getChunkAt(xx, zz).getEntities())); // Add all entities from this chunk to the list
-                }
-            }
-        }
-        if (!entities.isEmpty()) {
-            Iterator<Entity> iterator = entities.iterator();
+                    for (Entity entity : world.getChunkAt(xx, zz).getEntities()) {
+                        Location eLoc = entity.getLocation();
 
-            while (iterator.hasNext()) {
-                Location eLoc = iterator.next().getLocation();
-
-                if (Math.abs(eLoc.getX() - location.getX()) > x
-                        || Math.abs(eLoc.getY() - location.getY()) > y
-                        || Math.abs(eLoc.getZ() - location.getZ()) > z) {
-                    iterator.remove();
+                        if (Math.abs(eLoc.getX() - location.getX()) <= radius) {
+                            entities.add(entity);
+                        }
+                    }
                 }
             }
         }
@@ -384,7 +378,30 @@ public class SpartanPlayer {
         if (SpartanBukkit.isSynchronised()) {
             return this.protocol.bukkit.getNearbyEntities(x, y, z);
         } else {
-            return this.getNearbyEntities(this.protocol.getLocation(), x, y, z);
+            List<Entity> entities = new ArrayList<>();
+            Location location = protocol.getLocation();
+            World world = location.getWorld();
+            int smallX = MathHelper.floor_double((location.getX() - x) / PlayerUtils.chunk);
+            int bigX = MathHelper.floor_double((location.getX() + x) / PlayerUtils.chunk);
+            int smallZ = MathHelper.floor_double((location.getZ() - z) / PlayerUtils.chunk);
+            int bigZ = MathHelper.floor_double((location.getZ() + z) / PlayerUtils.chunk);
+
+            for (int xx = smallX; xx <= bigX; xx++) {
+                for (int zz = smallZ; zz <= bigZ; zz++) {
+                    if (world.isChunkLoaded(xx, zz)) {
+                        for (Entity entity : world.getChunkAt(xx, zz).getEntities()) {
+                            Location eLoc = entity.getLocation();
+
+                            if (Math.abs(eLoc.getX() - location.getX()) <= x
+                                    && Math.abs(eLoc.getY() - location.getY()) <= y
+                                    && Math.abs(eLoc.getZ() - location.getZ()) <= z) {
+                                entities.add(entity);
+                            }
+                        }
+                    }
+                }
+            }
+            return entities;
         }
     }
 

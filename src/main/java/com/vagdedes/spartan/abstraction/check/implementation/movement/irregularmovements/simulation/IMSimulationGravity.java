@@ -274,7 +274,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
                 }
 
                 boolean boat = false;
-                List<Entity> nearbyEntities = this.getEntitiesAroundPoint(to, 2);
+                List<Entity> nearbyEntities = this.protocol().spartan.getNearbyEntities(2);
                 for (Entity vehicle : nearbyEntities) {
                     if (vehicle.getType().toString().toLowerCase().contains("boat")) {
                         boat = true;
@@ -444,25 +444,6 @@ public class IMSimulationGravity extends ProbabilityDetection {
         this.protocol().spartan.movement.motionY = v;
     }
 
-    private List<Entity> getEntitiesAroundPoint(Location location, double radius) {
-        List<Entity> entities = new ArrayList<>();
-        World world = location.getWorld();
-        int smallX = MathHelper.floor_double((location.getX() - radius) / 16.0D);
-        int bigX = MathHelper.floor_double((location.getX() + radius) / 16.0D);
-        int smallZ = MathHelper.floor_double((location.getZ() - radius) / 16.0D);
-        int bigZ = MathHelper.floor_double((location.getZ() + radius) / 16.0D);
-
-        for (int x = smallX; x <= bigX; x++) {
-            for (int z = smallZ; z <= bigZ; z++) {
-                if (world.isChunkLoaded(x, z)) {
-                    entities.addAll(Arrays.asList(world.getChunkAt(x, z).getEntities())); // Add all entities from this chunk to the list
-                }
-            }
-        }
-        entities.removeIf(entity -> SpartanLocation.distanceSquared(entity.getLocation(), location) > radius * radius);
-        return entities;
-    }
-
     private boolean isOnWater(Location location) {
         double x = location.getX();
         double y = location.getY() - 0.1;
@@ -512,13 +493,13 @@ public class IMSimulationGravity extends ProbabilityDetection {
                             new Location(this.protocol().spartan.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
                     );
                     Material materialFrom = this.protocol().packetWorld.getBlock(
-                                    new Location(this.protocol().spartan.getWorld(), xF + (double) dx * 0.3, yF + (double) dy * 0.5, zF + (double) dz * 0.3)
+                            new Location(this.protocol().spartan.getWorld(), xF + (double) dx * 0.3, yF + (double) dy * 0.5, zF + (double) dz * 0.3)
                     );
 
                     if (material != null &&
                             (BlockUtils.isSemiSolid(material)
-                                            || BlockUtils.areWalls(materialFrom)
-                                            || BlockUtils.areCobbleWalls(materialFrom)
+                                    || BlockUtils.areWalls(materialFrom)
+                                    || BlockUtils.areCobbleWalls(materialFrom)
                                     || BlockUtils.areSlimeBlocks(material)
                                     || BlockUtils.areHoneyBlocks(material)
                                     || BlockUtils.areWebs(material))) {

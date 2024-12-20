@@ -15,16 +15,10 @@ import com.vagdedes.spartan.utils.minecraft.vector.SpartanVector2F;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Entity;
 import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import static java.lang.Math.PI;
 
@@ -38,9 +32,9 @@ public class IMSimulationSpeed extends HardcodedDetection {
     private static final double ACCELERATION_BASIC = 0.02;
     private double ACCELERATION_MOTION = 0.0;
     private static final double[] JUMP
-                    = new double[]{0.2806, 0.1726};
+            = new double[]{0.2806, 0.1726};
     private static final double[] JUMP_SPRINT =
-                    new double[]{0.6132, 0.3601};
+            new double[]{0.6132, 0.3601};
     private double predictX = 0, predictZ = 0;
     private double lastDx = 0, lastDz = 0;
     private double lastSpeed = 0;
@@ -67,9 +61,9 @@ public class IMSimulationSpeed extends HardcodedDetection {
             RayLine yawLine = new RayLine(-Math.sin(rYaw), Math.cos(rYaw));
             RayLine moveLine = new RayLine(dx, dz);
             boolean isOnAngle = RayUtils.validRayLines(
-                            yawLine, moveLine, 46.0);
+                    yawLine, moveLine, 46.0);
             boolean isOnAngle80 = RayUtils.validRayLines(
-                            yawLine, moveLine, 80.0);
+                    yawLine, moveLine, 80.0);
             if (to.getX() != from.getX() || to.getY() != from.getY() || to.getZ() != from.getZ()) {
                 {
                     this.ground(isOnGround);
@@ -78,7 +72,7 @@ public class IMSimulationSpeed extends HardcodedDetection {
                         this.velo = false;
                         double limit = isOnAngle ? 0.2975 : (isOnAngle80) ? 0.289 : 0.235;
                         double limitAccel = RayUtils.validRayLines(
-                                        yawLine, moveLine, 65.0) ? 0.15 : 0.12;
+                                yawLine, moveLine, 65.0) ? 0.15 : 0.12;
                         if (limit < limit * this.multiplex())
                             this.ACCELERATION_MOTION = (limit * this.multiplex()) - limit;
                         if (this.ground == 1 && lastSpeed > limitAccel)
@@ -94,7 +88,7 @@ public class IMSimulationSpeed extends HardcodedDetection {
                     } else if (this.air == 1 || (this.air == 2 && !this.velo)) {
                         double lim;
                         if (RayUtils.validRayLines(
-                                        yawLine, moveLine, 46) || sprintStatus)
+                                yawLine, moveLine, 46) || sprintStatus)
                             lim = JUMP_SPRINT[air - 1];
                         else if (RayUtils.validRayLines(yawLine, moveLine, 65)) {
                             lim = JUMP[air - 1] + (JUMP_SPRINT[air - 1] / 2.0);
@@ -106,10 +100,10 @@ public class IMSimulationSpeed extends HardcodedDetection {
                         if (speed < lim)
                             this.setPredict(dx, dz);
                         else this.setPredict(-Math.sin(Math.toRadians(to.getYaw())) * lim,
-                                        Math.cos(Math.toRadians(to.getYaw())) * lim);
+                                Math.cos(Math.toRadians(to.getYaw())) * lim);
                         if (p.isSprinting()
-                                        && isOnAngle
-                                        && this.air == 1) sprintStatus = true;
+                                && isOnAngle
+                                && this.air == 1) sprintStatus = true;
                     } else {
                         double pX = this.lastDx * 0.91f;
                         double pZ = this.lastDz * 0.91f;
@@ -118,30 +112,30 @@ public class IMSimulationSpeed extends HardcodedDetection {
                         double accel = ACCELERATION_SPRINT * this.multiplex();
                         if (this.protocol().getComponentXZ().pistonTick) accel += 1.0;
                         boolean point = this.isPointWall(to)
-                                        || this.isPointWall(from)
-                                        || (this.getEntitiesAroundPoint(this.protocol().getLocation(), 2).size() > 1)
-                                        || this.isPointWall(
-                                        to.clone().add(
-                                                        -Math.sin(moveAngle) * 0.3, 0,
-                                                        Math.cos(moveAngle) * 0.3));
+                                || this.isPointWall(from)
+                                || (this.protocol().spartan.getNearbyEntities(2).size() > 1)
+                                || this.isPointWall(
+                                to.clone().add(
+                                        -Math.sin(moveAngle) * 0.3, 0,
+                                        Math.cos(moveAngle) * 0.3));
                         if (point && speed < lastSpeed * 1.2) {
                             if (getDeviantity(dx, pX) > accel) pX = dx;
                             if (getDeviantity(dz, pZ) > accel) pZ = dz;
                         }
                         boolean isCorrect =
-                                        getDeviantity(dx, pX) < accel
+                                getDeviantity(dx, pX) < accel
                                         && getDeviantity(dz, pZ) < accel;
                         if (isCorrect)
                             this.setPredict(dx, dz);
                         else this.setPredict(
-                                        -Math.sin(Math.toRadians(to.getYaw())) * ACCELERATION_BASIC,
-                                        Math.cos(Math.toRadians(to.getYaw())) * ACCELERATION_BASIC);
+                                -Math.sin(Math.toRadians(to.getYaw())) * ACCELERATION_BASIC,
+                                Math.cos(Math.toRadians(to.getYaw())) * ACCELERATION_BASIC);
 
                     }
                     this.velocity(
-                                    to.getY() - from.getY(),
-                                    ACCELERATION_SPRINT * (1.5) * this.multiplex(),
-                                    new SpartanVector2D(dx, dz)
+                            to.getY() - from.getY(),
+                            ACCELERATION_SPRINT * (1.5) * this.multiplex(),
+                            new SpartanVector2D(dx, dz)
                     );
                     if ((this.isOnSlimeWide(to) || this.isOnSlimeWide(from)))
                         this.nearSlimeStatus = 4;
@@ -149,8 +143,8 @@ public class IMSimulationSpeed extends HardcodedDetection {
                         double pr = Math.sqrt(predictX * predictX + predictZ * predictZ);
                         double d = getDeviantity(pr, speed);
                         if (d <= 1.01 && d > 0.1 && this.protocol().getComponentXZ().pistonTick) {
-                             this.setPredict(dx, dz);
-                             this.removePistonTick = true;
+                            this.setPredict(dx, dz);
+                            this.removePistonTick = true;
                         }
                         if (this.protocol().getComponentXZ().pistonTick && this.nearSlimeStatus > 0) {
                             this.slimeBoostApply = 3;
@@ -202,15 +196,15 @@ public class IMSimulationSpeed extends HardcodedDetection {
             m += (double) (speedEffect.bukkitEffect.getAmplifier() + 1) * 0.2;
         if (this.isOnIce(l) || this.isOnSlime(l) || this.isOnIce(lF) || this.isOnSlime(lF))
             m *= 1.6;
-        if (this.getEntitiesAroundPoint(this.protocol().getLocation(), 2).size() > 1)
+        if (this.protocol().spartan.getNearbyEntities(2).size() > 1)
             m *= 1.4;
         if (BlockUtils.areWebs(new SpartanLocation(this.protocol().getLocation()).getBlock().getType())) {
             m *= 0.2;
         }
         if (this.isOnWater(l) || this.isOnWater(lF)) {
             ExtendedPotionEffect dolphinEffect = PlayerUtils.dolphinsGrace
-                            ? this.protocol().spartan.getPotionEffect(PotionEffectType.DOLPHINS_GRACE, 0)
-                            : null;
+                    ? this.protocol().spartan.getPotionEffect(PotionEffectType.DOLPHINS_GRACE, 0)
+                    : null;
             if (dolphinEffect != null) m *= 6.2;
         }
         if (this.isOnSemi(l)) m *= 1.4;
@@ -273,26 +267,7 @@ public class IMSimulationSpeed extends HardcodedDetection {
         this.predictX = x;
         this.predictZ = z;
     }
-
-    private List<Entity> getEntitiesAroundPoint(Location location, double radius) {
-        List<Entity> entities = new ArrayList<>();
-        World world = location.getWorld();
-        int smallX = MathHelper.floor_double((location.getX() - radius) / 16.0D);
-        int bigX = MathHelper.floor_double((location.getX() + radius) / 16.0D);
-        int smallZ = MathHelper.floor_double((location.getZ() - radius) / 16.0D);
-        int bigZ = MathHelper.floor_double((location.getZ() + radius) / 16.0D);
-
-        for (int x = smallX; x <= bigX; x++) {
-            for (int z = smallZ; z <= bigZ; z++) {
-                if (world.isChunkLoaded(x, z)) {
-                    entities.addAll(Arrays.asList(world.getChunkAt(x, z).getEntities())); // Add all entities from this chunk to the list
-                }
-            }
-        }
-        entities.removeIf(entity -> SpartanLocation.distanceSquared(entity.getLocation(), location) > radius * radius);
-        return entities;
-    }
-
+    
     private boolean isOnWater(Location location) {
         double x = location.getX();
         double y = location.getY() - 0.1;
@@ -332,10 +307,10 @@ public class IMSimulationSpeed extends HardcodedDetection {
             for (int dy = -2; dy <= 1; ++dy) {
                 for (int dz = -1; dz <= 1; ++dz) {
                     Material m = this.protocol().packetWorld.getBlock(
-                                    new Location(this.protocol().spartan.getWorld(),
-                                                    x + (double) dx,
-                                                    y + (double) dy,
-                                                    z + (double) dz)
+                            new Location(this.protocol().spartan.getWorld(),
+                                    x + (double) dx,
+                                    y + (double) dy,
+                                    z + (double) dz)
                     );
 
                     if (BlockUtils.areIceBlocks(m)) {
@@ -347,6 +322,7 @@ public class IMSimulationSpeed extends HardcodedDetection {
 
         return false;
     }
+
     private boolean isPointWall(Location location) {
         double x = location.getX();
         double y = location.getY();
@@ -355,17 +331,17 @@ public class IMSimulationSpeed extends HardcodedDetection {
             for (int dy = 0; dy <= 5; ++dy) {
                 for (int dz = -2; dz <= 2; ++dz) {
                     Material material = this.protocol().packetWorld.getBlock(
-                                    new Location(
-                                                    this.protocol().spartan.getWorld(),
-                                                    x + (double) dx * 0.5,
-                                                    y + (double) dy * 0.5, z + (double) dz * 0.5));
+                            new Location(
+                                    this.protocol().spartan.getWorld(),
+                                    x + (double) dx * 0.5,
+                                    y + (double) dy * 0.5, z + (double) dz * 0.5));
 
 
                     if (material != null &&
-                                    (BlockUtils.isSemiSolid(material)
-                                                    || BlockUtils.isSolid(material)
-                                                    || material.toString().contains("GRASS"))
-                                    || BlockUtils.isLiquid(material)) {
+                            (BlockUtils.isSemiSolid(material)
+                                    || BlockUtils.isSolid(material)
+                                    || material.toString().contains("GRASS"))
+                            || BlockUtils.isLiquid(material)) {
                         return true;
                     }
                 }
