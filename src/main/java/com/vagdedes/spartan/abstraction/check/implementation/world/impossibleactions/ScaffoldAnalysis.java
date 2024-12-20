@@ -102,6 +102,11 @@ public class ScaffoldAnalysis extends ProbabilityDetection {
                 return;
             }
 
+            if (this.oldBlock.getY() != bL.getY()) {
+                if (buffer.count > 5) buffer.count -= 5;
+                return;
+            }
+
             if (delay < 280) {
                 buffer.count += 6;
             } else if (delay < (p.isSneaking() ? 345 : 385) && p.rightClickCounter < 3) {
@@ -110,11 +115,11 @@ public class ScaffoldAnalysis extends ProbabilityDetection {
                 flag = false;
             }
 
-            if (buffer.count > 10 && flag) {
+            if (buffer.count > 14 && flag) {
                 this.cancel("type: scaffold analysis ("
                         + (long) Math.abs((((double) 400 / (double) delay) * 100) - 100)
                         + "% faster than possible) [VL: " + buffer.count + "]");
-                buffer.count -= 3;
+                buffer.count = 10;
             } else if (buffer.count > 0) {
                 buffer.count--;
             }

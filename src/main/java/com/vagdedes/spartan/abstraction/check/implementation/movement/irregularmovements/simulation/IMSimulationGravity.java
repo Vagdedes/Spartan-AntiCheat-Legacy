@@ -27,10 +27,13 @@ public class IMSimulationGravity extends ProbabilityDetection {
     private int top = 0, topReset = 0;
     private int levitation = 0, glideBlocks = 0, climbBlocks = 0,
             slowFalling = 0, levitationA = 0, slowFallingA = 0;
-    private boolean slime = false, slime0Tick = false, trident = false, cringeBlockClimb = false;
+    private boolean slime = false, slime0Tick = false,
+                    trident = false, cringeBlockClimb = false, allowLowJump = false,
+                    allowMinorGravityChange = false;
     private int slimePunch = 0, slimeTicks = 0, pistonTicks = 0, sub = 0;
     private double vl = 0.0;
     private double fallDistance = 0.0;
+    private double lastGroundY = 0;
 
     public IMSimulationGravity(CheckRunner executor) {
         super(executor, "gravity_packets", true);
@@ -56,12 +59,17 @@ public class IMSimulationGravity extends ProbabilityDetection {
                         (atJumpModifyBlock(to)
                                 && this.jumpMotion() * 1.5 > motion)
                                 ? motion : this.jumpMotion();
+                /*
                 this.air = isOnGround ? 0 : this.air + 1;
                 this.ground = isOnGround ? this.ground + 1 : 0;
+                 */
                 boolean isOnWater = this.isOnWater(p.getLocation());
                 double pr2;
                 PlayerMovement playerMovement;
+                if (this.isOnSlime(to)) this.allowMinorGravityChange = true;
                 if (isOnGround) {
+                    if (this.protocol().getLocation().getY() > this.lastGroundY)
+                        allowLowJump = true;
                     if (this.ground != 1) {
                         this.setPredict(0.0);
                         if (this.abs(motion) < 0.08 && this.abs(motion) > 0.0
@@ -89,6 +97,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
                     if (this.isOnSemi(to) && motion != 0.0 && motion < 0.785) {
                         this.setPredict(motion);
                     }
+                    this.lastGroundY = this.protocol().getLocation().getY();
                 } else if (this.air == 1) {
                     if (motion > 0.0) {
                         this.setPredict((float) jumpStartMotionY);
@@ -326,6 +335,11 @@ public class IMSimulationGravity extends ProbabilityDetection {
                     this.setPredict(motion);
                     this.protocol().getComponentY().explosionTick = false;
                 }
+                if (this.allowMinorGravityChange && this.predictY() > motion
+                                && getDeviantity(motion) <= 0.08) {
+                    this.setPredict(motion);
+                    this.allowMinorGravityChange = false;
+                }
 
                 double devTotal = this.abs(this.abs(motion) - this.abs(this.predictY()));
                 //this.protocol().bukkit.sendMessage("m: " + motion + " p: " + this.predictY() + " air: " + air);
@@ -336,8 +350,13 @@ public class IMSimulationGravity extends ProbabilityDetection {
                             && devTotal < 1.0) {
                         this.setPredict(0.0);
                     } else {
+                        if (allowLowJump && air == 1
+                                        && this.predictY() > motion
+                                        && getDeviantity(motion) <= 0.03) {
+                            return;
+                        }
                         this.vl += devTotal;
-                        if (this.vl > 0.02) {
+                        if (this.vl > 0.05) {
                             StringBuilder alertBuilder = new StringBuilder(String.valueOf(RayUtils.scaleVal(devTotal, 6.0)));
                             if (devTotal < 1.0) {
                                 alertBuilder.deleteCharAt(0);
@@ -352,7 +371,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
                         }
 
                         this.setPredict(motion);
-                        this.vl /= 1.3;
+                        this.vl /= 1.14;
                     }
                 } else {
                     ++this.topReset;
@@ -375,6 +394,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
         for (PlayerVelocityEvent velo : this.protocol().claimedVeloGravity) {
             if (this.veloIsValid(motion, velo.getVelocity().getY())) {
                 this.setPredict(motion);
+                this.allowMinorGravityChange = true;
                 claimed = velo;
                 break;
             }
@@ -405,7 +425,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
         if (!this.protocol().packetsEnabled()) {
             return;
         }
-        if (isOnGround) this.ground(true);
+        this.ground(isOnGround);
     }
 
     public void trident() {

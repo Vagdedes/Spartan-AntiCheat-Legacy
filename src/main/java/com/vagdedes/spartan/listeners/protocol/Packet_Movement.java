@@ -102,7 +102,7 @@ public class Packet_Movement extends PacketAdapter {
             }
         }
         boolean legacy = ProtocolTools.isFlying(event, l, r);
-        PlayerTickEvent tickEvent = new PlayerTickEvent(p, legacy).build();
+        PlayerTickEvent tickEvent = new PlayerTickEvent(p, legacy, onGround).build();
         Event_Movement.tick(tickEvent);
         if (tickEvent.getDelay() > 65) {
             p.lagTick = tickEvent.getDelay();

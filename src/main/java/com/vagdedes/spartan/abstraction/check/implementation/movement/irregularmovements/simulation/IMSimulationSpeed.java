@@ -158,6 +158,10 @@ public class IMSimulationSpeed extends ProbabilityDetection {
                             this.tridentBoostApply--;
                             this.setPredict(dx, dz);
                         }
+                        if (d >= 0.02 && d <= 1.7 && this.protocol().getComponentXZ().explosionTick) {
+                            this.protocol().getComponentXZ().explosionTick = false;
+                            this.setPredict(dx, dz);
+                        }
                         pr = Math.sqrt(predictX * predictX + predictZ * predictZ);
                         d = getDeviantity(pr, speed);
                         if (!(dx == predictX && dz == predictZ)) {

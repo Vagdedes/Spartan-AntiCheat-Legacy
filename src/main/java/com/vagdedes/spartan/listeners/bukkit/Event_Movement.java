@@ -109,6 +109,7 @@ public class Event_Movement implements Listener {
         protocol.packetWorld.tick(tickEvent);
         SpartanPlayer p = protocol.spartan;
         p.getRunner(Enums.HackType.MorePackets).handle(false, tickEvent);
+        p.getRunner(Enums.HackType.IrregularMovements).handle(false, tickEvent);
     }
 
     public static void transaction(PlayerTransactionEvent event) {

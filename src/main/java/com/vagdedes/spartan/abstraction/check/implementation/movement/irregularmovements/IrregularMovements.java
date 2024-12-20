@@ -5,6 +5,7 @@ import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.simulation.IMSimulationGravity;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.simulation.IMSimulationSpeed;
+import com.vagdedes.spartan.abstraction.event.PlayerTickEvent;
 import com.vagdedes.spartan.abstraction.event.SuperPositionPacketEvent;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.TPS;
@@ -90,12 +91,14 @@ public class IrregularMovements extends CheckRunner {
             speedBukkit.trident((int) object);
         } else if (object instanceof SuperPositionPacketEvent) {
             SuperPositionPacketEvent e = (SuperPositionPacketEvent) object;
-            gravityPackets.groundSp(e.packetEvent.getPacket().getBooleans().read(0));
             speedPackets.ground(e.packetEvent.getPacket().getBooleans().read(0));
         } else if (object instanceof PlayerMoveEvent) {
             speedBukkit.run((PlayerMoveEvent) object);
         } else if (object instanceof PlayerVelocityEvent) {
             speedBukkit.velocity((PlayerVelocityEvent) object);
+        } else if (object instanceof PlayerTickEvent) {
+            PlayerTickEvent e = (PlayerTickEvent) object;
+            gravityPackets.groundSp(e.onGround);
         } else {
             gravityPackets.teleport();
             speedPackets.teleport();
