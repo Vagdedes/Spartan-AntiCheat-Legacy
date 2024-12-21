@@ -213,8 +213,7 @@ public class SpartanProtocol {
         Entity vehicle = this.spartan.getVehicle();
 
         if (vehicle instanceof LivingEntity || vehicle instanceof Vehicle) {
-            Location vehicleLoc = ProtocolLib.getLocationOrNull(vehicle);
-            return vehicleLoc;
+            return ProtocolLib.getLocationOrNull(vehicle);
         } else {
             return null;
         }

@@ -297,7 +297,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
                     && this.protocol().spartan.getVehicle() != null) {
                 Entity v = this.protocol().spartan.getVehicle();
                 boolean isJumpingEntity = EntityUtils.abstractHorseClass
-                        ? v instanceof AbstractHorse
+                        ? v instanceof AbstractHorse // Covers horse, donkey, skeleton-horse, llama, mule
                         : v instanceof Horse;
 
                 if (this.isOnSolidGround(to) && this.abs(motion) <= ((isJumpingEntity || boat) ? 1.0 : 0.3)) {
