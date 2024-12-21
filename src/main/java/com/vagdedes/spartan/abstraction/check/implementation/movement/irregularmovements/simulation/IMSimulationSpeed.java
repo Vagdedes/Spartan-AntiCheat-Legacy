@@ -49,140 +49,138 @@ public class IMSimulationSpeed extends ProbabilityDetection {
         if (!this.protocol().packetsEnabled()) {
             return;
         }
-        if (this.protocol().spartan != null) {
-            SpartanProtocol p = this.protocol();
-            boolean isOnGround = p.isOnGround();
-            Location to = p.getLocation();
-            Location from = this.protocol().getFromLocation();
-            double dx = to.getX() - from.getX();
-            double dz = to.getZ() - from.getZ();
-            double speed = Math.sqrt(dx * dx + dz * dz);
-            double rYaw = Math.toRadians(MathHelper.floor_float(to.getYaw()));
-            RayLine yawLine = new RayLine(-Math.sin(rYaw), Math.cos(rYaw));
-            RayLine moveLine = new RayLine(dx, dz);
-            boolean isOnAngle = RayUtils.validRayLines(
-                    yawLine, moveLine, 46.0);
-            boolean isOnAngle80 = RayUtils.validRayLines(
-                    yawLine, moveLine, 80.0);
-            if (to.getX() != from.getX() || to.getY() != from.getY() || to.getZ() != from.getZ()) {
-                {
-                    this.ground(isOnGround);
-                    if (this.air == 0) {
-                        this.sprintStatus = false;
-                        this.velo = false;
-                        double limit = isOnAngle ? 0.2975 : (isOnAngle80) ? 0.289 : 0.235;
-                        double limitAccel = RayUtils.validRayLines(
-                                yawLine, moveLine, 65.0) ? 0.15 : 0.12;
-                        if (limit < limit * this.multiplex())
-                            this.ACCELERATION_MOTION = (limit * this.multiplex()) - limit;
-                        if (this.ground == 1 && lastSpeed > limitAccel)
-                            this.ACCELERATION_MOTION = lastSpeed - limitAccel;
-                        limit *= this.multiplex();
-                        limit += this.ACCELERATION_MOTION;
-                        if (this.protocol().getComponentXZ().pistonTick) limit += 1.0;
-                        if (speed < limit)
-                            setPredict(dx, dz);
-                        if (this.ACCELERATION_MOTION > 0)
-                            this.ACCELERATION_MOTION -= 0.02;
-                        if (this.ACCELERATION_MOTION < 0) this.ACCELERATION_MOTION = 0;
-                    } else if (this.air == 1 || (this.air == 2 && !this.velo)) {
-                        double lim;
-                        if (RayUtils.validRayLines(
-                                yawLine, moveLine, 46) || sprintStatus)
-                            lim = JUMP_SPRINT[air - 1];
-                        else if (RayUtils.validRayLines(yawLine, moveLine, 65)) {
-                            lim = JUMP[air - 1] + (JUMP_SPRINT[air - 1] / 2.0);
-                        } else lim = JUMP[air - 1];
-                        if (this.ACCELERATION_MOTION > 0.146)
-                            lim += this.ACCELERATION_MOTION - 0.146;
-                        lim *= this.multiplex();
-                        if (this.protocol().getComponentXZ().pistonTick) lim += 1.0;
-                        if (speed < lim)
-                            this.setPredict(dx, dz);
-                        else this.setPredict(-Math.sin(Math.toRadians(to.getYaw())) * lim,
-                                Math.cos(Math.toRadians(to.getYaw())) * lim);
-                        if (p.isSprinting()
-                                && isOnAngle
-                                && this.air == 1) sprintStatus = true;
-                    } else {
-                        double pX = this.lastDx * 0.91f;
-                        double pZ = this.lastDz * 0.91f;
-                        this.setPredict(pX, pZ);
-                        double moveAngle = RayUtils.calculateRayLine(moveLine);
-                        double accel = ACCELERATION_SPRINT * this.multiplex();
-                        if (this.protocol().getComponentXZ().pistonTick) accel += 1.0;
-                        boolean point = this.isPointWall(to)
-                                || this.isPointWall(from)
-                                || (this.protocol().spartan.getNearbyEntities(2).size() > 1)
-                                || this.isPointWall(
-                                to.clone().add(
-                                        -Math.sin(moveAngle) * 0.3, 0,
-                                        Math.cos(moveAngle) * 0.3));
-                        if (point && speed < lastSpeed * 1.2) {
-                            if (getDeviantity(dx, pX) > accel) pX = dx;
-                            if (getDeviantity(dz, pZ) > accel) pZ = dz;
-                        }
-                        boolean isCorrect =
-                                getDeviantity(dx, pX) < accel
-                                        && getDeviantity(dz, pZ) < accel;
-                        if (isCorrect)
-                            this.setPredict(dx, dz);
-                        else this.setPredict(
-                                -Math.sin(Math.toRadians(to.getYaw())) * ACCELERATION_BASIC,
-                                Math.cos(Math.toRadians(to.getYaw())) * ACCELERATION_BASIC);
-
+        SpartanProtocol p = this.protocol();
+        boolean isOnGround = p.isOnGround();
+        Location to = p.getLocation();
+        Location from = this.protocol().getFromLocation();
+        double dx = to.getX() - from.getX();
+        double dz = to.getZ() - from.getZ();
+        double speed = Math.sqrt(dx * dx + dz * dz);
+        double rYaw = Math.toRadians(MathHelper.floor_float(to.getYaw()));
+        RayLine yawLine = new RayLine(-Math.sin(rYaw), Math.cos(rYaw));
+        RayLine moveLine = new RayLine(dx, dz);
+        boolean isOnAngle = RayUtils.validRayLines(
+                yawLine, moveLine, 46.0);
+        boolean isOnAngle80 = RayUtils.validRayLines(
+                yawLine, moveLine, 80.0);
+        if (to.getX() != from.getX() || to.getY() != from.getY() || to.getZ() != from.getZ()) {
+            {
+                this.ground(isOnGround);
+                if (this.air == 0) {
+                    this.sprintStatus = false;
+                    this.velo = false;
+                    double limit = isOnAngle ? 0.2975 : (isOnAngle80) ? 0.289 : 0.235;
+                    double limitAccel = RayUtils.validRayLines(
+                            yawLine, moveLine, 65.0) ? 0.15 : 0.12;
+                    if (limit < limit * this.multiplex())
+                        this.ACCELERATION_MOTION = (limit * this.multiplex()) - limit;
+                    if (this.ground == 1 && lastSpeed > limitAccel)
+                        this.ACCELERATION_MOTION = lastSpeed - limitAccel;
+                    limit *= this.multiplex();
+                    limit += this.ACCELERATION_MOTION;
+                    if (this.protocol().getComponentXZ().pistonTick) limit += 1.0;
+                    if (speed < limit)
+                        setPredict(dx, dz);
+                    if (this.ACCELERATION_MOTION > 0)
+                        this.ACCELERATION_MOTION -= 0.02;
+                    if (this.ACCELERATION_MOTION < 0) this.ACCELERATION_MOTION = 0;
+                } else if (this.air == 1 || (this.air == 2 && !this.velo)) {
+                    double lim;
+                    if (RayUtils.validRayLines(
+                            yawLine, moveLine, 46) || sprintStatus)
+                        lim = JUMP_SPRINT[air - 1];
+                    else if (RayUtils.validRayLines(yawLine, moveLine, 65)) {
+                        lim = JUMP[air - 1] + (JUMP_SPRINT[air - 1] / 2.0);
+                    } else lim = JUMP[air - 1];
+                    if (this.ACCELERATION_MOTION > 0.146)
+                        lim += this.ACCELERATION_MOTION - 0.146;
+                    lim *= this.multiplex();
+                    if (this.protocol().getComponentXZ().pistonTick) lim += 1.0;
+                    if (speed < lim)
+                        this.setPredict(dx, dz);
+                    else this.setPredict(-Math.sin(Math.toRadians(to.getYaw())) * lim,
+                            Math.cos(Math.toRadians(to.getYaw())) * lim);
+                    if (p.isSprinting()
+                            && isOnAngle
+                            && this.air == 1) sprintStatus = true;
+                } else {
+                    double pX = this.lastDx * 0.91f;
+                    double pZ = this.lastDz * 0.91f;
+                    this.setPredict(pX, pZ);
+                    double moveAngle = RayUtils.calculateRayLine(moveLine);
+                    double accel = ACCELERATION_SPRINT * this.multiplex();
+                    if (this.protocol().getComponentXZ().pistonTick) accel += 1.0;
+                    boolean point = this.isPointWall(to)
+                            || this.isPointWall(from)
+                            || (this.protocol().spartan.getNearbyEntities(2).size() > 1)
+                            || this.isPointWall(
+                            to.clone().add(
+                                    -Math.sin(moveAngle) * 0.3, 0,
+                                    Math.cos(moveAngle) * 0.3));
+                    if (point && speed < lastSpeed * 1.2) {
+                        if (getDeviantity(dx, pX) > accel) pX = dx;
+                        if (getDeviantity(dz, pZ) > accel) pZ = dz;
                     }
-                    this.velocity(
-                            to.getY() - from.getY(),
-                            ACCELERATION_SPRINT * (1.5) * this.multiplex(),
-                            new SpartanVector2D(dx, dz)
-                    );
-                    if ((this.isOnSlimeWide(to) || this.isOnSlimeWide(from)))
-                        this.nearSlimeStatus = 4;
+                    boolean isCorrect =
+                            getDeviantity(dx, pX) < accel
+                                    && getDeviantity(dz, pZ) < accel;
+                    if (isCorrect)
+                        this.setPredict(dx, dz);
+                    else this.setPredict(
+                            -Math.sin(Math.toRadians(to.getYaw())) * ACCELERATION_BASIC,
+                            Math.cos(Math.toRadians(to.getYaw())) * ACCELERATION_BASIC);
+
+                }
+                this.velocity(
+                        to.getY() - from.getY(),
+                        ACCELERATION_SPRINT * (1.5) * this.multiplex(),
+                        new SpartanVector2D(dx, dz)
+                );
+                if ((this.isOnSlimeWide(to) || this.isOnSlimeWide(from)))
+                    this.nearSlimeStatus = 4;
+                if (!(dx == predictX && dz == predictZ)) {
+                    double pr = Math.sqrt(predictX * predictX + predictZ * predictZ);
+                    double d = getDeviantity(pr, speed);
+                    if (d <= 1.01 && d > 0.1 && this.protocol().getComponentXZ().pistonTick) {
+                        this.setPredict(dx, dz);
+                        this.removePistonTick = true;
+                    }
+                    if (this.protocol().getComponentXZ().pistonTick && this.nearSlimeStatus > 0) {
+                        this.slimeBoostApply = 3;
+                        this.removePistonTick = true;
+                    }
+                    if (d >= 0.04 && d <= 1.6 && this.slimeBoostApply > 0) {
+                        this.slimeBoostApply--;
+                        this.setPredict(dx, dz);
+                    }
+                    if (d >= 0.04 && d <= 3.1 && this.tridentBoostApply > 0) {
+                        this.tridentBoostApply--;
+                        this.setPredict(dx, dz);
+                    }
+                    if (d >= 0.02 && d <= 1.7 && this.protocol().getComponentXZ().explosionTick) {
+                        this.protocol().getComponentXZ().explosionTick = false;
+                        this.setPredict(dx, dz);
+                    }
+                    pr = Math.sqrt(predictX * predictX + predictZ * predictZ);
+                    d = getDeviantity(pr, speed);
                     if (!(dx == predictX && dz == predictZ)) {
-                        double pr = Math.sqrt(predictX * predictX + predictZ * predictZ);
-                        double d = getDeviantity(pr, speed);
-                        if (d <= 1.01 && d > 0.1 && this.protocol().getComponentXZ().pistonTick) {
-                            this.setPredict(dx, dz);
-                            this.removePistonTick = true;
+                        this.vl += (d * 2) + (air == 1 ? 0.3 : 0.1);
+                        if (this.vl > 0.45) {
+                            this.cancel("type: simulation[accel], diff: " + d);
+                            this.vl -= 0.1;
                         }
-                        if (this.protocol().getComponentXZ().pistonTick && this.nearSlimeStatus > 0) {
-                            this.slimeBoostApply = 3;
-                            this.removePistonTick = true;
-                        }
-                        if (d >= 0.04 && d <= 1.6 && this.slimeBoostApply > 0) {
-                            this.slimeBoostApply--;
-                            this.setPredict(dx, dz);
-                        }
-                        if (d >= 0.04 && d <= 3.1 && this.tridentBoostApply > 0) {
-                            this.tridentBoostApply--;
-                            this.setPredict(dx, dz);
-                        }
-                        if (d >= 0.02 && d <= 1.7 && this.protocol().getComponentXZ().explosionTick) {
-                            this.protocol().getComponentXZ().explosionTick = false;
-                            this.setPredict(dx, dz);
-                        }
-                        pr = Math.sqrt(predictX * predictX + predictZ * predictZ);
-                        d = getDeviantity(pr, speed);
-                        if (!(dx == predictX && dz == predictZ)) {
-                            this.vl += (d * 2) + (air == 1 ? 0.3 : 0.1);
-                            if (this.vl > 0.45) {
-                                this.cancel("type: simulation[accel], diff: " + d);
-                                this.vl -= 0.1;
-                            }
-                        }
-                        if (this.removePistonTick) {
-                            this.protocol().getComponentXZ().pistonTick = false;
-                            this.removePistonTick = false;
-                        }
+                    }
+                    if (this.removePistonTick) {
+                        this.protocol().getComponentXZ().pistonTick = false;
+                        this.removePistonTick = false;
                     }
                 }
-                this.vl /= 1.15;
-                this.lastDx = dx;
-                this.lastDz = dz;
-                this.lastSpeed = speed;
-                if (this.nearSlimeStatus > 0) this.nearSlimeStatus--;
             }
+            this.vl /= 1.15;
+            this.lastDx = dx;
+            this.lastDz = dz;
+            this.lastSpeed = speed;
+            if (this.nearSlimeStatus > 0) this.nearSlimeStatus--;
         }
     }
 
