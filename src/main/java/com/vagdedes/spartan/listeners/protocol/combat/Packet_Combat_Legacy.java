@@ -66,7 +66,7 @@ public class Packet_Combat_Legacy extends PacketAdapter {
                     Bukkit.getScheduler().runTask(Register.plugin,
                                     () -> protocol.bukkit.teleport(protocol.getLocation()));
                     AwarenessNotifications.optionallySend(protocol.bukkit.getName()
-                                    + " attack faster than the transaction response");
+                                    + " attack faster than the transaction response.");
                     event.setCancelled(true);
                     return;
                 }

@@ -196,6 +196,7 @@ public class SpartanPlayer {
     public int getMaxChatLength() {
         return this.isBedrockPlayer() ? 512 :
                 MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_11)
+                        || this.protocol.isUsingVersionOrGreater(MultiVersion.MCVersion.V1_11)
                         || PluginUtils.exists("viaversion")
                         || Compatibility.CompatibilityType.PROTOCOL_SUPPORT.isFunctional() ? 256 :
                         100;

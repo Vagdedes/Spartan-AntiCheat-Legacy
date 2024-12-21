@@ -117,7 +117,7 @@ public class Packet_Movement extends PacketAdapter {
                 AwarenessNotifications.optionallySend(player.getName()
                         + " moves faster than the transaction response ("
                         + tickEvent.getDelay() + "ms > "
-                        + (System.currentTimeMillis() - p.transactionTime) + "ms)");
+                        + (System.currentTimeMillis() - p.transactionTime) + "ms).");
                 event.setCancelled(true);
                 return;
             }
