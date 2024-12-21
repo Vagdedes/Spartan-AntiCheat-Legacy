@@ -531,7 +531,7 @@ public class ResearchEngine {
                     if (hackType.getCheck().isEnabled(dataType, null)) {
                         for (PlayerProfile profile : profiles) {
                             for (CheckDetection detectionExecutor : profile.getRunner(hackType).getDetections()) {
-                                Double data = detectionExecutor.getData(profile);
+                                Double data = detectionExecutor.getData(profile, dataType);
 
                                 if (data != null) {
                                     wave.computeIfAbsent(

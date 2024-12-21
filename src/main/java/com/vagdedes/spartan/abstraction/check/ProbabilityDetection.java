@@ -78,9 +78,9 @@ public abstract class ProbabilityDetection extends CheckDetection {
     }
 
     @Override
-    public final Double getData(PlayerProfile profile) {
+    public final Double getData(PlayerProfile profile, Check.DataType dataType) {
         synchronized (this.data) {
-            Collection<Long> data = this.data.get(profile.getLastDataType());
+            Collection<Long> data = this.data.get(dataType);
 
             if (data == null) {
                 return null;

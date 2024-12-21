@@ -96,7 +96,7 @@ public abstract class CheckDetection extends CheckProcess {
     public void store(Check.DataType dataType, long time) {
     }
 
-    public Double getData(PlayerProfile profile) {
+    public Double getData(PlayerProfile profile, Check.DataType dataType) {
         return null;
     }
 
