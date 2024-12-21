@@ -357,14 +357,16 @@ public class SpartanPlayer {
         int bigX = MathHelper.floor_double((location.getX() + radius) / PlayerUtils.chunk);
         int smallZ = MathHelper.floor_double((location.getZ() - radius) / PlayerUtils.chunk);
         int bigZ = MathHelper.floor_double((location.getZ() + radius) / PlayerUtils.chunk);
+        double radiusSquared = radius * radius;
 
         for (int xx = smallX; xx <= bigX; xx++) {
             for (int zz = smallZ; zz <= bigZ; zz++) {
                 if (world.isChunkLoaded(xx, zz)) {
                     for (Entity entity : world.getChunkAt(xx, zz).getEntities()) {
-                        Location eLoc = entity.getLocation();
-
-                        if (Math.abs(eLoc.getX() - location.getX()) <= radius) {
+                        if (SpartanLocation.distanceSquared(
+                                entity.getLocation(),
+                                location
+                        ) <= radiusSquared) {
                             entities.add(entity);
                         }
                     }
