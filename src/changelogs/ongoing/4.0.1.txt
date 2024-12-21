@@ -2,4 +2,5 @@
 [#] Fixed some false positives with Vehicle
 [#] Fixed false positives with teleportation
 [#] Fixed false positives with breaking unbreakable blocks (Ghost blocks)
+[#] Fixed false positives with speed after velocity
 [#] Other minor fixes
