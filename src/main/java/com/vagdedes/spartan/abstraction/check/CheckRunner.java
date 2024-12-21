@@ -249,33 +249,22 @@ public abstract class CheckRunner extends CheckProcess {
             reason = this.hackType.getCheck().getName();
         }
         this.disableCauses.add(new CheckCancellation(reason, pointer, ticks));
-        if (this.protocol() != null) {
-            InteractiveInventory.playerInfo.refresh(this.protocol().bukkit.getName());
-        }
+        InteractiveInventory.playerInfo.refresh(this.playerName());
     }
 
     public final void addSilentCause(String reason, String pointer, int ticks) {
         this.silentCauses.add(new CheckCancellation(reason, pointer, ticks));
-
-        if (this.protocol() != null) {
-            InteractiveInventory.playerInfo.refresh(this.protocol().bukkit.getName());
-        }
+        InteractiveInventory.playerInfo.refresh(this.playerName());
     }
 
     public final void removeDisableCause() {
         this.disableCauses.clear();
-
-        if (this.protocol() != null) {
-            InteractiveInventory.playerInfo.refresh(this.protocol().bukkit.getName());
-        }
+        InteractiveInventory.playerInfo.refresh(this.playerName());
     }
 
     public final void removeSilentCause() {
         this.silentCauses.clear();
-
-        if (this.protocol() != null) {
-            InteractiveInventory.playerInfo.refresh(this.protocol().bukkit.getName());
-        }
+        InteractiveInventory.playerInfo.refresh(this.playerName());
     }
 
     // Prevention

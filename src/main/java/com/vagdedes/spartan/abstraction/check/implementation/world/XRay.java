@@ -58,7 +58,7 @@ public class XRay extends CheckRunner {
         for (World.Environment environment : World.Environment.values()) {
             this.detections[environment.ordinal()] = new ImplementedHardcodedDetection(
                     this,
-                    "check_" + environment.name().toLowerCase(),
+                    environment.name().toLowerCase(),
                     true
             );
         }
