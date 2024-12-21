@@ -7,8 +7,8 @@ import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityD
 import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.utils.java.ReflectionUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
+import com.vagdedes.spartan.utils.minecraft.entity.EntityUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PotionEffectUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
@@ -25,9 +25,6 @@ import java.util.Set;
 public class IMStepBukkit extends ProbabilityDetection {
 
     private static final double bedrockPlayerStepExtra = 1.0;
-    private static final boolean abstractHorseClass = ReflectionUtils.classExists(
-            "org.bukkit.entity.AbstractHorse"
-    );
     private static final Map<Integer, Boolean> stepCombination = new LinkedHashMap<>();
     private static final Set<Double> firstFallingBox = new HashSet<>();
 
@@ -96,8 +93,8 @@ public class IMStepBukkit extends ProbabilityDetection {
     }
 
     final void run(boolean knownBox, boolean knownOldBox,
-             double box, double oldBox,
-             double vertical, boolean teleported) {
+                   double box, double oldBox,
+                   double vertical, boolean teleported) {
         if (this.protocol().packetsEnabled()) {
             return;
         }
@@ -177,7 +174,7 @@ public class IMStepBukkit extends ProbabilityDetection {
                     if (vehicle != null) {
                         double vehicleLimit = 0.0;
 
-                        if (abstractHorseClass) {
+                        if (EntityUtils.abstractHorseClass) {
                             if (vehicle instanceof AbstractHorse) {
                                 vehicleLimit = ((AbstractHorse) vehicle).getJumpStrength()
                                         + GroundUtils.maxHeightLengthRatio;

@@ -11,11 +11,15 @@ import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.MultiVersion.MCVersion;
 import com.vagdedes.spartan.utils.math.RayUtils;
+import com.vagdedes.spartan.utils.minecraft.entity.EntityUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PotionEffectUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.AbstractHorse;
+import org.bukkit.entity.Boat;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Horse;
 import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.potion.PotionEffectType;
 
@@ -280,7 +284,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
             boolean boat = false;
             List<Entity> nearbyEntities = this.protocol().spartan.getNearbyEntities(2);
             for (Entity vehicle : nearbyEntities) {
-                if (vehicle.getType().toString().toLowerCase().contains("boat")) {
+                if (vehicle instanceof Boat) {
                     boat = true;
                 }
             }
@@ -291,10 +295,9 @@ public class IMSimulationGravity extends ProbabilityDetection {
             if (this.abs(this.abs(motion) - this.abs(this.predictY())) > 0.005
                     && this.protocol().spartan.getVehicle() != null) {
                 Entity v = this.protocol().spartan.getVehicle();
-                boolean isJumpingEntity = (v.getName().toLowerCase().contains("horse")
-                        || v.getName().toLowerCase().contains("donkey")
-                        || v.getName().toLowerCase().contains("mule")
-                        || v.getName().toLowerCase().contains("llama"));
+                boolean isJumpingEntity = EntityUtils.abstractHorseClass
+                        ? v instanceof AbstractHorse
+                        : v instanceof Horse;
 
                 if (this.isOnSolidGround(to) && this.abs(motion) <= ((isJumpingEntity || boat) ? 1.0 : 0.3)) {
                     this.setPredict(motion);
@@ -563,9 +566,9 @@ public class IMSimulationGravity extends ProbabilityDetection {
                             new Location(this.protocol().getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
                     );
 
-                    if (material != null && material
-                            .toString().equalsIgnoreCase("SWEET_BERRY_BUSH")
-                            || BlockUtils.isPowderSnow(material)) {
+                    if (material != null
+                            && (BlockUtils.areInteractiveBushes(material)
+                            || BlockUtils.isPowderSnow(material))) {
                         return true;
                     }
                 }
