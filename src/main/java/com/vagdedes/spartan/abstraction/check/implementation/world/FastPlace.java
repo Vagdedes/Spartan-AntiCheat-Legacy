@@ -20,8 +20,8 @@ public class FastPlace extends CheckRunner {
     private long time;
     private final Buffer.IndividualBuffer fastBuffer, mediumBuffer, slowBuffer;
 
-    public FastPlace(HackType hackType, SpartanProtocol protocol, String playerName) {
-        super(hackType, protocol, playerName);
+    public FastPlace(HackType hackType, SpartanProtocol protocol) {
+        super(hackType, protocol);
         this.fast = new ImplementedProbabilityDetection(this, "fast", true);
         this.medium = new ImplementedProbabilityDetection(this, "medium", true);
         this.slow = new ImplementedProbabilityDetection(this, "slow", true);

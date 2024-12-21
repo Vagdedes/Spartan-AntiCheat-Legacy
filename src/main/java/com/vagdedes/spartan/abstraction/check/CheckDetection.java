@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.abstraction.check;
 
 import com.vagdedes.spartan.Register;
+import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudConnections;
@@ -41,7 +42,7 @@ public abstract class CheckDetection extends CheckProcess {
     protected long notifications;
 
     protected CheckDetection(CheckRunner executor, String name, boolean def) {
-        super(executor.hackType, executor.protocol(), executor.playerName());
+        super(executor.hackType, executor.protocol());
         this.executor = executor;
         this.name = name;
         this.def = def;
@@ -95,7 +96,7 @@ public abstract class CheckDetection extends CheckProcess {
     public void store(Check.DataType dataType, long time) {
     }
 
-    public Double getData(Check.DataType dataType) {
+    public Double getData(PlayerProfile profile) {
         return null;
     }
 
@@ -215,7 +216,7 @@ public abstract class CheckDetection extends CheckProcess {
 
             if (!commands.isEmpty()
                     && this.hasSufficientData(this.protocol().spartan.dataType)) {
-                Collection<Enums.HackType> detectedHacks = this.profile().getEvidenceList(
+                Collection<Enums.HackType> detectedHacks = this.protocol().profile().getEvidenceList(
                         PlayerEvidence.punishmentProbability
                 );
                 detectedHacks.removeIf(loopHackType -> !loopHackType.getCheck().canPunish(this.protocol().spartan.dataType));

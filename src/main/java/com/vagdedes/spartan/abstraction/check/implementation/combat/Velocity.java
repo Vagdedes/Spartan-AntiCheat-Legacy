@@ -21,8 +21,8 @@ public class Velocity extends CheckRunner {
 
     private final CheckDetection vertical, horizontal;
 
-    public Velocity(Enums.HackType hackType, SpartanProtocol protocol, String playerName) {
-        super(hackType, protocol, playerName);
+    public Velocity(Enums.HackType hackType, SpartanProtocol protocol) {
+        super(hackType, protocol);
         this.vertical = new ImplementedHardcodedDetection(this, "vertical", true);
         this.horizontal = new ImplementedHardcodedDetection(this, "horizontal", true);
     }

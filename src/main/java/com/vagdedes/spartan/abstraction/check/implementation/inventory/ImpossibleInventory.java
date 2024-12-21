@@ -37,8 +37,8 @@ public class ImpossibleInventory extends CheckRunner {
 
     private long autoTotem;
 
-    public ImpossibleInventory(Enums.HackType hackType, SpartanProtocol protocol, String playerName) {
-        super(hackType, protocol, playerName);
+    public ImpossibleInventory(Enums.HackType hackType, SpartanProtocol protocol) {
+        super(hackType, protocol);
         this.autoTotemDetection = new ImplementedProbabilityDetection(this, "auto_totem", true);
         this.closedInventoryDetection = new ImplementedProbabilityDetection(this, "closed_inventory", true);
         this.portalInventoryDetection = new ImplementedProbabilityDetection(this, "portal_inventory", true);

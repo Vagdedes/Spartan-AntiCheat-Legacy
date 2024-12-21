@@ -29,8 +29,8 @@ public class BlockReach extends CheckRunner {
             place,
             unusual;
 
-    public BlockReach(HackType hackType, SpartanProtocol protocol, String playerName) {
-        super(hackType, protocol, playerName);
+    public BlockReach(HackType hackType, SpartanProtocol protocol) {
+        super(hackType, protocol);
         this.breaking = new ImplementedProbabilityDetection(this, "breaking", true);
         this.interact = new ImplementedProbabilityDetection(this, "interact", true);
         this.place = new ImplementedProbabilityDetection(this, "place", true);

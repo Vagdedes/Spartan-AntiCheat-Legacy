@@ -28,8 +28,8 @@ public class InventoryClicks extends CheckRunner {
             fastBuffer,
             shiftBuffer;
 
-    public InventoryClicks(Enums.HackType hackType, SpartanProtocol protocol, String playerName) {
-        super(hackType, protocol, playerName);
+    public InventoryClicks(Enums.HackType hackType, SpartanProtocol protocol) {
+        super(hackType, protocol);
         this.shift = new ImplementedProbabilityDetection(this, "shift", true);
         this.slow = new ImplementedProbabilityDetection(this, "slow", true);
         this.medium = new ImplementedProbabilityDetection(this, "medium", true);

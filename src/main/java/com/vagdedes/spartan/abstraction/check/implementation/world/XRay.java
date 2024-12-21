@@ -51,8 +51,8 @@ public class XRay extends CheckRunner {
 
     private final HardcodedDetection[] detections;
 
-    public XRay(Enums.HackType hackType, SpartanProtocol protocol, String playerName) {
-        super(hackType, protocol, playerName);
+    public XRay(Enums.HackType hackType, SpartanProtocol protocol) {
+        super(hackType, protocol);
         this.detections = new HardcodedDetection[World.Environment.values().length];
 
         for (World.Environment environment : World.Environment.values()) {

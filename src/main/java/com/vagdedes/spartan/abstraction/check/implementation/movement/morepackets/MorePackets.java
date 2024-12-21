@@ -32,8 +32,8 @@ public class MorePackets extends CheckRunner {
             negative;
     private long teleported;
 
-    public MorePackets(HackType hackType, SpartanProtocol protocol, String playerName) {
-        super(hackType, protocol, playerName);
+    public MorePackets(HackType hackType, SpartanProtocol protocol) {
+        super(hackType, protocol);
         this.bukkitNmsMap = new LinkedHashMap<>(AlgebraUtils.integerCeil(TPS.maximum) + 1, 1.0f);
         this.bukkitBuffer = 0;
         this.packetVL = 0;

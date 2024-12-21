@@ -78,9 +78,9 @@ public abstract class ProbabilityDetection extends CheckDetection {
     }
 
     @Override
-    public final Double getData(Check.DataType dataType) {
+    public final Double getData(PlayerProfile profile) {
         synchronized (this.data) {
-            Collection<Long> data = this.data.get(dataType);
+            Collection<Long> data = this.data.get(profile.getLastDataType());
 
             if (data == null) {
                 return null;
@@ -97,7 +97,7 @@ public abstract class ProbabilityDetection extends CheckDetection {
                     while (iterator.hasNext()) {
                         long current = iterator.next();
 
-                        if (this.profile().getContinuity().wasOnline(current, previous)) {
+                        if (profile.getContinuity().wasOnline(current, previous)) {
                             comparisonCount++;
                             long difference = current - previous;
                             previous = current;
@@ -105,7 +105,7 @@ public abstract class ProbabilityDetection extends CheckDetection {
                         }
                     }
                 }
-                long onlineTime = this.profile().getContinuity().getOnlineTime();
+                long onlineTime = profile.getContinuity().getOnlineTime();
 
                 if (onlineTime > 0L) {
                     onlineTime /= 1_000L; // Convert to seconds

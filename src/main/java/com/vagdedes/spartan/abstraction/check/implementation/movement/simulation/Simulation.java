@@ -16,8 +16,8 @@ public class Simulation extends CheckRunner {
 
     public double diffVl = 0;
 
-    public Simulation(HackType hackType, SpartanProtocol protocol, String playerName) {
-        super(hackType, protocol, playerName);
+    public Simulation(HackType hackType, SpartanProtocol protocol) {
+        super(hackType, protocol);
     }
 
     @Override

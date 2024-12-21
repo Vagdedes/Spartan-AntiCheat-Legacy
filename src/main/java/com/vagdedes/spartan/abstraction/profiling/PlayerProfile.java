@@ -107,8 +107,8 @@ public class PlayerProfile {
         for (Enums.HackType hackType : Enums.HackType.values()) {
             try {
                 CheckRunner executor = (CheckRunner) hackType.executor
-                        .getConstructor(hackType.getClass(), SpartanProtocol.class, String.class)
-                        .newInstance(hackType, protocol, this.name);
+                        .getConstructor(hackType.getClass(), SpartanProtocol.class)
+                        .newInstance(hackType, protocol);
                 this.runners[hackType.ordinal()] = executor;
             } catch (Exception ex) {
                 ex.printStackTrace();

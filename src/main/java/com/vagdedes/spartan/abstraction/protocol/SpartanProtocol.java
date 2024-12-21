@@ -122,8 +122,6 @@ public class SpartanProtocol {
         this.lagTick = 0;
         this.componentY = new ComponentY();
         this.componentXZ = new ComponentXZ();
-
-        this.setProfile(ResearchEngine.getPlayerProfile(this, false));
     }
 
     public long getActiveCreationTime() {
@@ -296,7 +294,7 @@ public class SpartanProtocol {
     }
 
     public PlayerProfile profile() {
-        return this.profile;
+        return ResearchEngine.getPlayerProfile(this);
     }
 
     // Separator

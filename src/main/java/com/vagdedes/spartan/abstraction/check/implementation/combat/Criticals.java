@@ -15,8 +15,8 @@ public class Criticals extends CheckRunner {
 
     private final CheckDetection detection;
 
-    public Criticals(HackType hackType, SpartanProtocol protocol, String playerName) {
-        super(hackType, protocol, playerName);
+    public Criticals(HackType hackType, SpartanProtocol protocol) {
+        super(hackType, protocol);
         this.detection = new ImplementedProbabilityDetection(this, null, true);
     }
 

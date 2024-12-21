@@ -71,19 +71,14 @@ public class ResearchEngine {
         return new ArrayList<>(playerProfiles.values());
     }
 
-    public static PlayerProfile getPlayerProfile(String name, boolean create) {
+    public static PlayerProfile getPlayerProfile(String name) {
         PlayerProfile playerProfile = playerProfiles.get(name);
 
-        if (playerProfile != null) {
-            return playerProfile;
-        }
-        if (create) {
+        if (playerProfile == null) {
             playerProfile = new PlayerProfile(name);
             playerProfiles.put(name, playerProfile);
-            return playerProfile;
-        } else {
-            return null;
         }
+        return playerProfile;
     }
 
     public static PlayerProfile getAnyCasePlayerProfile(String name) {
@@ -97,19 +92,18 @@ public class ResearchEngine {
         return null;
     }
 
-    public static PlayerProfile getPlayerProfile(SpartanProtocol protocol, boolean force) {
-        PlayerProfile playerProfile;
+    public static PlayerProfile getPlayerProfile(SpartanProtocol protocol) {
+        PlayerProfile playerProfile = playerProfiles.get(protocol.bukkit.getName());
 
-        if (!force) {
-            playerProfile = playerProfiles.get(protocol.bukkit.getName());
-
-            if (playerProfile != null) {
-                return playerProfile;
-            }
+        if (playerProfile == null) {
+            playerProfile = new PlayerProfile(protocol);
+            playerProfiles.put(protocol.bukkit.getName(), playerProfile);
         }
-        playerProfile = new PlayerProfile(protocol);
-        playerProfiles.put(protocol.bukkit.getName(), playerProfile);
         return playerProfile;
+    }
+
+    private static void createPlayerProfile(SpartanProtocol protocol) {
+        playerProfiles.put(protocol.bukkit.getName(), new PlayerProfile(protocol));
     }
 
     // Separator
@@ -186,7 +180,7 @@ public class ResearchEngine {
                     if (player == null) {
                         playerProfiles.remove(playerName);
                     } else {
-                        player.setProfile(getPlayerProfile(player, true));
+                        createPlayerProfile(player);
                     }
                     if (Config.sql.isEnabled()) {
                         Config.sql.update("DELETE FROM " + Config.sql.getTable() + " WHERE information LIKE '%" + playerName + "%';");
@@ -214,7 +208,7 @@ public class ResearchEngine {
             } else if (player == null) {
                 playerProfiles.remove(playerName);
             } else {
-                player.setProfile(getPlayerProfile(player, true));
+                createPlayerProfile(player);
             }
             MainMenu.refresh();
             InteractiveInventory.playerInfo.refresh(playerName);
@@ -404,8 +398,7 @@ public class ResearchEngine {
                                 for (Enums.HackType hackType : Enums.HackType.values()) {
                                     if (hackTypeString.equals(hackType.toString())) {
                                         CheckDetection detectionExecutor = getPlayerProfile(
-                                                player,
-                                                true
+                                                player
                                         ).getRunner(
                                                 hackType
                                         ).getDetection(
@@ -468,8 +461,7 @@ public class ResearchEngine {
 
                                                 if (environment != null) {
                                                     getPlayerProfile(
-                                                            player,
-                                                            true
+                                                            player
                                                     ).getMiningHistory(
                                                             ore
                                                     ).increaseMines(
@@ -490,8 +482,7 @@ public class ResearchEngine {
 
                                 try {
                                     ResearchEngine.getPlayerProfile(
-                                            data.split(" ", 2)[0],
-                                            true
+                                            data.split(" ", 2)[0]
                                     ).getContinuity().setActiveTime(
                                             sdf.parse(fullDate).getTime(),
                                             Long.parseLong(data.substring(index + PlayerProfile.activeFor.length())),
@@ -540,7 +531,7 @@ public class ResearchEngine {
                     if (hackType.getCheck().isEnabled(dataType, null)) {
                         for (PlayerProfile profile : profiles) {
                             for (CheckDetection detectionExecutor : profile.getRunner(hackType).getDetections()) {
-                                Double data = detectionExecutor.getData(dataType);
+                                Double data = detectionExecutor.getData(profile);
 
                                 if (data != null) {
                                     wave.computeIfAbsent(

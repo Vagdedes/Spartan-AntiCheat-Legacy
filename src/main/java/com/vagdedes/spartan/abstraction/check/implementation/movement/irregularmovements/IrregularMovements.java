@@ -30,8 +30,8 @@ public class IrregularMovements extends CheckRunner {
     private final IMFoodSprint foodSprint;
     private final IMBaritone baritone;
 
-    public IrregularMovements(HackType hackType, SpartanProtocol protocol, String playerName) {
-        super(hackType, protocol, playerName);
+    public IrregularMovements(HackType hackType, SpartanProtocol protocol) {
+        super(hackType, protocol);
         limitServerFlying = new ImplementedProbabilityDetection(this, "limit_server_flying", false);
         step = new IMStepBukkit(this);
         gravityBukkit = new IMBukkitGravity(this);
