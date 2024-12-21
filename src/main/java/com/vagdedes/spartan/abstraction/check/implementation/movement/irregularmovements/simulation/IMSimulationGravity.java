@@ -5,6 +5,7 @@ import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
 import com.vagdedes.spartan.abstraction.protocol.ExtendedPotionEffect;
 import com.vagdedes.spartan.abstraction.protocol.PlayerMovement;
 import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
+import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanBlock;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
@@ -46,8 +47,9 @@ public class IMSimulationGravity extends ProbabilityDetection {
         if (!this.protocol().packetsEnabled()) {
             return;
         }
-        boolean isOnGround = this.protocol().isOnGround();
-        Location to = this.protocol().getLocation();
+        SpartanProtocol p = this.protocol();
+        boolean isOnGround = p.isOnGround();
+        Location to = p.getLocation();
         Location from = this.protocol().getFromLocation();
         double dx = to.getX() - from.getX();
         double dz = to.getZ() - from.getZ();
@@ -64,7 +66,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
                 this.air = isOnGround ? 0 : this.air + 1;
                 this.ground = isOnGround ? this.ground + 1 : 0;
                  */
-            boolean isOnWater = this.isOnWater(this.protocol().getLocation());
+            boolean isOnWater = this.isOnWater(p.getLocation());
             double pr2;
             PlayerMovement playerMovement;
             if (this.isOnSlime(to)) this.allowMinorGravityChange = true;
@@ -129,25 +131,25 @@ public class IMSimulationGravity extends ProbabilityDetection {
                 }
                 this.slime = false;
             }
-            if (this.protocol().getComponentY().pistonTick)
+            if (p.getComponentY().pistonTick)
                 this.pistonTicks = 2;
             if (this.getDeviantity(motion) > 0.01
-                    && this.protocol().getComponentY().pistonTick
+                    && p.getComponentY().pistonTick
                     && motion <= 0.25) {
                 this.setPredict(motion);
             }
             if (pistonTicks > 0) pistonTicks--;
             if (this.getDeviantity(motion) > 0.01
-                    && this.protocol().getComponentY().pistonTick
+                    && p.getComponentY().pistonTick
                     && motion <= 1.0) {
                 this.setPredict(motion);
-                this.protocol().getComponentY().pistonTick = false;
+                p.getComponentY().pistonTick = false;
             }
             boolean slimeEvent = (this.getDeviantity(motion) > 0.001)
-                    && (this.protocol().getComponentY().pistonHandle
+                    && (p.getComponentY().pistonHandle
                     && this.slime0Tick);
             if (slimeEvent) {
-                this.protocol().getComponentY().pistonHandle = false;
+                p.getComponentY().pistonHandle = false;
                 slimePunch = 4;
             }
             if ((this.isOnSemi(to) || this.isOnSlimeHeight(to)) && motion != 0.0 && motion < 0.51) {
