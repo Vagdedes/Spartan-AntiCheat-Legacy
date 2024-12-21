@@ -3,6 +3,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.irregular
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
 import com.vagdedes.spartan.abstraction.protocol.ExtendedPotionEffect;
+import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanBlock;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
@@ -161,10 +162,14 @@ public class IMSimulationSpeed extends ProbabilityDetection {
                         this.protocol().getComponentXZ().explosionTick = false;
                         this.setPredict(dx, dz);
                     }
+                    if (d >= 0.2 && d <= 1.0 && this.protocol().spartan.trackers.has(
+                                    PlayerTrackers.TrackerType.VEHICLE, "vh_tp")) {
+                        this.setPredict(dx, dz);
+                    }
                     pr = Math.sqrt(predictX * predictX + predictZ * predictZ);
                     d = getDeviantity(pr, speed);
                     if (!(dx == predictX && dz == predictZ)) {
-                        this.vl += (d * 2) + (air == 1 ? 0.3 : 0.1);
+                        this.vl += (d * 1.5) + (air == 1 ? 0.3 : (d > 0.04) ? 0.1 : 0.03);
                         if (this.vl > 0.45) {
                             this.cancel("type: simulation[accel], diff: " + d);
                             this.vl -= 0.1;
@@ -224,10 +229,16 @@ public class IMSimulationSpeed extends ProbabilityDetection {
         PlayerVelocityEvent claimed = null;
         for (PlayerVelocityEvent velo : this.protocol().claimedVeloGravity) {
             if (this.veloIsValid(motion, velo.getVelocity().getY())) {
-                if (getDeviantity(velo.getVelocity().getX(), move.x) <= allowedDev)
+                double speed = Math.sqrt(move.x * move.x + move.y * move.y);
+                double pr = Math.sqrt(
+                                velo.getVelocity().getX()
+                                * velo.getVelocity().getX()
+                                + velo.getVelocity().getZ()
+                                 * velo.getVelocity().getZ());
+                if (speed < pr * 1.5 + allowedDev) {
                     this.predictX = move.x;
-                if (getDeviantity(velo.getVelocity().getZ(), move.y) <= allowedDev)
                     this.predictZ = move.y;
+                }
                 claimed = velo;
                 this.velo = true;
                 break;
@@ -255,7 +266,7 @@ public class IMSimulationSpeed extends ProbabilityDetection {
         this.ground = isOnGround ? this.ground + 1 : 0;
     }
 
-    public void trident() {
+    public void  trident() {
         if (!this.protocol().packetsEnabled()) {
             return;
         }

@@ -21,6 +21,7 @@ public class Event_Vehicle implements Listener {
             if (entity instanceof Player) {
                 SpartanPlayer p = SpartanBukkit.getProtocol((Player) entity, true).spartan;
                 p.trackers.add(PlayerTrackers.TrackerType.VEHICLE, "enter", 5);
+
             }
         }
     }
@@ -39,6 +40,7 @@ public class Event_Vehicle implements Listener {
     public static void exit(SpartanPlayer player) {
         player.trackers.add(PlayerTrackers.TrackerType.VEHICLE, "exit", 5);
         player.trackers.add(PlayerTrackers.TrackerType.VEHICLE, "exit_tp", 1);
+        player.trackers.add(PlayerTrackers.TrackerType.VEHICLE, "vh_tp", 1);
     }
 
 }

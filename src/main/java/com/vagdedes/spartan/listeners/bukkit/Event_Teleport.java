@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.listeners.bukkit;
 
 import com.vagdedes.spartan.abstraction.check.implementation.movement.morepackets.MorePackets;
+import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
 import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
@@ -31,6 +32,7 @@ public class Event_Teleport implements Listener {
             // Detections
             p.getRunner(Enums.HackType.MorePackets).handle(false, MorePackets.TELEPORT);
             p.getRunner(Enums.HackType.IrregularMovements).handle(false, null);
+            p.trackers.add(PlayerTrackers.TrackerType.TELEPORT, "tp", 1);
         }
     }
 

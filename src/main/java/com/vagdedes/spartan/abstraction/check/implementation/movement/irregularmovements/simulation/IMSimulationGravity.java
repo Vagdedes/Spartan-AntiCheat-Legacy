@@ -36,6 +36,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
             allowMinorGravityChange = false;
     private int slimePunch = 0, slimeTicks = 0, pistonTicks = 0, sub = 0;
     private double vl = 0.0;
+    private int semi = 0;
     private double fallDistance = 0.0;
     private double lastGroundY = 0;
 
@@ -51,6 +52,10 @@ public class IMSimulationGravity extends ProbabilityDetection {
         boolean isOnGround = p.isOnGround();
         Location to = p.getLocation();
         Location from = this.protocol().getFromLocation();
+        if (this.isSolidBlock(from.clone().add(0, 0.5, 0))
+                        && to.distance(from) < 0.26) {
+            return;
+        }
         double dx = to.getX() - from.getX();
         double dz = to.getZ() - from.getZ();
         double speed = Math.sqrt(dx * dx + dz * dz);
@@ -97,8 +102,12 @@ public class IMSimulationGravity extends ProbabilityDetection {
                     }
                 }
 
-                if (this.isOnSemi(to) && motion != 0.0 && motion < 0.785) {
+                if (this.isOnSemi(to) || this.isOnSemi(from)) {
+                    this.semi = 2;
+                }
+                if (this.semi > 0 && motion != 0.0 && motion < 0.785) {
                     this.setPredict(motion);
+                    this.semi--;
                 }
                 this.lastGroundY = this.protocol().getLocation().getY();
             } else if (this.air == 1) {
@@ -152,7 +161,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
                 p.getComponentY().pistonHandle = false;
                 slimePunch = 4;
             }
-            if ((this.isOnSemi(to) || this.isOnSlimeHeight(to)) && motion != 0.0 && motion < 0.51) {
+            if ((this.isOnSemi(to) || this.isOnSemi(from) || this.isOnSlimeHeight(to)) && motion != 0.0 && motion < 0.51) {
                 this.setPredict(motion);
             }
             pr2 = this.abs(this.abs(motion) - this.abs(this.predictY()));
@@ -164,7 +173,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
             if (dev1 > 0.008 && this.isBlocksOnTop(to)) {
                 if (motion < this.predictY() && motion > -0.08) {
                     this.setPredict(motion);
-                    this.top = 2;
+                    this.top = 3;
                     this.topReset = 0;
                 }
             } else if (dev1 > 0.008 && this.top > 0) {
@@ -344,13 +353,18 @@ public class IMSimulationGravity extends ProbabilityDetection {
                 this.setPredict(motion);
                 this.allowMinorGravityChange = false;
             }
+            if (this.protocol().spartan.trackers.has(
+                            PlayerTrackers.TrackerType.TELEPORT, "tp")
+                            && getDeviantity(motion) < 0.16) {
+                this.setPredict(motion);
+            }
 
             double devTotal = this.abs(this.abs(motion) - this.abs(this.predictY()));
             //this.protocol().bukkit.sendMessage("m: " + motion + " p: " + this.predictY() + " air: " + air);
 
             if (devTotal > 0.009) {
                 if (this.protocol().spartan.trackers.has(
-                        PlayerTrackers.TrackerType.VEHICLE, "exit_tp")
+                        PlayerTrackers.TrackerType.VEHICLE, "vh_tp")
                         && devTotal < 1.0) {
                     this.setPredict(0.0);
                 } else {
@@ -570,6 +584,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
 
                     if (material != null
                             && (BlockUtils.areInteractiveBushes(material)
+                                    || BlockUtils.areBeds(material)
                             || BlockUtils.isPowderSnow(material))) {
                         return true;
                     }
@@ -678,7 +693,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
             for (double dy = 1.0; dy <= 2.0; dy += 0.5) {
                 for (int dz = -2; dz <= 2; ++dz) {
                     Material material = this.protocol().packetWorld.getBlock(
-                            new Location(this.protocol().getWorld(), x + (double) dx * 0.3, y + dy, z + (double) dz * 0.3)
+                            new Location(this.protocol().getWorld(), x + (double) dx * 0.5, y + dy, z + (double) dz * 0.5)
                     );
 
                     if (material != null && BlockUtils.isSolid(material)) {
@@ -688,6 +703,34 @@ public class IMSimulationGravity extends ProbabilityDetection {
             }
         }
 
+        return false;
+    }
+
+    private boolean isSolidBlock(Location location) {
+        double x = location.getX(),
+                        y = location.getY(),
+                        z = location.getZ();
+
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dy = -1; dy <= 1; dy++) {
+                for (int dz = -1; dz <= 1; dz++) {
+                    Material material = this.protocol().packetWorld.getBlock(
+                                    new Location(
+                                                    this.protocol().getWorld(),
+                                                    x + dx * 0.3,
+                                                    y + dy * 0.3,
+                                                    z + dz * 0.3)
+                    );
+
+                    if (material == null) {
+                        continue;
+                    }
+                    if (BlockUtils.isSolid(material)) {
+                        return true;
+                    }
+                }
+            }
+        }
         return false;
     }
 
