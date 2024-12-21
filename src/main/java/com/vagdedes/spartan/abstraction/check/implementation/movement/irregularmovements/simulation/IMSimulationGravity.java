@@ -238,7 +238,8 @@ public class IMSimulationGravity extends ProbabilityDetection {
             }
 
             if (this.protocol().spartan.movement.isFlying()
-                    || this.protocol().spartan.movement.isGliding()) {
+                    || this.protocol().spartan.movement.isGliding()
+                            || this.protocol().flyingTicks > 0) {
                 this.setPredict(motion);
                 this.levitation = 3;
                 this.levitationA = 3;

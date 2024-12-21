@@ -211,7 +211,7 @@ public class IMSimulationSpeed extends ProbabilityDetection {
         }
         if (this.isOnSemi(l)) m *= 1.4;
         if (this.protocol().spartan.movement.isGliding()) m *= 18.0;
-        if (this.protocol().spartan.movement.isFlying()) m *= 25.0;
+        if (this.protocol().spartan.movement.isFlying() || this.protocol().flyingTicks > 0) m *= 25.0;
         m *= (this.protocol().bukkit.getWalkSpeed() * 5);
         return m;
     }

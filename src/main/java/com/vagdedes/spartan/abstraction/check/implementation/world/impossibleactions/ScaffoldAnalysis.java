@@ -99,18 +99,14 @@ public class ScaffoldAnalysis extends ProbabilityDetection {
                     || !BlockUtils.areAir(downBType)) {
                 p.rightClickCounter = 0;
                 this.oldBlock = currentBlock;
-                return;
-            }
-
-            if (this.oldBlock.getY() != bL.getY()) {
                 if (buffer.count > 5) buffer.count -= 5;
                 return;
             }
 
             if (delay < 280) {
-                buffer.count += 6;
+                buffer.count += 4;
             } else if (delay < (p.isSneaking() ? 345 : 385) && p.rightClickCounter < 3) {
-                buffer.count += 3;
+                buffer.count += 2;
             } else {
                 flag = false;
             }
@@ -121,7 +117,7 @@ public class ScaffoldAnalysis extends ProbabilityDetection {
                         + "% faster than possible) [VL: " + buffer.count + "]");
                 buffer.count = 10;
             } else if (buffer.count > 0) {
-                buffer.count--;
+                buffer.count -= 3;
             }
             //p.player.sendMessage(delay + " " + p.rightClickCounter);
 

@@ -55,7 +55,7 @@ public class SpartanProtocol {
     private CheckBoundData checkBoundData;
     public final PacketWorld packetWorld;
     public long placeTime, placeHash;
-    public int transactionVl;
+    public int transactionVl, flyingTicks;
     public PlayerTickEvent lastTickEvent;
 
     public short transactionId;
@@ -95,6 +95,7 @@ public class SpartanProtocol {
         this.teleported = false;
         this.vehicleStatus = true;
         this.keepEntity = 0;
+        this.flyingTicks = 0;
         this.tickTime = time;
 
         this.rightClickCounter = 0;

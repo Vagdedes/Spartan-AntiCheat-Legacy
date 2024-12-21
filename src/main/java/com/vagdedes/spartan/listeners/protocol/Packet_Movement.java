@@ -187,6 +187,7 @@ public class Packet_Movement extends PacketAdapter {
             );
             moveEvent.setCancelled(event.isCancelled());
             Event_Movement.event(moveEvent, true);
+            if (p.flyingTicks > 0) p.flyingTicks--;
 
             //player.sendMessage("event: " + moveEvent.getTo().toVector());
         } else {
