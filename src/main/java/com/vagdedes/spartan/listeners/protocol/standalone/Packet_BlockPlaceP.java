@@ -6,6 +6,7 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import org.bukkit.entity.Player;
 
@@ -22,7 +23,9 @@ public class Packet_BlockPlaceP extends PacketAdapter {
         super(
                 Register.plugin,
                 ListenerPriority.HIGHEST,
-                PacketType.Play.Client.BLOCK_PLACE
+                (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_21))
+                                ? PacketType.Play.Client.USE_ITEM_ON
+                                : PacketType.Play.Client.BLOCK_PLACE
         );
     }
 
