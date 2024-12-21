@@ -42,7 +42,6 @@ public class SpartanProtocol {
     private Location location, from, teleport;
     public String fromWorld;
     public Location simulationStartPoint;
-    private PlayerProfile profile;
     public List<Packet_Teleport.TeleportData> teleportEngine;
     public final MCClient mcClient;
     public byte simulationDelayPerTP, keepEntity;
@@ -122,6 +121,7 @@ public class SpartanProtocol {
         this.lagTick = 0;
         this.componentY = new ComponentY();
         this.componentXZ = new ComponentXZ();
+        this.profile().update(this);
     }
 
     public long getActiveCreationTime() {
@@ -329,11 +329,6 @@ public class SpartanProtocol {
         if (this.positionHistoryLong.size() > 50) {
             this.positionHistoryLong.removeFirst();
         }
-    }
-
-    public void setProfile(PlayerProfile profile) {
-        this.profile = profile;
-        this.profile.update(this);
     }
 
     public World getWorld() {

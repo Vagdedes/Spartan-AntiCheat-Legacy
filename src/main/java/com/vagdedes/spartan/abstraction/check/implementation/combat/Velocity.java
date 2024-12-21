@@ -2,7 +2,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.combat;
 
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
-import com.vagdedes.spartan.abstraction.check.definition.ImplementedHardcodedDetection;
+import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.event.PlayerTransactionEvent;
 import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
@@ -23,8 +23,8 @@ public class Velocity extends CheckRunner {
 
     public Velocity(Enums.HackType hackType, SpartanProtocol protocol) {
         super(hackType, protocol);
-        this.vertical = new ImplementedHardcodedDetection(this, "vertical", true);
-        this.horizontal = new ImplementedHardcodedDetection(this, "horizontal", true);
+        this.vertical = new ImplementedProbabilityDetection(this, "vertical", true);
+        this.horizontal = new ImplementedProbabilityDetection(this, "horizontal", true);
     }
 
     private final double[] jumpReset = new double[]{0.248136, 0.3332};
