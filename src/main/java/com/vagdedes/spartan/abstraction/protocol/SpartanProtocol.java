@@ -203,7 +203,9 @@ public class SpartanProtocol {
     }
 
     public Location getFromLocation() {
-        return this.from;
+        return this.from != null
+                ? this.from
+                : this.getLocation();
     }
 
     public Location getVehicleLocation() {

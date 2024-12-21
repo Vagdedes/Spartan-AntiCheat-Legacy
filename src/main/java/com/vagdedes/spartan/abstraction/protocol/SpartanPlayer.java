@@ -351,30 +351,34 @@ public class SpartanPlayer {
     // Separator
 
     public List<Entity> getNearbyEntities(double radius) {
-        List<Entity> entities = new ArrayList<>();
-        Location location = protocol.getLocation();
-        World world = location.getWorld();
-        int smallX = MathHelper.floor_double((location.getX() - radius) / PlayerUtils.chunk);
-        int bigX = MathHelper.floor_double((location.getX() + radius) / PlayerUtils.chunk);
-        int smallZ = MathHelper.floor_double((location.getZ() - radius) / PlayerUtils.chunk);
-        int bigZ = MathHelper.floor_double((location.getZ() + radius) / PlayerUtils.chunk);
-        double radiusSquared = radius * radius;
+        if (SpartanBukkit.isSynchronised()) {
+            return this.protocol.bukkit.getNearbyEntities(radius, radius, radius);
+        } else {
+            List<Entity> entities = new ArrayList<>();
+            Location location = protocol.getLocation();
+            World world = location.getWorld();
+            int smallX = MathHelper.floor_double((location.getX() - radius) / PlayerUtils.chunk);
+            int bigX = MathHelper.floor_double((location.getX() + radius) / PlayerUtils.chunk);
+            int smallZ = MathHelper.floor_double((location.getZ() - radius) / PlayerUtils.chunk);
+            int bigZ = MathHelper.floor_double((location.getZ() + radius) / PlayerUtils.chunk);
+            double radiusSquared = radius * radius;
 
-        for (int xx = smallX; xx <= bigX; xx++) {
-            for (int zz = smallZ; zz <= bigZ; zz++) {
-                if (Event_Chunks.isLoaded(world, xx, zz)) {
-                    for (Entity entity : world.getChunkAt(xx, zz).getEntities()) {
-                        if (SpartanLocation.distanceSquared(
-                                entity.getLocation(),
-                                location
-                        ) <= radiusSquared) {
-                            entities.add(entity);
+            for (int xx = smallX; xx <= bigX; xx++) {
+                for (int zz = smallZ; zz <= bigZ; zz++) {
+                    if (Event_Chunks.isLoaded(world, xx, zz)) {
+                        for (Entity entity : world.getChunkAt(xx, zz).getEntities()) {
+                            if (SpartanLocation.distanceSquared(
+                                    entity.getLocation(),
+                                    location
+                            ) <= radiusSquared) {
+                                entities.add(entity);
+                            }
                         }
                     }
                 }
             }
+            return entities;
         }
-        return entities;
     }
 
     public List<Entity> getNearbyEntities(double x, double y, double z) {
