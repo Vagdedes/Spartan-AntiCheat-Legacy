@@ -20,6 +20,8 @@ import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
+import java.util.Random;
+
 import static java.lang.Math.PI;
 
 public class IMSimulationSpeed extends ProbabilityDetection {
@@ -50,6 +52,7 @@ public class IMSimulationSpeed extends ProbabilityDetection {
             return;
         }
         SpartanProtocol p = this.protocol();
+        p.bukkit.sendMessage(new Random().nextInt() + "");
         boolean isOnGround = p.isOnGround();
         Location to = p.getLocation();
         Location from = this.protocol().getFromLocation();
@@ -389,10 +392,10 @@ public class IMSimulationSpeed extends ProbabilityDetection {
                     );
 
                     if (material != null
-                            && BlockUtils.isPowderSnow(material)
+                            && (BlockUtils.isPowderSnow(material)
                             || BlockUtils.areHoneyBlocks(material)
                             || BlockUtils.areWebs(material)
-                            || BlockUtils.areInteractiveBushes(material)) {
+                            || BlockUtils.areInteractiveBushes(material))) {
                         return true;
                     }
                 }

@@ -542,10 +542,10 @@ public class IMSimulationGravity extends ProbabilityDetection {
                     );
 
                     if (material != null
-                            && BlockUtils.isPowderSnow(material)
+                            && (BlockUtils.isPowderSnow(material)
                             || BlockUtils.areHoneyBlocks(material)
                             || BlockUtils.areWebs(material)
-                            || BlockUtils.areInteractiveBushes(material)) {
+                            || BlockUtils.areInteractiveBushes(material))) {
                         return true;
                     }
                 }
