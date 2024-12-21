@@ -369,7 +369,7 @@ public class IMSimulationSpeed extends ProbabilityDetection {
                     );
 
                     if (material != null && !material.toString().contains("GRASS")
-                                    && (BlockUtils.isSemiSolid(material))) {
+                            && (BlockUtils.isSemiSolid(material))) {
                         return true;
                     }
                 }
@@ -416,9 +416,9 @@ public class IMSimulationSpeed extends ProbabilityDetection {
                             new Location(this.protocol().getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
                     );
 
-                    if (material != null && material
-                            .toString().equalsIgnoreCase("SWEET_BERRY_BUSH")
-                            || BlockUtils.isPowderSnow(material)) {
+                    if (material != null
+                            && (BlockUtils.areInteractiveBushes(material)
+                            || BlockUtils.isPowderSnow(material))) {
                         return true;
                     }
                 }
