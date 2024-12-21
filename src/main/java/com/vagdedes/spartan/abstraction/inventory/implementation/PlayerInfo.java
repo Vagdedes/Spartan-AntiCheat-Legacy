@@ -247,7 +247,7 @@ public class PlayerInfo extends InventoryMenu {
         if (!SpartanEdition.hasDetectionsPurchased(dataType)) {
             return "Detection is missing";
         }
-        String worldName = protocol.spartan.getWorld().getName();
+        String worldName = protocol.getWorld().getName();
         Check check = hackType.getCheck();
 
         if (!check.isEnabled(dataType, worldName)) { // Do not put player because we calculate it below

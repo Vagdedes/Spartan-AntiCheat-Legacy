@@ -25,7 +25,7 @@ public class Packet_PistonHandle extends PacketAdapter {
             protocol.getComponentY().pistonHandle = true;
             Location blockLocation = packet.getBlockPositionModifier()
                     .read(0)
-                    .toLocation(protocol.spartan.getWorld());
+                    .toLocation(protocol.getWorld());
 
             if (isPlayerInBox(protocol.getLocation(), blockLocation, 3)) {
                 protocol.getComponentY().pistonTick = true;

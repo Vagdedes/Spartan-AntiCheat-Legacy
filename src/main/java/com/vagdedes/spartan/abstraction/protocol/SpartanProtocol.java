@@ -17,6 +17,7 @@ import com.vagdedes.spartan.listeners.protocol.Packet_Teleport;
 import com.vagdedes.spartan.utils.minecraft.entity.AxisAlignedBB;
 import com.vagdedes.spartan.utils.minecraft.protocol.ProtocolTools;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -53,7 +54,7 @@ public class SpartanProtocol {
 
     private Set<AxisAlignedBB> axisMatrixCache;
     private CheckBoundData checkBoundData;
-    public PacketWorld packetWorld;
+    public final PacketWorld packetWorld;
     public long placeTime, placeHash;
     public int transactionVl;
     public PlayerTickEvent lastTickEvent;
@@ -237,7 +238,7 @@ public class SpartanProtocol {
     }
 
     public boolean teleport(Location location) {
-        if (this.spartan.getWorld().equals(location.getWorld())) {
+        if (this.getWorld().equals(location.getWorld())) {
             if (SpartanBukkit.isSynchronised()) {
                 this.bukkit.leaveVehicle();
             }
@@ -336,6 +337,10 @@ public class SpartanProtocol {
     public void setProfile(PlayerProfile profile) {
         this.profile = profile;
         this.profile.update(this);
+    }
+
+    public World getWorld() {
+        return this.getLocation().getWorld();
     }
 
     public boolean packetsEnabled() {

@@ -144,7 +144,7 @@ public class Velocity extends CheckRunner {
             for (int dy = -1; dy <= 1; ++dy) {
                 for (int dz = -1; dz <= 1; ++dz) {
                     Material material = new SpartanLocation(
-                            new Location(this.protocol().spartan.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.3, z + (double) dz * 0.3)
+                            new Location(this.protocol().getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.3, z + (double) dz * 0.3)
                     ).getBlock().getTypeOrNull();
 
                     if (material != null &&

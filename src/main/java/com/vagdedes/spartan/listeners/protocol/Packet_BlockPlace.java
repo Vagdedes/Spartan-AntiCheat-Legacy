@@ -60,7 +60,7 @@ public class Packet_BlockPlace extends PacketAdapter {
                 }
 
                 Location l = new Location(
-                        protocol.spartan.getWorld(),
+                        protocol.getWorld(),
                         blockPosition.toVector().getBlockX(),
                         blockPosition.toVector().getBlockY(),
                         blockPosition.toVector().getBlockZ()

@@ -85,7 +85,7 @@ public class GhostHand extends CheckRunner {
     }
 
     private boolean canDo(Block b) {
-        return b.getWorld() == this.protocol().spartan.getWorld();
+        return b.getWorld() == this.protocol().getWorld();
     }
 
     @Override

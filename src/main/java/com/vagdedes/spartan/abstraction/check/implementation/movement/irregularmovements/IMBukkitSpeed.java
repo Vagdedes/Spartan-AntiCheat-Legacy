@@ -285,7 +285,7 @@ public class IMBukkitSpeed extends ProbabilityDetection {
 
     private boolean slimeBlockCause(Location location) {
         boolean slime = false;
-        World world = this.protocol().spartan.getWorld();
+        World world = this.protocol().getWorld();
 
         for (int x = location.getBlockX() - 1; x <= location.getBlockX() + 1; x++) {
             for (int y2 = location.getBlockY() - 1; y2 <= location.getBlockY() + 1; y2++) {
@@ -302,7 +302,7 @@ public class IMBukkitSpeed extends ProbabilityDetection {
     }
 
     private boolean onIce(Location location) {
-        World world = this.protocol().spartan.getWorld();
+        World world = this.protocol().getWorld();
         for (int x = location.getBlockX() - 1; x <= location.getBlockX() + 1; x++) {
             for (int y2 = location.getBlockY() - 2; y2 <= location.getBlockY() + 1; y2++) {
                 for (int z = location.getBlockZ() - 1; z <= location.getBlockZ() + 1; z++) {

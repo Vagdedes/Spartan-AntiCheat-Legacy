@@ -413,7 +413,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
         this.air = 0;
     }
 
-    public void ground(boolean isOnGround) {
+    private void ground(boolean isOnGround) {
         if (!this.protocol().packetsEnabled()) {
             return;
         }
@@ -469,11 +469,11 @@ public class IMSimulationGravity extends ProbabilityDetection {
             for (int dy = -1; dy <= 1; ++dy) {
                 for (int dz = -1; dz <= 1; ++dz) {
                     SpartanBlock block = new SpartanLocation(
-                            new Location(this.protocol().spartan.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
+                            new Location(this.protocol().getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
                     ).getBlock();
 
                     Material m = this.protocol().packetWorld.getBlock(
-                            new Location(this.protocol().spartan.getWorld(),
+                            new Location(this.protocol().getWorld(),
                                     x + (double) dx * 0.3,
                                     y + (double) dy * 0.5,
                                     z + (double) dz * 0.3)
@@ -506,10 +506,10 @@ public class IMSimulationGravity extends ProbabilityDetection {
             for (int dy = -1; dy <= 1; ++dy) {
                 for (int dz = -1; dz <= 1; ++dz) {
                     Material material = this.protocol().packetWorld.getBlock(
-                            new Location(this.protocol().spartan.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
+                            new Location(this.protocol().getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
                     );
                     Material materialFrom = this.protocol().packetWorld.getBlock(
-                            new Location(this.protocol().spartan.getWorld(), xF + (double) dx * 0.3, yF + (double) dy * 0.5, zF + (double) dz * 0.3)
+                            new Location(this.protocol().getWorld(), xF + (double) dx * 0.3, yF + (double) dy * 0.5, zF + (double) dz * 0.3)
                     );
 
                     if (material != null &&
@@ -536,7 +536,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
             for (int dy = -1; dy <= 1; ++dy) {
                 for (int dz = -1; dz <= 1; ++dz) {
                     Material material = this.protocol().packetWorld.getBlock(
-                            new Location(this.protocol().spartan.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
+                            new Location(this.protocol().getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
                     );
 
                     if (material != null
@@ -562,7 +562,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
             for (int dy = -2; dy <= 2; ++dy) {
                 for (int dz = -1; dz <= 1; ++dz) {
                     Material material = this.protocol().packetWorld.getBlock(
-                            new Location(this.protocol().spartan.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
+                            new Location(this.protocol().getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
                     );
 
                     if (material != null && material
@@ -586,7 +586,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
             for (int dy = -1; dy <= 1; ++dy) {
                 for (int dz = -1; dz <= 1; ++dz) {
                     Material material = this.protocol().packetWorld.getBlock(
-                            new Location(this.protocol().spartan.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
+                            new Location(this.protocol().getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
                     );
 
                     if (material != null
@@ -609,7 +609,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
             for (int dy = -1; dy <= 1; ++dy) {
                 for (int dz = -1; dz <= 1; ++dz) {
                     Material material = this.protocol().packetWorld.getBlock(
-                            new Location(this.protocol().spartan.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
+                            new Location(this.protocol().getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
                     );
 
                     if (material != null
@@ -633,7 +633,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
             for (int dy = -2; dy <= 2; ++dy) {
                 for (int dz = -2; dz <= 2; ++dz) {
                     Material material = this.protocol().packetWorld.getBlock(
-                            new Location(this.protocol().spartan.getWorld(), x + (double) dx, y + (double) dy, z + (double) dz)
+                            new Location(this.protocol().getWorld(), x + (double) dx, y + (double) dy, z + (double) dz)
                     );
 
                     if (material != null && (BlockUtils.areSlimeBlocks(material))) {
@@ -654,7 +654,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
             for (int dy = -2; dy <= 2; ++dy) {
                 for (int dz = -1; dz <= 1; ++dz) {
                     Material material = this.protocol().packetWorld.getBlock(
-                            new Location(this.protocol().spartan.getWorld(), x + (double) dx, y + (double) dy, z + (double) dz)
+                            new Location(this.protocol().getWorld(), x + (double) dx, y + (double) dy, z + (double) dz)
                     );
 
                     if (material != null && (BlockUtils.areSlimeBlocks(material))) {
@@ -675,7 +675,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
             for (double dy = 1.0; dy <= 2.0; dy += 0.5) {
                 for (int dz = -2; dz <= 2; ++dz) {
                     Material material = this.protocol().packetWorld.getBlock(
-                            new Location(this.protocol().spartan.getWorld(), x + (double) dx * 0.3, y + dy, z + (double) dz * 0.3)
+                            new Location(this.protocol().getWorld(), x + (double) dx * 0.3, y + dy, z + (double) dz * 0.3)
                     );
 
                     if (material != null && BlockUtils.isSolid(material)) {
@@ -698,7 +698,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
                 for (int dz = -1; dz <= 1; dz++) {
                     Material material = this.protocol().packetWorld.getBlock(
                             new Location(
-                                    this.protocol().spartan.getWorld(),
+                                    this.protocol().getWorld(),
                                     x + dx,
                                     y + dy,
                                     z + dz)

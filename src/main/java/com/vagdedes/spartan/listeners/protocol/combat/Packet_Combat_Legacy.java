@@ -102,7 +102,7 @@ public class Packet_Combat_Legacy extends PacketAdapter {
                 if (pendingEntityId == entityId) {
                     Player attacker = plugin.getServer().getPlayer(playerUUID);
                     Entity target = ProtocolLibrary.getProtocolManager().
-                                    getEntityFromID(protocol.spartan.getWorld(), entityId);
+                                    getEntityFromID(protocol.getWorld(), entityId);
                     if (attacker != null && target != null) {
                         Event_Combat.event(
                                         new EntityDamageByEntityEvent(

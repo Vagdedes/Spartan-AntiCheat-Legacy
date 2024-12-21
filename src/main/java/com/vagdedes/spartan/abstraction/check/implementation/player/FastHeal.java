@@ -79,7 +79,7 @@ public class FastHeal extends CheckRunner {
 
     @Override
     protected boolean canRun() {
-        if (this.protocol().spartan.getWorld().getDifficulty() != Difficulty.PEACEFUL
+        if (this.protocol().getWorld().getDifficulty() != Difficulty.PEACEFUL
                 && this.protocol().bukkit.getFireTicks() <= 0
                 && Attributes.getAmount(this.protocol(), Attributes.GENERIC_MAX_ABSORPTION) == 0.0) {
             GameMode gameMode = this.protocol().bukkit.getGameMode();

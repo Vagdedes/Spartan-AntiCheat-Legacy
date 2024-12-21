@@ -38,7 +38,7 @@ public class BlockReach extends CheckRunner {
     }
 
     private boolean canDo(Block b) {
-        return this.protocol().spartan.getWorld().equals(b.getWorld());
+        return this.protocol().getWorld().equals(b.getWorld());
     }
 
     private double getLimit() {

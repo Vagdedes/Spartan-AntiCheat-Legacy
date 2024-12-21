@@ -50,7 +50,7 @@ public class MiningHistory {
                 }
 
                 if ((event == null || !event.isCancelled())
-                        && Enums.HackType.XRay.getCheck().isEnabled(protocol.spartan.dataType, protocol.spartan.getWorld().getName())) {
+                        && Enums.HackType.XRay.getCheck().isEnabled(protocol.spartan.dataType, protocol.getWorld().getName())) {
                     AntiCheatLogs.logInfo(
                             protocol,
                             null,

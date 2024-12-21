@@ -160,7 +160,7 @@ public abstract class CheckDetection extends CheckProcess {
                 + "(Data-Completion: " + AlgebraUtils.cut(dataCompletion, 2) + "), "
                 + "(Server-Version: " + MultiVersion.serverVersion.toString() + "), "
                 + "(Plugin-Version: " + API.getVersion() + "), "
-                + "(Silent: " + hackType.getCheck().isSilent(this.protocol().spartan.dataType, this.protocol().spartan.getWorld().getName()) + "), "
+                + "(Silent: " + hackType.getCheck().isSilent(this.protocol().spartan.dataType, this.protocol().getWorld().getName()) + "), "
                 + "(Punish: " + hackType.getCheck().canPunish(this.protocol().spartan.dataType) + "), "
                 + "(Packets: " + this.protocol().packetsEnabled() + "), "
                 + "(Ping: " + this.protocol().getPing() + "ms), "
@@ -327,7 +327,7 @@ public abstract class CheckDetection extends CheckProcess {
                 this.punish();
                 this.executor.prevention = newPrevention;
                 this.executor.prevention.canPrevent =
-                        !hackType.getCheck().isSilent(this.protocol().spartan.dataType, this.protocol().spartan.getWorld().getName())
+                        !hackType.getCheck().isSilent(this.protocol().spartan.dataType, this.protocol().getWorld().getName())
                                 && (silentCause == null
                                 || silentCause.hasExpired()
                                 || !silentCause.pointerMatches(information))

@@ -431,7 +431,7 @@ public class SpartanPlayer {
                 || BlockUtils.canClimb(locationP1.getBlock().getType(), false))) {
             return;
         }
-        World world = getWorld();
+        World world = this.protocol.getWorld();
         double startY = Math.min(BlockUtils.getMaxHeight(world), location.getY()),
                 box = startY - Math.floor(startY);
         int iterations = 0;
@@ -484,13 +484,9 @@ public class SpartanPlayer {
 
     // Separator
 
-    public World getWorld() {
-        return protocol.getLocation().getWorld();
-    }
-
     public boolean isOutsideOfTheBorder(double deviation) {
         Location loc = protocol.getLocation();
-        WorldBorder border = getWorld().getWorldBorder();
+        WorldBorder border = this.protocol.getWorld().getWorldBorder();
         double size = (border.getSize() / 2.0) + deviation;
         Location center = border.getCenter();
         return Math.abs(loc.getX() - center.getX()) > size

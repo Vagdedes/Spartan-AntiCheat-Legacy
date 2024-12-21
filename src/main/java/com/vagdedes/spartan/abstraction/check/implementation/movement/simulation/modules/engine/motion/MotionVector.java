@@ -1,6 +1,6 @@
 package com.vagdedes.spartan.abstraction.check.implementation.movement.simulation.modules.engine.motion;
 
-import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import org.bukkit.Location;
@@ -37,8 +37,8 @@ public class MotionVector {
         return v;
     }
 
-    public SpartanLocation toSpartanLocation(SpartanPlayer player) {
-        return new SpartanLocation(new Location(player.getWorld(), this.x, this.y, this.z));
+    public SpartanLocation toSpartanLocation(SpartanProtocol protocol) {
+        return new SpartanLocation(new Location(protocol.getWorld(), this.x, this.y, this.z));
     }
     public double getX() {
         return x;
