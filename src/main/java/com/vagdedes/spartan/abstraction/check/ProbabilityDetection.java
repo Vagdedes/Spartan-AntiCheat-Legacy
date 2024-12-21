@@ -27,7 +27,7 @@ public abstract class ProbabilityDetection extends CheckDetection {
     @Override
     protected final boolean hasData(Check.DataType dataType) {
         synchronized (this.data) {
-            return this.data.get(dataType) != null;
+            return this.data.containsKey(dataType);
         }
     }
 

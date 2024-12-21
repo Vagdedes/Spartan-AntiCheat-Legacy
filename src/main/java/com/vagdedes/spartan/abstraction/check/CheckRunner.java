@@ -85,10 +85,12 @@ public abstract class CheckRunner extends CheckProcess {
         double num = PlayerEvidence.emptyProbability;
 
         for (CheckDetection detectionExecutor : this.detections.values()) {
-            if (PlayerEvidence.POSITIVE) {
-                num = Math.max(num, detectionExecutor.getProbability(dataType));
-            } else {
-                num = Math.min(num, detectionExecutor.getProbability(dataType));
+            if (detectionExecutor.hasSufficientData(dataType)) {
+                if (PlayerEvidence.POSITIVE) {
+                    num = Math.max(num, detectionExecutor.getProbability(dataType));
+                } else {
+                    num = Math.min(num, detectionExecutor.getProbability(dataType));
+                }
             }
         }
         return num;
