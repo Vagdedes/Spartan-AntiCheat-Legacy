@@ -286,6 +286,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
             for (Entity vehicle : nearbyEntities) {
                 if (vehicle instanceof Boat) {
                     boat = true;
+                    break;
                 }
             }
             if (this.abs(this.abs(motion) - this.abs(this.predictY())) > 0.005
