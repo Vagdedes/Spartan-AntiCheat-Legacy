@@ -194,14 +194,12 @@ public class SpartanProtocol {
     }
 
     public Location getLocation() {
-        if (packetsEnabled()) {
-            return this.location;
-        } else {
-            Location loc = ProtocolLib.getLocationOrNull(this.bukkit);
-            return loc != null
-                    ? loc
-                    : SpartanLocation.bukkitDefault.clone();
-        }
+        Location loc = this.packetsEnabled()
+                ? this.location
+                : ProtocolLib.getLocationOrNull(this.bukkit);
+        return loc != null
+                ? loc
+                : SpartanLocation.bukkitDefault.clone();
     }
 
     public Location getFromLocation() {
@@ -223,14 +221,14 @@ public class SpartanProtocol {
         Location vehicleLocation = getVehicleLocation();
 
         if (vehicleLocation == null) {
-            return this.location;
+            return this.getLocation();
         } else {
             return vehicleLocation;
         }
     }
 
     public SpartanLocation getPastTickRotation() {
-        Location l = this.location.clone();
+        Location l = this.getLocation().clone();
         l.setYaw(this.from.getYaw());
         l.setPitch(this.from.getPitch());
         return new SpartanLocation(l);
@@ -279,6 +277,7 @@ public class SpartanProtocol {
     public ComponentY getComponentY() {
         return this.componentY;
     }
+
     public ComponentXZ getComponentXZ() {
         return this.componentXZ;
     }
