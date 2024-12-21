@@ -162,7 +162,7 @@ public class IMSimulationSpeed extends ProbabilityDetection {
                         this.protocol().getComponentXZ().explosionTick = false;
                         this.setPredict(dx, dz);
                     }
-                    if (d >= 0.2 && d <= 1.0 && this.protocol().spartan.trackers.has(
+                    if (d >= 0.01 && d <= 1.0 && this.protocol().spartan.trackers.has(
                                     PlayerTrackers.TrackerType.VEHICLE, "vh_tp")) {
                         this.setPredict(dx, dz);
                     }
