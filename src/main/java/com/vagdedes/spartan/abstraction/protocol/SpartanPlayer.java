@@ -12,6 +12,7 @@ import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
+import com.vagdedes.spartan.listeners.bukkit.standalone.Event_Chunks;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.math.MathHelper;
@@ -361,7 +362,7 @@ public class SpartanPlayer {
 
         for (int xx = smallX; xx <= bigX; xx++) {
             for (int zz = smallZ; zz <= bigZ; zz++) {
-                if (world.isChunkLoaded(xx, zz)) {
+                if (Event_Chunks.isLoaded(world, xx, zz)) {
                     for (Entity entity : world.getChunkAt(xx, zz).getEntities()) {
                         if (SpartanLocation.distanceSquared(
                                 entity.getLocation(),
@@ -390,7 +391,7 @@ public class SpartanPlayer {
 
             for (int xx = smallX; xx <= bigX; xx++) {
                 for (int zz = smallZ; zz <= bigZ; zz++) {
-                    if (world.isChunkLoaded(xx, zz)) {
+                    if (Event_Chunks.isLoaded(world, xx, zz)) {
                         for (Entity entity : world.getChunkAt(xx, zz).getEntities()) {
                             Location eLoc = entity.getLocation();
 
