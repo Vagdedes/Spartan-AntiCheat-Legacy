@@ -109,7 +109,7 @@ public class FastEat extends CheckRunner {
             switch (e.getAction()) {
                 case RIGHT_CLICK_BLOCK:
                     if (e.getClickedBlock().getType() == cake) {
-                        this.protocol().spartan.getRunner(hackType).addDisableCause(null, null, 10);
+                        this.protocol().profile().getRunner(hackType).addDisableCause(null, null, 10);
                     }
                     break;
                 case RIGHT_CLICK_AIR:

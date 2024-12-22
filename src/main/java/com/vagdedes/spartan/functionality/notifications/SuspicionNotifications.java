@@ -57,14 +57,14 @@ public class SuspicionNotifications {
                 StringBuilder evidence = new StringBuilder();
 
                 for (Enums.HackType hackType : list) {
-                    CheckRunner runner = protocol.spartan.getRunner(hackType);
+                    CheckRunner runner = protocol.profile().getRunner(hackType);
                     boolean sufficientData = runner.hasSufficientData(
                             protocol.spartan.dataType,
                             PlayerEvidence.dataRatio
                     );
                     long remainingTime = sufficientData
                             ? 0L
-                            : profile.getRunner(hackType).getRemainingCompletionTime(profile.getLastDataType());
+                            : protocol.profile().getRunner(hackType).getRemainingCompletionTime(profile.getLastDataType());
                     evidence.append(
                             hackType.getCheck().getName()
                                     + (sufficientData

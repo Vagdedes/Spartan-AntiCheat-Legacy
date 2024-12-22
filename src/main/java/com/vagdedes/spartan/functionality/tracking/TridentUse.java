@@ -34,7 +34,7 @@ public class TridentUse {
                             p.spartan.trackers.add(PlayerTrackers.TrackerType.TRIDENT, ticks);
                         }
 
-                        p.spartan.getRunner(Enums.HackType.IrregularMovements).handle(false, level);
+                        p.profile().getRunner(Enums.HackType.IrregularMovements).handle(false, level);
                     }
                     break;
                 }

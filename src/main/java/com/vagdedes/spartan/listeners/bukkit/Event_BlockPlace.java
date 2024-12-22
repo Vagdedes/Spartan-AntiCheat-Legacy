@@ -35,19 +35,19 @@ public class Event_BlockPlace implements Listener {
 
         // Detections
         if (!ItemsAdder.is(block)) {
-            protocol.spartan.getRunner(Enums.HackType.ImpossibleActions).handle(
+            protocol.profile().getRunner(Enums.HackType.ImpossibleActions).handle(
                     cancelled,
                     new Block[]{block, blockAgainst}
             );
-            protocol.spartan.getRunner(Enums.HackType.BlockReach).handle(
+            protocol.profile().getRunner(Enums.HackType.BlockReach).handle(
                     cancelled,
                     new Block[]{block, blockAgainst}
             );
-            protocol.spartan.getRunner(Enums.HackType.FastPlace).handle(cancelled, block);
+            protocol.profile().getRunner(Enums.HackType.FastPlace).handle(cancelled, block);
         }
-        return protocol.spartan.getRunner(Enums.HackType.FastPlace).prevent()
-                || protocol.spartan.getRunner(Enums.HackType.BlockReach).prevent()
-                || protocol.spartan.getRunner(Enums.HackType.ImpossibleActions).prevent();
+        return protocol.profile().getRunner(Enums.HackType.FastPlace).prevent()
+                || protocol.profile().getRunner(Enums.HackType.BlockReach).prevent()
+                || protocol.profile().getRunner(Enums.HackType.ImpossibleActions).prevent();
     }
 
 }

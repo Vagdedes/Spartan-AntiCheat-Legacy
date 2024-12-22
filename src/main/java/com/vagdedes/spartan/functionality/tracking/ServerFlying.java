@@ -11,7 +11,7 @@ import me.vagdedes.spartan.system.Enums;
 public class ServerFlying {
 
     static void run(SpartanProtocol p) {
-        if (((IrregularMovements) p.spartan.getRunner(Enums.HackType.IrregularMovements)).limitServerFlying.isEnabled()
+        if (((IrregularMovements) p.profile().getRunner(Enums.HackType.IrregularMovements)).limitServerFlying.isEnabled()
                 && !Permissions.isBypassing(p.bukkit, Enums.HackType.IrregularMovements)
                 && p.spartan.movement.isFlying()
                 && !p.spartan.movement.isGliding()

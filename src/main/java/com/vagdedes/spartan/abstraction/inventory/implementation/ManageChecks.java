@@ -172,7 +172,7 @@ public class ManageChecks extends InventoryMenu {
 
         for (Check.DataType dataType : Check.DataType.values()) {
             if (SpartanEdition.hasDetectionsPurchased(dataType)
-                    && !protocol.spartan.getRunner(hackType).hasSufficientData(
+                    && !protocol.profile().getRunner(hackType).hasSufficientData(
                     dataType,
                     PlayerEvidence.dataRatio
             )) {

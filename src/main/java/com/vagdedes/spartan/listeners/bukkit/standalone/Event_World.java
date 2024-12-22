@@ -30,32 +30,32 @@ public class Event_World implements Listener {
 
         // Detections
         if (!ItemsAdder.is(nb)) {
-            protocol.spartan.getRunner(Enums.HackType.NoSwing).handle(cancelled, e);
-            protocol.spartan.getRunner(Enums.HackType.BlockReach).handle(cancelled, e);
-            protocol.spartan.getRunner(Enums.HackType.FastBreak).handle(cancelled, e);
-            protocol.spartan.getRunner(Enums.HackType.GhostHand).handle(cancelled, nb);
+            protocol.profile().getRunner(Enums.HackType.NoSwing).handle(cancelled, e);
+            protocol.profile().getRunner(Enums.HackType.BlockReach).handle(cancelled, e);
+            protocol.profile().getRunner(Enums.HackType.FastBreak).handle(cancelled, e);
+            protocol.profile().getRunner(Enums.HackType.GhostHand).handle(cancelled, nb);
         }
-        protocol.spartan.getRunner(Enums.HackType.Exploits).handle(cancelled, e);
-        protocol.spartan.getRunner(Enums.HackType.FastClicks).handle(cancelled, null);
+        protocol.profile().getRunner(Enums.HackType.Exploits).handle(cancelled, e);
+        protocol.profile().getRunner(Enums.HackType.FastClicks).handle(cancelled, null);
         MiningHistory.log(protocol, nb, cancelled);
 
-        if (protocol.spartan.getRunner(Enums.HackType.NoSwing).prevent()
-                        || protocol.spartan.getRunner(Enums.HackType.BlockReach).prevent()
-                        || protocol.spartan.getRunner(Enums.HackType.FastBreak).prevent()
-                        || protocol.spartan.getRunner(Enums.HackType.GhostHand).prevent()
-                        || protocol.spartan.getRunner(Enums.HackType.XRay).prevent()) {
+        if (protocol.profile().getRunner(Enums.HackType.NoSwing).prevent()
+                        || protocol.profile().getRunner(Enums.HackType.BlockReach).prevent()
+                        || protocol.profile().getRunner(Enums.HackType.FastBreak).prevent()
+                        || protocol.profile().getRunner(Enums.HackType.GhostHand).prevent()
+                        || protocol.profile().getRunner(Enums.HackType.XRay).prevent()) {
             e.setCancelled(true);
         }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Sign(SignChangeEvent e) {
-        SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer(), true).spartan;
+        SpartanProtocol p = SpartanBukkit.getProtocol(e.getPlayer(), true);
 
         // Detections
-        p.getRunner(Enums.HackType.Exploits).handle(e.isCancelled(), e.getLines());
+        p.profile().getRunner(Enums.HackType.Exploits).handle(e.isCancelled(), e.getLines());
 
-        if (p.getRunner(Enums.HackType.Exploits).prevent()) {
+        if (p.profile().getRunner(Enums.HackType.Exploits).prevent()) {
             e.setCancelled(true);
         }
     }
@@ -65,12 +65,13 @@ public class Event_World implements Listener {
         SpartanProtocol protocol = SpartanBukkit.getProtocol(e.getPlayer(), true);
 
         // Detections
-        protocol.spartan.getRunner(Enums.HackType.NoSwing).handle(e.isCancelled(), e);
+        protocol.profile().getRunner(Enums.HackType.NoSwing).handle(e.isCancelled(), e);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Interact(PlayerInteractEvent e) {
-        SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer(), true).spartan;
+        SpartanProtocol protocol = SpartanBukkit.getProtocol(e.getPlayer(), true);
+        SpartanPlayer p = protocol.spartan;
         Block nb = e.getClickedBlock();
         Action action = e.getAction();
         boolean notNull = nb != null,
@@ -89,27 +90,27 @@ public class Event_World implements Listener {
         if (notNull) {
             // Detections
             if (!customBlock) {
-                p.getRunner(Enums.HackType.BlockReach).handle(false, e);
-                p.getRunner(Enums.HackType.FastBreak).handle(false, e);
-                p.getRunner(Enums.HackType.ImpossibleActions).handle(false, e);
+                protocol.profile().getRunner(Enums.HackType.BlockReach).handle(false, e);
+                protocol.profile().getRunner(Enums.HackType.FastBreak).handle(false, e);
+                protocol.profile().getRunner(Enums.HackType.ImpossibleActions).handle(false, e);
             }
-            p.getRunner(Enums.HackType.FastEat).handle(false, e);
+            protocol.profile().getRunner(Enums.HackType.FastEat).handle(false, e);
 
             if (!customBlock) {
-                p.getRunner(Enums.HackType.GhostHand).handle(false, e);
+                protocol.profile().getRunner(Enums.HackType.GhostHand).handle(false, e);
             }
         } else {
             // Detections
-            p.getRunner(Enums.HackType.FastEat).handle(false, e);
+            protocol.profile().getRunner(Enums.HackType.FastEat).handle(false, e);
         }
         // Detections
         if (!customBlock) {
-            p.getRunner(Enums.HackType.NoSwing).handle(false, e);
+            protocol.profile().getRunner(Enums.HackType.NoSwing).handle(false, e);
         }
-        p.getRunner(Enums.HackType.FastBow).handle(false, e);
+        protocol.profile().getRunner(Enums.HackType.FastBow).handle(false, e);
 
-        if (p.getRunner(Enums.HackType.GhostHand).prevent()
-                        || p.getRunner(Enums.HackType.FastClicks).prevent()) {
+        if (protocol.profile().getRunner(Enums.HackType.GhostHand).prevent()
+                        || protocol.profile().getRunner(Enums.HackType.FastClicks).prevent()) {
             e.setCancelled(true);
         }
     }

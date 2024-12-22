@@ -65,7 +65,7 @@ public class MiningHistory {
                     if (miningHistory != null) {
                         String pluralKey = key.endsWith("s") ? (key + "es") : (key + "s");
                         miningHistory.increaseMines(environment, amount);
-                        protocol.spartan.getRunner(Enums.HackType.XRay).handle(
+                        protocol.profile().getRunner(Enums.HackType.XRay).handle(
                                 cancelled,
                                 new Object[]{environment, miningHistory, ore, pluralKey});
                     }

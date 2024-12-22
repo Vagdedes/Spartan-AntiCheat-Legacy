@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.listeners.bukkit.standalone;
 
 import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.entity.Entity;
@@ -18,14 +19,14 @@ public class Event_Health implements Listener {
         Entity entity = e.getEntity();
 
         if (entity instanceof Player) {
-            SpartanPlayer p = SpartanBukkit.getProtocol((Player) entity).spartan;
+            SpartanProtocol p = SpartanBukkit.getProtocol((Player) entity);
             boolean cancelled = e.isCancelled();
 
             // Detections
-            p.getRunner(Enums.HackType.FastEat).handle(cancelled, e);
-            p.getRunner(Enums.HackType.FastHeal).handle(cancelled, e);
+            p.profile().getRunner(Enums.HackType.FastEat).handle(cancelled, e);
+            p.profile().getRunner(Enums.HackType.FastHeal).handle(cancelled, e);
 
-            if (p.getRunner(Enums.HackType.FastEat).prevent()) {
+            if (p.profile().getRunner(Enums.HackType.FastEat).prevent()) {
                 e.setCancelled(true);
             }
         }

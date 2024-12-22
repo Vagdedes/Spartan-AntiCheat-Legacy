@@ -253,7 +253,7 @@ public class PlayerInfo extends InventoryMenu {
         if (!check.isEnabled(dataType, worldName)) { // Do not put player because we calculate it below
             return "Check is disabled";
         }
-        CheckCancellation disabledCause = protocol.spartan.getRunner(hackType).getDisableCause();
+        CheckCancellation disabledCause = protocol.profile().getRunner(hackType).getDisableCause();
         return Permissions.isBypassing(protocol.bukkit, hackType)
                 ? "Player has permission bypass"
                 : disabledCause != null

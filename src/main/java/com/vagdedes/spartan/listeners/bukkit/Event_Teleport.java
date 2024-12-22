@@ -30,8 +30,8 @@ public class Event_Teleport implements Listener {
             p.resetCrucialData();
 
             // Detections
-            p.getRunner(Enums.HackType.MorePackets).handle(false, MorePackets.TELEPORT);
-            p.getRunner(Enums.HackType.IrregularMovements).handle(false, null);
+            protocol.profile().getRunner(Enums.HackType.MorePackets).handle(false, MorePackets.TELEPORT);
+            protocol.profile().getRunner(Enums.HackType.IrregularMovements).handle(false, null);
             p.trackers.add(PlayerTrackers.TrackerType.TELEPORT, "tp", 1);
         }
     }
