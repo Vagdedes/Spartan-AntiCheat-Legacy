@@ -26,9 +26,7 @@ public abstract class ProbabilityDetection extends CheckDetection {
 
     @Override
     protected final boolean hasData(Check.DataType dataType) {
-        synchronized (this.data) {
-            return this.data.containsKey(dataType);
-        }
+        return this.lastTime[dataType.ordinal()] != null;
     }
 
     @Override
@@ -140,9 +138,7 @@ public abstract class ProbabilityDetection extends CheckDetection {
 
     @Override
     final Long getLastTime(Check.DataType dataType) {
-        synchronized (this.data) {
-            return this.lastTime[dataType.ordinal()];
-        }
+        return this.lastTime[dataType.ordinal()];
     }
 
     @Override
