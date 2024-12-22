@@ -5,7 +5,6 @@ import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.inventory.implementation.MainMenu;
-import com.vagdedes.spartan.abstraction.pattern.Pattern;
 import com.vagdedes.spartan.abstraction.profiling.MiningHistory;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
@@ -174,7 +173,6 @@ public class ResearchEngine {
             } else {
                 profile = player.profile();
             }
-            Pattern.deleteFromFile(profile);
 
             if (isStorageMode()) {
                 // Clear Files/Database
@@ -355,11 +353,9 @@ public class ResearchEngine {
 
             if (enabledPlugin) {
                 buildCache();
-                Pattern.reload();
                 CloudBase.refresh();
             } else {
                 CloudBase.clear(true);
-                Pattern.clear();
             }
         };
 
