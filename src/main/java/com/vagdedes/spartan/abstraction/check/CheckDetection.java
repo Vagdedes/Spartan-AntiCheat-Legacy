@@ -194,7 +194,7 @@ public abstract class CheckDetection extends CheckProcess {
 
             if (!protocols.isEmpty()) {
                 for (SpartanProtocol staff : protocols) {
-                    if (staff.spartan.getRunner(this.hackType).getDetection(this.name).canSendNotification(this.protocol(), roundedCertainty)) {
+                    if (staff.profile().getRunner(this.hackType).getDetection(this.name).canSendNotification(this.protocol(), roundedCertainty)) {
                         ClickableMessage.sendCommand(
                                 staff.bukkit,
                                 notification,

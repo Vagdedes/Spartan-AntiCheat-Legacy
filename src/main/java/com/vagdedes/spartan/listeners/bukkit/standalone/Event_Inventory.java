@@ -44,12 +44,12 @@ public class Event_Inventory implements Listener {
             int slot = e.getSlot();
 
             // Detections
-            p.spartan.getRunner(Enums.HackType.ImpossibleInventory).handle(cancelled, e);
-            p.spartan.getRunner(Enums.HackType.InventoryClicks).handle(cancelled, e);
+            p.profile().getRunner(Enums.HackType.ImpossibleInventory).handle(cancelled, e);
+            p.profile().getRunner(Enums.HackType.InventoryClicks).handle(cancelled, e);
 
             // GUIs
-            if (p.spartan.getRunner(Enums.HackType.ImpossibleInventory).prevent()
-                    | p.spartan.getRunner(Enums.HackType.InventoryClicks).prevent()) {
+            if (p.profile().getRunner(Enums.HackType.ImpossibleInventory).prevent()
+                    | p.profile().getRunner(Enums.HackType.InventoryClicks).prevent()) {
                 e.setCancelled(true);
             } else if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
                 for (InventoryMenu menu : InteractiveInventory.menus) {

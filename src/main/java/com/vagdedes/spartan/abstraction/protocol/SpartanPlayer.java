@@ -2,7 +2,6 @@ package com.vagdedes.spartan.abstraction.protocol;
 
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.Check;
-import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.Compatibility;
 import com.vagdedes.spartan.compatibility.necessary.BedrockCompatibility;
@@ -168,10 +167,6 @@ public class SpartanPlayer {
 
     // Separator
 
-    public CheckRunner getRunner(Enums.HackType hackType) {
-        return this.protocol.profile().getRunner(hackType);
-    }
-
     public void resetCrucialData() {
         for (PlayerTrackers.TrackerType handlerType : PlayerTrackers.TrackerType.values()) {
             this.trackers.remove(handlerType);
@@ -186,7 +181,7 @@ public class SpartanPlayer {
     public void calculateClicks(boolean run) {
         if (run) {
             clicks.calculate();
-            this.getRunner(Enums.HackType.FastClicks).run(false);
+            this.protocol.profile().getRunner(Enums.HackType.FastClicks).run(false);
             InteractiveInventory.playerInfo.refresh(this.protocol.bukkit.getName());
         }
     }

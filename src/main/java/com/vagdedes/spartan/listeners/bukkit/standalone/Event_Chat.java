@@ -1,6 +1,6 @@
 package com.vagdedes.spartan.listeners.bukkit.standalone;
 
-import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
+import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.event.EventHandler;
@@ -12,10 +12,10 @@ public class Event_Chat implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Event(AsyncPlayerChatEvent e) {
-        SpartanPlayer p = SpartanBukkit.getProtocol(e.getPlayer()).spartan;
+        SpartanProtocol p = SpartanBukkit.getProtocol(e.getPlayer());
 
         // Detections
-        p.getRunner(Enums.HackType.Exploits).handle(e.isCancelled(), e.getMessage());
+        p.profile().getRunner(Enums.HackType.Exploits).handle(e.isCancelled(), e.getMessage());
     }
 
 }
