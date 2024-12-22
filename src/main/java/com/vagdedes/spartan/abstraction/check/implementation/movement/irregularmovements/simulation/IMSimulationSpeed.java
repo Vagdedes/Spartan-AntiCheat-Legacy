@@ -73,6 +73,7 @@ public class IMSimulationSpeed extends ProbabilityDetection {
         if (to.getX() != from.getX() || to.getY() != from.getY() || to.getZ() != from.getZ()) {
             {
                 this.ground(isOnGround);
+                protocol().bukkit.sendMessage("m: " + multiplex() + " " + this.ACCELERATION_MOTION);
                 if (this.air == 0) {
                     this.sprintStatus = false;
                     this.velo = false;
@@ -80,14 +81,14 @@ public class IMSimulationSpeed extends ProbabilityDetection {
                     double limitAccel = RayUtils.validRayLines(
                             yawLine, moveLine, 65.0) ? 0.15 : 0.12;
                     if (limit < limit * this.multiplex())
-                        this.ACCELERATION_MOTION = (limit * this.multiplex()) - limit;
+                        this.ACCELERATION_MOTION = ((limit * this.multiplex()) - limit) * 0.5;
                     if (this.ground == 1 && lastSpeed > limitAccel)
-                        this.ACCELERATION_MOTION = lastSpeed - limitAccel;
+                        this.ACCELERATION_MOTION = lastSpeed - limitAccel * 0.91;
                     limit *= this.multiplex();
                     limit += this.ACCELERATION_MOTION;
                     if (this.protocol().getComponentXZ().pistonTick) limit += 1.0;
                     if (speed < limit)
-                        setPredict(dx, dz);
+                        this.setPredict(dx, dz);
                     if (this.ACCELERATION_MOTION > 0)
                         this.ACCELERATION_MOTION -= 0.02;
                     if (this.ACCELERATION_MOTION < 0) this.ACCELERATION_MOTION = 0;
@@ -153,6 +154,7 @@ public class IMSimulationSpeed extends ProbabilityDetection {
                         this.removePistonTick = true;
                     }
                     if (this.protocol().getComponentXZ().pistonTick && this.nearSlimeStatus > 0) {
+                        this.nearSlimeStatus = 0;
                         this.slimeBoostApply = 3;
                         this.removePistonTick = true;
                     }
@@ -206,6 +208,7 @@ public class IMSimulationSpeed extends ProbabilityDetection {
             this.lastDx = dx;
             this.lastDz = dz;
             this.lastSpeed = speed;
+            this.ACCELERATION_MOTION /= 1.14;
             if (this.nearSlimeStatus > 0) this.nearSlimeStatus--;
         }
     }
