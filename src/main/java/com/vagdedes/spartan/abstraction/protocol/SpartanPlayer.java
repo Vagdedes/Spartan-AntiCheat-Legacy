@@ -53,7 +53,6 @@ public class SpartanPlayer {
                         protocol.spartan.setStoredPotionEffects();
                     }
                     protocol.profile().getRunner(Enums.HackType.AutoRespawn).run(false);
-                    protocol.profile().getRunner(Enums.HackType.MorePackets).run(false);
                     protocol.profile().getRunner(Enums.HackType.Exploits).run(false);
                     protocol.spartan.movement.schedulerFrom = protocol.getLocation();
                     protocol.spartan.checkForAFK();

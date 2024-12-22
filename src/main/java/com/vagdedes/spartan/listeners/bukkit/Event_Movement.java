@@ -21,9 +21,6 @@ public class Event_Movement implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     private void MoveEvent(PlayerMoveEvent e) {
         event(e, false);
-        SpartanBukkit.getProtocol(e.getPlayer(), true).profile().getRunner(
-                Enums.HackType.MorePackets
-        ).handle(e.isCancelled(), null);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -99,7 +96,6 @@ public class Event_Movement implements Listener {
             protocol.profile().getRunner(Enums.HackType.KillAura).handle(cancelled, e);
             protocol.profile().getRunner(Enums.HackType.Criticals).handle(cancelled, e);
             protocol.profile().getRunner(Enums.HackType.Simulation).handle(cancelled, e);
-            protocol.profile().getRunner(Enums.HackType.MorePackets).handle(cancelled, null);
         }
     }
 
