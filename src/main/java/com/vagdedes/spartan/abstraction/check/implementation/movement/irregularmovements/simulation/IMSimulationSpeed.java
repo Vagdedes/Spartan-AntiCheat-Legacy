@@ -73,7 +73,6 @@ public class IMSimulationSpeed extends ProbabilityDetection {
         if (to.getX() != from.getX() || to.getY() != from.getY() || to.getZ() != from.getZ()) {
             {
                 this.ground(isOnGround);
-                protocol().bukkit.sendMessage("m: " + multiplex() + " " + this.ACCELERATION_MOTION);
                 if (this.air == 0) {
                     this.sprintStatus = false;
                     this.velo = false;
