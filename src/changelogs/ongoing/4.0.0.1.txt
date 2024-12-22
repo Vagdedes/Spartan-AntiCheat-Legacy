@@ -6,3 +6,4 @@
 [#] Fixed false positives with certain 1.21+ interactions
 [#] Other minor fixes that were not mentioned in this changelog
 [#] Fixed a data pending missing description in the inventory menus
+[#] Updated the default notifications to look better and contain less info.
