@@ -55,10 +55,6 @@ public class IMSimulationGravity extends ProbabilityDetection {
                         ? this.protocol().spartan.getVehicle().isOnGround() : protocol().isOnGround();
         Location to = p.getLocation();
         Location from = this.protocol().getFromLocation();
-        if (this.isSolidBlock(from.clone().add(0, 0.5, 0))
-                        && to.distance(from) < 0.26) {
-            return;
-        }
         double dx = to.getX() - from.getX();
         double dz = to.getZ() - from.getZ();
         double speed = Math.sqrt(dx * dx + dz * dz);
@@ -383,7 +379,10 @@ public class IMSimulationGravity extends ProbabilityDetection {
                     if (allowLowJump && air == 1
                             && this.predictY() > motion
                             && getDeviantity(motion) <= 0.03) {
-                        this.protocol().bukkit.sendMessage("demolish");
+                        return;
+                    }
+                    if (this.isSolidBlock(from.clone().add(0, 0.5, 0))
+                                    && to.distance(from) < 0.26) {
                         return;
                     }
                     this.vl += devTotal;

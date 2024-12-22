@@ -1,0 +1,2 @@
+[+] EntityFly checks
+[#] Fixed critical issues with simulation gravity
