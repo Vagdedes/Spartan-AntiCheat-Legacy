@@ -28,7 +28,7 @@ public class MoveDirection extends ProbabilityDetection {
     private String punish, punishL2;
     private double lastSwitchYaw, lastSwitchPitch;
     private final List<UUID> targetsOnTheRow;
-    private final LinkedList<Double> rayTraceAnalysis;
+    private final List<Double> rayTraceAnalysis;
 
     public MoveDirection(CheckRunner executor) {
         super(executor, null, true);

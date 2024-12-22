@@ -13,7 +13,6 @@ import com.vagdedes.spartan.functionality.connection.Latency;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
-import com.vagdedes.spartan.listeners.protocol.Packet_Teleport;
 import com.vagdedes.spartan.utils.minecraft.entity.AxisAlignedBB;
 import com.vagdedes.spartan.utils.minecraft.protocol.ProtocolTools;
 import org.bukkit.Location;
@@ -25,42 +24,65 @@ import org.bukkit.entity.Vehicle;
 import org.bukkit.event.player.PlayerVelocityEvent;
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class SpartanProtocol {
 
     private long activeCreationTime;
     public final Player bukkit;
     public final SpartanPlayer spartan;
-    public final TimerBalancer timerBalancer;
 
     // Custom
-    private boolean onGround, onGroundFrom;
+    private boolean
+            onGround,
+            onGroundFrom;
     private int hashPosBuffer;
-    public int rightClickCounter;
-    public boolean mutateTeleport, sprinting, sneaking, vehicleStatus;
-    public boolean simulationFlag, teleported, pistonTick;
+    public int
+            rightClickCounter,
+            transactionVl,
+            flyingTicks;
+    public boolean
+            mutateTeleport,
+            sprinting,
+            sneaking,
+            vehicleStatus,
+            simulationFlag,
+            teleported,
+            pistonTick;
     private Location location, from, teleport;
     public String fromWorld;
     public Location simulationStartPoint;
-    public List<Packet_Teleport.TeleportData> teleportEngine;
     public final MCClient mcClient;
-    public byte simulationDelayPerTP, keepEntity;
-    public LinkedList<Location> positionHistory, positionHistoryLong, positionHistoryShort;
+    public byte
+            simulationDelayPerTP,
+            keepEntity;
+    public final List<Location>
+            positionHistory,
+            positionHistoryLong,
+            positionHistoryShort;
     public PlayerVelocityEvent claimedVelocity;
-    public List<PlayerVelocityEvent> claimedVeloGravity, claimedVeloSpeed;
+    public final List<PlayerVelocityEvent>
+            claimedVeloGravity,
+            claimedVeloSpeed;
     public long tickTime;
     public final MultiVersion.MCVersion version;
+    public final TimerBalancer timerBalancer;
 
     private Set<AxisAlignedBB> axisMatrixCache;
     private CheckBoundData checkBoundData;
     public final PacketWorld packetWorld;
     public long placeTime, placeHash;
-    public int transactionVl, flyingTicks;
     public PlayerTickEvent lastTickEvent;
 
     public short transactionId;
-    public long transactionTime, transactionLastTime, transactionPing, lagTick;
-    public boolean transactionBoot, transactionLocal, transactionSentKeep;
+    public long
+            transactionTime,
+            transactionLastTime,
+            transactionPing,
+            lagTick;
+    public boolean transactionBoot,
+            transactionLocal,
+            transactionSentKeep;
     public boolean entityHandle;
 
     private ComponentY componentY;
@@ -84,7 +106,6 @@ public class SpartanProtocol {
         this.from = null;
         this.fromWorld = "";
         this.teleport = null;
-        this.teleportEngine = new LinkedList<>();
         this.simulationFlag = false;
         this.transactionVl = 0;
         this.spartan = new SpartanPlayer(this);
@@ -99,13 +120,13 @@ public class SpartanProtocol {
         this.tickTime = time;
 
         this.rightClickCounter = 0;
-        this.positionHistoryShort = new LinkedList<>();
-        this.positionHistory = new LinkedList<>();
-        this.positionHistoryLong = new LinkedList<>();
+        this.positionHistoryShort = new CopyOnWriteArrayList<>();
+        this.positionHistory = new CopyOnWriteArrayList<>();
+        this.positionHistoryLong = new CopyOnWriteArrayList<>();
         this.hashPosBuffer = 0;
         this.claimedVelocity = null;
-        this.claimedVeloGravity = new ArrayList<>();
-        this.claimedVeloSpeed = new ArrayList<>();
+        this.claimedVeloGravity = new CopyOnWriteArrayList<>();
+        this.claimedVeloSpeed = new CopyOnWriteArrayList<>();
         this.entityHandle = false;
 
         this.axisMatrixCache = new HashSet<>();
@@ -163,10 +184,6 @@ public class SpartanProtocol {
 
     public boolean isSameWithHash(Location location) {
         return this.hashPosBuffer == Objects.hashCode((location.getX() + location.getY() + location.getZ()));
-    }
-
-    public LinkedList<Location> getLocations() {
-        return this.positionHistory;
     }
 
     public boolean isOnGround() {
@@ -318,17 +335,24 @@ public class SpartanProtocol {
     }
 
     public void addRawLocation(Location location) {
-        this.positionHistory.addLast(location.clone());
-        this.positionHistoryLong.addLast(location.clone());
-        this.positionHistoryShort.addLast(location.clone());
+        this.positionHistory.add(location.clone());
+        this.positionHistoryLong.add(location.clone());
+        this.positionHistoryShort.add(location.clone());
+
         if (this.positionHistory.size() > 20) {
-            this.positionHistory.removeFirst();
+            Iterator<Location> iterator = this.positionHistory.iterator();
+            iterator.next();
+            iterator.remove();
         }
         if (this.positionHistoryShort.size() > 5) {
-            this.positionHistoryShort.removeFirst();
+            Iterator<Location> iterator = this.positionHistoryShort.iterator();
+            iterator.next();
+            iterator.remove();
         }
         if (this.positionHistoryLong.size() > 50) {
-            this.positionHistoryLong.removeFirst();
+            Iterator<Location> iterator = this.positionHistoryLong.iterator();
+            iterator.next();
+            iterator.remove();
         }
     }
 

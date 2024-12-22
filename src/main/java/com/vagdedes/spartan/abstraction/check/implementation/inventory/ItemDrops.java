@@ -7,7 +7,7 @@ import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.TPS;
 import me.vagdedes.spartan.system.Enums;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ItemDrops extends CheckRunner {
@@ -21,7 +21,7 @@ public class ItemDrops extends CheckRunner {
         super(hackType, protocol);
         this.detection = new ImplementedProbabilityDetection(this, null, true);
         this.buffer = new Buffer.IndividualBuffer();
-        this.times = new LinkedList<>();
+        this.times = new ArrayList<>();
     }
 
     @Override

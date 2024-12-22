@@ -22,7 +22,6 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -31,7 +30,7 @@ public class HitReach extends CheckRunner {
     private final CheckDetection
                     hitboxRaytrace,
                     simple;
-    private final LinkedList<Double> rayTraceAnalysis = new LinkedList<>();
+    private final List<Double> rayTraceAnalysis = new ArrayList<>();
     private int vl = 0;
     private static final boolean[] BOOLEANS = {true, false};
     private static final double REACH_DIST = 3.001, HIT_BOX_VAL = 10.0;
@@ -129,7 +128,7 @@ public class HitReach extends CheckRunner {
                             && !this.protocol().bukkit.getGameMode().equals(GameMode.CREATIVE)) {
                 double bruteforceRayTrace = RayUtils.bruteforceRayTrace(this.protocol(), target),
                                 diff = bruteforceRayTrace - 0.4;
-                rayTraceAnalysis.addLast(bruteforceRayTrace);
+                rayTraceAnalysis.add(bruteforceRayTrace);
                 if (rayTraceAnalysis.size() >= 10) {
                     analyze(this.protocol().getLocation(), bruteforceRayTrace);
                 }

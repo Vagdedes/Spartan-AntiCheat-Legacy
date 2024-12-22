@@ -9,8 +9,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -46,7 +46,7 @@ public class CommandTab implements TabCompleter {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String arg, String[] args) {
-        List<String> list = new LinkedList<>();
+        List<String> list = new ArrayList<>();
         int length = args.length;
 
         if (length == 1) {
