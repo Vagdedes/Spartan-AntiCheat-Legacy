@@ -1,7 +1,0 @@
-[#] Fixed some falsest with semi-solid blocks
-[#] Fixed some false positives with Vehicle
-[#] Fixed false positives with teleportation
-[#] Fixed false positives with breaking unbreakable blocks (Ghost blocks)
-[#] Fixed false positives with speed after velocity
-[#] Fixed false positives with 1.21+ interactions
-[#] Other minor fixes

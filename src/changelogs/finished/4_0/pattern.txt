@@ -1,0 +1,6 @@
+x = subject
+z = any number at the time
+
+4.x.z.z = Major update
+4.z.x.z = Minor update
+4.z.z.x = Hotfix update
