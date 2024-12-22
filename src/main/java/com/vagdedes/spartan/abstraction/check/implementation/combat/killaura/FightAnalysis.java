@@ -11,15 +11,15 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
 
 public class FightAnalysis extends ProbabilityDetection {
 
     private static final Map<UUID, Map<Integer, int[]>> data = new OverflowMap<>(
-            new HashMap<>(2),
-            2048
+            new LinkedHashMap<>(2),
+            2_048
     );
     private static final double desiredConfidence = 0.9;
     private static final int desiredCount = AlgebraUtils.integerCeil(
@@ -41,7 +41,7 @@ public class FightAnalysis extends ProbabilityDetection {
         }
         Map<Integer, int[]> subData = data.computeIfAbsent(
                 this.protocol().getUUID(),
-                k -> new HashMap<>(2)
+                k -> new LinkedHashMap<>(2)
         );
         int[] hitsDamages = subData.getOrDefault(identifier, new int[2]);
         hitsDamages[0]++;
@@ -68,7 +68,7 @@ public class FightAnalysis extends ProbabilityDetection {
         Map<Integer, int[]> subData = data.computeIfAbsent(
                 this.protocol().getUUID(),
                 k -> new OverflowMap<>(
-                        new HashMap<>(2),
+                        new LinkedHashMap<>(2),
                         EntityType.values().length
                 )
         );

@@ -34,15 +34,15 @@ public class MoveDirection extends ProbabilityDetection {
         super(executor, null, true);
         this.layer1 = new ImplementedProbabilityDetection(executor, "move_direction_1", true);
         this.layer2 = new ImplementedProbabilityDetection(executor, "move_direction_2", true);
-        aimAnalysis = new LinkedList<>();
-        attackHandle = new AttackHandle(null, System.currentTimeMillis());
+        this.aimAnalysis = new LinkedList<>();
+        this.attackHandle = new AttackHandle(null, System.currentTimeMillis());
 
         this.vl = 0;
         this.vlL2 = 0;
         this.punish = "";
         this.punishL2 = "";
         this.targetsOnTheRow = new ArrayList<>();
-        this.rayTraceAnalysis = new LinkedList<>();
+        this.rayTraceAnalysis = new ArrayList<>();
     }
 
     public final void run() {
@@ -65,8 +65,8 @@ public class MoveDirection extends ProbabilityDetection {
                         ).x
                 );
                 double yaw360 = RayUtils.castTo360(this.protocol().getLocation().getYaw());
-                rayTraceAnalysis.addLast(bruteforceRayTrace);
-                aimAnalysis.addLast(
+                rayTraceAnalysis.add(bruteforceRayTrace);
+                aimAnalysis.add(
                         new AttackData(
                                 Math.abs(predict - yaw360),
                                 this.protocol().getLocation().getYaw(),
