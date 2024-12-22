@@ -382,7 +382,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
                         return;
                     }
                     if (this.isSolidBlock(from.clone().add(0, 0.5, 0))
-                                    && to.distance(from) < 0.26) {
+                                    && to.distance(from) < 0.3) {
                         return;
                     }
                     this.vl += devTotal;
