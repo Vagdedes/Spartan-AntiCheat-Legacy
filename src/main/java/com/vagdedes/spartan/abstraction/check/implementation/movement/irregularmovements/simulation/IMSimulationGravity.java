@@ -370,7 +370,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
             }
 
             double devTotal = this.abs(this.abs(motion) - this.abs(this.predictY()));
-            this.protocol().bukkit.sendMessage("m: " + motion + " p: " + this.predictY() + " air: " + air);
+            //this.protocol().bukkit.sendMessage("m: " + motion + " p: " + this.predictY() + " air: " + air);
             if (devTotal > ((this.protocol().spartan.getVehicle()
                             != null && motion < 0 && airVehicle < 10)
                             ? 0.36 : (this.protocol().spartan.getVehicle()
