@@ -363,11 +363,15 @@ public class SpartanPlayer {
                 for (int zz = smallZ; zz <= bigZ; zz++) {
                     if (Event_Chunks.isLoaded(world, xx, zz)) {
                         for (Entity entity : world.getChunkAt(xx, zz).getEntities()) {
-                            if (SpartanLocation.distanceSquared(
-                                    entity.getLocation(),
-                                    location
-                            ) <= radiusSquared) {
-                                entities.add(entity);
+                            Location eLoc = ProtocolLib.getLocationOrNull(entity);
+
+                            if (eLoc != null) {
+                                if (SpartanLocation.distanceSquared(
+                                        eLoc,
+                                        location
+                                ) <= radiusSquared) {
+                                    entities.add(entity);
+                                }
                             }
                         }
                     }
@@ -393,12 +397,14 @@ public class SpartanPlayer {
                 for (int zz = smallZ; zz <= bigZ; zz++) {
                     if (Event_Chunks.isLoaded(world, xx, zz)) {
                         for (Entity entity : world.getChunkAt(xx, zz).getEntities()) {
-                            Location eLoc = entity.getLocation();
+                            Location eLoc = ProtocolLib.getLocationOrNull(entity);
 
-                            if (Math.abs(eLoc.getX() - location.getX()) <= x
-                                    && Math.abs(eLoc.getY() - location.getY()) <= y
-                                    && Math.abs(eLoc.getZ() - location.getZ()) <= z) {
-                                entities.add(entity);
+                            if (eLoc != null) {
+                                if (Math.abs(eLoc.getX() - location.getX()) <= x
+                                        && Math.abs(eLoc.getY() - location.getY()) <= y
+                                        && Math.abs(eLoc.getZ() - location.getZ()) <= z) {
+                                    entities.add(entity);
+                                }
                             }
                         }
                     }
