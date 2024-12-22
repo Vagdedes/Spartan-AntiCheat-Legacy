@@ -29,15 +29,15 @@ import java.util.Set;
 public class Packet_Movement extends PacketAdapter {
     public Packet_Movement() {
         super(
-                Register.plugin,
-                ListenerPriority.LOWEST,
-                PacketType.Play.Server.POSITION,
-                PacketType.Play.Client.POSITION,
-                PacketType.Play.Client.POSITION_LOOK,
-                PacketType.Play.Client.LOOK,
-                (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17))
-                        ? PacketType.Play.Client.GROUND
-                        : PacketType.Play.Client.FLYING
+                        Register.plugin,
+                        ListenerPriority.LOWEST,
+                        PacketType.Play.Server.POSITION,
+                        PacketType.Play.Client.POSITION,
+                        PacketType.Play.Client.POSITION_LOOK,
+                        PacketType.Play.Client.LOOK,
+                        (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17))
+                                        ? PacketType.Play.Client.GROUND
+                                        : PacketType.Play.Client.FLYING
         );
     }
 
@@ -97,7 +97,7 @@ public class Packet_Movement extends PacketAdapter {
         for (Double check : v) {
             if (check.isNaN() || check.isInfinite() || Math.abs(check) > 3E8) {
                 SpartanBukkit.getProtocol(player)
-                        .spartan.punishments.kick(Bukkit.getConsoleSender(), "Invalid packet");
+                                .spartan.punishments.kick(Bukkit.getConsoleSender(), "Invalid packet");
                 return;
             }
         }
@@ -113,11 +113,11 @@ public class Packet_Movement extends PacketAdapter {
             p.transactionVl += (p.isBlatantDesync() ? 2 : 1);
             if (p.transactionVl > 40) {
                 Bukkit.getScheduler().runTask(Register.plugin,
-                        () -> player.teleport(p.getLocation()));
+                                () -> player.teleport(p.getLocation()));
                 AwarenessNotifications.optionallySend(player.getName()
-                        + " moves faster than the transaction response ("
-                        + tickEvent.getDelay() + "ms > "
-                        + (System.currentTimeMillis() - p.transactionTime) + "ms).");
+                                + " moves faster than the transaction response ("
+                                + tickEvent.getDelay() + "ms > "
+                                + (System.currentTimeMillis() - p.transactionTime) + "ms).");
                 event.setCancelled(true);
                 return;
             }
@@ -181,9 +181,9 @@ public class Packet_Movement extends PacketAdapter {
             }
 
             PlayerMoveEvent moveEvent = new PlayerMoveEvent(
-                    player,
-                    p.getFromLocation(),
-                    p.getLocation()
+                            player,
+                            p.getFromLocation(),
+                            p.getLocation()
             );
             moveEvent.setCancelled(event.isCancelled());
             Event_Movement.event(moveEvent, true);

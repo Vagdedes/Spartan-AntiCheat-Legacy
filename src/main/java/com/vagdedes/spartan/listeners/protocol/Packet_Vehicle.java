@@ -7,8 +7,13 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.listeners.bukkit.Event_Movement;
 import com.vagdedes.spartan.listeners.bukkit.Event_Vehicle;
 import com.vagdedes.spartan.utils.minecraft.protocol.ProtocolTools;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Vehicle;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 
@@ -31,20 +36,32 @@ public class Packet_Vehicle extends PacketAdapter {
         if (protocol.spartan.isBedrockPlayer()) {
             return;
         }
-        if (protocol.spartan.getNearbyEntities(4).size() < 2) return;
         if (ProtocolTools.hasPosition(event.getPacket().getType()) && protocol.entityHandle) {
-            protocol.timerBalancer.addBalance(50);
-            VehicleExitEvent bukkitEvent = new VehicleExitEvent(null, protocol.bukkit);
-            bukkitEvent.setCancelled(event.isCancelled());
-            Event_Vehicle.exit(bukkitEvent);
             protocol.entityHandle = false;
-        } else if (event.getPacket().getType().equals(PacketType.Play.Client.STEER_VEHICLE) && !protocol.entityHandle) {
-            protocol.timerBalancer.addBalance(50);
-            VehicleEnterEvent bukkitEvent = new VehicleEnterEvent(null, protocol.bukkit);
-            bukkitEvent.setCancelled(event.isCancelled());
-            Event_Vehicle.enter(bukkitEvent);
-            protocol.entityHandle = true;
+        }
+        if (protocol.spartan.getNearbyEntities(4).size() >= 2) {
+            if (ProtocolTools.hasPosition(event.getPacket().getType()) && protocol.entityHandle) {
+                protocol.timerBalancer.addBalance(50);
+                VehicleExitEvent bukkitEvent = new VehicleExitEvent(null, protocol.bukkit);
+                bukkitEvent.setCancelled(event.isCancelled());
+                Event_Vehicle.exit(bukkitEvent);
+            } else if (event.getPacket().getType().equals(PacketType.Play.Client.STEER_VEHICLE) && !protocol.entityHandle) {
+                protocol.timerBalancer.addBalance(50);
+                VehicleEnterEvent bukkitEvent = new VehicleEnterEvent(null, protocol.bukkit);
+                bukkitEvent.setCancelled(event.isCancelled());
+                Event_Vehicle.enter(bukkitEvent);
+                protocol.entityHandle = true;
+            }
+        }
+        if (event.getPacket().getType().equals(PacketType.Play.Client.STEER_VEHICLE)) {
+            Player player = event.getPlayer();
+            if (player.getVehicle() != null) {
+                Vehicle vehicle = (Vehicle) player.getVehicle();
+                Location location = vehicle.getLocation();
+                SpartanBukkit.getProtocol(player).setLocation(location);
+                Event_Movement.event(new PlayerMoveEvent(player, protocol.getFromLocation(), protocol.getLocation()), true);
+                //protocol.profile().getRunner(Enums.HackType.IrregularMovements).run(event.isCancelled());
+            }
         }
     }
-
 }

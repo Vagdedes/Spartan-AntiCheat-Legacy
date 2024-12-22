@@ -32,7 +32,6 @@ public class PlayerTickEvent {
         this.protocol.tickTime = this.time;
         return this;
     }
-
     public long getDelay() {
         return this.delay;
     }

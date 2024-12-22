@@ -28,6 +28,8 @@ import java.util.List;
 public class IMSimulationGravity extends ProbabilityDetection {
 
     private int air = 0, ground = 0;
+    private int airVehicle = 0;
+    private int limToUpdate = 0;
     private int top = 0, topReset = 0;
     private int levitation = 0, glideBlocks = 0, climbBlocks = 0,
             slowFalling = 0, levitationA = 0, slowFallingA = 0;
@@ -49,7 +51,8 @@ public class IMSimulationGravity extends ProbabilityDetection {
             return;
         }
         SpartanProtocol p = this.protocol();
-        boolean isOnGround = p.isOnGround();
+        boolean ground = (this.protocol().spartan.getVehicle() != null)
+                        ? this.protocol().spartan.getVehicle().isOnGround() : protocol().isOnGround();
         Location to = p.getLocation();
         Location from = this.protocol().getFromLocation();
         if (this.isSolidBlock(from.clone().add(0, 0.5, 0))
@@ -63,6 +66,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
         if (to.getX() != from.getX() || to.getY() != from.getY() || to.getZ() != from.getZ()) {
             double motion = to.getY() - from.getY();
             double gravity = 0.08;
+            this.limToUpdate = 0;
             double jumpStartMotionY =
                     (atJumpModifyBlock(to)
                             && this.jumpMotion() * 1.5 > motion)
@@ -75,7 +79,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
             double pr2;
             PlayerMovement playerMovement;
             if (this.isOnSlime(to)) this.allowMinorGravityChange = true;
-            if (isOnGround) {
+            if (ground) {
                 if (this.protocol().getLocation().getY() > this.lastGroundY)
                     allowLowJump = true;
                 if (this.ground != 1) {
@@ -253,7 +257,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
                 this.levitation = 3;
                 this.levitationA = 3;
             }
-            if (!isOnGround) {
+            if (!ground) {
                 if (this.air == 1) {
                     if (motion < 0.0) {
                         this.fallDistance = motion;
@@ -299,10 +303,15 @@ public class IMSimulationGravity extends ProbabilityDetection {
                     break;
                 }
             }
-            if (this.abs(this.abs(motion) - this.abs(this.predictY())) > 0.005
-                    && boat && motion < 0.6 && motion > 0)
+            if (this.protocol().spartan.getVehicle() == null
+                            && boat &&
+                            this.abs(this.abs(motion) - this.abs(this.predictY())) < 0.6) {
                 this.setPredict(motion);
-
+            }
+            if (this.protocol().spartan.getVehicle() != null) {
+                this.airVehicle = (this.isOnSolidGround(
+                                this.protocol().spartan.getVehicle().getLocation())) ? this.airVehicle + 1 : 0;
+            }
             if (this.abs(this.abs(motion) - this.abs(this.predictY())) > 0.005
                     && this.protocol().spartan.getVehicle() != null) {
                 Entity v = this.protocol().spartan.getVehicle();
@@ -310,10 +319,11 @@ public class IMSimulationGravity extends ProbabilityDetection {
                         ? v instanceof AbstractHorse // Covers horse, donkey, skeleton-horse, llama, mule
                         : v instanceof Horse;
 
-                if (this.isOnSolidGround(to) && this.abs(motion) <= ((isJumpingEntity || boat) ? 1.0 : 0.3)) {
+                if (this.isOnSolidGround(v.getLocation()) && this.abs(motion) <=
+                                ((isJumpingEntity || (boat && v.isOnGround())) ? 1.0 : 0.3)) {
                     this.setPredict(motion);
-                } else if (!this.isOnSolidGround(to)
-                        && motion < this.predictY() / 2) {
+                } else if (!this.isOnSolidGround(v.getLocation())
+                        && motion < (this.predictY() / 1.6)) {
                     this.setPredict(motion);
                 }
             }
@@ -360,9 +370,11 @@ public class IMSimulationGravity extends ProbabilityDetection {
             }
 
             double devTotal = this.abs(this.abs(motion) - this.abs(this.predictY()));
-            //this.protocol().bukkit.sendMessage("m: " + motion + " p: " + this.predictY() + " air: " + air);
-
-            if (devTotal > 0.009) {
+            this.protocol().bukkit.sendMessage("m: " + motion + " p: " + this.predictY() + " air: " + air);
+            if (devTotal > ((this.protocol().spartan.getVehicle()
+                            != null && motion < 0 && airVehicle < 10)
+                            ? 0.36 : (this.protocol().spartan.getVehicle()
+                            != null) ? 0.09 : 0.009)) {
                 if (this.protocol().spartan.trackers.has(
                         PlayerTrackers.TrackerType.VEHICLE, "vh_tp")
                         && devTotal < 1.0) {
@@ -371,10 +383,11 @@ public class IMSimulationGravity extends ProbabilityDetection {
                     if (allowLowJump && air == 1
                             && this.predictY() > motion
                             && getDeviantity(motion) <= 0.03) {
+                        this.protocol().bukkit.sendMessage("demolish");
                         return;
                     }
                     this.vl += devTotal;
-                    if (this.vl > 0.05) {
+                    if (this.vl > ((this.protocol().spartan.getVehicle() != null) ? 0.6 : 0.05)) {
                         StringBuilder alertBuilder = new StringBuilder(String.valueOf(RayUtils.scaleVal(devTotal, 6.0)));
                         if (devTotal < 1.0) {
                             alertBuilder.deleteCharAt(0);
@@ -434,8 +447,12 @@ public class IMSimulationGravity extends ProbabilityDetection {
         if (!this.protocol().packetsEnabled()) {
             return;
         }
-        this.air = isOnGround ? 0 : this.air + 1;
-        this.ground = isOnGround ? this.ground + 1 : 0;
+        this.limToUpdate++;
+        //if (limToUpdate > 1) return;
+        boolean ground = (this.protocol().spartan.getVehicle() != null)
+                        ? this.protocol().spartan.getVehicle().isOnGround() : isOnGround;
+        this.ground = ground ? this.ground + 1 : 0;
+        this.air = ground ? 0 : this.air + 1;
     }
 
     public void groundSp(boolean isOnGround) {

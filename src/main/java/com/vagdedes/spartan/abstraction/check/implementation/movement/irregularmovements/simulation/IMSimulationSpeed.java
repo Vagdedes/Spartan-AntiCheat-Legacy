@@ -10,6 +10,7 @@ import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.utils.math.MathHelper;
 import com.vagdedes.spartan.utils.math.RayLine;
 import com.vagdedes.spartan.utils.math.RayUtils;
+import com.vagdedes.spartan.utils.minecraft.entity.EntityUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import com.vagdedes.spartan.utils.minecraft.vector.SpartanVector2D;
 import com.vagdedes.spartan.utils.minecraft.vector.SpartanVector2F;
@@ -17,6 +18,10 @@ import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.AbstractHorse;
+import org.bukkit.entity.Boat;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Horse;
 import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
@@ -51,7 +56,8 @@ public class IMSimulationSpeed extends ProbabilityDetection {
             return;
         }
         SpartanProtocol p = this.protocol();
-        boolean isOnGround = p.isOnGround();
+        boolean isOnGround = (p.spartan.getVehicle() != null)
+                        ? p.spartan.getVehicle().isOnGround() : p.isOnGround();
         Location to = p.getLocation();
         Location from = this.protocol().getFromLocation();
         double dx = to.getX() - from.getX();
@@ -150,7 +156,7 @@ public class IMSimulationSpeed extends ProbabilityDetection {
                         this.slimeBoostApply = 3;
                         this.removePistonTick = true;
                     }
-                    if (d >= 0.04 && d <= 1.6 && this.slimeBoostApply > 0) {
+                    if (d >= 0.04 && d <= 2.2 && this.slimeBoostApply > 0) {
                         this.slimeBoostApply--;
                         this.setPredict(dx, dz);
                     }
@@ -165,6 +171,21 @@ public class IMSimulationSpeed extends ProbabilityDetection {
                     if (d >= 0.01 && d <= 1.0 && this.protocol().spartan.trackers.has(
                                     PlayerTrackers.TrackerType.VEHICLE, "vh_tp")) {
                         this.setPredict(dx, dz);
+                    }
+                    if (d > 0.005 && this.protocol().spartan.getVehicle() != null) {
+                        Entity v = this.protocol().spartan.getVehicle();
+                        boolean isJumpingEntity = EntityUtils.abstractHorseClass
+                                        ? v instanceof AbstractHorse
+                                        : v instanceof Horse;
+                        if (d < 2.2 && v instanceof Boat && this.isOnIce(v.getLocation().add(0, -0.45, 0))) {
+                            this.setPredict(dx, dz);
+                        } else if (d < 0.5 && v instanceof Boat) {
+                            this.setPredict(dx, dz);
+                        } else if (d < (isOnGround ? 0.63 : 0.2) * this.multiplex() && isJumpingEntity) {
+                            this.setPredict(dx, dz);
+                        } else if (d < 0.3 * this.multiplex()) {
+                            this.setPredict(dx, dz);
+                        }
                     }
                     pr = Math.sqrt(predictX * predictX + predictZ * predictZ);
                     d = getDeviantity(pr, speed);

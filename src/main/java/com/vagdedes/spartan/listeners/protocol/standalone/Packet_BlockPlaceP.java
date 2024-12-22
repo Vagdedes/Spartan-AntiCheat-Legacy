@@ -34,5 +34,6 @@ public class Packet_BlockPlaceP extends PacketAdapter {
         Player player = event.getPlayer();
         SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
         protocol.timerBalancer.addBalance(50);
+        protocol.useItemPacket = true;
     }
 }

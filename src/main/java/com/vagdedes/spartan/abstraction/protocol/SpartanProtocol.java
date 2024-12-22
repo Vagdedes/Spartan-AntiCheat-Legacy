@@ -82,7 +82,7 @@ public class SpartanProtocol {
             lagTick;
     public boolean transactionBoot,
             transactionLocal,
-            transactionSentKeep;
+            transactionSentKeep, useItemPacket;
     public boolean entityHandle;
 
     private ComponentY componentY;
@@ -144,6 +144,7 @@ public class SpartanProtocol {
         this.componentY = new ComponentY();
         this.componentXZ = new ComponentXZ();
         this.profile().update(this);
+        this.useItemPacket = false;
     }
 
     public long getActiveCreationTime() {
