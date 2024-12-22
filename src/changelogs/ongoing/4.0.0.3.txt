@@ -1,4 +1,6 @@
-[#] Fixed some errors
-[#] Fixed collision falsest
-[#] Fixed some speed falsest
-[#] Fixes slime punch infinity speed bypass
+Many updates today folks, we are working hard to get the best version out for you.
+
+[#] Fixed a few console errors
+[#] Fixed collision false positives
+[#] Fixed some speed false positives
+[#] Fixed slime punch infinity speed bypass
