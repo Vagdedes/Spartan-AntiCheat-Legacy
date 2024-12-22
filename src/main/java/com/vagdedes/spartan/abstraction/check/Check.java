@@ -15,6 +15,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Check {
 
@@ -76,7 +77,7 @@ public class Check {
     // Object Methods
 
     public Check(Enums.HackType hackType) {
-        this.options = Collections.synchronizedMap(new LinkedHashMap<>());
+        this.options = new ConcurrentHashMap<>();
         this.hackType = hackType;
 
         // Separator
@@ -298,10 +299,7 @@ public class Check {
                 this.enabled[type.ordinal()] = b;
                 ResearchEngine.queueToCache(this.hackType, type);
                 setOption("enabled." + type.toString().toLowerCase(), b);
-
-                synchronized (options) {
-                    options.clear();
-                }
+                options.clear();
             }
         }
     }
@@ -351,12 +349,10 @@ public class Check {
 
     public Object getOption(String option, Object def, boolean cache) {
         if (cache) {
-            synchronized (options) {
-                Object cached = options.get(option);
+            Object cached = options.get(option);
 
-                if (cached != null) {
-                    return cached;
-                }
+            if (cached != null) {
+                return cached;
             }
         }
         try {
@@ -365,25 +361,23 @@ public class Check {
             YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
 
             if (cache) {
-                synchronized (options) {
-                    if (configuration.contains(key)) {
-                        Object value = configuration.get(key, def);
+                if (configuration.contains(key)) {
+                    Object value = configuration.get(key, def);
 
-                        if (!isDefaultNull) {
-                            options.put(option, value);
-                        }
-                        return value;
-                    }
                     if (!isDefaultNull) {
-                        configuration.set(key, def);
+                        options.put(option, value);
+                    }
+                    return value;
+                }
+                if (!isDefaultNull) {
+                    configuration.set(key, def);
 
-                        try {
-                            configuration.save(file);
-                            options.put(option, def);
-                        } catch (Exception ex) {
-                            AwarenessNotifications.forcefullySend("Failed to store '" + key + "' option in '" + file.getName() + "' file.");
-                            ex.printStackTrace();
-                        }
+                    try {
+                        configuration.save(file);
+                        options.put(option, def);
+                    } catch (Exception ex) {
+                        AwarenessNotifications.forcefullySend("Failed to store '" + key + "' option in '" + file.getName() + "' file.");
+                        ex.printStackTrace();
                     }
                 }
             } else {
@@ -535,10 +529,7 @@ public class Check {
             if (event == null || !event.isCancelled()) {
                 this.silent[type.ordinal()] = b;
                 setOption("silent." + type.toString().toLowerCase(), b);
-
-                synchronized (options) {
-                    options.clear();
-                }
+                options.clear();
             }
         }
     }
@@ -579,10 +570,7 @@ public class Check {
             if (event == null || !event.isCancelled()) {
                 this.punish[type.ordinal()] = b;
                 setOption("punishments.enabled" + type.toString().toLowerCase(), b);
-
-                synchronized (options) {
-                    options.clear();
-                }
+                options.clear();
             }
         }
     }

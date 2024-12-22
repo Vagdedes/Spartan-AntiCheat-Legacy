@@ -7,18 +7,18 @@ import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
 import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class ProbabilityDetection extends CheckDetection {
 
     private int lastProbability;
     private final Long[] lastTime;
     private final Map<Check.DataType, Collection<Long>> data;
+    private final Object synchronizer = new Object();
 
     public ProbabilityDetection(CheckRunner executor, String name, boolean def) {
         super(executor, name, def);
-        this.data = Collections.synchronizedMap(
-                new LinkedHashMap<>(Check.DataType.values().length)
-        );
+        this.data = new ConcurrentHashMap<>(Check.DataType.values().length);
         this.lastTime = new Long[Check.DataType.values().length];
     }
 
@@ -26,7 +26,7 @@ public abstract class ProbabilityDetection extends CheckDetection {
 
     @Override
     protected final boolean hasData(Check.DataType dataType) {
-        return this.lastTime[dataType.ordinal()] != null;
+        return this.data.containsKey(dataType);
     }
 
     @Override
@@ -51,20 +51,18 @@ public abstract class ProbabilityDetection extends CheckDetection {
 
     @Override
     public void clearData(Check.DataType dataType) {
-        synchronized (this.data) {
-            this.data.remove(dataType);
-            this.lastTime[dataType.ordinal()] = null;
-        }
+        this.data.remove(dataType);
+        this.lastTime[dataType.ordinal()] = null;
     }
 
     @Override
     public final void store(Check.DataType dataType, long time) {
-        synchronized (this.data) {
-            Collection<Long> data = this.data.computeIfAbsent(
-                    dataType,
-                    k -> new TreeSet<>()
-            );
+        Collection<Long> data = this.data.computeIfAbsent(
+                dataType,
+                k -> new TreeSet<>()
+        );
 
+        synchronized (this.synchronizer) {
             if (data.size() == 2_048) {
                 Iterator<Long> iterator = data.iterator();
                 iterator.next();
@@ -77,16 +75,18 @@ public abstract class ProbabilityDetection extends CheckDetection {
 
     @Override
     public final Double getData(PlayerProfile profile, Check.DataType dataType) {
-        synchronized (this.data) {
-            Collection<Long> data = this.data.get(dataType);
+        Collection<Long> data = this.data.get(dataType);
 
-            if (data == null) {
-                return null;
-            } else {
-                double averageViolationVelocity,
-                        violationCount = data.size(),
-                        comparisonCount = 0.0;
-                long violationVelocitySquareSum = 0;
+        if (data == null) {
+            return null;
+        } else {
+            double violationCount,
+                    averageViolationVelocity,
+                    comparisonCount = 0.0;
+            long violationVelocitySquareSum = 0;
+
+            synchronized (this.synchronizer) {
+                violationCount = data.size();
                 Iterator<Long> iterator = data.iterator();
 
                 if (iterator.hasNext()) {
@@ -103,37 +103,35 @@ public abstract class ProbabilityDetection extends CheckDetection {
                         }
                     }
                 }
-                long onlineTime = profile.getContinuity().getOnlineTime();
-
-                if (onlineTime > 0L) {
-                    onlineTime /= 1_000L; // Convert to seconds
-                    violationCount /= (double) onlineTime;
-                }
-                if (comparisonCount == 0.0) {
-                    averageViolationVelocity = Float.MAX_VALUE;
-                } else {
-                    averageViolationVelocity = Math.sqrt(violationVelocitySquareSum / comparisonCount);
-                }
-                double result = averageViolationVelocity / violationCount;
-                return result == Double.POSITIVE_INFINITY || result == Double.NEGATIVE_INFINITY
-                        ? null
-                        : result;
             }
+            long onlineTime = profile.getContinuity().getOnlineTime();
+
+            if (onlineTime > 0L) {
+                onlineTime /= 1_000L; // Convert to seconds
+                violationCount /= (double) onlineTime;
+            }
+            if (comparisonCount == 0.0) {
+                averageViolationVelocity = Float.MAX_VALUE;
+            } else {
+                averageViolationVelocity = Math.sqrt(violationVelocitySquareSum / comparisonCount);
+            }
+            double result = averageViolationVelocity / violationCount;
+            return result == Double.POSITIVE_INFINITY || result == Double.NEGATIVE_INFINITY
+                    ? null
+                    : result;
         }
     }
 
     @Override
     final Long getFirstTime(Check.DataType dataType) {
-        Long time = null;
+        Collection<Long> data = this.data.get(dataType);
 
-        synchronized (this.data) {
-            Collection<Long> data = this.data.get(dataType);
-
-            if (data != null) {
-                time = data.iterator().next();
+        if (data != null) {
+            synchronized (this.synchronizer) {
+                return data.iterator().next();
             }
         }
-        return time;
+        return null;
     }
 
     @Override
