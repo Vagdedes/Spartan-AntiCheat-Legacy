@@ -1,3 +1,4 @@
-
 [#] Fixed some errors
+[#] Fixed collision falsest
+[#] Fixed some speed falsest
 [#] Fixes slime punch infinity speed bypass
