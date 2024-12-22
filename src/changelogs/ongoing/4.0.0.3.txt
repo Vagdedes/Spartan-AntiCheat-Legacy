@@ -1,6 +1,7 @@
 Many updates today folks, we are working hard to get the best version out for you.
 Update at your own pace, no need to rush, but we will do <3
 
+[+] NoSlow, checks for shield/food usage
 [#] Optimized many multi-thread methods
 [#] Fixed a few console errors
 [#] Fixed collision false positives

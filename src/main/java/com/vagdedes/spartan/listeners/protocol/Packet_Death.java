@@ -33,6 +33,7 @@ public class Packet_Death extends PacketAdapter {
         if (packet.getType().equals(PacketType.Play.Server.UPDATE_HEALTH)
                 && packet.getFloat().read(0) <= 0.0F) {
             Event_Death.event(event.getPlayer(), true);
+            protocol.useItemPacket = false;
         }
     }
 

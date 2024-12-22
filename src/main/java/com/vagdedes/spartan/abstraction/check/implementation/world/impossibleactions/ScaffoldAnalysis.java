@@ -111,15 +111,14 @@ public class ScaffoldAnalysis extends ProbabilityDetection {
                 flag = false;
             }
 
-            if (buffer.count > 14 && flag) {
+            if (buffer.count > 12 && flag) {
                 this.cancel("type: scaffold analysis ("
                         + (long) Math.abs((((double) 400 / (double) delay) * 100) - 100)
                         + "% faster than possible) [VL: " + buffer.count + "]");
                 buffer.count = 10;
             } else if (buffer.count > 0) {
-                buffer.count -= 3;
+                buffer.count -= 2;
             }
-            //p.player.sendMessage(delay + " " + p.rightClickCounter);
 
         }
 

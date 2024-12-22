@@ -27,7 +27,7 @@ public class Packet_BlockPlace extends PacketAdapter {
 
     public Packet_BlockPlace() {
         super(Register.plugin, ListenerPriority.HIGHEST,
-                via8blockPlace(),
+                via8blockPlace(), PacketType.Play.Client.BLOCK_PLACE,
                 via21blockPlace());
         // Method: Event_BlockPlace.event()
     }
@@ -116,9 +116,8 @@ public class Packet_BlockPlace extends PacketAdapter {
             return (blockPosition.getY() != -1);
         } else {
             return ((packet.getType().equals(PacketType.Play.Client.USE_ITEM)
-                    || (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_21)
-                    && packet.getType().equals(PacketType.Play.Client.USE_ITEM_ON)))
-                    && packet.getHands().read(0).equals(EnumWrappers.Hand.MAIN_HAND));
+                    ||packet.getType().equals(PacketType.Play.Client.USE_ITEM_ON)))
+                    && packet.getHands().read(0).equals(EnumWrappers.Hand.MAIN_HAND);
         }
     }
 
@@ -156,9 +155,12 @@ public class Packet_BlockPlace extends PacketAdapter {
     }
 
     private static PacketType via21blockPlace() {
+        return PacketType.Play.Client.USE_ITEM_ON;
+        /*
         return MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_21)
                 ? PacketType.Play.Client.USE_ITEM_ON
                 : PacketType.Play.Client.BLOCK_PLACE;
+         */
     }
 
     private static PacketType via8blockPlace() {

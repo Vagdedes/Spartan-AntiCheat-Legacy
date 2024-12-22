@@ -32,10 +32,11 @@ public class IMSimulationSpeed extends ProbabilityDetection {
 
     private double vl = 0;
 
-    public int ground = 0, air = 0;
+    public int ground = 0, air = 0, action = 0;
     private boolean velo = false, sprintStatus = true;
     private static final double ACCELERATION_SPRINT = 0.026;
     private static final double ACCELERATION_BASIC = 0.02;
+    private static final double ACCELERATION_ACTION = 0.0073;
     private double ACCELERATION_MOTION = 0.0;
     private static final double[] JUMP
             = new double[]{0.2806, 0.1726};
@@ -77,6 +78,7 @@ public class IMSimulationSpeed extends ProbabilityDetection {
                     this.sprintStatus = false;
                     this.velo = false;
                     double limit = isOnAngle ? 0.2975 : (isOnAngle80) ? 0.289 : 0.235;
+                    limit = (this.action > 6 ? 0.061 : this.action > 3 ? 0.09 : this.action > 1 ? 0.17 : limit);
                     double limitAccel = RayUtils.validRayLines(
                             yawLine, moveLine, 65.0) ? 0.15 : 0.12;
                     if (limit < limit * this.multiplex())
@@ -102,6 +104,7 @@ public class IMSimulationSpeed extends ProbabilityDetection {
                     if (this.ACCELERATION_MOTION > 0.146)
                         lim += this.ACCELERATION_MOTION - 0.146;
                     lim *= this.multiplex();
+                    if (this.action > 0) lim /= 1.4;
                     if (this.protocol().getComponentXZ().pistonTick) lim += 1.0;
                     if (speed < lim)
                         this.setPredict(dx, dz);
@@ -114,8 +117,11 @@ public class IMSimulationSpeed extends ProbabilityDetection {
                     double pX = this.lastDx * 0.91f;
                     double pZ = this.lastDz * 0.91f;
                     this.setPredict(pX, pZ);
+                    double speedAccel = Math.sqrt(getDeviantity(dx, pX) * getDeviantity(dx, pX) + getDeviantity(dz, pZ) * getDeviantity(dz, pZ));
                     double moveAngle = RayUtils.calculateRayLine(moveLine);
-                    double accel = ACCELERATION_SPRINT * this.multiplex();
+                    double accel = ((this.action > 2)
+                                    ? ACCELERATION_ACTION : (this.action > 0) ?
+                                    ACCELERATION_BASIC : ACCELERATION_SPRINT) * this.multiplex();
                     boolean nearbyEntities = this.protocol().spartan.getNearbyEntities(2.5).size() > 1;
                     if (this.protocol().getComponentXZ().pistonTick) accel += 1.0;
                     boolean point = this.isPointWall(to)
@@ -287,6 +293,7 @@ public class IMSimulationSpeed extends ProbabilityDetection {
             return;
         }
         this.air = isOnGround ? 0 : this.air + 1;
+        this.action = this.protocol().useItemPacket ? this.action + 1 : 0;
         this.ground = isOnGround ? this.ground + 1 : 0;
     }
 
