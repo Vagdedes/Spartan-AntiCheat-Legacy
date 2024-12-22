@@ -23,6 +23,7 @@ import me.vagdedes.spartan.system.Enums;
 import org.bukkit.GameMode;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class CheckRunner extends CheckProcess {
 
@@ -38,7 +39,7 @@ public abstract class CheckRunner extends CheckProcess {
         super(hackType, protocol);
         this.creation = System.currentTimeMillis();
         this.prevention = new CheckPrevention();
-        this.detections = Collections.synchronizedMap(new LinkedHashMap<>(2));
+        this.detections = new ConcurrentHashMap<>(2);
         this.disableCauses = Collections.synchronizedList(new ArrayList<>(1));
         this.silentCauses = Collections.synchronizedList(new ArrayList<>(1));
     }
@@ -52,7 +53,7 @@ public abstract class CheckRunner extends CheckProcess {
             int count = 0,
                     total = 0;
 
-            for (CheckDetection detectionExecutor : this.getDetections()) {
+            for (CheckDetection detectionExecutor : new TreeMap<>(this.detections).values()) {
                 if (detectionExecutor instanceof ProbabilityDetection) {
                     total++;
 
@@ -143,9 +144,7 @@ public abstract class CheckRunner extends CheckProcess {
         if (detection == null) {
             return this.getDetection();
         } else {
-            synchronized (this.detections) {
-                return this.detections.get(detection);
-            }
+            return this.detections.get(detection);
         }
     }
 
@@ -153,21 +152,15 @@ public abstract class CheckRunner extends CheckProcess {
         if (this.detections.isEmpty()) {
             new ImplementedProbabilityDetection(this, null, false);
         }
-        synchronized (this.detections) {
-            return this.detections.values().iterator().next();
-        }
+        return this.detections.values().iterator().next();
     }
 
     public final Collection<CheckDetection> getDetections() {
-        synchronized (this.detections) {
-            return new ArrayList<>(this.detections.values());
-        }
+        return new ArrayList<>(this.detections.values());
     }
 
     protected final CheckDetection addDetection(String name, CheckDetection detection) {
-        synchronized (this.detections) {
-            return this.detections.putIfAbsent(name, detection);
-        }
+        return this.detections.putIfAbsent(name, detection);
     }
 
     // Run
