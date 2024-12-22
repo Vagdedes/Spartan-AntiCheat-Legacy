@@ -53,7 +53,7 @@ public class HitReach extends CheckRunner {
             if (CombatUtils.canCheck(this.protocol(), SpartanBukkit.getProtocol((Player) event.target).bukkit)
                             && !this.protocol().bukkit.getGameMode().equals(GameMode.CREATIVE)) {
                 SpartanProtocol target = SpartanBukkit.getProtocol((Player) event.target);
-                List<Location> h = target.positionHistory;
+                List<Location> h = target.getPositionHistory();
                 boolean is1_8 = this.protocol().isUsingVersion(MultiVersion.MCVersion.V1_8);
                 float hitbox = (is1_8) ? 0.4F : 0.3F;
                 AtomicReference<Double> minDistance = new AtomicReference<>(Double.MAX_VALUE);

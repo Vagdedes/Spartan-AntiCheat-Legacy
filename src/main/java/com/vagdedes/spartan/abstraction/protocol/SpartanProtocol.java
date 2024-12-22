@@ -56,7 +56,7 @@ public class SpartanProtocol {
     public byte
             simulationDelayPerTP,
             keepEntity;
-    public final List<Location>
+    private final List<Location>
             positionHistory,
             positionHistoryLong,
             positionHistoryShort;
@@ -120,9 +120,9 @@ public class SpartanProtocol {
         this.tickTime = time;
 
         this.rightClickCounter = 0;
-        this.positionHistoryShort = new CopyOnWriteArrayList<>();
-        this.positionHistory = new CopyOnWriteArrayList<>();
-        this.positionHistoryLong = new CopyOnWriteArrayList<>();
+        this.positionHistoryShort = Collections.synchronizedList(new LinkedList<>());
+        this.positionHistory = Collections.synchronizedList(new LinkedList<>());
+        this.positionHistoryLong = Collections.synchronizedList(new LinkedList<>());
         this.hashPosBuffer = 0;
         this.claimedVelocity = null;
         this.claimedVeloGravity = new CopyOnWriteArrayList<>();
@@ -245,6 +245,24 @@ public class SpartanProtocol {
         }
     }
 
+    public List<Location> getPositionHistory() {
+        synchronized (this.positionHistory) {
+            return new ArrayList<>(this.positionHistory);
+        }
+    }
+
+    public List<Location> getPositionHistoryLong() {
+        synchronized (this.positionHistoryLong) {
+            return new ArrayList<>(this.positionHistoryLong);
+        }
+    }
+
+    public List<Location> getPositionHistoryShort() {
+        synchronized (this.positionHistoryShort) {
+            return new ArrayList<>(this.positionHistoryShort);
+        }
+    }
+
     public SpartanLocation getPastTickRotation() {
         Location l = this.getLocation().clone();
         l.setYaw(this.from.getYaw());
@@ -335,24 +353,32 @@ public class SpartanProtocol {
     }
 
     public void addRawLocation(Location location) {
-        this.positionHistory.add(location.clone());
-        this.positionHistoryLong.add(location.clone());
-        this.positionHistoryShort.add(location.clone());
+        synchronized (this.positionHistory) {
+            this.positionHistory.add(location.clone());
 
-        if (this.positionHistory.size() > 20) {
-            Iterator<Location> iterator = this.positionHistory.iterator();
-            iterator.next();
-            iterator.remove();
+            if (this.positionHistory.size() > 20) {
+                Iterator<Location> iterator = this.positionHistory.iterator();
+                iterator.next();
+                iterator.remove();
+            }
         }
-        if (this.positionHistoryShort.size() > 5) {
-            Iterator<Location> iterator = this.positionHistoryShort.iterator();
-            iterator.next();
-            iterator.remove();
+        synchronized (this.positionHistoryShort) {
+            this.positionHistoryShort.add(location.clone());
+
+            if (this.positionHistoryShort.size() > 5) {
+                Iterator<Location> iterator = this.positionHistoryShort.iterator();
+                iterator.next();
+                iterator.remove();
+            }
         }
-        if (this.positionHistoryLong.size() > 50) {
-            Iterator<Location> iterator = this.positionHistoryLong.iterator();
-            iterator.next();
-            iterator.remove();
+        synchronized (this.positionHistoryLong) {
+            this.positionHistoryLong.add(location.clone());
+
+            if (this.positionHistoryLong.size() > 50) {
+                Iterator<Location> iterator = this.positionHistoryLong.iterator();
+                iterator.next();
+                iterator.remove();
+            }
         }
     }
 

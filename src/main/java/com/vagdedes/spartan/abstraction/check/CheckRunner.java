@@ -23,7 +23,6 @@ import me.vagdedes.spartan.system.Enums;
 import org.bukkit.GameMode;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class CheckRunner extends CheckProcess {
 
@@ -33,13 +32,13 @@ public abstract class CheckRunner extends CheckProcess {
     private final Collection<CheckCancellation> disableCauses, silentCauses;
     CheckPrevention prevention;
     private boolean cancelled;
-    protected final Map<String, CheckDetection> detections;
+    private final Map<String, CheckDetection> detections;
 
     public CheckRunner(Enums.HackType hackType, SpartanProtocol protocol) {
         super(hackType, protocol);
         this.creation = System.currentTimeMillis();
         this.prevention = new CheckPrevention();
-        this.detections = new ConcurrentHashMap<>(2);
+        this.detections = Collections.synchronizedMap(new LinkedHashMap<>(2));
         this.disableCauses = Collections.synchronizedList(new ArrayList<>(1));
         this.silentCauses = Collections.synchronizedList(new ArrayList<>(1));
     }
@@ -47,11 +46,13 @@ public abstract class CheckRunner extends CheckProcess {
     // Probability
 
     public final boolean hasSufficientData(Check.DataType dataType, double ratio) {
-        if (ratio > 0.0) {
+        if (this.detections.isEmpty()) {
+            return false;
+        } else if (ratio > 0.0) {
             int count = 0,
                     total = 0;
 
-            for (CheckDetection detectionExecutor : this.detections.values()) {
+            for (CheckDetection detectionExecutor : this.getDetections()) {
                 if (detectionExecutor instanceof ProbabilityDetection) {
                     total++;
 
@@ -68,7 +69,7 @@ public abstract class CheckRunner extends CheckProcess {
         } else {
             boolean found = false;
 
-            for (CheckDetection detectionExecutor : this.detections.values()) {
+            for (CheckDetection detectionExecutor : this.getDetections()) {
                 if (detectionExecutor instanceof ProbabilityDetection) {
                     found = true;
 
@@ -84,7 +85,7 @@ public abstract class CheckRunner extends CheckProcess {
     public final double getExtremeProbability(Check.DataType dataType) {
         double num = PlayerEvidence.emptyProbability;
 
-        for (CheckDetection detectionExecutor : this.detections.values()) {
+        for (CheckDetection detectionExecutor : this.getDetections()) {
             if (detectionExecutor.hasSufficientData(dataType)) {
                 if (PlayerEvidence.POSITIVE) {
                     num = Math.max(num, detectionExecutor.getProbability(dataType));
@@ -139,20 +140,34 @@ public abstract class CheckRunner extends CheckProcess {
     // Detections
 
     public final CheckDetection getDetection(String detection) {
-        return detection == null
-                ? this.getDetection()
-                : this.detections.get(detection);
+        if (detection == null) {
+            return this.getDetection();
+        } else {
+            synchronized (this.detections) {
+                return this.detections.get(detection);
+            }
+        }
     }
 
     public final CheckDetection getDetection() {
         if (this.detections.isEmpty()) {
             new ImplementedProbabilityDetection(this, null, false);
         }
-        return this.detections.values().iterator().next();
+        synchronized (this.detections) {
+            return this.detections.values().iterator().next();
+        }
     }
 
     public final Collection<CheckDetection> getDetections() {
-        return this.detections.values();
+        synchronized (this.detections) {
+            return new ArrayList<>(this.detections.values());
+        }
+    }
+
+    protected final CheckDetection addDetection(String name, CheckDetection detection) {
+        synchronized (this.detections) {
+            return this.detections.putIfAbsent(name, detection);
+        }
     }
 
     // Run

@@ -55,13 +55,13 @@ public abstract class CheckDetection extends CheckProcess {
             while (true) {
                 random = Integer.toString(new Random().nextInt());
 
-                if (executor.detections.putIfAbsent(random, this) == null) {
+                if (executor.addDetection(random, this) == null) {
                     break;
                 }
             }
             this.random = random;
         } else {
-            if (executor.detections.putIfAbsent(this.name, this) != null) {
+            if (executor.addDetection(this.name, this) != null) {
                 throw new IllegalArgumentException(
                         "Detection '" + this.name + "' already exists for enum '" + executor.hackType.toString() + "'."
                 );
