@@ -57,6 +57,6 @@ public class ItemDrops extends CheckRunner {
 
     @Override
     protected boolean canRun() {
-        return !this.protocol().bukkit.isDead();
+        return !this.protocol().spartan.isDead();
     }
 }

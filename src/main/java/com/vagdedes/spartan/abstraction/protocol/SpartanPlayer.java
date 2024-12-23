@@ -493,4 +493,11 @@ public class SpartanPlayer {
                 || Math.abs(loc.getZ() - center.getZ()) > size;
     }
 
+    // Separator
+
+    public boolean isDead() {
+        return this.protocol.bukkit.isDead()
+                && this.protocol.bukkit.getHealth() <= 0.0;
+    }
+
 }

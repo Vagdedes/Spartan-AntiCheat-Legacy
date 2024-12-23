@@ -133,7 +133,7 @@ public class ImpossibleInventory extends CheckRunner {
                     : check.getBooleanOption("check_sleeping", true)
                     && this.protocol().bukkit.isSleeping() ? 3
                     : check.getBooleanOption("check_dead", true)
-                    && this.protocol().bukkit.isDead() ? 5
+                    && this.protocol().spartan.isDead() ? 5
                     : check.getBooleanOption("check_sprint_jumping", true)
                     && this.protocol().isSprinting()
                     && this.protocol().spartan.movement.isJumping(this.protocol().spartan.movement.getValueOrDefault(this.protocol().spartan.movement.getEventVertical(), 0.0)) ? 6
