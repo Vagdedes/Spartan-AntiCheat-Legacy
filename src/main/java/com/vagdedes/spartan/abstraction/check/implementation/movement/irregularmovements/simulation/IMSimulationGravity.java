@@ -35,7 +35,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
             slowFalling = 0, levitationA = 0, slowFallingA = 0;
     private boolean slime = false, slime0Tick = false,
             trident = false, cringeBlockClimb = false, allowLowJump = false,
-            allowMinorGravityChange = false;
+            allowMinorGravityChange = false, allowLowMinorAccel = false;
     private int slimePunch = 0, slimeTicks = 0, pistonTicks = 0, sub = 0;
     private double vl = 0.0;
     private int semi = 0;
@@ -289,6 +289,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
                     && this.slimePunch > 0
                     && motion > 0 && motion < 1.52) {
                 this.setPredict(motion);
+                this.allowLowMinorAccel = true;
                 this.slimePunch--;
             }
 
@@ -359,6 +360,10 @@ public class IMSimulationGravity extends ProbabilityDetection {
                     && getDeviantity(motion) <= 0.08) {
                 this.setPredict(motion);
                 this.allowMinorGravityChange = false;
+            }
+            if (this.allowLowMinorAccel && this.predictY() > motion && getDeviantity(motion) <= 0.1) {
+                this.setPredict(motion);
+                this.allowLowMinorAccel = false;
             }
             if (this.protocol().spartan.trackers.has(
                             PlayerTrackers.TrackerType.TELEPORT, "tp")

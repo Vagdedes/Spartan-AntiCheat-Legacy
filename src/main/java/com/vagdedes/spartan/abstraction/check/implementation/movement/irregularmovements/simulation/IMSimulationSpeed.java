@@ -123,7 +123,6 @@ public class IMSimulationSpeed extends ProbabilityDetection {
                                     ? ACCELERATION_ACTION : (this.action > 0) ?
                                     ACCELERATION_BASIC : ACCELERATION_SPRINT) * this.multiplex();
                     boolean nearbyEntities = this.protocol().spartan.getNearbyEntities(2.5).size() > 1;
-                    if (this.protocol().getComponentXZ().pistonTick) accel += 1.0;
                     boolean point = this.isPointWall(to)
                             || this.isPointWall(from)
                             || (nearbyEntities)
@@ -150,6 +149,7 @@ public class IMSimulationSpeed extends ProbabilityDetection {
                         ACCELERATION_SPRINT * (1.5) * this.multiplex(),
                         new SpartanVector2D(dx, dz)
                 );
+                //protocol().bukkit.sendMessage("i: " + this.protocol().getComponentXZ().pistonTick + " " + this.removePistonTick);
                 if ((this.isOnSlimeWide(to) || this.isOnSlimeWide(from)))
                     this.nearSlimeStatus = 4;
                 if (!(dx == predictX && dz == predictZ)) {
@@ -175,6 +175,11 @@ public class IMSimulationSpeed extends ProbabilityDetection {
                     if (d >= 0.02 && d <= 1.7 && this.protocol().getComponentXZ().explosionTick) {
                         this.protocol().getComponentXZ().explosionTick = false;
                         this.setPredict(dx, dz);
+                    }
+                    if (this.protocol().getComponentXZ().pistonTick
+                                    && getDeviantity(pr, speed) > 0.1 && getDeviantity(pr, speed) <= 1.0) {
+                        this.setPredict(dx, dz);
+                        this.removePistonTick = true;
                     }
                     if (d >= 0.01 && d <= 1.0 && this.protocol().spartan.trackers.has(
                                     PlayerTrackers.TrackerType.VEHICLE, "vh_tp")) {
@@ -204,11 +209,11 @@ public class IMSimulationSpeed extends ProbabilityDetection {
                             this.vl -= 0.1;
                         }
                     }
-                    if (this.removePistonTick) {
-                        this.protocol().getComponentXZ().pistonTick = false;
-                        this.removePistonTick = false;
-                    }
                 }
+            }
+            if (this.removePistonTick) {
+                this.protocol().getComponentXZ().pistonTick = false;
+                this.removePistonTick = false;
             }
             this.vl /= 1.15;
             this.lastDx = dx;
