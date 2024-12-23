@@ -5,6 +5,7 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.event.PlayerTickEvent;
 import com.vagdedes.spartan.abstraction.event.SuperPositionPacketEvent;
@@ -23,6 +24,7 @@ import org.bukkit.entity.Boat;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.Set;
 
@@ -46,6 +48,10 @@ public class Packet_Movement extends PacketAdapter {
         Player player = event.getPlayer();
         SpartanProtocol p = SpartanBukkit.getProtocol(player);
         Location tp = ProtocolTools.readLocation(event);
+        if (!event.getPacket().getFloat().getValues().isEmpty()) {
+            tp.setYaw(event.getPacket().getFloat().read(0));
+            tp.setPitch(event.getPacket().getFloat().read(1));
+        }
 
         if (tp == null) {
             return;
@@ -53,9 +59,6 @@ public class Packet_Movement extends PacketAdapter {
         Location loc = p.getLocation().clone();
         Location result = tp.clone();
 
-        if (result == null) {
-            return;
-        }
         Set<tpFlags> flags = ProtocolTools.getTeleportFlags(event);
         for (tpFlags flag : flags) {
             if (flag.equals(tpFlags.X))
@@ -179,7 +182,15 @@ public class Packet_Movement extends PacketAdapter {
                     l.setPitch(packet.getFloat().read(1));
                 }
             }
-
+            if (p.useItemPacket) {
+                if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
+                    if (!player.getInventory().getItemInMainHand().getType().isEdible()
+                                    && !player.getInventory().getItemInOffHand().getType().isEdible())
+                        p.useItemPacket = false;
+                } else {
+                    if (!player.getInventory().getItemInHand().getType().isEdible()) p.useItemPacket = false;
+                }
+            }
             PlayerMoveEvent moveEvent = new PlayerMoveEvent(
                             player,
                             p.getFromLocation(),
@@ -202,6 +213,6 @@ public class Packet_Movement extends PacketAdapter {
     }
 
     public enum tpFlags {
-        X, Y, Z
+        X, Y, Z, Y_ROT, X_ROT
     }
 }

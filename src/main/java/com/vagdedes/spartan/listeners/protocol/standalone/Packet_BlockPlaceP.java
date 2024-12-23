@@ -23,9 +23,7 @@ public class Packet_BlockPlaceP extends PacketAdapter {
         super(
                 Register.plugin,
                 ListenerPriority.HIGHEST,
-                (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_21))
-                                ? PacketType.Play.Client.USE_ITEM_ON
-                                : PacketType.Play.Client.BLOCK_PLACE
+                resolvePacketTypes()
         );
     }
 
@@ -34,5 +32,13 @@ public class Packet_BlockPlaceP extends PacketAdapter {
         Player player = event.getPlayer();
         SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
         protocol.timerBalancer.addBalance(50);
+    }
+
+    private static PacketType[] resolvePacketTypes() {
+        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
+            return new PacketType[]{ PacketType.Play.Client.USE_ITEM, PacketType.Play.Client.USE_ITEM_ON, PacketType.Play.Client.BLOCK_PLACE };
+        } else {
+            return new PacketType[]{ PacketType.Play.Client.USE_ITEM_ON, PacketType.Play.Client.BLOCK_PLACE };
+        }
     }
 }

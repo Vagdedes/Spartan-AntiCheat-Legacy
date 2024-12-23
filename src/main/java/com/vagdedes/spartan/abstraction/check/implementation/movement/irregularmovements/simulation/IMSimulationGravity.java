@@ -13,6 +13,7 @@ import com.vagdedes.spartan.functionality.server.MultiVersion.MCVersion;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.EntityUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PotionEffectUtils;
+import com.vagdedes.spartan.utils.minecraft.inventory.MaterialUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -41,6 +42,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
     private int semi = 0;
     private double fallDistance = 0.0;
     private double lastGroundY = 0;
+    private double teleportExcept = 0;
 
     public IMSimulationGravity(CheckRunner executor) {
         super(executor, "gravity_packets", true);
@@ -67,6 +69,9 @@ public class IMSimulationGravity extends ProbabilityDetection {
                     (atJumpModifyBlock(to)
                             && this.jumpMotion() * 1.5 > motion)
                             ? motion : this.jumpMotion();
+            if (BlockUtils.areWebs(new SpartanLocation(to).getBlock().getType())) {
+                jumpStartMotionY /= 10;
+            }
                 /*
                 this.air = isOnGround ? 0 : this.air + 1;
                 this.ground = isOnGround ? this.ground + 1 : 0;
@@ -188,7 +193,8 @@ public class IMSimulationGravity extends ProbabilityDetection {
                 this.topReset = 0;
             }
             boolean onWaterBubble = this.isOnWaterBubble(to);
-            if (this.protocol().bukkit.isSwimming()) {
+            if (MultiVersion.isOrGreater(MCVersion.V1_13)
+                            && this.protocol().bukkit.isSwimming()) {
                 this.swimming = 2;
             } else if (this.swimming > 0) {
                 this.swimming--;
@@ -300,6 +306,11 @@ public class IMSimulationGravity extends ProbabilityDetection {
                 this.setPredict(motion);
                 this.allowLowMinorAccel = true;
                 this.slimePunch--;
+            }
+            if (this.getDeviantity(motion) > 0.001 &&
+                            this.teleportExcept > 0 && this.getDeviantity(motion) <= this.teleportExcept) {
+                this.setPredict(motion);
+                this.teleportExcept = 0;
             }
 
             boolean boat = false;
@@ -455,6 +466,9 @@ public class IMSimulationGravity extends ProbabilityDetection {
             return;
         }
         this.air = 0;
+        this.ground = 0;
+        this.teleportExcept = 0.35;
+        this.setPredict(0.0);
     }
 
     private void ground(boolean isOnGround) {
