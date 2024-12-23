@@ -84,7 +84,6 @@ public class Event_Movement implements Listener {
                 return;
             }
             MovementProcessing.run(protocol, to, ver, box);
-
             // Detections
             boolean cancelled = e.isCancelled();
             protocol.profile().getRunner(Enums.HackType.Exploits).handle(cancelled, null);

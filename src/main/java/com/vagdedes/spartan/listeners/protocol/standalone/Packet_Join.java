@@ -30,11 +30,11 @@ public class Packet_Join extends PacketAdapter {
         }
         Packet_LagCompensation.newPacket(protocol.spartan.getEntityId());
         protocol.transactionBoot = true;
-        Bukkit.getScheduler().runTask(Register.plugin, () -> {
+        Bukkit.getScheduler().runTaskLater(Register.plugin, () -> {
             if (protocol.spartan.getVehicle() != null) {
-                protocol.vehicleStatus = true;
+                protocol.entityHandle = true;
             }
-        });
+        }, 1L);
     }
 
 }

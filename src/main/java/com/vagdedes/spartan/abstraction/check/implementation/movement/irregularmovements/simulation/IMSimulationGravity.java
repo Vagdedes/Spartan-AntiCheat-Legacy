@@ -576,6 +576,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
                     );
 
                     Material m2 = block.getType();
+                    if (m == null || m2 == null) return false;
 
                     if (m.equals(Material.BUBBLE_COLUMN) || m2.equals(Material.BUBBLE_COLUMN)) {
                         return true;

@@ -74,7 +74,6 @@ public class Packet_Movement extends PacketAdapter {
         Player player = event.getPlayer();
         SpartanProtocol p = SpartanBukkit.getProtocol(player);
         PacketContainer packet = event.getPacket();
-
         // Always loaded if you use this listener
         if (p.spartan.isBedrockPlayer()) {
             return;
