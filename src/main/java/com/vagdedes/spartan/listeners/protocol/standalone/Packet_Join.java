@@ -7,6 +7,7 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 public class Packet_Join extends PacketAdapter {
@@ -29,6 +30,11 @@ public class Packet_Join extends PacketAdapter {
         }
         Packet_LagCompensation.newPacket(protocol.spartan.getEntityId());
         protocol.transactionBoot = true;
+        Bukkit.getScheduler().runTask(Register.plugin, () -> {
+            if (protocol.spartan.getVehicle() != null) {
+                protocol.vehicleStatus = true;
+            }
+        });
     }
 
 }

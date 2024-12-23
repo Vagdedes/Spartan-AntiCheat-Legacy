@@ -88,8 +88,7 @@ public class IMSimulationSpeed extends ProbabilityDetection {
                     limit *= this.multiplex();
                     limit += this.ACCELERATION_MOTION;
                     if (this.protocol().getComponentXZ().pistonTick) limit += 1.0;
-                    if (speed < limit)
-                        this.setPredict(dx, dz);
+                    if (speed < limit) this.setPredict(dx, dz);
                     if (this.ACCELERATION_MOTION > 0)
                         this.ACCELERATION_MOTION -= 0.02;
                     if (this.ACCELERATION_MOTION < 0) this.ACCELERATION_MOTION = 0;
@@ -104,7 +103,7 @@ public class IMSimulationSpeed extends ProbabilityDetection {
                     if (this.ACCELERATION_MOTION > 0.146)
                         lim += this.ACCELERATION_MOTION - 0.146;
                     lim *= this.multiplex();
-                    if (this.action > 0) lim /= 1.4;
+                    if (this.action > 0) lim /= 1.2;
                     if (this.protocol().getComponentXZ().pistonTick) lim += 1.0;
                     if (speed < lim)
                         this.setPredict(dx, dz);
@@ -203,7 +202,7 @@ public class IMSimulationSpeed extends ProbabilityDetection {
                     pr = Math.sqrt(predictX * predictX + predictZ * predictZ);
                     d = getDeviantity(pr, speed);
                     if (!(dx == predictX && dz == predictZ)) {
-                        this.vl += (d * 1.5) + (air == 1 ? 0.3 : (d > 0.04) ? 0.1 : 0.03);
+                        this.vl += (d * 1.5) + (air == 1 ? 0.3 : (d > 0.04) ? 0.12 : 0.06);
                         if (this.vl > 0.45) {
                             this.cancel("type: simulation[accel], diff: " + d);
                             this.vl -= 0.1;
