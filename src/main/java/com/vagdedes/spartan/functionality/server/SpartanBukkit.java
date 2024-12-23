@@ -79,7 +79,7 @@ public class SpartanBukkit {
 
     public static SpartanProtocol getProtocol(Player player, boolean updateLastInteraction) {
         if (ProtocolLib.isTemporary(player)) {
-            return new SpartanProtocol(player);
+            return new SpartanProtocol(player, UUID);
         } else {
             SpartanProtocol protocol = playerProtocol.get(player.getUniqueId());
 

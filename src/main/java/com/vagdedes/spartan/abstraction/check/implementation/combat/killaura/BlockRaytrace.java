@@ -29,7 +29,7 @@ public class BlockRaytrace extends ProbabilityDetection {
             return;
         }
         if (targetHandle instanceof Player) {
-            SpartanProtocol target = SpartanBukkit.getProtocol(targetHandle.getUniqueId());
+            SpartanProtocol target = SpartanBukkit.getProtocol((Player) targetHandle);
 
             if (target != null) {
                 Location playerLocation = this.protocol.getLocation();
