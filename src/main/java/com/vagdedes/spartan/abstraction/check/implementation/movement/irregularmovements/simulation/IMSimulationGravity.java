@@ -13,7 +13,6 @@ import com.vagdedes.spartan.functionality.server.MultiVersion.MCVersion;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.EntityUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PotionEffectUtils;
-import com.vagdedes.spartan.utils.minecraft.inventory.MaterialUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
