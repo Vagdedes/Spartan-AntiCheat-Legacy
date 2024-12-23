@@ -1,1 +1,2 @@
 [#] Fixed some flaws in simulation gravity/accel
+[#] Fixed simulation gravity/accel bypasses

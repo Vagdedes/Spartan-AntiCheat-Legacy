@@ -187,10 +187,11 @@ public class IMSimulationGravity extends ProbabilityDetection {
                 --this.top;
                 this.topReset = 0;
             }
-
-            if (dev1 > 0.01 && isOnWater && motion > -3.92 && motion < 0.41) {
+            boolean onWaterBubble = this.isOnWaterBubble(to);
+            if (dev1 > 0.01 && isOnWater && motion > -3.92
+                            && motion < (onWaterBubble ? 0.8 : 0.4)) {
                 this.setPredict(motion);
-                this.sub = 5;
+                this.sub = (onWaterBubble) ? 8 : 5;
             }
 
             if (this.abs(this.abs(motion)
@@ -523,6 +524,39 @@ public class IMSimulationGravity extends ProbabilityDetection {
                     if (BlockUtils.isLiquidOrWaterLogged(block, true)
                             || BlockUtils.isLiquid(m) || BlockUtils.isLiquid(m2)
                             || BlockUtils.isWaterLogged(block)) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private boolean isOnWaterBubble(Location location) {
+        if (!MultiVersion.isOrGreater(MCVersion.V1_13))
+            return false;
+        double x = location.getX();
+        double y = location.getY() - 0.1;
+        double z = location.getZ();
+
+        for (int dx = -1; dx <= 1; ++dx) {
+            for (int dy = -1; dy <= 1; ++dy) {
+                for (int dz = -1; dz <= 1; ++dz) {
+                    SpartanBlock block = new SpartanLocation(
+                                    new Location(this.protocol().getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
+                    ).getBlock();
+
+                    Material m = this.protocol().packetWorld.getBlock(
+                                    new Location(this.protocol().getWorld(),
+                                                    x + (double) dx * 0.3,
+                                                    y + (double) dy * 0.5,
+                                                    z + (double) dz * 0.3)
+                    );
+
+                    Material m2 = block.getType();
+
+                    if (m.equals(Material.BUBBLE_COLUMN) || m2.equals(Material.BUBBLE_COLUMN)) {
                         return true;
                     }
                 }
