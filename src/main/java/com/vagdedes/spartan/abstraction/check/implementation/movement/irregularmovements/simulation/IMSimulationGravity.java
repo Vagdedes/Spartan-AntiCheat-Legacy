@@ -146,6 +146,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
                     && p.getComponentY().pistonTick
                     && motion <= 0.25) {
                 this.setPredict(motion);
+                p.getComponentY().pistonTick = false;
             }
             if (pistonTicks > 0) pistonTicks--;
             if (this.getDeviantity(motion) > 0.01
