@@ -119,7 +119,7 @@ public class IMSimulationSpeed extends ProbabilityDetection {
                     double speedAccel = Math.sqrt(getDeviantity(dx, pX) * getDeviantity(dx, pX) + getDeviantity(dz, pZ) * getDeviantity(dz, pZ));
                     double moveAngle = RayUtils.calculateRayLine(moveLine);
                     double accel = ((this.action > 2)
-                                    ? ACCELERATION_ACTION : (this.action > 0) ?
+                                    ? ACCELERATION_ACTION : (this.action > 1) ?
                                     ACCELERATION_BASIC : ACCELERATION_SPRINT) * this.multiplex();
                     boolean nearbyEntities = this.protocol().spartan.getNearbyEntities(2.5).size() > 1;
                     boolean point = this.isPointWall(to)
