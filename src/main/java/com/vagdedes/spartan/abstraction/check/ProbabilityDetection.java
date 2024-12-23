@@ -175,7 +175,7 @@ public abstract class ProbabilityDetection extends CheckDetection {
                 || time - this.notifications >= 5_000L
                 || (protocol != null
                 ? protocol.spartan.equals(this.protocol.spartan)
-                : this.protocol.bukkit.getName().equals(detected.toString())))) {
+                : this.protocol.bukkit().getName().equals(detected.toString())))) {
             int ticks = this.executor.getNotificationTicksCooldown(protocol);
 
             if (ticks > 0) {

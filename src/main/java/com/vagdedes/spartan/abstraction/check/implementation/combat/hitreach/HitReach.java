@@ -50,8 +50,8 @@ public class HitReach extends CheckRunner {
         PlayerAttackEvent event = (PlayerAttackEvent) object;
         if (!(event.target instanceof Player)) return;
         if (this.protocol.packetsEnabled()) {
-            if (CombatUtils.canCheck(this.protocol, SpartanBukkit.getProtocol((Player) event.target).bukkit)
-                            && !this.protocol.bukkit.getGameMode().equals(GameMode.CREATIVE)) {
+            if (CombatUtils.canCheck(this.protocol, SpartanBukkit.getProtocol((Player) event.target).bukkit())
+                            && !this.protocol.bukkit().getGameMode().equals(GameMode.CREATIVE)) {
                 SpartanProtocol target = SpartanBukkit.getProtocol((Player) event.target);
                 List<Location> h = target.getPositionHistory();
                 boolean is1_8 = this.protocol.isUsingVersion(MultiVersion.MCVersion.V1_8);
@@ -106,7 +106,7 @@ public class HitReach extends CheckRunner {
 
                     if (minDistance.get() > HIT_BOX_VAL) {
                         if (++hitBoxVL > 3D) {
-                            hitboxRaytrace.cancel("Missing HitBox of " + target.bukkit.getName());
+                            hitboxRaytrace.cancel("Missing HitBox of " + target.bukkit().getName());
                         }
                     } else {
                         hitBoxVL = Math.max(hitBoxVL - 5D, 0);
@@ -125,7 +125,7 @@ public class HitReach extends CheckRunner {
         } else {
             LivingEntity target = event.target;
             if (CombatUtils.canCheck(this.protocol, target)
-                            && !this.protocol.bukkit.getGameMode().equals(GameMode.CREATIVE)) {
+                            && !this.protocol.bukkit().getGameMode().equals(GameMode.CREATIVE)) {
                 double bruteforceRayTrace = RayUtils.bruteforceRayTrace(this.protocol, target),
                                 diff = bruteforceRayTrace - 0.4;
                 rayTraceAnalysis.add(bruteforceRayTrace);

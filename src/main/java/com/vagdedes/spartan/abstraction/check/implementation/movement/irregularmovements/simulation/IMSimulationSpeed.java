@@ -230,8 +230,8 @@ public class IMSimulationSpeed extends ProbabilityDetection {
         ExtendedPotionEffect speedEffect = this.protocol.spartan.getPotionEffect(PotionEffectType.SPEED, 5);
         Location l = this.protocol.getLocation().clone().add(0, -0.5, 0);
         Location lF = this.protocol.getFromLocation().clone().add(0, -0.5, 0);
-        if (PlayerUtils.soulSpeed && this.protocol.bukkit.getInventory().getBoots() != null) {
-            int e = this.protocol.bukkit.getInventory().getBoots().getEnchantmentLevel(Enchantment.SOUL_SPEED);
+        if (PlayerUtils.soulSpeed && this.protocol.bukkit().getInventory().getBoots() != null) {
+            int e = this.protocol.bukkit().getInventory().getBoots().getEnchantmentLevel(Enchantment.SOUL_SPEED);
             double v = (e + 1) * 0.4;
             m += v;
         }
@@ -253,7 +253,7 @@ public class IMSimulationSpeed extends ProbabilityDetection {
         if (this.isOnSemi(l)) m *= 1.4;
         if (this.protocol.spartan.movement.isGliding()) m *= 18.0;
         if (this.protocol.spartan.movement.isFlying() || this.protocol.flyingTicks > 0) m *= 25.0;
-        m *= (this.protocol.bukkit.getWalkSpeed() * 5);
+        m *= (this.protocol.bukkit().getWalkSpeed() * 5);
         return m;
     }
 

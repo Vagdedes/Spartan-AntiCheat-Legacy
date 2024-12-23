@@ -35,7 +35,7 @@ public class FastEat extends CheckRunner {
 
     private long getDelay() {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
-            PlayerInventory inventory = this.protocol.bukkit.getInventory();
+            PlayerInventory inventory = this.protocol.bukkit().getInventory();
 
             for (ItemStack itemStack : new ItemStack[]{inventory.getItemInHand(), inventory.getItemInOffHand()}) {
                 if (itemStack != null) {
@@ -98,9 +98,9 @@ public class FastEat extends CheckRunner {
         if (object instanceof FoodLevelChangeEvent) {
             int lvl = ((FoodLevelChangeEvent) object).getFoodLevel();
 
-            if (lvl > this.protocol.bukkit.getFoodLevel()
+            if (lvl > this.protocol.bukkit().getFoodLevel()
                     && (checkDelay() || checkEating())) {
-                Player p = this.protocol.bukkit;
+                Player p = this.protocol.bukkit();
                 p.setFoodLevel(p.getFoodLevel() - (lvl - p.getFoodLevel()));
             }
         } else if (!this.protocol.spartan.isBedrockPlayer()) {

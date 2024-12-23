@@ -201,12 +201,12 @@ public abstract class CheckRunner extends CheckProcess {
         return this.protocol != null
                 && (System.currentTimeMillis() - this.creation) > TPS.maximum * TPS.tickTime
                 && (!cancelled || hackType.getCheck().handleCancelledEvents)
-                && (!v1_8 || this.protocol.bukkit.getGameMode() != GameMode.SPECTATOR)
+                && (!v1_8 || this.protocol.bukkit().getGameMode() != GameMode.SPECTATOR)
                 && hackType.getCheck().isEnabled(this.protocol.spartan.dataType, this.protocol.getWorld().getName())
                 && Attributes.getAmount(this.protocol, Attributes.GENERIC_SCALE) == 0.0
-                && !ProtocolLib.isTemporary(this.protocol.bukkit)
+                && !ProtocolLib.isTemporary(this.protocol.bukkit())
                 && canRun()
-                && !Permissions.isBypassing(this.protocol.bukkit, hackType);
+                && !Permissions.isBypassing(this.protocol.bukkit(), hackType);
     }
 
     // Causes
@@ -260,7 +260,7 @@ public abstract class CheckRunner extends CheckProcess {
         }
         this.disableCauses.add(new CheckCancellation(reason, pointer, ticks));
         if (this.protocol != null) {
-            InteractiveInventory.playerInfo.refresh(this.protocol.bukkit.getName());
+            InteractiveInventory.playerInfo.refresh(this.protocol.bukkit().getName());
         }
     }
 
@@ -268,7 +268,7 @@ public abstract class CheckRunner extends CheckProcess {
         this.silentCauses.add(new CheckCancellation(reason, pointer, ticks));
 
         if (this.protocol != null) {
-            InteractiveInventory.playerInfo.refresh(this.protocol.bukkit.getName());
+            InteractiveInventory.playerInfo.refresh(this.protocol.bukkit().getName());
         }
     }
 
@@ -276,7 +276,7 @@ public abstract class CheckRunner extends CheckProcess {
         this.disableCauses.clear();
 
         if (this.protocol != null) {
-            InteractiveInventory.playerInfo.refresh(this.protocol.bukkit.getName());
+            InteractiveInventory.playerInfo.refresh(this.protocol.bukkit().getName());
         }
     }
 
@@ -284,7 +284,7 @@ public abstract class CheckRunner extends CheckProcess {
         this.silentCauses.clear();
 
         if (this.protocol != null) {
-            InteractiveInventory.playerInfo.refresh(this.protocol.bukkit.getName());
+            InteractiveInventory.playerInfo.refresh(this.protocol.bukkit().getName());
         }
     }
 
@@ -296,7 +296,7 @@ public abstract class CheckRunner extends CheckProcess {
                 CheckCancelEvent checkCancelEvent;
 
                 if (Config.settings.getBoolean("Important.enable_developer_api")) {
-                    checkCancelEvent = new CheckCancelEvent(this.protocol.bukkit, hackType);
+                    checkCancelEvent = new CheckCancelEvent(this.protocol.bukkit(), hackType);
                     Register.manager.callEvent(checkCancelEvent);
                 } else {
                     checkCancelEvent = null;
@@ -314,7 +314,7 @@ public abstract class CheckRunner extends CheckProcess {
                 Boolean[] cancelled = new Boolean[1];
 
                 SpartanBukkit.transferTask(this.protocol, () -> {
-                    CheckCancelEvent checkCancelEvent = new CheckCancelEvent(this.protocol.bukkit, hackType);
+                    CheckCancelEvent checkCancelEvent = new CheckCancelEvent(this.protocol.bukkit(), hackType);
                     Register.manager.callEvent(checkCancelEvent);
                     cancelled[0] = checkCancelEvent.isCancelled();
 
@@ -351,7 +351,7 @@ public abstract class CheckRunner extends CheckProcess {
                 && frequency != DetectionNotifications.defaultFrequency) {
             return frequency;
         } else if (detected != null
-                && (detected.bukkit.equals(this.protocol.bukkit)
+                && (detected.bukkit().equals(this.protocol.bukkit())
                 || detected.getWorld().equals(this.protocol.getWorld())
                 && detected.getLocation().distance(this.protocol.getLocation()) <= PlayerUtils.chunk)) {
             return AlgebraUtils.integerRound(Math.sqrt(TPS.maximum));

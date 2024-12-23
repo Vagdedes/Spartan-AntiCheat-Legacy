@@ -16,8 +16,8 @@ public class IMFoodSprint extends ProbabilityDetection {
 
     final void run() {
         if (this.protocol.isSprinting()) {
-            GameMode gameMode = this.protocol.bukkit.getGameMode();
-            int food = this.protocol.bukkit.getFoodLevel(),
+            GameMode gameMode = this.protocol.bukkit().getGameMode();
+            int food = this.protocol.bukkit().getFoodLevel(),
                     threshold = 6;
 
             if (food <= threshold

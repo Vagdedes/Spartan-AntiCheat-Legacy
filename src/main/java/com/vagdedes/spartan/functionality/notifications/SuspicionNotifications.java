@@ -82,12 +82,12 @@ public class SuspicionNotifications {
 
                 if (evidence.length() > 0) {
                     size++;
-                    players.append(protocol.bukkit.getName()).append(comma);
+                    players.append(protocol.bukkit().getName()).append(comma);
                     Location location = protocol.getLocation();
                     CloudConnections.executeDiscordWebhook(
                             "checks",
                             protocol.getUUID(),
-                            protocol.bukkit.getName(),
+                            protocol.bukkit().getName(),
                             location.getBlockX(),
                             location.getBlockY(),
                             location.getBlockZ(),
@@ -105,7 +105,7 @@ public class SuspicionNotifications {
 
             if (!staff.isEmpty()) {
                 for (SpartanProtocol protocol : staff) {
-                    protocol.bukkit.sendMessage(message);
+                    protocol.bukkit().sendMessage(message);
                 }
             }
         }

@@ -88,7 +88,7 @@ public class CloudBase {
     }
 
     public static void announce(SpartanProtocol protocol) {
-        if (Permissions.isStaff(protocol.bukkit)) {
+        if (Permissions.isStaff(protocol.bukkit())) {
             SpartanBukkit.connectionThread.execute(() -> {
                 String[][] announcements = CloudConnections.getStaffAnnouncements();
 
@@ -99,7 +99,7 @@ public class CloudBase {
                                 "staff-announcement-" + announcement[0],
                                 Integer.parseInt(announcement[2])
                         )) {
-                            protocol.bukkit.sendMessage(AwarenessNotifications.getNotification(announcement[1]));
+                            protocol.bukkit().sendMessage(AwarenessNotifications.getNotification(announcement[1]));
                         }
                     }
                 }
@@ -267,7 +267,7 @@ public class CloudBase {
                                         "staff-announcement-" + announcement[0],
                                         Integer.parseInt(announcement[2])
                                 )) {
-                                    p.bukkit.sendMessage(AwarenessNotifications.getNotification(announcement[1]));
+                                    p.bukkit().sendMessage(AwarenessNotifications.getNotification(announcement[1]));
                                 }
                             }
                         }

@@ -29,7 +29,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class SpartanProtocol {
 
     private long activeCreationTime;
-    public final Player bukkit;
+    private Player bukkit;
     public final SpartanPlayer spartan;
 
     // Custom
@@ -145,6 +145,14 @@ public class SpartanProtocol {
         this.componentXZ = new ComponentXZ();
         this.profile().update(this);
         this.useItemPacket = false;
+    }
+
+    public final Player bukkit() {
+        return this.bukkit;
+    }
+
+    public void updateBukkit(Player player) {
+        this.bukkit = player;
     }
 
     public long getActiveCreationTime() {

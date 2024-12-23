@@ -59,7 +59,7 @@ public class IMBukkitGravity extends ProbabilityDetection {
                         new double[][]{
                                 {GroundUtils.contactBoundingBox, 0.0, GroundUtils.contactBoundingBox},
                                 {GroundUtils.contactBoundingBox, 1.0, GroundUtils.contactBoundingBox},
-                                {GroundUtils.contactBoundingBox, Math.ceil(this.protocol.bukkit.getEyeHeight()), GroundUtils.contactBoundingBox}
+                                {GroundUtils.contactBoundingBox, Math.ceil(this.protocol.bukkit().getEyeHeight()), GroundUtils.contactBoundingBox}
                         },
                         to,
                         true,
@@ -68,7 +68,7 @@ public class IMBukkitGravity extends ProbabilityDetection {
                         new double[][]{
                                 {GroundUtils.contactBoundingBox, 0.0, GroundUtils.contactBoundingBox},
                                 {GroundUtils.contactBoundingBox, 1.0, GroundUtils.contactBoundingBox},
-                                {GroundUtils.contactBoundingBox, Math.ceil(this.protocol.bukkit.getEyeHeight()), GroundUtils.contactBoundingBox}
+                                {GroundUtils.contactBoundingBox, Math.ceil(this.protocol.bukkit().getEyeHeight()), GroundUtils.contactBoundingBox}
                         },
                         from,
                         true,
@@ -138,7 +138,7 @@ public class IMBukkitGravity extends ProbabilityDetection {
                         && !BlockPatternUtils.isBlockPattern(
                         new double[]{
                                 GroundUtils.boundingBox,
-                                Math.ceil(this.protocol.bukkit.getEyeHeight()),
+                                Math.ceil(this.protocol.bukkit().getEyeHeight()),
                                 GroundUtils.boundingBox
                         },
                         to,
@@ -245,7 +245,7 @@ public class IMBukkitGravity extends ProbabilityDetection {
 
     private boolean isUsingMace() {
         if (MACE != null) {
-            ItemStack[] contents = this.protocol.bukkit.getInventory().getContents();
+            ItemStack[] contents = this.protocol.bukkit().getInventory().getContents();
 
             for (ItemStack item : contents) {
                 if (item != null && item.getType() == MACE) {

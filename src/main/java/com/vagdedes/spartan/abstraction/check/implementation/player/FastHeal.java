@@ -70,7 +70,7 @@ public class FastHeal extends CheckRunner {
                 }
                 previousHealth = health;
             }
-        } else if (((FoodLevelChangeEvent) object).getFoodLevel() > this.protocol.bukkit.getFoodLevel()
+        } else if (((FoodLevelChangeEvent) object).getFoodLevel() > this.protocol.bukkit().getFoodLevel()
                 && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
                 || this.protocol.spartan.getItemInHand().getType() != Material.DRIED_KELP)) {
             this.protocol.profile().getRunner(hackType).addDisableCause(null, null, 10);
@@ -80,9 +80,9 @@ public class FastHeal extends CheckRunner {
     @Override
     protected boolean canRun() {
         if (this.protocol.getWorld().getDifficulty() != Difficulty.PEACEFUL
-                && this.protocol.bukkit.getFireTicks() <= 0
+                && this.protocol.bukkit().getFireTicks() <= 0
                 && Attributes.getAmount(this.protocol, Attributes.GENERIC_MAX_ABSORPTION) == 0.0) {
-            GameMode gameMode = this.protocol.bukkit.getGameMode();
+            GameMode gameMode = this.protocol.bukkit().getGameMode();
             return gameMode == GameMode.ADVENTURE || gameMode == GameMode.SURVIVAL;
         } else {
             return false;

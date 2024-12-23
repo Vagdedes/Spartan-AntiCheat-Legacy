@@ -42,12 +42,12 @@ public class Packet_Vehicle extends PacketAdapter {
         if (protocol.spartan.getNearbyEntities(4).size() >= 2) {
             if (ProtocolTools.hasPosition(event.getPacket().getType()) && protocol.entityHandle) {
                 protocol.timerBalancer.addBalance(50);
-                VehicleExitEvent bukkitEvent = new VehicleExitEvent(null, protocol.bukkit);
+                VehicleExitEvent bukkitEvent = new VehicleExitEvent(null, protocol.bukkit());
                 bukkitEvent.setCancelled(event.isCancelled());
                 Event_Vehicle.exit(bukkitEvent);
             } else if (event.getPacket().getType().equals(PacketType.Play.Client.STEER_VEHICLE) && !protocol.entityHandle) {
                 protocol.timerBalancer.addBalance(50);
-                VehicleEnterEvent bukkitEvent = new VehicleEnterEvent(null, protocol.bukkit);
+                VehicleEnterEvent bukkitEvent = new VehicleEnterEvent(null, protocol.bukkit());
                 bukkitEvent.setCancelled(event.isCancelled());
                 Event_Vehicle.enter(bukkitEvent);
                 protocol.entityHandle = true;

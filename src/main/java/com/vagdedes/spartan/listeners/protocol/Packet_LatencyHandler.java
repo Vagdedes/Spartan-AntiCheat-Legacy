@@ -92,7 +92,7 @@ public class Packet_LatencyHandler extends PacketAdapter {
             packet.getLongs().write(0, (long) id);
         } else return;
 
-        ProtocolLibrary.getProtocolManager().sendServerPacket(protocol.bukkit, packet);
+        ProtocolLibrary.getProtocolManager().sendServerPacket(protocol.bukkit(), packet);
         protocol.transactionId--;
         if (protocol.transactionId < -1945)
             protocol.transactionId = -1939;

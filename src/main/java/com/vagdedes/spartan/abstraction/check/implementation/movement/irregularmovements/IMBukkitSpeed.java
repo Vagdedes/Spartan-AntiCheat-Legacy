@@ -212,10 +212,10 @@ public class IMBukkitSpeed extends ProbabilityDetection {
             onAir = 0;
         }
         SpartanLocation to = new SpartanLocation(this.protocol.getLocation().clone());
-        PlayerInventory inventory = this.protocol.bukkit.getInventory();
+        PlayerInventory inventory = this.protocol.bukkit().getInventory();
         Entity vehicle = this.protocol.spartan.getVehicle();
         if (onGround == 1) this.multiplyFriction = 0.26;
-        double m = (this.protocol.bukkit.getWalkSpeed() * 5);
+        double m = (this.protocol.bukkit().getWalkSpeed() * 5);
         boolean solidBlockOnTop = RayUtils.onSolidBlock(this.protocol, to.clone().add(0, 2, 0).bukkit());
         m += getMaxSpeedAmplifier();
         ExtendedPotionEffect dolphinEffect = PlayerUtils.dolphinsGrace

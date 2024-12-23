@@ -59,7 +59,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
         double dx = to.getX() - from.getX();
         double dz = to.getZ() - from.getZ();
         double speed = Math.sqrt(dx * dx + dz * dz);
-        //this.protocol.bukkit.sendMessage(protocol().pistonHandle + " " + protocol().pistonTick + " " + protocol().explosionHandle);
+        //this.protocol.bukkit().sendMessage(protocol().pistonHandle + " " + protocol().pistonTick + " " + protocol().explosionHandle);
         if (to.getX() != from.getX() || to.getY() != from.getY() || to.getZ() != from.getZ()) {
             double motion = to.getY() - from.getY();
             double gravity = 0.08;
@@ -193,7 +193,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
             }
             boolean onWaterBubble = this.isOnWaterBubble(to);
             if (MultiVersion.isOrGreater(MCVersion.V1_13)
-                            && this.protocol.bukkit.isSwimming()) {
+                            && this.protocol.bukkit().isSwimming()) {
                 this.swimming = 2;
             } else if (this.swimming > 0) {
                 this.swimming--;
@@ -391,7 +391,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
             }
 
             double devTotal = this.abs(this.abs(motion) - this.abs(this.predictY()));
-            //this.protocol.bukkit.sendMessage("m: " + motion + " p: " + this.predictY() + " air: " + air);
+            //this.protocol.bukkit().sendMessage("m: " + motion + " p: " + this.predictY() + " air: " + air);
             if (devTotal > ((this.protocol.spartan.getVehicle()
                             != null && motion < 0 && airVehicle < 10)
                             ? 0.36 : (this.protocol.spartan.getVehicle()
@@ -417,10 +417,10 @@ public class IMSimulationGravity extends ProbabilityDetection {
                             alertBuilder.deleteCharAt(0);
                         }
                         this.cancel("type: simulation[gravity], y: " + alertBuilder);
-                        //this.protocol.bukkit.sendMessage("hacks: " + devTotal);
+                        //this.protocol.bukkit().sendMessage("hacks: " + devTotal);
                             /*
                             Bukkit.getScheduler().runTask(Register.plugin, () -> {
-                                this.protocol.bukkit.teleport(from);
+                                this.protocol.bukkit().teleport(from);
                             });
                              */
                     }

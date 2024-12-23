@@ -342,7 +342,7 @@ public class SQLFeature extends ConfigurationBuilder {
                             + ", " + (notification != null ? syntaxForColumn(notification) : "NULL")
                             + ", " + syntaxForColumn(information)
                             + ", " + (hasPlayer ? syntaxForColumn(p.getUUID()) : "NULL")
-                            + ", " + (hasPlayer ? syntaxForColumn(p.bukkit.getName()) : "NULL")
+                            + ", " + (hasPlayer ? syntaxForColumn(p.bukkit().getName()) : "NULL")
                             + ", " + (hasPlayer ? syntaxForColumn(p.getPing()) : "NULL")
                             + ", " + (hasPlayer ? syntaxForColumn(location.getBlockX()) : "NULL")
                             + ", " + (hasPlayer ? syntaxForColumn(location.getBlockY()) : "NULL")

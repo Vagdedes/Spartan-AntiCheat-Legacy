@@ -217,7 +217,7 @@ public class MCClient {
                     d2 += (0.05D * (double) (levitation.bukkitEffect.getAmplifier() + 1) - vector3d5.y) * 0.2D;
                     //this.fallDistance = 0.0F;
                 }
-                if (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_10) || this.p().bukkit.hasGravity()) {
+                if (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_10) || this.p().bukkit().hasGravity()) {
                     d2 -= d0;
                 }
                 this.getMotion().y = d2 * (double) 0.98F;
@@ -474,7 +474,7 @@ public class MCClient {
     }
 
     private void debug(String msg) {
-        this.p().bukkit.sendMessage(msg);
+        this.p().bukkit().sendMessage(msg);
     }
 
 }

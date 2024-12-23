@@ -84,7 +84,7 @@ public class ScaffoldAnalysis extends ProbabilityDetection {
             if (delay < 5
                     || placeHash == p.placeHash
                     || (long) p.getLocation().getY() <= bL.getY()
-                    || p.bukkit.isFlying() || !checkHash) {
+                    || p.bukkit().isFlying() || !checkHash) {
                 p.rightClickCounter = 0;
                 p.placeTime = System.currentTimeMillis();
                 this.oldBlock = currentBlock;

@@ -163,7 +163,7 @@ public class Packet_Movement extends PacketAdapter {
                                     Location build = p.getTeleport().clone();
                                     build.setYaw(p.getLocation().getYaw());
                                     build.setPitch(p.getLocation().getPitch());
-                                    p.bukkit.teleport(build);
+                                    p.bukkit().teleport(build);
                                 }
                             });
                             return;

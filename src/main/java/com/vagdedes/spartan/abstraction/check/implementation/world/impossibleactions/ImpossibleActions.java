@@ -140,11 +140,11 @@ public class ImpossibleActions extends CheckRunner {
                     && !Compatibility.CompatibilityType.MC_MMO.isFunctional()) {
                 int cases;
 
-                if (this.protocol.bukkit.isSleeping()) {
+                if (this.protocol.bukkit().isSleeping()) {
                     cases = 1;
                 } else if (this.protocol.spartan.isDead()) {
                     cases = 2;
-                } else if (BlockUtils.hasMaterial(this.protocol.bukkit.getOpenInventory().getCursor())) {
+                } else if (BlockUtils.hasMaterial(this.protocol.bukkit().getOpenInventory().getCursor())) {
                     cases = 3;
                 } else {
                     cases = 0;

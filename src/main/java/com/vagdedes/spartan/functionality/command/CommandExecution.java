@@ -87,8 +87,8 @@ public class CommandExecution implements CommandExecutor {
         isPlayer &= protocol != null;
 
         String command = Register.plugin.getName().toLowerCase();
-        boolean info = !isPlayer || Permissions.has(protocol.bukkit, Enums.Permission.INFO),
-                manage = !isPlayer || Permissions.has(protocol.bukkit, Enums.Permission.MANAGE);
+        boolean info = !isPlayer || Permissions.has(protocol.bukkit(), Enums.Permission.INFO),
+                manage = !isPlayer || Permissions.has(protocol.bukkit(), Enums.Permission.MANAGE);
 
         switch (list) {
             case "default":
@@ -110,7 +110,7 @@ public class CommandExecution implements CommandExecutor {
                                     "/" + command + " menu"
                             );
                         }
-                        if (Permissions.has(protocol.bukkit, Permission.RELOAD)) {
+                        if (Permissions.has(protocol.bukkit(), Permission.RELOAD)) {
                             ClickableMessage.sendCommand(
                                     sender,
                                     "§cReload Plugin §7(Click)",
@@ -146,7 +146,7 @@ public class CommandExecution implements CommandExecutor {
                                     "/" + command + " manage-checks"
                             );
                         }
-                        if (Permissions.has(protocol.bukkit, Permission.USE_BYPASS)) {
+                        if (Permissions.has(protocol.bukkit(), Permission.USE_BYPASS)) {
                             ClickableMessage.sendCommand(
                                     sender,
                                     "§cPlayer Bypass §7(Click)",
@@ -187,10 +187,10 @@ public class CommandExecution implements CommandExecutor {
                     }
                     if (!isPlayer
                             || info
-                            || Permissions.has(protocol.bukkit, Permission.KICK)
-                            || Permissions.has(protocol.bukkit, Permission.WARN)
-                            || Permissions.has(protocol.bukkit, Permission.USE_BYPASS)
-                            || Permissions.has(protocol.bukkit, Permission.WAVE)) {
+                            || Permissions.has(protocol.bukkit(), Permission.KICK)
+                            || Permissions.has(protocol.bukkit(), Permission.WARN)
+                            || Permissions.has(protocol.bukkit(), Permission.USE_BYPASS)
+                            || Permissions.has(protocol.bukkit(), Permission.WAVE)) {
                         buildCommand(
                                 sender,
                                 ChatColor.RED, "/" + command + " moderation",
@@ -218,7 +218,7 @@ public class CommandExecution implements CommandExecutor {
                         );
                     }
                     if (!isPlayer
-                            || Permissions.has(protocol.bukkit, Permission.USE_BYPASS)) {
+                            || Permissions.has(protocol.bukkit(), Permission.USE_BYPASS)) {
                         permission = true;
                         ClickableMessage.sendCommand(
                                 sender,
@@ -228,7 +228,7 @@ public class CommandExecution implements CommandExecutor {
                         );
                     }
                     if (!isPlayer
-                            || Permissions.has(protocol.bukkit, Permission.WARN)) {
+                            || Permissions.has(protocol.bukkit(), Permission.WARN)) {
                         permission = true;
                         ClickableMessage.sendCommand(
                                 sender,
@@ -238,7 +238,7 @@ public class CommandExecution implements CommandExecutor {
                         );
                     }
                     if (!isPlayer
-                            || Permissions.has(protocol.bukkit, Permission.KICK)) {
+                            || Permissions.has(protocol.bukkit(), Permission.KICK)) {
                         permission = true;
                         ClickableMessage.sendCommand(
                                 sender,
@@ -248,7 +248,7 @@ public class CommandExecution implements CommandExecutor {
                         );
                     }
                     if (!isPlayer
-                            || Permissions.has(protocol.bukkit, Permission.WAVE)) {
+                            || Permissions.has(protocol.bukkit(), Permission.WAVE)) {
                         permission = true;
                         ClickableMessage.sendCommand(
                                 sender,
@@ -262,7 +262,7 @@ public class CommandExecution implements CommandExecutor {
                         );
                     }
                     if (!isPlayer
-                            || Permissions.has(protocol.bukkit, Permission.ADMIN)) {
+                            || Permissions.has(protocol.bukkit(), Permission.ADMIN)) {
                         permission = true;
                         ClickableMessage.sendCommand(
                                 sender,
@@ -279,7 +279,7 @@ public class CommandExecution implements CommandExecutor {
                 break;
             case "conditions":
                 if (spartanMessage(sender, isPlayer, true)) {
-                    if (!isPlayer || Permissions.has(protocol.bukkit, Permission.CONDITION)) {
+                    if (!isPlayer || Permissions.has(protocol.bukkit(), Permission.CONDITION)) {
                         sender.sendMessage(ChatColor.RED + "/" + command + " <player> if <condition> equals <result> do <command>");
                         sender.sendMessage(ChatColor.RED + "/" + command + " <player> if <condition> contains <result> do <command>");
                         sender.sendMessage(ChatColor.RED + "/" + command + " <player> if <number> is-less-than <result> do <command>");
@@ -310,7 +310,7 @@ public class CommandExecution implements CommandExecutor {
 
             if (args.length == 0) {
                 if (isPlayer) {
-                    if (NPCManager.supported && Permissions.isStaff(protocol.bukkit)) {
+                    if (NPCManager.supported && Permissions.isStaff(protocol.bukkit())) {
                         if (Config.settings.getBoolean("Important.enable_npc")) {
                             NPCManager.create(protocol);
                         } else {
@@ -327,7 +327,7 @@ public class CommandExecution implements CommandExecutor {
                 } else if (isPlayer && args[0].equalsIgnoreCase("Manage-Checks")) {
                     InteractiveInventory.manageChecks.open(protocol);
                 } else if (args[0].equalsIgnoreCase("Panic")) {
-                    if (isPlayer && !Permissions.has(protocol.bukkit, Permission.MANAGE)) {
+                    if (isPlayer && !Permissions.has(protocol.bukkit(), Permission.MANAGE)) {
                         ClickableMessage.sendURL(
                                 sender,
                                 Config.messages.getColorfulString("no_permission"),
@@ -360,7 +360,7 @@ public class CommandExecution implements CommandExecutor {
                     completeMessage(sender, args[0].toLowerCase());
 
                 } else if (args[0].equalsIgnoreCase("Reload") || args[0].equalsIgnoreCase("Rl")) {
-                    if (isPlayer && !Permissions.has(protocol.bukkit, Permission.RELOAD)) {
+                    if (isPlayer && !Permissions.has(protocol.bukkit(), Permission.RELOAD)) {
                         ClickableMessage.sendURL(
                                 sender,
                                 Config.messages.getColorfulString("no_permission"),
@@ -372,7 +372,7 @@ public class CommandExecution implements CommandExecutor {
                     Config.reload(sender);
 
                 } else if (isPlayer && args[0].equalsIgnoreCase("Info")) {
-                    if (!Permissions.has(protocol.bukkit, Permission.INFO)) {
+                    if (!Permissions.has(protocol.bukkit(), Permission.INFO)) {
                         ClickableMessage.sendURL(
                                 sender,
                                 Config.messages.getColorfulString("no_permission"),
@@ -400,7 +400,7 @@ public class CommandExecution implements CommandExecutor {
                 }
             } else {
                 if (args[0].equalsIgnoreCase("Proxy-Command")) {
-                    if (isPlayer && !Permissions.has(protocol.bukkit, Permission.ADMIN)) {
+                    if (isPlayer && !Permissions.has(protocol.bukkit(), Permission.ADMIN)) {
                         ClickableMessage.sendURL(
                                 sender,
                                 Config.messages.getColorfulString("no_permission"),
@@ -424,7 +424,7 @@ public class CommandExecution implements CommandExecutor {
                         );
                         return true;
                     }
-                    if (!ProxyUtils.executeCommand(isPlayer ? protocol.bukkit : null, argumentsToString)) {
+                    if (!ProxyUtils.executeCommand(isPlayer ? protocol.bukkit() : null, argumentsToString)) {
                         ClickableMessage.sendURL(
                                 sender,
                                 Config.messages.getColorfulString("failed_command").replace(
@@ -447,7 +447,7 @@ public class CommandExecution implements CommandExecutor {
                         if (args[0].equalsIgnoreCase("Wave")) {
                             String command = args[1];
 
-                            if (isPlayer && !Permissions.has(protocol.bukkit, Permission.WAVE)) {
+                            if (isPlayer && !Permissions.has(protocol.bukkit(), Permission.WAVE)) {
                                 ClickableMessage.sendURL(
                                         sender,
                                         Config.messages.getColorfulString("no_permission"),
@@ -493,7 +493,7 @@ public class CommandExecution implements CommandExecutor {
                             }
 
                         } else if (isPlayer && args[0].equalsIgnoreCase("Info")) {
-                            if (!Permissions.has(protocol.bukkit, Permission.INFO)) {
+                            if (!Permissions.has(protocol.bukkit(), Permission.INFO)) {
                                 ClickableMessage.sendURL(
                                         sender,
                                         Config.messages.getColorfulString("no_permission"),
@@ -507,7 +507,7 @@ public class CommandExecution implements CommandExecutor {
                         } else if (args[0].equalsIgnoreCase("Toggle")) {
                             String check = args[1];
 
-                            if (isPlayer && !Permissions.has(protocol.bukkit, Permission.MANAGE)) {
+                            if (isPlayer && !Permissions.has(protocol.bukkit(), Permission.MANAGE)) {
                                 ClickableMessage.sendURL(
                                         sender,
                                         Config.messages.getColorfulString("no_permission"),
@@ -555,7 +555,7 @@ public class CommandExecution implements CommandExecutor {
                         } else if (args[0].equalsIgnoreCase("Toggle-Prevention")) {
                             String check = args[1];
 
-                            if (isPlayer && !Permissions.has(protocol.bukkit, Permission.MANAGE)) {
+                            if (isPlayer && !Permissions.has(protocol.bukkit(), Permission.MANAGE)) {
                                 ClickableMessage.sendURL(
                                         sender,
                                         Config.messages.getColorfulString("no_permission"),
@@ -603,7 +603,7 @@ public class CommandExecution implements CommandExecutor {
                         } else if (args[0].equalsIgnoreCase("Toggle-Punishment")) {
                             String check = args[1];
 
-                            if (isPlayer && !Permissions.has(protocol.bukkit, Permission.MANAGE)) {
+                            if (isPlayer && !Permissions.has(protocol.bukkit(), Permission.MANAGE)) {
                                 ClickableMessage.sendURL(
                                         sender,
                                         Config.messages.getColorfulString("no_permission"),
@@ -700,7 +700,7 @@ public class CommandExecution implements CommandExecutor {
                         String argumentsToString = argumentsToStringBuilder.substring(0, argumentsToStringBuilder.length() - 1);
 
                         if (args[0].equalsIgnoreCase("Kick")) {
-                            if (isPlayer && !Permissions.has(protocol.bukkit, Permission.KICK)) {
+                            if (isPlayer && !Permissions.has(protocol.bukkit(), Permission.KICK)) {
                                 ClickableMessage.sendURL(
                                         sender,
                                         Config.messages.getColorfulString("no_permission"),
@@ -742,7 +742,7 @@ public class CommandExecution implements CommandExecutor {
                             }
 
                         } else if (args[0].equalsIgnoreCase("Warn")) {
-                            if (isPlayer && !Permissions.has(protocol.bukkit, Permission.WARN)) {
+                            if (isPlayer && !Permissions.has(protocol.bukkit(), Permission.WARN)) {
                                 ClickableMessage.sendURL(
                                         sender,
                                         Config.messages.getColorfulString("no_permission"),
@@ -792,7 +792,7 @@ public class CommandExecution implements CommandExecutor {
                                 String[] checks = args[2].split(",", maxHackTypes);
                                 String sec = noSeconds ? null : args[3];
 
-                                if (isPlayer && !Permissions.has(protocol.bukkit, Permission.USE_BYPASS)) {
+                                if (isPlayer && !Permissions.has(protocol.bukkit(), Permission.USE_BYPASS)) {
                                     ClickableMessage.sendURL(
                                             sender,
                                             Config.messages.getColorfulString("no_permission"),
@@ -854,7 +854,7 @@ public class CommandExecution implements CommandExecutor {
                             String command = args[1];
                             OfflinePlayer t = Bukkit.getOfflinePlayer(args[2]);
 
-                            if (isPlayer && !Permissions.has(protocol.bukkit, Permission.WAVE)) {
+                            if (isPlayer && !Permissions.has(protocol.bukkit(), Permission.WAVE)) {
                                 ClickableMessage.sendURL(
                                         sender,
                                         Config.messages.getColorfulString("no_permission"),
@@ -917,7 +917,7 @@ public class CommandExecution implements CommandExecutor {
                             argumentsToString = argumentsToStringBuilder.substring(0, argumentsToStringBuilder.length() - 1);
 
                             if (args.length >= 7) {
-                                if (isPlayer && !Permissions.has(protocol.bukkit, Permission.CONDITION)) {
+                                if (isPlayer && !Permissions.has(protocol.bukkit(), Permission.CONDITION)) {
                                     ClickableMessage.sendURL(
                                             sender,
                                             Config.messages.getColorfulString("no_permission"),

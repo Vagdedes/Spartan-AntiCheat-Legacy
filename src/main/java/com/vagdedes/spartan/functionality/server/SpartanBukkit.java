@@ -86,6 +86,8 @@ public class SpartanBukkit {
             if (protocol == null) {
                 protocol = new SpartanProtocol(player);
                 playerProtocol.put(player.getUniqueId(), protocol);
+            } else {
+                protocol.updateBukkit(player);
             }
             if (updateLastInteraction) {
                 protocol.spartan.setLastInteraction();
@@ -101,7 +103,7 @@ public class SpartanBukkit {
     public static SpartanProtocol getProtocol(String name) {
         if (!playerProtocol.isEmpty()) {
             for (SpartanProtocol protocol : playerProtocol.values()) {
-                if (protocol.bukkit.getName().equals(name)) {
+                if (protocol.bukkit().getName().equals(name)) {
                     return protocol;
                 }
             }
@@ -112,7 +114,7 @@ public class SpartanBukkit {
     public static SpartanProtocol getAnyCaseProtocol(String name) {
         if (!playerProtocol.isEmpty()) {
             for (SpartanProtocol protocol : playerProtocol.values()) {
-                if (protocol.bukkit.getName().equalsIgnoreCase(name)) {
+                if (protocol.bukkit().getName().equalsIgnoreCase(name)) {
                     return protocol;
                 }
             }

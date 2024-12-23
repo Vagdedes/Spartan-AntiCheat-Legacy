@@ -92,8 +92,8 @@ public class CommandTab implements TabCompleter {
                 player &= p != null;
 
                 for (SpartanProtocol protocol : protocols) {
-                    if (!player || p.bukkit.canSee(protocol.bukkit)) {
-                        String name = protocol.bukkit.getName();
+                    if (!player || p.bukkit().canSee(protocol.bukkit())) {
+                        String name = protocol.bukkit().getName();
 
                         if (name.toLowerCase().contains(argAbstract)) {
                             list.add(name);

@@ -86,7 +86,7 @@ public class Permissions {
             List<SpartanProtocol> array = new ArrayList<>(size);
 
             for (SpartanProtocol protocol : protocols) {
-                if (isStaff(protocol.bukkit)) {
+                if (isStaff(protocol.bukkit())) {
                     array.add(protocol);
                 }
             }

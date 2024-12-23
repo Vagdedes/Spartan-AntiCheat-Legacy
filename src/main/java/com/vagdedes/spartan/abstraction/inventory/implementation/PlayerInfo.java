@@ -57,16 +57,16 @@ public class PlayerInfo extends InventoryMenu {
                 : ResearchEngine.getAnyCasePlayerProfile(object.toString());
 
         if (profile == null) {
-            protocol.bukkit.closeInventory();
+            protocol.bukkit().closeInventory();
             ClickableMessage.sendURL(
-                    protocol.bukkit,
+                    protocol.bukkit(),
                     Config.messages.getColorfulString("player_not_found_message"),
                     CommandExecution.support,
                     DiscordMemberCount.discordURL
             );
             return false;
         } else {
-            setTitle(protocol, menu + (isOnline ? target.bukkit.getName() : profile.name));
+            setTitle(protocol, menu + (isOnline ? target.bukkit().getName() : profile.name));
             List<String> lore = new ArrayList<>();
             lore.add("");
 
@@ -254,7 +254,7 @@ public class PlayerInfo extends InventoryMenu {
             return "Check is disabled";
         }
         CheckCancellation disabledCause = protocol.profile().getRunner(hackType).getDisableCause();
-        return Permissions.isBypassing(protocol.bukkit, hackType)
+        return Permissions.isBypassing(protocol.bukkit(), hackType)
                 ? "Player has permission bypass"
                 : disabledCause != null
                 ? "Custom: " + disabledCause.getReason()
@@ -266,7 +266,7 @@ public class PlayerInfo extends InventoryMenu {
 
         if (!protocols.isEmpty()) {
             for (SpartanProtocol protocol : protocols) {
-                InventoryView inventoryView = protocol.bukkit.getOpenInventory();
+                InventoryView inventoryView = protocol.bukkit().getOpenInventory();
 
                 if (inventoryView.getTitle().equals(PlayerInfo.menu + targetName)
                         && cooldowns.canDo("player-info=" + protocol.getUUID())) {
@@ -284,10 +284,10 @@ public class PlayerInfo extends InventoryMenu {
         String playerName = title.substring(menu.length());
 
         if (item.equalsIgnoreCase(playerName)) {
-            if (!Permissions.has(protocol.bukkit, Permission.MANAGE)) {
-                protocol.bukkit.closeInventory();
+            if (!Permissions.has(protocol.bukkit(), Permission.MANAGE)) {
+                protocol.bukkit().closeInventory();
                 ClickableMessage.sendURL(
-                        protocol.bukkit,
+                        protocol.bukkit(),
                         Config.messages.getColorfulString("no_permission"),
                         CommandExecution.support,
                         DiscordMemberCount.discordURL
@@ -297,19 +297,19 @@ public class PlayerInfo extends InventoryMenu {
 
                 if (name == null) {
                     ClickableMessage.sendURL(
-                            protocol.bukkit,
+                            protocol.bukkit(),
                             Config.messages.getColorfulString("player_not_found_message"),
                             CommandExecution.support,
                             DiscordMemberCount.discordURL
                     );
                 } else {
                     ResearchEngine.resetData(name);
-                    protocol.bukkit.sendMessage(Config.messages.getColorfulString("player_stored_data_delete_message").replace("{player}", name));
+                    protocol.bukkit().sendMessage(Config.messages.getColorfulString("player_stored_data_delete_message").replace("{player}", name));
                 }
-                protocol.bukkit.closeInventory();
+                protocol.bukkit().closeInventory();
             }
         } else if (item.equals("Close")) {
-            protocol.bukkit.closeInventory();
+            protocol.bukkit().closeInventory();
         } else if (item.equals("Back")) {
             InteractiveInventory.mainMenu.open(protocol);
         } else {

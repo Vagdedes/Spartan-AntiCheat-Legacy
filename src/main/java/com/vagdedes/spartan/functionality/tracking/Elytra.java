@@ -12,9 +12,9 @@ public class Elytra {
 
     public static void judge(SpartanProtocol p) {
         if (((Exploits) p.profile().getRunner(Enums.HackType.Exploits)).elytra.isEnabled()
-                && !Permissions.isBypassing(p.bukkit, Enums.HackType.Exploits)) {
+                && !Permissions.isBypassing(p.bukkit(), Enums.HackType.Exploits)) {
             if (p.spartan.getVehicle() == null) {
-                PlayerInventory inventory = p.bukkit.getInventory();
+                PlayerInventory inventory = p.bukkit().getInventory();
 
                 if (inventory != null) {
                     ItemStack i = inventory.getChestplate();
@@ -24,17 +24,17 @@ public class Elytra {
                             if (i.getDurability() < 432) {
                                 p.profile().getRunner(Enums.HackType.Exploits).handle(false, Elytra.class);
                             } else {
-                                p.bukkit.setGliding(false);
+                                p.bukkit().setGliding(false);
                             }
                         } else {
-                            p.bukkit.setGliding(false);
+                            p.bukkit().setGliding(false);
                         }
                     } else {
-                        p.bukkit.setGliding(false);
+                        p.bukkit().setGliding(false);
                     }
                 }
             } else {
-                p.bukkit.setGliding(false);
+                p.bukkit().setGliding(false);
             }
         }
     }

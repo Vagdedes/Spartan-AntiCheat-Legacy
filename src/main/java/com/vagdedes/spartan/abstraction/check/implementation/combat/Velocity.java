@@ -72,7 +72,7 @@ public class Velocity extends CheckRunner {
             double y = to.getY() - from.getY();
             double z = to.getZ() - from.getZ();
 
-            //this.protocol.bukkit.sendMessage("m: " + y);
+            //this.protocol.bukkit().sendMessage("m: " + y);
             if (velocity != null) {
                 if (abs(abs(y) - abs(velocity.getY())) < mostCloseYMotion)
                     mostCloseYMotion = y;
@@ -92,7 +92,7 @@ public class Velocity extends CheckRunner {
                             this.flag("velocity manipulation [xz] (ground deviation: " + total + ")", 30, horizontal);
                         }
                     }
-                    //this.protocol.bukkit.sendMessage(x + " " + velocity.getX() + " | " + z + " " + velocity.getZ());
+                    //this.protocol.bukkit().sendMessage(x + " " + velocity.getX() + " | " + z + " " + velocity.getZ());
                     this.velocity = null;
                     this.timing = 0;
                 } else if (delay > 25) {
@@ -115,7 +115,7 @@ public class Velocity extends CheckRunner {
     private void flag(String reason, double vl, CheckDetection e) {
         this.vl += (float) vl;
         if (this.vl > 60) {
-            //this.protocol.bukkit.sendMessage("flag: " + reason);
+            //this.protocol.bukkit().sendMessage("flag: " + reason);
             e.cancel(reason);
             this.vl = 50;
         }

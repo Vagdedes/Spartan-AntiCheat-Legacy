@@ -92,11 +92,11 @@ public class ResearchEngine {
     }
 
     public static PlayerProfile getPlayerProfile(SpartanProtocol protocol) {
-        PlayerProfile playerProfile = playerProfiles.get(protocol.bukkit.getName());
+        PlayerProfile playerProfile = playerProfiles.get(protocol.bukkit().getName());
 
         if (playerProfile == null) {
             playerProfile = new PlayerProfile(protocol);
-            playerProfiles.put(protocol.bukkit.getName(), playerProfile);
+            playerProfiles.put(protocol.bukkit().getName(), playerProfile);
         }
         return playerProfile;
     }
@@ -104,7 +104,7 @@ public class ResearchEngine {
     private static void createPlayerProfile(SpartanProtocol protocol) {
         PlayerProfile profile = new PlayerProfile(protocol);
         profile.update(protocol);
-        playerProfiles.put(protocol.bukkit.getName(), new PlayerProfile(protocol));
+        playerProfiles.put(protocol.bukkit().getName(), new PlayerProfile(protocol));
     }
 
     // Separator

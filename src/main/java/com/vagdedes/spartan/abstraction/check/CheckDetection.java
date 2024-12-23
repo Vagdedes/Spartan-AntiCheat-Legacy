@@ -153,7 +153,7 @@ public abstract class CheckDetection extends CheckProcess {
         );
 
         Location location = this.protocol.getLocation();
-        information = "(" + AntiCheatLogs.playerIdentifier + " " + this.protocol.bukkit.getName() + "), "
+        information = "(" + AntiCheatLogs.playerIdentifier + " " + this.protocol.bukkit().getName() + "), "
                 + "(" + checkIdentifier + " " + this.hackType + "), "
                 + "(" + javaPlayerIdentifier + " " + (!this.protocol.spartan.isBedrockPlayer()) + ")" + ", "
                 + "(" + detectionIdentifier + " " + this.name + ")" + ", "
@@ -183,11 +183,11 @@ public abstract class CheckDetection extends CheckProcess {
 
         // Local Notifications
         String command = Config.settings.getString("Notifications.message_clickable_command")
-                .replace("{player}", this.protocol.bukkit.getName());
+                .replace("{player}", this.protocol.bukkit().getName());
 
         if (Config.settings.getBoolean("Notifications.individual_only_notifications")) {
             if (DetectionNotifications.isEnabled(this.protocol)) { // Attention
-                ClickableMessage.sendCommand(this.protocol.bukkit, notification, command, command);
+                ClickableMessage.sendCommand(this.protocol.bukkit(), notification, command, command);
             }
         } else {
             List<SpartanProtocol> protocols = DetectionNotifications.getPlayers();
@@ -196,7 +196,7 @@ public abstract class CheckDetection extends CheckProcess {
                 for (SpartanProtocol staff : protocols) {
                     if (staff.profile().getRunner(this.hackType).getDetection(this.name).canSendNotification(this.protocol, roundedCertainty)) {
                         ClickableMessage.sendCommand(
-                                staff.bukkit,
+                                staff.bukkit(),
                                 notification,
                                 command,
                                 command
@@ -243,7 +243,7 @@ public abstract class CheckDetection extends CheckProcess {
                         if (enabledDeveloperAPI) {
                             Runnable runnable = () -> {
                                 PlayerViolationCommandEvent event = new PlayerViolationCommandEvent(
-                                        this.protocol.bukkit,
+                                        this.protocol.bukkit(),
                                         hackType,
                                         detectedHacks,
                                         modifiedCommand
@@ -268,7 +268,7 @@ public abstract class CheckDetection extends CheckProcess {
                     CloudConnections.executeDiscordWebhook(
                             "punishments",
                             this.protocol.getUUID(),
-                            this.protocol.bukkit.getName(),
+                            this.protocol.bukkit().getName(),
                             location.getBlockX(),
                             location.getBlockY(),
                             location.getBlockZ(),
@@ -309,7 +309,7 @@ public abstract class CheckDetection extends CheckProcess {
             Runnable runnable = () -> {
                 if (event) {
                     PlayerViolationEvent playerViolationEvent = new PlayerViolationEvent(
-                            this.protocol.bukkit,
+                            this.protocol.bukkit(),
                             hackType,
                             information
                     );

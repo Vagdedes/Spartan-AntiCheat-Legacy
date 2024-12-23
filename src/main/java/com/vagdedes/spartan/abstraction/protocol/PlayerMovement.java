@@ -45,7 +45,7 @@ public class PlayerMovement {
         this.parent = parent;
         this.lastLiquidMaterial = Material.AIR;
 
-        Location bukkit = ProtocolTools.getLoadLocation(this.parent.protocol.bukkit);
+        Location bukkit = ProtocolTools.getLoadLocation(this.parent.protocol.bukkit());
         SpartanLocation location = new SpartanLocation(bukkit);
         this.locations = Collections.synchronizedMap(new LinkedHashMap<>());
         this.locations.put(System.currentTimeMillis(), location);
@@ -137,7 +137,7 @@ public class PlayerMovement {
         if (artificialSwimming >= System.currentTimeMillis()) {
             return true;
         } else if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
-            return this.parent.protocol.bukkit.isSwimming();
+            return this.parent.protocol.bukkit().isSwimming();
         } else {
             return false;
         }
@@ -150,7 +150,7 @@ public class PlayerMovement {
     // Separator
 
     public boolean isLowEyeHeight() {
-        return this.parent.protocol.bukkit.getEyeHeight() < 1.0;
+        return this.parent.protocol.bukkit().getEyeHeight() < 1.0;
     }
 
     public boolean isFlying() {
@@ -160,7 +160,7 @@ public class PlayerMovement {
         if (vehicle != null) {
             flying = vehicle instanceof Player && ((Player) vehicle).isFlying();
         } else {
-            flying = this.parent.protocol.bukkit.isFlying();
+            flying = this.parent.protocol.bukkit().isFlying();
         }
         if (flying) {
             this.lastFlight = System.currentTimeMillis();
@@ -233,7 +233,7 @@ public class PlayerMovement {
 
     public boolean isGliding() {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
-            if (this.parent.protocol.bukkit.isGliding()) {
+            if (this.parent.protocol.bukkit().isGliding()) {
                 this.lastGlide = System.currentTimeMillis();
                 return true;
             } else {

@@ -65,7 +65,7 @@ public class ImpossibleInventory extends CheckRunner {
     @Override
     protected void runInternal(boolean cancelled) {
         if (!this.protocol.spartan.movement.isSwimming() && this.protocol.spartan.getVehicle() == null) {
-            ItemStack cursor = this.protocol.bukkit.getOpenInventory().getCursor();
+            ItemStack cursor = this.protocol.bukkit().getOpenInventory().getCursor();
 
             if (BlockUtils.hasMaterial(cursor)) {
                 int cases = getActionCase();
@@ -98,7 +98,7 @@ public class ImpossibleInventory extends CheckRunner {
                 && !click.isKeyboardClick()
                 && !this.protocol.spartan.movement.isSwimming()
                 && this.protocol.spartan.getVehicle() == null
-                && this.protocol.bukkit.getOpenInventory().countSlots() > PlayerUtils.playerInventorySlots
+                && this.protocol.bukkit().getOpenInventory().countSlots() > PlayerUtils.playerInventorySlots
                 && !BlockPatternUtils.isBlockPattern(
                 belowBlocks,
                 this.protocol.getLocationOrVehicle(),
@@ -131,7 +131,7 @@ public class ImpossibleInventory extends CheckRunner {
                     && check.getBooleanOption("check_sprinting", true)
                     && this.protocol.isSprinting() ? 2
                     : check.getBooleanOption("check_sleeping", true)
-                    && this.protocol.bukkit.isSleeping() ? 3
+                    && this.protocol.bukkit().isSleeping() ? 3
                     : check.getBooleanOption("check_dead", true)
                     && this.protocol.spartan.isDead() ? 5
                     : check.getBooleanOption("check_sprint_jumping", true)

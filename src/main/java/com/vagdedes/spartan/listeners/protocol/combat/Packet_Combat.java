@@ -63,8 +63,8 @@ public class Packet_Combat extends PacketAdapter {
                             EnumWrappers.EntityUseAction.ATTACK)) {
                 if (protocol.isSDesync()) {
                     Bukkit.getScheduler().runTask(Register.plugin,
-                                    () -> protocol.bukkit.teleport(protocol.getLocation()));
-                    AwarenessNotifications.optionallySend(protocol.bukkit.getName()
+                                    () -> protocol.bukkit().teleport(protocol.getLocation()));
+                    AwarenessNotifications.optionallySend(protocol.bukkit().getName()
                                     + " attack faster than the transaction response.");
                     event.setCancelled(true);
                     return;

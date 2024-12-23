@@ -384,7 +384,7 @@ public class RayUtils {
     public static float getEyeHeight(final boolean sneak, SpartanProtocol protocol) {
         float f2 = 1.62F;
 
-        if (protocol.bukkit.isSleeping()) {
+        if (protocol.bukkit().isSleeping()) {
             f2 = 0.2F;
         }
         if (sneak) {

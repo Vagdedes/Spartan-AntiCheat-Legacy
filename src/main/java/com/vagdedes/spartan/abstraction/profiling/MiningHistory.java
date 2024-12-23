@@ -25,7 +25,7 @@ public class MiningHistory {
             oreIdentifier = "Ore: ";
 
     public static void log(SpartanProtocol protocol, Block block, boolean cancelled) {
-        if (protocol.bukkit.getGameMode() == GameMode.SURVIVAL
+        if (protocol.bukkit().getGameMode() == GameMode.SURVIVAL
                 && PlayerUtils.isPickaxeItem(protocol.spartan.getItemInHand().getType())) {
             MiningHistory.MiningOre ore = MiningHistory.getMiningOre(block.getType());
 
@@ -33,7 +33,7 @@ public class MiningHistory {
                 World.Environment environment = block.getWorld().getEnvironment();
                 int x = block.getX(), y = block.getY(), z = block.getZ(), amount = 1;
                 String key = ore.toString(),
-                        log = "(" + AntiCheatLogs.playerIdentifier + protocol.bukkit.getName() + "), "
+                        log = "(" + AntiCheatLogs.playerIdentifier + protocol.bukkit().getName() + "), "
                                 + "(" + amountIdentifier + amount + "), "
                                 + "(" + oreIdentifier + key + "), "
                                 + "(" + environmentIdentifier + BlockUtils.environmentToString(environment) + "), "
@@ -43,7 +43,7 @@ public class MiningHistory {
                 PlayerFoundOreEvent event;
 
                 if (Config.settings.getBoolean("Important.enable_developer_api")) {
-                    event = new PlayerFoundOreEvent(protocol.bukkit, log, block.getLocation(), block.getType());
+                    event = new PlayerFoundOreEvent(protocol.bukkit(), log, block.getLocation(), block.getType());
                     Register.manager.callEvent(event);
                 } else {
                     event = null;

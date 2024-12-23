@@ -53,7 +53,7 @@ public class FastBreak extends CheckRunner {
 
     private void checkDelay(Block block, int seconds) {
         if (!BlockUtils.isSensitive(block.getType())) {
-            GameMode gameMode = this.protocol.bukkit.getGameMode();
+            GameMode gameMode = this.protocol.bukkit().getGameMode();
 
             if (gameMode == GameMode.SURVIVAL || gameMode == GameMode.ADVENTURE) {
                 long time = interactTime.getOrDefault(
@@ -142,7 +142,7 @@ public class FastBreak extends CheckRunner {
     }
 
     private void checkBreaksPerSecond(int seconds, Block block) {
-        GameMode gameMode = this.protocol.bukkit.getGameMode();
+        GameMode gameMode = this.protocol.bukkit().getGameMode();
 
         if (gameMode == GameMode.CREATIVE) {
             int limit = hackType.getCheck().getNumericalOption("max_breaks_per_second", 40);
@@ -164,7 +164,7 @@ public class FastBreak extends CheckRunner {
     }
 
     private void checkIndirectSurroundingsPerSecond(int seconds, Block block) {
-        GameMode gameMode = this.protocol.bukkit.getGameMode();
+        GameMode gameMode = this.protocol.bukkit().getGameMode();
 
         if ((gameMode == GameMode.SURVIVAL || gameMode == GameMode.ADVENTURE)
                 && !BlockUtils.isSensitive(this.protocol, block.getType())) {

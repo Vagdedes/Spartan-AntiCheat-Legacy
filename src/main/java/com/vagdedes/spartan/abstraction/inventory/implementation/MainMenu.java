@@ -41,7 +41,7 @@ public class MainMenu extends InventoryMenu {
         if (!protocols.isEmpty()) {
             for (SpartanProtocol protocol : protocols) {
                 SpartanBukkit.transferTask(protocol, () -> {
-                    String title = protocol.bukkit.getOpenInventory().getTitle();
+                    String title = protocol.bukkit().getOpenInventory().getTitle();
 
                     if (title.startsWith(name)) {
                         DiscordMemberCount.ignore();
@@ -148,23 +148,23 @@ public class MainMenu extends InventoryMenu {
             protocol.spartan.sendImportantMessage("§6Discord Invite URL§8: §e§n" + DiscordMemberCount.discordURL);
 
         } else if (item.equals("Compatibilities")) {
-            if (!Permissions.has(protocol.bukkit, Permission.MANAGE)) {
-                protocol.bukkit.closeInventory();
+            if (!Permissions.has(protocol.bukkit(), Permission.MANAGE)) {
+                protocol.bukkit().closeInventory();
                 ClickableMessage.sendURL(
-                        protocol.bukkit,
+                        protocol.bukkit(),
                         Config.messages.getColorfulString("no_permission"),
                         CommandExecution.support,
                         DiscordMemberCount.discordURL
                 );
             } else if (Compatibility.CompatibilityType.FILE_GUI.isFunctional()) {
-                Player n = protocol.bukkit;
+                Player n = protocol.bukkit();
 
                 if (n.hasPermission("filegui.modify")) {
                     FileGUIAPI.openMenu(n, Config.compatibility.getFile().getPath(), 1);
                 } else {
-                    protocol.bukkit.closeInventory();
+                    protocol.bukkit().closeInventory();
                     ClickableMessage.sendURL(
-                            protocol.bukkit,
+                            protocol.bukkit(),
                             Config.messages.getColorfulString("no_permission"),
                             CommandExecution.support,
                             DiscordMemberCount.discordURL
@@ -173,10 +173,10 @@ public class MainMenu extends InventoryMenu {
             }
 
         } else if (item.equals("Management")) {
-            if (!Permissions.has(protocol.bukkit, Permission.MANAGE)) {
-                protocol.bukkit.closeInventory();
+            if (!Permissions.has(protocol.bukkit(), Permission.MANAGE)) {
+                protocol.bukkit().closeInventory();
                 ClickableMessage.sendURL(
-                        protocol.bukkit,
+                        protocol.bukkit(),
                         Config.messages.getColorfulString("no_permission"),
                         CommandExecution.support,
                         DiscordMemberCount.discordURL

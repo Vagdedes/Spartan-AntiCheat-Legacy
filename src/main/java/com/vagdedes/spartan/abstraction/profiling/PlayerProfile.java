@@ -44,7 +44,7 @@ public class PlayerProfile {
         SpartanProtocol protocol = SpartanBukkit.getProtocol(name);
 
         if (protocol != null) {
-            this.offlinePlayer = protocol.bukkit;
+            this.offlinePlayer = protocol.bukkit();
             this.registerRunners(protocol);
         } else {
             this.offlinePlayer = null;
@@ -53,8 +53,8 @@ public class PlayerProfile {
     }
 
     public PlayerProfile(SpartanProtocol protocol) {
-        this.name = protocol.bukkit.getName();
-        this.offlinePlayer = protocol.bukkit; // Attention
+        this.name = protocol.bukkit().getName();
+        this.offlinePlayer = protocol.bukkit(); // Attention
         this.skull = null;
         this.runners = new CheckRunner[Enums.HackType.values().length];
         this.miningHistory = new MiningHistory[MiningHistory.MiningOre.values().length];
@@ -74,7 +74,7 @@ public class PlayerProfile {
     }
 
     public void update(SpartanProtocol protocol) {
-        this.offlinePlayer = protocol.bukkit;
+        this.offlinePlayer = protocol.bukkit();
         this.lastDataType = protocol.spartan.dataType;
         this.registerRunners(protocol);
     }
