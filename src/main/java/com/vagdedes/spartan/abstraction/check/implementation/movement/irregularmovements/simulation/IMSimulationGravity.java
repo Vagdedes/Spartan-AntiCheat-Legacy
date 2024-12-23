@@ -32,7 +32,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
     private int limToUpdate = 0;
     private int top = 0, topReset = 0;
     private int levitation = 0, glideBlocks = 0, climbBlocks = 0,
-            slowFalling = 0, levitationA = 0, slowFallingA = 0;
+            slowFalling = 0, levitationA = 0, slowFallingA = 0, swimming = 0;
     private boolean slime = false, slime0Tick = false,
             trident = false, cringeBlockClimb = false, allowLowJump = false,
             allowMinorGravityChange = false, allowLowMinorAccel = false;
@@ -188,8 +188,16 @@ public class IMSimulationGravity extends ProbabilityDetection {
                 this.topReset = 0;
             }
             boolean onWaterBubble = this.isOnWaterBubble(to);
+            if (this.protocol().bukkit.isSwimming()) {
+                this.swimming = 2;
+            } else if (this.swimming > 0) {
+                this.swimming--;
+            }
+            double waterLimClimb = (this.isOnSolidGround(to)) ? 0.4 : 0.2;
+            double waterLim = (MultiVersion.isOrGreater(MCVersion.V1_13))
+                            ? (this.swimming > 0) ? 0.4 : waterLimClimb : waterLimClimb;
             if (dev1 > 0.01 && isOnWater && motion > -3.92
-                            && motion < (onWaterBubble ? 0.8 : 0.4)) {
+                            && motion < (onWaterBubble ? 0.8 : waterLim)) {
                 this.setPredict(motion);
                 this.sub = (onWaterBubble) ? 8 : 5;
             }
