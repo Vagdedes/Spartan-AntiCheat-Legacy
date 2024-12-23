@@ -166,7 +166,7 @@ public abstract class CheckRunner extends CheckProcess {
     // Run
 
     public final void run(boolean cancelled) {
-        if (this.protocol() != null) {
+        if (this.protocol != null) {
             this.cancelled = cancelled;
             this.runInternal(cancelled);
         }
@@ -179,7 +179,7 @@ public abstract class CheckRunner extends CheckProcess {
     // Handle
 
     public final void handle(boolean cancelled, Object object) {
-        if (this.protocol() != null) {
+        if (this.protocol != null) {
             this.cancelled = cancelled;
             this.handleInternal(cancelled, object);
         }
@@ -198,15 +198,15 @@ public abstract class CheckRunner extends CheckProcess {
     // Separator
 
     final boolean canFunction() {
-        return this.protocol() != null
+        return this.protocol != null
                 && (System.currentTimeMillis() - this.creation) > TPS.maximum * TPS.tickTime
                 && (!cancelled || hackType.getCheck().handleCancelledEvents)
-                && (!v1_8 || this.protocol().bukkit.getGameMode() != GameMode.SPECTATOR)
-                && hackType.getCheck().isEnabled(this.protocol().spartan.dataType, this.protocol().getWorld().getName())
-                && Attributes.getAmount(this.protocol(), Attributes.GENERIC_SCALE) == 0.0
-                && !ProtocolLib.isTemporary(this.protocol().bukkit)
+                && (!v1_8 || this.protocol.bukkit.getGameMode() != GameMode.SPECTATOR)
+                && hackType.getCheck().isEnabled(this.protocol.spartan.dataType, this.protocol.getWorld().getName())
+                && Attributes.getAmount(this.protocol, Attributes.GENERIC_SCALE) == 0.0
+                && !ProtocolLib.isTemporary(this.protocol.bukkit)
                 && canRun()
-                && !Permissions.isBypassing(this.protocol().bukkit, hackType);
+                && !Permissions.isBypassing(this.protocol.bukkit, hackType);
     }
 
     // Causes
@@ -232,14 +232,14 @@ public abstract class CheckRunner extends CheckProcess {
         CheckCancellation disableCause = this.getLastCause(this.disableCauses);
 
         if (disableCause == null) {
-            if (this.protocol() != null) {
-                return MythicMobs.is(this.protocol())
+            if (this.protocol != null) {
+                return MythicMobs.is(this.protocol)
                         ? new CheckCancellation(Compatibility.CompatibilityType.MYTHIC_MOBS)
-                        : ItemsAdder.is(this.protocol())
+                        : ItemsAdder.is(this.protocol)
                         ? new CheckCancellation(Compatibility.CompatibilityType.ITEMS_ADDER)
-                        : CustomEnchantsPlus.has(this.protocol())
+                        : CustomEnchantsPlus.has(this.protocol)
                         ? new CheckCancellation(Compatibility.CompatibilityType.CUSTOM_ENCHANTS_PLUS)
-                        : EcoEnchants.has(this.protocol())
+                        : EcoEnchants.has(this.protocol)
                         ? new CheckCancellation(Compatibility.CompatibilityType.ECO_ENCHANTS)
                         : null;
             } else {
@@ -259,32 +259,32 @@ public abstract class CheckRunner extends CheckProcess {
             reason = this.hackType.getCheck().getName();
         }
         this.disableCauses.add(new CheckCancellation(reason, pointer, ticks));
-        if (this.protocol() != null) {
-            InteractiveInventory.playerInfo.refresh(this.protocol().bukkit.getName());
+        if (this.protocol != null) {
+            InteractiveInventory.playerInfo.refresh(this.protocol.bukkit.getName());
         }
     }
 
     public final void addSilentCause(String reason, String pointer, int ticks) {
         this.silentCauses.add(new CheckCancellation(reason, pointer, ticks));
 
-        if (this.protocol() != null) {
-            InteractiveInventory.playerInfo.refresh(this.protocol().bukkit.getName());
+        if (this.protocol != null) {
+            InteractiveInventory.playerInfo.refresh(this.protocol.bukkit.getName());
         }
     }
 
     public final void removeDisableCause() {
         this.disableCauses.clear();
 
-        if (this.protocol() != null) {
-            InteractiveInventory.playerInfo.refresh(this.protocol().bukkit.getName());
+        if (this.protocol != null) {
+            InteractiveInventory.playerInfo.refresh(this.protocol.bukkit.getName());
         }
     }
 
     public final void removeSilentCause() {
         this.silentCauses.clear();
 
-        if (this.protocol() != null) {
-            InteractiveInventory.playerInfo.refresh(this.protocol().bukkit.getName());
+        if (this.protocol != null) {
+            InteractiveInventory.playerInfo.refresh(this.protocol.bukkit.getName());
         }
     }
 
@@ -296,7 +296,7 @@ public abstract class CheckRunner extends CheckProcess {
                 CheckCancelEvent checkCancelEvent;
 
                 if (Config.settings.getBoolean("Important.enable_developer_api")) {
-                    checkCancelEvent = new CheckCancelEvent(this.protocol().bukkit, hackType);
+                    checkCancelEvent = new CheckCancelEvent(this.protocol.bukkit, hackType);
                     Register.manager.callEvent(checkCancelEvent);
                 } else {
                     checkCancelEvent = null;
@@ -304,7 +304,7 @@ public abstract class CheckRunner extends CheckProcess {
 
                 if (checkCancelEvent == null
                         || !checkCancelEvent.isCancelled()) {
-                    this.prevention.handle(this.protocol());
+                    this.prevention.handle(this.protocol);
                     return true;
                 } else {
                     return false;
@@ -313,8 +313,8 @@ public abstract class CheckRunner extends CheckProcess {
                 Thread thread = Thread.currentThread();
                 Boolean[] cancelled = new Boolean[1];
 
-                SpartanBukkit.transferTask(this.protocol(), () -> {
-                    CheckCancelEvent checkCancelEvent = new CheckCancelEvent(this.protocol().bukkit, hackType);
+                SpartanBukkit.transferTask(this.protocol, () -> {
+                    CheckCancelEvent checkCancelEvent = new CheckCancelEvent(this.protocol.bukkit, hackType);
                     Register.manager.callEvent(checkCancelEvent);
                     cancelled[0] = checkCancelEvent.isCancelled();
 
@@ -331,7 +331,7 @@ public abstract class CheckRunner extends CheckProcess {
                     }
                 }
                 if (!cancelled[0]) {
-                    this.prevention.handle(this.protocol());
+                    this.prevention.handle(this.protocol);
                     return true;
                 } else {
                     return false;
@@ -345,15 +345,15 @@ public abstract class CheckRunner extends CheckProcess {
     // Notification
 
     final int getNotificationTicksCooldown(SpartanProtocol detected) {
-        Integer frequency = DetectionNotifications.getFrequency(this.protocol());
+        Integer frequency = DetectionNotifications.getFrequency(this.protocol);
 
         if (frequency != null
                 && frequency != DetectionNotifications.defaultFrequency) {
             return frequency;
         } else if (detected != null
-                && (detected.bukkit.equals(this.protocol().bukkit)
-                || detected.getWorld().equals(this.protocol().getWorld())
-                && detected.getLocation().distance(this.protocol().getLocation()) <= PlayerUtils.chunk)) {
+                && (detected.bukkit.equals(this.protocol.bukkit)
+                || detected.getWorld().equals(this.protocol.getWorld())
+                && detected.getLocation().distance(this.protocol.getLocation()) <= PlayerUtils.chunk)) {
             return AlgebraUtils.integerRound(Math.sqrt(TPS.maximum));
         } else {
             return AlgebraUtils.integerCeil(TPS.maximum);

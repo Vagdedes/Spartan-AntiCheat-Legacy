@@ -53,14 +53,14 @@ public class IMSimulationSpeed extends ProbabilityDetection {
     }
 
     public final void run() {
-        if (!this.protocol().packetsEnabled()) {
+        if (!this.protocol.packetsEnabled()) {
             return;
         }
-        SpartanProtocol p = this.protocol();
+        SpartanProtocol p = this.protocol;
         boolean isOnGround = (p.spartan.getVehicle() != null)
                         ? p.spartan.getVehicle().isOnGround() : p.isOnGround();
         Location to = p.getLocation();
-        Location from = this.protocol().getFromLocation();
+        Location from = this.protocol.getFromLocation();
         double dx = to.getX() - from.getX();
         double dz = to.getZ() - from.getZ();
         double speed = Math.sqrt(dx * dx + dz * dz);
@@ -87,7 +87,7 @@ public class IMSimulationSpeed extends ProbabilityDetection {
                         this.ACCELERATION_MOTION = lastSpeed - limitAccel * 0.91;
                     limit *= this.multiplex();
                     limit += this.ACCELERATION_MOTION;
-                    if (this.protocol().getComponentXZ().pistonTick) limit += 1.0;
+                    if (this.protocol.getComponentXZ().pistonTick) limit += 1.0;
                     if (speed < limit) this.setPredict(dx, dz);
                     if (this.ACCELERATION_MOTION > 0)
                         this.ACCELERATION_MOTION -= 0.02;
@@ -104,7 +104,7 @@ public class IMSimulationSpeed extends ProbabilityDetection {
                         lim += this.ACCELERATION_MOTION - 0.146;
                     lim *= this.multiplex();
                     if (this.action > 0) lim /= 1.2;
-                    if (this.protocol().getComponentXZ().pistonTick) lim += 1.0;
+                    if (this.protocol.getComponentXZ().pistonTick) lim += 1.0;
                     if (speed < lim)
                         this.setPredict(dx, dz);
                     else this.setPredict(-Math.sin(Math.toRadians(to.getYaw())) * lim,
@@ -121,7 +121,7 @@ public class IMSimulationSpeed extends ProbabilityDetection {
                     double accel = ((this.action > 2)
                                     ? ACCELERATION_ACTION : (this.action > 1) ?
                                     ACCELERATION_BASIC : ACCELERATION_SPRINT) * this.multiplex();
-                    boolean nearbyEntities = this.protocol().spartan.getNearbyEntities(2.5).size() > 1;
+                    boolean nearbyEntities = this.protocol.spartan.getNearbyEntities(2.5).size() > 1;
                     boolean point = this.isPointWall(to)
                             || this.isPointWall(from)
                             || (nearbyEntities)
@@ -148,17 +148,17 @@ public class IMSimulationSpeed extends ProbabilityDetection {
                         ACCELERATION_SPRINT * (1.5) * this.multiplex(),
                         new SpartanVector2D(dx, dz)
                 );
-                //protocol().bukkit.sendMessage("i: " + this.protocol().getComponentXZ().pistonTick + " " + this.removePistonTick);
+                //protocol().bukkit.sendMessage("i: " + this.protocol.getComponentXZ().pistonTick + " " + this.removePistonTick);
                 if ((this.isOnSlimeWide(to) || this.isOnSlimeWide(from)))
                     this.nearSlimeStatus = 4;
                 if (!(dx == predictX && dz == predictZ)) {
                     double pr = Math.sqrt(predictX * predictX + predictZ * predictZ);
                     double d = getDeviantity(pr, speed);
-                    if (d <= 1.01 && d > 0.1 && this.protocol().getComponentXZ().pistonTick) {
+                    if (d <= 1.01 && d > 0.1 && this.protocol.getComponentXZ().pistonTick) {
                         this.setPredict(dx, dz);
                         this.removePistonTick = true;
                     }
-                    if (this.protocol().getComponentXZ().pistonTick && this.nearSlimeStatus > 0) {
+                    if (this.protocol.getComponentXZ().pistonTick && this.nearSlimeStatus > 0) {
                         this.nearSlimeStatus = 0;
                         this.slimeBoostApply = 3;
                         this.removePistonTick = true;
@@ -171,21 +171,21 @@ public class IMSimulationSpeed extends ProbabilityDetection {
                         this.tridentBoostApply--;
                         this.setPredict(dx, dz);
                     }
-                    if (d >= 0.02 && d <= 1.7 && this.protocol().getComponentXZ().explosionTick) {
-                        this.protocol().getComponentXZ().explosionTick = false;
+                    if (d >= 0.02 && d <= 1.7 && this.protocol.getComponentXZ().explosionTick) {
+                        this.protocol.getComponentXZ().explosionTick = false;
                         this.setPredict(dx, dz);
                     }
-                    if (this.protocol().getComponentXZ().pistonTick
+                    if (this.protocol.getComponentXZ().pistonTick
                                     && getDeviantity(pr, speed) > 0.1 && getDeviantity(pr, speed) <= 1.0) {
                         this.setPredict(dx, dz);
                         this.removePistonTick = true;
                     }
-                    if (d >= 0.01 && d <= 1.0 && this.protocol().spartan.trackers.has(
+                    if (d >= 0.01 && d <= 1.0 && this.protocol.spartan.trackers.has(
                                     PlayerTrackers.TrackerType.VEHICLE, "vh_tp")) {
                         this.setPredict(dx, dz);
                     }
-                    if (d > 0.005 && this.protocol().spartan.getVehicle() != null) {
-                        Entity v = this.protocol().spartan.getVehicle();
+                    if (d > 0.005 && this.protocol.spartan.getVehicle() != null) {
+                        Entity v = this.protocol.spartan.getVehicle();
                         boolean isJumpingEntity = EntityUtils.abstractHorseClass
                                         ? v instanceof AbstractHorse
                                         : v instanceof Horse;
@@ -212,7 +212,7 @@ public class IMSimulationSpeed extends ProbabilityDetection {
                 }
             }
             if (this.removePistonTick) {
-                this.protocol().getComponentXZ().pistonTick = false;
+                this.protocol.getComponentXZ().pistonTick = false;
                 this.removePistonTick = false;
             }
             this.vl /= 1.15;
@@ -226,11 +226,11 @@ public class IMSimulationSpeed extends ProbabilityDetection {
 
     private double multiplex() {
         double m = 1.0;
-        ExtendedPotionEffect speedEffect = this.protocol().spartan.getPotionEffect(PotionEffectType.SPEED, 5);
-        Location l = this.protocol().getLocation().clone().add(0, -0.5, 0);
-        Location lF = this.protocol().getFromLocation().clone().add(0, -0.5, 0);
-        if (PlayerUtils.soulSpeed && this.protocol().bukkit.getInventory().getBoots() != null) {
-            int e = this.protocol().bukkit.getInventory().getBoots().getEnchantmentLevel(Enchantment.SOUL_SPEED);
+        ExtendedPotionEffect speedEffect = this.protocol.spartan.getPotionEffect(PotionEffectType.SPEED, 5);
+        Location l = this.protocol.getLocation().clone().add(0, -0.5, 0);
+        Location lF = this.protocol.getFromLocation().clone().add(0, -0.5, 0);
+        if (PlayerUtils.soulSpeed && this.protocol.bukkit.getInventory().getBoots() != null) {
+            int e = this.protocol.bukkit.getInventory().getBoots().getEnchantmentLevel(Enchantment.SOUL_SPEED);
             double v = (e + 1) * 0.4;
             m += v;
         }
@@ -238,21 +238,21 @@ public class IMSimulationSpeed extends ProbabilityDetection {
             m += (double) (speedEffect.bukkitEffect.getAmplifier() + 1) * 0.2;
         if (this.isOnIce(l) || this.isOnSlime(l) || this.isOnIce(lF) || this.isOnSlime(lF))
             m *= 1.6;
-        if (this.protocol().spartan.getNearbyEntities(2).size() > 1)
+        if (this.protocol.spartan.getNearbyEntities(2).size() > 1)
             m *= 1.4;
-        if (BlockUtils.areWebs(new SpartanLocation(this.protocol().getLocation()).getBlock().getType())) {
+        if (BlockUtils.areWebs(new SpartanLocation(this.protocol.getLocation()).getBlock().getType())) {
             m *= 0.2;
         }
         if (this.isOnWater(l) || this.isOnWater(lF)) {
             ExtendedPotionEffect dolphinEffect = PlayerUtils.dolphinsGrace
-                    ? this.protocol().spartan.getPotionEffect(PotionEffectType.DOLPHINS_GRACE, 0)
+                    ? this.protocol.spartan.getPotionEffect(PotionEffectType.DOLPHINS_GRACE, 0)
                     : null;
             if (dolphinEffect != null) m *= 6.2;
         }
         if (this.isOnSemi(l)) m *= 1.4;
-        if (this.protocol().spartan.movement.isGliding()) m *= 18.0;
-        if (this.protocol().spartan.movement.isFlying() || this.protocol().flyingTicks > 0) m *= 25.0;
-        m *= (this.protocol().bukkit.getWalkSpeed() * 5);
+        if (this.protocol.spartan.movement.isGliding()) m *= 18.0;
+        if (this.protocol.spartan.movement.isFlying() || this.protocol.flyingTicks > 0) m *= 25.0;
+        m *= (this.protocol.bukkit.getWalkSpeed() * 5);
         return m;
     }
 
@@ -262,7 +262,7 @@ public class IMSimulationSpeed extends ProbabilityDetection {
 
     private void velocity(double motion, double allowedDev, SpartanVector2D move) {
         PlayerVelocityEvent claimed = null;
-        for (PlayerVelocityEvent velo : this.protocol().claimedVeloGravity) {
+        for (PlayerVelocityEvent velo : this.protocol.claimedVeloGravity) {
             if (this.veloIsValid(motion, velo.getVelocity().getY())) {
                 double speed = Math.sqrt(move.x * move.x + move.y * move.y);
                 double pr = Math.sqrt(
@@ -279,7 +279,7 @@ public class IMSimulationSpeed extends ProbabilityDetection {
                 break;
             }
         }
-        if (claimed != null) this.protocol().claimedVeloGravity.remove(claimed);
+        if (claimed != null) this.protocol.claimedVeloGravity.remove(claimed);
     }
 
     private boolean veloIsValid(double motion, double velo) {
@@ -287,23 +287,23 @@ public class IMSimulationSpeed extends ProbabilityDetection {
     }
 
     public void teleport() {
-        if (!this.protocol().packetsEnabled()) {
+        if (!this.protocol.packetsEnabled()) {
             return;
         }
         this.air = 0;
     }
 
     public void ground(boolean isOnGround) {
-        if (!this.protocol().packetsEnabled()) {
+        if (!this.protocol.packetsEnabled()) {
             return;
         }
         this.air = isOnGround ? 0 : this.air + 1;
-        this.action = this.protocol().useItemPacket ? this.action + 1 : 0;
+        this.action = this.protocol.useItemPacket ? this.action + 1 : 0;
         this.ground = isOnGround ? this.ground + 1 : 0;
     }
 
     public void  trident() {
-        if (!this.protocol().packetsEnabled()) {
+        if (!this.protocol.packetsEnabled()) {
             return;
         }
         this.tridentBoostApply = 10;
@@ -327,11 +327,11 @@ public class IMSimulationSpeed extends ProbabilityDetection {
             for (int dy = -1; dy <= 1; ++dy) {
                 for (int dz = -1; dz <= 1; ++dz) {
                     SpartanBlock block = new SpartanLocation(
-                            new Location(this.protocol().getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
+                            new Location(this.protocol.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
                     ).getBlock();
 
-                    Material m = this.protocol().packetWorld.getBlock(
-                            new Location(this.protocol().getWorld(),
+                    Material m = this.protocol.packetWorld.getBlock(
+                            new Location(this.protocol.getWorld(),
                                     x + (double) dx * 0.3,
                                     y + (double) dy * 0.5,
                                     z + (double) dz * 0.3)
@@ -356,8 +356,8 @@ public class IMSimulationSpeed extends ProbabilityDetection {
         for (int dx = -1; dx <= 1; ++dx) {
             for (int dy = -2; dy <= 1; ++dy) {
                 for (int dz = -1; dz <= 1; ++dz) {
-                    Material m = this.protocol().packetWorld.getBlock(
-                            new Location(this.protocol().getWorld(),
+                    Material m = this.protocol.packetWorld.getBlock(
+                            new Location(this.protocol.getWorld(),
                                     x + (double) dx,
                                     y + (double) dy,
                                     z + (double) dz)
@@ -380,9 +380,9 @@ public class IMSimulationSpeed extends ProbabilityDetection {
         for (int dx = -2; dx <= 2; ++dx) {
             for (int dy = 0; dy <= 5; ++dy) {
                 for (int dz = -2; dz <= 2; ++dz) {
-                    Material material = this.protocol().packetWorld.getBlock(
+                    Material material = this.protocol.packetWorld.getBlock(
                             new Location(
-                                    this.protocol().getWorld(),
+                                    this.protocol.getWorld(),
                                     x + (double) dx * 0.5,
                                     y + (double) dy * 0.5, z + (double) dz * 0.5));
 
@@ -409,8 +409,8 @@ public class IMSimulationSpeed extends ProbabilityDetection {
         for (int dx = -1; dx <= 1; ++dx) {
             for (int dy = -1; dy <= 1; ++dy) {
                 for (int dz = -1; dz <= 1; ++dz) {
-                    Material material = this.protocol().packetWorld.getBlock(
-                            new Location(this.protocol().getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
+                    Material material = this.protocol.packetWorld.getBlock(
+                            new Location(this.protocol.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
                     );
 
                     if (material != null && !material.toString().contains("GRASS")
@@ -431,8 +431,8 @@ public class IMSimulationSpeed extends ProbabilityDetection {
         for (int dx = -1; dx <= 1; ++dx) {
             for (int dy = -1; dy <= 1; ++dy) {
                 for (int dz = -1; dz <= 1; ++dz) {
-                    Material material = this.protocol().packetWorld.getBlock(
-                            new Location(this.protocol().getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
+                    Material material = this.protocol.packetWorld.getBlock(
+                            new Location(this.protocol.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
                     );
 
                     if (material != null
@@ -457,8 +457,8 @@ public class IMSimulationSpeed extends ProbabilityDetection {
         for (int dx = -1; dx <= 1; ++dx) {
             for (int dy = -2; dy <= 2; ++dy) {
                 for (int dz = -1; dz <= 1; ++dz) {
-                    Material material = this.protocol().packetWorld.getBlock(
-                            new Location(this.protocol().getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
+                    Material material = this.protocol.packetWorld.getBlock(
+                            new Location(this.protocol.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
                     );
 
                     if (material != null
@@ -481,8 +481,8 @@ public class IMSimulationSpeed extends ProbabilityDetection {
         for (int dx = -1; dx <= 1; ++dx) {
             for (int dy = -1; dy <= 1; ++dy) {
                 for (int dz = -1; dz <= 1; ++dz) {
-                    Material material = this.protocol().packetWorld.getBlock(
-                            new Location(this.protocol().getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
+                    Material material = this.protocol.packetWorld.getBlock(
+                            new Location(this.protocol.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
                     );
 
                     if (material != null
@@ -504,8 +504,8 @@ public class IMSimulationSpeed extends ProbabilityDetection {
         for (int dx = -1; dx <= 1; ++dx) {
             for (int dy = -1; dy <= 1; ++dy) {
                 for (int dz = -1; dz <= 1; ++dz) {
-                    Material material = this.protocol().packetWorld.getBlock(
-                            new Location(this.protocol().getWorld(), x + (double) dx, y + (double) dy, z + (double) dz)
+                    Material material = this.protocol.packetWorld.getBlock(
+                            new Location(this.protocol.getWorld(), x + (double) dx, y + (double) dy, z + (double) dz)
                     );
 
                     if (material != null
@@ -528,8 +528,8 @@ public class IMSimulationSpeed extends ProbabilityDetection {
         for (int dx = -2; dx <= 2; ++dx) {
             for (int dy = -2; dy <= 2; ++dy) {
                 for (int dz = -2; dz <= 2; ++dz) {
-                    Material material = this.protocol().packetWorld.getBlock(
-                            new Location(this.protocol().getWorld(), x + (double) dx, y + (double) dy, z + (double) dz)
+                    Material material = this.protocol.packetWorld.getBlock(
+                            new Location(this.protocol.getWorld(), x + (double) dx, y + (double) dy, z + (double) dz)
                     );
 
                     if (material != null && (BlockUtils.areSlimeBlocks(material))) {
@@ -549,8 +549,8 @@ public class IMSimulationSpeed extends ProbabilityDetection {
         for (int dx = -1; dx <= 1; ++dx) {
             for (int dy = -2; dy <= 2; ++dy) {
                 for (int dz = -1; dz <= 1; ++dz) {
-                    Material material = this.protocol().packetWorld.getBlock(
-                            new Location(this.protocol().getWorld(), x + (double) dx, y + (double) dy, z + (double) dz)
+                    Material material = this.protocol.packetWorld.getBlock(
+                            new Location(this.protocol.getWorld(), x + (double) dx, y + (double) dy, z + (double) dz)
                     );
 
                     if (material != null && (BlockUtils.areSlimeBlocks(material))) {
@@ -570,8 +570,8 @@ public class IMSimulationSpeed extends ProbabilityDetection {
         for (int dx = -2; dx <= 2; ++dx) {
             for (double dy = 1.0; dy <= 2.0; dy += 0.5) {
                 for (int dz = -2; dz <= 2; ++dz) {
-                    Material material = this.protocol().packetWorld.getBlock(
-                            new Location(this.protocol().getWorld(), x + (double) dx * 0.3, y + dy, z + (double) dz * 0.3)
+                    Material material = this.protocol.packetWorld.getBlock(
+                            new Location(this.protocol.getWorld(), x + (double) dx * 0.3, y + dy, z + (double) dz * 0.3)
                     );
 
                     if (material != null && BlockUtils.isSolid(material)) {
@@ -592,9 +592,9 @@ public class IMSimulationSpeed extends ProbabilityDetection {
         for (int dx = -1; dx <= 1; dx++) {
             for (int dy = -1; dy <= 1; dy++) {
                 for (int dz = -1; dz <= 1; dz++) {
-                    Material material = this.protocol().packetWorld.getBlock(
+                    Material material = this.protocol.packetWorld.getBlock(
                             new Location(
-                                    this.protocol().getWorld(),
+                                    this.protocol.getWorld(),
                                     x + dx,
                                     y + dy,
                                     z + dz)

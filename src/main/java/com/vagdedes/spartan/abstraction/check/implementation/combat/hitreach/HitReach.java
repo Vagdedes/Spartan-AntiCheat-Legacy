@@ -49,20 +49,20 @@ public class HitReach extends CheckRunner {
     protected void handleInternal(boolean cancelled, Object object) {
         PlayerAttackEvent event = (PlayerAttackEvent) object;
         if (!(event.target instanceof Player)) return;
-        if (this.protocol().packetsEnabled()) {
-            if (CombatUtils.canCheck(this.protocol(), SpartanBukkit.getProtocol((Player) event.target).bukkit)
-                            && !this.protocol().bukkit.getGameMode().equals(GameMode.CREATIVE)) {
+        if (this.protocol.packetsEnabled()) {
+            if (CombatUtils.canCheck(this.protocol, SpartanBukkit.getProtocol((Player) event.target).bukkit)
+                            && !this.protocol.bukkit.getGameMode().equals(GameMode.CREATIVE)) {
                 SpartanProtocol target = SpartanBukkit.getProtocol((Player) event.target);
                 List<Location> h = target.getPositionHistory();
-                boolean is1_8 = this.protocol().isUsingVersion(MultiVersion.MCVersion.V1_8);
+                boolean is1_8 = this.protocol.isUsingVersion(MultiVersion.MCVersion.V1_8);
                 float hitbox = (is1_8) ? 0.4F : 0.3F;
                 AtomicReference<Double> minDistance = new AtomicReference<>(Double.MAX_VALUE);
                 {
                     for (boolean fastMath : BOOLEANS) {
                         ClientMath clientMath = fastMath ? optifineMath : vanillaMath;
 
-                        Location l = this.protocol().getLocation();
-                        Location lF = this.protocol().getFromLocation();
+                        Location l = this.protocol.getLocation();
+                        Location lF = this.protocol.getFromLocation();
                         Vec3[] possibleEyeRotation = {
                                         getVectorForRotation(l.getYaw(), l.getPitch(), clientMath),
                                         getVectorForRotation(lF.getYaw(), lF.getPitch(), clientMath),
@@ -124,13 +124,13 @@ public class HitReach extends CheckRunner {
             }
         } else {
             LivingEntity target = event.target;
-            if (CombatUtils.canCheck(this.protocol(), target)
-                            && !this.protocol().bukkit.getGameMode().equals(GameMode.CREATIVE)) {
-                double bruteforceRayTrace = RayUtils.bruteforceRayTrace(this.protocol(), target),
+            if (CombatUtils.canCheck(this.protocol, target)
+                            && !this.protocol.bukkit.getGameMode().equals(GameMode.CREATIVE)) {
+                double bruteforceRayTrace = RayUtils.bruteforceRayTrace(this.protocol, target),
                                 diff = bruteforceRayTrace - 0.4;
                 rayTraceAnalysis.add(bruteforceRayTrace);
                 if (rayTraceAnalysis.size() >= 10) {
-                    analyze(this.protocol().getLocation(), bruteforceRayTrace);
+                    analyze(this.protocol.getLocation(), bruteforceRayTrace);
                 }
             }
         }
@@ -161,7 +161,7 @@ public class HitReach extends CheckRunner {
         }
         double result = globalValue / rayTraceAnalysis.size();
 
-        if (result > (this.protocol().packetsEnabled() ? 0.43 : 0.5)) punish = "simple";
+        if (result > (this.protocol.packetsEnabled() ? 0.43 : 0.5)) punish = "simple";
         int percent = (int) ((result / 0.4) * 100);
         if (punish != null) {
             vl += 100;
@@ -180,6 +180,6 @@ public class HitReach extends CheckRunner {
 
     @Override
     protected boolean canRun() {
-        return CombatUtils.canCheck(this.protocol());
+        return CombatUtils.canCheck(this.protocol);
     }
 }

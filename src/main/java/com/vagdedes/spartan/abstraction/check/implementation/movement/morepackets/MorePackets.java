@@ -100,7 +100,7 @@ public class MorePackets extends CheckRunner {
         if (packetVL > 100) {
             executor.cancel(
                     info,
-                    this.protocol().getFromLocation(),
+                    this.protocol.getFromLocation(),
                     0,
                     true
             );
@@ -112,11 +112,11 @@ public class MorePackets extends CheckRunner {
 
     @Override
     protected boolean canRun() {
-        return !this.protocol().spartan.isBedrockPlayer()
+        return !this.protocol.spartan.isBedrockPlayer()
                 && this.teleported < System.currentTimeMillis()
                 && MovementProcessing.canCheck(
-                this.protocol(),
-                this.protocol().packetsEnabled(),
+                this.protocol,
+                this.protocol.packetsEnabled(),
                 true,
                 true,
                 true

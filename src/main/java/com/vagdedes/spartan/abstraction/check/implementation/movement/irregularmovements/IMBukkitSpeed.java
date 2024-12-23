@@ -83,7 +83,7 @@ public class IMBukkitSpeed extends ProbabilityDetection {
     }
 
     final void velocity(PlayerVelocityEvent e) {
-        if (this.protocol().packetsEnabled()) {
+        if (this.protocol.packetsEnabled()) {
             return;
         }
         Vector v = e.getVelocity();
@@ -98,22 +98,22 @@ public class IMBukkitSpeed extends ProbabilityDetection {
     }
 
     final void trident(int level) {
-        if (this.protocol().packetsEnabled()) {
+        if (this.protocol.packetsEnabled()) {
             return;
         }
         multiply = level * 5;
     }
 
     final void run(PlayerMoveEvent e) {
-        if (this.protocol().packetsEnabled()
-                || this.protocol().spartan.trackers.has(PlayerTrackers.TrackerType.PISTON)) {
+        if (this.protocol.packetsEnabled()
+                || this.protocol.spartan.trackers.has(PlayerTrackers.TrackerType.PISTON)) {
             return;
         }
-        Location location = this.protocol().getLocation().clone();
+        Location location = this.protocol.getLocation().clone();
         if (f == null) f = location.clone();
         Location from = e.getFrom();
         Location to = e.getTo();
-        boolean onGround = this.protocol().isOnGround();
+        boolean onGround = this.protocol.isOnGround();
         double dx = to.getX() - from.getX();
         double dz = to.getZ() - from.getZ();
 
@@ -130,10 +130,10 @@ public class IMBukkitSpeed extends ProbabilityDetection {
         }
         double rayDiff = RayUtils.calculateRayLines(lookRay, moveRay);
         ExtendedPotionEffect glideEffect = PlayerUtils.slowFall
-                ? this.protocol().spartan.getPotionEffect(PotionEffectType.SLOW_FALLING, 0)
+                ? this.protocol.spartan.getPotionEffect(PotionEffectType.SLOW_FALLING, 0)
                 : null;
         ExtendedPotionEffect levitationEffect = PlayerUtils.levitation
-                ? this.protocol().spartan.getPotionEffect(PotionEffectType.LEVITATION, 0)
+                ? this.protocol.spartan.getPotionEffect(PotionEffectType.LEVITATION, 0)
                 : null;
 
         if (speed > speedLimit && onAir < 24) {
@@ -144,8 +144,8 @@ public class IMBukkitSpeed extends ProbabilityDetection {
                     this.straightLineSpeeding
             };
         }
-        if (velocity == 0 && !this.protocol().spartan.isBedrockPlayer() && levitationEffect == null
-                && glideEffect == null && !this.protocol().spartan.movement.isSwimming()) {
+        if (velocity == 0 && !this.protocol.spartan.isBedrockPlayer() && levitationEffect == null
+                && glideEffect == null && !this.protocol.spartan.movement.isSwimming()) {
             double localSpeedLimit = r((speedLimit / 1.35) + 0.01);
             double localSpeedLimit2 = r((speedLimit / 1.6) + 0.01);
             double[] allowedRots = new double[]{0.0, 45.0, -45.0};
@@ -204,29 +204,29 @@ public class IMBukkitSpeed extends ProbabilityDetection {
     }
 
     private double updateStats() {
-        if (!this.protocol().isOnGround()) {
+        if (!this.protocol.isOnGround()) {
             onAir++;
             onGround = 0;
         } else {
             onGround++;
             onAir = 0;
         }
-        SpartanLocation to = new SpartanLocation(this.protocol().getLocation().clone());
-        PlayerInventory inventory = this.protocol().bukkit.getInventory();
-        Entity vehicle = this.protocol().spartan.getVehicle();
+        SpartanLocation to = new SpartanLocation(this.protocol.getLocation().clone());
+        PlayerInventory inventory = this.protocol.bukkit.getInventory();
+        Entity vehicle = this.protocol.spartan.getVehicle();
         if (onGround == 1) this.multiplyFriction = 0.26;
-        double m = (this.protocol().bukkit.getWalkSpeed() * 5);
-        boolean solidBlockOnTop = RayUtils.onSolidBlock(this.protocol(), to.clone().add(0, 2, 0).bukkit());
+        double m = (this.protocol.bukkit.getWalkSpeed() * 5);
+        boolean solidBlockOnTop = RayUtils.onSolidBlock(this.protocol, to.clone().add(0, 2, 0).bukkit());
         m += getMaxSpeedAmplifier();
         ExtendedPotionEffect dolphinEffect = PlayerUtils.dolphinsGrace
-                ? this.protocol().spartan.getPotionEffect(PotionEffectType.DOLPHINS_GRACE, 0)
+                ? this.protocol.spartan.getPotionEffect(PotionEffectType.DOLPHINS_GRACE, 0)
                 : null;
-        ExtendedPotionEffect speedEffect = this.protocol().spartan.getPotionEffect(PotionEffectType.SPEED, 0);
+        ExtendedPotionEffect speedEffect = this.protocol.spartan.getPotionEffect(PotionEffectType.SPEED, 0);
         ExtendedPotionEffect glideEffect = PlayerUtils.slowFall
-                ? this.protocol().spartan.getPotionEffect(PotionEffectType.SLOW_FALLING, 0)
+                ? this.protocol.spartan.getPotionEffect(PotionEffectType.SLOW_FALLING, 0)
                 : null;
         ExtendedPotionEffect levitationEffect = PlayerUtils.levitation
-                ? this.protocol().spartan.getPotionEffect(PotionEffectType.LEVITATION, 0)
+                ? this.protocol.spartan.getPotionEffect(PotionEffectType.LEVITATION, 0)
                 : null;
         if (PlayerUtils.soulSpeed && inventory.getBoots() != null) {
             int e = inventory.getBoots().getEnchantmentLevel(Enchantment.SOUL_SPEED);
@@ -236,33 +236,33 @@ public class IMBukkitSpeed extends ProbabilityDetection {
             }
         }
         if (dolphinEffect != null) if (this.multiply < 5.0D) this.multiply = 5.0D;
-        if (slimeBlockCause(this.protocol().getLocation())) {
+        if (slimeBlockCause(this.protocol.getLocation())) {
             if (this.multiply < 3) this.multiply = 3D;
         }
         if (solidBlockOnTop) {
             if (this.multiply < 0.6) this.multiply = 0.6D;
         }
-        if ((this.onIce(this.protocol().getLocation().clone()))) {
+        if ((this.onIce(this.protocol.getLocation().clone()))) {
             double m1 = (solidBlockOnTop) ? 1.5 : 0.7;
             if (this.multiply < m1) multiply = m1;
 
         }
-        if (RayUtils.onBlock(this.protocol(), to.bukkit(), BlockUtils.honey_block)) {
+        if (RayUtils.onBlock(this.protocol, to.bukkit(), BlockUtils.honey_block)) {
             if (multiply < 0.2) multiply = 0.2;
         }
-        if (RayUtils.onBlock(this.protocol(), to.bukkit(), BlockUtils.climbableOriginal)) {
+        if (RayUtils.onBlock(this.protocol, to.bukkit(), BlockUtils.climbableOriginal)) {
             if (multiply < 0.3) multiply = 0.3;
         }
-        if (RayUtils.onBlock(this.protocol(), to.bukkit(), BlockUtils.stairs)) {
+        if (RayUtils.onBlock(this.protocol, to.bukkit(), BlockUtils.stairs)) {
             if (multiply < 0.35) multiply = 0.35;
         }
-        if (this.protocol().spartan.movement.isGliding() || vehicle != null) {
+        if (this.protocol.spartan.movement.isGliding() || vehicle != null) {
             if (multiply < 18.0) multiply = 18.0;
         }
-        if (this.protocol().spartan.movement.isFlying()) {
+        if (this.protocol.spartan.movement.isFlying()) {
             multiply = 25.0;
         }
-        for (Entity e : this.protocol().spartan.getNearbyEntities(2, 2, 2)) {
+        for (Entity e : this.protocol.spartan.getNearbyEntities(2, 2, 2)) {
             if (multiply < 0.4 && !(e instanceof Player)) {
                 multiply = 0.4;
                 break;
@@ -270,11 +270,11 @@ public class IMBukkitSpeed extends ProbabilityDetection {
         }
 
         m *= 1 + (((speedEffect != null ? (speedEffect.bukkitEffect.getAmplifier() + 1) * 0.4 : 0))
-                + (this.onIce(this.protocol().getLocation().clone()) ? 0.66 : 0)
+                + (this.onIce(this.protocol.getLocation().clone()) ? 0.66 : 0)
                 + multiply + multiplyVelo
-                + ((this.protocol().isOnGround()) ? multiplyFriction : 0));
+                + ((this.protocol.isOnGround()) ? multiplyFriction : 0));
         if (levitationEffect != null || glideEffect != null) m *= 1.3;
-        SpartanBlock block = new SpartanLocation(this.protocol().getLocation()).getBlock();
+        SpartanBlock block = new SpartanLocation(this.protocol.getLocation()).getBlock();
         if (BlockUtils.areWebs(block.getType())) {
             m /= 4.0;
         }
@@ -285,7 +285,7 @@ public class IMBukkitSpeed extends ProbabilityDetection {
 
     private boolean slimeBlockCause(Location location) {
         boolean slime = false;
-        World world = this.protocol().getWorld();
+        World world = this.protocol.getWorld();
 
         for (int x = location.getBlockX() - 1; x <= location.getBlockX() + 1; x++) {
             for (int y2 = location.getBlockY() - 1; y2 <= location.getBlockY() + 1; y2++) {
@@ -302,7 +302,7 @@ public class IMBukkitSpeed extends ProbabilityDetection {
     }
 
     private boolean onIce(Location location) {
-        World world = this.protocol().getWorld();
+        World world = this.protocol.getWorld();
         for (int x = location.getBlockX() - 1; x <= location.getBlockX() + 1; x++) {
             for (int y2 = location.getBlockY() - 2; y2 <= location.getBlockY() + 1; y2++) {
                 for (int z = location.getBlockZ() - 1; z <= location.getBlockZ() + 1; z++) {
@@ -317,11 +317,11 @@ public class IMBukkitSpeed extends ProbabilityDetection {
     }
 
     private double getMaxSpeedAmplifier() {
-        return Attributes.getAmount(this.protocol(), Attributes.GENERIC_MOVEMENT_SPEED);
+        return Attributes.getAmount(this.protocol, Attributes.GENERIC_MOVEMENT_SPEED);
     }
 
     private void startSimulationFlag() {
-        this.f = this.protocol().getFromLocation();
+        this.f = this.protocol.getFromLocation();
         this.simulationFlag = true;
     }
 

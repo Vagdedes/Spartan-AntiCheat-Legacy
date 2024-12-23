@@ -48,18 +48,18 @@ public class IMSimulationGravity extends ProbabilityDetection {
     }
 
     public final void run() {
-        if (!this.protocol().packetsEnabled()) {
+        if (!this.protocol.packetsEnabled()) {
             return;
         }
-        SpartanProtocol p = this.protocol();
-        boolean ground = (this.protocol().spartan.getVehicle() != null)
-                        ? this.protocol().spartan.getVehicle().isOnGround() : protocol().isOnGround();
+        SpartanProtocol p = this.protocol;
+        boolean ground = (this.protocol.spartan.getVehicle() != null)
+                        ? this.protocol.spartan.getVehicle().isOnGround() : this.protocol.isOnGround();
         Location to = p.getLocation();
-        Location from = this.protocol().getFromLocation();
+        Location from = this.protocol.getFromLocation();
         double dx = to.getX() - from.getX();
         double dz = to.getZ() - from.getZ();
         double speed = Math.sqrt(dx * dx + dz * dz);
-        //this.protocol().bukkit.sendMessage(protocol().pistonHandle + " " + protocol().pistonTick + " " + protocol().explosionHandle);
+        //this.protocol.bukkit.sendMessage(protocol().pistonHandle + " " + protocol().pistonTick + " " + protocol().explosionHandle);
         if (to.getX() != from.getX() || to.getY() != from.getY() || to.getZ() != from.getZ()) {
             double motion = to.getY() - from.getY();
             double gravity = 0.08;
@@ -80,7 +80,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
             PlayerMovement playerMovement;
             if (this.isOnSlime(to)) this.allowMinorGravityChange = true;
             if (ground) {
-                if (this.protocol().getLocation().getY() > this.lastGroundY)
+                if (this.protocol.getLocation().getY() > this.lastGroundY)
                     allowLowJump = true;
                 if (this.ground != 1) {
                     this.setPredict(0.0);
@@ -91,7 +91,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
                         this.setPredict(motion);
                     }
                 } else {
-                    playerMovement = this.protocol().spartan.movement;
+                    playerMovement = this.protocol.spartan.movement;
                     pr2 = playerMovement.motionY -= gravity;
                     pr2 *= 0.9800000190734863;
                     this.setPredict(0.0);
@@ -113,7 +113,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
                     this.setPredict(motion);
                     this.semi--;
                 }
-                this.lastGroundY = this.protocol().getLocation().getY();
+                this.lastGroundY = this.protocol.getLocation().getY();
             } else if (this.air == 1) {
                 if (motion > 0.0) {
                     this.setPredict((float) jumpStartMotionY);
@@ -135,12 +135,12 @@ public class IMSimulationGravity extends ProbabilityDetection {
                 }
             } else {
                 this.cringeBlockClimb = (this.air == 14);
-                playerMovement = this.protocol().spartan.movement;
+                playerMovement = this.protocol.spartan.movement;
                 playerMovement.motionY -= gravity;
-                playerMovement = this.protocol().spartan.movement;
+                playerMovement = this.protocol.spartan.movement;
                 playerMovement.motionY *= 0.9800000190734863;
-                if (this.protocol().spartan.movement.motionY < -3.92) {
-                    this.protocol().spartan.movement.motionY = -3.92;
+                if (this.protocol.spartan.movement.motionY < -3.92) {
+                    this.protocol.spartan.movement.motionY = -3.92;
                 }
                 this.slime = false;
             }
@@ -170,7 +170,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
                 this.setPredict(motion);
             }
             pr2 = this.abs(this.abs(motion) - this.abs(this.predictY()));
-            if (!this.protocol().claimedVeloGravity.isEmpty() && pr2 > 0.001) {
+            if (!this.protocol.claimedVeloGravity.isEmpty() && pr2 > 0.001) {
                 this.velocity(motion);
             }
 
@@ -193,7 +193,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
             }
             boolean onWaterBubble = this.isOnWaterBubble(to);
             if (MultiVersion.isOrGreater(MCVersion.V1_13)
-                            && this.protocol().bukkit.isSwimming()) {
+                            && this.protocol.bukkit.isSwimming()) {
                 this.swimming = 2;
             } else if (this.swimming > 0) {
                 this.swimming--;
@@ -221,7 +221,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
             ExtendedPotionEffect slowFalling;
             double pr;
             if (MultiVersion.isOrGreater(MCVersion.V1_9)) {
-                slowFalling = this.protocol().spartan.getPotionEffect(PotionEffectType.LEVITATION, 0L);
+                slowFalling = this.protocol.spartan.getPotionEffect(PotionEffectType.LEVITATION, 0L);
                 if (slowFalling != null || this.levitation > 0) {
                     if (slowFalling != null) {
                         this.levitation = 2;
@@ -242,7 +242,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
             }
 
             if (MultiVersion.isOrGreater(MCVersion.V1_13)) {
-                slowFalling = this.protocol().spartan.getPotionEffect(PotionEffectType.SLOW_FALLING, 0L);
+                slowFalling = this.protocol.spartan.getPotionEffect(PotionEffectType.SLOW_FALLING, 0L);
                 if (slowFalling != null || this.slowFalling > 0) {
                     if (slowFalling != null) {
                         this.slowFalling = 2;
@@ -261,9 +261,9 @@ public class IMSimulationGravity extends ProbabilityDetection {
                 }
             }
 
-            if (this.protocol().spartan.movement.isFlying()
-                    || this.protocol().spartan.movement.isGliding()
-                            || this.protocol().flyingTicks > 0) {
+            if (this.protocol.spartan.movement.isFlying()
+                    || this.protocol.spartan.movement.isGliding()
+                            || this.protocol.flyingTicks > 0) {
                 this.setPredict(motion);
                 this.levitation = 3;
                 this.levitationA = 3;
@@ -313,25 +313,25 @@ public class IMSimulationGravity extends ProbabilityDetection {
             }
 
             boolean boat = false;
-            List<Entity> nearbyEntities = this.protocol().spartan.getNearbyEntities(2);
+            List<Entity> nearbyEntities = this.protocol.spartan.getNearbyEntities(2);
             for (Entity vehicle : nearbyEntities) {
                 if (vehicle instanceof Boat) {
                     boat = true;
                     break;
                 }
             }
-            if (this.protocol().spartan.getVehicle() == null
+            if (this.protocol.spartan.getVehicle() == null
                             && boat &&
                             this.abs(this.abs(motion) - this.abs(this.predictY())) < 0.6) {
                 this.setPredict(motion);
             }
-            if (this.protocol().spartan.getVehicle() != null) {
+            if (this.protocol.spartan.getVehicle() != null) {
                 this.airVehicle = (this.isOnSolidGround(
-                                this.protocol().spartan.getVehicle().getLocation())) ? this.airVehicle + 1 : 0;
+                                this.protocol.spartan.getVehicle().getLocation())) ? this.airVehicle + 1 : 0;
             }
             if (this.abs(this.abs(motion) - this.abs(this.predictY())) > 0.005
-                    && this.protocol().spartan.getVehicle() != null) {
-                Entity v = this.protocol().spartan.getVehicle();
+                    && this.protocol.spartan.getVehicle() != null) {
+                Entity v = this.protocol.spartan.getVehicle();
                 boolean isJumpingEntity = EntityUtils.abstractHorseClass
                         ? v instanceof AbstractHorse // Covers horse, donkey, skeleton-horse, llama, mule
                         : v instanceof Horse;
@@ -349,12 +349,12 @@ public class IMSimulationGravity extends ProbabilityDetection {
                 /*
                 Brainrot 1.18< version cringe fix...
                  */
-            if (!this.protocol().isUsingVersionOrGreater(MCVersion.V1_19)
+            if (!this.protocol.isUsingVersionOrGreater(MCVersion.V1_19)
                     && (air > 5 && air < 10)
                     && (motion < this.predictY() + 0.04)
                     && speed < 0.1) {
                 double allowedDeviantity = 0.076;
-                ExtendedPotionEffect jumpEffect = this.protocol().spartan.getPotionEffect(PotionEffectUtils.JUMP, 1L);
+                ExtendedPotionEffect jumpEffect = this.protocol.spartan.getPotionEffect(PotionEffectUtils.JUMP, 1L);
 
                 if (jumpEffect != null) {
                     allowedDeviantity += 0.04 * (double) (jumpEffect.bukkitEffect.getAmplifier() + 1);
@@ -371,9 +371,9 @@ public class IMSimulationGravity extends ProbabilityDetection {
                 and then with in the next tick already from the recoil,
                 let's take into account this nonsense
                  */
-            if (this.protocol().getComponentY().explosionTick && this.getDeviantity(motion) < 1.2) {
+            if (this.protocol.getComponentY().explosionTick && this.getDeviantity(motion) < 1.2) {
                 this.setPredict(motion);
-                this.protocol().getComponentY().explosionTick = false;
+                this.protocol.getComponentY().explosionTick = false;
             }
             if (this.allowMinorGravityChange && this.predictY() > motion
                     && getDeviantity(motion) <= 0.08) {
@@ -384,19 +384,19 @@ public class IMSimulationGravity extends ProbabilityDetection {
                 this.setPredict(motion);
                 this.allowLowMinorAccel = false;
             }
-            if (this.protocol().spartan.trackers.has(
+            if (this.protocol.spartan.trackers.has(
                             PlayerTrackers.TrackerType.TELEPORT, "tp")
                             && getDeviantity(motion) < 0.16) {
                 this.setPredict(motion);
             }
 
             double devTotal = this.abs(this.abs(motion) - this.abs(this.predictY()));
-            //this.protocol().bukkit.sendMessage("m: " + motion + " p: " + this.predictY() + " air: " + air);
-            if (devTotal > ((this.protocol().spartan.getVehicle()
+            //this.protocol.bukkit.sendMessage("m: " + motion + " p: " + this.predictY() + " air: " + air);
+            if (devTotal > ((this.protocol.spartan.getVehicle()
                             != null && motion < 0 && airVehicle < 10)
-                            ? 0.36 : (this.protocol().spartan.getVehicle()
+                            ? 0.36 : (this.protocol.spartan.getVehicle()
                             != null) ? 0.09 : 0.009)) {
-                if (this.protocol().spartan.trackers.has(
+                if (this.protocol.spartan.trackers.has(
                         PlayerTrackers.TrackerType.VEHICLE, "vh_tp")
                         && devTotal < 1.0) {
                     this.setPredict(0.0);
@@ -411,16 +411,16 @@ public class IMSimulationGravity extends ProbabilityDetection {
                         return;
                     }
                     this.vl += devTotal;
-                    if (this.vl > ((this.protocol().spartan.getVehicle() != null) ? 0.6 : 0.05)) {
+                    if (this.vl > ((this.protocol.spartan.getVehicle() != null) ? 0.6 : 0.05)) {
                         StringBuilder alertBuilder = new StringBuilder(String.valueOf(RayUtils.scaleVal(devTotal, 6.0)));
                         if (devTotal < 1.0) {
                             alertBuilder.deleteCharAt(0);
                         }
                         this.cancel("type: simulation[gravity], y: " + alertBuilder);
-                        //this.protocol().bukkit.sendMessage("hacks: " + devTotal);
+                        //this.protocol.bukkit.sendMessage("hacks: " + devTotal);
                             /*
                             Bukkit.getScheduler().runTask(Register.plugin, () -> {
-                                this.protocol().bukkit.teleport(from);
+                                this.protocol.bukkit.teleport(from);
                             });
                              */
                     }
@@ -445,7 +445,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
 
     private void velocity(double motion) {
         PlayerVelocityEvent claimed = null;
-        for (PlayerVelocityEvent velo : this.protocol().claimedVeloGravity) {
+        for (PlayerVelocityEvent velo : this.protocol.claimedVeloGravity) {
             if (this.veloIsValid(motion, velo.getVelocity().getY())) {
                 this.setPredict(motion);
                 this.allowMinorGravityChange = true;
@@ -453,7 +453,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
                 break;
             }
         }
-        if (claimed != null) this.protocol().claimedVeloGravity.remove(claimed);
+        if (claimed != null) this.protocol.claimedVeloGravity.remove(claimed);
     }
 
     private boolean veloIsValid(double motion, double velo) {
@@ -461,7 +461,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
     }
 
     public void teleport() {
-        if (!this.protocol().packetsEnabled()) {
+        if (!this.protocol.packetsEnabled()) {
             return;
         }
         this.air = 0;
@@ -471,26 +471,26 @@ public class IMSimulationGravity extends ProbabilityDetection {
     }
 
     private void ground(boolean isOnGround) {
-        if (!this.protocol().packetsEnabled()) {
+        if (!this.protocol.packetsEnabled()) {
             return;
         }
         this.limToUpdate++;
         //if (limToUpdate > 1) return;
-        boolean ground = (this.protocol().spartan.getVehicle() != null)
-                        ? this.protocol().spartan.getVehicle().isOnGround() : isOnGround;
+        boolean ground = (this.protocol.spartan.getVehicle() != null)
+                        ? this.protocol.spartan.getVehicle().isOnGround() : isOnGround;
         this.ground = ground ? this.ground + 1 : 0;
         this.air = ground ? 0 : this.air + 1;
     }
 
     public void groundSp(boolean isOnGround) {
-        if (!this.protocol().packetsEnabled()) {
+        if (!this.protocol.packetsEnabled()) {
             return;
         }
         this.ground(isOnGround);
     }
 
     public void trident() {
-        if (!this.protocol().packetsEnabled()) {
+        if (!this.protocol.packetsEnabled()) {
             return;
         }
         this.trident = true;
@@ -500,7 +500,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
 
     private double jumpMotion() {
         double jumpPower = 0.42;
-        ExtendedPotionEffect jumpEffect = this.protocol().spartan.getPotionEffect(PotionEffectUtils.JUMP, 1L);
+        ExtendedPotionEffect jumpEffect = this.protocol.spartan.getPotionEffect(PotionEffectUtils.JUMP, 1L);
 
         if (jumpEffect != null) {
             jumpPower += 0.1 * (double) (jumpEffect.bukkitEffect.getAmplifier() + 1);
@@ -514,11 +514,11 @@ public class IMSimulationGravity extends ProbabilityDetection {
     }
 
     private double predictY() {
-        return this.protocol().spartan.movement.motionY;
+        return this.protocol.spartan.movement.motionY;
     }
 
     private void setPredict(double v) {
-        this.protocol().spartan.movement.motionY = v;
+        this.protocol.spartan.movement.motionY = v;
     }
 
     private boolean isOnWater(Location location) {
@@ -530,11 +530,11 @@ public class IMSimulationGravity extends ProbabilityDetection {
             for (int dy = -1; dy <= 1; ++dy) {
                 for (int dz = -1; dz <= 1; ++dz) {
                     SpartanBlock block = new SpartanLocation(
-                            new Location(this.protocol().getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
+                            new Location(this.protocol.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
                     ).getBlock();
 
-                    Material m = this.protocol().packetWorld.getBlock(
-                            new Location(this.protocol().getWorld(),
+                    Material m = this.protocol.packetWorld.getBlock(
+                            new Location(this.protocol.getWorld(),
                                     x + (double) dx * 0.3,
                                     y + (double) dy * 0.5,
                                     z + (double) dz * 0.3)
@@ -565,11 +565,11 @@ public class IMSimulationGravity extends ProbabilityDetection {
             for (int dy = -1; dy <= 1; ++dy) {
                 for (int dz = -1; dz <= 1; ++dz) {
                     SpartanBlock block = new SpartanLocation(
-                                    new Location(this.protocol().getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
+                                    new Location(this.protocol.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
                     ).getBlock();
 
-                    Material m = this.protocol().packetWorld.getBlock(
-                                    new Location(this.protocol().getWorld(),
+                    Material m = this.protocol.packetWorld.getBlock(
+                                    new Location(this.protocol.getWorld(),
                                                     x + (double) dx * 0.3,
                                                     y + (double) dy * 0.5,
                                                     z + (double) dz * 0.3)
@@ -592,18 +592,18 @@ public class IMSimulationGravity extends ProbabilityDetection {
         double y = location.getY() - 0.1;
         double z = location.getZ();
 
-        double xF = this.protocol().getFromLocation().getX();
-        double yF = this.protocol().getFromLocation().getY() - 0.1;
-        double zF = this.protocol().getFromLocation().getZ();
+        double xF = this.protocol.getFromLocation().getX();
+        double yF = this.protocol.getFromLocation().getY() - 0.1;
+        double zF = this.protocol.getFromLocation().getZ();
 
         for (int dx = -1; dx <= 1; ++dx) {
             for (int dy = -1; dy <= 1; ++dy) {
                 for (int dz = -1; dz <= 1; ++dz) {
-                    Material material = this.protocol().packetWorld.getBlock(
-                            new Location(this.protocol().getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
+                    Material material = this.protocol.packetWorld.getBlock(
+                            new Location(this.protocol.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
                     );
-                    Material materialFrom = this.protocol().packetWorld.getBlock(
-                            new Location(this.protocol().getWorld(), xF + (double) dx * 0.3, yF + (double) dy * 0.5, zF + (double) dz * 0.3)
+                    Material materialFrom = this.protocol.packetWorld.getBlock(
+                            new Location(this.protocol.getWorld(), xF + (double) dx * 0.3, yF + (double) dy * 0.5, zF + (double) dz * 0.3)
                     );
 
                     if (material != null &&
@@ -629,8 +629,8 @@ public class IMSimulationGravity extends ProbabilityDetection {
         for (int dx = -1; dx <= 1; ++dx) {
             for (int dy = -1; dy <= 1; ++dy) {
                 for (int dz = -1; dz <= 1; ++dz) {
-                    Material material = this.protocol().packetWorld.getBlock(
-                            new Location(this.protocol().getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
+                    Material material = this.protocol.packetWorld.getBlock(
+                            new Location(this.protocol.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
                     );
 
                     if (material != null
@@ -655,8 +655,8 @@ public class IMSimulationGravity extends ProbabilityDetection {
         for (int dx = -1; dx <= 1; ++dx) {
             for (int dy = -2; dy <= 2; ++dy) {
                 for (int dz = -1; dz <= 1; ++dz) {
-                    Material material = this.protocol().packetWorld.getBlock(
-                            new Location(this.protocol().getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
+                    Material material = this.protocol.packetWorld.getBlock(
+                            new Location(this.protocol.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
                     );
 
                     if (material != null
@@ -680,8 +680,8 @@ public class IMSimulationGravity extends ProbabilityDetection {
         for (int dx = -1; dx <= 1; ++dx) {
             for (int dy = -1; dy <= 1; ++dy) {
                 for (int dz = -1; dz <= 1; ++dz) {
-                    Material material = this.protocol().packetWorld.getBlock(
-                            new Location(this.protocol().getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
+                    Material material = this.protocol.packetWorld.getBlock(
+                            new Location(this.protocol.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
                     );
 
                     if (material != null
@@ -703,8 +703,8 @@ public class IMSimulationGravity extends ProbabilityDetection {
         for (int dx = -1; dx <= 1; ++dx) {
             for (int dy = -1; dy <= 1; ++dy) {
                 for (int dz = -1; dz <= 1; ++dz) {
-                    Material material = this.protocol().packetWorld.getBlock(
-                            new Location(this.protocol().getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
+                    Material material = this.protocol.packetWorld.getBlock(
+                            new Location(this.protocol.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
                     );
 
                     if (material != null
@@ -727,8 +727,8 @@ public class IMSimulationGravity extends ProbabilityDetection {
         for (int dx = -2; dx <= 2; ++dx) {
             for (int dy = -2; dy <= 2; ++dy) {
                 for (int dz = -2; dz <= 2; ++dz) {
-                    Material material = this.protocol().packetWorld.getBlock(
-                            new Location(this.protocol().getWorld(), x + (double) dx, y + (double) dy, z + (double) dz)
+                    Material material = this.protocol.packetWorld.getBlock(
+                            new Location(this.protocol.getWorld(), x + (double) dx, y + (double) dy, z + (double) dz)
                     );
 
                     if (material != null && (BlockUtils.areSlimeBlocks(material))) {
@@ -748,8 +748,8 @@ public class IMSimulationGravity extends ProbabilityDetection {
         for (int dx = -1; dx <= 1; ++dx) {
             for (int dy = -2; dy <= 2; ++dy) {
                 for (int dz = -1; dz <= 1; ++dz) {
-                    Material material = this.protocol().packetWorld.getBlock(
-                            new Location(this.protocol().getWorld(), x + (double) dx, y + (double) dy, z + (double) dz)
+                    Material material = this.protocol.packetWorld.getBlock(
+                            new Location(this.protocol.getWorld(), x + (double) dx, y + (double) dy, z + (double) dz)
                     );
 
                     if (material != null && (BlockUtils.areSlimeBlocks(material))) {
@@ -769,8 +769,8 @@ public class IMSimulationGravity extends ProbabilityDetection {
         for (int dx = -2; dx <= 2; ++dx) {
             for (double dy = 1.0; dy <= 2.0; dy += 0.5) {
                 for (int dz = -2; dz <= 2; ++dz) {
-                    Material material = this.protocol().packetWorld.getBlock(
-                            new Location(this.protocol().getWorld(), x + (double) dx * 0.5, y + dy, z + (double) dz * 0.5)
+                    Material material = this.protocol.packetWorld.getBlock(
+                            new Location(this.protocol.getWorld(), x + (double) dx * 0.5, y + dy, z + (double) dz * 0.5)
                     );
 
                     if (material != null && BlockUtils.isSolid(material)) {
@@ -791,9 +791,9 @@ public class IMSimulationGravity extends ProbabilityDetection {
         for (int dx = -1; dx <= 1; dx++) {
             for (int dy = -1; dy <= 1; dy++) {
                 for (int dz = -1; dz <= 1; dz++) {
-                    Material material = this.protocol().packetWorld.getBlock(
+                    Material material = this.protocol.packetWorld.getBlock(
                                     new Location(
-                                                    this.protocol().getWorld(),
+                                                    this.protocol.getWorld(),
                                                     x + dx * 0.3,
                                                     y + dy * 0.3,
                                                     z + dz * 0.3)
@@ -819,9 +819,9 @@ public class IMSimulationGravity extends ProbabilityDetection {
         for (int dx = -1; dx <= 1; dx++) {
             for (int dy = -1; dy <= 1; dy++) {
                 for (int dz = -1; dz <= 1; dz++) {
-                    Material material = this.protocol().packetWorld.getBlock(
+                    Material material = this.protocol.packetWorld.getBlock(
                             new Location(
-                                    this.protocol().getWorld(),
+                                    this.protocol.getWorld(),
                                     x + dx,
                                     y + dy,
                                     z + dz)

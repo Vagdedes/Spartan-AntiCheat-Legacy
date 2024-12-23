@@ -31,10 +31,10 @@ public class Tower extends ProbabilityDetection {
              Location playerLocation,
              int playerY,
              int blockY) {
-        if (this.protocol().packetsEnabled()) {
+        if (this.protocol.packetsEnabled()) {
             return;
         }
-        Double deltaXZ = this.protocol().spartan.movement.getEventHorizontal();
+        Double deltaXZ = this.protocol.spartan.movement.getEventHorizontal();
 
         if (deltaXZ == null) {
             return;
@@ -43,8 +43,8 @@ public class Tower extends ProbabilityDetection {
                 SpartanLocation.getBlockLocation(playerLocation),
                 block.getLocation()
         ) <= 1.0) {
-            ItemStack handItem = this.protocol().spartan.getItemInHand();
-            int jumpLevel = PlayerUtils.getPotionLevel(this.protocol().spartan, PotionEffectUtils.JUMP) + 1,
+            ItemStack handItem = this.protocol.spartan.getItemInHand();
+            int jumpLevel = PlayerUtils.getPotionLevel(this.protocol.spartan, PotionEffectUtils.JUMP) + 1,
                     motionTicks = PlayerUtils.getJumpTicks(jumpLevel);
             double motionSum = PlayerUtils.getJumpMotionSum(jumpLevel),
                     blockHeight = GroundUtils.getMinHeight(
@@ -71,7 +71,7 @@ public class Tower extends ProbabilityDetection {
                                 + ", placements: " + possiblePlacements
                                 + ", horizontal: " + deltaXZ
                                 + ", vertical: " + deltaYMinus1,
-                        this.protocol().getFromLocation(),
+                        this.protocol.getFromLocation(),
                         0,
                         true
                 );

@@ -33,7 +33,7 @@ public class FastClicks extends CheckRunner {
                 checkPattern = this.clicksPattern.isEnabled();
 
         if (checkLimit || checkPattern) {
-            Collection<Long> data = this.protocol().spartan.clicks.getData();
+            Collection<Long> data = this.protocol.spartan.clicks.getData();
             int count = data.size();
             checkLimit &= count >= limit;
             checkPattern &= count > 1;

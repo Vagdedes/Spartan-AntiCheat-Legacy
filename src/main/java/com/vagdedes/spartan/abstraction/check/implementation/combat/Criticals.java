@@ -22,12 +22,12 @@ public class Criticals extends CheckRunner {
 
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
-        Double verticalMaxAccuracy = this.protocol().spartan.movement.getEventVertical();
+        Double verticalMaxAccuracy = this.protocol.spartan.movement.getEventVertical();
 
         if (verticalMaxAccuracy != null) {
             if (RayUtils.onBlock(
-                    this.protocol(),
-                    this.protocol().getLocationOrVehicle(),
+                    this.protocol,
+                    this.protocol.getLocationOrVehicle(),
                     BlockUtils.web
             )
             ) {
@@ -36,9 +36,9 @@ public class Criticals extends CheckRunner {
 
             if ((verticalMaxAccuracy < 0.079 || Math.abs(verticalMaxAccuracy) == 0.0625)
                     && verticalMaxAccuracy > 0
-                    && this.protocol().spartan.movement.getTicksOnAir() == 1
-                    && !new SpartanLocation(this.protocol().getLocation()).getBlock().getType().isBlock()
-                    && !RayUtils.onSolidBlock(this.protocol(), this.protocol().getLocation().clone().add(0, 2, 0))) {
+                    && this.protocol.spartan.movement.getTicksOnAir() == 1
+                    && !new SpartanLocation(this.protocol.getLocation()).getBlock().getType().isBlock()
+                    && !RayUtils.onSolidBlock(this.protocol, this.protocol.getLocation().clone().add(0, 2, 0))) {
                 this.detection.cancel("type: packet");
             }
         }
@@ -46,8 +46,8 @@ public class Criticals extends CheckRunner {
 
     @Override
     protected boolean canRun() {
-        return CombatUtils.canCheck(this.protocol())
-                && !this.protocol().spartan.movement.isInLiquids()
-                && !this.protocol().spartan.hasPotionEffect(PotionEffectType.BLINDNESS, 0);
+        return CombatUtils.canCheck(this.protocol)
+                && !this.protocol.spartan.movement.isInLiquids()
+                && !this.protocol.spartan.hasPotionEffect(PotionEffectType.BLINDNESS, 0);
     }
 }

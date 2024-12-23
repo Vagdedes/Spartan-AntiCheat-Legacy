@@ -40,10 +40,10 @@ public class KillAura extends CheckRunner {
 
     boolean canRunEntity(LivingEntity entity) {
         if (ProtocolLib.getVehicle(entity) == null
-                && CombatUtils.canCheck(this.protocol(), entity)) {
+                && CombatUtils.canCheck(this.protocol, entity)) {
             boolean isPlayer = entity instanceof Player;
             return (isPlayer || !MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_10) || entity.hasAI())
-                    && !this.protocol().bukkit.equals(entity)
+                    && !this.protocol.bukkit.equals(entity)
                     && hackType.getCheck().getBooleanOption("detection." + (isPlayer ? "players" : "entities"), true);
         }
         return false;
@@ -82,6 +82,6 @@ public class KillAura extends CheckRunner {
 
     @Override
     protected boolean canRun() {
-        return CombatUtils.canCheck(this.protocol());
+        return CombatUtils.canCheck(this.protocol);
     }
 }

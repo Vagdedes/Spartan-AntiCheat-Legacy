@@ -33,9 +33,9 @@ public class GhostHand extends CheckRunner {
             Block b = (Block) object;
 
             if (canDo(b)) {
-                Location location = this.protocol().getLocationOrVehicle();
+                Location location = this.protocol.getLocationOrVehicle();
                 double bDistance = SpartanLocation.distance(location, b.getLocation());
-                Block t = this.protocol().spartan.getTargetBlock(bDistance, PlayerUtils.chunk);
+                Block t = this.protocol.spartan.getTargetBlock(bDistance, PlayerUtils.chunk);
 
                 if (t != null) {
                     double tDistance = SpartanLocation.distance(location, t.getLocation());
@@ -60,9 +60,9 @@ public class GhostHand extends CheckRunner {
                 Block b = event.getClickedBlock();
 
                 if (canDo(b) && BlockUtils.isChangeable(b.getType())) {
-                    Location location = this.protocol().getLocationOrVehicle();
+                    Location location = this.protocol.getLocationOrVehicle();
                     double bDistance = SpartanLocation.distance(location, b.getLocation());
-                    Block t = this.protocol().spartan.getTargetBlock(bDistance, PlayerUtils.chunk);
+                    Block t = this.protocol.spartan.getTargetBlock(bDistance, PlayerUtils.chunk);
 
                     if (t != null) {
                         double tDistance = SpartanLocation.distance(location, t.getLocation());
@@ -85,16 +85,16 @@ public class GhostHand extends CheckRunner {
     }
 
     private boolean canDo(Block b) {
-        return b.getWorld() == this.protocol().getWorld();
+        return b.getWorld() == this.protocol.getWorld();
     }
 
     @Override
     protected boolean canRun() {
-        if (!this.protocol().spartan.movement.isFlying()
-                && !Vehicles.has(this.protocol(), Vehicles.DRILL)
-                && !PrinterMode.isUsing(this.protocol())
-                && Attributes.getAmount(this.protocol(), Attributes.PLAYER_BLOCK_INTERACTION_RANGE) == 0.0) {
-            GameMode gameMode = this.protocol().bukkit.getGameMode();
+        if (!this.protocol.spartan.movement.isFlying()
+                && !Vehicles.has(this.protocol, Vehicles.DRILL)
+                && !PrinterMode.isUsing(this.protocol)
+                && Attributes.getAmount(this.protocol, Attributes.PLAYER_BLOCK_INTERACTION_RANGE) == 0.0) {
+            GameMode gameMode = this.protocol.bukkit.getGameMode();
             return gameMode == GameMode.SURVIVAL
                     || gameMode == GameMode.ADVENTURE;
         }

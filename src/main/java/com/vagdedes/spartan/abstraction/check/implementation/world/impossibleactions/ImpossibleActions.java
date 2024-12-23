@@ -45,7 +45,7 @@ public class ImpossibleActions extends CheckRunner {
         if (object instanceof Block[]) {
             Block[] blocks = (Block[]) object;
             Block block = blocks[0];
-            Location playerLocation = this.protocol().getLocationOrVehicle();
+            Location playerLocation = this.protocol.getLocationOrVehicle();
             int playerY = playerLocation.getBlockY(),
                     blockY = block.getY();
             this.scaffoldAnalysis.run(block);
@@ -78,7 +78,7 @@ public class ImpossibleActions extends CheckRunner {
                                                 + ", vector-distance: " + directionDistance
                                                 + ", block-distance: " + SpartanLocation.distance(playerLocation, blockAgainst.getLocation())
                                 );
-                            } else if (!this.protocol().spartan.isBedrockPlayer()) {
+                            } else if (!this.protocol.spartan.isBedrockPlayer()) {
                                 float pitch = playerLocation.getPitch();
 
                                 if (pitch <= 0.0) {
@@ -88,7 +88,7 @@ public class ImpossibleActions extends CheckRunner {
                                                     + ", block-distance: " + SpartanLocation.distance(playerLocation, blockAgainst.getLocation())
                                     );
                                 } else {
-                                    List<SpartanLocation> fromLocations = this.protocol().spartan.movement.getLocations();
+                                    List<SpartanLocation> fromLocations = this.protocol.spartan.movement.getLocations();
                                     int requiredComparisons = 5, requiredSize = requiredComparisons + 1;
 
                                     if (fromLocations.size() >= requiredSize) { // 6-1 comparisons = 5
@@ -140,11 +140,11 @@ public class ImpossibleActions extends CheckRunner {
                     && !Compatibility.CompatibilityType.MC_MMO.isFunctional()) {
                 int cases;
 
-                if (this.protocol().bukkit.isSleeping()) {
+                if (this.protocol.bukkit.isSleeping()) {
                     cases = 1;
-                } else if (this.protocol().spartan.isDead()) {
+                } else if (this.protocol.spartan.isDead()) {
                     cases = 2;
-                } else if (BlockUtils.hasMaterial(this.protocol().bukkit.getOpenInventory().getCursor())) {
+                } else if (BlockUtils.hasMaterial(this.protocol.bukkit.getOpenInventory().getCursor())) {
                     cases = 3;
                 } else {
                     cases = 0;

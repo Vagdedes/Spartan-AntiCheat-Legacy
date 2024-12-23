@@ -32,13 +32,13 @@ public class BlockRaytrace extends ProbabilityDetection {
             SpartanProtocol target = SpartanBukkit.getProtocol(targetHandle.getUniqueId());
 
             if (target != null) {
-                Location playerLocation = this.protocol().getLocation();
-                worldInit(this.protocol(), playerLocation);
-                this.protocol().setCheckBoundData(new CheckBoundData(this.protocol(), target));
-                Vector result = isBoundThrough(this.protocol().getCheckBoundData());
+                Location playerLocation = this.protocol.getLocation();
+                worldInit(this.protocol, playerLocation);
+                this.protocol.setCheckBoundData(new CheckBoundData(this.protocol, target));
+                Vector result = isBoundThrough(this.protocol.getCheckBoundData());
                 if (result != null) {
                     cancel("attack through block at " + result);
-                    this.protocol().setCheckBoundData(null);
+                    this.protocol.setCheckBoundData(null);
                 }
             }
         }

@@ -20,17 +20,17 @@ public class IMHorizontal extends ProbabilityDetection {
     }
 
     final void run(boolean knownBox, boolean knownOldBox, double box, double oldBox, double vertical) {
-        if (!this.protocol().spartan.trackers.has(PlayerTrackers.TrackerType.BUBBLE_WATER, "soul-sand")) {
-            int airTicks = this.protocol().spartan.movement.getTicksOnAir();
+        if (!this.protocol.spartan.trackers.has(PlayerTrackers.TrackerType.BUBBLE_WATER, "soul-sand")) {
+            int airTicks = this.protocol.spartan.movement.getTicksOnAir();
 
             if (airTicks > 0
-                    && !BlockUtils.canClimb(new SpartanLocation(this.protocol().getLocation()).getBlock().getType(), false)
-                    && !BlockUtils.canClimb(new SpartanLocation(this.protocol().getFromLocation()).getBlock().getType(), false)) {
+                    && !BlockUtils.canClimb(new SpartanLocation(this.protocol.getLocation()).getBlock().getType(), false)
+                    && !BlockUtils.canClimb(new SpartanLocation(this.protocol.getFromLocation()).getBlock().getType(), false)) {
                 if (knownBox || knownOldBox) {
-                    int limit = PlayerUtils.getJumpTicks(0) * (this.protocol().spartan.isBedrockPlayer() ? PlayerUtils.getJumpTicks(0) : 1);
+                    int limit = PlayerUtils.getJumpTicks(0) * (this.protocol.spartan.isBedrockPlayer() ? PlayerUtils.getJumpTicks(0) : 1);
 
                     if (airTicks > limit
-                            && !this.protocol().spartan.isOnGround(true)) {
+                            && !this.protocol.spartan.isOnGround(true)) {
                         this.horizontal_known.cancel(
                                 "type: horizontal(known)"
                                         + ", box: " + box
@@ -38,7 +38,7 @@ public class IMHorizontal extends ProbabilityDetection {
                                         + ", vertical: " + vertical
                                         + ", air-ticks: " + airTicks
                                         + ", limit: " + limit,
-                                this.protocol().getFromLocation(),
+                                this.protocol.getFromLocation(),
                                 0,
                                 true
                         );
@@ -50,7 +50,7 @@ public class IMHorizontal extends ProbabilityDetection {
                                     + ", old-box: " + oldBox
                                     + ", vertical: " + vertical
                                     + ", air-ticks: " + airTicks,
-                            this.protocol().getFromLocation(),
+                            this.protocol.getFromLocation(),
                             0,
                             true
                     );

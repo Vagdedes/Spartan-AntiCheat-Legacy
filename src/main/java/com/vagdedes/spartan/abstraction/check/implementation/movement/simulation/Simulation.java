@@ -22,7 +22,7 @@ public class Simulation extends CheckRunner {
 
     @Override
     public void handleInternal(boolean cancelled, Object object) {
-        MCClient client = this.protocol().mcClient;
+        MCClient client = this.protocol.mcClient;
 
         if (object instanceof PlayerMoveEvent) {
             PlayerMoveEvent event = (PlayerMoveEvent) object;

@@ -40,26 +40,26 @@ public class IMBukkitGravity extends ProbabilityDetection {
     }
 
     final void run(double vertical, double oldVertical, double box, double oldBox) {
-        if (this.protocol().packetsEnabled()
+        if (this.protocol.packetsEnabled()
                 || isUsingMace()) {
             return;
         }
-        int airTicks = this.protocol().spartan.movement.getTicksOnAir();
-        SpartanLocation to = new SpartanLocation(this.protocol().getLocation()),
-                from = new SpartanLocation(this.protocol().getFromLocation());
+        int airTicks = this.protocol.spartan.movement.getTicksOnAir();
+        SpartanLocation to = new SpartanLocation(this.protocol.getLocation()),
+                from = new SpartanLocation(this.protocol.getFromLocation());
         int levitationLevel = PlayerUtils.levitation
-                ? PlayerUtils.getPotionLevel(this.protocol().spartan, PotionEffectType.LEVITATION)
+                ? PlayerUtils.getPotionLevel(this.protocol.spartan, PotionEffectType.LEVITATION)
                 : -1;
         List<Double> predictions = new ArrayList<>(5);
         boolean levitation = levitationLevel != -1,
-                slowFall = PlayerUtils.slowFall && this.protocol().spartan.hasPotionEffect(PotionEffectType.SLOW_FALLING, 0),
-                liquid = this.protocol().spartan.movement.isInLiquids(),
-                climb = this.protocol().spartan.isFrozen() || canClimb(to) || canClimb(from),
+                slowFall = PlayerUtils.slowFall && this.protocol.spartan.hasPotionEffect(PotionEffectType.SLOW_FALLING, 0),
+                liquid = this.protocol.spartan.movement.isInLiquids(),
+                climb = this.protocol.spartan.isFrozen() || canClimb(to) || canClimb(from),
                 web = BlockPatternUtils.isBlockPattern(
                         new double[][]{
                                 {GroundUtils.contactBoundingBox, 0.0, GroundUtils.contactBoundingBox},
                                 {GroundUtils.contactBoundingBox, 1.0, GroundUtils.contactBoundingBox},
-                                {GroundUtils.contactBoundingBox, Math.ceil(this.protocol().bukkit.getEyeHeight()), GroundUtils.contactBoundingBox}
+                                {GroundUtils.contactBoundingBox, Math.ceil(this.protocol.bukkit.getEyeHeight()), GroundUtils.contactBoundingBox}
                         },
                         to,
                         true,
@@ -68,7 +68,7 @@ public class IMBukkitGravity extends ProbabilityDetection {
                         new double[][]{
                                 {GroundUtils.contactBoundingBox, 0.0, GroundUtils.contactBoundingBox},
                                 {GroundUtils.contactBoundingBox, 1.0, GroundUtils.contactBoundingBox},
-                                {GroundUtils.contactBoundingBox, Math.ceil(this.protocol().bukkit.getEyeHeight()), GroundUtils.contactBoundingBox}
+                                {GroundUtils.contactBoundingBox, Math.ceil(this.protocol.bukkit.getEyeHeight()), GroundUtils.contactBoundingBox}
                         },
                         from,
                         true,
@@ -100,7 +100,7 @@ public class IMBukkitGravity extends ProbabilityDetection {
         predictions.add( // Always second
                 PlayerUtils.calculateNextFallMotion(
                         oldVertical,
-                        -this.protocol().spartan.movement.getAirAcceleration(),
+                        -this.protocol.spartan.movement.getAirAcceleration(),
                         PlayerUtils.airDrag
                 )
         );
@@ -115,7 +115,7 @@ public class IMBukkitGravity extends ProbabilityDetection {
             double calculation = PlayerUtils.calculateNextFallMotion(
                     oldVertical,
                     -PlayerUtils.liquidAcceleration,
-                    this.protocol().spartan.movement.getLastLiquidMaterial() == Material.LAVA
+                    this.protocol.spartan.movement.getLastLiquidMaterial() == Material.LAVA
                             ? PlayerUtils.lavaDrag
                             : PlayerUtils.waterDrag
             );
@@ -132,13 +132,13 @@ public class IMBukkitGravity extends ProbabilityDetection {
         }
         if (climb) {
             if (vertical == 0.0 && oldVertical == 0.0) {
-                if (!this.protocol().spartan.isOnGround(to.bukkit(), true)
-                        && !this.protocol().isSneaking()
-                        && this.protocol().spartan.getNearbyEntities(1.0, 1.0, 1.0).isEmpty()
+                if (!this.protocol.spartan.isOnGround(to.bukkit(), true)
+                        && !this.protocol.isSneaking()
+                        && this.protocol.spartan.getNearbyEntities(1.0, 1.0, 1.0).isEmpty()
                         && !BlockPatternUtils.isBlockPattern(
                         new double[]{
                                 GroundUtils.boundingBox,
-                                Math.ceil(this.protocol().bukkit.getEyeHeight()),
+                                Math.ceil(this.protocol.bukkit.getEyeHeight()),
                                 GroundUtils.boundingBox
                         },
                         to,
@@ -152,7 +152,7 @@ public class IMBukkitGravity extends ProbabilityDetection {
                                     + ", box: " + box
                                     + ", old-box: " + oldBox
                                     + ", air-ticks: " + airTicks,
-                            this.protocol().getFromLocation(),
+                            this.protocol.getFromLocation(),
                             0,
                             true
                     );
@@ -181,25 +181,25 @@ public class IMBukkitGravity extends ProbabilityDetection {
             if (Math.abs(prediction) > PlayerUtils.optimizationY) {
                 double difference = Math.abs(vertical - prediction), product;
 
-                if (this.protocol().spartan.isBedrockPlayer()) {
+                if (this.protocol.spartan.isBedrockPlayer()) {
                     product = PlayerUtils.calculateTerminalVelocity(
                             PlayerUtils.airDrag,
-                            this.protocol().spartan.movement.getAirAcceleration()
+                            this.protocol.spartan.movement.getAirAcceleration()
                     ) * 2;
                 } else {
                     product = !sensitive
-                            && !this.protocol().spartan.movement.isJumping(vertical) && !this.protocol().spartan.movement.isJumping(oldVertical)
-                            && !this.protocol().spartan.movement.isFalling(vertical, -this.protocol().spartan.movement.getAirAcceleration(), PlayerUtils.airDrag, GroundUtils.maxHeightLengthRatio)
-                            && !this.protocol().spartan.movement.isFalling(oldVertical, -this.protocol().spartan.movement.getAirAcceleration(), PlayerUtils.airDrag, GroundUtils.maxHeightLengthRatio)
+                            && !this.protocol.spartan.movement.isJumping(vertical) && !this.protocol.spartan.movement.isJumping(oldVertical)
+                            && !this.protocol.spartan.movement.isFalling(vertical, -this.protocol.spartan.movement.getAirAcceleration(), PlayerUtils.airDrag, GroundUtils.maxHeightLengthRatio)
+                            && !this.protocol.spartan.movement.isFalling(oldVertical, -this.protocol.spartan.movement.getAirAcceleration(), PlayerUtils.airDrag, GroundUtils.maxHeightLengthRatio)
                             ? GroundUtils.maxPlayerStep
-                            : PlayerUtils.getJumpTicks(PlayerUtils.getPotionLevel(this.protocol().spartan, PotionEffectUtils.JUMP) + 1);
+                            : PlayerUtils.getJumpTicks(PlayerUtils.getPotionLevel(this.protocol.spartan, PotionEffectUtils.JUMP) + 1);
                 }
                 double limit = Math.max(
                         this.sensitive ? product : product / (double) airTicks,
-                        this.protocol().spartan.trackers.has(PlayerTrackers.TrackerFamily.VELOCITY)
-                                || this.protocol().spartan.trackers.has(PlayerTrackers.TrackerFamily.MOTION) ? (GroundUtils.maxBoundingBox * 2.0) :
+                        this.protocol.spartan.trackers.has(PlayerTrackers.TrackerFamily.VELOCITY)
+                                || this.protocol.spartan.trackers.has(PlayerTrackers.TrackerFamily.MOTION) ? (GroundUtils.maxBoundingBox * 2.0) :
                                 liquid ? GroundUtils.maxPlayerStep :
-                                        this.protocol().spartan.isBedrockPlayer() || sensitive ? PlayerUtils.climbingDownDefault :
+                                        this.protocol.spartan.isBedrockPlayer() || sensitive ? PlayerUtils.climbingDownDefault :
                                                 GroundUtils.maxHeightLengthRatio
                 );
 
@@ -227,7 +227,7 @@ public class IMBukkitGravity extends ProbabilityDetection {
             } else {
                 this.gravity_prediction.cancel(
                         violation,
-                        this.protocol().getFromLocation(),
+                        this.protocol.getFromLocation(),
                         0,
                         true
                 );
@@ -245,7 +245,7 @@ public class IMBukkitGravity extends ProbabilityDetection {
 
     private boolean isUsingMace() {
         if (MACE != null) {
-            ItemStack[] contents = this.protocol().bukkit.getInventory().getContents();
+            ItemStack[] contents = this.protocol.bukkit.getInventory().getContents();
 
             for (ItemStack item : contents) {
                 if (item != null && item.getType() == MACE) {

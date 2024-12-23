@@ -29,7 +29,7 @@ public class ScaffoldAnalysis extends ProbabilityDetection {
     }
 
     final void run(Block currentBlock) {
-        SpartanProtocol p = this.protocol();
+        SpartanProtocol p = this.protocol;
 
         if (this.oldBlock == null) {
             this.oldBlock = currentBlock;

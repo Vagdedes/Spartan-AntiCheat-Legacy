@@ -56,14 +56,14 @@ public class IrregularMovementsJump extends ProbabilityDetection {
     }
 
     final void run(double vertical, double box) {
-        if (this.protocol().spartan.trackers.has(PlayerTrackers.TrackerFamily.VELOCITY)
-                ? this.protocol().spartan.movement.justJumped(vertical)
-                : this.protocol().spartan.movement.isJumping(vertical)) {
-            int jumpEffect = PlayerUtils.getPotionLevel(this.protocol().spartan, PotionEffectUtils.JUMP) + 1,
+        if (this.protocol.spartan.trackers.has(PlayerTrackers.TrackerFamily.VELOCITY)
+                ? this.protocol.spartan.movement.justJumped(vertical)
+                : this.protocol.spartan.movement.isJumping(vertical)) {
+            int jumpEffect = PlayerUtils.getPotionLevel(this.protocol.spartan, PotionEffectUtils.JUMP) + 1,
                     jumpTicks = PlayerUtils.getJumpTicks(jumpEffect);
             boolean contains = heights.get(jumpEffect).contains(AlgebraUtils.cut(box, MovementProcessing.heightPrecision));
 
-            if (!contains && this.protocol().spartan.isBedrockPlayer()) {
+            if (!contains && this.protocol.spartan.isBedrockPlayer()) {
                 for (double height : heightsBedrock.get(jumpEffect)) {
                     if (Math.abs(height - box) < MovementProcessing.heightPrecision) {
                         contains = true;
@@ -73,7 +73,7 @@ public class IrregularMovementsJump extends ProbabilityDetection {
             }
 
             if (!contains) {
-                int airTicks = this.protocol().spartan.movement.getTicksOnAir();
+                int airTicks = this.protocol.spartan.movement.getTicksOnAir();
 
                 if (airTicks > jumpTicks) {
                     int blocks = AlgebraUtils.integerCeil(PlayerUtils.getJumpMotionSum(jumpEffect));
@@ -87,7 +87,7 @@ public class IrregularMovementsJump extends ProbabilityDetection {
                     }
                     if (!BlockPatternUtils.isBlockPattern(
                             patterns,
-                            this.protocol().getLocationOrVehicle(),
+                            this.protocol.getLocationOrVehicle(),
                             true,
                             GroundUtils.abstractMaterials
                     )) {
@@ -96,20 +96,20 @@ public class IrregularMovementsJump extends ProbabilityDetection {
                                         + ", vertical: " + vertical
                                         + ", jump-effect: " + jumpEffect
                                         + ", air-ticks: " + airTicks,
-                                this.protocol().getFromLocation(),
+                                this.protocol.getFromLocation(),
                                 0,
                                 true
                         );
                     }
                 }
-            } else if (this.protocol().version == MultiVersion.MCVersion.OTHER
-                    || this.protocol().isUsingVersionOrGreater(MultiVersion.serverVersion)) {
+            } else if (this.protocol.version == MultiVersion.MCVersion.OTHER
+                    || this.protocol.isUsingVersionOrGreater(MultiVersion.serverVersion)) {
                 int limit = Math.max(jumpTicks, AlgebraUtils.integerCeil(TPS.maximum));
 
-                if (!this.protocol().spartan.isOnGround(this.protocol().getLocation(), true)
-                        && !this.protocol().spartan.isOnGround(this.protocol().getFromLocation(), false)
-                        && !this.protocol().spartan.movement.isInLiquids()) {
-                    int airTicks = this.protocol().spartan.movement.getTicksOnAir();
+                if (!this.protocol.spartan.isOnGround(this.protocol.getLocation(), true)
+                        && !this.protocol.spartan.isOnGround(this.protocol.getFromLocation(), false)
+                        && !this.protocol.spartan.movement.isInLiquids()) {
+                    int airTicks = this.protocol.spartan.movement.getTicksOnAir();
 
                     if (airTicks > limit) {
                         this.jump_ticks.cancel(
@@ -119,7 +119,7 @@ public class IrregularMovementsJump extends ProbabilityDetection {
                                         + ", jump-effect: " + jumpEffect
                                         + ", air-ticks: " + airTicks
                                         + ", limit: " + limit,
-                                this.protocol().getFromLocation(),
+                                this.protocol.getFromLocation(),
                                 0,
                                 true
                         );

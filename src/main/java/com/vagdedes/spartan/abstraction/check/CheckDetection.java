@@ -42,7 +42,7 @@ public abstract class CheckDetection extends CheckProcess {
     protected long notifications;
 
     protected CheckDetection(CheckRunner executor, String name, boolean def) {
-        super(executor.hackType, executor.protocol());
+        super(executor.hackType, executor.protocol);
         this.executor = executor;
         this.name = name;
         this.def = def;
@@ -135,13 +135,13 @@ public abstract class CheckDetection extends CheckProcess {
     public abstract boolean canSendNotification(Object detected, int probability);
 
     protected void notify(long time, String information) {
-        boolean hasSufficientData = this.hasSufficientData(this.protocol().spartan.dataType);
-        double probability = this.getProbability(this.protocol().spartan.dataType),
+        boolean hasSufficientData = this.hasSufficientData(this.protocol.spartan.dataType);
+        double probability = this.getProbability(this.protocol.spartan.dataType),
                 certainty = PlayerEvidence.probabilityToCertainty(probability) * 100.0,
-                dataCompletion = hasSufficientData ? 100.0 : this.getDataCompletion(this.protocol().spartan.dataType) * 100.0;
+                dataCompletion = hasSufficientData ? 100.0 : this.getDataCompletion(this.protocol.spartan.dataType) * 100.0;
         int roundedCertainty = AlgebraUtils.integerRound(certainty);
         String notification = ConfigUtils.replaceWithSyntax(
-                this.protocol(),
+                this.protocol,
                 Config.messages.getColorfulString("detection_notification")
                         .replace("{info}", information)
                         .replace("{detection:percentage}",
@@ -152,23 +152,23 @@ public abstract class CheckDetection extends CheckProcess {
                 hackType
         );
 
-        Location location = this.protocol().getLocation();
-        information = "(" + AntiCheatLogs.playerIdentifier + " " + this.protocol().bukkit.getName() + "), "
+        Location location = this.protocol.getLocation();
+        information = "(" + AntiCheatLogs.playerIdentifier + " " + this.protocol.bukkit.getName() + "), "
                 + "(" + checkIdentifier + " " + this.hackType + "), "
-                + "(" + javaPlayerIdentifier + " " + (!this.protocol().spartan.isBedrockPlayer()) + ")" + ", "
+                + "(" + javaPlayerIdentifier + " " + (!this.protocol.spartan.isBedrockPlayer()) + ")" + ", "
                 + "(" + detectionIdentifier + " " + this.name + ")" + ", "
                 + "(Certainty: " + AlgebraUtils.cut(certainty, 2) + "), "
                 + "(Data-Completion: " + AlgebraUtils.cut(dataCompletion, 2) + "), "
                 + "(Server-Version: " + MultiVersion.serverVersion.toString() + "), "
                 + "(Plugin-Version: " + API.getVersion() + "), "
-                + "(Silent: " + hackType.getCheck().isSilent(this.protocol().spartan.dataType, this.protocol().getWorld().getName()) + "), "
-                + "(Punish: " + hackType.getCheck().canPunish(this.protocol().spartan.dataType) + "), "
-                + "(Packets: " + this.protocol().packetsEnabled() + "), "
-                + "(Ping: " + this.protocol().getPing() + "ms), "
+                + "(Silent: " + hackType.getCheck().isSilent(this.protocol.spartan.dataType, this.protocol.getWorld().getName()) + "), "
+                + "(Punish: " + hackType.getCheck().canPunish(this.protocol.spartan.dataType) + "), "
+                + "(Packets: " + this.protocol.packetsEnabled() + "), "
+                + "(Ping: " + this.protocol.getPing() + "ms), "
                 + "(W-XYZ: " + location.getWorld().getName() + " " + location.getBlockX() + " " + location.getBlockY() + " " + location.getBlockZ() + "), "
                 + "(Data: " + information + ")";
         AntiCheatLogs.logInfo(
-                this.protocol(),
+                this.protocol,
                 notification,
                 information,
                 hasSufficientData
@@ -183,18 +183,18 @@ public abstract class CheckDetection extends CheckProcess {
 
         // Local Notifications
         String command = Config.settings.getString("Notifications.message_clickable_command")
-                .replace("{player}", this.protocol().bukkit.getName());
+                .replace("{player}", this.protocol.bukkit.getName());
 
         if (Config.settings.getBoolean("Notifications.individual_only_notifications")) {
-            if (DetectionNotifications.isEnabled(this.protocol())) { // Attention
-                ClickableMessage.sendCommand(this.protocol().bukkit, notification, command, command);
+            if (DetectionNotifications.isEnabled(this.protocol)) { // Attention
+                ClickableMessage.sendCommand(this.protocol.bukkit, notification, command, command);
             }
         } else {
             List<SpartanProtocol> protocols = DetectionNotifications.getPlayers();
 
             if (!protocols.isEmpty()) {
                 for (SpartanProtocol staff : protocols) {
-                    if (staff.profile().getRunner(this.hackType).getDetection(this.name).canSendNotification(this.protocol(), roundedCertainty)) {
+                    if (staff.profile().getRunner(this.hackType).getDetection(this.name).canSendNotification(this.protocol, roundedCertainty)) {
                         ClickableMessage.sendCommand(
                                 staff.bukkit,
                                 notification,
@@ -211,15 +211,15 @@ public abstract class CheckDetection extends CheckProcess {
 
     protected void punish() {
         Check check = hackType.getCheck();
-        if (check.canPunish(this.protocol().spartan.dataType)) {
+        if (check.canPunish(this.protocol.spartan.dataType)) {
             List<String> commands = check.getPunishmentCommands();
 
             if (!commands.isEmpty()
-                    && this.hasSufficientData(this.protocol().spartan.dataType)) {
-                Collection<Enums.HackType> detectedHacks = this.protocol().profile().getEvidenceList(
+                    && this.hasSufficientData(this.protocol.spartan.dataType)) {
+                Collection<Enums.HackType> detectedHacks = this.protocol.profile().getEvidenceList(
                         PlayerEvidence.punishmentProbability
                 );
-                detectedHacks.removeIf(loopHackType -> !loopHackType.getCheck().canPunish(this.protocol().spartan.dataType));
+                detectedHacks.removeIf(loopHackType -> !loopHackType.getCheck().canPunish(this.protocol.spartan.dataType));
 
                 if (!detectedHacks.isEmpty()
                         && detectedHacks.contains(hackType)) {
@@ -234,7 +234,7 @@ public abstract class CheckDetection extends CheckProcess {
 
                     for (String command : commands) {
                         String modifiedCommand = ConfigUtils.replaceWithSyntax(
-                                this.protocol(),
+                                this.protocol,
                                 command.replaceAll("\\{detections}|\\{detection}", detections),
                                 null
                         );
@@ -243,7 +243,7 @@ public abstract class CheckDetection extends CheckProcess {
                         if (enabledDeveloperAPI) {
                             Runnable runnable = () -> {
                                 PlayerViolationCommandEvent event = new PlayerViolationCommandEvent(
-                                        this.protocol().bukkit,
+                                        this.protocol.bukkit,
                                         hackType,
                                         detectedHacks,
                                         modifiedCommand
@@ -258,17 +258,17 @@ public abstract class CheckDetection extends CheckProcess {
                             if (SpartanBukkit.isSynchronised()) {
                                 runnable.run();
                             } else {
-                                SpartanBukkit.transferTask(this.protocol(), runnable);
+                                SpartanBukkit.transferTask(this.protocol, runnable);
                             }
                         } else {
                             SpartanBukkit.runCommand(modifiedCommand);
                         }
                     }
-                    Location location = this.protocol().getLocation();
+                    Location location = this.protocol.getLocation();
                     CloudConnections.executeDiscordWebhook(
                             "punishments",
-                            this.protocol().getUUID(),
-                            this.protocol().bukkit.getName(),
+                            this.protocol.getUUID(),
+                            this.protocol.bukkit.getName(),
                             location.getBlockX(),
                             location.getBlockY(),
                             location.getBlockZ(),
@@ -309,7 +309,7 @@ public abstract class CheckDetection extends CheckProcess {
             Runnable runnable = () -> {
                 if (event) {
                     PlayerViolationEvent playerViolationEvent = new PlayerViolationEvent(
-                            this.protocol().bukkit,
+                            this.protocol.bukkit,
                             hackType,
                             information
                     );
@@ -320,27 +320,27 @@ public abstract class CheckDetection extends CheckProcess {
                     }
                 }
                 this.store(
-                        this.protocol().spartan.dataType,
+                        this.protocol.spartan.dataType,
                         time
                 );
-                ResearchEngine.queueToCache(this.hackType, this.protocol().spartan.dataType);
+                ResearchEngine.queueToCache(this.hackType, this.protocol.spartan.dataType);
                 this.notify(time, information);
                 this.punish();
                 this.executor.prevention = newPrevention;
                 this.executor.prevention.canPrevent =
-                        !hackType.getCheck().isSilent(this.protocol().spartan.dataType, this.protocol().getWorld().getName())
+                        !hackType.getCheck().isSilent(this.protocol.spartan.dataType, this.protocol.getWorld().getName())
                                 && (silentCause == null
                                 || silentCause.hasExpired()
                                 || !silentCause.pointerMatches(information))
-                                && this.hasSufficientData(this.protocol().spartan.dataType)
-                                && PlayerEvidence.surpassedProbability(this.getProbability(this.protocol().spartan.dataType), PlayerEvidence.preventionProbability);
+                                && this.hasSufficientData(this.protocol.spartan.dataType)
+                                && PlayerEvidence.surpassedProbability(this.getProbability(this.protocol.spartan.dataType), PlayerEvidence.preventionProbability);
 
             };
 
             if (!event || SpartanBukkit.isSynchronised()) {
                 runnable.run();
             } else {
-                SpartanBukkit.transferTask(this.protocol(), runnable);
+                SpartanBukkit.transferTask(this.protocol, runnable);
             }
         }
     }

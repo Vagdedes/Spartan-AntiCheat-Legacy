@@ -40,7 +40,7 @@ public class FightAnalysis extends ProbabilityDetection {
             identifier = target.getType().toString().hashCode();
         }
         Map<Integer, int[]> subData = data.computeIfAbsent(
-                this.protocol().getUUID(),
+                this.protocol.getUUID(),
                 k -> new LinkedHashMap<>(2)
         );
         int[] hitsDamages = subData.getOrDefault(identifier, new int[2]);
@@ -66,7 +66,7 @@ public class FightAnalysis extends ProbabilityDetection {
             identifier = damager.getType().toString().hashCode();
         }
         Map<Integer, int[]> subData = data.computeIfAbsent(
-                this.protocol().getUUID(),
+                this.protocol.getUUID(),
                 k -> new OverflowMap<>(
                         new LinkedHashMap<>(2),
                         EntityType.values().length

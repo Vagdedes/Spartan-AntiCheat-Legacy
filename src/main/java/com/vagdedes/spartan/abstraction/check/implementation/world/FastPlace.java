@@ -68,7 +68,7 @@ public class FastPlace extends CheckRunner {
                             );
                         }
                         if (timePassed <= 50L
-                                && !this.protocol().spartan.isBedrockPlayer()
+                                && !this.protocol.spartan.isBedrockPlayer()
                                 && !Compatibility.CompatibilityType.VEIN_MINER.isFunctional()
                                 && fastBuffer.count(1, ticks) >= 4) {
                             this.fast.cancel(
@@ -87,8 +87,8 @@ public class FastPlace extends CheckRunner {
 
     @Override
     protected boolean canRun() {
-        return !this.protocol().spartan.movement.isFlying()
-                && !PrinterMode.isUsing(this.protocol())
-                && !Vehicles.has(this.protocol(), new String[]{Vehicles.DRILL, Vehicles.TRACTOR});
+        return !this.protocol.spartan.movement.isFlying()
+                && !PrinterMode.isUsing(this.protocol)
+                && !Vehicles.has(this.protocol, new String[]{Vehicles.DRILL, Vehicles.TRACTOR});
     }
 }
