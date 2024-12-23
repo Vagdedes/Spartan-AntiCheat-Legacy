@@ -4,6 +4,7 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.events.PacketListener;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
@@ -39,7 +40,7 @@ public class Packet_Vehicle extends PacketAdapter {
         if (ProtocolTools.hasPosition(event.getPacket().getType()) && protocol.entityHandle) {
             protocol.entityHandle = false;
         }
-        if (protocol.spartan.getNearbyEntities(4).size() >= 2) {
+        if (protocol.spartan.getNearbyEntities(4).size() > 1) {
             if (ProtocolTools.hasPosition(event.getPacket().getType()) && protocol.entityHandle) {
                 protocol.timerBalancer.addBalance(50);
                 VehicleExitEvent bukkitEvent = new VehicleExitEvent(null, protocol.bukkit());

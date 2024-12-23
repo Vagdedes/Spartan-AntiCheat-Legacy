@@ -1,2 +1,5 @@
-[#] Fixed an Exploits dead-chat-usage false positive.
+[+] New Velocity handling for Speed checks
+[#] Fixed null exception error
+[#] Fixed annoying flaw deep in the plugin (because of which there was a disabler)
 [#] Made detections reset when a player rejoined the server.
+[#] Fixed an Exploits dead-chat-usage false positive.
