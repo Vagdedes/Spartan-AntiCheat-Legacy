@@ -1,1 +1,2 @@
 [#] Fixed an Exploits dead-chat-usage false positive.
+[#] Made detections reset when a player rejoined the server.
