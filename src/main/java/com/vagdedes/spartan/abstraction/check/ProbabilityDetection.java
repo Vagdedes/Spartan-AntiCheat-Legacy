@@ -111,7 +111,7 @@ public abstract class ProbabilityDetection extends CheckDetection {
                 violationCount /= (double) onlineTime;
             }
             if (comparisonCount == 0.0) {
-                averageViolationVelocity = Float.MAX_VALUE;
+                averageViolationVelocity = Long.MAX_VALUE;
             } else {
                 averageViolationVelocity = Math.sqrt(violationVelocitySquareSum / comparisonCount);
             }
