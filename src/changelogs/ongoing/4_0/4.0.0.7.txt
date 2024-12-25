@@ -1,1 +1,2 @@
 [#] Fixed a vehicle related console error.
+[#] Accelerated the learning time of the statistics by introducing data assumptions.
