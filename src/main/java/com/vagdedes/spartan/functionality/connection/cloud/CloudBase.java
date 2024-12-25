@@ -36,7 +36,7 @@ public class CloudBase {
 
     // Parameters
     static String identification = identification(), token = null;
-    static final String version = calculateVersion();
+    static final String version = Register.plugin.getDescription().getVersion();
     static final String separator = ">@#&!%<;=";
 
     static {
@@ -44,17 +44,6 @@ public class CloudBase {
     }
 
     // Separator
-
-    private static String calculateVersion() {
-        String[] verstionString = Register.plugin.getDescription().getVersion().split(" ");
-
-        for (String s : verstionString) {
-            if (AlgebraUtils.validInteger(s) || AlgebraUtils.validDecimal(s)) {
-                return s;
-            }
-        }
-        return "0";
-    }
 
     public static boolean hasToken() {
         return token != null && !IDs.hasUserIDByDefault;
