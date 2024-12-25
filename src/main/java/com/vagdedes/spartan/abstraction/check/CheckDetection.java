@@ -145,7 +145,7 @@ public abstract class CheckDetection extends CheckProcess {
 
     public abstract boolean canSendNotification(Object detected, int probability);
 
-    protected void notify(long time, String information) {
+    protected void notify(boolean enabled, long time, String information) {
         boolean hasSufficientData = this.hasSufficientData(this.protocol.spartan.dataType);
         double probability = this.getProbability(this.protocol.spartan.dataType),
                 certainty = PlayerEvidence.probabilityToCertainty(probability) * 100.0,
@@ -180,38 +180,41 @@ public abstract class CheckDetection extends CheckProcess {
                 + "(Data: " + information + ")";
         AntiCheatLogs.logInfo(
                 this.protocol,
-                notification,
+                enabled ? notification : null,
                 information,
-                hasSufficientData
+                enabled
+                        && hasSufficientData
                         && PlayerEvidence.surpassedProbability(
                         probability,
                         PlayerEvidence.notificationProbability
                 ),
                 null,
-                hackType,
+                this.hackType,
                 time
         );
 
-        // Local Notifications
-        String command = Config.settings.getString("Notifications.message_clickable_command")
-                .replace("{player}", this.protocol.bukkit().getName());
+        if (enabled) {
+            // Local Notifications
+            String command = Config.settings.getString("Notifications.message_clickable_command")
+                    .replace("{player}", this.protocol.bukkit().getName());
 
-        if (Config.settings.getBoolean("Notifications.individual_only_notifications")) {
-            if (DetectionNotifications.isEnabled(this.protocol)) { // Attention
-                ClickableMessage.sendCommand(this.protocol.bukkit(), notification, command, command);
-            }
-        } else {
-            List<SpartanProtocol> protocols = DetectionNotifications.getPlayers();
+            if (Config.settings.getBoolean("Notifications.individual_only_notifications")) {
+                if (DetectionNotifications.isEnabled(this.protocol)) { // Attention
+                    ClickableMessage.sendCommand(this.protocol.bukkit(), notification, command, command);
+                }
+            } else {
+                List<SpartanProtocol> protocols = DetectionNotifications.getPlayers();
 
-            if (!protocols.isEmpty()) {
-                for (SpartanProtocol staff : protocols) {
-                    if (staff.profile().getRunner(this.hackType).getDetection(this.name).canSendNotification(this.protocol, roundedCertainty)) {
-                        ClickableMessage.sendCommand(
-                                staff.bukkit(),
-                                notification,
-                                command,
-                                command
-                        );
+                if (!protocols.isEmpty()) {
+                    for (SpartanProtocol staff : protocols) {
+                        if (staff.profile().getRunner(this.hackType).getDetection(this.name).canSendNotification(this.protocol, roundedCertainty)) {
+                            ClickableMessage.sendCommand(
+                                    staff.bukkit(),
+                                    notification,
+                                    command,
+                                    command
+                            );
+                        }
                     }
                 }
             }
@@ -220,7 +223,7 @@ public abstract class CheckDetection extends CheckProcess {
 
     // Punishment
 
-    protected void punish() {
+    private void punish() {
         Check check = hackType.getCheck();
         if (check.canPunish(this.protocol.spartan.dataType)) {
             List<String> commands = check.getPunishmentCommands();
@@ -295,47 +298,49 @@ public abstract class CheckDetection extends CheckProcess {
 
     public final void cancel(String information, Location location,
                              int cancelTicks, boolean groundTeleport, double damage) {
-        if (!this.isEnabled()) {
-            return;
-        }
         long time = System.currentTimeMillis();
-
-        if (!this.executor.canFunction()
-                || CloudBase.isInformationCancelled(this.hackType, information)) {
-            return;
-        }
         CheckPrevention newPrevention = new CheckPrevention(
                 location,
                 cancelTicks,
                 groundTeleport,
                 damage
         );
-        CheckCancellation disableCause = this.executor.getDisableCause();
-        if (disableCause == null
-                || disableCause.hasExpired()
-                || !disableCause.pointerMatches(information)) {
-            boolean event = Config.settings.getBoolean("Important.enable_developer_api");
-            CheckCancellation silentCause = this.executor.getSilentCause();
+        boolean isEnabled = this.executor.canFunction()
+                && this.isEnabled()
+                && !CloudBase.isInformationCancelled(this.hackType, information);
 
-            Runnable runnable = () -> {
-                if (event) {
-                    PlayerViolationEvent playerViolationEvent = new PlayerViolationEvent(
-                            this.protocol.bukkit(),
-                            hackType,
-                            information
-                    );
-                    Register.manager.callEvent(playerViolationEvent);
+        if (isEnabled) {
+            CheckCancellation disableCause = this.executor.getDisableCause();
+            isEnabled = disableCause == null
+                    || disableCause.hasExpired()
+                    || !disableCause.pointerMatches(information);
+        }
+        boolean event = isEnabled
+                && Config.settings.getBoolean("Important.enable_developer_api");
+        CheckCancellation silentCause = this.executor.getSilentCause();
+        boolean finalIsEnabled = isEnabled;
 
-                    if (playerViolationEvent.isCancelled()) {
-                        return;
-                    }
-                }
-                this.store(
-                        this.protocol.spartan.dataType,
-                        time
+        Runnable runnable = () -> {
+            if (event) {
+                PlayerViolationEvent playerViolationEvent = new PlayerViolationEvent(
+                        this.protocol.bukkit(),
+                        hackType,
+                        information
                 );
-                ResearchEngine.queueToCache(this.hackType, this.protocol.spartan.dataType);
-                this.notify(time, information);
+                Register.manager.callEvent(playerViolationEvent);
+
+                if (playerViolationEvent.isCancelled()) {
+                    return;
+                }
+            }
+            this.store(
+                    this.protocol.spartan.dataType,
+                    time
+            );
+            ResearchEngine.queueToCache(this.hackType, this.protocol.spartan.dataType);
+            this.notify(finalIsEnabled, time, information);
+
+            if (finalIsEnabled) {
                 this.punish();
                 this.executor.prevention = newPrevention;
                 this.executor.prevention.canPrevent =
@@ -345,14 +350,13 @@ public abstract class CheckDetection extends CheckProcess {
                                 || !silentCause.pointerMatches(information))
                                 && this.hasSufficientData(this.protocol.spartan.dataType)
                                 && PlayerEvidence.surpassedProbability(this.getProbability(this.protocol.spartan.dataType), PlayerEvidence.preventionProbability);
-
-            };
-
-            if (!event || SpartanBukkit.isSynchronised()) {
-                runnable.run();
-            } else {
-                SpartanBukkit.transferTask(this.protocol, runnable);
             }
+        };
+
+        if (!event || SpartanBukkit.isSynchronised()) {
+            runnable.run();
+        } else {
+            SpartanBukkit.transferTask(this.protocol, runnable);
         }
     }
 
