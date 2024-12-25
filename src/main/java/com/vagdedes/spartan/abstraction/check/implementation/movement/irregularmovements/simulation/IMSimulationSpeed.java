@@ -87,7 +87,11 @@ public class IMSimulationSpeed extends ProbabilityDetection {
                         this.ACCELERATION_MOTION = lastSpeed - limitAccel * 0.91;
                     limit *= this.multiplex();
                     limit += this.ACCELERATION_MOTION;
-                    if (this.protocol.getComponentXZ().pistonTick) limit += 1.0;
+                    if (this.protocol.getComponentXZ().pistonTick && speed > limit) {
+                        limit += 1.0;
+                        this.removePistonTick = true;
+                    }
+
                     if (speed < limit) this.setPredict(dx, dz);
                     if (this.ACCELERATION_MOTION > 0)
                         this.ACCELERATION_MOTION -= 0.02;

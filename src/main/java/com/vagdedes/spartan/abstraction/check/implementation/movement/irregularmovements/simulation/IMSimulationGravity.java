@@ -174,6 +174,16 @@ public class IMSimulationGravity extends ProbabilityDetection {
                 this.velocity(motion);
             }
 
+            double devPreTotal2 = this.abs(this.abs(motion) - this.abs(this.predictY()));
+
+            if (this.climbBlocks > 0 && devPreTotal2 > 0.001 && motion < 0.118 && motion > -0.16) {
+                this.setPredict(motion);
+                this.climbBlocks--;
+            } else if (devPreTotal2 > 0.001 && motion < 0.118 && motion > -0.16 && isNearClimbBlocks(to)) {
+                this.setPredict(motion);
+                this.climbBlocks = 2;
+            }
+
             double dev1 = this.abs(this.abs(motion) - this.abs(this.predictY()));
             if (dev1 > 0.008 && this.isBlocksOnTop(to)) {
                 if (motion < this.predictY() && motion > -0.08) {
@@ -287,16 +297,6 @@ public class IMSimulationGravity extends ProbabilityDetection {
             } else if (devPreTotal > 0.001 && motion < 0 && motion > -0.16 && isNearGlideBlocks(to)) {
                 this.setPredict(motion);
                 this.glideBlocks = 2;
-            }
-
-            double devPreTotal2 = this.abs(this.abs(motion) - this.abs(this.predictY()));
-
-            if (this.climbBlocks > 0 && devPreTotal2 > 0.001 && motion < 0.118 && motion > -0.16) {
-                this.setPredict(motion);
-                this.climbBlocks--;
-            } else if (devPreTotal2 > 0.001 && motion < 0.118 && motion > -0.16 && isNearClimbBlocks(to)) {
-                this.setPredict(motion);
-                this.climbBlocks = 2;
             }
 
             if (this.getDeviantity(motion) > 0.001
@@ -607,7 +607,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
                             new Location(this.protocol.getWorld(), xF + (double) dx * 0.3, yF + (double) dy * 0.5, zF + (double) dz * 0.3)
                     );
 
-                    if (material != null &&
+                    if (material != null && !BlockUtils.canClimb(material, false) &&
                             (BlockUtils.isSemiSolid(material)
                                     || BlockUtils.areWalls(materialFrom)
                                     || BlockUtils.areCobbleWalls(materialFrom)

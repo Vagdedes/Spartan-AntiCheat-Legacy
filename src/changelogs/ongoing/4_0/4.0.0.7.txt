@@ -1,3 +1,4 @@
+[#] Fixed speed ground/fastclimb bypasses
 [#] Fixed a vehicle related console error
 [#] Accelerated the learning time of the statistics by introducing data assumptions
 [#] Detections will still collect data regardless of them or the check being disabled.
