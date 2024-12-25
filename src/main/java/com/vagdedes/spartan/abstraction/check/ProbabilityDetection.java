@@ -25,8 +25,9 @@ public abstract class ProbabilityDetection extends CheckDetection {
     // Data
 
     @Override
-    protected final boolean hasData(Check.DataType dataType) {
-        return this.data.containsKey(dataType);
+    protected final boolean hasData(PlayerProfile profile, Check.DataType dataType) {
+        return this.data.containsKey(dataType)
+                || profile.getContinuity().getOnlineTime() >= 600_000L; // 10 minutes
     }
 
     @Override
@@ -37,7 +38,7 @@ public abstract class ProbabilityDetection extends CheckDetection {
             int count = 0;
 
             for (PlayerProfile profile : playerProfiles) {
-                if (profile.getRunner(this.hackType).getDetection(this.name).hasData(dataType)) {
+                if (profile.getRunner(this.hackType).getDetection(this.name).hasData(profile, dataType)) {
                     count++;
 
                     if (count == PlayerEvidence.factorRequirement) {
@@ -74,11 +75,11 @@ public abstract class ProbabilityDetection extends CheckDetection {
     }
 
     @Override
-    public final Double getData(PlayerProfile profile, Check.DataType dataType) {
+    public final double getData(PlayerProfile profile, Check.DataType dataType) {
         Collection<Long> data = this.data.get(dataType);
 
         if (data == null) {
-            return null;
+            return CheckDetection.defaultData();
         } else {
             double violationCount,
                     averageViolationVelocity,
@@ -116,9 +117,14 @@ public abstract class ProbabilityDetection extends CheckDetection {
                 averageViolationVelocity = Math.sqrt(violationVelocitySquareSum / comparisonCount);
             }
             double result = averageViolationVelocity / violationCount;
-            return result == Double.POSITIVE_INFINITY || result == Double.NEGATIVE_INFINITY
-                    ? null
-                    : result;
+
+            if (result == Double.POSITIVE_INFINITY
+                    || result == Double.NEGATIVE_INFINITY) {
+                return CheckDetection.defaultData();
+            } else {
+                CheckDetection.setDefaultData(result);
+                return result;
+            }
         }
     }
 
@@ -147,7 +153,7 @@ public abstract class ProbabilityDetection extends CheckDetection {
             int count = 0;
 
             for (PlayerProfile profile : playerProfiles) {
-                if (profile.getRunner(this.hackType).getDetection(this.name).hasData(dataType)) {
+                if (profile.getRunner(this.hackType).getDetection(this.name).hasData(profile, dataType)) {
                     count++;
 
                     if (count == PlayerEvidence.factorRequirement) {

@@ -34,6 +34,17 @@ public abstract class CheckDetection extends CheckProcess {
             javaPlayerIdentifier = "Java:",
             checkIdentifier = "Check:",
             detectionIdentifier = "Detection:";
+    private static double defaultData = (double) Long.MAX_VALUE;
+
+    protected static double defaultData() {
+        return defaultData;
+    }
+
+    protected static void setDefaultData(double newData) {
+        CheckDetection.defaultData = Math.max(CheckDetection.defaultData, newData);
+    }
+
+    // Separator
 
     public final CheckRunner executor;
     public final String name, random;
@@ -84,7 +95,7 @@ public abstract class CheckDetection extends CheckProcess {
 
     // Data
 
-    protected boolean hasData(Check.DataType dataType) {
+    protected boolean hasData(PlayerProfile profile, Check.DataType dataType) {
         return true;
     }
 
@@ -96,8 +107,8 @@ public abstract class CheckDetection extends CheckProcess {
     public void store(Check.DataType dataType, long time) {
     }
 
-    public Double getData(PlayerProfile profile, Check.DataType dataType) {
-        return null;
+    public double getData(PlayerProfile profile, Check.DataType dataType) {
+        return defaultData();
     }
 
     Long getFirstTime(Check.DataType dataType) {
