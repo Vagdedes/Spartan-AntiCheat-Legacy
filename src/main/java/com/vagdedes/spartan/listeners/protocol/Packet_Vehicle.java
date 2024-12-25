@@ -11,8 +11,8 @@ import com.vagdedes.spartan.listeners.bukkit.Event_Movement;
 import com.vagdedes.spartan.listeners.bukkit.Event_Vehicle;
 import com.vagdedes.spartan.utils.minecraft.protocol.ProtocolTools;
 import org.bukkit.Location;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Vehicle;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
@@ -56,7 +56,7 @@ public class Packet_Vehicle extends PacketAdapter {
         if (event.getPacket().getType().equals(PacketType.Play.Client.STEER_VEHICLE)) {
             Player player = event.getPlayer();
             if (player.getVehicle() != null) {
-                Vehicle vehicle = (Vehicle) player.getVehicle();
+                Entity vehicle = player.getVehicle();
                 Location location = vehicle.getLocation();
                 SpartanBukkit.getProtocol(player).setLocation(location);
                 Event_Movement.event(new PlayerMoveEvent(player, protocol.getFromLocation(), protocol.getLocation()), true);
