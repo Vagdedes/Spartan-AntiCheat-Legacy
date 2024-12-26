@@ -29,7 +29,7 @@ public abstract class CheckRunner extends CheckProcess {
 
     private static final boolean v1_8 = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8);
 
-    private final long creation;
+    final long creation;
     private final Collection<CheckCancellation> disableCauses, silentCauses;
     CheckPrevention prevention;
     private boolean cancelled;

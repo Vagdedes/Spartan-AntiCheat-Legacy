@@ -27,8 +27,13 @@ public abstract class ProbabilityDetection extends CheckDetection {
 
     @Override
     protected final boolean hasData(PlayerProfile profile, Check.DataType dataType) {
-        return this.data.containsKey(dataType)
-                || profile.getContinuity().getOnlineTime() >= 1800_000L; // 30 minutes
+        if (this.data.containsKey(dataType)) {
+            return true;
+        }
+        long onlineTime = profile.getContinuity().getOnlineTime(),
+                threshold = 1800_000L; // 30 minutes
+        return (System.currentTimeMillis() - this.executor.creation) >= threshold
+                && onlineTime >= threshold; // 30 minutes
     }
 
     @Override
