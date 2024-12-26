@@ -124,6 +124,7 @@ public class ResearchEngine {
                                 detectionExecutor.clearData(dataType);
                             }
                         }
+                        playerProfile.getContinuity().clear();
                     }
                     updateCache(true);
                 }
@@ -165,14 +166,7 @@ public class ResearchEngine {
     public static void resetData(String playerName) {
         if (firstLoad) {
             // Clear Violations
-            PlayerProfile profile;
             SpartanProtocol player = SpartanBukkit.getProtocol(playerName);
-
-            if (player == null) {
-                profile = getAnyCasePlayerProfile(playerName);
-            } else {
-                profile = player.profile();
-            }
 
             if (isStorageMode()) {
                 // Clear Files/Database
