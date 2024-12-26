@@ -7,6 +7,7 @@ import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanBlock;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
+import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
 import com.vagdedes.spartan.utils.math.MathHelper;
 import com.vagdedes.spartan.utils.math.RayLine;
 import com.vagdedes.spartan.utils.math.RayUtils;
@@ -71,6 +72,7 @@ public class IMSimulationSpeed extends ProbabilityDetection {
                         yawLine, moveLine, 46.0);
         boolean isOnAngle80 = RayUtils.validRayLines(
                         yawLine, moveLine, 80.0);
+        double atr = Attributes.getAmount(this.protocol, Attributes.GENERIC_MOVEMENT_SPEED) * 1.2;
         if (to.getX() != from.getX() || to.getY() != from.getY() || to.getZ() != from.getZ()) {
             {
                 this.ground(isOnGround);
@@ -80,11 +82,12 @@ public class IMSimulationSpeed extends ProbabilityDetection {
                     double limit = isOnAngle ? 0.2975 : (isOnAngle80) ? 0.289 : 0.235;
                     limit = (this.action > 6 ? 0.061 : this.action > 3 ? 0.09 : this.action > 1 ? 0.17 : limit);
                     double limitAccel = RayUtils.validRayLines(
-                                    yawLine, moveLine, 65.0) ? 0.15 : 0.12;
-                    if (limit < limit * this.multiplex())
-                        this.ACCELERATION_MOTION = ((limit * this.multiplex()) - limit) * 0.5;
+                                    yawLine, moveLine, 65.0) ? 0.15 : 0.12 + atr;
+                    if (limit < (limit + atr) * this.multiplex())
+                        this.ACCELERATION_MOTION = (((limit + atr) * this.multiplex()) - limit) * 0.5;
                     if (this.ground == 1 && lastSpeed > limitAccel)
                         this.ACCELERATION_MOTION = lastSpeed - limitAccel * 0.91;
+                    limit += atr;
                     limit *= this.multiplex();
                     limit += this.ACCELERATION_MOTION;
                     if (this.protocol.getComponentXZ().pistonTick && speed > limit) {
@@ -106,6 +109,7 @@ public class IMSimulationSpeed extends ProbabilityDetection {
                     } else lim = JUMP[air - 1];
                     if (this.ACCELERATION_MOTION > 0.146)
                         lim += this.ACCELERATION_MOTION - 0.146;
+                    lim += atr;
                     lim *= this.multiplex();
                     if (this.action > 0) lim /= 1.2;
                     if (this.protocol.getComponentXZ().pistonTick) lim += 1.0;
