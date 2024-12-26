@@ -12,13 +12,14 @@ import java.util.concurrent.ConcurrentHashMap;
 public abstract class ProbabilityDetection extends CheckDetection {
 
     private int lastProbability;
-    private final Long[] lastTime;
+    private final Long[] firstTime, lastTime;
     private final Map<Check.DataType, Collection<Long>> data;
     private final Object synchronizer = new Object();
 
     public ProbabilityDetection(CheckRunner executor, String name, boolean def) {
         super(executor, name, def);
         this.data = new ConcurrentHashMap<>(Check.DataType.values().length);
+        this.firstTime = new Long[Check.DataType.values().length];
         this.lastTime = new Long[Check.DataType.values().length];
     }
 
@@ -53,6 +54,7 @@ public abstract class ProbabilityDetection extends CheckDetection {
     @Override
     public void clearData(Check.DataType dataType) {
         this.data.remove(dataType);
+        this.firstTime[dataType.ordinal()] = null;
         this.lastTime[dataType.ordinal()] = null;
     }
 
@@ -70,6 +72,12 @@ public abstract class ProbabilityDetection extends CheckDetection {
                 iterator.remove();
             }
             data.add(time);
+
+            if (this.firstTime[dataType.ordinal()] == null) {
+                this.firstTime[dataType.ordinal()] = time;
+            } else if (time < this.firstTime[dataType.ordinal()]) {
+                this.firstTime[dataType.ordinal()] = time;
+            }
             this.lastTime[dataType.ordinal()] = time;
         }
     }
@@ -130,14 +138,7 @@ public abstract class ProbabilityDetection extends CheckDetection {
 
     @Override
     final Long getFirstTime(Check.DataType dataType) {
-        Collection<Long> data = this.data.get(dataType);
-
-        if (data != null) {
-            synchronized (this.synchronizer) {
-                return data.iterator().next();
-            }
-        }
-        return null;
+        return this.firstTime[dataType.ordinal()];
     }
 
     @Override

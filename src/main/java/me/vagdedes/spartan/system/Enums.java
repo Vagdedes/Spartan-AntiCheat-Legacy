@@ -56,15 +56,6 @@ public class Enums {
                         "in abnormal cases, such as when sleeping."
                 }
         ),
-        ItemDrops(
-                HackCategoryType.INVENTORY,
-                com.vagdedes.spartan.abstraction.check.implementation.inventory.ItemDrops.class,
-                new String[]{
-                        "This check will prevent client modules",
-                        "that allow a player to drop an amount",
-                        "of items in abnormally fast rates."
-                }
-        ),
         AutoRespawn(
                 HackCategoryType.PLAYER,
                 com.vagdedes.spartan.abstraction.check.implementation.player.AutoRespawn.class,

@@ -24,11 +24,7 @@ public class Event_Inventory implements Listener {
         SpartanProtocol p = SpartanBukkit.getProtocol(e.getPlayer(), true);
 
         // Detections
-        p.profile().getRunner(Enums.HackType.ItemDrops).run(e.isCancelled());
-
-        if (p.profile().getRunner(Enums.HackType.ItemDrops).prevent()) {
-            e.setCancelled(true);
-        }
+        p.profile().getRunner(Enums.HackType.FastClicks).handle(false, null);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

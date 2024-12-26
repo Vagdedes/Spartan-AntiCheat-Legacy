@@ -376,6 +376,7 @@ public class SpartanPlayer {
                     }
                 }
             }
+            entities.remove(this.protocol.bukkit());
             return entities;
         }
     }
@@ -409,6 +410,7 @@ public class SpartanPlayer {
                     }
                 }
             }
+            entities.remove(this.protocol.bukkit());
             return entities;
         }
     }

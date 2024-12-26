@@ -3,3 +3,7 @@
 [#] Fixed a vehicle related console error
 [#] Accelerated the learning time of the statistics by introducing data assumptions
 [#] Detections will still collect data regardless of them or the check being disabled.
+[#] Improved the time statistics take to calculate certain time distances.
+[#] Fixed certain FastClicks false positives related to items dropping.
+[#] Fixed a nearby entities method bug where it could include the player himself.
+[-] Removed the ItemDrops detection as it wasn't really helping anywhere.
