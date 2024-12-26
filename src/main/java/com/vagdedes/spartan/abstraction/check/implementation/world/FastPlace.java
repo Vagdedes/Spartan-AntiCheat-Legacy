@@ -48,7 +48,7 @@ public class FastPlace extends CheckRunner {
                 int ticks = 20;
 
                 if (timePassed <= 150L) {
-                    if (slowBuffer.count(1, ticks) >= 8) {
+                    if (slowBuffer.count(1, ticks) >= 9) {
                         this.slow.cancel(
                                 "type: slow"
                                         + ", ms: " + timePassed
@@ -58,7 +58,7 @@ public class FastPlace extends CheckRunner {
                         );
                     }
                     if (timePassed <= 100L) {
-                        if (mediumBuffer.count(1, ticks) >= 7) {
+                        if (mediumBuffer.count(1, ticks) >= 8) {
                             this.medium.cancel(
                                     "type: medium"
                                             + ", ms: " + timePassed
@@ -70,7 +70,7 @@ public class FastPlace extends CheckRunner {
                         if (timePassed <= 50L
                                 && !this.protocol.spartan.isBedrockPlayer()
                                 && !Compatibility.CompatibilityType.VEIN_MINER.isFunctional()
-                                && fastBuffer.count(1, ticks) >= 4) {
+                                && fastBuffer.count(1, ticks) >= 5) {
                             this.fast.cancel(
                                     "type: fast"
                                             + ", ms: " + timePassed

@@ -7,3 +7,4 @@
 [#] Fixed certain FastClicks false positives related to items dropping.
 [#] Fixed a nearby entities method bug where it could include the player himself.
 [-] Removed the ItemDrops detection as it wasn't really helping anywhere.
+[#] Fixed a few FastPlace false positives.
