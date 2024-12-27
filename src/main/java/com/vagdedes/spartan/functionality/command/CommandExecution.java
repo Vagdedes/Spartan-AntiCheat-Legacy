@@ -47,7 +47,7 @@ public class CommandExecution implements CommandExecutor {
                                          boolean documentation) {
         if (!isPlayer || Permissions.has((Player) sender)) {
             sender.sendMessage("");
-            String command = "§2" + Register.plugin.getName() + " AntiCheat";
+            String command = "§2" + Register.getPluginName() + " AntiCheat";
             String placeholder = "Click to view our Patreon offer/s.";
             command += "\n§8[ §7Detections Available§8: "
                     + (SpartanEdition.hasDetectionsPurchased(Check.DataType.JAVA) ? "§a" : "§c") + Check.DataType.JAVA
@@ -86,7 +86,6 @@ public class CommandExecution implements CommandExecutor {
         SpartanProtocol protocol = isPlayer ? SpartanBukkit.getProtocol((Player) sender) : null;
         isPlayer &= protocol != null;
 
-        String command = Register.plugin.getName().toLowerCase();
         boolean info = !isPlayer || Permissions.has(protocol.bukkit(), Enums.Permission.INFO),
                 manage = !isPlayer || Permissions.has(protocol.bukkit(), Enums.Permission.MANAGE);
 
@@ -99,7 +98,7 @@ public class CommandExecution implements CommandExecutor {
                                     sender,
                                     "§cPanic Mode §7(Click)",
                                     "Click this command to toggle silent mode and disable punishments for all checks.",
-                                    "/" + command + " panic"
+                                    "/" + Register.command + " panic"
                             );
                         }
                         if (info || manage) {
@@ -107,7 +106,7 @@ public class CommandExecution implements CommandExecutor {
                                     sender,
                                     "§cInventory Menu §7(Click)",
                                     "Click this command to open the plugin's inventory menu.",
-                                    "/" + command + " menu"
+                                    "/" + Register.command + " menu"
                             );
                         }
                         if (Permissions.has(protocol.bukkit(), Permission.RELOAD)) {
@@ -115,7 +114,7 @@ public class CommandExecution implements CommandExecutor {
                                     sender,
                                     "§cReload Plugin §7(Click)",
                                     "Click this command to reload the plugin's cache.",
-                                    "/" + command + " reload"
+                                    "/" + Register.command + " reload"
                             );
                         }
                         if (info) {
@@ -123,7 +122,7 @@ public class CommandExecution implements CommandExecutor {
                                     sender,
                                     "§cPlayer Info §7(Click)",
                                     "Click this command to view useful information yourself.",
-                                    "/" + command + " info"
+                                    "/" + Register.command + " info"
                             );
                         }
                         if (manage) {
@@ -131,19 +130,19 @@ public class CommandExecution implements CommandExecutor {
                                     sender,
                                     "§cToggle Checks §7(Click)",
                                     "Click this command to toggle a check and its detections.",
-                                    "/" + command + " manage-checks"
+                                    "/" + Register.command + " manage-checks"
                             );
                             ClickableMessage.sendCommand(
                                     sender,
                                     "§cToggle Preventions §7(Click)",
                                     "Click this command to toggle a check's preventions.",
-                                    "/" + command + " manage-checks"
+                                    "/" + Register.command + " manage-checks"
                             );
                             ClickableMessage.sendCommand(
                                     sender,
                                     "§cToggle Punishments §7(Click)",
                                     "Click this command to toggle a check's punishments.",
-                                    "/" + command + " manage-checks"
+                                    "/" + Register.command + " manage-checks"
                             );
                         }
                         if (Permissions.has(protocol.bukkit(), Permission.USE_BYPASS)) {
@@ -151,37 +150,37 @@ public class CommandExecution implements CommandExecutor {
                                     sender,
                                     "§cPlayer Bypass §7(Click)",
                                     "Click this command to give check bypass to a player.",
-                                    "/" + command + " bypass *"
+                                    "/" + Register.command + " bypass *"
                             );
                         }
                     } else {
                         ClickableMessage.sendCommand(
                                 sender,
-                                ChatColor.RED + "/" + command + " panic",
+                                ChatColor.RED + "/" + Register.command + " panic",
                                 "This command can be used to enable silent mode and disable punishments for all checks.",
                                 null
                         );
                         ClickableMessage.sendCommand(
                                 sender,
-                                ChatColor.RED + "/" + command + " toggle <check>",
+                                ChatColor.RED + "/" + Register.command + " toggle <check>",
                                 "This command can be used to toggle a check and its detections.",
                                 null
                         );
                         ClickableMessage.sendCommand(
                                 sender,
-                                ChatColor.RED + "/" + command + " toggle-prevention <check>",
+                                ChatColor.RED + "/" + Register.command + " toggle-prevention <check>",
                                 "This command can be used to toggle a check's preventions.",
                                 null
                         );
                         ClickableMessage.sendCommand(
                                 sender,
-                                ChatColor.RED + "/" + command + " toggle-punishment <check>",
+                                ChatColor.RED + "/" + Register.command + " toggle-punishment <check>",
                                 "This command can be used to toggle a check's punishments.",
                                 null
                         );
                         buildCommand(
                                 sender,
-                                ChatColor.RED, "/" + command + " reload",
+                                ChatColor.RED, "/" + Register.command + " reload",
                                 "Click this command to reload the plugin's cache."
                         );
                     }
@@ -193,7 +192,7 @@ public class CommandExecution implements CommandExecutor {
                             || Permissions.has(protocol.bukkit(), Permission.WAVE)) {
                         buildCommand(
                                 sender,
-                                ChatColor.RED, "/" + command + " moderation",
+                                ChatColor.RED, "/" + Register.command + " moderation",
                                 "Click this command to view a list of moderation commands."
                         );
                     }
@@ -206,13 +205,13 @@ public class CommandExecution implements CommandExecutor {
                     if (isPlayer && DetectionNotifications.hasPermission(protocol)) {
                         ClickableMessage.sendCommand(
                                 sender,
-                                ChatColor.RED + "/" + command + " notifications [ticks-frequency]",
+                                ChatColor.RED + "/" + Register.command + " notifications [ticks-frequency]",
                                 "This command can be used to receive chat messages whenever a player is suspected of using hack modules.", null);
                     }
                     if (isPlayer && info) {
                         ClickableMessage.sendCommand(
                                 sender,
-                                ChatColor.RED + "/" + command + " info [player]",
+                                ChatColor.RED + "/" + Register.command + " info [player]",
                                 "This command can be used to view useful information about a player.",
                                 null
                         );
@@ -222,7 +221,7 @@ public class CommandExecution implements CommandExecutor {
                         permission = true;
                         ClickableMessage.sendCommand(
                                 sender,
-                                ChatColor.RED + "/" + command + " bypass <player> <check> [seconds]",
+                                ChatColor.RED + "/" + Register.command + " bypass <player> <check> [seconds]",
                                 "This command can be used to cause a player to temporarily bypass a check and its detections.",
                                 null
                         );
@@ -232,7 +231,7 @@ public class CommandExecution implements CommandExecutor {
                         permission = true;
                         ClickableMessage.sendCommand(
                                 sender,
-                                ChatColor.RED + "/" + command + " warn <player> <reason>",
+                                ChatColor.RED + "/" + Register.command + " warn <player> <reason>",
                                 "This command can be used to individually warn a player about something important.",
                                 null
                         );
@@ -242,7 +241,7 @@ public class CommandExecution implements CommandExecutor {
                         permission = true;
                         ClickableMessage.sendCommand(
                                 sender,
-                                ChatColor.RED + "/" + command + " kick <player> <reason>",
+                                ChatColor.RED + "/" + Register.command + " kick <player> <reason>",
                                 "This command can be used to kick players from the server for a specific reason.",
                                 null
                         );
@@ -252,12 +251,12 @@ public class CommandExecution implements CommandExecutor {
                         permission = true;
                         ClickableMessage.sendCommand(
                                 sender,
-                                ChatColor.RED + "/" + command + " wave <add/remove/clear/run/list> [player] [command]",
+                                ChatColor.RED + "/" + Register.command + " wave <add/remove/clear/run/list> [player] [command]",
                                 "This command can be used to add a player to a list with a command representing their punishment. " +
                                         "This list can be executed manually by a player or automatically based on the plugin's configuration, " +
                                         "and cause added players to punished all at once and in order."
                                         + "\n\n"
-                                        + "Example: /" + command + " wave add playerName ban {player} You have been banned for hacking!",
+                                        + "Example: /" + Register.command + " wave add playerName ban {player} You have been banned for hacking!",
                                 null
                         );
                     }
@@ -266,7 +265,7 @@ public class CommandExecution implements CommandExecutor {
                         permission = true;
                         ClickableMessage.sendCommand(
                                 sender,
-                                ChatColor.RED + "/" + command + " proxy-command <command>",
+                                ChatColor.RED + "/" + Register.command + " proxy-command <command>",
                                 "This command can be used to transfer commands to the proxy/network of servers. (Example: BungeeCord)",
                                 null
                         );
@@ -280,10 +279,10 @@ public class CommandExecution implements CommandExecutor {
             case "conditions":
                 if (spartanMessage(sender, isPlayer, true)) {
                     if (!isPlayer || Permissions.has(protocol.bukkit(), Permission.CONDITION)) {
-                        sender.sendMessage(ChatColor.RED + "/" + command + " <player> if <condition> equals <result> do <command>");
-                        sender.sendMessage(ChatColor.RED + "/" + command + " <player> if <condition> contains <result> do <command>");
-                        sender.sendMessage(ChatColor.RED + "/" + command + " <player> if <number> is-less-than <result> do <command>");
-                        sender.sendMessage(ChatColor.RED + "/" + command + " <player> if <number> is-greater-than <result> do <command>");
+                        sender.sendMessage(ChatColor.RED + "/" + Register.command + " <player> if <condition> equals <result> do <command>");
+                        sender.sendMessage(ChatColor.RED + "/" + Register.command + " <player> if <condition> contains <result> do <command>");
+                        sender.sendMessage(ChatColor.RED + "/" + Register.command + " <player> if <number> is-less-than <result> do <command>");
+                        sender.sendMessage(ChatColor.RED + "/" + Register.command + " <player> if <number> is-greater-than <result> do <command>");
                     } else {
                         completeMessage(sender, "default");
                     }
@@ -305,7 +304,7 @@ public class CommandExecution implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         boolean isPlayer = sender instanceof Player;
 
-        if (label.equalsIgnoreCase(Register.plugin.getName()) && (isPlayer || sender instanceof ConsoleCommandSender)) {
+        if (label.equalsIgnoreCase(Register.command) && (isPlayer || sender instanceof ConsoleCommandSender)) {
             SpartanProtocol protocol = isPlayer ? SpartanBukkit.getProtocol((Player) sender) : null;
 
             if (args.length == 0) {

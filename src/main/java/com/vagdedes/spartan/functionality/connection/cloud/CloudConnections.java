@@ -21,7 +21,7 @@ public class CloudConnections {
             if (path.exists()
                     && path.isDirectory()) {
                 File[] files = path.listFiles();
-                String pluginName = Register.plugin.getName();
+                String pluginName = Register.getPluginName();
                 String fileType = ".jar";
 
                 if (files != null

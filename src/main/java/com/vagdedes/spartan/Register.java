@@ -24,12 +24,16 @@ import java.util.Set;
 public class Register extends JavaPlugin {
 
     public static Plugin plugin = null;
+    private static String pluginName = "";
+    public static final String command = "spartan";
 
     public static final PluginManager manager = Bukkit.getPluginManager();
     private static final Set<Class<?>> listeners = new LinkedHashSet<>(2);
 
     public void onEnable() {
         plugin = this;
+        pluginName = "Sporton";
+        //pluginName = plugin.getName();
         plugin.setNaggable(false);
         JarVerification.run();
         Config.create();
@@ -82,8 +86,8 @@ public class Register extends JavaPlugin {
         ProxyUtils.register();
 
         // Commands
-        this.getCommand("spartan").setExecutor(new CommandExecution());
-        this.getCommand("spartan").setTabCompleter(new CommandTab());
+        this.getCommand(command).setExecutor(new CommandExecution());
+        this.getCommand(command).setTabCompleter(new CommandTab());
     }
 
     public void onDisable() {
@@ -117,6 +121,10 @@ public class Register extends JavaPlugin {
 
     public static Class<?>[] getListeners() {
         return listeners.toArray(new Class[0]);
+    }
+
+    public static String getPluginName() {
+        return pluginName;
     }
 
 }

@@ -25,7 +25,7 @@ public class Event_Join implements Listener {
             n.sendMessage("");
             AwarenessNotifications.forcefullySend(
                     protocol,
-                    "\nThis server is protected by the " + Register.plugin.getName() + " AntiCheat",
+                    "\nThis server is protected by the " + Register.getPluginName() + " AntiCheat",
                     false
             );
             n.sendMessage("");

@@ -1,6 +1,5 @@
 package com.vagdedes.spartan.abstraction.protocol;
 
-import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.Compatibility;
@@ -117,7 +116,7 @@ public class SpartanPlayer {
     }
 
     public boolean debug(boolean function, boolean broadcast, boolean cutDecimals, Object... message) {
-        if (function && Bukkit.getMotd().contains(Register.plugin.getName())) {
+        if (function) {
             if (this.protocol.bukkit().isWhitelisted()) {
                 String string = "§f" + this.protocol.bukkit().getName() + " ";
 

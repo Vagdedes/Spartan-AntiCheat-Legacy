@@ -30,7 +30,7 @@ import java.util.UUID;
 
 public class MainMenu extends InventoryMenu {
 
-    private static final String name = Register.plugin.getName() + " AntiCheat (Page ";
+    private static final String name = Register.getPluginName() + " AntiCheat (Page ";
 
     public MainMenu() {
         super(name, 54, new Permission[]{Permission.MANAGE, Permission.INFO});

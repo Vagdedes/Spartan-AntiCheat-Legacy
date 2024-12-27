@@ -243,7 +243,7 @@ public class Enums {
         private final String key;
 
         Permission() {
-            key = Register.plugin.getName().toLowerCase() + "." + this.name().toLowerCase();
+            key = Register.command + "." + this.name().toLowerCase();
         }
 
         public String getKey() {

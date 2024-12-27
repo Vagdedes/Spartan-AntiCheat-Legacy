@@ -36,10 +36,10 @@ public class SpartanEdition {
             versionNotificationMessage = "\n§cHey, just a heads up!"
                     + " You have " + type + " players which cannot be checked by the anti-cheat due to missing " + type + " detections.",
             noVersionNotificationMessage = "\n§cHey, just a heads up!"
-                    + " Your owned editions of " + Register.plugin.getName() + " could not be verified."
+                    + " Your owned editions of " + Register.getPluginName() + " could not be verified."
                     + " Visit §n" + DiscordMemberCount.discordURL + "§r§c §lfix this§r§c.",
             hasAccountNotificationMessage = "\n§cHey, just a heads up!"
-                    + " You do not seem to have an account paired with your " + Register.plugin.getName() + " AntiCheat license."
+                    + " You do not seem to have an account paired with your " + Register.getPluginName() + " AntiCheat license."
                     + " Visit §n" + DiscordMemberCount.discordURL + "§r§c §lfix this§r§c.";
     private static boolean
             hasAccount = true,
@@ -113,7 +113,7 @@ public class SpartanEdition {
                 color = false;
             }
         }
-        return Register.plugin.getName() + (currentVersion && alternativeVersion ? " One" : "") + ": §a"
+        return Register.getPluginName() + (currentVersion && alternativeVersion ? " One" : "") + ": §a"
                 + (currentVersion ? "§a" : "§c") + currentType
                 + "§8/"
                 + (alternativeVersion ? "§a" : "§c") + alternativeType

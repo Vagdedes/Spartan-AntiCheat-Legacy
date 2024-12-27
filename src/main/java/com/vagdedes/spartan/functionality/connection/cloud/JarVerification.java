@@ -36,7 +36,7 @@ public class JarVerification {
             SpartanEdition.refresh();
 
             if (!isValid()) {
-                String message = "This version of " + Register.plugin.getName() + " does not have a license."
+                String message = "This version of " + Register.getPluginName() + " does not have a license."
                         + " If this download is pirated, please consider purchasing the plugin"
                         + " when your server starts making enough money. We also sell on BuiltByBit"
                         + " which supports many payment methods for all countries including yours.";

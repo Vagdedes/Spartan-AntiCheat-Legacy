@@ -40,7 +40,7 @@ public abstract class ProbabilityDetection extends CheckDetection {
                     count = 0;
 
             for (PlayerProfile profile : playerProfiles) {
-                long individualCount = profile.getRunner(this.hackType).getDetection(this.name).getDataCount(dataType);
+                int individualCount = profile.getRunner(this.hackType).getDetection(this.name).getDataCount(dataType);
 
                 if (individualCount > 0) {
                     count += individualCount;
