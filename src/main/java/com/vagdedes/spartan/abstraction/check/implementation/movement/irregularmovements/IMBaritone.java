@@ -29,7 +29,7 @@ public class IMBaritone extends ProbabilityDetection {
             float jiffDeltaYaw = (float) RayUtils.scaleVal(Math.abs(deltaYaw - oldDeltaMap.x), 3);
             float jiffDeltaPitch = (float) RayUtils.scaleVal(Math.abs(deltaPitch - oldDeltaMap.y), 3);
             {
-                if (this.protocol.bukkit().getVehicle() != null) return;
+                if (this.protocol.spartan.getVehicle() != null) return;
                 this.yawMoved += (Math.abs(l.getPitch()) > 89) ? 0 : (deltaPitch == 0.0F) ? deltaYaw : -yawMoved;
                 this.yawMoved = (float) RayUtils.scaleVal(yawMoved, 2);
                 if (this.yawMoved > 45 && Math.abs(yawMoved % 360.0 - 1.0) < 1e-9) {

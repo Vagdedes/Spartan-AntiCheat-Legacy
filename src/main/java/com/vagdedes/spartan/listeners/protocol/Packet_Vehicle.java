@@ -32,7 +32,9 @@ public class Packet_Vehicle extends PacketAdapter {
 
     @Override
     public void onPacketReceiving(PacketEvent event) {
-        SpartanProtocol protocol = SpartanBukkit.getProtocol(event.getPlayer());
+        Player player = event.getPlayer();
+        SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
+
         if (protocol.spartan.isBedrockPlayer()) {
             return;
         }
@@ -61,11 +63,10 @@ public class Packet_Vehicle extends PacketAdapter {
             }
         }
         if (event.getPacket().getType().equals(PacketType.Play.Client.STEER_VEHICLE)) {
-            Player player = event.getPlayer();
-            if (player.getVehicle() != null) {
-                Entity vehicle = player.getVehicle();
+            if (protocol.spartan.getVehicle() != null) {
+                Entity vehicle = protocol.spartan.getVehicle();
                 Location location = vehicle.getLocation();
-                SpartanBukkit.getProtocol(player).setLocation(location);
+                protocol.setLocation(location);
                 Event_Movement.event(new PlayerMoveEvent(player, protocol.getFromLocation(), protocol.getLocation()), true);
                 //protocol.profile().getRunner(Enums.HackType.IrregularMovements).run(event.isCancelled());
             }

@@ -16,7 +16,6 @@ import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
-import org.bukkit.event.vehicle.VehicleExitEvent;
 
 public class IrregularMovements extends CheckRunner {
 
