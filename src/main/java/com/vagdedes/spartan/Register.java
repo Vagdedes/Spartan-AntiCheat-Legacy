@@ -82,9 +82,8 @@ public class Register extends JavaPlugin {
         ProxyUtils.register();
 
         // Commands
-        String command = plugin.getName().toLowerCase();
-        getCommand(command).setExecutor(new CommandExecution());
-        getCommand(command).setTabCompleter(new CommandTab());
+        this.getCommand("spartan").setExecutor(new CommandExecution());
+        this.getCommand("spartan").setTabCompleter(new CommandTab());
     }
 
     public void onDisable() {

@@ -12,7 +12,6 @@ import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.functionality.notifications.clickable.ClickableMessage;
 import com.vagdedes.spartan.functionality.server.Config;
-import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
@@ -37,7 +36,7 @@ public class PlayerInfo extends InventoryMenu {
             new OverflowMap<>(new ConcurrentHashMap<>(), 512)
     );
     private static final String
-            menu = ("§0Player Info: ").substring(MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? 2 : 0),
+            menu = ("Player Info: "),
             documentationURL = "https://github.com/Vagdedes/Spartan-AntiCheat/blob/main/src/documentation/player_info_menu.md";
     private static final int[] slots = new int[]{
             20, 21, 22, 23, 24

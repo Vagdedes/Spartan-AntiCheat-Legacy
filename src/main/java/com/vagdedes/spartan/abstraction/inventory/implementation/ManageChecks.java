@@ -30,7 +30,7 @@ import java.util.List;
 public class ManageChecks extends InventoryMenu {
 
     public ManageChecks() {
-        super("§0Manage Checks".substring(MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? 2 : 0), 54, Permission.MANAGE);
+        super("Manage Checks", 54, Permission.MANAGE);
     }
 
     @Override

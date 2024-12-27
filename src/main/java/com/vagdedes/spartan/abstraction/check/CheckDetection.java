@@ -111,6 +111,10 @@ public abstract class CheckDetection extends CheckProcess {
         return defaultData();
     }
 
+    protected int getDataCount(Check.DataType dataType) {
+        return 0;
+    }
+
     Long getFirstTime(Check.DataType dataType) {
         return null;
     }

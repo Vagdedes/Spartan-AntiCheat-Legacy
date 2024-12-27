@@ -20,7 +20,7 @@ public class SpartanEdition {
             || IDs.resource.equals("25638")
             || IDs.resource.equals("11196")
             || IDs.resource.equals("350")
-            || Bukkit.getMotd().contains(Register.plugin.getName())
+            || Bukkit.getMotd().contains("Spartan")
             ? Check.DataType.JAVA
             : Check.DataType.BEDROCK,
             alternativeType = currentType == Check.DataType.JAVA

@@ -27,27 +27,28 @@ public abstract class ProbabilityDetection extends CheckDetection {
 
     @Override
     protected final boolean hasData(PlayerProfile profile, Check.DataType dataType) {
-        if (this.data.containsKey(dataType)) {
-            return true;
-        }
-        long onlineTime = profile.getContinuity().getOnlineTime(),
-                threshold = 1800_000L; // 30 minutes
-        return (System.currentTimeMillis() - this.executor.creation) >= threshold
-                && onlineTime >= threshold; // 30 minutes
+        return this.data.containsKey(dataType);
     }
 
     @Override
     protected final boolean hasSufficientData(Check.DataType dataType) {
         List<PlayerProfile> playerProfiles = ResearchEngine.getPlayerProfiles();
+        int total = playerProfiles.size();
 
-        if (playerProfiles.size() >= PlayerEvidence.factorRequirement) {
-            int count = 0;
+        if (total >= PlayerEvidence.factorRequirement) {
+            int pass = 0,
+                    count = 0;
 
             for (PlayerProfile profile : playerProfiles) {
-                if (profile.getRunner(this.hackType).getDetection(this.name).hasData(profile, dataType)) {
-                    count++;
+                long individualCount = profile.getRunner(this.hackType).getDetection(this.name).getDataCount(dataType);
 
-                    if (count == PlayerEvidence.factorRequirement) {
+                if (individualCount > 0) {
+                    count += individualCount;
+                    pass++;
+
+                    if (pass == PlayerEvidence.factorRequirement) {
+                        return true;
+                    } else if ((count / (double) total) > PlayerEvidence.factorRequirement) {
                         return true;
                     }
                 }
@@ -139,6 +140,12 @@ public abstract class ProbabilityDetection extends CheckDetection {
                 return result;
             }
         }
+    }
+
+    @Override
+    protected final int getDataCount(Check.DataType dataType) {
+        Collection<Long> data = this.data.get(dataType);
+        return data != null ? data.size() : 0;
     }
 
     @Override
