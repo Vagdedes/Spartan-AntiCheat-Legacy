@@ -28,7 +28,7 @@ import static java.lang.Math.PI;
 
 public class IMSimulationSpeed extends ProbabilityDetection {
 
-    private double vl = 0;
+    private double vl = 0, vlCount = 0;
 
     public int ground = 0, air = 0, action = 0, vhact = 0;
     private boolean velo = false, sprintStatus = true;
@@ -218,8 +218,9 @@ public class IMSimulationSpeed extends ProbabilityDetection {
                     pr = Math.sqrt(predictX * predictX + predictZ * predictZ);
                     d = getDeviantity(pr, speed);
                     if (!(dx == predictX && dz == predictZ)) {
+                        this.vlCount += 1;
                         this.vl += (d * 1.5) + (air == 1 ? 0.5 : (d > 0.04) ? 0.12 : 0.06);
-                        if (this.vl > 1) {
+                        if (this.vl > 1 || (this.vl > 0.4 && this.vlCount > 10)) {
                             this.cancel("type: simulation[accel], diff: " + d);
                             this.vl -= 0.1;
                             this.ACCELERATION_MOTION /= 2;
@@ -232,9 +233,10 @@ public class IMSimulationSpeed extends ProbabilityDetection {
                 this.removePistonTick = false;
             }
             if (this.vl > 0) {
-                this.vl -= 0.03;
+                this.vl -= 0.002;
                 this.vl /= 1.1;
             }
+            if (this.vlCount > 0) this.vlCount -= 0.3;
             if (this.vhact > 0) this.vhact--;
             this.lastDx = dx;
             this.lastDz = dz;
