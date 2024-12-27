@@ -218,7 +218,7 @@ public class IMSimulationSpeed extends ProbabilityDetection {
                     pr = Math.sqrt(predictX * predictX + predictZ * predictZ);
                     d = getDeviantity(pr, speed);
                     if (!(dx == predictX && dz == predictZ)) {
-                        this.vlCount += 1;
+                        this.vlCount += (air == 1) ? 4 : 1;
                         this.vl += (d * 1.5) + (air == 1 ? 0.5 : (d > 0.04) ? 0.12 : 0.06);
                         if (this.vl > 1 || (this.vl > 0.4 && this.vlCount > 10)) {
                             this.cancel("type: simulation[accel], diff: " + d);
