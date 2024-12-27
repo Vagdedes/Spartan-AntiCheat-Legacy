@@ -39,7 +39,14 @@ public class Packet_Vehicle extends PacketAdapter {
         if (ProtocolTools.hasPosition(event.getPacket().getType()) && protocol.entityHandle) {
             protocol.entityHandle = false;
         }
-        if (protocol.spartan.getNearbyEntities(4).size() > 1) {
+        boolean nearbyEntities = false;
+        for (Entity entity : protocol.spartan.getNearbyEntities(4.5)) {
+            if (entity.getUniqueId() != protocol.getUUID()) {
+                nearbyEntities = true;
+                break;
+            }
+        }
+        if (nearbyEntities) {
             if (ProtocolTools.hasPosition(event.getPacket().getType()) && protocol.entityHandle) {
                 protocol.timerBalancer.addBalance(50);
                 VehicleExitEvent bukkitEvent = new VehicleExitEvent(null, protocol.bukkit());

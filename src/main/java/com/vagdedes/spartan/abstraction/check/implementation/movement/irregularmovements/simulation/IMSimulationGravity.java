@@ -34,7 +34,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
             trident = false, cringeBlockClimb = false, allowLowJump = false,
             allowMinorGravityChange = false, allowLowMinorAccel = false;
     private int slimePunch = 0, slimeTicks = 0, pistonTicks = 0, sub = 0;
-    private double vl = 0.0;
+    private double vl = 0.0, vlCount = 0.0;
     private int semi = 0;
     private double fallDistance = 0.0;
     private double lastGroundY = 0;
@@ -395,7 +395,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
                             != null) ? 0.09 : 0.009)) {
                 if (this.protocol.spartan.trackers.has(
                         PlayerTrackers.TrackerType.VEHICLE, "vh_tp")
-                        && devTotal < 1.0) {
+                        && devTotal < 1.9) {
                     this.setPredict(0.0);
                 } else {
                     if (allowLowJump && air == 1
@@ -408,12 +408,15 @@ public class IMSimulationGravity extends ProbabilityDetection {
                         return;
                     }
                     this.vl += devTotal;
+                    this.vlCount += 1;
                     if (this.vl > ((this.protocol.spartan.getVehicle() != null) ? 0.6 : 0.05)) {
                         StringBuilder alertBuilder = new StringBuilder(String.valueOf(RayUtils.scaleVal(devTotal, 6.0)));
                         if (devTotal < 1.0) {
                             alertBuilder.deleteCharAt(0);
                         }
-                        this.cancel("type: simulation[gravity], y: " + alertBuilder);
+                        if (this.vlCount > ((this.air == 1) ? 0 : (this.vl > 0.3) ? 0 : (this.vl > 0.16) ? 1 : 3)) {
+                            this.cancel("type: simulation[gravity], y: " + alertBuilder);
+                        }
                         //this.protocol.bukkit().sendMessage("hacks: " + devTotal);
                             /*
                             Bukkit.getScheduler().runTask(Register.plugin, () -> {
@@ -423,7 +426,10 @@ public class IMSimulationGravity extends ProbabilityDetection {
                     }
 
                     this.setPredict(motion);
-                    this.vl /= 1.14;
+                    if (this.vl > 0) this.vl -= 0.004;
+                    if (this.vlCount > 0) this.vlCount -= 0.3;
+                    this.vlCount /= 1.08;
+                    this.vl /= (this.vlCount < 4) ? 1.17 : 1.04;
                 }
             } else {
                 ++this.topReset;
@@ -464,6 +470,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
         this.air = 0;
         this.ground = 0;
         this.teleportExcept = 0.35;
+        this.vl /= 1.5;
         this.setPredict(0.0);
     }
 

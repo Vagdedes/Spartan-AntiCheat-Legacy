@@ -49,6 +49,7 @@ public class HitReach extends CheckRunner {
     protected void handleInternal(boolean cancelled, Object object) {
         PlayerAttackEvent event = (PlayerAttackEvent) object;
         if (!(event.target instanceof Player)) return;
+        if (event.target.getVehicle() != null || this.protocol.spartan.getVehicle() != null) return;
         if (this.protocol.packetsEnabled()) {
             if (CombatUtils.canCheck(this.protocol, SpartanBukkit.getProtocol((Player) event.target).bukkit())
                             && !this.protocol.bukkit().getGameMode().equals(GameMode.CREATIVE)) {

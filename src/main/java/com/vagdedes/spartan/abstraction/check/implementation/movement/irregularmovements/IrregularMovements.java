@@ -15,6 +15,8 @@ import com.vagdedes.spartan.utils.minecraft.world.GroundUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerVelocityEvent;
+import org.bukkit.event.vehicle.VehicleEnterEvent;
+import org.bukkit.event.vehicle.VehicleExitEvent;
 
 public class IrregularMovements extends CheckRunner {
 
@@ -99,6 +101,8 @@ public class IrregularMovements extends CheckRunner {
         } else if (object instanceof PlayerTickEvent) {
             PlayerTickEvent e = (PlayerTickEvent) object;
             gravityPackets.groundSp(e.onGround);
+        } else if (object instanceof VehicleEnterEvent) {
+            speedPackets.vhAct();
         } else {
             gravityPackets.teleport();
             speedPackets.teleport();

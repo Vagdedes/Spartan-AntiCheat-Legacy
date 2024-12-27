@@ -1,5 +1,10 @@
 [#] Fixed speed ground/fastclimb bypasses
-[#] Fixed some speed falses
+[#] Fixed many speed/gravity falses
+[#] Fixed falses with collision
+[#] Fixed falses with vehicles
+[#] Fixed falses with minecarts
+[#] Fixed falses with ender pearls
+[#] Fixed a vehicle related false with HitReach
 [#] Fixed a vehicle related console error
 [#] Accelerated the learning time of the statistics by introducing data assumptions
 [#] Detections will still collect data regardless of them or the check being disabled.

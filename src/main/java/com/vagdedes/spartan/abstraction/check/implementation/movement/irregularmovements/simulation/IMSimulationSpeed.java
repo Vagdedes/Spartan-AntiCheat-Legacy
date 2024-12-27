@@ -30,7 +30,7 @@ public class IMSimulationSpeed extends ProbabilityDetection {
 
     private double vl = 0;
 
-    public int ground = 0, air = 0, action = 0;
+    public int ground = 0, air = 0, action = 0, vhact = 0;
     private boolean velo = false, sprintStatus = true;
     private static final double ACCELERATION_SPRINT = 0.026;
     private static final double ACCELERATION_BASIC = 0.02;
@@ -69,6 +69,7 @@ public class IMSimulationSpeed extends ProbabilityDetection {
                         yawLine, moveLine, 46.0);
         boolean isOnAngle80 = RayUtils.validRayLines(
                         yawLine, moveLine, 80.0);
+        if (!this.protocol.useItemPacket) this.action = 0;
         double atr = Attributes.getAmount(this.protocol, Attributes.GENERIC_MOVEMENT_SPEED) * 1.2;
         if (to.getX() != from.getX() || to.getY() != from.getY() || to.getZ() != from.getZ()) {
             {
@@ -127,7 +128,13 @@ public class IMSimulationSpeed extends ProbabilityDetection {
                     double accel = ((this.action > 2)
                                     ? ACCELERATION_ACTION : (this.action > 1) ?
                                     ACCELERATION_BASIC : ACCELERATION_SPRINT) * this.multiplex();
-                    boolean nearbyEntities = this.protocol.spartan.getNearbyEntities(2.5).size() > 1;
+                    boolean nearbyEntities = false;
+                    for (Entity entity : this.protocol.spartan.getNearbyEntities(2.4)) {
+                        if (entity.getUniqueId() != this.protocol.getUUID()) {
+                            nearbyEntities = true;
+                            break;
+                        }
+                    }
                     boolean point = this.isPointWall(to)
                                     || this.isPointWall(from)
                                     || (nearbyEntities)
@@ -135,7 +142,7 @@ public class IMSimulationSpeed extends ProbabilityDetection {
                                     to.clone().add(
                                                     -Math.sin(moveAngle) * 0.3, 0,
                                                     Math.cos(moveAngle) * 0.3));
-                    if (point && speed < lastSpeed * 1.2 + ((nearbyEntities) ? accel + 0.2 : 0.03)) {
+                    if (point && speed < lastSpeed * 1.2 + (nearbyEntities ? accel + 0.2 : 0.03)) {
                         if (getDeviantity(dx, pX) > accel) pX = dx;
                         if (getDeviantity(dz, pZ) > accel) pZ = dz;
                     }
@@ -186,8 +193,9 @@ public class IMSimulationSpeed extends ProbabilityDetection {
                         this.setPredict(dx, dz);
                         this.removePistonTick = true;
                     }
-                    if (d >= 0.01 && d <= 1.0 && this.protocol.spartan.trackers.has(
-                                    PlayerTrackers.TrackerType.VEHICLE, "vh_tp")) {
+                    if (d >= 0.01 && d <= 4.3
+                                    && (this.protocol.spartan.trackers.has(PlayerTrackers.TrackerType.VEHICLE, "vh_tp")
+                                    || this.vhact > 0)) {
                         this.setPredict(dx, dz);
                     }
                     if (d > 0.005 && this.protocol.spartan.getVehicle() != null) {
@@ -210,8 +218,8 @@ public class IMSimulationSpeed extends ProbabilityDetection {
                     pr = Math.sqrt(predictX * predictX + predictZ * predictZ);
                     d = getDeviantity(pr, speed);
                     if (!(dx == predictX && dz == predictZ)) {
-                        this.vl += (d * 1.5) + (air == 1 ? 0.3 : (d > 0.04) ? 0.12 : 0.06);
-                        if (this.vl > 0.45) {
+                        this.vl += (d * 1.5) + (air == 1 ? 0.5 : (d > 0.04) ? 0.12 : 0.06);
+                        if (this.vl > 1) {
                             this.cancel("type: simulation[accel], diff: " + d);
                             this.vl -= 0.1;
                             this.ACCELERATION_MOTION /= 2;
@@ -223,7 +231,11 @@ public class IMSimulationSpeed extends ProbabilityDetection {
                 this.protocol.getComponentXZ().pistonTick = false;
                 this.removePistonTick = false;
             }
-            this.vl /= 1.15;
+            if (this.vl > 0) {
+                this.vl -= 0.03;
+                this.vl /= 1.1;
+            }
+            if (this.vhact > 0) this.vhact--;
             this.lastDx = dx;
             this.lastDz = dz;
             this.lastSpeed = speed;
@@ -316,6 +328,10 @@ public class IMSimulationSpeed extends ProbabilityDetection {
             return;
         }
         this.tridentBoostApply = 10;
+    }
+
+    public void vhAct() {
+        this.vhact = 2;
     }
 
     private static double abs(double v) {
