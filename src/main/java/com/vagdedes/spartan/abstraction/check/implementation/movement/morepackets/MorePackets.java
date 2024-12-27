@@ -113,6 +113,7 @@ public class MorePackets extends CheckRunner {
     @Override
     protected boolean canRun() {
         return !this.protocol.spartan.isBedrockPlayer()
+                && !this.protocol.spartan.isAFK()
                 && this.teleported < System.currentTimeMillis()
                 && MovementProcessing.canCheck(
                 this.protocol,
