@@ -16,10 +16,7 @@ import com.vagdedes.spartan.utils.minecraft.entity.PotionEffectUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.entity.AbstractHorse;
-import org.bukkit.entity.Boat;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Horse;
+import org.bukkit.entity.*;
 import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.potion.PotionEffectType;
 
@@ -340,7 +337,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
                                 ((isJumpingEntity || (boat && v.isOnGround())) ? 1.0 : 0.3)) {
                     this.setPredict(motion);
                 } else if (!this.isOnSolidGround(v.getLocation())
-                        && motion < (this.predictY() / 1.6)) {
+                        && motion < ((v instanceof Minecart) ? 0.16 : (this.predictY() / 1.6))) {
                     this.setPredict(motion);
                 }
             }

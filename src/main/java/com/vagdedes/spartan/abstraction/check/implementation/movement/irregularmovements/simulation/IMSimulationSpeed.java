@@ -19,10 +19,7 @@ import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.AbstractHorse;
-import org.bukkit.entity.Boat;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Horse;
+import org.bukkit.entity.*;
 import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
@@ -203,6 +200,8 @@ public class IMSimulationSpeed extends ProbabilityDetection {
                         } else if (d < 0.5 && v instanceof Boat) {
                             this.setPredict(dx, dz);
                         } else if (d < (isOnGround ? 0.63 : 0.2) * this.multiplex() && isJumpingEntity) {
+                            this.setPredict(dx, dz);
+                        } else if (d < 0.6 && v instanceof Minecart) {
                             this.setPredict(dx, dz);
                         } else if (d < 0.3 * this.multiplex()) {
                             this.setPredict(dx, dz);
