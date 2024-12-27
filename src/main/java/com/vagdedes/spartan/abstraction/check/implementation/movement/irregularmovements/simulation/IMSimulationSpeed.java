@@ -293,7 +293,7 @@ public class IMSimulationSpeed extends ProbabilityDetection {
                 if (speed < pr * 2 + allowedDev) {
                     this.predictX = move.x;
                     this.predictZ = move.y;
-                    this.ACCELERATION_VELOCITY = (pr + allowedDev) * 1.3;
+                    this.ACCELERATION_VELOCITY = (pr + allowedDev) * 1.6;
                 }
                 claimed = velo;
                 this.velo = true;
