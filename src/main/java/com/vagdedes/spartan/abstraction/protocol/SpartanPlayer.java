@@ -88,7 +88,7 @@ public class SpartanPlayer {
     private void checkForAFK() {
         long lastInteraction = System.currentTimeMillis() - this.lastInteraction;
 
-        if (lastInteraction >= 30_000L) {
+        if (lastInteraction >= 20_000L) {
             if (!afk) {
                 this.protocol.profile().getContinuity().setActiveTime(
                         System.currentTimeMillis(),
