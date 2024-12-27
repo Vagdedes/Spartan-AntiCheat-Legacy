@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.abstraction.inventory.implementation;
 
 import com.vagdedes.filegui.api.FileGUIAPI;
+import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.inventory.InventoryMenu;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
@@ -29,7 +30,7 @@ import java.util.UUID;
 
 public class MainMenu extends InventoryMenu {
 
-    private static final String name = "§0Spartan AntiCheat (Page ".substring(MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? 2 : 0);
+    private static final String name = "§0" + Register.plugin.getName() + " AntiCheat (Page ".substring(MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? 2 : 0);
 
     public MainMenu() {
         super(name, 54, new Permission[]{Permission.MANAGE, Permission.INFO});

@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.functionality.npc;
 
+import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
@@ -44,7 +45,7 @@ public class SpartanNPC {
         armorStand.setGravity(false);
         armorStand.setSmall(false);
         armorStand.setVisible(false);
-        armorStand.setCustomName("§2Spartan §cAnti§4Cheat");
+        armorStand.setCustomName("§2" + Register.plugin.getName() + " §cAnti§4Cheat");
         armorStand.setCustomNameVisible(true);
         armorStand.setArms(true);
 

@@ -47,7 +47,7 @@ public class CommandExecution implements CommandExecutor {
                                          boolean documentation) {
         if (!isPlayer || Permissions.has((Player) sender)) {
             sender.sendMessage("");
-            String command = "§2Spartan AntiCheat";
+            String command = "§2" + Register.plugin.getName() + " AntiCheat";
             String placeholder = "Click to view our Patreon offer/s.";
             command += "\n§8[ §7Detections Available§8: "
                     + (SpartanEdition.hasDetectionsPurchased(Check.DataType.JAVA) ? "§a" : "§c") + Check.DataType.JAVA

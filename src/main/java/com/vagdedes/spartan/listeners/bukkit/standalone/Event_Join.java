@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.listeners.bukkit.standalone;
 
+import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
@@ -24,7 +25,7 @@ public class Event_Join implements Listener {
             n.sendMessage("");
             AwarenessNotifications.forcefullySend(
                     protocol,
-                    "\nThis server is protected by the Spartan AntiCheat",
+                    "\nThis server is protected by the " + Register.plugin.getName() + " AntiCheat",
                     false
             );
             n.sendMessage("");

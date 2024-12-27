@@ -31,8 +31,7 @@ public class CloudConnections {
                             String name = file.getName();
 
                             if (name.startsWith(pluginName) && name.endsWith(fileType)) {
-                                name = name.replace(fileType, "")
-                                        .replace("Spartan", "");
+                                name = name.replace(fileType, "").replace(pluginName, "");
 
                                 if (!name.isEmpty()) {
                                     String[] reply = RequestUtils.get(StringUtils.decodeBase64(CloudBase.accountWebsite) + "?token=" + name);
