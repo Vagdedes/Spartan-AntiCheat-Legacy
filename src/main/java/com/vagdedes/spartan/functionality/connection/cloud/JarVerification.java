@@ -54,7 +54,6 @@ public class JarVerification {
 
     private static boolean isValid() {
         boolean b = valid
-                && Register.plugin.getName().equalsIgnoreCase("Spartan")
                 && Register.plugin.getDescription().getAuthors().toString().startsWith("[Evangelos Dedes @Vagdedes");
 
         try {
