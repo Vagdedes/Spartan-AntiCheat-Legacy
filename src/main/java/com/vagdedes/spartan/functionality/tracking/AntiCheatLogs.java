@@ -85,10 +85,7 @@ public class AntiCheatLogs {
                 if (System.currentTimeMillis() - lastSave >= 1_000L) {
                     saved = true;
                     File file = todayFile;
-
-                    SpartanBukkit.dataThread.executeIfSyncElseHere(() -> {
-                        save(file);
-                    });
+                    SpartanBukkit.dataThread.executeIfSyncElseHere(() -> save(file));
                 }
                 File file = getFile();
 
