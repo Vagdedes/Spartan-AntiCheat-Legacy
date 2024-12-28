@@ -43,7 +43,7 @@ public class PlayerStateLists {
         item.setItemMeta(meta);
         inventory.setItem(slot, item);
 
-        SpartanBukkit.dataThread.executeWithPriority(() -> {
+        SpartanBukkit.headThread.executeWithPriority(() -> {
             ItemStack itemNew = profile.getSkull();
             ItemMeta metaNew = itemNew.getItemMeta();
             metaNew.setDisplayName(meta.getDisplayName());

@@ -144,7 +144,7 @@ public class Wave {
                     }
                 }
 
-                SpartanBukkit.dataThread.executeIfFreeElseHere(() -> {
+                SpartanBukkit.waveThread.executeIfFreeElseHere(() -> {
                     for (UUID uuid : uuids) {
                         try {
                             String command = getCommand(uuid);

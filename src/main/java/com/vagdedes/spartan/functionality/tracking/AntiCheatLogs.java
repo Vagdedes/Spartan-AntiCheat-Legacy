@@ -3,7 +3,6 @@ package com.vagdedes.spartan.functionality.tracking;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.Config;
-import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -48,22 +47,20 @@ public class AntiCheatLogs {
         }
         if (Config.settings.getBoolean("Logs.log_file")) {
             if (store && fileConfiguration != null) {
-                SpartanBukkit.dataThread.executeIfSyncElseHere(() -> {
-                    fileConfiguration.set(
-                            AntiCheatLogs.getDate(AntiCheatLogs.dateFormat, time),
-                            information
-                    );
-                    try {
-                        fileConfiguration.save(todayFile);
-                    } catch (Exception ignored) {
-                    }
-                    File file = getFile();
+                fileConfiguration.set(
+                        AntiCheatLogs.getDate(AntiCheatLogs.dateFormat, time),
+                        information
+                );
+                try {
+                    fileConfiguration.save(todayFile);
+                } catch (Exception ignored) {
+                }
+                File file = getFile();
 
-                    if (!file.getName().equals(todayFile.getName())) {
-                        AntiCheatLogs.todayFile = file;
-                        fileConfiguration = YamlConfiguration.loadConfiguration(file);
-                    }
-                });
+                if (!file.getName().equals(todayFile.getName())) {
+                    AntiCheatLogs.todayFile = file;
+                    fileConfiguration = YamlConfiguration.loadConfiguration(file);
+                }
             }
         }
         if (sql) {

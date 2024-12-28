@@ -4,6 +4,7 @@ import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
+import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import com.vagdedes.spartan.utils.minecraft.inventory.EnchantmentUtils;
 import com.vagdedes.spartan.utils.minecraft.inventory.InventoryUtils;
@@ -158,9 +159,11 @@ public class SpartanNPC {
     }
 
     void updateHead() {
-        armorStand.getEquipment().setHelmet(
-                InventoryUtils.getSkull(offlinePlayer, backupName, true)
-        );
+        SpartanBukkit.headThread.executeWithPriority(() -> {
+            armorStand.getEquipment().setHelmet(
+                    InventoryUtils.getSkull(offlinePlayer, backupName, true)
+            );
+        });
     }
 
     void remove() {
