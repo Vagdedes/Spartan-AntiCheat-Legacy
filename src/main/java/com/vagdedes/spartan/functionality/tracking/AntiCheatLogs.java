@@ -3,6 +3,7 @@ package com.vagdedes.spartan.functionality.tracking;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.Config;
+import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -21,7 +22,7 @@ public class AntiCheatLogs {
             dateFormat = "yyyy/MM/dd HH:mm:ss:SSSXXX",
             folderPath = Register.plugin.getDataFolder() + "/logs",
             playerIdentifier = "Player:";
-    private static long lastSave = System.currentTimeMillis();
+    private static long lastSave = 0L;
 
     private static File todayFile = getFile();
     private static YamlConfiguration fileConfiguration = YamlConfiguration.loadConfiguration(todayFile);
@@ -40,7 +41,21 @@ public class AntiCheatLogs {
         );
     }
 
+    private static void save(File file) {
+        try {
+            fileConfiguration.save(file);
+        } catch (Exception ignored) {
+        }
+    }
+
     // Separator
+
+    public static void shutdown() {
+        if (Config.settings.getBoolean("Logs.log_file")
+                && fileConfiguration != null) {
+            save(todayFile);
+        }
+    }
 
     public static void rawLogInfo(long time, String information, boolean console, boolean store, boolean sql) {
         if (console && Config.settings.getBoolean("Logs.log_console")) {
@@ -53,23 +68,21 @@ public class AntiCheatLogs {
                         AntiCheatLogs.getDate(AntiCheatLogs.dateFormat, time),
                         information
                 );
-                if (System.currentTimeMillis() - lastSave >= 1_000L) {
+                if (System.currentTimeMillis() - lastSave >= 5_000L) {
                     saved = true;
                     lastSave = System.currentTimeMillis();
+                    File file = todayFile;
 
-                    try {
-                        fileConfiguration.save(todayFile);
-                    } catch (Exception ignored) {
-                    }
+                    SpartanBukkit.dataThread.executeIfSyncElseHere(() -> {
+                        lastSave = System.currentTimeMillis();
+                        save(file);
+                    });
                 }
                 File file = getFile();
 
                 if (!file.getName().equals(todayFile.getName())) {
                     if (!saved) {
-                        try {
-                            fileConfiguration.save(todayFile);
-                        } catch (Exception ignored) {
-                        }
+                        save(todayFile);
                     }
                     AntiCheatLogs.todayFile = file;
                     fileConfiguration = YamlConfiguration.loadConfiguration(file);

@@ -6,6 +6,7 @@ import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.compatibility.Compatibility;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.npc.NPCManager;
+import com.vagdedes.spartan.functionality.tracking.AntiCheatLogs;
 import com.vagdedes.spartan.utils.java.ReflectionUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import org.bukkit.Bukkit;
@@ -20,7 +21,7 @@ public class SpartanBukkit {
     public static final Threads.ThreadPool
             connectionThread = new Threads.ThreadPool(TPS.tickTime),
             sqlThread = new Threads.ThreadPool(TPS.tickTime),
-            waveThread = new Threads.ThreadPool(1L),
+            dataThread = new Threads.ThreadPool(1L),
             headThread = new Threads.ThreadPool(1L),
             analysisThread = new Threads.ThreadPool(1L);
 
@@ -237,5 +238,6 @@ public class SpartanBukkit {
         Threads.disable();
         NPCManager.clear();
         Config.create();
+        AntiCheatLogs.shutdown();
     }
 }
