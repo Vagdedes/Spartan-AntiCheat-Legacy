@@ -235,9 +235,9 @@ public class SpartanBukkit {
         }
 
         playerProtocol.clear();
+        AntiCheatLogs.shutdown();
         Threads.disable();
         NPCManager.clear();
         Config.create();
-        AntiCheatLogs.shutdown();
     }
 }

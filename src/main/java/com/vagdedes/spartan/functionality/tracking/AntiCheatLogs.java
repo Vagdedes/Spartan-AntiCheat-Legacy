@@ -22,10 +22,13 @@ public class AntiCheatLogs {
             dateFormat = "yyyy/MM/dd HH:mm:ss:SSSXXX",
             folderPath = Register.plugin.getDataFolder() + "/logs",
             playerIdentifier = "Player:";
-    private static long lastSave = 0L;
 
     private static File todayFile = getFile();
     private static YamlConfiguration fileConfiguration = YamlConfiguration.loadConfiguration(todayFile);
+
+    private static final Object synchronizer = new Object();
+    private static long lastSave = 0L;
+    private static boolean saving = false;
 
     public static String getDate(String pattern, long time) {
         return DateTimeFormatter.ofPattern(pattern).format(
@@ -41,10 +44,21 @@ public class AntiCheatLogs {
         );
     }
 
-    private static void save(File file) {
+    private static void rawSave(File file) {
         try {
             fileConfiguration.save(file);
         } catch (Exception ignored) {
+        }
+    }
+
+    private static void save(File file) {
+        if (!saving) {
+            synchronized (synchronizer) {
+                saving = true;
+                rawSave(file);
+                lastSave = System.currentTimeMillis();
+                saving = false;
+            }
         }
     }
 
@@ -53,7 +67,7 @@ public class AntiCheatLogs {
     public static void shutdown() {
         if (Config.settings.getBoolean("Logs.log_file")
                 && fileConfiguration != null) {
-            save(todayFile);
+            rawSave(todayFile);
         }
     }
 
@@ -68,13 +82,11 @@ public class AntiCheatLogs {
                         AntiCheatLogs.getDate(AntiCheatLogs.dateFormat, time),
                         information
                 );
-                if (System.currentTimeMillis() - lastSave >= 5_000L) {
+                if (System.currentTimeMillis() - lastSave >= 1_000L) {
                     saved = true;
-                    lastSave = System.currentTimeMillis();
                     File file = todayFile;
 
                     SpartanBukkit.dataThread.executeIfSyncElseHere(() -> {
-                        lastSave = System.currentTimeMillis();
                         save(file);
                     });
                 }
@@ -82,7 +94,7 @@ public class AntiCheatLogs {
 
                 if (!file.getName().equals(todayFile.getName())) {
                     if (!saved) {
-                        save(todayFile);
+                        rawSave(todayFile);
                     }
                     AntiCheatLogs.todayFile = file;
                     fileConfiguration = YamlConfiguration.loadConfiguration(file);
