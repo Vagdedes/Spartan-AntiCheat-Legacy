@@ -230,7 +230,7 @@ public class IMSimulationSpeed extends ProbabilityDetection {
                             this.vl -= 0.1;
                         }
                     }
-                    this.protocol.bukkit().sendMessage("vl: " + this.vl + " " + this.vlCount);
+                    //this.protocol.bukkit().sendMessage("vl: " + this.vl + " " + this.vlCount);
                 }
             }
             if (this.removePistonTick) {
