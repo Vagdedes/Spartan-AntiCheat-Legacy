@@ -159,11 +159,11 @@ public class SpartanNPC {
     }
 
     void updateHead() {
-        SpartanBukkit.headThread.executeWithPriority(() -> {
-            armorStand.getEquipment().setHelmet(
-                    InventoryUtils.getSkull(offlinePlayer, backupName, true)
-            );
-        });
+        SpartanBukkit.headThread.executeWithPriority(
+                () -> armorStand.getEquipment().setHelmet(
+                        InventoryUtils.getSkull(offlinePlayer, backupName, true)
+                )
+        );
     }
 
     void remove() {

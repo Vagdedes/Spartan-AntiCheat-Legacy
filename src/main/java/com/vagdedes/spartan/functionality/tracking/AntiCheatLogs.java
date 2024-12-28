@@ -21,6 +21,7 @@ public class AntiCheatLogs {
             dateFormat = "yyyy/MM/dd HH:mm:ss:SSSXXX",
             folderPath = Register.plugin.getDataFolder() + "/logs",
             playerIdentifier = "Player:";
+    private static long lastSave = System.currentTimeMillis();
 
     private static File todayFile = getFile();
     private static YamlConfiguration fileConfiguration = YamlConfiguration.loadConfiguration(todayFile);
@@ -47,17 +48,29 @@ public class AntiCheatLogs {
         }
         if (Config.settings.getBoolean("Logs.log_file")) {
             if (store && fileConfiguration != null) {
+                boolean saved = false;
                 fileConfiguration.set(
                         AntiCheatLogs.getDate(AntiCheatLogs.dateFormat, time),
                         information
                 );
-                try {
-                    fileConfiguration.save(todayFile);
-                } catch (Exception ignored) {
+                if (System.currentTimeMillis() - lastSave >= 1_000L) {
+                    saved = true;
+                    lastSave = System.currentTimeMillis();
+
+                    try {
+                        fileConfiguration.save(todayFile);
+                    } catch (Exception ignored) {
+                    }
                 }
                 File file = getFile();
 
                 if (!file.getName().equals(todayFile.getName())) {
+                    if (!saved) {
+                        try {
+                            fileConfiguration.save(todayFile);
+                        } catch (Exception ignored) {
+                        }
+                    }
                     AntiCheatLogs.todayFile = file;
                     fileConfiguration = YamlConfiguration.loadConfiguration(file);
                 }
