@@ -293,49 +293,23 @@ public abstract class CheckRunner extends CheckProcess {
     public final boolean prevent() {
         if (this.prevention.complete()) {
             if (SpartanBukkit.isSynchronised()) {
-                CheckCancelEvent checkCancelEvent;
-
                 if (Config.settings.getBoolean("Important.enable_developer_api")) {
-                    checkCancelEvent = new CheckCancelEvent(this.protocol.bukkit(), hackType);
-                    Register.manager.callEvent(checkCancelEvent);
-                } else {
-                    checkCancelEvent = null;
-                }
-
-                if (checkCancelEvent == null
-                        || !checkCancelEvent.isCancelled()) {
-                    this.prevention.handle(this.protocol);
-                    return true;
-                } else {
-                    return false;
-                }
-            } else {
-                Thread thread = Thread.currentThread();
-                Boolean[] cancelled = new Boolean[1];
-
-                SpartanBukkit.transferTask(this.protocol, () -> {
                     CheckCancelEvent checkCancelEvent = new CheckCancelEvent(this.protocol.bukkit(), hackType);
                     Register.manager.callEvent(checkCancelEvent);
-                    cancelled[0] = checkCancelEvent.isCancelled();
 
-                    synchronized (thread) {
-                        thread.notifyAll();
+                    if (checkCancelEvent.isCancelled()) {
+                        return false;
+                    } else {
+                        this.prevention.handle(this.protocol);
+                        return true;
                     }
-                });
-                synchronized (thread) {
-                    if (cancelled[0] == null) {
-                        try {
-                            thread.wait();
-                        } catch (Exception ex) {
-                        }
-                    }
-                }
-                if (!cancelled[0]) {
+                } else {
                     this.prevention.handle(this.protocol);
                     return true;
-                } else {
-                    return false;
                 }
+            } else {
+                this.prevention.handle(this.protocol);
+                return true;
             }
         } else {
             return false;

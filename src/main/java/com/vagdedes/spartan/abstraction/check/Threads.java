@@ -14,6 +14,10 @@ public class Threads {
         enabled = false;
     }
 
+    public static boolean isKnown(Thread thread) {
+        return threads.containsKey(thread.getName());
+    }
+
     // Object
 
     public static class ThreadPool {
@@ -80,7 +84,7 @@ public class Threads {
         }
 
         public boolean executeIfUnknownThreadElseHere(Runnable runnable) {
-            if (!threads.containsKey(Thread.currentThread().getName())) {
+            if (!isKnown(Thread.currentThread())) {
                 synchronized (runnables) {
                     return runnables.add(runnable);
                 }
