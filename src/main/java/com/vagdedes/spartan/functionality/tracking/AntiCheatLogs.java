@@ -44,19 +44,19 @@ public class AntiCheatLogs {
         );
     }
 
-    private static void rawSave(File file) {
+    private static void rawSave() {
         try {
-            fileConfiguration.save(file);
+            fileConfiguration.save(todayFile);
         } catch (Exception ignored) {
         }
+        lastSave = System.currentTimeMillis();
     }
 
-    private static void save(File file) {
+    private static void save() {
         if (!saving) {
             synchronized (synchronizer) {
                 saving = true;
-                rawSave(file);
-                lastSave = System.currentTimeMillis();
+                rawSave();
                 saving = false;
             }
         }
@@ -67,7 +67,7 @@ public class AntiCheatLogs {
     public static void shutdown() {
         if (Config.settings.getBoolean("Logs.log_file")
                 && fileConfiguration != null) {
-            rawSave(todayFile);
+            rawSave();
         }
     }
 
@@ -77,24 +77,19 @@ public class AntiCheatLogs {
         }
         if (Config.settings.getBoolean("Logs.log_file")) {
             if (store && fileConfiguration != null) {
-                boolean saved = false;
+                File file = getFile();
+
+                if (!file.getName().equals(todayFile.getName())) {
+                    rawSave();
+                    todayFile = file;
+                    fileConfiguration = YamlConfiguration.loadConfiguration(file);
+                }
                 fileConfiguration.set(
                         AntiCheatLogs.getDate(AntiCheatLogs.dateFormat, time),
                         information
                 );
                 if (System.currentTimeMillis() - lastSave >= 1_000L) {
-                    saved = true;
-                    File file = todayFile;
-                    SpartanBukkit.dataThread.executeIfSyncElseHere(() -> save(file));
-                }
-                File file = getFile();
-
-                if (!file.getName().equals(todayFile.getName())) {
-                    if (!saved) {
-                        rawSave(todayFile);
-                    }
-                    AntiCheatLogs.todayFile = file;
-                    fileConfiguration = YamlConfiguration.loadConfiguration(file);
+                    SpartanBukkit.dataThread.executeIfSyncElseHere(AntiCheatLogs::save);
                 }
             }
         }
