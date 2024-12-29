@@ -32,8 +32,8 @@ public class Register extends JavaPlugin {
 
     public void onEnable() {
         plugin = this;
-        pluginName = "Sporton";
-        //pluginName = plugin.getName();
+        //pluginName = "Sporton";
+        pluginName = plugin.getName();
         plugin.setNaggable(false);
         JarVerification.run();
         Config.create();
