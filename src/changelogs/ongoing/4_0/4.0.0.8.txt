@@ -1,4 +1,5 @@
 [#] Fixed water speed bypass
-[#] Fixed potential lag issue related to thread identification
+[#] Fixed potential lag issue related to thread usage
 [#] Improved the stability of certain statistics
 [#] Fixed false positives caused by incorrect usage of threads
+[#] Decreased the amount of calls for certain statistical methods

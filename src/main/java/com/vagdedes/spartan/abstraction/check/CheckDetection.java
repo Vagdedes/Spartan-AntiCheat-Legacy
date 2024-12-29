@@ -20,7 +20,6 @@ import me.vagdedes.spartan.api.API;
 import me.vagdedes.spartan.api.PlayerViolationCommandEvent;
 import me.vagdedes.spartan.api.PlayerViolationEvent;
 import me.vagdedes.spartan.system.Enums;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 import java.util.Collection;
@@ -150,18 +149,17 @@ public abstract class CheckDetection extends CheckProcess {
 
     public abstract boolean canSendNotification(Object detected, int probability);
 
-    protected void notify(boolean enabled, long time, String information) {
-        boolean hasSufficientData = this.hasSufficientData(this.protocol.spartan.dataType);
+    protected void notify(boolean enabled, boolean sufficientData, long time, String information) {
         double probability = this.getProbability(this.protocol.spartan.dataType),
                 certainty = PlayerEvidence.probabilityToCertainty(probability) * 100.0,
-                dataCompletion = hasSufficientData ? 100.0 : this.getDataCompletion(this.protocol.spartan.dataType) * 100.0;
+                dataCompletion = sufficientData ? 100.0 : this.getDataCompletion(this.protocol.spartan.dataType) * 100.0;
         int roundedCertainty = AlgebraUtils.integerRound(certainty);
         String notification = ConfigUtils.replaceWithSyntax(
                 this.protocol,
                 Config.messages.getColorfulString("detection_notification")
                         .replace("{info}", information)
                         .replace("{detection:percentage}",
-                                hasSufficientData
+                                sufficientData
                                         ? ((roundedCertainty == 0 ? 1 : roundedCertainty) + "%")
                                         : "unlikely (data " + AlgebraUtils.integerRound(dataCompletion) + "% complete)"
                         ),
@@ -188,7 +186,7 @@ public abstract class CheckDetection extends CheckProcess {
                 enabled ? notification : null,
                 information,
                 enabled
-                        && hasSufficientData
+                        && sufficientData
                         && PlayerEvidence.surpassedProbability(
                         probability,
                         PlayerEvidence.notificationProbability
@@ -228,72 +226,74 @@ public abstract class CheckDetection extends CheckProcess {
 
     // Punishment
 
-    private void punish() {
-        Check check = hackType.getCheck();
-        if (check.canPunish(this.protocol.spartan.dataType)) {
-            List<String> commands = check.getPunishmentCommands();
+    private void punish(boolean sufficientData) {
+        if (sufficientData) {
+            Check check = hackType.getCheck();
 
-            if (!commands.isEmpty()
-                    && this.hasSufficientData(this.protocol.spartan.dataType)) {
-                Collection<Enums.HackType> detectedHacks = this.protocol.profile().getEvidenceList(
-                        PlayerEvidence.punishmentProbability
-                );
-                detectedHacks.removeIf(loopHackType -> !loopHackType.getCheck().canPunish(this.protocol.spartan.dataType));
+            if (check.canPunish(this.protocol.spartan.dataType)) {
+                List<String> commands = check.getPunishmentCommands();
 
-                if (!detectedHacks.isEmpty()
-                        && detectedHacks.contains(hackType)) {
-                    int index = 0;
-                    boolean enabledDeveloperAPI = Config.settings.getBoolean("Important.enable_developer_api");
-                    StringBuilder stringBuilder = new StringBuilder();
-
-                    for (Enums.HackType detectedHack : detectedHacks) {
-                        stringBuilder.append(detectedHack.getCheck().getName()).append(", ");
-                    }
-                    String detections = stringBuilder.substring(0, stringBuilder.length() - 2);
-
-                    for (String command : commands) {
-                        String modifiedCommand = ConfigUtils.replaceWithSyntax(
-                                this.protocol,
-                                command.replaceAll("\\{detections}|\\{detection}", detections),
-                                null
-                        );
-                        commands.set(index++, modifiedCommand);
-
-                        if (enabledDeveloperAPI) {
-                            Runnable runnable = () -> {
-                                PlayerViolationCommandEvent event = new PlayerViolationCommandEvent(
-                                        this.protocol.bukkit(),
-                                        hackType,
-                                        detectedHacks,
-                                        modifiedCommand
-                                );
-                                Register.manager.callEvent(event);
-
-                                if (!event.isCancelled()) {
-                                    SpartanBukkit.runCommand(modifiedCommand);
-                                }
-                            };
-
-                            if (SpartanBukkit.isSynchronised()) {
-                                runnable.run();
-                            } else {
-                                SpartanBukkit.transferTask(this.protocol, runnable);
-                            }
-                        } else {
-                            SpartanBukkit.runCommand(modifiedCommand);
-                        }
-                    }
-                    Location location = this.protocol.getLocation();
-                    CloudConnections.executeDiscordWebhook(
-                            "punishments",
-                            this.protocol.getUUID(),
-                            this.protocol.bukkit().getName(),
-                            location.getBlockX(),
-                            location.getBlockY(),
-                            location.getBlockZ(),
-                            "Punishment",
-                            StringUtils.toString(commands, "\n")
+                if (!commands.isEmpty()) {
+                    Collection<Enums.HackType> detectedHacks = this.protocol.profile().getEvidenceList(
+                            PlayerEvidence.punishmentProbability
                     );
+                    detectedHacks.removeIf(loopHackType -> !loopHackType.getCheck().canPunish(this.protocol.spartan.dataType));
+
+                    if (!detectedHacks.isEmpty()
+                            && detectedHacks.contains(hackType)) {
+                        int index = 0;
+                        boolean enabledDeveloperAPI = Config.settings.getBoolean("Important.enable_developer_api");
+                        StringBuilder stringBuilder = new StringBuilder();
+
+                        for (Enums.HackType detectedHack : detectedHacks) {
+                            stringBuilder.append(detectedHack.getCheck().getName()).append(", ");
+                        }
+                        String detections = stringBuilder.substring(0, stringBuilder.length() - 2);
+
+                        for (String command : commands) {
+                            String modifiedCommand = ConfigUtils.replaceWithSyntax(
+                                    this.protocol,
+                                    command.replaceAll("\\{detections}|\\{detection}", detections),
+                                    null
+                            );
+                            commands.set(index++, modifiedCommand);
+
+                            if (enabledDeveloperAPI) {
+                                Runnable runnable = () -> {
+                                    PlayerViolationCommandEvent event = new PlayerViolationCommandEvent(
+                                            this.protocol.bukkit(),
+                                            hackType,
+                                            detectedHacks,
+                                            modifiedCommand
+                                    );
+                                    Register.manager.callEvent(event);
+
+                                    if (!event.isCancelled()) {
+                                        SpartanBukkit.runCommand(modifiedCommand);
+                                    }
+                                };
+
+                                if (SpartanBukkit.isSynchronised()) {
+                                    runnable.run();
+                                } else {
+                                    SpartanBukkit.transferTask(this.protocol, runnable);
+                                }
+                            } else {
+                                SpartanBukkit.runCommand(modifiedCommand);
+                            }
+                        }
+                        Location location = this.protocol.getLocation();
+                        CloudConnections.executeDiscordWebhook(
+                                "punishments",
+                                this.protocol.getUUID(),
+                                this.protocol.bukkit().getName(),
+                                location.getBlockX(),
+                                location.getBlockY(),
+                                location.getBlockZ(),
+                                "Punishment",
+                                StringUtils.toString(commands, "\n")
+                        );
+                    }
                 }
             }
         }
@@ -346,17 +346,18 @@ public abstract class CheckDetection extends CheckProcess {
                     time
             );
             ResearchEngine.queueToCache(this.hackType, this.protocol.spartan.dataType);
-            this.notify(finalIsEnabled, time, information);
+            boolean sufficientData = this.hasSufficientData(this.protocol.spartan.dataType);
+            this.notify(finalIsEnabled, sufficientData, time, information);
 
             if (finalIsEnabled) {
-                this.punish();
+                this.punish(sufficientData);
                 this.executor.prevention = newPrevention;
                 this.executor.prevention.canPrevent =
-                        !hackType.getCheck().isSilent(this.protocol.spartan.dataType, this.protocol.getWorld().getName())
+                        sufficientData
+                                && !hackType.getCheck().isSilent(this.protocol.spartan.dataType, this.protocol.getWorld().getName())
                                 && (silentCause == null
                                 || silentCause.hasExpired()
                                 || !silentCause.pointerMatches(information))
-                                && this.hasSufficientData(this.protocol.spartan.dataType)
                                 && PlayerEvidence.surpassedProbability(this.getProbability(this.protocol.spartan.dataType), PlayerEvidence.preventionProbability);
             }
         };
