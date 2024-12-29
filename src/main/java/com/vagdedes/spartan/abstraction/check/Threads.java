@@ -3,12 +3,14 @@ package com.vagdedes.spartan.abstraction.check;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Threads {
 
     // Methods
 
     private static boolean enabled = true;
+    private static final Map<String, Boolean> threads = new ConcurrentHashMap<>();
 
     public static void disable() {
         enabled = false;
@@ -26,6 +28,8 @@ public class Threads {
             pause = false;
             runnables = Collections.synchronizedList(new LinkedList<>());
             thread = new Thread(() -> {
+                threads.put(Thread.currentThread().getName(), true);
+
                 while (enabled) {
                     if (pause) {
                         try {
@@ -77,8 +81,8 @@ public class Threads {
             }
         }
 
-        public boolean executeIfSyncElseHere(Runnable runnable) {
-            if (SpartanBukkit.isSynchronised()) {
+        public boolean executeIfUnknownThreadElseHere(Runnable runnable) {
+            if (!threads.containsKey(Thread.currentThread().getName())) {
                 synchronized (runnables) {
                     return runnables.add(runnable);
                 }

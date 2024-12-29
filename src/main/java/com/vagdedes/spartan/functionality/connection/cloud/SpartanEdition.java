@@ -55,7 +55,7 @@ public class SpartanEdition {
             firstLoad = false;
             currentVersion = !CloudBase.hasToken();
         }
-        SpartanBukkit.connectionThread.executeIfSyncElseHere(() -> {
+        SpartanBukkit.connectionThread.executeIfUnknownThreadElseHere(() -> {
             if (!currentVersion
                     && CloudConnections.ownsProduct(
                     getProductID(currentType)

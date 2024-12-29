@@ -36,11 +36,15 @@ public class AntiCheatLogs {
         );
     }
 
+    private static String getFileName() {
+        return "log"
+                + ZonedDateTime.now().format(DateTimeFormatter.ofPattern(dateOnlyFormat))
+                + ".yml";
+    }
+
     private static File getFile() {
         return new File(
-                folderPath + "/log"
-                        + ZonedDateTime.now().format(DateTimeFormatter.ofPattern(dateOnlyFormat))
-                        + ".yml"
+                folderPath + getFileName()
         );
     }
 
@@ -77,19 +81,26 @@ public class AntiCheatLogs {
         }
         if (Config.settings.getBoolean("Logs.log_file")) {
             if (store && fileConfiguration != null) {
-                File file = getFile();
+                String fileName = getFileName();
 
-                if (!file.getName().equals(todayFile.getName())) {
+                if (!fileName.equals(todayFile.getName())) {
                     rawSave();
-                    todayFile = file;
-                    fileConfiguration = YamlConfiguration.loadConfiguration(file);
+                    todayFile = getFile();
+                    fileConfiguration = YamlConfiguration.loadConfiguration(todayFile);
                 }
-                fileConfiguration.set(
-                        AntiCheatLogs.getDate(AntiCheatLogs.dateFormat, time),
-                        information
-                );
                 if (System.currentTimeMillis() - lastSave >= 1_000L) {
-                    SpartanBukkit.dataThread.executeIfSyncElseHere(AntiCheatLogs::save);
+                    SpartanBukkit.dataThread.executeIfUnknownThreadElseHere(() -> {
+                        fileConfiguration.set(
+                                AntiCheatLogs.getDate(AntiCheatLogs.dateFormat, time),
+                                information
+                        );
+                        AntiCheatLogs.save();
+                    });
+                } else {
+                    SpartanBukkit.dataThread.executeIfUnknownThreadElseHere(() -> fileConfiguration.set(
+                            AntiCheatLogs.getDate(AntiCheatLogs.dateFormat, time),
+                            information
+                    ));
                 }
             }
         }

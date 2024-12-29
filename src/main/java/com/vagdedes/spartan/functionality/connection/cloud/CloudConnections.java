@@ -133,7 +133,7 @@ public class CloudConnections {
             int length = color.length();
 
             if (length >= 3 && length <= 6) {
-                SpartanBukkit.connectionThread.executeIfSyncElseHere(() -> {
+                SpartanBukkit.connectionThread.executeIfUnknownThreadElseHere(() -> {
                     try {
                         int webhookVersion = 2;
                         String crossServerInformationOption = CrossServerNotifications.getServerName();

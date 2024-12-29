@@ -129,10 +129,10 @@ public class CloudBase {
             connectionRefreshCooldown = ms + refreshTime;
 
             // Separator
-            SpartanBukkit.connectionThread.executeIfSyncElseHere(SpartanEdition::refresh);
+            SpartanBukkit.connectionThread.executeIfUnknownThreadElseHere(SpartanEdition::refresh);
 
             // Separator
-            SpartanBukkit.connectionThread.executeIfSyncElseHere(() -> {
+            SpartanBukkit.connectionThread.executeIfUnknownThreadElseHere(() -> {
                 try {
                     String[] results = RequestUtils.get(StringUtils.decodeBase64(website) + "?" + identification
                             + "&action=get&data=automaticConfigurationChanges&version=" + version);
@@ -199,7 +199,7 @@ public class CloudBase {
             // Separator
             Map<Enums.HackType, String[]> disabledDetections = new LinkedHashMap<>();
 
-            SpartanBukkit.connectionThread.executeIfSyncElseHere(() -> {
+            SpartanBukkit.connectionThread.executeIfUnknownThreadElseHere(() -> {
                 try {
                     String[] results = RequestUtils.get(StringUtils.decodeBase64(website) + "?" + identification
                             + "&action=get&data=disabledDetections&version=" + version + "&value="
@@ -242,7 +242,7 @@ public class CloudBase {
             });
 
             // Separator
-            SpartanBukkit.connectionThread.executeIfSyncElseHere(() -> {
+            SpartanBukkit.connectionThread.executeIfUnknownThreadElseHere(() -> {
                 List<SpartanProtocol> protocols = Permissions.getStaff();
 
                 if (!protocols.isEmpty()) {

@@ -5,6 +5,7 @@ import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
 import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
+import com.vagdedes.spartan.utils.math.AlgebraUtils;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -38,6 +39,7 @@ public abstract class ProbabilityDetection extends CheckDetection {
         if (total >= PlayerEvidence.factorRequirement) {
             int pass = 0,
                     count = 0;
+            int halfRequirement = AlgebraUtils.integerCeil(PlayerEvidence.factorRequirement / 2.0);
 
             for (PlayerProfile profile : playerProfiles) {
                 int individualCount = profile.getRunner(this.hackType).getDetection(this.name).getDataCount(dataType);
@@ -48,7 +50,8 @@ public abstract class ProbabilityDetection extends CheckDetection {
 
                     if (pass == PlayerEvidence.factorRequirement) {
                         return true;
-                    } else if ((count / (double) total) > PlayerEvidence.factorRequirement) {
+                    } else if (pass >= halfRequirement
+                            && (count / (double) total) > PlayerEvidence.factorRequirement) {
                         return true;
                     }
                 }
