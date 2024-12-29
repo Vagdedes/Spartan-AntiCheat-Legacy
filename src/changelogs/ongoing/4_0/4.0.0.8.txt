@@ -1,2 +1,2 @@
 [#] Fixed water speed bypass
-[#] Fixed potential lag issue with saving spartan log files.
+[#] Fixed potential lag issue related to thread identification

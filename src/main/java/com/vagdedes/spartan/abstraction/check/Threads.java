@@ -1,7 +1,5 @@
 package com.vagdedes.spartan.abstraction.check;
 
-import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
