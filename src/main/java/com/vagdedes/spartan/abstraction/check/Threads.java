@@ -30,8 +30,6 @@ public class Threads {
             pause = false;
             runnables = Collections.synchronizedList(new LinkedList<>());
             thread = new Thread(() -> {
-                threads.put(Thread.currentThread().getName(), true);
-
                 while (enabled) {
                     if (pause) {
                         try {
@@ -57,6 +55,7 @@ public class Threads {
                 }
                 runnables.clear();
             });
+            threads.put(thread.getName(), true);
             thread.start();
         }
 
@@ -84,13 +83,13 @@ public class Threads {
         }
 
         public boolean executeIfUnknownThreadElseHere(Runnable runnable) {
-            if (!isKnown(Thread.currentThread())) {
+            if (isKnown(Thread.currentThread())) {
+                runnable.run();
+                return true;
+            } else {
                 synchronized (runnables) {
                     return runnables.add(runnable);
                 }
-            } else {
-                runnable.run();
-                return false;
             }
         }
 
