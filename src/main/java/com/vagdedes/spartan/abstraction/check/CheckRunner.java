@@ -205,7 +205,6 @@ public abstract class CheckRunner extends CheckProcess {
                 && hackType.getCheck().isEnabled(this.protocol.spartan.dataType, this.protocol.getWorld().getName())
                 && Attributes.getAmount(this.protocol, Attributes.GENERIC_SCALE) == 0.0
                 && !ProtocolLib.isTemporary(this.protocol.bukkit())
-                && canRun()
                 && !Permissions.isBypassing(this.protocol.bukkit(), hackType);
     }
 

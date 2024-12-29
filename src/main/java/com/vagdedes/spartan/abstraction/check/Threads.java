@@ -54,6 +54,7 @@ public class Threads {
                     }
                 }
                 runnables.clear();
+                threads.remove(Thread.currentThread().getName());
             });
             threads.put(thread.getName(), true);
             thread.start();

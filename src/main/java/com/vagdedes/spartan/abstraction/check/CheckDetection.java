@@ -20,6 +20,7 @@ import me.vagdedes.spartan.api.API;
 import me.vagdedes.spartan.api.PlayerViolationCommandEvent;
 import me.vagdedes.spartan.api.PlayerViolationEvent;
 import me.vagdedes.spartan.system.Enums;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 import java.util.Collection;
@@ -302,6 +303,9 @@ public abstract class CheckDetection extends CheckProcess {
 
     public final void cancel(String information, Location location,
                              int cancelTicks, boolean groundTeleport, double damage) {
+        if (!this.executor.canRun()) {
+            return;
+        }
         long time = System.currentTimeMillis();
         CheckPrevention newPrevention = new CheckPrevention(
                 location,
