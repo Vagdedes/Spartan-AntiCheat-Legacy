@@ -27,7 +27,6 @@ public class AntiCheatLogs {
     private static YamlConfiguration fileConfiguration = YamlConfiguration.loadConfiguration(todayFile);
 
     private static final Object synchronizer = new Object();
-    private static long lastSave = 0L;
     private static boolean saving = false;
 
     public static String getDate(String pattern, long time) {
@@ -53,7 +52,6 @@ public class AntiCheatLogs {
             fileConfiguration.save(todayFile);
         } catch (Exception ignored) {
         }
-        lastSave = System.currentTimeMillis();
     }
 
     private static void save() {
@@ -68,13 +66,6 @@ public class AntiCheatLogs {
 
     // Separator
 
-    public static void shutdown() {
-        if (Config.settings.getBoolean("Logs.log_file")
-                && fileConfiguration != null) {
-            rawSave();
-        }
-    }
-
     public static void rawLogInfo(long time, String information, boolean console, boolean store, boolean sql) {
         if (console && Config.settings.getBoolean("Logs.log_console")) {
             Bukkit.getConsoleSender().sendMessage(information);
@@ -88,20 +79,13 @@ public class AntiCheatLogs {
                     todayFile = getFile();
                     fileConfiguration = YamlConfiguration.loadConfiguration(todayFile);
                 }
-                if (System.currentTimeMillis() - lastSave >= 1_000L) {
-                    SpartanBukkit.dataThread.executeIfUnknownThreadElseHere(() -> {
-                        fileConfiguration.set(
-                                AntiCheatLogs.getDate(AntiCheatLogs.dateFormat, time),
-                                information
-                        );
-                        AntiCheatLogs.save();
-                    });
-                } else {
-                    SpartanBukkit.dataThread.executeIfUnknownThreadElseHere(() -> fileConfiguration.set(
+                SpartanBukkit.dataThread.executeIfUnknownThreadElseHere(() -> {
+                    fileConfiguration.set(
                             AntiCheatLogs.getDate(AntiCheatLogs.dateFormat, time),
                             information
-                    ));
-                }
+                    );
+                    AntiCheatLogs.save();
+                });
             }
         }
         if (sql) {

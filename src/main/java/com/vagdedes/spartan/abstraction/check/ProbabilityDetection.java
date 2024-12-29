@@ -74,9 +74,12 @@ public abstract class ProbabilityDetection extends CheckDetection {
     @Override
     public void clearData(Check.DataType dataType) {
         this.data.remove(dataType);
-        this.dataCount[dataType.ordinal()] = 0;
-        this.firstTime[dataType.ordinal()] = -1L;
-        this.lastTime[dataType.ordinal()] = -1L;
+
+        synchronized (this.synchronizer) {
+            this.dataCount[dataType.ordinal()] = 0;
+            this.firstTime[dataType.ordinal()] = -1L;
+            this.lastTime[dataType.ordinal()] = -1L;
+        }
     }
 
     @Override
