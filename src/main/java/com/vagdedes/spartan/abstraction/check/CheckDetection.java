@@ -357,8 +357,10 @@ public abstract class CheckDetection extends CheckProcess {
             }
         };
 
-        if (!event || SpartanBukkit.isSynchronised()) {
+        if (SpartanBukkit.isSynchronised()) {
             runnable.run();
+        } else if (!event) {
+            SpartanBukkit.dataThread.executeIfUnknownThreadElseHere(runnable);
         } else {
             SpartanBukkit.transferTask(this.protocol, runnable);
         }
