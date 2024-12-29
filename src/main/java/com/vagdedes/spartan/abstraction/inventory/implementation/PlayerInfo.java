@@ -261,7 +261,7 @@ public class PlayerInfo extends InventoryMenu {
     }
 
     public void refresh(String targetName) {
-        List<SpartanProtocol> protocols = SpartanBukkit.getProtocols();
+        Collection<SpartanProtocol> protocols = SpartanBukkit.getProtocols();
 
         if (!protocols.isEmpty()) {
             for (SpartanProtocol protocol : protocols) {

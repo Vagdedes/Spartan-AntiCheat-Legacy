@@ -13,7 +13,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SpartanBukkit {
@@ -45,8 +48,8 @@ public class SpartanBukkit {
         return !playerProtocol.isEmpty();
     }
 
-    public static List<SpartanProtocol> getProtocols() {
-        return new ArrayList<>(playerProtocol.values());
+    public static Collection<SpartanProtocol> getProtocols() {
+        return playerProtocol.values();
     }
 
     public static Set<Map.Entry<UUID, SpartanProtocol>> getPlayerEntries() {

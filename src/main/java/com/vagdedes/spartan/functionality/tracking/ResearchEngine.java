@@ -66,8 +66,8 @@ public class ResearchEngine {
 
     // Separator
 
-    public static List<PlayerProfile> getPlayerProfiles() {
-        return new ArrayList<>(playerProfiles.values());
+    public static Collection<PlayerProfile> getPlayerProfiles() {
+        return playerProfiles.values();
     }
 
     public static PlayerProfile getPlayerProfile(String name) {

@@ -24,7 +24,7 @@ public class SuspicionNotifications {
     static void run() {
         SpartanBukkit.runRepeatingTask(() -> { // Here because there are no other class calls
             if (!Config.settings.getBoolean("Notifications.individual_only_notifications")) {
-                List<SpartanProtocol> protocols = SpartanBukkit.getProtocols();
+                Collection<SpartanProtocol> protocols = SpartanBukkit.getProtocols();
 
                 if (!protocols.isEmpty()) {
                     List<SpartanProtocol> staff = new ArrayList<>(protocols);
@@ -43,7 +43,7 @@ public class SuspicionNotifications {
         }, 1L, 300L);
     }
 
-    private static void run(List<SpartanProtocol> staff, List<SpartanProtocol> online) {
+    private static void run(List<SpartanProtocol> staff, Collection<SpartanProtocol> online) {
         StringBuilder players = new StringBuilder();
         int size = 0, commaLength = comma.length();
 

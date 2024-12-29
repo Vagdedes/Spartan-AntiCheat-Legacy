@@ -9,10 +9,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class CommandTab implements TabCompleter {
 
@@ -83,7 +80,7 @@ public class CommandTab implements TabCompleter {
                 }
             }
         } else if (length > 1) {
-            List<SpartanProtocol> protocols = SpartanBukkit.getProtocols();
+            Collection<SpartanProtocol> protocols = SpartanBukkit.getProtocols();
 
             if (!protocols.isEmpty()) {
                 String argAbstract = args[length - 1].toLowerCase();

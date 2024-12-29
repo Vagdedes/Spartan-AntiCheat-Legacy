@@ -131,7 +131,7 @@ public class Wave {
                 if (broadcast) {
                     Bukkit.broadcastMessage(Config.messages.getColorfulString("wave_start_message"));
                 } else {
-                    List<SpartanProtocol> protocols = SpartanBukkit.getProtocols();
+                    Collection<SpartanProtocol> protocols = SpartanBukkit.getProtocols();
 
                     if (!protocols.isEmpty()) {
                         String message = Config.messages.getColorfulString("wave_start_message");
@@ -169,7 +169,7 @@ public class Wave {
                     Config.messages.getColorfulString("wave_end_message").replace("{total}", String.valueOf(total))
             );
         } else {
-            List<SpartanProtocol> protocols = SpartanBukkit.getProtocols();
+            Collection<SpartanProtocol> protocols = SpartanBukkit.getProtocols();
 
             if (!protocols.isEmpty()) {
                 String message = Config.messages.getColorfulString("wave_end_message").replace("{total}", String.valueOf(total));

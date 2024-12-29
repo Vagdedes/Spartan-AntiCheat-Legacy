@@ -44,7 +44,7 @@ public class SpartanPlayer {
 
     static {
         SpartanBukkit.runRepeatingTask(() -> {
-            List<SpartanProtocol> protocols = SpartanBukkit.getProtocols();
+            Collection<SpartanProtocol> protocols = SpartanBukkit.getProtocols();
 
             if (!protocols.isEmpty()) {
                 for (SpartanProtocol protocol : protocols) {
@@ -143,7 +143,7 @@ public class SpartanPlayer {
                     }
                     string += StringUtils.toString(message, " ");
                 }
-                List<SpartanProtocol> protocols = SpartanBukkit.getProtocols();
+                Collection<SpartanProtocol> protocols = SpartanBukkit.getProtocols();
 
                 if (!protocols.isEmpty()) {
                     if (broadcast) {

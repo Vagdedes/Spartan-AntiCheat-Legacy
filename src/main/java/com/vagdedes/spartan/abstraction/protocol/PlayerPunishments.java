@@ -9,7 +9,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.List;
+import java.util.Collection;
 
 public class PlayerPunishments {
 
@@ -41,7 +41,7 @@ public class PlayerPunishments {
             if (Config.settings.getBoolean("Punishments.broadcast_on_punishment")) {
                 Bukkit.broadcastMessage(announcement);
             } else {
-                List<SpartanProtocol> protocols = SpartanBukkit.getProtocols();
+                Collection<SpartanProtocol> protocols = SpartanBukkit.getProtocols();
 
                 if (!protocols.isEmpty()) {
                     for (SpartanProtocol protocol : protocols) {

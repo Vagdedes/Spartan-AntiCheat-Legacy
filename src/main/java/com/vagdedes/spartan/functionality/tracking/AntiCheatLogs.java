@@ -44,7 +44,7 @@ public class AntiCheatLogs {
 
     private static File getFile() {
         return new File(
-                folderPath + getFileName()
+                folderPath + "/" + getFileName()
         );
     }
 

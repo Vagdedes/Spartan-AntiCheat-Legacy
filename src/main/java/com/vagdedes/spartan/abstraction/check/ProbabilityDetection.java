@@ -7,33 +7,44 @@ import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
 import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class ProbabilityDetection extends CheckDetection {
 
     private int lastProbability;
-    private final Long[] firstTime, lastTime;
+    private final int[] dataCount;
+    private final long[] firstTime, lastTime;
     private final Map<Check.DataType, Collection<Long>> data;
     private final Object synchronizer = new Object();
 
     public ProbabilityDetection(CheckRunner executor, String name, boolean def) {
         super(executor, name, def);
         this.data = new ConcurrentHashMap<>(Check.DataType.values().length);
-        this.firstTime = new Long[Check.DataType.values().length];
-        this.lastTime = new Long[Check.DataType.values().length];
+        this.dataCount = new int[Check.DataType.values().length];
+        this.firstTime = new long[Check.DataType.values().length];
+        this.lastTime = new long[Check.DataType.values().length];
+
+        for (Check.DataType dataType : Check.DataType.values()) {
+            this.firstTime[dataType.ordinal()] = -1L;
+            this.lastTime[dataType.ordinal()] = -1L;
+            this.dataCount[dataType.ordinal()] = 0;
+        }
     }
 
     // Data
 
     @Override
     protected final boolean hasData(PlayerProfile profile, Check.DataType dataType) {
-        return this.data.containsKey(dataType);
+        return getFirstTime(dataType) != null;
     }
 
     @Override
     protected final boolean hasSufficientData(Check.DataType dataType) {
-        List<PlayerProfile> playerProfiles = ResearchEngine.getPlayerProfiles();
+        Collection<PlayerProfile> playerProfiles = ResearchEngine.getPlayerProfiles();
         int total = playerProfiles.size();
 
         if (total >= PlayerEvidence.factorRequirement) {
@@ -63,8 +74,9 @@ public abstract class ProbabilityDetection extends CheckDetection {
     @Override
     public void clearData(Check.DataType dataType) {
         this.data.remove(dataType);
-        this.firstTime[dataType.ordinal()] = null;
-        this.lastTime[dataType.ordinal()] = null;
+        this.dataCount[dataType.ordinal()] = 0;
+        this.firstTime[dataType.ordinal()] = -1L;
+        this.lastTime[dataType.ordinal()] = -1L;
     }
 
     @Override
@@ -82,12 +94,13 @@ public abstract class ProbabilityDetection extends CheckDetection {
             }
             data.add(time);
 
-            if (this.firstTime[dataType.ordinal()] == null) {
+            if (this.firstTime[dataType.ordinal()] == -1L) {
                 this.firstTime[dataType.ordinal()] = time;
             } else if (time < this.firstTime[dataType.ordinal()]) {
                 this.firstTime[dataType.ordinal()] = time;
             }
             this.lastTime[dataType.ordinal()] = time;
+            this.dataCount[dataType.ordinal()]++;
         }
     }
 
@@ -147,8 +160,7 @@ public abstract class ProbabilityDetection extends CheckDetection {
 
     @Override
     protected final int getDataCount(Check.DataType dataType) {
-        Collection<Long> data = this.data.get(dataType);
-        return data != null ? data.size() : 0;
+        return this.dataCount[dataType.ordinal()];
     }
 
     @Override
@@ -163,7 +175,7 @@ public abstract class ProbabilityDetection extends CheckDetection {
 
     @Override
     final double getDataCompletion(Check.DataType dataType) {
-        List<PlayerProfile> playerProfiles = ResearchEngine.getPlayerProfiles();
+        Collection<PlayerProfile> playerProfiles = ResearchEngine.getPlayerProfiles();
 
         if (!playerProfiles.isEmpty()) {
             int count = 0;

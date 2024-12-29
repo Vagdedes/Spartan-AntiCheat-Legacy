@@ -22,7 +22,6 @@ import me.vagdedes.spartan.api.PlayerViolationEvent;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Location;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -226,75 +225,62 @@ public abstract class CheckDetection extends CheckProcess {
 
     // Punishment
 
-    private void punish(boolean sufficientData) {
-        if (sufficientData) {
-            Check check = hackType.getCheck();
+    private void punish() {
+        Check check = hackType.getCheck();
 
-            if (check.canPunish(this.protocol.spartan.dataType)) {
-                List<String> commands = check.getPunishmentCommands();
+        if (check.canPunish(this.protocol.spartan.dataType)
+                && PlayerEvidence.surpassedProbability(
+                this.getProbability(this.protocol.spartan.dataType),
+                PlayerEvidence.punishmentProbability)
+        ) {
+            List<String> commands = check.getPunishmentCommands();
 
-                if (!commands.isEmpty()) {
-                    Collection<Enums.HackType> detectedHacks = this.protocol.profile().getEvidenceList(
-                            PlayerEvidence.punishmentProbability
+            if (!commands.isEmpty()) {
+                int index = 0;
+                boolean enabledDeveloperAPI = Config.settings.getBoolean("Important.enable_developer_api");
+
+                for (String command : commands) {
+                    String modifiedCommand = ConfigUtils.replaceWithSyntax(
+                            this.protocol,
+                            command.replaceAll("\\{detections}|\\{detection}", check.getName()),
+                            null
                     );
-                    detectedHacks.removeIf(loopHackType -> !loopHackType.getCheck().canPunish(this.protocol.spartan.dataType));
+                    commands.set(index++, modifiedCommand);
 
-                    if (!detectedHacks.isEmpty()
-                            && detectedHacks.contains(hackType)) {
-                        int index = 0;
-                        boolean enabledDeveloperAPI = Config.settings.getBoolean("Important.enable_developer_api");
-                        StringBuilder stringBuilder = new StringBuilder();
-
-                        for (Enums.HackType detectedHack : detectedHacks) {
-                            stringBuilder.append(detectedHack.getCheck().getName()).append(", ");
-                        }
-                        String detections = stringBuilder.substring(0, stringBuilder.length() - 2);
-
-                        for (String command : commands) {
-                            String modifiedCommand = ConfigUtils.replaceWithSyntax(
-                                    this.protocol,
-                                    command.replaceAll("\\{detections}|\\{detection}", detections),
-                                    null
+                    if (enabledDeveloperAPI) {
+                        Runnable runnable = () -> {
+                            PlayerViolationCommandEvent event = new PlayerViolationCommandEvent(
+                                    this.protocol.bukkit(),
+                                    hackType,
+                                    modifiedCommand
                             );
-                            commands.set(index++, modifiedCommand);
+                            Register.manager.callEvent(event);
 
-                            if (enabledDeveloperAPI) {
-                                Runnable runnable = () -> {
-                                    PlayerViolationCommandEvent event = new PlayerViolationCommandEvent(
-                                            this.protocol.bukkit(),
-                                            hackType,
-                                            detectedHacks,
-                                            modifiedCommand
-                                    );
-                                    Register.manager.callEvent(event);
-
-                                    if (!event.isCancelled()) {
-                                        SpartanBukkit.runCommand(modifiedCommand);
-                                    }
-                                };
-
-                                if (SpartanBukkit.isSynchronised()) {
-                                    runnable.run();
-                                } else {
-                                    SpartanBukkit.transferTask(this.protocol, runnable);
-                                }
-                            } else {
+                            if (!event.isCancelled()) {
                                 SpartanBukkit.runCommand(modifiedCommand);
                             }
+                        };
+
+                        if (SpartanBukkit.isSynchronised()) {
+                            runnable.run();
+                        } else {
+                            SpartanBukkit.transferTask(this.protocol, runnable);
                         }
-                        Location location = this.protocol.getLocation();
-                        CloudConnections.executeDiscordWebhook(
-                                "punishments",
-                                this.protocol.getUUID(),
-                                this.protocol.bukkit().getName(),
-                                location.getBlockX(),
-                                location.getBlockY(),
-                                location.getBlockZ(),
-                                "Punishment",
-                                StringUtils.toString(commands, "\n")
-                        );
+                    } else {
+                        SpartanBukkit.runCommand(modifiedCommand);
                     }
                 }
+                Location location = this.protocol.getLocation();
+                CloudConnections.executeDiscordWebhook(
+                        "punishments",
+                        this.protocol.getUUID(),
+                        this.protocol.bukkit().getName(),
+                        location.getBlockX(),
+                        location.getBlockY(),
+                        location.getBlockZ(),
+                        "Punishment",
+                        StringUtils.toString(commands, "\n")
+                );
             }
         }
     }
@@ -350,7 +336,9 @@ public abstract class CheckDetection extends CheckProcess {
             this.notify(finalIsEnabled, sufficientData, time, information);
 
             if (finalIsEnabled) {
-                this.punish(sufficientData);
+                if (sufficientData) {
+                    this.punish();
+                }
                 this.executor.prevention = newPrevention;
                 this.executor.prevention.canPrevent =
                         sufficientData

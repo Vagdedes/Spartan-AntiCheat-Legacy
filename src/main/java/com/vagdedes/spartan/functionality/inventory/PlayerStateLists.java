@@ -78,7 +78,7 @@ public class PlayerStateLists {
     }
 
     private static Map<PlayerProfile, Collection<Enums.HackType>> getProfiles() {
-        List<PlayerProfile> profiles = ResearchEngine.getPlayerProfiles();
+        Collection<PlayerProfile> profiles = ResearchEngine.getPlayerProfiles();
 
         if (!profiles.isEmpty()) {
             Map<PlayerProfile, Collection<Enums.HackType>> map = new LinkedHashMap<>();

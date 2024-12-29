@@ -11,6 +11,7 @@ import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
 import org.bukkit.Bukkit;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class SpartanEdition {
@@ -157,7 +158,7 @@ public class SpartanEdition {
                     attemptVersionNotification(protocol, missingDetections[0]);
                     return;
                 }
-                List<SpartanProtocol> players = SpartanBukkit.getProtocols();
+                Collection<SpartanProtocol> players = SpartanBukkit.getProtocols();
                 players.remove(protocol);
                 int size = players.size();
                 List<PlayerProfile> checkedProfiles;
@@ -180,7 +181,7 @@ public class SpartanEdition {
 
                 // Separator
 
-                List<PlayerProfile> playerProfiles = ResearchEngine.getPlayerProfiles();
+                Collection<PlayerProfile> playerProfiles = ResearchEngine.getPlayerProfiles();
 
                 if (!playerProfiles.isEmpty()) {
                     playerProfiles.remove(protocol.profile());

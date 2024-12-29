@@ -5,7 +5,7 @@ import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 
-import java.util.List;
+import java.util.Collection;
 
 public class Settings extends ConfigurationBuilder {
 
@@ -54,7 +54,7 @@ public class Settings extends ConfigurationBuilder {
     }
 
     public void runOnLogin() {
-        List<SpartanProtocol> protocols = SpartanBukkit.getProtocols();
+        Collection<SpartanProtocol> protocols = SpartanBukkit.getProtocols();
 
         if (!protocols.isEmpty()) {
             for (SpartanProtocol protocol : protocols) {

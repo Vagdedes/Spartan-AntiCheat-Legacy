@@ -99,7 +99,7 @@ public abstract class CheckRunner extends CheckProcess {
     }
 
     public final long getRemainingCompletionTime(Check.DataType dataType) {
-        List<PlayerProfile> playerProfiles = ResearchEngine.getPlayerProfiles();
+        Collection<PlayerProfile> playerProfiles = ResearchEngine.getPlayerProfiles();
 
         if (playerProfiles.isEmpty()) {
             return 0L;
@@ -156,7 +156,7 @@ public abstract class CheckRunner extends CheckProcess {
     }
 
     public final Collection<CheckDetection> getDetections() {
-        return new ArrayList<>(this.detections.values());
+        return this.detections.values();
     }
 
     protected final CheckDetection addDetection(String name, CheckDetection detection) {
