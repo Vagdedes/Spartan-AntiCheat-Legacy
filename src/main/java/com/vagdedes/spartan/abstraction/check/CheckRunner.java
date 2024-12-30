@@ -13,7 +13,10 @@ import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
-import com.vagdedes.spartan.functionality.server.*;
+import com.vagdedes.spartan.functionality.server.Config;
+import com.vagdedes.spartan.functionality.server.MultiVersion;
+import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
 import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -202,10 +205,8 @@ public abstract class CheckRunner extends CheckProcess {
                 && (System.currentTimeMillis() - this.creation) > TPS.maximum * TPS.tickTime
                 && (!cancelled || hackType.getCheck().handleCancelledEvents)
                 && (!v1_8 || this.protocol.bukkit().getGameMode() != GameMode.SPECTATOR)
-                && hackType.getCheck().isEnabled(this.protocol.spartan.dataType, this.protocol.getWorld().getName())
                 && Attributes.getAmount(this.protocol, Attributes.GENERIC_SCALE) == 0.0
-                && !ProtocolLib.isTemporary(this.protocol.bukkit())
-                && !Permissions.isBypassing(this.protocol.bukkit(), hackType);
+                && !ProtocolLib.isTemporary(this.protocol.bukkit());
     }
 
     // Causes

@@ -9,6 +9,7 @@ import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.notifications.clickable.ClickableMessage;
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
+import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.AntiCheatLogs;
 import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
@@ -288,7 +289,8 @@ public abstract class CheckDetection extends CheckProcess {
 
     public final void cancel(String information, Location location,
                              int cancelTicks, boolean groundTeleport, double damage) {
-        if (!this.executor.canRun()) {
+        if (!this.executor.canFunction()
+                || !this.executor.canRun()) {
             return;
         }
         long time = System.currentTimeMillis();
@@ -298,9 +300,11 @@ public abstract class CheckDetection extends CheckProcess {
                 groundTeleport,
                 damage
         );
-        boolean isEnabled = this.executor.canFunction()
-                && this.isEnabled()
-                && !CloudBase.isInformationCancelled(this.hackType, information);
+        boolean isEnabled =
+                hackType.getCheck().isEnabled(this.protocol.spartan.dataType, this.protocol.getWorld().getName())
+                        && this.isEnabled()
+                        && !Permissions.isBypassing(this.protocol.bukkit(), hackType)
+                        && !CloudBase.isInformationCancelled(this.hackType, information);
 
         if (isEnabled) {
             CheckCancellation disableCause = this.executor.getDisableCause();
