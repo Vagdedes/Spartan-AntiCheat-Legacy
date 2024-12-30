@@ -1,7 +1,10 @@
 package com.vagdedes.spartan.listeners.protocol;
 
 import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.events.*;
+import com.comphenix.protocol.events.ListenerPriority;
+import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.events.PacketEvent;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.event.PlayerTickEvent;
 import com.vagdedes.spartan.abstraction.event.SuperPositionPacketEvent;
@@ -21,24 +24,21 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
 
-import java.util.Arrays;
 import java.util.Set;
 
 public class Packet_Movement extends PacketAdapter {
+
     public Packet_Movement() {
         super(
                 Register.plugin,
                 ListenerPriority.LOWEST,
-                Arrays.asList(
-                        PacketType.Play.Server.POSITION,
-                        PacketType.Play.Client.POSITION,
-                        PacketType.Play.Client.POSITION_LOOK,
-                        PacketType.Play.Client.LOOK,
-                        (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17))
-                                ? PacketType.Play.Client.GROUND
-                                : PacketType.Play.Client.FLYING
-                ),
-                ListenerOptions.ASYNC
+                PacketType.Play.Server.POSITION,
+                PacketType.Play.Client.POSITION,
+                PacketType.Play.Client.POSITION_LOOK,
+                PacketType.Play.Client.LOOK,
+                (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17))
+                        ? PacketType.Play.Client.GROUND
+                        : PacketType.Play.Client.FLYING
         );
     }
 
@@ -195,7 +195,9 @@ public class Packet_Movement extends PacketAdapter {
                     p.getLocation()
             );
             moveEvent.setCancelled(event.isCancelled());
-            Event_Movement.event(moveEvent, true);
+            SpartanBukkit.movementThread.execute(() ->
+                    Event_Movement.event(moveEvent, true)
+            );
             if (p.flyingTicks > 0) p.flyingTicks--;
 
             //player.sendMessage("event: " + moveEvent.getTo().toVector());

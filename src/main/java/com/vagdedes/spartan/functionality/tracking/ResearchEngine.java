@@ -44,7 +44,7 @@ public class ResearchEngine {
                     if (Config.sql.isEnabled()) {
                         refresh(Register.isPluginEnabled());
                     } else {
-                        SpartanBukkit.analysisThread.executeIfFree(() -> {
+                        SpartanBukkit.statisticsThread.executeIfFree(() -> {
                             updateCache(false);
                             MainMenu.refresh();
                         });
@@ -52,7 +52,7 @@ public class ResearchEngine {
                 } else {
                     schedulerTicks -= 1;
 
-                    SpartanBukkit.analysisThread.executeIfFree(() -> {
+                    SpartanBukkit.statisticsThread.executeIfFree(() -> {
                         updateCache(false);
 
                         if (schedulerTicks % TPS.maximum == 0) {
@@ -111,7 +111,7 @@ public class ResearchEngine {
 
     public static void resetData(Enums.HackType hackType) {
         if (firstLoad) {
-            SpartanBukkit.analysisThread.execute(() -> {
+            SpartanBukkit.statisticsThread.execute(() -> {
                 String hackTypeString = hackType.toString();
 
                 // Separator
@@ -170,7 +170,7 @@ public class ResearchEngine {
 
             if (isStorageMode()) {
                 // Clear Files/Database
-                SpartanBukkit.analysisThread.execute(() -> {
+                SpartanBukkit.statisticsThread.execute(() -> {
                     if (player == null) {
                         playerProfiles.remove(playerName);
                     } else {
@@ -354,9 +354,9 @@ public class ResearchEngine {
         };
 
         if (firstLoad) {
-            SpartanBukkit.analysisThread.executeIfFree(runnable);
+            SpartanBukkit.statisticsThread.executeIfFree(runnable);
         } else {
-            SpartanBukkit.analysisThread.execute(runnable);
+            SpartanBukkit.statisticsThread.execute(runnable);
             firstLoad = true;
         }
     }

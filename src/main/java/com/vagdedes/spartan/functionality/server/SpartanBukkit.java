@@ -23,9 +23,10 @@ public class SpartanBukkit {
     public static final Threads.ThreadPool
             connectionThread = new Threads.ThreadPool(TPS.tickTime),
             sqlThread = new Threads.ThreadPool(TPS.tickTime),
+            headThread = new Threads.ThreadPool(TPS.tickTime),
             dataThread = new Threads.ThreadPool(1L),
-            headThread = new Threads.ThreadPool(1L),
-            analysisThread = new Threads.ThreadPool(1L);
+            movementThread = new Threads.ThreadPool(1L),
+            statisticsThread = new Threads.ThreadPool(1L);
 
     public static final int
             hashCodeMultiplier = 31,
