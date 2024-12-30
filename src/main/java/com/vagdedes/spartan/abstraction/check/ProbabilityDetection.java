@@ -29,9 +29,9 @@ public abstract class ProbabilityDetection extends CheckDetection {
         this.lastTime = new long[Check.DataType.values().length];
 
         for (Check.DataType dataType : Check.DataType.values()) {
+            this.dataCount[dataType.ordinal()] = 0;
             this.firstTime[dataType.ordinal()] = -1L;
             this.lastTime[dataType.ordinal()] = -1L;
-            this.dataCount[dataType.ordinal()] = 0;
         }
     }
 
@@ -109,54 +109,58 @@ public abstract class ProbabilityDetection extends CheckDetection {
 
     @Override
     public final double getData(PlayerProfile profile, Check.DataType dataType) {
-        Collection<Long> data = this.data.get(dataType);
-
-        if (data == null) {
+        if (getFirstTime(dataType) == null) {
             return CheckDetection.defaultData();
         } else {
-            double violationCount,
-                    averageViolationVelocity,
-                    comparisonCount = 0.0;
-            long violationVelocitySquareSum = 0;
+            Collection<Long> data = this.data.get(dataType);
 
-            synchronized (this.synchronizer) {
-                violationCount = data.size();
-                Iterator<Long> iterator = data.iterator();
+            if (data == null) {
+                return CheckDetection.defaultData();
+            } else {
+                double violationCount,
+                        averageViolationVelocity,
+                        comparisonCount = 0.0;
+                long violationVelocitySquareSum = 0;
 
-                if (iterator.hasNext()) {
-                    long previous = iterator.next();
+                synchronized (this.synchronizer) {
+                    violationCount = data.size();
+                    Iterator<Long> iterator = data.iterator();
 
-                    while (iterator.hasNext()) {
-                        long current = iterator.next();
+                    if (iterator.hasNext()) {
+                        long previous = iterator.next();
 
-                        if (profile.getContinuity().wasOnline(current, previous)) {
-                            comparisonCount++;
-                            long difference = current - previous;
-                            previous = current;
-                            violationVelocitySquareSum += difference * difference;
+                        while (iterator.hasNext()) {
+                            long current = iterator.next();
+
+                            if (profile.getContinuity().wasOnline(current, previous)) {
+                                comparisonCount++;
+                                long difference = current - previous;
+                                previous = current;
+                                violationVelocitySquareSum += difference * difference;
+                            }
                         }
                     }
                 }
-            }
-            long onlineTime = profile.getContinuity().getOnlineTime();
+                long onlineTime = profile.getContinuity().getOnlineTime();
 
-            if (onlineTime > 0L) {
-                onlineTime /= 1_000L; // Convert to seconds
-                violationCount /= (double) onlineTime;
-            }
-            if (comparisonCount == 0.0) {
-                averageViolationVelocity = Long.MAX_VALUE;
-            } else {
-                averageViolationVelocity = Math.sqrt(violationVelocitySquareSum / comparisonCount);
-            }
-            double result = averageViolationVelocity / violationCount;
+                if (onlineTime > 0L) {
+                    onlineTime /= 1_000L; // Convert to seconds
+                    violationCount /= (double) onlineTime;
+                }
+                if (comparisonCount == 0.0) {
+                    averageViolationVelocity = Long.MAX_VALUE;
+                } else {
+                    averageViolationVelocity = Math.sqrt(violationVelocitySquareSum / comparisonCount);
+                }
+                double result = averageViolationVelocity / violationCount;
 
-            if (result == Double.POSITIVE_INFINITY
-                    || result == Double.NEGATIVE_INFINITY) {
-                return CheckDetection.defaultData();
-            } else {
-                CheckDetection.setDefaultData(result);
-                return result;
+                if (result == Double.POSITIVE_INFINITY
+                        || result == Double.NEGATIVE_INFINITY) {
+                    return CheckDetection.defaultData();
+                } else {
+                    CheckDetection.setDefaultData(result);
+                    return result;
+                }
             }
         }
     }

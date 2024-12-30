@@ -46,7 +46,7 @@ public class SpartanNPC {
         armorStand.setGravity(false);
         armorStand.setSmall(false);
         armorStand.setVisible(false);
-        armorStand.setCustomName("§2" + Register.getPluginName() + " §cAnti§4Cheat");
+        armorStand.setCustomName("§2" + Register.pluginName + " §cAnti§4Cheat");
         armorStand.setCustomNameVisible(true);
         armorStand.setArms(true);
 

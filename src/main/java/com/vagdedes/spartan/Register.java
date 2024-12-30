@@ -24,7 +24,7 @@ import java.util.Set;
 public class Register extends JavaPlugin {
 
     public static Plugin plugin = null;
-    private static String pluginName = "";
+    public static final String pluginName = "Spartan";
     public static final String command = "spartan";
 
     public static final PluginManager manager = Bukkit.getPluginManager();
@@ -32,8 +32,6 @@ public class Register extends JavaPlugin {
 
     public void onEnable() {
         plugin = this;
-        //pluginName = "Sporton";
-        pluginName = plugin.getName();
         plugin.setNaggable(false);
         JarVerification.run();
         Config.create();
@@ -121,10 +119,6 @@ public class Register extends JavaPlugin {
 
     public static Class<?>[] getListeners() {
         return listeners.toArray(new Class[0]);
-    }
-
-    public static String getPluginName() {
-        return pluginName;
     }
 
 }
