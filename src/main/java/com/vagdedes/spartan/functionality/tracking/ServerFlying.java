@@ -23,7 +23,7 @@ public class ServerFlying {
                 && !p.spartan.trackers.has(PlayerTrackers.TrackerFamily.MOTION)
                 && Attributes.getAmount(p, Attributes.GENERIC_FLYING_SPEED) == 0.0) {
             double limit = (p.bukkit().getFlySpeed() * 10.0) + 1.0;
-            Double nmsDistance = p.spartan.movement.getEventDistance();
+            Double nmsDistance = p.getLocation().distance(p.getFromLocation());
 
             if (nmsDistance != null && nmsDistance >= limit
                     || SpartanLocation.distance(

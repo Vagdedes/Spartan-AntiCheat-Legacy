@@ -19,6 +19,7 @@ import org.bukkit.event.vehicle.VehicleEnterEvent;
 
 public class IrregularMovements extends CheckRunner {
 
+    private double oldVertical;
     private long teleport;
     public final CheckDetection limitServerFlying;
     private final IMStepBukkit step;
@@ -48,21 +49,9 @@ public class IrregularMovements extends CheckRunner {
     @Override
     protected void runInternal(boolean cancelled) {
         foodSprint.run();
-        Double vertical = this.protocol.spartan.movement.getEventVertical(),
-                oldVertical = this.protocol.spartan.movement.getPreviousEventVertical(),
-                horizontal = this.protocol.spartan.movement.getEventHorizontal(),
-                oldHorizontal = this.protocol.spartan.movement.getPreviousEventHorizontal(),
-                box = this.protocol.spartan.movement.getEventBox(),
-                oldBox = this.protocol.spartan.movement.getPreviousEventBox();
-
-        if (vertical == null
-                || oldVertical == null
-                || horizontal == null
-                || oldHorizontal == null
-                || box == null
-                || oldBox == null) {
-            return;
-        }
+        double vertical = this.protocol.getLocation().getY() - this.protocol.getFromLocation().getY(),
+                box = this.protocol.getLocation().getY(),
+                oldBox = this.protocol.getFromLocation().getY();
         boolean knownBox = GroundUtils.blockHeightExists(box),
                 knownOldBox = GroundUtils.blockHeightExists(oldBox),
                 teleported = teleport >= System.currentTimeMillis();
@@ -82,6 +71,7 @@ public class IrregularMovements extends CheckRunner {
         baritone.run();
         gravityPackets.run();
         speedPackets.run();
+        this.oldVertical = vertical;
     }
 
     @Override

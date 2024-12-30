@@ -34,7 +34,7 @@ public class Tower extends ProbabilityDetection {
         if (this.protocol.packetsEnabled()) {
             return;
         }
-        Double deltaXZ = this.protocol.spartan.movement.getEventHorizontal();
+        Double deltaXZ = AlgebraUtils.getHorizontalDistance(this.protocol.getLocation(), this.protocol.getFromLocation());
 
         if (deltaXZ == null) {
             return;

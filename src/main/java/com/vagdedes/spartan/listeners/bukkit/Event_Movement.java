@@ -7,7 +7,6 @@ import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
-import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
@@ -57,27 +56,15 @@ public class Event_Movement implements Listener {
                     from = new SpartanLocation(nfrom);
 
             // Values
-            double xDiff = to.getX() - from.getX(),
-                    zDiff = to.getZ() - from.getZ(),
-                    preXZ = (xDiff * xDiff) + (zDiff * zDiff),
-                    toY = to.getY(),
-                    fromY = from.getY(),
-                    dis = Math.sqrt(preXZ + AlgebraUtils.getSquare(toY, fromY)),
+            double toY = to.getY(),
                     box = toY - to.getBlockY(),
-                    ver = toY - fromY,
-                    hor = Math.sqrt(preXZ);
+                    ver = toY - from.getY();
 
             if (!p.movement.processLastMoveEvent(
                     nto,
                     vehicle,
                     nto,
                     nfrom,
-                    dis,
-                    hor,
-                    ver,
-                    xDiff,
-                    zDiff,
-                    box,
                     packets
             )) {
                 p.movement.judgeGround();

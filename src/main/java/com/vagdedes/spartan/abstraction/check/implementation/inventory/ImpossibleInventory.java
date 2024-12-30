@@ -136,14 +136,18 @@ public class ImpossibleInventory extends CheckRunner {
                     && this.protocol.spartan.isDead() ? 5
                     : check.getBooleanOption("check_sprint_jumping", true)
                     && this.protocol.isSprinting()
-                    && this.protocol.spartan.movement.isJumping(this.protocol.spartan.movement.getValueOrDefault(this.protocol.spartan.movement.getEventVertical(), 0.0)) ? 6
+                    && this.protocol.spartan.movement.isJumping(this.getVertical()) ? 6
                     : check.getBooleanOption("check_walk_jumping", true)
                     && !this.protocol.isSprinting()
-                    && this.protocol.spartan.movement.isJumping(this.protocol.spartan.movement.getValueOrDefault(this.protocol.spartan.movement.getEventVertical(), 0.0)) ? 7
+                    && this.protocol.spartan.movement.isJumping(this.getVertical()) ? 7
                     : check.getBooleanOption("check_jumping", true)
-                    && this.protocol.spartan.movement.isJumping(this.protocol.spartan.movement.getValueOrDefault(this.protocol.spartan.movement.getEventVertical(), 0.0)) ? 8
+                    && this.protocol.spartan.movement.isJumping(this.getVertical()) ? 8
                     : 0;
         }
+    }
+
+    private double getVertical() {
+        return this.protocol.getLocation().getY() - this.protocol.getFromLocation().getY();
     }
 
 }

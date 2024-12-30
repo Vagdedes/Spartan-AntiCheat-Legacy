@@ -19,7 +19,6 @@ import com.vagdedes.spartan.utils.minecraft.server.ConfigUtils;
 import me.vagdedes.spartan.api.API;
 import me.vagdedes.spartan.api.PlayerViolationCommandEvent;
 import me.vagdedes.spartan.api.PlayerViolationEvent;
-import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Location;
 
 import java.util.List;

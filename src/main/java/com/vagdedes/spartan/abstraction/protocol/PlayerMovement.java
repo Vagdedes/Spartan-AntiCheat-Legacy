@@ -18,16 +18,6 @@ import java.util.*;
 public class PlayerMovement {
 
     private final SpartanPlayer parent;
-    private Double
-            eventDistance,
-            eventHorizontal,
-            eventPreviousHorizontal,
-            eventVertical,
-            eventXDiff,
-            eventZDiff,
-            eventPreviousVertical,
-            eventBox,
-            eventPreviousBox;
     private final Map<Long, SpartanLocation> locations;
     private int
             airTicks;
@@ -54,58 +44,6 @@ public class PlayerMovement {
 
         this.clampVector = new Vector();
         this.motionY = 0;
-    }
-
-    // Separator
-
-    public double getValueOrDefault(Double value, double def) {
-        return value == null ? def : value;
-    }
-
-    // Separator
-
-    public Double getEventDistance() {
-        return eventDistance;
-    }
-
-    // Separator
-
-    public Double getEventHorizontal() {
-        return eventHorizontal;
-    }
-
-    public Double getPreviousEventHorizontal() {
-        return eventPreviousHorizontal;
-    }
-
-    // Separator
-
-    public Double getEventXDiff() {
-        return eventXDiff;
-    }
-
-    public Double getEventZDiff() {
-        return eventZDiff;
-    }
-
-    // Separator
-
-    public Double getEventVertical() {
-        return eventVertical;
-    }
-
-    public Double getPreviousEventVertical() {
-        return eventPreviousVertical;
-    }
-
-    // Separator
-
-    public Double getEventBox() {
-        return eventBox;
-    }
-
-    public Double getPreviousEventBox() {
-        return eventPreviousBox;
     }
 
     // Separator
@@ -218,17 +156,6 @@ public class PlayerMovement {
         ) != -1;
     }
 
-    public boolean justFell(double d) {
-        return d < 0.0
-                && Math.abs((0.0 - d) - (this.getAirAcceleration() * PlayerUtils.airDrag))
-                <= GroundUtils.maxHeightLengthRatio;
-    }
-
-    public boolean justLanded(double now, double before, double acceleration, double drag, double precision) {
-        return !isFalling(now, acceleration, drag, precision)
-                && isFalling(before, acceleration, drag, precision);
-    }
-
     // Separator
 
     public boolean isGliding() {
@@ -299,9 +226,6 @@ public class PlayerMovement {
 
     public boolean processLastMoveEvent(Location originalTo, Location vehicle,
                                         Location to, Location from,
-                                        double distance, double horizontal,
-                                        double vertical, double xDiff, double zDiff,
-                                        double box,
                                         boolean packets) {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)) {
             double x = clampMin(to.getX(), -3.0E7D, 3.0E7D),
@@ -321,19 +245,8 @@ public class PlayerMovement {
         if (!packets) {
             this.parent.protocol.setFromLocation(from);
         }
-        this.eventDistance = distance;
-        this.eventPreviousHorizontal = this.eventHorizontal;
-        this.eventHorizontal = horizontal;
-        this.eventPreviousVertical = this.eventVertical;
-        this.eventVertical = vertical;
-        this.eventXDiff = xDiff;
-        this.eventZDiff = zDiff;
-        this.eventPreviousBox = this.eventBox;
-        this.eventBox = box;
         this.judgeGround(true);
-        return this.eventPreviousHorizontal != null
-                && this.eventPreviousVertical != null
-                && this.eventPreviousBox != null;
+        return true;
     }
 
     private double clampMin(double d, double d2, double d3) {
@@ -360,15 +273,6 @@ public class PlayerMovement {
 
     public void resetAirTicks() {
         this.airTicks = 0;
-    }
-
-    // Separator
-
-    public boolean isInVoid() {
-        Location loc = this.parent.protocol.getLocationOrVehicle();
-        return MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)
-                ? loc.getY() < loc.getWorld().getMinHeight()
-                : loc.getY() < 0;
     }
 
 }
