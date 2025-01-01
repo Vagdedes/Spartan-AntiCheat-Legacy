@@ -174,15 +174,6 @@ public class Enums {
                         "high amounts of movement packets."
                 }
         ),
-        Simulation(
-                HackCategoryType.MOVEMENT,
-                com.vagdedes.spartan.abstraction.check.implementation.movement.simulation.Simulation.class,
-                new String[]{
-                        "This check will prevent client modules",
-                        "that allow a player to take advantage",
-                        "of any type of movement behavior."
-                }
-        ),
         FastEat(
                 HackCategoryType.PLAYER,
                 com.vagdedes.spartan.abstraction.check.implementation.player.FastEat.class,

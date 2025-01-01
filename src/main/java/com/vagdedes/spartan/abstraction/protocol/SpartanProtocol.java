@@ -52,7 +52,6 @@ public class SpartanProtocol {
     private Location location, from, teleport;
     public String fromWorld;
     public Location simulationStartPoint;
-    public final MCClient mcClient;
     public byte
             simulationDelayPerTP,
             keepEntity;
@@ -110,7 +109,6 @@ public class SpartanProtocol {
         this.transactionVl = 0;
         this.spartan = new SpartanPlayer(this);
         this.timerBalancer = new TimerBalancer();
-        this.mcClient = new MCClient(player);
         this.simulationStartPoint = null;
         this.simulationDelayPerTP = 1;
         this.teleported = false;

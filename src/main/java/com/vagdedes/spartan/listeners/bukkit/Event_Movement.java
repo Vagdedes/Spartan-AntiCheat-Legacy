@@ -81,7 +81,6 @@ public class Event_Movement implements Listener {
             protocol.profile().getRunner(Enums.HackType.Velocity).handle(cancelled, e);
             protocol.profile().getRunner(Enums.HackType.KillAura).handle(cancelled, e);
             protocol.profile().getRunner(Enums.HackType.Criticals).handle(cancelled, e);
-            protocol.profile().getRunner(Enums.HackType.Simulation).handle(cancelled, e);
         }
     }
 

@@ -33,7 +33,6 @@ public class Event_Velocity implements Listener {
             boolean cancelled = e.isCancelled();
             protocol.profile().getRunner(Enums.HackType.IrregularMovements).handle(cancelled, e);
             protocol.profile().getRunner(Enums.HackType.Velocity).handle(cancelled, e);
-            protocol.profile().getRunner(Enums.HackType.Simulation).handle(cancelled, e);
         }
     }
 
