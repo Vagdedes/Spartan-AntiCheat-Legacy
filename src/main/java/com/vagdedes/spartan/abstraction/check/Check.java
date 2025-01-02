@@ -10,6 +10,7 @@ import me.vagdedes.spartan.api.CheckPunishmentToggleEvent;
 import me.vagdedes.spartan.api.CheckSilentToggleEvent;
 import me.vagdedes.spartan.api.CheckToggleEvent;
 import me.vagdedes.spartan.system.Enums;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -290,7 +291,7 @@ public class Check {
 
             if (Config.settings.getBoolean("Important.enable_developer_api")) {
                 event = new CheckToggleEvent(this.hackType, b ? Enums.ToggleAction.ENABLE : Enums.ToggleAction.DISABLE);
-                Register.manager.callEvent(event);
+                Bukkit.getPluginManager().callEvent(event);
             } else {
                 event = null;
             }
@@ -521,7 +522,7 @@ public class Check {
 
             if (Config.settings.getBoolean("Important.enable_developer_api")) {
                 event = new CheckSilentToggleEvent(this.hackType, b ? Enums.ToggleAction.ENABLE : Enums.ToggleAction.DISABLE);
-                Register.manager.callEvent(event);
+                Bukkit.getPluginManager().callEvent(event);
             } else {
                 event = null;
             }
@@ -562,7 +563,7 @@ public class Check {
 
             if (Config.settings.getBoolean("Important.enable_developer_api")) {
                 event = new CheckPunishmentToggleEvent(this.hackType, b ? Enums.ToggleAction.ENABLE : Enums.ToggleAction.DISABLE);
-                Register.manager.callEvent(event);
+                Bukkit.getPluginManager().callEvent(event);
             } else {
                 event = null;
             }

@@ -23,6 +23,7 @@ import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import me.vagdedes.spartan.api.CheckCancelEvent;
 import me.vagdedes.spartan.system.Enums;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 
 import java.util.*;
@@ -291,7 +292,7 @@ public abstract class CheckRunner extends CheckProcess {
             if (SpartanBukkit.isSynchronised()) {
                 if (Config.settings.getBoolean("Important.enable_developer_api")) {
                     CheckCancelEvent checkCancelEvent = new CheckCancelEvent(this.protocol.bukkit(), hackType);
-                    Register.manager.callEvent(checkCancelEvent);
+                    Bukkit.getPluginManager().callEvent(checkCancelEvent);
 
                     if (checkCancelEvent.isCancelled()) {
                         return false;

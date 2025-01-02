@@ -17,6 +17,7 @@ import com.vagdedes.spartan.utils.minecraft.server.ConfigUtils;
 import me.vagdedes.spartan.api.API;
 import me.vagdedes.spartan.api.PlayerViolationCommandEvent;
 import me.vagdedes.spartan.api.PlayerViolationEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 import java.util.Collection;
@@ -310,7 +311,7 @@ public abstract class CheckDetection extends CheckProcess {
                                     hackType,
                                     modifiedCommand
                             );
-                            Register.manager.callEvent(event);
+                            Bukkit.getPluginManager().callEvent(event);
 
                             if (!event.isCancelled()) {
                                 SpartanBukkit.runCommand(modifiedCommand);
@@ -380,7 +381,7 @@ public abstract class CheckDetection extends CheckProcess {
                         hackType,
                         information
                 );
-                Register.manager.callEvent(playerViolationEvent);
+                Bukkit.getPluginManager().callEvent(playerViolationEvent);
 
                 if (playerViolationEvent.isCancelled()) {
                     return;

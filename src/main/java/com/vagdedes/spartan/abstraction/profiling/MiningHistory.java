@@ -9,6 +9,7 @@ import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import me.vagdedes.spartan.api.PlayerFoundOreEvent;
 import me.vagdedes.spartan.system.Enums;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -44,7 +45,7 @@ public class MiningHistory {
 
                 if (Config.settings.getBoolean("Important.enable_developer_api")) {
                     event = new PlayerFoundOreEvent(protocol.bukkit(), log, block.getLocation(), block.getType());
-                    Register.manager.callEvent(event);
+                    Bukkit.getPluginManager().callEvent(event);
                 } else {
                     event = null;
                 }
