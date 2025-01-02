@@ -157,7 +157,8 @@ public abstract class ProbabilityDetection extends CheckDetection {
                     Collection<PlayerProfile> playerProfiles = ResearchEngine.getPlayerProfiles();
 
                     if (!playerProfiles.isEmpty()) {
-                        long previous,
+                        long current,
+                                previous,
                                 difference;
                         double sum = 0.0;
                         int total = 0;
@@ -177,11 +178,11 @@ public abstract class ProbabilityDetection extends CheckDetection {
                                             previous = iterator.next();
 
                                             while (iterator.hasNext()) {
-                                                long current = iterator.next();
+                                                current = iterator.next();
 
                                                 if (loopProfile.getContinuity().wasOnline(current, previous)) {
                                                     difference = current - previous;
-                                                    sum += 1.0 - Math.abs(difference - averageViolationVelocity) / (double) (averageViolationVelocity + difference);
+                                                    sum += 1.0 - Math.abs(difference - averageViolationVelocity) / (averageViolationVelocity + difference);
                                                     total++;
                                                     previous = current;
                                                 }
@@ -192,7 +193,7 @@ public abstract class ProbabilityDetection extends CheckDetection {
                             }
                         }
                         if (total > 0) {
-                            return sum / (double) total;
+                            averageSimilarity = sum / (double) total;
                         } else {
                             averageSimilarity = 1.0;
                         }

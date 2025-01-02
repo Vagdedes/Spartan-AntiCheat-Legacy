@@ -36,11 +36,14 @@ public class CloudBase {
 
     // Parameters
     static String identification = identification(), token = null;
-    static final String version = Register.plugin.getDescription().getVersion();
     static final String separator = ">@#&!%<;=";
 
     static {
-        SpartanBukkit.runRepeatingTask(() -> SpartanBukkit.connectionThread.execute(CloudBase::refresh), 1L, refreshTime);
+        SpartanBukkit.runRepeatingTask(
+                () -> SpartanBukkit.connectionThread.execute(CloudBase::refresh),
+                1L,
+                refreshTime
+        );
     }
 
     // Separator
@@ -135,7 +138,7 @@ public class CloudBase {
             SpartanBukkit.connectionThread.executeIfUnknownThreadElseHere(() -> {
                 try {
                     String[] results = RequestUtils.get(StringUtils.decodeBase64(website) + "?" + identification
-                            + "&action=get&data=automaticConfigurationChanges&version=" + version);
+                            + "&action=get&data=automaticConfigurationChanges&version=" + Register.plugin.getDescription().getVersion());
 
                     if (results.length > 0) {
                         boolean changed = false;
@@ -202,7 +205,7 @@ public class CloudBase {
             SpartanBukkit.connectionThread.executeIfUnknownThreadElseHere(() -> {
                 try {
                     String[] results = RequestUtils.get(StringUtils.decodeBase64(website) + "?" + identification
-                            + "&action=get&data=disabledDetections&version=" + version + "&value="
+                            + "&action=get&data=disabledDetections&version=" + Register.plugin.getDescription().getVersion() + "&value="
                             + MultiVersion.serverVersion.toString());
 
                     if (results.length > 0) {

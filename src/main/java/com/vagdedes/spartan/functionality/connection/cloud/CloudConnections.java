@@ -58,7 +58,7 @@ public class CloudConnections {
             String[] reply = RequestUtils.get(StringUtils.decodeBase64(CloudBase.website)
                             + "?action=get"
                             + "&data=userIdentification"
-                            + "&version=" + CloudBase.version,
+                            + "&version=" + Register.plugin.getDescription().getVersion(),
                     RequestUtils.defaultTimeOut);
 
             if (reply.length > 0) {
@@ -80,7 +80,7 @@ public class CloudConnections {
     static boolean ownsProduct(String productID) { // Once
         try {
             String[] results = RequestUtils.get(StringUtils.decodeBase64(CloudBase.website) + "?" + CloudBase.identification
-                    + "&action=get&data=ownsProduct&version=" + CloudBase.version + "&value=" + productID);
+                    + "&action=get&data=ownsProduct&version=" + Register.plugin.getDescription().getVersion() + "&value=" + productID);
 
             if (results.length > 0) {
                 return results[0].equals("true");
@@ -94,7 +94,7 @@ public class CloudConnections {
     static boolean hasAccount() { // Once
         try {
             String[] results = RequestUtils.get(StringUtils.decodeBase64(CloudBase.website) + "?" + CloudBase.identification
-                    + "&action=get&data=hasAccount&version=" + CloudBase.version);
+                    + "&action=get&data=hasAccount&version=" + Register.plugin.getDescription().getVersion());
 
             if (results.length > 0) {
                 return !results[0].equals("false");
@@ -108,7 +108,7 @@ public class CloudConnections {
     static String[][] getStaffAnnouncements() { // Once
         try {
             String[] results = RequestUtils.get(StringUtils.decodeBase64(CloudBase.website) + "?" + CloudBase.identification
-                    + "&action=get&data=staffAnnouncements&version=" + CloudBase.version);
+                    + "&action=get&data=staffAnnouncements&version=" + Register.plugin.getDescription().getVersion());
 
             if (results.length > 0) {
                 String[] announcements = results[0].split(CloudBase.separator);
@@ -138,7 +138,7 @@ public class CloudConnections {
                         int webhookVersion = 2;
                         String crossServerInformationOption = CrossServerNotifications.getServerName();
                         RequestUtils.get(StringUtils.decodeBase64(CloudBase.website) + "?" + CloudBase.identification
-                                + "&action=add&data=discordWebhooks&version=" + CloudBase.version + "&value="
+                                + "&action=add&data=discordWebhooks&version=" + Register.plugin.getDescription().getVersion() + "&value="
                                 + URLEncoder.encode(
                                 webhookVersion + CloudBase.separator
                                         + url + CloudBase.separator

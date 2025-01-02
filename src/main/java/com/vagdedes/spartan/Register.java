@@ -15,7 +15,6 @@ import com.vagdedes.spartan.utils.minecraft.server.ProxyUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.LinkedHashSet;
@@ -27,24 +26,20 @@ public class Register extends JavaPlugin {
     public static final String pluginName = "Spartan";
     public static final String command = "spartan";
 
-    public static final PluginManager manager = Bukkit.getPluginManager();
     private static final Set<Class<?>> listeners = new LinkedHashSet<>(2);
 
     public void onEnable() {
-        plugin = this;
-        plugin.setNaggable(false);
-        JarVerification.run();
-        Config.create();
-
-        // Version
         if (MultiVersion.serverVersion == MultiVersion.MCVersion.OTHER) {
             AwarenessNotifications.forcefullySend(
                     "The server's version or type is not supported. "
                             + "Please contact the plugin's developer if you think this is an error."
             );
-            disablePlugin();
+            Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
+        plugin = this;
+        JarVerification.run(this);
+        Config.create();
 
         // Base
         Config.settings.runOnLogin();
@@ -90,7 +85,6 @@ public class Register extends JavaPlugin {
 
     public void onDisable() {
         plugin = this;
-        plugin.setNaggable(false);
 
         // Separator
         ProxyUtils.unregister();
@@ -102,14 +96,14 @@ public class Register extends JavaPlugin {
 
     public static void enable(Listener l) {
         if (isPluginEnabled() && listeners.add(l.getClass())) {
-            manager.registerEvents(l, plugin);
+            Bukkit.getPluginManager().registerEvents(l, plugin);
         }
     }
 
     public static void disablePlugin() {
         if (isPluginEnabled()) {
             plugin.setNaggable(false);
-            manager.disablePlugin(plugin);
+            Bukkit.getPluginManager().disablePlugin(plugin);
         }
     }
 

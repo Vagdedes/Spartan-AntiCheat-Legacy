@@ -4,6 +4,7 @@ import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
+import com.vagdedes.spartan.abstraction.check.Threads;
 import com.vagdedes.spartan.abstraction.inventory.implementation.MainMenu;
 import com.vagdedes.spartan.abstraction.profiling.MiningHistory;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
@@ -34,6 +35,7 @@ public class ResearchEngine {
     public static Map<Enums.HackType, Collection<Check.DataType>> violationFired = new ConcurrentHashMap<>();
     private static long schedulerTicks = 0L;
     private static final Map<String, PlayerProfile> playerProfiles = new ConcurrentHashMap<>();
+    private static final Threads.ThreadPool statisticsThread = new Threads.ThreadPool(1L);
 
     static {
         SpartanBukkit.runRepeatingTask(() -> {
@@ -44,7 +46,7 @@ public class ResearchEngine {
                     if (Config.sql.isEnabled()) {
                         refresh(Register.isPluginEnabled());
                     } else {
-                        SpartanBukkit.statisticsThread.executeIfFree(() -> {
+                        statisticsThread.executeIfFree(() -> {
                             updateCache(false);
                             MainMenu.refresh();
                         });
@@ -52,7 +54,7 @@ public class ResearchEngine {
                 } else {
                     schedulerTicks -= 1;
 
-                    SpartanBukkit.statisticsThread.executeIfFree(() -> {
+                    statisticsThread.executeIfFree(() -> {
                         updateCache(false);
 
                         if (schedulerTicks % TPS.maximum == 0) {
@@ -111,7 +113,7 @@ public class ResearchEngine {
 
     public static void resetData(Enums.HackType hackType) {
         if (firstLoad) {
-            SpartanBukkit.statisticsThread.execute(() -> {
+            statisticsThread.execute(() -> {
                 String hackTypeString = hackType.toString();
 
                 // Separator
@@ -170,7 +172,7 @@ public class ResearchEngine {
 
             if (isStorageMode()) {
                 // Clear Files/Database
-                SpartanBukkit.statisticsThread.execute(() -> {
+                statisticsThread.execute(() -> {
                     if (player == null) {
                         playerProfiles.remove(playerName);
                     } else {
@@ -354,9 +356,9 @@ public class ResearchEngine {
         };
 
         if (firstLoad) {
-            SpartanBukkit.statisticsThread.executeIfFree(runnable);
+            statisticsThread.executeIfFree(runnable);
         } else {
-            SpartanBukkit.statisticsThread.execute(runnable);
+            statisticsThread.execute(runnable);
             firstLoad = true;
         }
     }

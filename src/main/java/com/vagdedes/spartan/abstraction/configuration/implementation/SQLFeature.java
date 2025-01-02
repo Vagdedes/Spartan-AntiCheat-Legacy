@@ -1,11 +1,13 @@
 package com.vagdedes.spartan.abstraction.configuration.implementation;
 
+import com.vagdedes.spartan.abstraction.check.Threads;
 import com.vagdedes.spartan.abstraction.configuration.ConfigurationBuilder;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.notifications.CrossServerNotifications;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.AntiCheatLogs;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -17,6 +19,8 @@ import org.bukkit.Material;
 import java.sql.*;
 
 public class SQLFeature extends ConfigurationBuilder {
+
+    private static final Threads.ThreadPool sqlThread = new Threads.ThreadPool(TPS.tickTime);
 
     public SQLFeature() {
         super("sql");
@@ -152,7 +156,7 @@ public class SQLFeature extends ConfigurationBuilder {
         addOption("use_SSL", true);
         addOption("allow_public_key_retrieval", false);
         addOption("escape_special_characters", false);
-        SpartanBukkit.sqlThread.executeWithPriority(this::connect);
+        sqlThread.executeWithPriority(this::connect);
     }
 
     // Separator
@@ -230,7 +234,7 @@ public class SQLFeature extends ConfigurationBuilder {
     // Separator
 
     public void update(String command) {
-        SpartanBukkit.sqlThread.execute(() -> {
+        sqlThread.execute(() -> {
             connect();
 
             try {
@@ -251,7 +255,7 @@ public class SQLFeature extends ConfigurationBuilder {
         ResultSet[] rs = new ResultSet[1];
         Thread thread = Thread.currentThread();
 
-        SpartanBukkit.sqlThread.execute(() -> {
+        sqlThread.execute(() -> {
             connect();
 
             try {

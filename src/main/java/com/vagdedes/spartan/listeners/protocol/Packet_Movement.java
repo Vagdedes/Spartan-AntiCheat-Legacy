@@ -6,6 +6,7 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.vagdedes.spartan.Register;
+import com.vagdedes.spartan.abstraction.check.Threads;
 import com.vagdedes.spartan.abstraction.event.PlayerTickEvent;
 import com.vagdedes.spartan.abstraction.event.SuperPositionPacketEvent;
 import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
@@ -27,6 +28,8 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import java.util.Set;
 
 public class Packet_Movement extends PacketAdapter {
+
+    private static final Threads.ThreadPool movementThread = new Threads.ThreadPool(1L);
 
     public Packet_Movement() {
         super(
@@ -195,7 +198,7 @@ public class Packet_Movement extends PacketAdapter {
                     p.getLocation()
             );
             moveEvent.setCancelled(event.isCancelled());
-            SpartanBukkit.movementThread.execute(() ->
+            movementThread.execute(() ->
                     Event_Movement.event(moveEvent, true)
             );
             if (p.flyingTicks > 0) p.flyingTicks--;
