@@ -114,12 +114,12 @@ public abstract class CheckDetection extends CheckProcess {
         return 0;
     }
 
-    Long getFirstTime(Check.DataType dataType) {
-        return null;
+    long getFirstTime(Check.DataType dataType) {
+        return -1L;
     }
 
-    Long getLastTime(Check.DataType dataType) {
-        return null;
+    long getLastTime(Check.DataType dataType) {
+        return -1L;
     }
 
     abstract double getDataCompletion(Check.DataType dataType);
@@ -138,7 +138,7 @@ public abstract class CheckDetection extends CheckProcess {
         }
     }
 
-    public double getProbabilityMultiplier(double timeVelocity) {
+    public double getProbabilityMultiplier(long time) {
         return 1.0;
     }
 
@@ -152,9 +152,8 @@ public abstract class CheckDetection extends CheckProcess {
 
     public abstract boolean canSendNotification(Object detected, int probability);
 
-    protected void notify(boolean enabled, boolean sufficientData, long time, String information) {
-        double probability = this.getProbability(this.protocol.spartan.dataType),
-                certainty = PlayerEvidence.probabilityToCertainty(probability) * 100.0,
+    protected void notify(double probability, boolean enabled, boolean sufficientData, long time, String information) {
+        double certainty = PlayerEvidence.probabilityToCertainty(probability) * 100.0,
                 dataCompletion = sufficientData ? 100.0 : this.getDataCompletion(this.protocol.spartan.dataType) * 100.0;
         int roundedCertainty = AlgebraUtils.integerRound(certainty);
         String notification = ConfigUtils.replaceWithSyntax(
@@ -229,12 +228,12 @@ public abstract class CheckDetection extends CheckProcess {
 
     // Punishment
 
-    private void punish() {
+    private void punish(double probability) {
         Check check = hackType.getCheck();
 
         if (check.canPunish(this.protocol.spartan.dataType)
                 && PlayerEvidence.surpassedProbability(
-                this.getProbability(this.protocol.spartan.dataType),
+                probability,
                 PlayerEvidence.punishmentProbability)
         ) {
             List<String> commands = check.getPunishmentCommands();
@@ -334,17 +333,24 @@ public abstract class CheckDetection extends CheckProcess {
                     return;
                 }
             }
+            // Calculate probability
+            double probability = this.getProbability(this.protocol.spartan.dataType) * this.getProbabilityMultiplier(time);
+
+            // Store, potentially recalculate and check data
             this.store(
                     this.protocol.spartan.dataType,
                     time
             );
             ResearchEngine.queueToCache(this.hackType, this.protocol.spartan.dataType);
             boolean sufficientData = this.hasSufficientData(this.protocol.spartan.dataType);
-            this.notify(finalIsEnabled, sufficientData, time, information);
 
+            // Notification
+            this.notify(probability, finalIsEnabled, sufficientData, time, information);
+
+            // Prevention & Punishment
             if (finalIsEnabled) {
                 if (sufficientData) {
-                    this.punish();
+                    this.punish(probability);
                 }
                 this.executor.prevention = newPrevention;
                 this.executor.prevention.canPrevent =
@@ -353,7 +359,7 @@ public abstract class CheckDetection extends CheckProcess {
                                 && (silentCause == null
                                 || silentCause.hasExpired()
                                 || !silentCause.pointerMatches(information))
-                                && PlayerEvidence.surpassedProbability(this.getProbability(this.protocol.spartan.dataType), PlayerEvidence.preventionProbability);
+                                && PlayerEvidence.surpassedProbability(probability, PlayerEvidence.preventionProbability);
             }
         };
 

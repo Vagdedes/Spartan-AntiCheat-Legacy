@@ -39,7 +39,7 @@ public abstract class ProbabilityDetection extends CheckDetection {
 
     @Override
     protected final boolean hasData(PlayerProfile profile, Check.DataType dataType) {
-        return getFirstTime(dataType) != null;
+        return getFirstTime(dataType) != -1L;
     }
 
     @Override
@@ -109,7 +109,7 @@ public abstract class ProbabilityDetection extends CheckDetection {
 
     @Override
     public final double getData(PlayerProfile profile, Check.DataType dataType) {
-        if (getFirstTime(dataType) == null) {
+        if (getFirstTime(dataType) == -1L) {
             return CheckDetection.defaultData();
         } else {
             Collection<Long> data = this.data.get(dataType);
@@ -171,12 +171,12 @@ public abstract class ProbabilityDetection extends CheckDetection {
     }
 
     @Override
-    final Long getFirstTime(Check.DataType dataType) {
+    final long getFirstTime(Check.DataType dataType) {
         return this.firstTime[dataType.ordinal()];
     }
 
     @Override
-    final Long getLastTime(Check.DataType dataType) {
+    final long getLastTime(Check.DataType dataType) {
         return this.lastTime[dataType.ordinal()];
     }
 
@@ -233,8 +233,15 @@ public abstract class ProbabilityDetection extends CheckDetection {
     // Separator
 
     @Override
-    public final double getProbabilityMultiplier(double timeVelocity) {
-        return 1.0;
+    public final double getProbabilityMultiplier(long time) {
+        long lastTime = this.getLastTime(this.protocol.spartan.dataType);
+
+        if (lastTime == -1L) {
+            return 1.0;
+        } else {
+            long timeVelocity = time - lastTime;
+            return 1.0;
+        }
     }
 
 }

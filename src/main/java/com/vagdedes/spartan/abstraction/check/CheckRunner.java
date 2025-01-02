@@ -113,12 +113,12 @@ public abstract class CheckRunner extends CheckProcess {
 
             for (PlayerProfile profile : playerProfiles) {
                 for (CheckDetection detection : profile.getRunner(this.hackType).getDetections()) {
-                    Long firstTime = detection.getFirstTime(dataType);
+                    long firstTime = detection.getFirstTime(dataType);
 
-                    if (firstTime != null) {
-                        Long lastTime = detection.getLastTime(dataType);
+                    if (firstTime != -1L) {
+                        long lastTime = detection.getLastTime(dataType);
 
-                        if (lastTime != null) {
+                        if (lastTime != -1L) {
                             double completion = detection.getDataCompletion(dataType);
                             averageCompletion += completion * completion;
                             lastTime -= firstTime;
