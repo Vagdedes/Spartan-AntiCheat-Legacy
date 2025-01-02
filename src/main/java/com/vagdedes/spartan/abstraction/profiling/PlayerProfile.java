@@ -83,6 +83,11 @@ public class PlayerProfile {
         return this.runners[0].protocol;
     }
 
+    public boolean isOnline() {
+        SpartanProtocol protocol = this.protocol();
+        return protocol != null && SpartanBukkit.isOnline(protocol);
+    }
+
     public ProfileContinuity getContinuity() {
         return this.continuity;
     }

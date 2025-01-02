@@ -151,6 +151,10 @@ public class SpartanBukkit {
         return playerProtocol.containsKey(uuid);
     }
 
+    public static boolean isOnline(SpartanProtocol protocol) {
+        return playerProtocol.containsValue(protocol);
+    }
+
     public static SpartanProtocol deleteProtocol(Player player) {
         if (ProtocolLib.isTemporary(player)) {
             return null;

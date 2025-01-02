@@ -34,14 +34,14 @@ public class CloudConnections {
                                 name = name.replace(fileType, "").replace(pluginName, "");
 
                                 if (!name.isEmpty()) {
-                                    String[] reply = RequestUtils.get(StringUtils.decodeBase64(CloudBase.accountWebsite) + "?token=" + name);
+                                    String[] reply = RequestUtils.get(StringUtils.decodeBase64(JarVerification.accountWebsite) + "?token=" + name);
 
                                     if (reply.length > 0) {
                                         String line = reply[0];
 
                                         if (AlgebraUtils.validInteger(line)) {
                                             int id = Integer.parseInt(line);
-                                            CloudBase.token = name;
+                                            IDs.token = name;
                                             IDs.set(id, name.hashCode());
                                             return id;
                                         }
@@ -55,7 +55,7 @@ public class CloudConnections {
 
             // Separator
 
-            String[] reply = RequestUtils.get(StringUtils.decodeBase64(CloudBase.website)
+            String[] reply = RequestUtils.get(StringUtils.decodeBase64(JarVerification.website)
                             + "?action=get"
                             + "&data=userIdentification"
                             + "&version=" + Register.plugin.getDescription().getVersion(),
@@ -79,7 +79,7 @@ public class CloudConnections {
 
     static boolean ownsProduct(String productID) { // Once
         try {
-            String[] results = RequestUtils.get(StringUtils.decodeBase64(CloudBase.website) + "?" + CloudBase.identification
+            String[] results = RequestUtils.get(StringUtils.decodeBase64(JarVerification.website) + "?" + CloudBase.identification()
                     + "&action=get&data=ownsProduct&version=" + Register.plugin.getDescription().getVersion() + "&value=" + productID);
 
             if (results.length > 0) {
@@ -93,7 +93,7 @@ public class CloudConnections {
 
     static boolean hasAccount() { // Once
         try {
-            String[] results = RequestUtils.get(StringUtils.decodeBase64(CloudBase.website) + "?" + CloudBase.identification
+            String[] results = RequestUtils.get(StringUtils.decodeBase64(JarVerification.website) + "?" + CloudBase.identification()
                     + "&action=get&data=hasAccount&version=" + Register.plugin.getDescription().getVersion());
 
             if (results.length > 0) {
@@ -107,7 +107,7 @@ public class CloudConnections {
 
     static String[][] getStaffAnnouncements() { // Once
         try {
-            String[] results = RequestUtils.get(StringUtils.decodeBase64(CloudBase.website) + "?" + CloudBase.identification
+            String[] results = RequestUtils.get(StringUtils.decodeBase64(JarVerification.website) + "?" + CloudBase.identification()
                     + "&action=get&data=staffAnnouncements&version=" + Register.plugin.getDescription().getVersion());
 
             if (results.length > 0) {
@@ -137,7 +137,7 @@ public class CloudConnections {
                     try {
                         int webhookVersion = 2;
                         String crossServerInformationOption = CrossServerNotifications.getServerName();
-                        RequestUtils.get(StringUtils.decodeBase64(CloudBase.website) + "?" + CloudBase.identification
+                        RequestUtils.get(StringUtils.decodeBase64(JarVerification.website) + "?" + CloudBase.identification()
                                 + "&action=add&data=discordWebhooks&version=" + Register.plugin.getDescription().getVersion() + "&value="
                                 + URLEncoder.encode(
                                 webhookVersion + CloudBase.separator

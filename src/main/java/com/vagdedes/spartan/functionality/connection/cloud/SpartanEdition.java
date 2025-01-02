@@ -54,7 +54,7 @@ public class SpartanEdition {
     public static void refresh() {
         if (firstLoad) {
             firstLoad = false;
-            currentVersion = !CloudBase.hasToken();
+            currentVersion = !IDs.hasToken();
         }
         SpartanBukkit.connectionThread.executeIfUnknownThreadElseHere(() -> {
             if (!currentVersion
@@ -74,7 +74,7 @@ public class SpartanEdition {
                     && !CloudConnections.ownsProduct("26")) {
                 alternativeVersion = false;
             }
-            hasAccount = !CloudBase.hasToken() || CloudConnections.hasAccount();
+            hasAccount = !IDs.hasToken() || CloudConnections.hasAccount();
         });
     }
 

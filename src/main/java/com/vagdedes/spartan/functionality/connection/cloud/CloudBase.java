@@ -19,11 +19,6 @@ import java.util.*;
 
 public class CloudBase {
 
-    // URLs
-    static final String
-            website = "aHR0cHM6Ly93d3cudmFnZGVkZXMuY29tL21pbmVjcmFmdC9jbG91ZC8=",
-            accountWebsite = "aHR0cHM6Ly93d3cuaWRlYWxpc3RpYy5haS9hcGkvdjEvcHJvZHVjdC92ZXJpZnlEb3dubG9hZC8=";
-
     // Cache
     private static final Map<Enums.HackType, String[]>
             disabledDetections = new LinkedHashMap<>(Enums.HackType.values().length);
@@ -35,7 +30,6 @@ public class CloudBase {
     private static final long refreshTime = 60_000L;
 
     // Parameters
-    static String identification = identification(), token = null;
     static final String separator = ">@#&!%<;=";
 
     static {
@@ -44,20 +38,6 @@ public class CloudBase {
                 1L,
                 refreshTime
         );
-    }
-
-    // Separator
-
-    public static boolean hasToken() {
-        return token != null && !IDs.hasUserIDByDefault;
-    }
-
-    public static String getToken() {
-        return IDs.hasUserIDByDefault ? null : token;
-    }
-
-    public static String getRawToken() {
-        return token;
     }
 
     // Separator
@@ -113,15 +93,11 @@ public class CloudBase {
         }
     }
 
-    public static void clear(boolean cache) {
-        if (cache) {
-            disabledDetections.clear();
-        } else {
-            identification = identification();
-        }
+    public static void clear() {
+        disabledDetections.clear();
     }
 
-    private static String identification() {
+    public static String identification() {
         return "identification=" + IDs.platform() + "|" + IDs.user() + "|" + IDs.file();
     }
 
@@ -137,7 +113,7 @@ public class CloudBase {
             // Separator
             SpartanBukkit.connectionThread.executeIfUnknownThreadElseHere(() -> {
                 try {
-                    String[] results = RequestUtils.get(StringUtils.decodeBase64(website) + "?" + identification
+                    String[] results = RequestUtils.get(StringUtils.decodeBase64(JarVerification.website) + "?" + identification()
                             + "&action=get&data=automaticConfigurationChanges&version=" + Register.plugin.getDescription().getVersion());
 
                     if (results.length > 0) {
@@ -204,7 +180,7 @@ public class CloudBase {
 
             SpartanBukkit.connectionThread.executeIfUnknownThreadElseHere(() -> {
                 try {
-                    String[] results = RequestUtils.get(StringUtils.decodeBase64(website) + "?" + identification
+                    String[] results = RequestUtils.get(StringUtils.decodeBase64(JarVerification.website) + "?" + identification()
                             + "&action=get&data=disabledDetections&version=" + Register.plugin.getDescription().getVersion() + "&value="
                             + MultiVersion.serverVersion.toString());
 
