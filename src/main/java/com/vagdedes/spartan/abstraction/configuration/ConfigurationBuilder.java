@@ -143,7 +143,7 @@ public abstract class ConfigurationBuilder {
         clearOption(name);
     }
 
-    public final void addOption(String name, Object value) {
+    protected final void addOption(String name, Object value) {
         ConfigUtils.add(file, name, value);
         clearOption(name);
     }
@@ -157,8 +157,4 @@ public abstract class ConfigurationBuilder {
     }
 
     abstract public void create();
-
-    protected void addOption(String option, String value) {
-        ConfigUtils.add(file, option, value);
-    }
 }

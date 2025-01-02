@@ -7,10 +7,7 @@ import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudConnections;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.notifications.clickable.ClickableMessage;
-import com.vagdedes.spartan.functionality.server.Config;
-import com.vagdedes.spartan.functionality.server.MultiVersion;
-import com.vagdedes.spartan.functionality.server.Permissions;
-import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.functionality.server.*;
 import com.vagdedes.spartan.functionality.tracking.AntiCheatLogs;
 import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
 import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
@@ -22,6 +19,7 @@ import me.vagdedes.spartan.api.PlayerViolationCommandEvent;
 import me.vagdedes.spartan.api.PlayerViolationEvent;
 import org.bukkit.Location;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -32,7 +30,8 @@ public abstract class CheckDetection extends CheckProcess {
     public static final String
             javaPlayerIdentifier = "Java:",
             checkIdentifier = "Check:",
-            detectionIdentifier = "Detection:";
+            detectionIdentifier = "Detection:",
+            certaintyIdentifier = "Certainty:";
     private static double defaultData = (double) Long.MAX_VALUE;
 
     protected static double defaultData() {
@@ -45,6 +44,7 @@ public abstract class CheckDetection extends CheckProcess {
 
     // Separator
 
+    private long accumulatedProbabilityTime;
     public final CheckRunner executor;
     public final String name, random;
     private final boolean def;
@@ -138,10 +138,6 @@ public abstract class CheckDetection extends CheckProcess {
         }
     }
 
-    public double getProbabilityMultiplier(long time) {
-        return 1.0;
-    }
-
     final double getProbability(Check.DataType dataType) {
         return isEnabled()
                 ? this.probability.getOrDefault(dataType, PlayerEvidence.emptyProbability)
@@ -150,7 +146,66 @@ public abstract class CheckDetection extends CheckProcess {
 
     // Notification
 
-    public abstract boolean canSendNotification(Object detected, int probability);
+    private long getAccumulatedProbabilityTime(long time) {
+        return Math.max(this.accumulatedProbabilityTime - time, 0L);
+    }
+
+    public final boolean canSendNotification(Object detected, double probability) {
+        int ticks = this.executor.getNotificationTicksCooldown(protocol);
+
+        if (ticks == 0) {
+            return true;
+        } else {
+            if (this.notifications <= System.currentTimeMillis()) {
+                CheckDetection detection = detected instanceof CheckDetection
+                        ? (CheckDetection) detected
+                        : null;
+
+                if (probability == -1.0 || detection == null) {
+                    this.notifications = System.currentTimeMillis() + (ticks * TPS.tickTime);
+                    return true;
+                } else {
+                    int threshold = 1_000;
+
+                    if (detection.accumulatedProbabilityTime < System.currentTimeMillis()) {
+                        detection.accumulatedProbabilityTime = System.currentTimeMillis() + AlgebraUtils.integerRound(probability * threshold);
+                    } else {
+                        detection.accumulatedProbabilityTime += AlgebraUtils.integerRound(probability * threshold);
+                    }
+                    long remaining = detection.getAccumulatedProbabilityTime(System.currentTimeMillis());
+
+                    if (remaining >= threshold) {
+                        Collection<SpartanProtocol> protocols = SpartanBukkit.getProtocols();
+                        long sum = 0L;
+                        int total = 0;
+
+                        if (!protocols.isEmpty()) {
+                            long individual;
+
+                            for (SpartanProtocol protocol : protocols) {
+                                if (!protocol.spartan.isAFK()) {
+                                    individual = protocol.profile().getRunner(this.hackType).getDetection(this.name).getAccumulatedProbabilityTime(System.currentTimeMillis());
+                                    sum += individual * individual;
+                                    total++;
+                                }
+                            }
+                        }
+
+                        if (total > 0) {
+                            if (remaining >= Math.sqrt(sum / (double) total)) {
+                                detection.notifications = System.currentTimeMillis() + (ticks * TPS.tickTime);
+                                return true;
+                            }
+                        } else {
+                            this.notifications = System.currentTimeMillis() + (ticks * TPS.tickTime);
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+    }
 
     protected void notify(double probability, boolean enabled, boolean sufficientData, long time, String information) {
         double certainty = PlayerEvidence.probabilityToCertainty(probability) * 100.0,
@@ -173,7 +228,7 @@ public abstract class CheckDetection extends CheckProcess {
                 + "(" + checkIdentifier + " " + this.hackType + "), "
                 + "(" + javaPlayerIdentifier + " " + (!this.protocol.spartan.isBedrockPlayer()) + ")" + ", "
                 + "(" + detectionIdentifier + " " + this.name + ")" + ", "
-                + "(Certainty: " + AlgebraUtils.cut(certainty, 2) + "), "
+                + "(" + certaintyIdentifier + " " + AlgebraUtils.cut(certainty, 2) + "),"
                 + "(Data-Completion: " + AlgebraUtils.cut(dataCompletion, 2) + "), "
                 + "(Server-Version: " + MultiVersion.serverVersion.toString() + "), "
                 + "(Plugin-Version: " + API.getVersion() + "), "
@@ -212,7 +267,7 @@ public abstract class CheckDetection extends CheckProcess {
 
                 if (!protocols.isEmpty()) {
                     for (SpartanProtocol staff : protocols) {
-                        if (staff.profile().getRunner(this.hackType).getDetection(this.name).canSendNotification(this.protocol, roundedCertainty)) {
+                        if (staff.profile().getRunner(this.hackType).getDetection(this.name).canSendNotification(this, certainty)) {
                             ClickableMessage.sendCommand(
                                     staff.bukkit(),
                                     notification,
@@ -333,9 +388,6 @@ public abstract class CheckDetection extends CheckProcess {
                     return;
                 }
             }
-            // Calculate probability
-            double probability = this.getProbability(this.protocol.spartan.dataType) * this.getProbabilityMultiplier(time);
-
             // Store, potentially recalculate and check data
             this.store(
                     this.protocol.spartan.dataType,
@@ -343,6 +395,7 @@ public abstract class CheckDetection extends CheckProcess {
             );
             ResearchEngine.queueToCache(this.hackType, this.protocol.spartan.dataType);
             boolean sufficientData = this.hasSufficientData(this.protocol.spartan.dataType);
+            double probability = this.getProbability(this.protocol.spartan.dataType);
 
             // Notification
             this.notify(probability, finalIsEnabled, sufficientData, time, information);

@@ -1,2 +1,4 @@
-[#] Fixed certain false positives with the old gravity detection.
-[#] Fixed FastBreak false positives.
+[#] Fixed certain false positives with the old gravity detection
+[#] Fixed FastBreak false positives
+[-] Removed the settings.yml option 'Punishments.broadcast_on_punishment'
+[#] Improved notifications by reducing their spam and increasing their importance

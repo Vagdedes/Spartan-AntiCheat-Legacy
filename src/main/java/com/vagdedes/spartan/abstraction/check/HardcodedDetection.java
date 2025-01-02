@@ -35,24 +35,4 @@ public abstract class HardcodedDetection extends CheckDetection {
         return this.hasSufficientData(dataType) ? 1.0 : 0.0;
     }
 
-    @Override
-    public final boolean canSendNotification(Object detected, int probability) {
-        long time = System.currentTimeMillis();
-
-        if (this.notifications <= time) {
-            boolean player = detected instanceof SpartanProtocol;
-            int ticks = this.executor.getNotificationTicksCooldown(
-                    player ? (SpartanProtocol) detected : null
-            );
-
-            if (ticks > 0) {
-                this.notifications = time + (ticks * TPS.tickTime);
-            } else {
-                this.notifications = time;
-            }
-            return true;
-        }
-        return false;
-    }
-
 }

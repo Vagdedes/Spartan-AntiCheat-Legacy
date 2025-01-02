@@ -10,8 +10,6 @@ public class Messages extends ConfigurationBuilder {
 
     @Override
     public void create() {
-        clear();
-
         addOption("console_name", "Console");
         addOption("no_permission", "&8[&2" + prefix + "&8]&c You don't have permission to interact with this.");
         addOption("player_not_found_message", "&8[&2" + prefix + "&8]&c Player not found.");

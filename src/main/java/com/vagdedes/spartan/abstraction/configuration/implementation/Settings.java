@@ -17,10 +17,6 @@ public class Settings extends ConfigurationBuilder {
 
     @Override
     public void create() {
-        clear();
-
-        addOption("Punishments.broadcast_on_punishment", true);
-
         addOption("Logs.log_file", true);
         addOption("Logs.log_console", true);
 

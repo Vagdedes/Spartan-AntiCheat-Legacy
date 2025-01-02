@@ -51,11 +51,19 @@ public class CrossServerNotifications {
                                                         detection = ResearchEngine.findInformation(
                                                                 rs.getString("information"),
                                                                 CheckDetection.detectionIdentifier
+                                                        ),
+                                                        certaintyString = ResearchEngine.findInformation(
+                                                                rs.getString("information"),
+                                                                CheckDetection.certaintyIdentifier
                                                         );
+
                                                 notification = "§l[" + serverName + "]§r " + notification;
 
                                                 for (SpartanProtocol protocol : protocols) {
-                                                    if (protocol.profile().getRunner(hackType).getDetection(detection).canSendNotification(playerName, 0)) {
+                                                    if (protocol.profile().getRunner(hackType).getDetection(detection).canSendNotification(
+                                                            playerName,
+                                                            certaintyString == null ? -1.0 : Double.parseDouble(certaintyString)
+                                                    )) {
                                                         protocol.bukkit().sendMessage(notification);
                                                         processed.put(id, true);
                                                     }

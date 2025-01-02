@@ -4,7 +4,6 @@ import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.minecraft.server.ConfigUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
@@ -38,16 +37,12 @@ public class PlayerPunishments {
                                     .replace("{punisher}", punisherName),
                             null);
 
-            if (Config.settings.getBoolean("Punishments.broadcast_on_punishment")) {
-                Bukkit.broadcastMessage(announcement);
-            } else {
-                Collection<SpartanProtocol> protocols = SpartanBukkit.getProtocols();
+            Collection<SpartanProtocol> protocols = SpartanBukkit.getProtocols();
 
-                if (!protocols.isEmpty()) {
-                    for (SpartanProtocol protocol : protocols) {
-                        if (DetectionNotifications.hasPermission(protocol)) {
-                            protocol.bukkit().sendMessage(announcement);
-                        }
+            if (!protocols.isEmpty()) {
+                for (SpartanProtocol protocol : protocols) {
+                    if (DetectionNotifications.hasPermission(protocol)) {
+                        protocol.bukkit().sendMessage(announcement);
                     }
                 }
             }

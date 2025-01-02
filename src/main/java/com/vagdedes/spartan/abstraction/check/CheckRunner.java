@@ -325,12 +325,12 @@ public abstract class CheckRunner extends CheckProcess {
                 && frequency != DetectionNotifications.defaultFrequency) {
             return frequency;
         } else if (detected != null
-                && (detected.bukkit().equals(this.protocol.bukkit())
+                && (detected.equals(this.protocol)
                 || detected.getWorld().equals(this.protocol.getWorld())
                 && detected.getLocation().distance(this.protocol.getLocation()) <= PlayerUtils.chunk)) {
             return AlgebraUtils.integerRound(Math.sqrt(TPS.maximum));
         } else {
-            return AlgebraUtils.integerCeil(TPS.maximum);
+            return AlgebraUtils.integerRound(TPS.maximum);
         }
     }
 

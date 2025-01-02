@@ -15,7 +15,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class ProbabilityDetection extends CheckDetection {
 
-    private int lastProbability;
     private final int[] dataCount;
     private final long[] firstTime, lastTime;
     private final Map<Check.DataType, Collection<Long>> data;
@@ -102,7 +101,11 @@ public abstract class ProbabilityDetection extends CheckDetection {
             } else if (time < this.firstTime[dataType.ordinal()]) {
                 this.firstTime[dataType.ordinal()] = time;
             }
-            this.lastTime[dataType.ordinal()] = time;
+            if (this.lastTime[dataType.ordinal()] == -1L) {
+                this.lastTime[dataType.ordinal()] = time;
+            } else if (time > this.lastTime[dataType.ordinal()]) {
+                this.lastTime[dataType.ordinal()] = time;
+            }
             this.dataCount[dataType.ordinal()]++;
         }
     }
@@ -118,6 +121,7 @@ public abstract class ProbabilityDetection extends CheckDetection {
                 return CheckDetection.defaultData();
             } else {
                 double violationCount,
+                        averageSimilarity,
                         averageViolationVelocity,
                         comparisonCount = 0.0;
                 long violationVelocitySquareSum = 0;
@@ -149,10 +153,56 @@ public abstract class ProbabilityDetection extends CheckDetection {
                 }
                 if (comparisonCount == 0.0) {
                     averageViolationVelocity = Long.MAX_VALUE;
+                    averageSimilarity = 1.0;
                 } else {
                     averageViolationVelocity = Math.sqrt(violationVelocitySquareSum / comparisonCount);
+                    Collection<PlayerProfile> playerProfiles = ResearchEngine.getPlayerProfiles();
+
+                    if (!playerProfiles.isEmpty()) {
+                        long previous,
+                                difference;
+                        double sum = 0.0;
+                        int total = 0;
+
+                        for (PlayerProfile loopProfile : playerProfiles) {
+                            CheckDetection detection = loopProfile.getRunner(this.hackType).getDetection(this.name);
+
+                            if (detection.hasData(loopProfile, dataType)) {
+                                ProbabilityDetection probabilityDetection = (ProbabilityDetection) detection;
+                                data = probabilityDetection.data.get(dataType);
+
+                                if (data != null) {
+                                    synchronized (probabilityDetection.synchronizer) {
+                                        Iterator<Long> iterator = data.iterator();
+
+                                        if (iterator.hasNext()) {
+                                            previous = iterator.next();
+
+                                            while (iterator.hasNext()) {
+                                                long current = iterator.next();
+
+                                                if (loopProfile.getContinuity().wasOnline(current, previous)) {
+                                                    difference = current - previous;
+                                                    sum += 1.0 - Math.abs(difference - averageViolationVelocity) / (double) (averageViolationVelocity + difference);
+                                                    total++;
+                                                    previous = current;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        if (total > 0) {
+                            return sum / (double) total;
+                        } else {
+                            averageSimilarity = 1.0;
+                        }
+                    } else {
+                        averageSimilarity = 1.0;
+                    }
                 }
-                double result = averageViolationVelocity / violationCount;
+                double result = averageViolationVelocity / violationCount * averageSimilarity;
 
                 if (result == Double.POSITIVE_INFINITY
                         || result == Double.NEGATIVE_INFINITY) {
@@ -199,48 +249,6 @@ public abstract class ProbabilityDetection extends CheckDetection {
             return count / (double) PlayerEvidence.factorRequirement;
         } else {
             return 0.0;
-        }
-    }
-
-    // Notification
-
-    @Override
-    public final boolean canSendNotification(Object detected, int probability) {
-        long time = System.currentTimeMillis();
-        SpartanProtocol protocol = detected instanceof SpartanProtocol
-                ? (SpartanProtocol) detected
-                : null;
-
-        if (this.notifications <= time
-                && (this.lastProbability != probability
-                || time - this.notifications >= 5_000L
-                || (protocol != null
-                ? protocol.spartan.equals(this.protocol.spartan)
-                : this.protocol.bukkit().getName().equals(detected.toString())))) {
-            int ticks = this.executor.getNotificationTicksCooldown(protocol);
-
-            if (ticks > 0) {
-                this.notifications = time + (ticks * TPS.tickTime);
-            } else {
-                this.notifications = time;
-            }
-            this.lastProbability = probability;
-            return true;
-        }
-        return false;
-    }
-
-    // Separator
-
-    @Override
-    public final double getProbabilityMultiplier(long time) {
-        long lastTime = this.getLastTime(this.protocol.spartan.dataType);
-
-        if (lastTime == -1L) {
-            return 1.0;
-        } else {
-            long timeVelocity = time - lastTime;
-            return 1.0;
         }
     }
 

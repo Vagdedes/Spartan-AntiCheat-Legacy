@@ -152,8 +152,6 @@ public class SQLFeature extends ConfigurationBuilder {
         addOption("use_SSL", true);
         addOption("allow_public_key_retrieval", false);
         addOption("escape_special_characters", false);
-        clear();
-
         SpartanBukkit.sqlThread.executeWithPriority(this::connect);
     }
 
