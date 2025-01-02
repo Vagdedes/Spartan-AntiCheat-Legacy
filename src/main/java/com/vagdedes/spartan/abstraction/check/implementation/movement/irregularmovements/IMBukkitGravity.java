@@ -39,14 +39,13 @@ public class IMBukkitGravity extends ProbabilityDetection {
         this.gravity_prediction = new ImplementedProbabilityDetection(executor, "gravity_bukkit", true);
     }
 
-    final void run(double vertical, double oldVertical, double box, double oldBox) {
+    final void run(SpartanLocation to, SpartanLocation from,
+                   double vertical, double oldVertical, double box, double oldBox) {
         if (this.protocol.packetsEnabled()
                 || isUsingMace()) {
             return;
         }
         int airTicks = this.protocol.spartan.movement.getTicksOnAir();
-        SpartanLocation to = new SpartanLocation(this.protocol.getLocation()),
-                from = new SpartanLocation(this.protocol.getFromLocation());
         int levitationLevel = PlayerUtils.levitation
                 ? PlayerUtils.getPotionLevel(this.protocol.spartan, PotionEffectType.LEVITATION)
                 : -1;

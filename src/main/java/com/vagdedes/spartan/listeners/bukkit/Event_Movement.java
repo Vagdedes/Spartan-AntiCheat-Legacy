@@ -76,7 +76,6 @@ public class Event_Movement implements Listener {
             protocol.profile().getRunner(Enums.HackType.Exploits).handle(cancelled, null);
             protocol.profile().getRunner(Enums.HackType.Exploits).handle(cancelled, e);
             protocol.profile().getRunner(Enums.HackType.ImpossibleInventory).run(cancelled);
-            protocol.profile().getRunner(Enums.HackType.IrregularMovements).run(cancelled);
             protocol.profile().getRunner(Enums.HackType.IrregularMovements).handle(cancelled, e);
             protocol.profile().getRunner(Enums.HackType.Velocity).handle(cancelled, e);
             protocol.profile().getRunner(Enums.HackType.KillAura).handle(cancelled, e);

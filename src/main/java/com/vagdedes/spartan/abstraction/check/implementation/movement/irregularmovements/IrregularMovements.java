@@ -8,6 +8,7 @@ import com.vagdedes.spartan.abstraction.check.implementation.movement.irregularm
 import com.vagdedes.spartan.abstraction.event.PlayerTickEvent;
 import com.vagdedes.spartan.abstraction.event.SuperPositionPacketEvent;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -47,34 +48,6 @@ public class IrregularMovements extends CheckRunner {
     }
 
     @Override
-    protected void runInternal(boolean cancelled) {
-        foodSprint.run();
-        double vertical = this.protocol.getLocation().getY() - this.protocol.getFromLocation().getY(),
-                box = this.protocol.getLocation().getY(),
-                oldBox = this.protocol.getFromLocation().getY();
-        boolean knownBox = GroundUtils.blockHeightExists(box),
-                knownOldBox = GroundUtils.blockHeightExists(oldBox),
-                teleported = teleport >= System.currentTimeMillis();
-
-        if (knownBox || knownOldBox) {
-            if (vertical == 0.0) {
-                this.horizontal.run(knownBox, knownOldBox, box, oldBox, vertical);
-            } else {
-                step.run(knownBox, knownOldBox, box, oldBox, vertical, teleported);
-            }
-        } else {
-            gravityBukkit.run(vertical, oldVertical, box, oldBox);
-        }
-        if (!teleported) {
-            jump.run(vertical, box);
-        }
-        baritone.run();
-        gravityPackets.run();
-        speedPackets.run();
-        this.oldVertical = vertical;
-    }
-
-    @Override
     protected void handleInternal(boolean cancelled, Object object) {
         if (object instanceof Integer) {
             gravityPackets.trident();
@@ -84,7 +57,39 @@ public class IrregularMovements extends CheckRunner {
             SuperPositionPacketEvent e = (SuperPositionPacketEvent) object;
             speedPackets.ground(e.packetEvent.getPacket().getBooleans().read(0));
         } else if (object instanceof PlayerMoveEvent) {
-            speedBukkit.run((PlayerMoveEvent) object);
+            PlayerMoveEvent event = (PlayerMoveEvent) object;
+            speedBukkit.run(event);
+            foodSprint.run();
+            baritone.run();
+            gravityPackets.run();
+            speedPackets.run();
+            double vertical = this.protocol.getLocation().getY() - this.protocol.getFromLocation().getY(),
+                    box = this.protocol.getLocation().getY(),
+                    oldBox = this.protocol.getFromLocation().getY();
+            boolean knownBox = GroundUtils.blockHeightExists(box),
+                    knownOldBox = GroundUtils.blockHeightExists(oldBox),
+                    teleported = teleport >= System.currentTimeMillis();
+
+            if (knownBox || knownOldBox) {
+                if (vertical == 0.0) {
+                    this.horizontal.run(knownBox, knownOldBox, box, oldBox, vertical);
+                } else {
+                    step.run(knownBox, knownOldBox, box, oldBox, vertical, teleported);
+                }
+            } else {
+                gravityBukkit.run(
+                        new SpartanLocation(event.getTo()),
+                        new SpartanLocation(event.getFrom()),
+                        vertical,
+                        oldVertical,
+                        box,
+                        oldBox
+                );
+            }
+            if (!teleported) {
+                jump.run(vertical, box);
+            }
+            this.oldVertical = vertical;
         } else if (object instanceof PlayerVelocityEvent) {
             speedBukkit.velocity((PlayerVelocityEvent) object);
         } else if (object instanceof PlayerTickEvent) {

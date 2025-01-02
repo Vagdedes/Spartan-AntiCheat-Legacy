@@ -1,0 +1,1 @@
+[#] Fixed certain false positives with the old gravity detection.
