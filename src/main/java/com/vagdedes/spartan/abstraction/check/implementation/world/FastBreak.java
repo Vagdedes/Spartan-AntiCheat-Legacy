@@ -70,29 +70,14 @@ public class FastBreak extends CheckRunner {
                                 limit = originalLimit;
 
                         if (limit > -1L) { // Make sure the limit can be calculated on this specific server
-                            if (this.protocol.spartan.isBedrockPlayer()) {
-                                if (limit * 0.8 < limit - BlockUtils.sensitiveBlockBreakTime) {
-                                    limit = AlgebraUtils.integerRound(limit * 0.8);
-                                } else {
-                                    limit -= BlockUtils.sensitiveBlockBreakTime;
-                                }
-                            } else {
-                                if (limit * 0.9 < limit - BlockUtils.sensitiveBlockBreakTime) {
-                                    limit = AlgebraUtils.integerRound(limit * 0.9);
-                                } else {
-                                    limit -= BlockUtils.sensitiveBlockBreakTime;
-                                }
-                            }
-                            if (AlgebraUtils.getHorizontalDistance(this.protocol.getLocationOrVehicle(), block.getLocation()) <= 1.0
-                                    && this.protocol.getLocationOrVehicle().getBlockY() >= block.getY()) { // Above block
-                                limit = AlgebraUtils.integerRound(limit / 4.0);
-                            }
+                            limit /= 2;
 
                             if (limit > (TPS.tickTime * 2L) && time < limit) {
                                 boolean emptyItem = itemStack == null || itemStack.getType() == Material.AIR;
                                 Collection<PotionEffect> potionEffects = this.protocol.spartan.getActivePotionEffects();
-                                Set<Map.Entry<Enchantment, Integer>> enchantments =
-                                        !emptyItem ? itemStack.getEnchantments().entrySet() : new HashSet<>();
+                                Set<Map.Entry<Enchantment, Integer>> enchantments = !emptyItem
+                                        ? itemStack.getEnchantments().entrySet()
+                                        : new HashSet<>();
                                 StringBuilder enchantmentsString = new StringBuilder(),
                                         effectsString = new StringBuilder();
 
@@ -108,26 +93,17 @@ public class FastBreak extends CheckRunner {
                                         String name = effect.getType().getName().toLowerCase().replace("_", "/");
                                         effectsString.append(name).append("-").append(effect.getAmplifier() + 1).append(", ");
                                     }
-                                }
-                                int length = effectsString.length();
-                                boolean hasEffects;
-
-                                if (length > 0) {
-                                    hasEffects = true;
-                                    effectsString = new StringBuilder(effectsString.substring(0, length - 2));
-                                } else {
-                                    hasEffects = false;
+                                    effectsString = new StringBuilder(effectsString.substring(0, effectsString.length() - 2));
                                 }
                                 String prevention = "type: delay"
                                         + ", time: " + time
-                                        + ", seconds: " + (time / 1000.0)
                                         + ", original-limit: " + originalLimit
                                         + ", limit: " + limit
                                         + ", difference: " + (limit - time)
                                         + ", block: " + BlockUtils.materialToString(block.getType())
                                         + ", item: " + (emptyItem ? "none" : BlockUtils.materialToString(itemStack.getType()))
                                         + ", enchantments: " + (!enchantments.isEmpty() ? "none" : "[" + enchantmentsString + "]")
-                                        + ", effects: " + (!hasEffects ? "none" : "[" + effectsString + "]");
+                                        + ", effects: " + (!potionEffects.isEmpty() ? "none" : "[" + effectsString + "]");
                                 this.delay.cancel(
                                         prevention,
                                         null,

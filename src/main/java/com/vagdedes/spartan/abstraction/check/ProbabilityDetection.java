@@ -230,4 +230,11 @@ public abstract class ProbabilityDetection extends CheckDetection {
         return false;
     }
 
+    // Separator
+
+    @Override
+    public final double getProbabilityMultiplier(double timeVelocity) {
+        return 1.0;
+    }
+
 }

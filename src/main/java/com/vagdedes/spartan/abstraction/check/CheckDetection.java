@@ -138,6 +138,10 @@ public abstract class CheckDetection extends CheckProcess {
         }
     }
 
+    public double getProbabilityMultiplier(double timeVelocity) {
+        return 1.0;
+    }
+
     final double getProbability(Check.DataType dataType) {
         return isEnabled()
                 ? this.probability.getOrDefault(dataType, PlayerEvidence.emptyProbability)
