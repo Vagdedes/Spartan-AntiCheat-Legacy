@@ -4,3 +4,4 @@
 [#] Improved notifications by reducing their spam and increasing their importance
 [#] Potentially fixed a Folia server error that prevented the plugin from loading
 [#] Disabled the XRay check for custom worlds
+[#] Optimized how detections/statistics run when requested by multiple threads

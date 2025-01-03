@@ -490,6 +490,13 @@ public class ResearchEngine {
                 }
             }
         }
+        for (PlayerProfile profile : playerProfiles.values()) {
+            for (CheckRunner runner : profile.getRunners()) {
+                for (CheckDetection detection : runner.getDetections()) {
+                    detection.sort();
+                }
+            }
+        }
         updateCache(true);
         MainMenu.refresh();
     }

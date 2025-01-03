@@ -1,6 +1,5 @@
 package com.vagdedes.spartan.abstraction.check;
 
-import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
@@ -105,6 +104,9 @@ public abstract class CheckDetection extends CheckProcess {
     }
 
     public void store(Check.DataType dataType, long time) {
+    }
+
+    public void sort() {
     }
 
     public double getData(PlayerProfile profile, Check.DataType dataType) {
