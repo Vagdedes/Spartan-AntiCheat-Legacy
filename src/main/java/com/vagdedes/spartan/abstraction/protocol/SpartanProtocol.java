@@ -78,8 +78,8 @@ public class SpartanProtocol {
             transactionTime,
             transactionLastTime,
             transactionPing,
-            lagTick;
-    public boolean transactionBoot,
+            lagTick, oldClickTime;
+    public boolean transactionBoot, clickBlocker,
             transactionLocal,
             transactionSentKeep, useItemPacket;
     public boolean entityHandle;
@@ -115,6 +115,8 @@ public class SpartanProtocol {
         this.vehicleStatus = true;
         this.keepEntity = 0;
         this.flyingTicks = 0;
+        this.oldClickTime = System.currentTimeMillis();
+        this.clickBlocker = false;
         this.tickTime = time;
 
         this.rightClickCounter = 0;

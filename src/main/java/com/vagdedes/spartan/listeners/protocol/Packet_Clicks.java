@@ -5,7 +5,10 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.vagdedes.spartan.Register;
+import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
+import com.vagdedes.spartan.functionality.server.MultiVersion;
+import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.java.OverflowMap;
 import org.bukkit.entity.Player;
 
@@ -15,35 +18,40 @@ import java.util.UUID;
 
 public class Packet_Clicks extends PacketAdapter {
 
-    private final Map<UUID, Boolean> diggingPlayers = new OverflowMap<>(
-            new LinkedHashMap<>(),
-            1_024
-    );
-
     public Packet_Clicks() {
-        super(Register.plugin, ListenerPriority.NORMAL, PacketType.Play.Client.ARM_ANIMATION, PacketType.Play.Client.BLOCK_DIG);
+        super(Register.plugin, ListenerPriority.NORMAL,
+                        PacketType.Play.Client.ARM_ANIMATION,
+                        PacketType.Play.Client.BLOCK_DIG,
+                        (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)
+                                        ? PacketType.Play.Client.GROUND
+                                        : PacketType.Play.Client.FLYING)
+
+        );
     }
 
     @Override
     public void onPacketReceiving(PacketEvent event) {
         Player player = event.getPlayer();
-        UUID uuid = ProtocolLib.getUUID(player);
+        SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
 
-        if (event.getPacketType() == PacketType.Play.Client.ARM_ANIMATION) {
-            if (!diggingPlayers.containsKey(uuid)) {
-                handleLeftClick(player);
+        if (event.getPacket().getType().equals(PacketType.Play.Client.ARM_ANIMATION)) {
+            {
+                long delay = System.currentTimeMillis() - protocol.oldClickTime;
+                if (delay > 150) protocol.clickBlocker = false;
+                if (!protocol.clickBlocker) handleLeftClick(player, delay);
             }
-        } else if (event.getPacketType() == PacketType.Play.Client.BLOCK_DIG) {
-            int digType = event.getPacket().getPlayerDigTypes().readSafely(0).ordinal();
-            if (digType == 0) {
-                diggingPlayers.put(uuid, true);
-            } else if (digType == 2) {
-                diggingPlayers.remove(uuid);
-            }
+            protocol.oldClickTime = System.currentTimeMillis();
+        } else if (event.getPacket().getType().equals(PacketType.Play.Client.BLOCK_DIG)) {
+            String s = event.getPacket().getStructures().getValues().toString();
+            protocol.oldClickTime = System.currentTimeMillis();
+            protocol.clickBlocker = !s.contains("ABORT");
+        } else if (event.getPacket().getType().equals(PacketType.Play.Client.FLYING)
+                        || event.getPacket().getType().equals(PacketType.Play.Client.GROUND)) {
+            // stub
         }
     }
 
-    private void handleLeftClick(Player player) {
-        //player.sendMessage("Left-click detected without digging.");
+    private void handleLeftClick(Player player, long delay) {
+
     }
 }
