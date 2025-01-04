@@ -16,12 +16,13 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class CloudBase {
 
     // Cache
     private static final Map<Enums.HackType, String[]>
-            disabledDetections = new LinkedHashMap<>(Enums.HackType.values().length);
+            disabledDetections = new ConcurrentHashMap<>(Enums.HackType.values().length);
 
     // Functionality
     private static long

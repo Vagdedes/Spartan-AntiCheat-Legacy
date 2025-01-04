@@ -141,8 +141,10 @@ public class SpartanProtocol {
         this.lagTick = 0;
         this.componentY = new ComponentY();
         this.componentXZ = new ComponentXZ();
-        this.profile().update(this);
         this.useItemPacket = false;
+
+        // Always last
+        this.profile().update(this);
     }
 
     public final Player bukkit() {

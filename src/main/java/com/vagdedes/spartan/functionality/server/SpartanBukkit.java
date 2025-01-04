@@ -167,6 +167,7 @@ public class SpartanBukkit {
                         protocol.getActiveTimePlayed(),
                         true
                 );
+                protocol.profile().update(protocol);
             }
             return protocol;
         }
