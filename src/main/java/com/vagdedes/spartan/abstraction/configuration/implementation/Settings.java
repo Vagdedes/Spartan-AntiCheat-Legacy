@@ -38,7 +38,6 @@ public class Settings extends ConfigurationBuilder {
 
         addOption("Discord.webhook_hex_color", "4caf50");
         addOption("Discord.checks_webhook_url", "");
-        addOption("Discord.punishments_webhook_url", "");
     }
 
     public void runOnLogin(SpartanProtocol p) {

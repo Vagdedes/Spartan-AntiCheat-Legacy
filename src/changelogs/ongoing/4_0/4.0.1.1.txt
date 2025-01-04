@@ -1,0 +1,1 @@
+[-] Removed the punishments webhook URL option as it was not used
