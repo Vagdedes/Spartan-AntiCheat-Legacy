@@ -38,39 +38,29 @@ public class Event_Movement implements Listener {
                 p.movement.judgeGround();
                 return;
             }
-
-            /*
-            int sens = Sensitivity.calculateSensitivity(
-                            Math.abs(Math.abs(e.getTo().getYaw())
-                                            - Math.abs(e.getFrom().getYaw())));
-            e.getPlayer().sendMessage("s: " + sens + " "
-                            + Math.abs(Math.abs(e.getTo().getYaw())
-                            - Math.abs(e.getFrom().getYaw())));
-
-             */
-
             Location vehicle = protocol.getVehicleLocation(),
                     nfrom = e.getFrom();
-            SpartanLocation
-                    to = vehicle != null ? new SpartanLocation(vehicle) : new SpartanLocation(nto),
-                    from = new SpartanLocation(nfrom);
+            SpartanLocation to = vehicle != null
+                    ? new SpartanLocation(vehicle)
+                    : new SpartanLocation(nto);
 
             // Values
             double toY = to.getY(),
                     box = toY - to.getBlockY(),
-                    ver = toY - from.getY();
+                    ver = toY - nfrom.getY();
 
             if (!p.movement.processLastMoveEvent(
                     nto,
                     vehicle,
-                    nto,
-                    nfrom,
+                    to,
+                    e.getFrom(),
                     packets
             )) {
                 p.movement.judgeGround();
                 return;
             }
             MovementProcessing.run(protocol, to, ver, box);
+
             // Detections
             boolean cancelled = e.isCancelled();
             protocol.profile().getRunner(Enums.HackType.Exploits).handle(cancelled, null);
@@ -94,8 +84,6 @@ public class Event_Movement implements Listener {
     public static void transaction(PlayerTransactionEvent event) {
         SpartanProtocol protocol = event.protocol;
         protocol.profile().getRunner(Enums.HackType.Velocity).handle(false, event);
-        //protocol.bukkit().sendMessage("delay: " + event.delay);
-        // stub
     }
 
 }

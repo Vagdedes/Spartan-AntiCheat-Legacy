@@ -224,9 +224,13 @@ public class PlayerMovement {
 
     // Separator
 
-    public boolean processLastMoveEvent(Location originalTo, Location vehicle,
-                                        Location to, Location from,
-                                        boolean packets) {
+    public boolean processLastMoveEvent(
+            Location originalTo,
+            Location vehicle,
+            SpartanLocation to,
+            Location from,
+            boolean packets
+    ) {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)) {
             double x = clampMin(to.getX(), -3.0E7D, 3.0E7D),
                     y = clampMin(to.getY(), -2.0E7D, 2.0E7D),
