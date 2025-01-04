@@ -7,7 +7,6 @@ import com.vagdedes.spartan.functionality.connection.cloud.CloudConnections;
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
-import com.vagdedes.spartan.utils.java.TimeUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Location;
@@ -58,26 +57,21 @@ public class SuspicionNotifications {
 
                 for (Enums.HackType hackType : list) {
                     CheckRunner runner = protocol.profile().getRunner(hackType);
-                    boolean sufficientData = runner.hasSufficientData(
-                            protocol.spartan.dataType,
-                            PlayerEvidence.dataRatio
-                    );
-                    long remainingTime = sufficientData
-                            ? 0L
-                            : protocol.profile().getRunner(hackType).getRemainingCompletionTime(profile.getLastDataType());
-                    evidence.append(
-                            hackType.getCheck().getName()
-                                    + (sufficientData
-                                    ? " (" + AlgebraUtils.integerRound(
-                                    PlayerEvidence.probabilityToCertainty(
-                                            runner.getExtremeProbability(protocol.spartan.dataType)
-                                    ) * 100.0) + "%)"
-                                    : remainingTime > 0L
-                                    ? " (Data pending: " + TimeUtils.convertMilliseconds(remainingTime) + ")"
-                                    : " [Unlikely (Data pending)]")
-                    ).append(
-                            comma
-                    );
+                    double probability = runner.getExtremeProbability(protocol.spartan.dataType);
+
+                    if (probability != PlayerEvidence.emptyProbability) {
+                        evidence
+                                .append(hackType.getCheck().getName())
+                                .append(" (")
+                                .append(
+                                        AlgebraUtils.integerRound(
+                                                PlayerEvidence.probabilityToCertainty(
+                                                        runner.getExtremeProbability(protocol.spartan.dataType)
+                                                ) * 100.0)
+                                )
+                                .append("%)")
+                                .append(comma);
+                    }
                 }
 
                 if (evidence.length() > 0) {
