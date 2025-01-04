@@ -29,6 +29,8 @@ public class Register extends JavaPlugin {
     private static final Set<Class<?>> listeners = new LinkedHashSet<>(2);
 
     public void onEnable() {
+        plugin = this;
+
         if (MultiVersion.serverVersion == MultiVersion.MCVersion.OTHER) {
             AwarenessNotifications.forcefullySend(
                     "The server's version or type is not supported. "
@@ -37,7 +39,6 @@ public class Register extends JavaPlugin {
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
-        plugin = this;
         JarVerification.run(this);
         Config.create();
 
@@ -100,19 +101,8 @@ public class Register extends JavaPlugin {
         }
     }
 
-    public static void disablePlugin() {
-        if (isPluginEnabled()) {
-            plugin.setNaggable(false);
-            Bukkit.getPluginManager().disablePlugin(plugin);
-        }
-    }
-
     public static boolean isPluginEnabled() {
         return plugin != null && plugin.isEnabled();
-    }
-
-    public static Class<?>[] getListeners() {
-        return listeners.toArray(new Class[0]);
     }
 
 }
