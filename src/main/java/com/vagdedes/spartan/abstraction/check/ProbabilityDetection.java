@@ -90,11 +90,16 @@ public abstract class ProbabilityDetection extends CheckDetection {
     @Override
     public final void store(Check.DataType dataType, long time) {
         Collection<Long> data = this.data[dataType.ordinal()];
+        int size = data.size() - 2_048;
 
-        if (data.size() == 2_048) {
+        if (size > 0) {
             Iterator<Long> iterator = data.iterator();
-            iterator.next();
-            iterator.remove();
+
+            while (iterator.hasNext() && size > 0) {
+                if (data.remove(iterator.next())) {
+                    size--;
+                }
+            }
         }
         data.add(time);
 
