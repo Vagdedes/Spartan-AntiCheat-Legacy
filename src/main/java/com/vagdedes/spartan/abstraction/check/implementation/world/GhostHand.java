@@ -35,16 +35,16 @@ public class GhostHand extends CheckRunner {
             if (canDo(b)) {
                 Location location = this.protocol.getLocationOrVehicle();
                 double bDistance = SpartanLocation.distance(location, b.getLocation());
-                Block t = this.protocol.spartan.getTargetBlock(bDistance, PlayerUtils.chunk);
+                SpartanLocation t = this.protocol.spartan.getTargetBlock(bDistance, PlayerUtils.chunk);
 
                 if (t != null) {
-                    double tDistance = SpartanLocation.distance(location, t.getLocation());
+                    double tDistance = t.distance(location);
 
                     if (tDistance < bDistance) {
                         this.breaking.cancel(
                                 "type: breaking"
                                         + ", interacted-block: " + BlockUtils.blockToString(b)
-                                        + ", blocking-block: " + BlockUtils.blockToString(t)
+                                        + ", blocking-block: " + BlockUtils.blockToString(t.getBlock())
                                         + ", interacted-distance: " + bDistance
                                         + ", blocking-distance: " + tDistance,
                                 null,
@@ -62,16 +62,16 @@ public class GhostHand extends CheckRunner {
                 if (canDo(b) && BlockUtils.isChangeable(b.getType())) {
                     Location location = this.protocol.getLocationOrVehicle();
                     double bDistance = SpartanLocation.distance(location, b.getLocation());
-                    Block t = this.protocol.spartan.getTargetBlock(bDistance, PlayerUtils.chunk);
+                    SpartanLocation t = this.protocol.spartan.getTargetBlock(bDistance, PlayerUtils.chunk);
 
                     if (t != null) {
-                        double tDistance = SpartanLocation.distance(location, t.getLocation());
+                        double tDistance = t.distance(location);
 
                         if (tDistance < bDistance) {
                             this.interact.cancel(
                                     "type: interact"
                                             + ", interacted-block: " + BlockUtils.blockToString(b)
-                                            + ", blocking-block: " + BlockUtils.blockToString(t)
+                                            + ", blocking-block: " + BlockUtils.blockToString(t.getBlock())
                                             + ", interacted-distance: " + bDistance
                                             + ", blocking-distance: " + tDistance,
                                     null,

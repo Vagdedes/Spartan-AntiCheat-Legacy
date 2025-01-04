@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.abstraction.protocol;
 
 import com.vagdedes.spartan.abstraction.check.Check;
+import com.vagdedes.spartan.abstraction.world.SpartanBlock;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.Compatibility;
 import com.vagdedes.spartan.compatibility.necessary.BedrockCompatibility;
@@ -238,19 +239,16 @@ public class SpartanPlayer {
 
     // Separator
 
-    public Block getTargetBlock(double distance, double limit) {
-        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)) {
-            try {
-                List<Block> list = this.protocol.bukkit().getLineOfSight(null, (int) Math.min(distance, limit));
+    public SpartanLocation getTargetBlock(double distance, double limit) {
+        for (int i = 0; i < AlgebraUtils.integerCeil(Math.min(distance, limit)); i++) {
+            SpartanLocation location = new SpartanLocation(
+                    protocol.getLocation().clone().add(
+                            protocol.getLocation().getDirection().multiply(i)
+                    )
+            );
 
-                if (!list.isEmpty()) {
-                    for (Block block : list) {
-                        if (BlockUtils.isFullSolid(block.getType())) {
-                            return block;
-                        }
-                    }
-                }
-            } catch (Exception ignored) {
+            if (BlockUtils.isFullSolid(location.getBlock().getType())) {
+                return location;
             }
         }
         return null;

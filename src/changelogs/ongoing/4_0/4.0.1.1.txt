@@ -1,1 +1,2 @@
 [-] Removed the punishments webhook URL option as it was not used
+[#] Rewrote the line of sight block method because bukkit's method caused crashes
