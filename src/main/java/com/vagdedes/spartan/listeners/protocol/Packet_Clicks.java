@@ -6,15 +6,9 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
-import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
-import com.vagdedes.spartan.utils.java.OverflowMap;
 import org.bukkit.entity.Player;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.UUID;
 
 public class Packet_Clicks extends PacketAdapter {
 
