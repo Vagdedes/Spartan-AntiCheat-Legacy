@@ -231,17 +231,15 @@ public class PlayerMovement {
             Location from,
             boolean packets
     ) {
-        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)) {
-            double x = clampMin(to.getX(), -3.0E7D, 3.0E7D),
-                    y = clampMin(to.getY(), -2.0E7D, 2.0E7D),
-                    z = clampMin(to.getZ(), -3.0E7D, 3.0E7D);
-            Vector vector = new Vector(x, y, z);
-            double d = this.clampVector.distanceSquared(vector);
-            this.clampVector = vector;
+        double x = clampMin(to.getX(), -3.0E7D, 3.0E7D),
+                        y = clampMin(to.getY(), -2.0E7D, 2.0E7D),
+                        z = clampMin(to.getZ(), -3.0E7D, 3.0E7D);
+        Vector vector = new Vector(x, y, z);
+        double d = this.clampVector.distanceSquared(vector);
+        this.clampVector = vector;
 
-            if (d < 4e-8) {
-                return false;
-            }
+        if (d < 4e-8) {
+            return false;
         }
         if (vehicle == null) {
             this.refreshLocation(originalTo);
