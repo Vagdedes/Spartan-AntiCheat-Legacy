@@ -8,6 +8,7 @@ import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import me.vagdedes.spartan.system.Enums;
 import org.bukkit.entity.Player;
 
 public class Packet_Clicks extends PacketAdapter {
@@ -46,6 +47,8 @@ public class Packet_Clicks extends PacketAdapter {
     }
 
     private void handleLeftClick(Player player, long delay) {
-
+        SpartanBukkit.getProtocol(player)
+                        .profile().getRunner(Enums.HackType.FastClicks)
+                        .handle(false, delay);
     }
 }

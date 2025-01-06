@@ -78,6 +78,7 @@ public class Event_Movement implements Listener {
         protocol.lastTickEvent = tickEvent;
         protocol.packetWorld.tick(tickEvent);
         protocol.profile().getRunner(Enums.HackType.MorePackets).handle(false, tickEvent);
+        protocol.profile().getRunner(Enums.HackType.FastClicks).handle(false, tickEvent);
         protocol.profile().getRunner(Enums.HackType.IrregularMovements).handle(false, tickEvent);
     }
 

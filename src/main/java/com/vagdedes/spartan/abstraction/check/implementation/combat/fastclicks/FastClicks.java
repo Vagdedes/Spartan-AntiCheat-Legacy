@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.abstraction.check.implementation.combat.fastclicks;
 
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
+import com.vagdedes.spartan.abstraction.event.PlayerTickEvent;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -26,10 +27,14 @@ public class FastClicks extends CheckRunner {
     protected void handleInternal(boolean cancelled, Object object) {
         if (object == null) {
             this.addDisableCause(
-                    null,
-                    null,
-                    AlgebraUtils.integerCeil(TPS.maximum)
+                            null,
+                            null,
+                            AlgebraUtils.integerCeil(TPS.maximum)
             );
+        } else if (object instanceof Long) {
+            packets.run(cancelled, (long) object);
+        } else if (object instanceof PlayerTickEvent) {
+            packets.tick((PlayerTickEvent) object);
         }
     }
 
