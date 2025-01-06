@@ -40,7 +40,6 @@ public class FastClicksPackets extends ProbabilityDetection {
                 );
                 final double variance = StatisticsMath.getVariance(this.samples);
                 final double kurtosis = StatisticsMath.getKurtosis(this.samples);
-                protocol.bukkit().sendMessage("v: " + variance);
                 if (cps > limit) this.cancel("type: limit ("
                                 + (int) cps + "/" + (int) limit + ")");
                 { // floor
