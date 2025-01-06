@@ -1,30 +1,24 @@
-package com.vagdedes.spartan.abstraction.check.implementation.combat;
+package com.vagdedes.spartan.abstraction.check.implementation.combat.fastclicks;
 
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
+import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.TPS;
-import com.vagdedes.spartan.utils.math.AlgebraUtils;
-import me.vagdedes.spartan.system.Enums;
 
 import java.util.Collection;
 import java.util.Iterator;
 
-public class FastClicks extends CheckRunner {
+public class FastClicksBukkit extends ProbabilityDetection {
 
-    private final CheckDetection
-            clicksPerSecond,
-            clicksPattern;
+    private final CheckDetection clicksPattern;
 
-    public FastClicks(Enums.HackType hackType, SpartanProtocol protocol) {
-        super(hackType, protocol);
-        this.clicksPerSecond = new ImplementedProbabilityDetection(this, null, true);
+    FastClicksBukkit(CheckRunner executor) {
+        super(executor, null, true);
         this.clicksPattern = new ImplementedProbabilityDetection(this, "click_pattern", true);
     }
 
-    @Override
-    protected void runInternal(boolean cancelled) {
+    void run() {
         int limit = hackType.getCheck().getNumericalOption(
                 "clicks_per_second_limit",
                 15
@@ -54,7 +48,7 @@ public class FastClicks extends CheckRunner {
 
                 if (deviation > 10.0) { // Used for latency to judge when many packets are sent in a short period of time
                     if (checkLimit) {
-                        this.clicksPerSecond.cancel(
+                        this.cancel(
                                 "type: clicks-per-second"
                                         + ", count: " + count
                                         + ", limit: " + limit
@@ -78,15 +72,6 @@ public class FastClicks extends CheckRunner {
                 }
             }
         }
-    }
-
-    @Override
-    protected void handleInternal(boolean cancelled, Object object) {
-        this.addDisableCause(
-                null,
-                null,
-                AlgebraUtils.integerCeil(TPS.maximum)
-        );
     }
 
 }
