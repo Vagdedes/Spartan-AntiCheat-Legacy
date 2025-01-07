@@ -5,7 +5,6 @@ import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
 import com.vagdedes.spartan.abstraction.protocol.ExtendedPotionEffect;
 import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
-import com.vagdedes.spartan.abstraction.world.SpartanBlock;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
 import com.vagdedes.spartan.utils.math.MathHelper;
@@ -270,7 +269,7 @@ public class IMSimulationSpeed extends ProbabilityDetection {
         if (BlockUtils.areWebs(new SpartanLocation(this.protocol.getLocation()).getBlock().getType())) {
             m *= 0.2;
         }
-        if (this.isOnWater(l) || this.isOnWater(lF)) {
+        if (this.isOnWater() || this.isOnWater()) {
             ExtendedPotionEffect dolphinEffect = PlayerUtils.dolphinsGrace
                             ? this.protocol.spartan.getPotionEffect(PotionEffectType.DOLPHINS_GRACE, 0)
                             : null;
@@ -350,59 +349,12 @@ public class IMSimulationSpeed extends ProbabilityDetection {
         this.predictZ = z;
     }
 
-    private boolean isOnWater(Location location) {
-        double x = location.getX();
-        double y = location.getY() - 0.1;
-        double z = location.getZ();
-
-        for (int dx = -1; dx <= 1; ++dx) {
-            for (int dy = -1; dy <= 1; ++dy) {
-                for (int dz = -1; dz <= 1; ++dz) {
-                    SpartanBlock block = new SpartanLocation(
-                                    new Location(this.protocol.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
-                    ).getBlock();
-
-                    Material m = this.protocol.packetWorld.getBlock(
-                                    new Location(this.protocol.getWorld(),
-                                                    x + (double) dx * 0.3,
-                                                    y + (double) dy * 0.5,
-                                                    z + (double) dz * 0.3)
-                    );
-
-                    if (BlockUtils.isLiquidOrWaterLogged(block, true)
-                                    || BlockUtils.isLiquid(m)) {
-                        return true;
-                    }
-                }
-            }
-        }
-
-        return false;
+    private boolean isOnWater() {
+        return this.protocol.getEncirclementData().isWater();
     }
 
     private boolean isOnIce(Location location) {
-        double x = location.getX();
-        double y = location.getY() - 0.1;
-        double z = location.getZ();
-
-        for (int dx = -1; dx <= 1; ++dx) {
-            for (int dy = -2; dy <= 1; ++dy) {
-                for (int dz = -1; dz <= 1; ++dz) {
-                    Material m = this.protocol.packetWorld.getBlock(
-                                    new Location(this.protocol.getWorld(),
-                                                    x + (double) dx,
-                                                    y + (double) dy,
-                                                    z + (double) dz)
-                    );
-
-                    if (BlockUtils.areIceBlocks(m)) {
-                        return true;
-                    }
-                }
-            }
-        }
-
-        return false;
+        return this.protocol.getEncirclementData().isIce();
     }
 
     private boolean isPointWall(Location location) {
@@ -410,8 +362,8 @@ public class IMSimulationSpeed extends ProbabilityDetection {
         double y = location.getY();
         double z = location.getZ();
         for (int dx = -2; dx <= 2; ++dx) {
-            for (int dy = 0; dy <= 5; ++dy) {
-                for (int dz = -2; dz <= 2; ++dz) {
+            for (int dy = 0; dy <= 2; ++dy) {
+                for (int dz = -2; dz <= 3; ++dz) {
                     Material material = this.protocol.packetWorld.getBlock(
                                     new Location(
                                                     this.protocol.getWorld(),
@@ -434,221 +386,16 @@ public class IMSimulationSpeed extends ProbabilityDetection {
 
 
     private boolean isOnSemi(Location location) {
-        double x = location.getX();
-        double y = location.getY() - 0.1;
-        double z = location.getZ();
-
-        for (int dx = -1; dx <= 1; ++dx) {
-            for (int dy = -1; dy <= 1; ++dy) {
-                for (int dz = -1; dz <= 1; ++dz) {
-                    Material material = this.protocol.packetWorld.getBlock(
-                                    new Location(this.protocol.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
-                    );
-
-                    if (material != null && !material.toString().contains("GRASS")
-                                    && (BlockUtils.isSemiSolid(material))) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
+        return this.protocol.getEncirclementData().isSemi();
     }
 
-    private boolean isNearGlideBlocks(Location location) {
-        double x = location.getX();
-        double y = location.getY() - 0.1;
-        double z = location.getZ();
-
-        for (int dx = -1; dx <= 1; ++dx) {
-            for (int dy = -1; dy <= 1; ++dy) {
-                for (int dz = -1; dz <= 1; ++dz) {
-                    Material material = this.protocol.packetWorld.getBlock(
-                                    new Location(this.protocol.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
-                    );
-
-                    if (material != null
-                                    && (BlockUtils.isPowderSnow(material)
-                                    || BlockUtils.areHoneyBlocks(material)
-                                    || BlockUtils.areWebs(material)
-                                    || BlockUtils.areInteractiveBushes(material))) {
-                        return true;
-                    }
-                }
-            }
-        }
-
-        return false;
-    }
-
-    private boolean atJumpModifyBlock(Location location) {
-        double x = location.getX();
-        double y = location.getY();
-        double z = location.getZ();
-
-        for (int dx = -1; dx <= 1; ++dx) {
-            for (int dy = -2; dy <= 2; ++dy) {
-                for (int dz = -1; dz <= 1; ++dz) {
-                    Material material = this.protocol.packetWorld.getBlock(
-                                    new Location(this.protocol.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
-                    );
-
-                    if (material != null
-                                    && (BlockUtils.areInteractiveBushes(material)
-                                    || BlockUtils.isPowderSnow(material))) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-
-    private boolean isNearClimbBlocks(Location location) {
-        double x = location.getX();
-        double y = location.getY() - 0.1;
-        double z = location.getZ();
-
-        for (int dx = -1; dx <= 1; ++dx) {
-            for (int dy = -1; dy <= 1; ++dy) {
-                for (int dz = -1; dz <= 1; ++dz) {
-                    Material material = this.protocol.packetWorld.getBlock(
-                                    new Location(this.protocol.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
-                    );
-
-                    if (material != null
-                                    && BlockUtils.canClimb(material, false)) {
-                        return true;
-                    }
-                }
-            }
-        }
-
-        return false;
-    }
 
     private boolean isOnSlime(Location location) {
-        double x = location.getX();
-        double y = location.getY() - 0.1;
-        double z = location.getZ();
-
-        for (int dx = -1; dx <= 1; ++dx) {
-            for (int dy = -1; dy <= 1; ++dy) {
-                for (int dz = -1; dz <= 1; ++dz) {
-                    Material material = this.protocol.packetWorld.getBlock(
-                                    new Location(this.protocol.getWorld(), x + (double) dx, y + (double) dy, z + (double) dz)
-                    );
-
-                    if (material != null
-                                    && (BlockUtils.areHoneyBlocks(material)
-                                    || BlockUtils.areBeds(material)
-                                    || BlockUtils.areSlimeBlocks(material))) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
+        return this.protocol.getEncirclementData().isSlime();
     }
 
     private boolean isOnSlimeWide(Location location) {
-        double x = location.getX();
-        double y = location.getY() - 0.1;
-        double z = location.getZ();
-
-        for (int dx = -2; dx <= 2; ++dx) {
-            for (int dy = -2; dy <= 2; ++dy) {
-                for (int dz = -2; dz <= 2; ++dz) {
-                    Material material = this.protocol.packetWorld.getBlock(
-                                    new Location(this.protocol.getWorld(), x + (double) dx, y + (double) dy, z + (double) dz)
-                    );
-
-                    if (material != null && (BlockUtils.areSlimeBlocks(material))) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
+        return this.protocol.getEncirclementData().isSlimeWide();
     }
 
-    private boolean isOnSlimeHeight(Location location) {
-        double x = location.getX();
-        double y = location.getY() - 0.1;
-        double z = location.getZ();
-
-        for (int dx = -1; dx <= 1; ++dx) {
-            for (int dy = -2; dy <= 2; ++dy) {
-                for (int dz = -1; dz <= 1; ++dz) {
-                    Material material = this.protocol.packetWorld.getBlock(
-                                    new Location(this.protocol.getWorld(), x + (double) dx, y + (double) dy, z + (double) dz)
-                    );
-
-                    if (material != null && (BlockUtils.areSlimeBlocks(material))) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-    private boolean isBlocksOnTop(Location location) {
-        double x = location.getX();
-        double y = location.getY() - 0.1;
-        double z = location.getZ();
-
-        for (int dx = -2; dx <= 2; ++dx) {
-            for (double dy = 1.0; dy <= 2.0; dy += 0.5) {
-                for (int dz = -2; dz <= 2; ++dz) {
-                    Material material = this.protocol.packetWorld.getBlock(
-                                    new Location(this.protocol.getWorld(), x + (double) dx * 0.3, y + dy, z + (double) dz * 0.3)
-                    );
-
-                    if (material != null && BlockUtils.isSolid(material)) {
-                        return true;
-                    }
-                }
-            }
-        }
-
-        return false;
-    }
-
-    private boolean isOnSolidGround(Location location) {
-        double x = location.getX(),
-                        y = location.getY() - 0.1,
-                        z = location.getZ();
-
-        for (int dx = -1; dx <= 1; dx++) {
-            for (int dy = -1; dy <= 1; dy++) {
-                for (int dz = -1; dz <= 1; dz++) {
-                    Material material = this.protocol.packetWorld.getBlock(
-                                    new Location(
-                                                    this.protocol.getWorld(),
-                                                    x + dx,
-                                                    y + dy,
-                                                    z + dz)
-                    );
-
-                    if (material == null) {
-                        continue;
-                    }
-                    if (BlockUtils.isSolid(material)) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-    public static SpartanVector2F calculateVec2Vec(final Vector from, final Vector to) {
-        final Vector diff = to.subtract(from);
-        final double distance = Math.hypot(diff.getX(), diff.getZ());
-        final float yaw = (float) (Math.atan2(diff.getZ(), diff.getX()) * 180.0F / PI) - 90.0F;
-        final float pitch = (float) (-(Math.atan2(diff.getY(), distance) * 180.0F / PI));
-        return new SpartanVector2F(yaw, pitch);
-    }
 }

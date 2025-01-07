@@ -9,6 +9,7 @@ import com.vagdedes.spartan.utils.minecraft.entity.AxisAlignedBB;
 import com.vagdedes.spartan.utils.minecraft.entity.MovingObjectPosition;
 import com.vagdedes.spartan.utils.minecraft.vector.Vec3;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
+import lombok.experimental.UtilityClass;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -17,6 +18,7 @@ import org.bukkit.util.Vector;
 
 import java.util.Set;
 
+@UtilityClass
 public class RayUtils {
 
     private static final boolean[] BOOLEANS = {true, false};

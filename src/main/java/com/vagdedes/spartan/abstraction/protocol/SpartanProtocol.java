@@ -4,6 +4,7 @@ import com.vagdedes.spartan.abstraction.check.implementation.movement.irregularm
 import com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.component.ComponentY;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.morepackets.TimerBalancer;
 import com.vagdedes.spartan.abstraction.data.CheckBoundData;
+import com.vagdedes.spartan.abstraction.data.EncirclementData;
 import com.vagdedes.spartan.abstraction.data.PacketWorld;
 import com.vagdedes.spartan.abstraction.event.PlayerTickEvent;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
@@ -15,6 +16,10 @@ import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
 import com.vagdedes.spartan.utils.minecraft.entity.AxisAlignedBB;
 import com.vagdedes.spartan.utils.minecraft.protocol.ProtocolTools;
+import dev.lone.itemsadder.e.E;
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.experimental.FieldDefaults;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
@@ -26,15 +31,17 @@ import org.bukkit.event.player.PlayerVelocityEvent;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+@Data
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class SpartanProtocol {
 
-    private long activeCreationTime;
+    public long activeCreationTime;
     private Player bukkit;
+    private EncirclementData encirclementData;
     public final SpartanPlayer spartan;
 
     // Custom
-    private boolean
-            onGround,
+    public boolean onGround,
             onGroundFrom;
     private int hashPosBuffer;
     public int
@@ -118,7 +125,7 @@ public class SpartanProtocol {
         this.oldClickTime = System.currentTimeMillis();
         this.clickBlocker = false;
         this.tickTime = time;
-
+        this.encirclementData = new EncirclementData();
         this.rightClickCounter = 0;
         this.positionHistoryShort = Collections.synchronizedList(new LinkedList<>());
         this.positionHistory = Collections.synchronizedList(new LinkedList<>());
@@ -155,10 +162,6 @@ public class SpartanProtocol {
 
     public void updateBukkit(Player player) {
         this.bukkit = player;
-    }
-
-    public long getActiveCreationTime() {
-        return this.activeCreationTime;
     }
 
     void resetActiveCreationTime() {
@@ -303,10 +306,6 @@ public class SpartanProtocol {
         }
     }
 
-    public Location getTeleport() {
-        return this.teleport;
-    }
-
     public void setTeleport(Location teleport) {
         this.teleport = teleport;
     }
@@ -319,25 +318,6 @@ public class SpartanProtocol {
         return ProtocolLib.isTemporary(this.bukkit)
                 ? UUID.randomUUID()
                 : this.bukkit.getUniqueId();
-    }
-
-    public ComponentY getComponentY() {
-        return this.componentY;
-    }
-
-    public ComponentXZ getComponentXZ() {
-        return this.componentXZ;
-    }
-
-    public void startSimulationFlag() {
-        this.teleport(this.getFromLocation());
-        this.simulationStartPoint = this.getFromLocation().clone();
-        this.simulationFlag = true;
-        this.simulationDelayPerTP = 1;
-    }
-
-    public void endSimulationFlag() {
-        this.simulationFlag = false;
     }
 
     public PlayerProfile profile() {
@@ -399,14 +379,6 @@ public class SpartanProtocol {
 
     public boolean packetsEnabled() {
         return SpartanBukkit.packetsEnabled() && !this.spartan.isBedrockPlayer();
-    }
-
-    public Set<AxisAlignedBB> getAxisMatrixCache() {
-        return this.axisMatrixCache;
-    }
-
-    public CheckBoundData getCheckBoundData() {
-        return this.checkBoundData;
     }
 
     public void setCheckBoundData(CheckBoundData checkBoundData) {

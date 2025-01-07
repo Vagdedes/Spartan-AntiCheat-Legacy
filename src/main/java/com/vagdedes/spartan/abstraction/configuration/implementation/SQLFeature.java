@@ -1,6 +1,6 @@
 package com.vagdedes.spartan.abstraction.configuration.implementation;
 
-import com.vagdedes.spartan.abstraction.check.Threads;
+import com.vagdedes.spartan.functionality.concurrent.Threads;
 import com.vagdedes.spartan.abstraction.configuration.ConfigurationBuilder;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;

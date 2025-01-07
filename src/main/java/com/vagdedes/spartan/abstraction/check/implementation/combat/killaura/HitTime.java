@@ -2,7 +2,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.combat.killaura;
 
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
-import com.vagdedes.spartan.listeners.protocol.standalone.Packet_LagCompensation;
+import com.vagdedes.spartan.listeners.protocol.standalone.LegacyLagCompensationListener;
 
 public class HitTime extends ProbabilityDetection {
 
@@ -46,7 +46,7 @@ public class HitTime extends ProbabilityDetection {
                 cancel("type: switch", this.protocol.getFromLocation());
             }
         }
-        if (packets >= 5 && Packet_LagCompensation.getPlayerTicksDelay(this.protocol.spartan.getEntityId()) < 2) {
+        if (packets >= 5 && LegacyLagCompensationListener.getPlayerTicksDelay(this.protocol.spartan.getEntityId()) < 2) {
             if (devianceTotal < 35) {
                 vlAnalysis += (devianceTotal < 10) ? 150 : 75;
                 if (vlAnalysis >= 300) {

@@ -6,7 +6,6 @@ import com.vagdedes.spartan.abstraction.protocol.ExtendedPotionEffect;
 import com.vagdedes.spartan.abstraction.protocol.PlayerMovement;
 import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
-import com.vagdedes.spartan.abstraction.world.SpartanBlock;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.MultiVersion.MCVersion;
@@ -62,7 +61,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
             double gravity = 0.08;
             this.limToUpdate = 0;
             double jumpStartMotionY =
-                    (atJumpModifyBlock(to)
+                    (atJumpModifyBlock()
                             && this.jumpMotion() * 1.5 > motion)
                             ? motion : this.jumpMotion();
             if (BlockUtils.areWebs(new SpartanLocation(to).getBlock().getType())) {
@@ -72,10 +71,10 @@ public class IMSimulationGravity extends ProbabilityDetection {
                 this.air = isOnGround ? 0 : this.air + 1;
                 this.ground = isOnGround ? this.ground + 1 : 0;
                  */
-            boolean isOnWater = this.isOnWater(p.getLocation());
+            boolean isOnWater = this.isOnWater();
             double pr2;
             PlayerMovement playerMovement;
-            if (this.isOnSlime(to)) this.allowMinorGravityChange = true;
+            if (this.isOnSlime()) this.allowMinorGravityChange = true;
             if (ground) {
                 if (this.protocol.getLocation().getY() > this.lastGroundY)
                     allowLowJump = true;
@@ -83,8 +82,8 @@ public class IMSimulationGravity extends ProbabilityDetection {
                     this.setPredict(0.0);
                     if (this.abs(motion) < 0.08 && this.abs(motion) > 0.0
                             && (this.isBlocksOnTop(to)
-                            || this.isOnSlime(to)
-                            || isNearGlideBlocks(to))) {
+                            || this.isOnSlime()
+                            || isNearGlideBlocks())) {
                         this.setPredict(motion);
                     }
                 } else {
@@ -98,12 +97,12 @@ public class IMSimulationGravity extends ProbabilityDetection {
                         // skull
                         this.setPredict(motion);
                     }
-                    if (this.isOnSlime(to)) {
+                    if (this.isOnSlime()) {
                         this.slime = true;
                     }
                 }
 
-                if (this.isOnSemi(to) || this.isOnSemi(from)) {
+                if (this.isOnSemi() || this.isOnSemi()) {
                     this.semi = 2;
                 }
                 if (this.semi > 0 && motion != 0.0 && motion < 0.785) {
@@ -134,7 +133,6 @@ public class IMSimulationGravity extends ProbabilityDetection {
                 this.cringeBlockClimb = (this.air == 14);
                 playerMovement = this.protocol.spartan.movement;
                 playerMovement.motionY -= gravity;
-                playerMovement = this.protocol.spartan.movement;
                 playerMovement.motionY *= 0.9800000190734863;
                 if (this.protocol.spartan.movement.motionY < -3.92) {
                     this.protocol.spartan.movement.motionY = -3.92;
@@ -163,7 +161,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
                 p.getComponentY().pistonHandle = false;
                 slimePunch = 4;
             }
-            if ((this.isOnSemi(to) || this.isOnSemi(from) || this.isOnSlimeHeight(to)) && motion != 0.0 && motion < 0.51) {
+            if ((this.isOnSemi() || this.isOnSemi() || this.isOnSlimeHeight(to)) && motion != 0.0 && motion < 0.51) {
                 this.setPredict(motion);
             }
             pr2 = this.abs(this.abs(motion) - this.abs(this.predictY()));
@@ -176,7 +174,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
             if (this.climbBlocks > 0 && devPreTotal2 > 0.001 && motion < 0.118 && motion > -0.16) {
                 this.setPredict(motion);
                 this.climbBlocks--;
-            } else if (devPreTotal2 > 0.001 && motion < 0.118 && motion > -0.16 && isNearClimbBlocks(to)) {
+            } else if (devPreTotal2 > 0.001 && motion < 0.118 && motion > -0.16 && isNearClimbBlocks()) {
                 this.setPredict(motion);
                 this.climbBlocks = 2;
             }
@@ -198,7 +196,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
                 --this.top;
                 this.topReset = 0;
             }
-            boolean onWaterBubble = this.isOnWaterBubble(to);
+            boolean onWaterBubble = this.isOnWaterBubble();
             if (MultiVersion.isOrGreater(MCVersion.V1_13)
                             && this.protocol.bukkit().isSwimming()) {
                 this.swimming = 2;
@@ -291,7 +289,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
             if (this.glideBlocks > 0 && devPreTotal > 0.001 && motion < 0 && motion > -0.16) {
                 this.setPredict(motion);
                 this.glideBlocks--;
-            } else if (devPreTotal > 0.001 && motion < 0 && motion > -0.16 && isNearGlideBlocks(to)) {
+            } else if (devPreTotal > 0.001 && motion < 0 && motion > -0.16 && isNearGlideBlocks()) {
                 this.setPredict(motion);
                 this.glideBlocks = 2;
             }
@@ -409,6 +407,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
                     }
                     this.vl += devTotal;
                     this.vlCount += 1;
+
                     if (this.vl > ((this.protocol.spartan.getVehicle() != null) ? 0.6 : 0.05)) {
                         StringBuilder alertBuilder = new StringBuilder(String.valueOf(RayUtils.scaleVal(devTotal, 6.0)));
                         if (devTotal < 1.0) {
@@ -439,7 +438,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
                 }
             }
         }
-        slime0Tick = (this.isOnSlimeWide(to) || this.isOnSlimeWide(from));
+        slime0Tick = (this.isOnSlimeWide() || this.isOnSlimeWide());
     }
 
     private double getDeviantity(double motion) {
@@ -525,245 +524,41 @@ public class IMSimulationGravity extends ProbabilityDetection {
         this.protocol.spartan.movement.motionY = v;
     }
 
-    private boolean isOnWater(Location location) {
-        double x = location.getX();
-        double y = location.getY() - 0.1;
-        double z = location.getZ();
-
-        for (int dx = -1; dx <= 1; ++dx) {
-            for (int dy = -1; dy <= 1; ++dy) {
-                for (int dz = -1; dz <= 1; ++dz) {
-                    SpartanBlock block = new SpartanLocation(
-                            new Location(this.protocol.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
-                    ).getBlock();
-
-                    Material m = this.protocol.packetWorld.getBlock(
-                            new Location(this.protocol.getWorld(),
-                                    x + (double) dx * 0.3,
-                                    y + (double) dy * 0.5,
-                                    z + (double) dz * 0.3)
-                    );
-
-                    Material m2 = block.getType();
-
-                    if (BlockUtils.isLiquidOrWaterLogged(block, true)
-                            || BlockUtils.isLiquid(m) || BlockUtils.isLiquid(m2)
-                            || BlockUtils.isWaterLogged(block)) {
-                        return true;
-                    }
-                }
-            }
-        }
-
-        return false;
+    private boolean isOnWater() {
+        return this.protocol.getEncirclementData().isWater();
     }
 
-    private boolean isOnWaterBubble(Location location) {
-        if (!MultiVersion.isOrGreater(MCVersion.V1_13))
-            return false;
-        double x = location.getX();
-        double y = location.getY() - 0.1;
-        double z = location.getZ();
-
-        for (int dx = -1; dx <= 1; ++dx) {
-            for (int dy = -1; dy <= 1; ++dy) {
-                for (int dz = -1; dz <= 1; ++dz) {
-                    SpartanBlock block = new SpartanLocation(
-                                    new Location(this.protocol.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
-                    ).getBlock();
-
-                    Material m = this.protocol.packetWorld.getBlock(
-                                    new Location(this.protocol.getWorld(),
-                                                    x + (double) dx * 0.3,
-                                                    y + (double) dy * 0.5,
-                                                    z + (double) dz * 0.3)
-                    );
-
-                    Material m2 = block.getType();
-                    if (m == null || m2 == null) return false;
-
-                    if (m.equals(Material.BUBBLE_COLUMN) || m2.equals(Material.BUBBLE_COLUMN)) {
-                        return true;
-                    }
-                }
-            }
-        }
-
-        return false;
+    private boolean isOnWaterBubble() {
+        return this.protocol.getEncirclementData().isBubble();
     }
 
-    private boolean isOnSemi(Location location) {
-        double x = location.getX();
-        double y = location.getY() - 0.1;
-        double z = location.getZ();
-
-        double xF = this.protocol.getFromLocation().getX();
-        double yF = this.protocol.getFromLocation().getY() - 0.1;
-        double zF = this.protocol.getFromLocation().getZ();
-
-        for (int dx = -1; dx <= 1; ++dx) {
-            for (int dy = -1; dy <= 1; ++dy) {
-                for (int dz = -1; dz <= 1; ++dz) {
-                    Material material = this.protocol.packetWorld.getBlock(
-                            new Location(this.protocol.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
-                    );
-                    Material materialFrom = this.protocol.packetWorld.getBlock(
-                            new Location(this.protocol.getWorld(), xF + (double) dx * 0.3, yF + (double) dy * 0.5, zF + (double) dz * 0.3)
-                    );
-
-                    if (material != null && !BlockUtils.canClimb(material, false) &&
-                            (BlockUtils.isSemiSolid(material)
-                                    || BlockUtils.areWalls(materialFrom)
-                                    || BlockUtils.areCobbleWalls(materialFrom)
-                                    || BlockUtils.areSlimeBlocks(material)
-                                    || BlockUtils.areHoneyBlocks(material)
-                                    || BlockUtils.areWebs(material))) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
+    private boolean isOnSemi() {
+        return this.protocol.getEncirclementData().isSemi();
     }
 
-    private boolean isNearGlideBlocks(Location location) {
-        double x = location.getX();
-        double y = location.getY() - 0.1;
-        double z = location.getZ();
-
-        for (int dx = -1; dx <= 1; ++dx) {
-            for (int dy = -1; dy <= 1; ++dy) {
-                for (int dz = -1; dz <= 1; ++dz) {
-                    Material material = this.protocol.packetWorld.getBlock(
-                            new Location(this.protocol.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
-                    );
-
-                    if (material != null
-                            && (BlockUtils.isPowderSnow(material)
-                            || BlockUtils.areHoneyBlocks(material)
-                            || BlockUtils.areWebs(material)
-                            || BlockUtils.areInteractiveBushes(material))) {
-                        return true;
-                    }
-                }
-            }
-        }
-
-        return false;
+    private boolean isNearGlideBlocks() {
+        return this.protocol.getEncirclementData().isSemi();
     }
 
-    private boolean atJumpModifyBlock(Location location) {
-        double x = location.getX();
-        double y = location.getY();
-        double z = location.getZ();
-
-        for (int dx = -1; dx <= 1; ++dx) {
-            for (int dy = -2; dy <= 2; ++dy) {
-                for (int dz = -1; dz <= 1; ++dz) {
-                    Material material = this.protocol.packetWorld.getBlock(
-                            new Location(this.protocol.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
-                    );
-
-                    if (material != null
-                            && (BlockUtils.areInteractiveBushes(material)
-                                    || BlockUtils.areBeds(material)
-                            || BlockUtils.isPowderSnow(material))) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
+    private boolean atJumpModifyBlock() {
+        return this.protocol.getEncirclementData().isJumpModify();
     }
 
 
-    private boolean isNearClimbBlocks(Location location) {
-        double x = location.getX();
-        double y = location.getY() - 0.1;
-        double z = location.getZ();
-
-        for (int dx = -1; dx <= 1; ++dx) {
-            for (int dy = -1; dy <= 1; ++dy) {
-                for (int dz = -1; dz <= 1; ++dz) {
-                    Material material = this.protocol.packetWorld.getBlock(
-                            new Location(this.protocol.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
-                    );
-
-                    if (material != null
-                            && BlockUtils.canClimb(material, false)) {
-                        return true;
-                    }
-                }
-            }
-        }
-
-        return false;
+    private boolean isNearClimbBlocks() {
+        return this.protocol.getEncirclementData().isClimb();
     }
 
-    private boolean isOnSlime(Location location) {
-        double x = location.getX();
-        double y = location.getY() - 0.1;
-        double z = location.getZ();
-
-        for (int dx = -1; dx <= 1; ++dx) {
-            for (int dy = -1; dy <= 1; ++dy) {
-                for (int dz = -1; dz <= 1; ++dz) {
-                    Material material = this.protocol.packetWorld.getBlock(
-                            new Location(this.protocol.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
-                    );
-
-                    if (material != null
-                            && (BlockUtils.areHoneyBlocks(material)
-                            || BlockUtils.areBeds(material)
-                            || BlockUtils.areSlimeBlocks(material))) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
+    private boolean isOnSlime() {
+        return this.protocol.getEncirclementData().isSlime();
     }
 
-    private boolean isOnSlimeWide(Location location) {
-        double x = location.getX();
-        double y = location.getY() - 0.1;
-        double z = location.getZ();
-
-        for (int dx = -2; dx <= 2; ++dx) {
-            for (int dy = -2; dy <= 2; ++dy) {
-                for (int dz = -2; dz <= 2; ++dz) {
-                    Material material = this.protocol.packetWorld.getBlock(
-                            new Location(this.protocol.getWorld(), x + (double) dx, y + (double) dy, z + (double) dz)
-                    );
-
-                    if (material != null && (BlockUtils.areSlimeBlocks(material))) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
+    private boolean isOnSlimeWide() {
+        return this.protocol.getEncirclementData().isSlimeWide();
     }
 
     private boolean isOnSlimeHeight(Location location) {
-        double x = location.getX();
-        double y = location.getY() - 0.1;
-        double z = location.getZ();
-
-        for (int dx = -1; dx <= 1; ++dx) {
-            for (int dy = -2; dy <= 2; ++dy) {
-                for (int dz = -1; dz <= 1; ++dz) {
-                    Material material = this.protocol.packetWorld.getBlock(
-                            new Location(this.protocol.getWorld(), x + (double) dx, y + (double) dy, z + (double) dz)
-                    );
-
-                    if (material != null && (BlockUtils.areSlimeBlocks(material))) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
+        return this.protocol.getEncirclementData().isSlimeHeight();
     }
 
     private boolean isBlocksOnTop(Location location) {

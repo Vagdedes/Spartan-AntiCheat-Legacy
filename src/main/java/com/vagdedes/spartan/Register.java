@@ -46,24 +46,24 @@ public class Register extends JavaPlugin {
         Config.settings.runOnLogin();
 
         // Listeners (More may be registered elsewhere)
-        enable(new Event_Join());
-        enable(new Event_Leave());
-        enable(new Event_Chat());
-        enable(new Event_Plugin());
-        enable(new Event_Inventory());
-        enable(new Event_Bow());
-        enable(new Event_Chunks());
-        enable(new Event_VehicleDeath());
-        enable(new Event_Health());
-        enable(new Event_Combat());
-        enable(new Event_BlockPlace());
-        enable(new Event_Movement());
-        enable(new Event_Teleport());
-        enable(new Event_Death());
-        enable(new Event_Vehicle());
-        enable(new Event_Velocity());
-        enable(new Event_World());
-        enable(new Event_Damaged());
+        enable(new JoinEvent());
+        enable(new LeaveEvent());
+        enable(new ChatEvent());
+        enable(new PluginEvent());
+        enable(new InventoryEvent());
+        enable(new BowEvent());
+        enable(new ChunksEvent());
+        enable(new VehicleDeathEvent());
+        enable(new HealthEvent());
+        enable(new CombatEvent());
+        enable(new BlockPlaceEvent());
+        enable(new MovementEvent());
+        enable(new TeleportEvent());
+        enable(new DeathEvent());
+        enable(new VehicleEvent());
+        enable(new VelocityEvent());
+        enable(new WorldEvent());
+        enable(new DamagedEvent());
 
         //enable(new GhostBlockTest());
 
@@ -71,10 +71,10 @@ public class Register extends JavaPlugin {
             enable(new NPCManager());
         }
         if (PlayerUtils.elytra) {
-            enable(new Event_Elytra());
+            enable(new ElytraEvent());
 
             if (PlayerUtils.trident) {
-                enable(new Event_Trident());
+                enable(new TridentEvent());
             }
         }
         ProxyUtils.register();

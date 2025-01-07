@@ -22,7 +22,7 @@ public class Criticals extends CheckRunner {
 
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
-        Double verticalMaxAccuracy = this.protocol.getLocation().getY() - this.protocol.getFromLocation().getY();
+        double verticalMaxAccuracy = this.protocol.getLocation().getY() - this.protocol.getFromLocation().getY();
 
         if (RayUtils.onBlock(
                 this.protocol,

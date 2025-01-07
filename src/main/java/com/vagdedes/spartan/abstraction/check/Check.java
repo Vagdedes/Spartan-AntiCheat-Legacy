@@ -489,13 +489,8 @@ public class Check {
                     break;
                 }
             }
-            if (!enabled) {
-                return false;
-            }
-        } else if (!this.silent[dataType.ordinal()]) {
-            return false;
-        }
-        return true;
+            return enabled;
+        } else return this.silent[dataType.ordinal()];
     }
 
     public void setSilent(Check.DataType dataType, boolean b) {

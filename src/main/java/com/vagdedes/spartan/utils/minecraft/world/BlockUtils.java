@@ -755,7 +755,6 @@ public class BlockUtils {
         // Separator
 
         builder.clear();
-        helper.clear();
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
             if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_14)) {
                 if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_16)) {
