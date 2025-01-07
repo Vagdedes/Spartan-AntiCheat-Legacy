@@ -6,12 +6,10 @@ import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.concurrent.SpartanScheduler;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 
 @Data
 @RequiredArgsConstructor
@@ -92,21 +90,17 @@ public class EncirclementData {
                         if (BlockUtils.areIceBlocks(material)) {
                             this.ice = true;
                         }
-                    }
-                }
-            }
-            for (int dx = -2; dx <= 2; ++dx) {
-                for (int dy = -2; dy <= 2; ++dy) {
-                    for (int dz = -2; dz <= 2; ++dz) {
-                        Material material = protocol.packetWorld.getBlock(
-                                        new Location(protocol.getWorld(), x + (double) dx, y + (double) dy, z + (double) dz)
-                        );
-                        if (material == null) return;
-                        if ((BlockUtils.areHoneyBlocks(material)
-                                        || BlockUtils.areBeds(material)
-                                        || BlockUtils.areSlimeBlocks(material))) {
-                            this.slimeHeight = true;
-                            this.slimeWide = true;
+                        {
+                            Material materialBig = protocol.packetWorld.getBlock(
+                                            new Location(protocol.getWorld(), x + (double) dx, y + (double) dy, z + (double) dz)
+                            );
+                            if (materialBig == null) return;
+                            if ((BlockUtils.areHoneyBlocks(materialBig)
+                                            || BlockUtils.areBeds(materialBig)
+                                            || BlockUtils.areSlimeBlocks(materialBig))) {
+                                this.slimeHeight = true;
+                                this.slimeWide = true;
+                            }
                         }
                     }
                 }
