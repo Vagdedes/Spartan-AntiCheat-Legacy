@@ -241,6 +241,10 @@ public class SpartanPlayer {
         for (int i = 0; i < AlgebraUtils.integerCeil(Math.min(distance, limit)); i++) {
             SpartanLocation location = new SpartanLocation(
                     protocol.getLocation().clone().add(
+                            0,
+                            this.protocol.bukkit().getEyeHeight(),
+                            0
+                    ).add(
                             protocol.getLocation().getDirection().multiply(i)
                     )
             );

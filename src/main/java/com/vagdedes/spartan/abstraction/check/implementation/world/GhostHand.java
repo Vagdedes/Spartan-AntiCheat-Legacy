@@ -33,7 +33,11 @@ public class GhostHand extends CheckRunner {
             Block b = (Block) object;
 
             if (canDo(b)) {
-                Location location = this.protocol.getLocationOrVehicle();
+                Location location = this.protocol.getLocationOrVehicle().clone().add(
+                        0,
+                        this.protocol.bukkit().getEyeHeight(),
+                        0
+                );
                 double bDistance = SpartanLocation.distance(location, b.getLocation());
                 SpartanLocation t = this.protocol.spartan.getTargetBlock(bDistance, PlayerUtils.chunk);
 
@@ -60,7 +64,11 @@ public class GhostHand extends CheckRunner {
                 Block b = event.getClickedBlock();
 
                 if (canDo(b) && BlockUtils.isChangeable(b.getType())) {
-                    Location location = this.protocol.getLocationOrVehicle();
+                    Location location = this.protocol.getLocationOrVehicle().clone().add(
+                            0,
+                            this.protocol.bukkit().getEyeHeight(),
+                            0
+                    );
                     double bDistance = SpartanLocation.distance(location, b.getLocation());
                     SpartanLocation t = this.protocol.spartan.getTargetBlock(bDistance, PlayerUtils.chunk);
 
