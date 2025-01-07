@@ -40,6 +40,9 @@ public class FastClicksPackets extends ProbabilityDetection {
     }
 
     void run(long delay) {
+        if (!this.protocol.packetsEnabled()) {
+            return;
+        }
         if (!tickingCorrect()) return;
         long t = System.currentTimeMillis();
         this.samples.add(delay);

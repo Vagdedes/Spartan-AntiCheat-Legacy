@@ -19,6 +19,9 @@ public class FastClicksBukkit extends ProbabilityDetection {
     }
 
     void run() {
+        if (this.protocol.packetsEnabled()) {
+            return;
+        }
         int limit = hackType.getCheck().getNumericalOption(
                 "clicks_per_second_limit",
                 15
