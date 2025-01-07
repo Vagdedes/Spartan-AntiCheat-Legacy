@@ -1,14 +1,11 @@
 package com.vagdedes.spartan.abstraction.check.implementation.combat.fastclicks;
 
-import com.archyx.aureliumskills.stats.Stat;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
-import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.event.PlayerTickEvent;
 import com.vagdedes.spartan.utils.math.statistics.StatisticsMath;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 

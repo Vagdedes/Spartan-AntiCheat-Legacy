@@ -1,10 +1,10 @@
 package com.vagdedes.spartan.functionality.server;
 
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.functionality.concurrent.Threads;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.compatibility.Compatibility;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
+import com.vagdedes.spartan.functionality.concurrent.Threads;
 import com.vagdedes.spartan.functionality.npc.NPCManager;
 import com.vagdedes.spartan.utils.java.ReflectionUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;

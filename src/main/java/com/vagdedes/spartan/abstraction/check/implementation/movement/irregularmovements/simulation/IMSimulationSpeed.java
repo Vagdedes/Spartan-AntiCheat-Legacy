@@ -13,7 +13,6 @@ import com.vagdedes.spartan.utils.math.RayUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.EntityUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import com.vagdedes.spartan.utils.minecraft.vector.SpartanVector2D;
-import com.vagdedes.spartan.utils.minecraft.vector.SpartanVector2F;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -21,9 +20,6 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.util.Vector;
-
-import static java.lang.Math.PI;
 
 public class IMSimulationSpeed extends ProbabilityDetection {
 
