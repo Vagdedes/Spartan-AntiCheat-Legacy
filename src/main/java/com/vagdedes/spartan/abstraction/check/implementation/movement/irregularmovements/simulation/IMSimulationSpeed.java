@@ -135,13 +135,10 @@ public class IMSimulationSpeed extends ProbabilityDetection {
                             break;
                         }
                     }
-                    boolean point = this.isPointWall(to)
-                                    || this.isPointWall(from)
-                                    || (nearbyEntities)
-                                    || this.isPointWall(
-                                    to.clone().add(
-                                                    -Math.sin(moveAngle) * 0.3, 0,
-                                                    Math.cos(moveAngle) * 0.3));
+                    boolean point = this.isPointWall(to, from, to.clone().add(
+                                    -Math.sin(moveAngle) * 0.3, 0,
+                                    Math.cos(moveAngle) * 0.3))
+                                    || (nearbyEntities);
                     if (point && speed < lastSpeed * 1.2 + (nearbyEntities ? accel + 0.2 : 0.03)) {
                         if (getDeviantity(dx, pX) > accel) pX = dx;
                         if (getDeviantity(dz, pZ) > accel) pZ = dz;
@@ -357,26 +354,28 @@ public class IMSimulationSpeed extends ProbabilityDetection {
         return this.protocol.getEncirclementData().isIce();
     }
 
-    private boolean isPointWall(Location location) {
-        double x = location.getX();
-        double y = location.getY();
-        double z = location.getZ();
+    private boolean isPointWall(Location... l) {
         for (int dx = -2; dx <= 2; ++dx) {
             for (int dy = 0; dy <= 2; ++dy) {
                 for (int dz = -2; dz <= 3; ++dz) {
-                    Material material = this.protocol.packetWorld.getBlock(
-                                    new Location(
-                                                    this.protocol.getWorld(),
-                                                    x + (double) dx * 0.5,
-                                                    y + (double) dy * 0.5, z + (double) dz * 0.5));
+                    for (Location location : l) {
+                        double x = location.getX();
+                        double y = location.getY();
+                        double z = location.getZ();
+                        Material material = this.protocol.packetWorld.getBlock(
+                                        new Location(
+                                                        this.protocol.getWorld(),
+                                                        x + (double) dx * 0.5,
+                                                        y + (double) dy * 0.5, z + (double) dz * 0.5));
 
 
-                    if (material != null &&
-                                    (BlockUtils.isSemiSolid(material)
-                                                    || BlockUtils.isSolid(material)
-                                                    || material.toString().contains("GRASS"))
-                                    || BlockUtils.isLiquid(material)) {
-                        return true;
+                        if (material != null &&
+                                        (BlockUtils.isSemiSolid(material)
+                                                        || BlockUtils.isSolid(material)
+                                                        || material.toString().contains("GRASS"))
+                                        || BlockUtils.isLiquid(material)) {
+                            return true;
+                        }
                     }
                 }
             }
