@@ -52,11 +52,7 @@ public class EncirclementData {
                         if ((BlockUtils.areHoneyBlocks(material)
                                         || BlockUtils.areBeds(material)
                                         || BlockUtils.areSlimeBlocks(material))) {
-                            if (Math.abs(dy) < 2 && h) {
-                                this.slime = true;
-                            } else if (h) {
-                                this.slimeHeight = true;
-                            } else this.slimeWide = true;
+                            this.slime = true;
                         }
                         if (Math.abs(dx) < 2
                                         && Math.abs(dz) < 2
@@ -65,8 +61,7 @@ public class EncirclementData {
                                         || BlockUtils.isPowderSnow(material))) {
                             this.jumpModify = true;
                         }
-                        if (Math.abs(dy) < 2 && h
-                                        && BlockUtils.canClimb(material, false)) {
+                        if (BlockUtils.canClimb(material, false)) {
                             this.climb = true;
                         }
                         if (Math.abs(dy) < 2 && h
@@ -76,7 +71,7 @@ public class EncirclementData {
                                         || BlockUtils.areInteractiveBushes(material))) {
                             this.glide = true;
                         }
-                        if (Math.abs(dy) < 2 && h && !BlockUtils.canClimb(material, false) &&
+                        if (!BlockUtils.canClimb(material, false) &&
                                         (BlockUtils.isSemiSolid(material)
                                                         || BlockUtils.areWalls(materialFrom)
                                                         || BlockUtils.areCobbleWalls(materialFrom)
@@ -89,15 +84,29 @@ public class EncirclementData {
                                         && material.equals(Material.BUBBLE_COLUMN) || m2.equals(Material.BUBBLE_COLUMN)) {
                             if (h) this.bubble = true;
                         }
-                        if (Math.abs(dy) < 2 && Math.abs(dx) < 2
-                                        && Math.abs(dz) < 2
-                                        && BlockUtils.isLiquidOrWaterLogged(b, true)
+                        if (BlockUtils.isLiquidOrWaterLogged(b, true)
                                         || BlockUtils.isLiquid(material) || BlockUtils.isLiquid(m2)
                                         || BlockUtils.isWaterLogged(b)) {
                             this.water = true;
                         }
                         if (BlockUtils.areIceBlocks(material)) {
                             this.ice = true;
+                        }
+                    }
+                }
+            }
+            for (int dx = -2; dx <= 2; ++dx) {
+                for (int dy = -2; dy <= 2; ++dy) {
+                    for (int dz = -2; dz <= 2; ++dz) {
+                        Material material = protocol.packetWorld.getBlock(
+                                        new Location(protocol.getWorld(), x + (double) dx, y + (double) dy, z + (double) dz)
+                        );
+                        if (material == null) return;
+                        if ((BlockUtils.areHoneyBlocks(material)
+                                        || BlockUtils.areBeds(material)
+                                        || BlockUtils.areSlimeBlocks(material))) {
+                            this.slimeHeight = true;
+                            this.slimeWide = true;
                         }
                     }
                 }

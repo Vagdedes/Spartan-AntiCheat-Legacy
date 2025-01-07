@@ -161,7 +161,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
                 p.getComponentY().pistonHandle = false;
                 slimePunch = 4;
             }
-            if ((this.isOnSemi() || this.isOnSemi() || this.isOnSlimeHeight(to)) && motion != 0.0 && motion < 0.51) {
+            if ((this.isOnSemi() || this.isOnSemi() || this.isOnSlimeHeight()) && motion != 0.0 && motion < 0.51) {
                 this.setPredict(motion);
             }
             pr2 = this.abs(this.abs(motion) - this.abs(this.predictY()));
@@ -557,7 +557,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
         return this.protocol.getEncirclementData().isSlimeWide();
     }
 
-    private boolean isOnSlimeHeight(Location location) {
+    private boolean isOnSlimeHeight() {
         return this.protocol.getEncirclementData().isSlimeHeight();
     }
 

@@ -33,7 +33,6 @@ public class MovementEvent implements Listener {
 
         if (protocol.packetsEnabled() == packets) {
             SpartanPlayer p = protocol.spartan;
-            protocol.setEncirclementData(new EncirclementData(protocol));
 
             Location nto = e.getTo();
 

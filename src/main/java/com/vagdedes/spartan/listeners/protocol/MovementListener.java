@@ -6,6 +6,7 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.vagdedes.spartan.Register;
+import com.vagdedes.spartan.abstraction.data.EncirclementData;
 import com.vagdedes.spartan.functionality.concurrent.SpartanScheduler;
 import com.vagdedes.spartan.functionality.concurrent.Threads;
 import com.vagdedes.spartan.abstraction.event.PlayerTickEvent;
@@ -200,6 +201,7 @@ public class MovementListener extends PacketAdapter {
                                 p.getLocation()
                 );
                 moveEvent.setCancelled(event.isCancelled());
+                p.setEncirclementData(new EncirclementData(p));
                 MovementEvent.event(moveEvent, true);
             });
             if (p.flyingTicks > 0) p.flyingTicks--;
