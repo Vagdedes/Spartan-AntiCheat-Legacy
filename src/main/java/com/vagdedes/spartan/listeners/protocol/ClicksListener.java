@@ -29,7 +29,7 @@ public class ClicksListener extends PacketAdapter {
     public void onPacketReceiving(PacketEvent event) {
         Player player = event.getPlayer();
         SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
-        SpartanScheduler.run(() -> {
+        synchronized (protocol) {
             if (event.getPacket().getType().equals(PacketType.Play.Client.ARM_ANIMATION)) {
                 {
                     long delay = System.currentTimeMillis() - protocol.oldClickTime;
@@ -45,7 +45,7 @@ public class ClicksListener extends PacketAdapter {
                             || event.getPacket().getType().equals(PacketType.Play.Client.GROUND)) {
                 // stub
             }
-        });
+        }
     }
 
     private void handleLeftClick(Player player, long delay) {
