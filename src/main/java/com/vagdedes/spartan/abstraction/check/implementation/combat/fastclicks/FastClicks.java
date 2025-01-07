@@ -27,12 +27,12 @@ public class FastClicks extends CheckRunner {
     protected void handleInternal(boolean cancelled, Object object) {
         if (object == null) {
             this.addDisableCause(
-                            null,
-                            null,
-                            AlgebraUtils.integerCeil(TPS.maximum)
+                    null,
+                    null,
+                    AlgebraUtils.integerCeil(TPS.maximum)
             );
         } else if (object instanceof Long) {
-            packets.run(cancelled, (long) object);
+            packets.run((long) object);
         } else if (object instanceof PlayerTickEvent) {
             packets.tick((PlayerTickEvent) object);
         }
