@@ -1,2 +1,3 @@
 [+] New AutoClicker (FastClicks) checks
 [#] Major performance improvements
+[#] Potentially fixed a ProtocolLib world change error
