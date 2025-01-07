@@ -16,7 +16,6 @@ import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
 import com.vagdedes.spartan.utils.minecraft.entity.AxisAlignedBB;
 import com.vagdedes.spartan.utils.minecraft.protocol.ProtocolTools;
-import dev.lone.itemsadder.e.E;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;

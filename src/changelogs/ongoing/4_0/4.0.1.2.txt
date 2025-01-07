@@ -1,0 +1,3 @@
+[+] New AutoClicker (FastClicks) checks
+[#] Major performance improvements
+[#] Other minor code fixes
