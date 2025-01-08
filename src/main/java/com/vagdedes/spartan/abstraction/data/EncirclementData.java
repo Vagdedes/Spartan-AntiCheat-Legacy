@@ -79,7 +79,7 @@ public class EncirclementData {
                             this.semi = true;
                         }
                         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
-                                        && material.equals(Material.BUBBLE_COLUMN) || m2.equals(Material.BUBBLE_COLUMN)) {
+                                        && (material.equals(Material.BUBBLE_COLUMN) || m2.equals(Material.BUBBLE_COLUMN))) {
                             if (h) this.bubble = true;
                         }
                         if (BlockUtils.isLiquidOrWaterLogged(b, true)

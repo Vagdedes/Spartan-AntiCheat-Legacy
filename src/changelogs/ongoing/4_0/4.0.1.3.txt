@@ -1,1 +1,2 @@
 [#] Disabled certain detections of FastClicks when on packets
+[#] Fixed console errors related to bubble columns
