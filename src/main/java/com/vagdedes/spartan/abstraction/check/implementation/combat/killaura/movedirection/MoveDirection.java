@@ -12,7 +12,6 @@ import org.bukkit.Location;
 import org.bukkit.entity.*;
 import org.bukkit.util.Vector;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -23,7 +22,7 @@ public class MoveDirection extends ProbabilityDetection {
 
     private final CheckDetection layer1, layer2;
     private AttackHandle attackHandle;
-    private final LinkedList<AttackData> aimAnalysis;
+    private final List<AttackData> aimAnalysis;
     private float vl, vlL2;
     private String punish, punishL2;
     private double lastSwitchYaw, lastSwitchPitch;
@@ -34,7 +33,7 @@ public class MoveDirection extends ProbabilityDetection {
         super(executor, null, true);
         this.layer1 = new ImplementedProbabilityDetection(executor, "move_direction_1", true);
         this.layer2 = new ImplementedProbabilityDetection(executor, "move_direction_2", true);
-        this.aimAnalysis = new LinkedList<>();
+        this.aimAnalysis = new CopyOnWriteArrayList<>();
         this.attackHandle = new AttackHandle(null, System.currentTimeMillis());
 
         this.vl = 0;
@@ -88,9 +87,9 @@ public class MoveDirection extends ProbabilityDetection {
         punishL2 = "";
         double globalValue = 0;
         double changeYaw = 0;
-        double oldYaw = aimAnalysis.getFirst().pitch;
-        double oldYawResult = aimAnalysis.getFirst().yaw;
-        double oldPitchResult = aimAnalysis.getFirst().pitch;
+        double oldYaw = aimAnalysis.get(0).pitch;
+        double oldYawResult = aimAnalysis.get(0).yaw;
+        double oldPitchResult = aimAnalysis.get(0).pitch;
         double yawChangeFirst = Math.abs(aimAnalysis.get(0).yaw - aimAnalysis.get(1).yaw);
         int basicHeuristic = 0;
         int lowHeuristic = 0;

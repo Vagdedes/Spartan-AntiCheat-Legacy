@@ -23,14 +23,15 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class HitReach extends CheckRunner {
 
     private final CheckDetection
-                    hitboxRaytrace,
-                    simple;
-    private final List<Double> rayTraceAnalysis = new ArrayList<>();
+            hitboxRaytrace,
+            simple;
+    private final List<Double> rayTraceAnalysis = new CopyOnWriteArrayList<>();
     private int vl = 0;
     private static final boolean[] BOOLEANS = {true, false};
     private static final double REACH_DIST = 3.001, HIT_BOX_VAL = 10.0;
@@ -52,7 +53,7 @@ public class HitReach extends CheckRunner {
         if (event.target.getVehicle() != null || this.protocol.spartan.getVehicle() != null) return;
         if (this.protocol.packetsEnabled()) {
             if (CombatUtils.canCheck(this.protocol, SpartanBukkit.getProtocol((Player) event.target).bukkit())
-                            && !this.protocol.bukkit().getGameMode().equals(GameMode.CREATIVE)) {
+                    && !this.protocol.bukkit().getGameMode().equals(GameMode.CREATIVE)) {
                 SpartanProtocol target = SpartanBukkit.getProtocol((Player) event.target);
                 List<Location> h = target.getPositionHistory();
                 boolean is1_8 = this.protocol.isUsingVersion(MultiVersion.MCVersion.V1_8);
@@ -65,22 +66,22 @@ public class HitReach extends CheckRunner {
                         Location l = this.protocol.getLocation();
                         Location lF = this.protocol.getFromLocation();
                         Vec3[] possibleEyeRotation = {
-                                        getVectorForRotation(l.getYaw(), l.getPitch(), clientMath),
-                                        getVectorForRotation(lF.getYaw(), lF.getPitch(), clientMath),
-                                        getVectorForRotation(lF.getYaw(), l.getPitch(), clientMath),
+                                getVectorForRotation(l.getYaw(), l.getPitch(), clientMath),
+                                getVectorForRotation(lF.getYaw(), lF.getPitch(), clientMath),
+                                getVectorForRotation(lF.getYaw(), l.getPitch(), clientMath),
                         };
 
                         for (boolean sneaking : BOOLEANS) {
                             for (Vec3 eyeRotation : possibleEyeRotation) {
                                 Vec3 eyePos = new Vec3(
-                                                l.getX(),
-                                                l.getY() + getEyeHeight(sneaking),
-                                                l.getZ()
+                                        l.getX(),
+                                        l.getY() + getEyeHeight(sneaking),
+                                        l.getZ()
                                 );
                                 Vec3 endReachRay = eyePos.addVector(
-                                                eyeRotation.xCoord * 6.0D,
-                                                eyeRotation.yCoord * 6.0D,
-                                                eyeRotation.zCoord * 6.0D
+                                        eyeRotation.xCoord * 6.0D,
+                                        eyeRotation.yCoord * 6.0D,
+                                        eyeRotation.zCoord * 6.0D
                                 );
                                 List<Location> positions = new ArrayList<>(h);
                                 positions.add(target.getLocation());
@@ -88,8 +89,8 @@ public class HitReach extends CheckRunner {
                                 for (Location position : positions) {
 
                                     AxisAlignedBB axisAlignedBB = new AxisAlignedBB(
-                                                    position.getX() - hitbox, position.getY() - 0.1f, position.getZ() - hitbox,
-                                                    position.getX() + hitbox, position.getY() + 1.9f, position.getZ() + hitbox
+                                            position.getX() - hitbox, position.getY() - 0.1f, position.getZ() - hitbox,
+                                            position.getX() + hitbox, position.getY() + 1.9f, position.getZ() + hitbox
                                     );
 
                                     MovingObjectPosition intercept = axisAlignedBB.calculateIntercept(eyePos, endReachRay);
@@ -126,9 +127,9 @@ public class HitReach extends CheckRunner {
         } else {
             LivingEntity target = event.target;
             if (CombatUtils.canCheck(this.protocol, target)
-                            && !this.protocol.bukkit().getGameMode().equals(GameMode.CREATIVE)) {
+                    && !this.protocol.bukkit().getGameMode().equals(GameMode.CREATIVE)) {
                 double bruteforceRayTrace = RayUtils.bruteforceRayTrace(this.protocol, target),
-                                diff = bruteforceRayTrace - 0.4;
+                        diff = bruteforceRayTrace - 0.4;
                 rayTraceAnalysis.add(bruteforceRayTrace);
                 if (rayTraceAnalysis.size() >= 10) {
                     analyze(this.protocol.getLocation(), bruteforceRayTrace);
@@ -136,6 +137,7 @@ public class HitReach extends CheckRunner {
             }
         }
     }
+
     private static Vec3 getVectorForRotation(float yaw, float pitch, ClientMath clientMath) {
         float f = clientMath.cos(-yaw * 0.017453292F - (float) Math.PI);
         float f1 = clientMath.sin(-yaw * 0.017453292F - (float) Math.PI);
@@ -144,6 +146,7 @@ public class HitReach extends CheckRunner {
 
         return new Vec3(f1 * f2, f3, f * f2);
     }
+
     private static float getEyeHeight(boolean sneaking) {
         float eyeHeight = 1.62F;
 
@@ -153,6 +156,7 @@ public class HitReach extends CheckRunner {
 
         return eyeHeight;
     }
+
     private void analyze(Location to, double bruteForce) {
         String punish = null;
         double globalValue = 0;
@@ -167,10 +171,10 @@ public class HitReach extends CheckRunner {
         if (punish != null) {
             vl += 100;
             this.simple.cancel( // ATTENTION: Add more detections to the check if you write more definitions for the 'punish' String field
-                            "type: " + punish + ", hitbox-size-analysis: "
-                                            + result + ", hitbox-size-last: " + bruteForce + ", percent-of-deviation: "
-                                            + percent + "%, reach: " + RayUtils.scaleVal((result / 0.4) * 3, 2) + " blocks",
-                            to
+                    "type: " + punish + ", hitbox-size-analysis: "
+                            + result + ", hitbox-size-last: " + bruteForce + ", percent-of-deviation: "
+                            + percent + "%, reach: " + RayUtils.scaleVal((result / 0.4) * 3, 2) + " blocks",
+                    to
             );
         } else {
             if (vl > 0) vl -= 50;
