@@ -7,14 +7,13 @@ import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityD
 import com.vagdedes.spartan.abstraction.event.PlayerTickEvent;
 import com.vagdedes.spartan.utils.math.statistics.StatisticsMath;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class FastClicksPackets extends ProbabilityDetection {
 
     private long lastTickTime = System.currentTimeMillis();
-    private final List<Integer> buffer = new ArrayList<>();
+    private final List<Integer> buffer = new CopyOnWriteArrayList<>();
 
     {
         for (int i = 0; i < 7; i++) buffer.add(0);

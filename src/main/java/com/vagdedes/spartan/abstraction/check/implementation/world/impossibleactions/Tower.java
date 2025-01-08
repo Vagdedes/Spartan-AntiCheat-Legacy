@@ -15,8 +15,8 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Tower extends ProbabilityDetection {
 
@@ -24,13 +24,13 @@ public class Tower extends ProbabilityDetection {
 
     Tower(CheckRunner executor) {
         super(executor, "tower", true);
-        this.buffers = new OverflowMap<>(new LinkedHashMap<>(), 124);
+        this.buffers = new OverflowMap<>(new ConcurrentHashMap<>(2), 124);
     }
 
     final void run(Block block,
-             Location playerLocation,
-             int playerY,
-             int blockY) {
+                   Location playerLocation,
+                   int playerY,
+                   int blockY) {
         if (this.protocol.packetsEnabled()) {
             return;
         }

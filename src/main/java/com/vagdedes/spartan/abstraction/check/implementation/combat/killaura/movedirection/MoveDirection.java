@@ -12,10 +12,10 @@ import org.bukkit.Location;
 import org.bukkit.entity.*;
 import org.bukkit.util.Vector;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import static java.lang.Math.PI;
 
@@ -41,8 +41,8 @@ public class MoveDirection extends ProbabilityDetection {
         this.vlL2 = 0;
         this.punish = "";
         this.punishL2 = "";
-        this.targetsOnTheRow = new ArrayList<>();
-        this.rayTraceAnalysis = new ArrayList<>();
+        this.targetsOnTheRow = new CopyOnWriteArrayList<>();
+        this.rayTraceAnalysis = new CopyOnWriteArrayList<>();
     }
 
     public final void run() {

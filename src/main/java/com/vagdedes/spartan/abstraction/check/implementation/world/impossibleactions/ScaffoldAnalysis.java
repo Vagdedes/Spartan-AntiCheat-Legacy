@@ -14,9 +14,9 @@ import org.bukkit.block.Block;
 import org.bukkit.util.Vector;
 
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ScaffoldAnalysis extends ProbabilityDetection {
 
@@ -25,7 +25,7 @@ public class ScaffoldAnalysis extends ProbabilityDetection {
 
     ScaffoldAnalysis(CheckRunner executor) {
         super(executor, "scaffold_analysis", true);
-        this.buffers = new OverflowMap<>(new LinkedHashMap<>(), 124);
+        this.buffers = new OverflowMap<>(new ConcurrentHashMap<>(2), 124);
     }
 
     final void run(Block currentBlock) {

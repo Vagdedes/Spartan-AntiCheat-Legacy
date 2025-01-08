@@ -28,6 +28,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class FastBreak extends CheckRunner {
 
@@ -46,7 +47,7 @@ public class FastBreak extends CheckRunner {
         this.delay = new ImplementedProbabilityDetection(this, "delay", true);
         this.breaksPerSecond = new ImplementedProbabilityDetection(this, null, true);
         this.indirectSurroundingsPerSecond = new ImplementedProbabilityDetection(this, null, true);
-        this.interactTime = new LinkedHashMap<>();
+        this.interactTime = new ConcurrentHashMap<>(2);
         this.breaksPerSecondBuffer = new Buffer.IndividualBuffer();
         this.individualSurroundingsPerSecondBuffer = new Buffer.IndividualBuffer();
     }
