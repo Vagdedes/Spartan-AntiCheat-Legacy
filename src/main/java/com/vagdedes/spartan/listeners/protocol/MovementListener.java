@@ -31,8 +31,6 @@ import java.util.Set;
 
 public class MovementListener extends PacketAdapter {
 
-    private static final Threads.ThreadPool movementThread = new Threads.ThreadPool(1L);
-
     public MovementListener() {
         super(
                 Register.plugin,

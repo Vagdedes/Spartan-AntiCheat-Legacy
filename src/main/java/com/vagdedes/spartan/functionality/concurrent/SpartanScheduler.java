@@ -11,27 +11,34 @@ import lombok.extern.java.Log;
 import java.lang.reflect.Field;
 import java.util.concurrent.*;
 import java.util.function.Function;
+
 @Log
 @UtilityClass
 public class SpartanScheduler {
 
+    private static boolean debug = false;
     private static final char INNER_CLASS_SEPARATOR_CHAR = '$';
     public static int STOP_WATCH_TIME_MILLIS = 750;
     @Getter
     private static ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(64,
-        new ThreadFactoryBuilder().setNameFormat("Spartan Thread %d").build());
+            new ThreadFactoryBuilder().setNameFormat("Spartan Thread %d").build());
+
     public static void shutdown() {
         TryIgnore.ignore(() -> scheduler.shutdownNow());
     }
+
     public static Future<?> run(Runnable runnable) {
         return scheduler.submit(new DecoratedRunnable(runnable));
     }
+
     public static <T> Future<T> run(Callable<T> callable) {
         return scheduler.submit(new DecoratedCallable<>(callable));
     }
+
     public static ScheduledFuture<?> later(Runnable runnable, long delay, TimeUnit time) {
         return scheduler.schedule(new DecoratedRunnable(runnable), delay, time);
     }
+
     public static ScheduledFuture<?> timer(Runnable runnable, long delay, long period, TimeUnit time) {
         return scheduler.scheduleAtFixedRate(new DecoratedRunnable(runnable), delay, period, time);
     }
@@ -79,6 +86,7 @@ public class SpartanScheduler {
             }
         }
     }
+
     @ToString
     public static class DecoratedCallable<T> implements Callable<T> {
         @Setter
@@ -107,11 +115,15 @@ public class SpartanScheduler {
                 if (after > STOP_WATCH_TIME_MILLIS) {
                     String l = SpartanScheduler.toString(originalCallable);
                     if (l.length() > 26) l = l.substring(0, 26) + "...";
-                    log.warning("Busy task " + l + ", it was performed " + after + "ms.");
+
+                    if (debug) {
+                        log.warning("Busy task " + l + ", it was performed " + after + "ms.");
+                    }
                 }
             }
         }
     }
+
     public static String toString(Object object) {
         if (object == null) {
             return "null";
