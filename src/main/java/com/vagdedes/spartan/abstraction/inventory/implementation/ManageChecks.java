@@ -92,7 +92,10 @@ public class ManageChecks extends InventoryMenu {
                     protocol.bukkit().closeInventory();
                     ClickableMessage.sendURL(
                             protocol.bukkit(),
-                            Config.messages.getColorfulString("check_stored_data_delete_message"),
+                            Config.messages.getColorfulString("check_stored_data_delete_message").replace(
+                                    "{check}",
+                                    check.getName()
+                            ),
                             CommandExecution.support,
                             DiscordMemberCount.discordURL
                     );
