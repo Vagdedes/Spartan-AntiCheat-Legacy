@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.functionality.concurrent;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.vagdedes.spartan.utils.java.OverflowMap;
 import com.vagdedes.spartan.utils.java.TryIgnore;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,6 +10,7 @@ import lombok.experimental.UtilityClass;
 import lombok.extern.java.Log;
 
 import java.lang.reflect.Field;
+import java.util.Map;
 import java.util.concurrent.*;
 import java.util.function.Function;
 
@@ -20,11 +22,15 @@ public class SpartanScheduler {
     private static final char INNER_CLASS_SEPARATOR_CHAR = '$';
     public static int STOP_WATCH_TIME_MILLIS = 750;
     @Getter
-    private static ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(64,
+    private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(64,
             new ThreadFactoryBuilder().setNameFormat("Spartan Thread %d").build());
+    private static final Map<String, Boolean> processedErrors = new OverflowMap<>(
+            new ConcurrentHashMap<>(),
+            128
+    );
 
     public static void shutdown() {
-        TryIgnore.ignore(() -> scheduler.shutdownNow());
+        TryIgnore.ignore(scheduler::shutdownNow);
     }
 
     public static Future<?> run(Runnable runnable) {
@@ -71,10 +77,12 @@ public class SpartanScheduler {
             try {
                 decoratedRunnable.run();
             } catch (Throwable e) {
-                log.severe("Error during execution of asynchronous task " + SpartanScheduler.toString(originalRunnable));
-                e.printStackTrace();
-                if (e instanceof InterruptedException) // for debug
-                    throw e;
+                if (debug || processedErrors.putIfAbsent(e.getMessage(), true) == null) {
+                    log.severe("Error during execution of asynchronous task:");
+                    e.printStackTrace();
+                    if (e instanceof InterruptedException) // for debug
+                        throw e;
+                }
 
             } finally {
                 long after = System.currentTimeMillis() - start;
