@@ -6,6 +6,7 @@ import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
 import com.vagdedes.spartan.utils.minecraft.inventory.InventoryUtils;
+import lombok.Getter;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
@@ -21,8 +22,13 @@ public class PlayerProfile {
     private final MiningHistory[] miningHistory;
     private ItemStack skull;
     private OfflinePlayer offlinePlayer;
+    @Getter
     private final CheckRunner[] runners;
+    @Getter
     private Check.DataType lastDataType;
+    @Getter
+    private Check.DetectionType lastDetectionType;
+    @Getter
     private final ProfileContinuity continuity;
 
     // Separator
@@ -33,6 +39,9 @@ public class PlayerProfile {
         this.runners = new CheckRunner[Enums.HackType.values().length];
         this.miningHistory = new MiningHistory[MiningHistory.MiningOre.values().length];
         this.lastDataType = Check.DataType.JAVA;
+        this.lastDetectionType = SpartanBukkit.packetsEnabled()
+                ? Check.DetectionType.PACKETS
+                : Check.DetectionType.BUKKIT;
         this.continuity = new ProfileContinuity(this);
 
         for (MiningHistory.MiningOre ore : MiningHistory.MiningOre.values()) {
@@ -59,6 +68,9 @@ public class PlayerProfile {
         this.runners = new CheckRunner[Enums.HackType.values().length];
         this.miningHistory = new MiningHistory[MiningHistory.MiningOre.values().length];
         this.lastDataType = protocol.spartan.dataType;
+        this.lastDetectionType = protocol.packetsEnabled()
+                ? Check.DetectionType.PACKETS
+                : Check.DetectionType.BUKKIT;
         this.continuity = new ProfileContinuity(this);
 
         for (MiningHistory.MiningOre ore : MiningHistory.MiningOre.values()) {
@@ -69,13 +81,12 @@ public class PlayerProfile {
 
     // Separator
 
-    public Check.DataType getLastDataType() {
-        return lastDataType;
-    }
-
     public void update(SpartanProtocol protocol) {
         this.offlinePlayer = protocol.bukkit();
         this.lastDataType = protocol.spartan.dataType;
+        this.lastDetectionType = protocol.packetsEnabled()
+                ? Check.DetectionType.PACKETS
+                : Check.DetectionType.BUKKIT;
         this.registerRunners(protocol);
     }
 
@@ -88,16 +99,8 @@ public class PlayerProfile {
         return protocol != null && SpartanBukkit.isOnline(protocol);
     }
 
-    public ProfileContinuity getContinuity() {
-        return this.continuity;
-    }
-
     public CheckRunner getRunner(Enums.HackType hackType) {
         return this.runners[hackType.ordinal()];
-    }
-
-    public CheckRunner[] getRunners() {
-        return this.runners;
     }
 
     private void registerRunners(SpartanProtocol protocol) {

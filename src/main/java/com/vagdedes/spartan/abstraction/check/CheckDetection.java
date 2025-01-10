@@ -107,7 +107,7 @@ public abstract class CheckDetection extends CheckProcess {
                 || this.forcedDataType == dataType;
     }
 
-    public final boolean supportsDetectionType(Check.DetectionType detectionType) {
+    public final boolean supportsDetectionType(PlayerProfile profile, Check.DetectionType detectionType) {
         return this.detectionType == detectionType;
     }
 
