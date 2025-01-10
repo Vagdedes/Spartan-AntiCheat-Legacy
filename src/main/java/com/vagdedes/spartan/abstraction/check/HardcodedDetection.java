@@ -1,6 +1,5 @@
 package com.vagdedes.spartan.abstraction.check;
 
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
 
 public abstract class HardcodedDetection extends CheckDetection {
@@ -10,11 +9,9 @@ public abstract class HardcodedDetection extends CheckDetection {
     }
 
     public final void setHackingRatio(double ratio) {
-        SpartanProtocol protocol = this.protocol;
-
-        if (protocol != null && protocol.bukkit().isOnline()) {
+        if (this.protocol != null) {
             this.setProbability(
-                    protocol.spartan.dataType,
+                    this.protocol.spartan.dataType,
                     PlayerEvidence.probabilityToCertainty(ratio)
             );
         }

@@ -27,7 +27,7 @@ public class XRay extends CheckRunner {
         } else {
             int profileCount = 0;
             double mean = 0.0,
-                    stdDev = 0.0;
+                    variance = 0.0;
 
             for (PlayerProfile profile : profiles) {
                 double minesToTimeRatio = profile.getMiningHistory(ore).getMinesToTimeRatio(environment);
@@ -35,13 +35,24 @@ public class XRay extends CheckRunner {
                 if (minesToTimeRatio > 0.0) {
                     profileCount++;
                     mean += minesToTimeRatio;
-                    stdDev += minesToTimeRatio * minesToTimeRatio;
                 }
             }
+            mean /= profileCount;
+
+            for (PlayerProfile profile : profiles) {
+                double minesToTimeRatio = profile.getMiningHistory(ore).getMinesToTimeRatio(environment);
+
+                if (minesToTimeRatio > 0.0) {
+                    double difference = minesToTimeRatio - mean;
+                    variance += difference * difference;
+                }
+            }
+            double stdDev = Math.sqrt(variance / (double) profileCount);
+
             if (profileCount >= PlayerEvidence.factorRequirement) {
                 return new double[]{
-                        mean / profileCount,
-                        Math.sqrt(stdDev / profileCount)
+                        mean / (double) profileCount,
+                        Math.sqrt(stdDev / (double) profileCount)
                 };
             } else {
                 return new double[]{};
@@ -68,33 +79,30 @@ public class XRay extends CheckRunner {
     protected void handleInternal(boolean cancelled, Object object) {
         Object[] objects = (Object[]) object;
         World.Environment environment = World.Environment.valueOf(objects[0].toString());
+        double[] statistics = getStatistics(environment, (MiningHistory.MiningOre) objects[2]);
 
-        if (environment == World.Environment.NORMAL
-                || environment == World.Environment.NETHER
-                || environment == World.Environment.THE_END) {
-            double[] statistics = getStatistics(environment, (MiningHistory.MiningOre) objects[2]);
+        if (statistics.length > 0) {
+            double individual = ((MiningHistory) objects[1]).getMinesToTimeRatio(environment);
 
-            if (statistics.length > 0) {
-                double individual = ((MiningHistory) objects[1]).getMinesToTimeRatio(environment);
+            if (individual > 0.0) {
+                double probability = StatisticsMath.getCumulativeProbability(
+                        (individual - statistics[0]) / statistics[1]
+                );
+                this.detections[environment.ordinal()].setHackingRatio(probability);
 
-                if (individual > 0.0) {
-                    double probability = StatisticsMath.getCumulativeProbability(
-                            (individual - statistics[0]) / statistics[1]
+                if (probability >= threshold) {
+                    this.detections[environment.ordinal()].cancel(
+                            "Unfair gathering of " + objects[3]
+                                    + " in " + environment.name().toLowerCase() + " world"
+                                    + ", surpassed " + AlgebraUtils.cut(probability * 100.0, 2)
+                                    + "% of players"
                     );
-
-                    if (probability >= threshold) {
-                        this.detections[environment.ordinal()].setHackingRatio(probability);
-                        this.detections[environment.ordinal()].cancel(
-                                "Unfair gathering of " + objects[3]
-                                        + " in " + environment.name().toLowerCase() + " world"
-                                        + ", surpassed " + AlgebraUtils.cut(probability * 100.0, 2)
-                                        + "% of players"
-                        );
-                    } else {
-                        this.detections[environment.ordinal()].setHackingRatio(probability);
-                    }
                 }
+            } else {
+                this.detections[environment.ordinal()].setHackingRatio(PlayerEvidence.emptyProbability);
             }
+        } else {
+            this.detections[environment.ordinal()].setHackingRatio(PlayerEvidence.emptyProbability);
         }
     }
 

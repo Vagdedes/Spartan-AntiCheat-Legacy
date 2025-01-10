@@ -26,12 +26,6 @@ public class PlayerEvidence {
         return POSITIVE ? probability >= threshold : probability <= threshold;
     }
 
-    public static double modifyProbability(double probability, double min, double max) {
-        return POSITIVE
-                ? probability + max
-                : probability - min;
-    }
-
     public static int probabilityToFactors(double probability) {
         return AlgebraUtils.integerCeil(1.0 / createProbability(probability));
     }

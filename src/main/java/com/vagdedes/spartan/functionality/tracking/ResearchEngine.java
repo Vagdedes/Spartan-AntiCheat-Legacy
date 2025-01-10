@@ -552,41 +552,25 @@ public class ResearchEngine {
                     } else {
                         for (Map<CheckDetection, Double> map : wave.values()) {
                             double sum = 0,
-                                    squareSum = 0,
-                                    min = Double.MAX_VALUE,
-                                    max = Double.MIN_VALUE;
+                                    variance = 0;
 
                             for (double value : map.values()) {
                                 sum += value;
-                                squareSum += value * value;
                             }
                             double divisor = map.size(),
-                                    mean = sum / divisor,
-                                    deviation = Math.sqrt(squareSum / divisor);
+                                    mean = sum / divisor;
 
-                            for (Map.Entry<CheckDetection, Double> entry : map.entrySet()) {
-                                double probability = StatisticsMath.getCumulativeProbability(
-                                        (entry.getValue() - mean) / deviation
-                                );
-                                entry.setValue(probability);
-
-                                if (probability > max) {
-                                    max = probability;
-                                }
-                                if (probability < min) {
-                                    min = probability;
-                                }
+                            for (double value : map.values()) {
+                                double difference = value - mean;
+                                variance += difference * difference;
                             }
-                            max = 1.0 - max;
-                            double distributionDifference = Math.abs(max - min);
+                            double deviation = Math.sqrt(variance / divisor);
 
                             for (Map.Entry<CheckDetection, Double> entry : map.entrySet()) {
                                 entry.getKey().setProbability(
                                         dataType,
-                                        PlayerEvidence.modifyProbability(
-                                                entry.getValue(),
-                                                Math.max(min - distributionDifference, 0.0),
-                                                Math.max(max - distributionDifference, 0.0)
+                                        StatisticsMath.getCumulativeProbability(
+                                                (entry.getValue() - mean) / deviation
                                         )
                                 );
                             }

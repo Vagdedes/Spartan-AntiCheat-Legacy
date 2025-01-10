@@ -127,7 +127,6 @@ public abstract class ProbabilityDetection extends CheckDetection {
                 return CheckDetection.defaultData();
             } else {
                 double violationCount = data.size(),
-                        averageSimilarity,
                         averageViolationVelocity,
                         comparisonCount = 0.0;
                 long violationVelocitySquareSum = 0;
@@ -155,55 +154,10 @@ public abstract class ProbabilityDetection extends CheckDetection {
                 }
                 if (comparisonCount == 0.0) {
                     averageViolationVelocity = Long.MAX_VALUE;
-                    averageSimilarity = 1.0;
                 } else {
                     averageViolationVelocity = Math.sqrt(violationVelocitySquareSum / comparisonCount);
-                    Collection<PlayerProfile> playerProfiles = ResearchEngine.getPlayerProfiles();
-
-                    if (!playerProfiles.isEmpty()) {
-                        long current,
-                                previous,
-                                difference;
-                        double sum = 0.0;
-                        int total = 0;
-
-                        for (PlayerProfile loopProfile : playerProfiles) {
-                            CheckDetection detection = loopProfile.getRunner(this.hackType).getDetection(this.name);
-
-                            if (detection.hasData(loopProfile, dataType)) {
-                                ProbabilityDetection probabilityDetection = (ProbabilityDetection) detection;
-                                data = probabilityDetection.data[dataType.ordinal()];
-
-                                if (data != null) {
-                                    iterator = data.iterator();
-
-                                    if (iterator.hasNext()) {
-                                        previous = iterator.next();
-
-                                        while (iterator.hasNext()) {
-                                            current = iterator.next();
-
-                                            if (loopProfile.getContinuity().wasOnline(current, previous)) {
-                                                difference = current - previous;
-                                                sum += 1.0 - Math.abs(difference - averageViolationVelocity) / (averageViolationVelocity + difference);
-                                                total++;
-                                                previous = current;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        if (total > 0) {
-                            averageSimilarity = sum / (double) total;
-                        } else {
-                            averageSimilarity = 1.0;
-                        }
-                    } else {
-                        averageSimilarity = 1.0;
-                    }
                 }
-                double result = averageViolationVelocity / violationCount * averageSimilarity;
+                double result = averageViolationVelocity / violationCount;
 
                 if (result == Double.POSITIVE_INFINITY
                         || result == Double.NEGATIVE_INFINITY) {
