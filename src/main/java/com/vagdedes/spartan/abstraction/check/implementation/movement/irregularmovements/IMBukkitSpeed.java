@@ -76,7 +76,7 @@ public class IMBukkitSpeed extends ProbabilityDetection {
     private boolean simulationFlag = false;
 
     public IMBukkitSpeed(CheckRunner executor) {
-        super(executor, null, true);
+        super(executor, null, null, true);
         this.strafeLineSpeeding = new ImplementedProbabilityDetection(this, "speed_strafe_line_speeding", true);
         this.strafeJumpSpeeding = new ImplementedProbabilityDetection(this, "speed_strafe_jump_speeding", true);
         this.straightLineSpeeding = new ImplementedProbabilityDetection(this, "speed_straight_line_speeding", true);

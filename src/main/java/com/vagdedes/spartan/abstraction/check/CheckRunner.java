@@ -57,7 +57,8 @@ public abstract class CheckRunner extends CheckProcess {
                     total = 0;
 
             for (CheckDetection detectionExecutor : new TreeMap<>(this.detections).values()) {
-                if (detectionExecutor instanceof ProbabilityDetection) {
+                if (detectionExecutor instanceof ProbabilityDetection
+                        && detectionExecutor.supportsDataType(dataType)) { // todo
                     total++;
 
                     if (detectionExecutor.hasSufficientData(dataType)) {
@@ -74,7 +75,8 @@ public abstract class CheckRunner extends CheckProcess {
             boolean found = false;
 
             for (CheckDetection detectionExecutor : this.getDetections()) {
-                if (detectionExecutor instanceof ProbabilityDetection) {
+                if (detectionExecutor instanceof ProbabilityDetection
+                        && detectionExecutor.supportsDataType(dataType)) { // todo
                     found = true;
 
                     if (detectionExecutor.hasSufficientData(dataType)) {
@@ -113,17 +115,19 @@ public abstract class CheckRunner extends CheckProcess {
 
             for (PlayerProfile profile : playerProfiles) {
                 for (CheckDetection detection : profile.getRunner(this.hackType).getDetections()) {
-                    long firstTime = detection.getFirstTime(dataType);
+                    if (detection.supportsDataType(dataType)) { // todo
+                        long firstTime = detection.getFirstTime(dataType);
 
-                    if (firstTime != -1L) {
-                        long lastTime = detection.getLastTime(dataType);
+                        if (firstTime != -1L) {
+                            long lastTime = detection.getLastTime(dataType);
 
-                        if (lastTime != -1L) {
-                            double completion = detection.getDataCompletion(dataType);
-                            averageCompletion += completion * completion;
-                            lastTime -= firstTime;
-                            averageTime += lastTime * lastTime;
-                            size++;
+                            if (lastTime != -1L) {
+                                double completion = detection.getDataCompletion(dataType);
+                                averageCompletion += completion * completion;
+                                lastTime -= firstTime;
+                                averageTime += lastTime * lastTime;
+                                size++;
+                            }
                         }
                     }
                 }
@@ -146,7 +150,7 @@ public abstract class CheckRunner extends CheckProcess {
     public final CheckDetection getDetection(String detection) {
         if (detection == null) {
             if (this.detections.isEmpty()) {
-                new ImplementedProbabilityDetection(this, null, false);
+                new ImplementedProbabilityDetection(this, null, null, false); // todo
             }
             return this.detections.values().iterator().next();
         } else {

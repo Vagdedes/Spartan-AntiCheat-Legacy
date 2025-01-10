@@ -30,7 +30,7 @@ public class FastClicksPackets extends ProbabilityDetection {
             samplesMassive = new CopyOnWriteArrayList<>();
 
     FastClicksPackets(CheckRunner executor) {
-        super(executor, null, true);
+        super(executor, null, null, true);
         this.floorTempo = new ImplementedProbabilityDetection(this, "floor_tempo", true);
         this.deviation = new ImplementedProbabilityDetection(this, "deviation", true);
         this.skewness = new ImplementedProbabilityDetection(this, "skewness", true);

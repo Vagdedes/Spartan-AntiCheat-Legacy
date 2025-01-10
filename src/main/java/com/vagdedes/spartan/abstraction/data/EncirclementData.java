@@ -24,6 +24,7 @@ public class EncirclementData {
     private boolean jumpModify = false;
     private boolean climb = false;
     private boolean bubble = false;
+
     public EncirclementData(SpartanProtocol protocol) {
         Location location = protocol.getLocation();
         SpartanScheduler.run(() -> {
@@ -36,58 +37,63 @@ public class EncirclementData {
                     for (int dz = -2; dz <= 2; ++dz) {
                         boolean h = Math.abs(dx) < 2 && Math.abs(dz) < 2;
                         SpartanBlock b = new SpartanLocation(
-                                        new Location(protocol.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
+                                new Location(protocol.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
                         ).getBlock();
                         Material material = protocol.packetWorld.getBlock(
-                                        new Location(protocol.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
+                                new Location(protocol.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
                         );
                         Material materialFrom = protocol.packetWorld.getBlock(
-                                        new Location(protocol.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
+                                new Location(protocol.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
                         );
                         Material m2 = b.getType();
                         if (material == null || materialFrom == null || m2 == null) return;
 
                         if ((BlockUtils.areHoneyBlocks(material)
-                                        || BlockUtils.areBeds(material)
-                                        || BlockUtils.areSlimeBlocks(material))) {
+                                || BlockUtils.areBeds(material)
+                                || BlockUtils.areSlimeBlocks(material))) {
                             this.slime = true;
                         }
                         if (Math.abs(dx) < 2
-                                        && Math.abs(dz) < 2
-                                        && (BlockUtils.areInteractiveBushes(material)
-                                        || BlockUtils.areBeds(material)
-                                        || BlockUtils.isPowderSnow(material))) {
+                                && Math.abs(dz) < 2
+                                && (BlockUtils.areInteractiveBushes(material)
+                                || BlockUtils.areBeds(material)
+                                || BlockUtils.isPowderSnow(material))) {
                             this.jumpModify = true;
                         }
                         if (BlockUtils.canClimb(material, false)) {
                             this.climb = true;
                         }
                         if (Math.abs(dy) < 2 && h
-                                        && (BlockUtils.isPowderSnow(material)
-                                        || BlockUtils.areHoneyBlocks(material)
-                                        || BlockUtils.areWebs(material)
-                                        || BlockUtils.areInteractiveBushes(material))) {
+                                && (BlockUtils.isPowderSnow(material)
+                                || BlockUtils.areHoneyBlocks(material)
+                                || BlockUtils.areWebs(material)
+                                || BlockUtils.areInteractiveBushes(material))) {
                             this.glide = true;
                         }
                         if (!BlockUtils.canClimb(material, false) &&
-                                        (BlockUtils.isSemiSolid(material)
-                                                        || BlockUtils.areWalls(materialFrom)
-                                                        || BlockUtils.areCobbleWalls(materialFrom)
-                                                        || BlockUtils.areSlimeBlocks(material)
-                                                        || BlockUtils.areHoneyBlocks(material)
-                                                        || BlockUtils.areWebs(material))) {
+                                (BlockUtils.isSemiSolid(material)
+                                        || BlockUtils.areWalls(materialFrom)
+                                        || BlockUtils.areCobbleWalls(materialFrom)
+                                        || BlockUtils.areSlimeBlocks(material)
+                                        || BlockUtils.areHoneyBlocks(material)
+                                        || BlockUtils.areWebs(material))) {
                             this.semi = true;
                         }
                         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
-                                        && (material.equals(Material.BUBBLE_COLUMN) || m2.equals(Material.BUBBLE_COLUMN))) {
+                                && (material.equals(Material.BUBBLE_COLUMN) || m2.equals(Material.BUBBLE_COLUMN))) {
                             if (h) this.bubble = true;
                         }
-                        if (BlockUtils.isLiquidOrWaterLogged(b, true) || BlockUtils.isLiquid(protocol.packetWorld.getBlock(
-                                        new Location(protocol.getWorld(), x + (double) dx * 0.3, y, z dz * 0.3).getType())
-                                        || BlockUtils.isWaterLogged(protocol.packetWorld.getBlock(
-                                        new Location(protocol.getWorld(), x + (double) dx * 0.3, y, z dz * 0.3))                                                     
-                                        || BlockUtils.isLiquid(material) || BlockUtils.isLiquid(m2)
-                                        || BlockUtils.isWaterLogged(b)) {
+                        if (BlockUtils.isLiquidOrWaterLogged(b, true) ||
+                                BlockUtils.isLiquid(protocol.packetWorld.getBlock(
+                                        new Location(protocol.getWorld(), x + (double) dx * 0.3, y, z + (double) dz * 0.3)
+                                ))
+                                || BlockUtils.isWaterLogged(protocol.packetWorld.getBlock(
+                                new Location(protocol.getWorld(), x + (double) dx * 0.3, y, z + (double) dz * 0.3)
+                        ))
+                                || BlockUtils.isLiquid(material)
+                                || BlockUtils.isLiquid(m2)
+                                || BlockUtils.isWaterLogged(b)) {
+
                             this.water = true;
                         }
                         if (BlockUtils.areIceBlocks(material)) {
@@ -95,12 +101,12 @@ public class EncirclementData {
                         }
                         {
                             Material materialBig = protocol.packetWorld.getBlock(
-                                            new Location(protocol.getWorld(), x + (double) dx, y + (double) dy, z + (double) dz)
+                                    new Location(protocol.getWorld(), x + (double) dx, y + (double) dy, z + (double) dz)
                             );
                             if (materialBig == null) return;
                             if ((BlockUtils.areHoneyBlocks(materialBig)
-                                            || BlockUtils.areBeds(materialBig)
-                                            || BlockUtils.areSlimeBlocks(materialBig))) {
+                                    || BlockUtils.areBeds(materialBig)
+                                    || BlockUtils.areSlimeBlocks(materialBig))) {
                                 this.slimeHeight = true;
                                 this.slimeWide = true;
                             }

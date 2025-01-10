@@ -82,7 +82,7 @@ public class IMStepBukkit extends ProbabilityDetection {
             step_abstract_down;
 
     IMStepBukkit(CheckRunner executor) {
-        super(executor, null, true);
+        super(executor, null, null, true);
         this.step_high = new ImplementedProbabilityDetection(this, "step_high", true);
         this.step_combination = new ImplementedProbabilityDetection(this, "step_combination", true);
         this.step_entity = new ImplementedProbabilityDetection(this, "step_entity", true);

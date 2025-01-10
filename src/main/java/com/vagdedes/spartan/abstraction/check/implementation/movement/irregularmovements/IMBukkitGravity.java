@@ -34,9 +34,9 @@ public class IMBukkitGravity extends ProbabilityDetection {
     private boolean ignore, sensitive;
 
     IMBukkitGravity(CheckRunner executor) {
-        super(executor, null, true);
-        this.gravity_climb_stable = new ImplementedProbabilityDetection(executor, "climb", true);
-        this.gravity_prediction = new ImplementedProbabilityDetection(executor, "gravity_bukkit", true);
+        super(executor, null, null, true);
+        this.gravity_climb_stable = new ImplementedProbabilityDetection(this, "climb", true);
+        this.gravity_prediction = new ImplementedProbabilityDetection(this, "gravity_bukkit", true);
     }
 
     final void run(SpartanLocation to, SpartanLocation from,

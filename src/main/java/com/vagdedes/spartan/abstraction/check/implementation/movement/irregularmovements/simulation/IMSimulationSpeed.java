@@ -42,7 +42,7 @@ public class IMSimulationSpeed extends ProbabilityDetection {
     private boolean removePistonTick = false;
 
     public IMSimulationSpeed(CheckRunner executor) {
-        super(executor, "speed", true);
+        super(executor, null, "speed", true);
     }
 
     public final void run() {

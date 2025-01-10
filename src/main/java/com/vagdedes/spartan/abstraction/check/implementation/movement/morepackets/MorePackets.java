@@ -30,21 +30,25 @@ public class MorePackets extends CheckRunner {
         this.packetVL = 0;
         this.positive_net = new ImplementedProbabilityDetection(
                 this,
+                null,
                 "positive_net",
                 true
         );
         this.positive_latency = new ImplementedProbabilityDetection(
                 this,
+                null,
                 "positive_latency",
                 true
         );
         this.positive_balance = new ImplementedProbabilityDetection(
                 this,
+                null,
                 "positive_balance",
                 true
         );
         this.negative = new ImplementedProbabilityDetection(
                 this,
+                null,
                 "negative",
                 true
         );

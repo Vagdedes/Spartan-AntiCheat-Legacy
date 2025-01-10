@@ -49,14 +49,24 @@ public abstract class CheckDetection extends CheckProcess {
     public final String name, random;
     private final boolean def;
     private final Map<Check.DataType, Double> probability;
+    public final Check.DataType forcedDataType;
+    public final Check.DetectionType detectionType;
     protected long notifications;
 
-    protected CheckDetection(CheckRunner executor, String name, boolean def) {
+    protected CheckDetection(
+            CheckRunner executor,
+            Check.DataType forcedDataType,
+            Check.DetectionType detectionType,
+            String name,
+            boolean def
+    ) {
         super(executor.hackType, executor.protocol);
         this.executor = executor;
         this.name = name;
         this.def = def;
         this.probability = new ConcurrentHashMap<>(Check.DataType.values().length);
+        this.forcedDataType = forcedDataType;
+        this.detectionType = detectionType;
         this.isEnabled();
 
         if (this.name == null) {
@@ -90,6 +100,15 @@ public abstract class CheckDetection extends CheckProcess {
     public final boolean isEnabled() {
         return this.name == null
                 || this.hackType.getCheck().getBooleanOption("check_" + this.name, this.def);
+    }
+
+    public final boolean supportsDataType(Check.DataType dataType) {
+        return this.forcedDataType == null
+                || this.forcedDataType == dataType;
+    }
+
+    public final boolean supportsDetectionType(Check.DetectionType detectionType) {
+        return this.detectionType == detectionType;
     }
 
     // Data

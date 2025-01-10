@@ -4,8 +4,8 @@ import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
 
 public abstract class HardcodedDetection extends CheckDetection {
 
-    public HardcodedDetection(CheckRunner executor, String name, boolean def) {
-        super(executor, name, def);
+    public HardcodedDetection(CheckRunner executor, Check.DataType forcedDataType, String name, boolean def) {
+        super(executor, forcedDataType, name, def);
     }
 
     public final void setHackingRatio(double ratio) {

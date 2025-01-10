@@ -7,7 +7,7 @@ import com.vagdedes.spartan.listeners.protocol.standalone.LegacyLagCompensationL
 public class HitTime extends ProbabilityDetection {
 
     HitTime(CheckRunner executor) {
-        super(executor, "hit_time", true);
+        super(executor, null, "hit_time", true);
     }
 
     private int

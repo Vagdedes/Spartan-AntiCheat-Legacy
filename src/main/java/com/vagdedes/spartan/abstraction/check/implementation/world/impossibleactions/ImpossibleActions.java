@@ -32,10 +32,10 @@ public class ImpossibleActions extends CheckRunner {
 
     public ImpossibleActions(Enums.HackType hackType, SpartanProtocol protocol) {
         super(hackType, protocol);
-        this.scaffoldDirection = new ImplementedProbabilityDetection(this, "scaffold_direction", true);
-        this.scaffoldUp = new ImplementedProbabilityDetection(this, "scaffold_up", true);
-        this.scaffoldYaw = new ImplementedProbabilityDetection(this, "scaffold_yaw", true);
-        this.actions = new ImplementedProbabilityDetection(this, "actions", true);
+        this.scaffoldDirection = new ImplementedProbabilityDetection(this, null, "scaffold_direction", true);
+        this.scaffoldUp = new ImplementedProbabilityDetection(this, null, "scaffold_up", true);
+        this.scaffoldYaw = new ImplementedProbabilityDetection(this, null, "scaffold_yaw", true);
+        this.actions = new ImplementedProbabilityDetection(this, null, "actions", true);
         this.tower = new Tower(this);
         this.scaffoldAnalysis = new ScaffoldAnalysis(this);
     }

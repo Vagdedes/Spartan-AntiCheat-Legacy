@@ -47,6 +47,25 @@ public class Check {
         }
     }
 
+    public enum DetectionType {
+        BUKKIT, PACKETS;
+
+        private final String string;
+
+        DetectionType() {
+            if (this.ordinal() == 0) {
+                this.string = "Bukkit";
+            } else {
+                this.string = "Packets";
+            }
+        }
+
+        @Override
+        public String toString() {
+            return string;
+        }
+    }
+
     public static boolean panic = false;
     public static final int maxCommands = 10;
     private static final File file = new File(

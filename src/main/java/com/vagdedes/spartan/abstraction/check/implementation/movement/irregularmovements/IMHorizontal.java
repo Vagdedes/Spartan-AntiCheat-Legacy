@@ -14,7 +14,7 @@ public class IMHorizontal extends ProbabilityDetection {
     private final CheckDetection horizontal_known, horizontal_abstract;
 
     IMHorizontal(CheckRunner executor) {
-        super(executor, null, true);
+        super(executor, null, null, true);
         this.horizontal_known = new ImplementedProbabilityDetection(this, "horizontal_known", true);
         this.horizontal_abstract = new ImplementedProbabilityDetection(this, "horizontal_abstract", true);
     }

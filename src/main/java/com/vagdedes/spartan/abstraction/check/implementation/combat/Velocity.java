@@ -23,8 +23,8 @@ public class Velocity extends CheckRunner {
 
     public Velocity(Enums.HackType hackType, SpartanProtocol protocol) {
         super(hackType, protocol);
-        this.vertical = new ImplementedProbabilityDetection(this, "vertical", true);
-        this.horizontal = new ImplementedProbabilityDetection(this, "horizontal", true);
+        this.vertical = new ImplementedProbabilityDetection(this, null, "vertical", true);
+        this.horizontal = new ImplementedProbabilityDetection(this, null, "horizontal", true);
     }
 
     private final double[] jumpReset = new double[]{0.248136, 0.3332};
@@ -40,8 +40,7 @@ public class Velocity extends CheckRunner {
     protected void handleInternal(boolean cancelled, Object object) {
         if (object instanceof PlayerTransactionEvent) {
             transactionLock = false;
-        }
-        else if (object instanceof PlayerVelocityEvent) {
+        } else if (object instanceof PlayerVelocityEvent) {
             PlayerVelocityEvent event = (PlayerVelocityEvent) object;
             transactionLock = true;
             Location[] locationsToCheck = {

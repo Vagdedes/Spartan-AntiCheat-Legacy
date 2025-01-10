@@ -35,7 +35,7 @@ public class IrregularMovements extends CheckRunner {
 
     public IrregularMovements(HackType hackType, SpartanProtocol protocol) {
         super(hackType, protocol);
-        limitServerFlying = new ImplementedProbabilityDetection(this, "limit_server_flying", false);
+        limitServerFlying = new ImplementedProbabilityDetection(this, null, "limit_server_flying", false);
         step = new IMStepBukkit(this);
         gravityBukkit = new IMBukkitGravity(this);
         gravityPackets = new IMSimulationGravity(this);

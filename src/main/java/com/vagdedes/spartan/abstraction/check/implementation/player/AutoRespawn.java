@@ -18,7 +18,7 @@ public class AutoRespawn extends CheckRunner {
 
     public AutoRespawn(HackType hackType, SpartanProtocol protocol) {
         super(hackType, protocol);
-        this.detection = new ImplementedProbabilityDetection(this, null, true);
+        this.detection = new ImplementedProbabilityDetection(this, null, null, true);
     }
 
     @Override

@@ -9,7 +9,7 @@ import org.bukkit.Location;
 public class IMBaritone extends ProbabilityDetection {
 
     IMBaritone(CheckRunner executor) {
-        super(executor, "baritone", true);
+        super(executor, null, "baritone", true);
     }
 
     private SpartanVector2F oldV2 = new SpartanVector2F(0, 0);

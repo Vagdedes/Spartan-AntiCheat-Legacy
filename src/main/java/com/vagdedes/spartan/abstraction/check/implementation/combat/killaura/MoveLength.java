@@ -21,7 +21,7 @@ public class MoveLength extends ProbabilityDetection {
     private long hit, hitBy;
 
     MoveLength(CheckRunner executor) {
-        super(executor, "move_length", true);
+        super(executor, null, "move_length", true);
         previousPitch = 0.0f;
         previousPitchDifference = 0.0f;
         this.buffer = new Buffer.IndividualBuffer();

@@ -14,7 +14,7 @@ public class FastClicksBukkit extends ProbabilityDetection {
     private final CheckDetection clicksPattern;
 
     FastClicksBukkit(CheckRunner executor) {
-        super(executor, null, true);
+        super(executor, null, null, true);
         this.clicksPattern = new ImplementedProbabilityDetection(this, "click_pattern", true);
     }
 

@@ -29,8 +29,8 @@ public class FastEat extends CheckRunner {
 
     public FastEat(HackType hackType, SpartanProtocol protocol) {
         super(hackType, protocol);
-        this.interact = new ImplementedProbabilityDetection(this, "interact", true);
-        this.eat = new ImplementedProbabilityDetection(this, "eat", true);
+        this.interact = new ImplementedProbabilityDetection(this, null, "interact", true);
+        this.eat = new ImplementedProbabilityDetection(this, null, "eat", true);
     }
 
     private long getDelay() {

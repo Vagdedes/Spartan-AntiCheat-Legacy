@@ -27,7 +27,7 @@ public class FightAnalysis extends ProbabilityDetection {
     );
 
     FightAnalysis(CheckRunner executor) {
-        super(executor, "fight_analysis", true);
+        super(executor, null, "fight_analysis", true);
     }
 
     final void runDealDamage(PlayerAttackEvent e) {

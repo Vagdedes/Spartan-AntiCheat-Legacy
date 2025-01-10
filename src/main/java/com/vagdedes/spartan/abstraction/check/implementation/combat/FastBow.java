@@ -22,8 +22,8 @@ public class FastBow extends CheckRunner {
 
     public FastBow(HackType hackType, SpartanProtocol protocol) {
         super(hackType, protocol);
-        this.bowForceDetection = new ImplementedProbabilityDetection(this, "bow_force", true);
-        this.bowShotsDetection = new ImplementedProbabilityDetection(this, "bow_shots", true);
+        this.bowForceDetection = new ImplementedProbabilityDetection(this, null, "bow_force", true);
+        this.bowShotsDetection = new ImplementedProbabilityDetection(this, null, "bow_shots", true);
         this.bowForce = new Buffer.IndividualBuffer();
         this.bowShots = new Buffer.IndividualBuffer();
     }

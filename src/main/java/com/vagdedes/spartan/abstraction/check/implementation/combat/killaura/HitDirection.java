@@ -6,7 +6,7 @@ import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
 public class HitDirection extends ProbabilityDetection {
 
     HitDirection(CheckRunner executor) {
-        super(executor, "hit_direction", true);
+        super(executor, null, "hit_direction", true);
     }
 
     final void run() {

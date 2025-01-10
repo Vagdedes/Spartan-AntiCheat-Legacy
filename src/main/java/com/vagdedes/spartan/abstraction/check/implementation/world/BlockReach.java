@@ -31,10 +31,10 @@ public class BlockReach extends CheckRunner {
 
     public BlockReach(HackType hackType, SpartanProtocol protocol) {
         super(hackType, protocol);
-        this.breaking = new ImplementedProbabilityDetection(this, "breaking", true);
-        this.interact = new ImplementedProbabilityDetection(this, "interact", true);
-        this.place = new ImplementedProbabilityDetection(this, "place", true);
-        this.unusual = new ImplementedProbabilityDetection(this, "unusual", true);
+        this.breaking = new ImplementedProbabilityDetection(this, null, "breaking", true);
+        this.interact = new ImplementedProbabilityDetection(this, null, "interact", true);
+        this.place = new ImplementedProbabilityDetection(this, null, "place", true);
+        this.unusual = new ImplementedProbabilityDetection(this, null, "unusual", true);
     }
 
     private boolean canDo(Block b) {
