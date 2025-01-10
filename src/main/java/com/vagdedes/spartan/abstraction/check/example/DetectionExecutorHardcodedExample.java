@@ -9,6 +9,7 @@ public class DetectionExecutorHardcodedExample extends HardcodedDetection {
         super(
                 executor,
                 null,
+                null,
                 "detection_option_name_in_checks_yml",
                 true // Enabled By Default Or Not
         );

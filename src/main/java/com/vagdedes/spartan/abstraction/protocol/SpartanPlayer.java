@@ -34,6 +34,7 @@ public class SpartanPlayer {
     final SpartanProtocol protocol;
     private final Map<PotionEffectType, ExtendedPotionEffect> potionEffects;
     public final Check.DataType dataType;
+    public final Check.DetectionType detectionType;
     public final PlayerMovement movement;
     public final PlayerPunishments punishments;
     public final PlayerTrackers trackers;
@@ -66,6 +67,9 @@ public class SpartanPlayer {
         this.dataType = BedrockCompatibility.isPlayer(protocol.bukkit())
                 ? Check.DataType.BEDROCK
                 : Check.DataType.JAVA;
+        this.detectionType = this.protocol.packetsEnabled()
+                ? Check.DetectionType.PACKETS
+                : Check.DetectionType.BUKKIT;
         this.trackers = new PlayerTrackers();
 
         this.potionEffects = new ConcurrentHashMap<>(2);

@@ -7,12 +7,22 @@ import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
 
 public class ImplementedProbabilityDetection extends ProbabilityDetection {
 
-    public ImplementedProbabilityDetection(CheckRunner executor, Check.DataType forcedDataType, String name, boolean def) {
-        super(executor, forcedDataType, name, def);
+    public ImplementedProbabilityDetection(
+            CheckRunner executor,
+            Check.DataType forcedDataType,
+            Check.DetectionType detectionType,
+            String name,
+            boolean def
+    ) {
+        super(executor, forcedDataType, detectionType, name, def);
     }
 
-    public ImplementedProbabilityDetection(CheckDetection executor, String name, boolean def) {
-        super(executor.executor, executor.forcedDataType, name, def);
+    public ImplementedProbabilityDetection(
+            CheckDetection executor,
+            String name,
+            boolean def
+    ) {
+        super(executor.executor, executor.forcedDataType, executor.detectionType, name, def);
     }
 
 }

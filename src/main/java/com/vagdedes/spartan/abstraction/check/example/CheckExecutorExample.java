@@ -30,6 +30,7 @@ public class CheckExecutorExample extends CheckRunner {
         this.detection3 = new ImplementedHardcodedDetection(
                 this,
                 Check.DataType.JAVA,
+                Check.DetectionType.PACKETS,
                 "detection_option_name_in_checks_yml",
                 true // Enabled By Default Or Not
         );
@@ -37,6 +38,7 @@ public class CheckExecutorExample extends CheckRunner {
         this.detection4 = new ImplementedProbabilityDetection(
                 this,
                 Check.DataType.BEDROCK,
+                Check.DetectionType.BUKKIT,
                 "detection_option_name_in_checks_yml",
                 true // Enabled By Default Or Not
         );

@@ -17,8 +17,14 @@ public abstract class ProbabilityDetection extends CheckDetection {
     private final long[] firstTime, lastTime;
     private final List<Long>[] data;
 
-    public ProbabilityDetection(CheckRunner executor, Check.DataType forcedDataType, String name, boolean def) {
-        super(executor, forcedDataType, name, def);
+    public ProbabilityDetection(
+            CheckRunner executor,
+            Check.DataType forcedDataType,
+            Check.DetectionType detectionType,
+            String name,
+            boolean def
+    ) {
+        super(executor, forcedDataType, detectionType, name, def);
         this.data = new List[Check.DataType.values().length];
         this.dataCount = new int[Check.DataType.values().length];
         this.firstTime = new long[Check.DataType.values().length];

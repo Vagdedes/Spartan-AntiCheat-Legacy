@@ -107,8 +107,20 @@ public abstract class CheckDetection extends CheckProcess {
                 || this.forcedDataType == dataType;
     }
 
-    public final boolean supportsDetectionType(PlayerProfile profile, Check.DetectionType detectionType) {
-        return this.detectionType == detectionType;
+    public final boolean supportsDetectionType(Check.DetectionType detectionType) {
+        return this.detectionType == null
+                || this.detectionType == detectionType;
+    }
+
+    public final boolean call(Runnable runnable) {
+        if (this.protocol != null
+                && this.supportsDataType(this.protocol.spartan.dataType)
+                && this.supportsDetectionType(this.protocol.spartan.detectionType)) {
+            runnable.run();
+            return true;
+        } else {
+            return false;
+        }
     }
 
     // Data

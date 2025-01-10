@@ -7,12 +7,22 @@ import com.vagdedes.spartan.abstraction.check.HardcodedDetection;
 
 public class ImplementedHardcodedDetection extends HardcodedDetection {
 
-    public ImplementedHardcodedDetection(CheckRunner executor, Check.DataType forcedDataType, String name, boolean def) {
-        super(executor, forcedDataType, name, def);
+    public ImplementedHardcodedDetection(
+            CheckRunner executor,
+            Check.DataType forcedDataType,
+            Check.DetectionType detectionType,
+            String name,
+            boolean def
+    ) {
+        super(executor, forcedDataType, detectionType, name, def);
     }
 
-    public ImplementedHardcodedDetection(CheckDetection executor, String name, boolean def) {
-        super(executor.executor, executor.forcedDataType, name, def);
+    public ImplementedHardcodedDetection(
+            CheckDetection executor,
+            String name,
+            boolean def
+    ) {
+        super(executor.executor, executor.forcedDataType, executor.detectionType, name, def);
     }
 
 }

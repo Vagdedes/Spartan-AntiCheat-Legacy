@@ -150,7 +150,13 @@ public abstract class CheckRunner extends CheckProcess {
     public final CheckDetection getDetection(String detection) {
         if (detection == null) {
             if (this.detections.isEmpty()) {
-                new ImplementedProbabilityDetection(this, null, null, false); // todo
+                new ImplementedProbabilityDetection(
+                        this,
+                        null,
+                        null,
+                        null,
+                        false
+                );
             }
             return this.detections.values().iterator().next();
         } else {

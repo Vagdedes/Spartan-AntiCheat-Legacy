@@ -83,10 +83,10 @@ public class EncirclementData {
                                 && (material.equals(Material.BUBBLE_COLUMN) || m2.equals(Material.BUBBLE_COLUMN))) {
                             if (h) this.bubble = true;
                         }
-                        if (BlockUtils.isLiquidOrWaterLogged(b, true) ||
-                                BlockUtils.isLiquid(protocol.packetWorld.getBlock(
-                                        new Location(protocol.getWorld(), x + (double) dx * 0.3, y, z + (double) dz * 0.3)
-                                ))
+                        if (BlockUtils.isLiquidOrWaterLogged(b, true)
+                                || BlockUtils.isLiquid(protocol.packetWorld.getBlock(
+                                new Location(protocol.getWorld(), x + (double) dx * 0.3, y, z + (double) dz * 0.3)
+                        ))
                                 || BlockUtils.isWaterLogged(protocol.packetWorld.getBlock(
                                 new Location(protocol.getWorld(), x + (double) dx * 0.3, y, z + (double) dz * 0.3)
                         ))
