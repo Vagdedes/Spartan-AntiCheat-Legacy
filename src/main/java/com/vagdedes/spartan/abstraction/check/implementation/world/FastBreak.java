@@ -152,7 +152,6 @@ public class FastBreak extends CheckRunner {
                     );
 
             if (limit > 0) {
-                String key = "indirect-surroundings";
                 double bufferThreshold;
 
                 if (lastBlock != null) {

@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.abstraction.profiling;
 
 import com.vagdedes.spartan.abstraction.check.Check;
+import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
@@ -106,10 +107,27 @@ public class PlayerProfile {
     private void registerRunners(SpartanProtocol protocol) {
         for (Enums.HackType hackType : Enums.HackType.values()) {
             try {
-                CheckRunner executor = (CheckRunner) hackType.executor
-                        .getConstructor(hackType.getClass(), SpartanProtocol.class)
-                        .newInstance(hackType, protocol);
-                this.runners[hackType.ordinal()] = executor;
+                CheckRunner
+                        oldRunner = this.runners[hackType.ordinal()],
+                        runner = (CheckRunner) hackType.executor
+                                .getConstructor(hackType.getClass(), SpartanProtocol.class)
+                                .newInstance(hackType, protocol);
+                this.runners[hackType.ordinal()] = runner;
+
+                if (oldRunner != null) {
+                    for (CheckDetection detection : oldRunner.getDetections()) {
+                        for (Check.DataType dataType : Check.DataType.values()) {
+                            CheckDetection newDetection = runner.getDetection(detection.random);
+
+                            if (newDetection != null) {
+                                newDetection.setProbability(
+                                        dataType,
+                                        detection.getProbability(dataType)
+                                );
+                            }
+                        }
+                    }
+                }
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

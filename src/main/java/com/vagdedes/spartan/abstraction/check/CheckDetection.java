@@ -179,7 +179,7 @@ public abstract class CheckDetection extends CheckProcess {
         }
     }
 
-    final double getProbability(Check.DataType dataType) {
+    public final double getProbability(Check.DataType dataType) {
         return isEnabled()
                 ? this.probability.getOrDefault(dataType, PlayerEvidence.emptyProbability)
                 : PlayerEvidence.emptyProbability;

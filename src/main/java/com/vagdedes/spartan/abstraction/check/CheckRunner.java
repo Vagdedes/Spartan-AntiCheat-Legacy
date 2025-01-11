@@ -1,6 +1,5 @@
 package com.vagdedes.spartan.abstraction.check;
 
-import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.compatibility.Compatibility;
@@ -161,16 +160,14 @@ public abstract class CheckRunner extends CheckProcess {
 
     public final CheckDetection getDetection(String detection) {
         if (detection == null) {
-            if (this.detections.isEmpty()) {
-                new ImplementedProbabilityDetection(
-                        this,
-                        null,
-                        null,
-                        null,
-                        false
-                );
+            if (!this.detections.isEmpty()) {
+                for (CheckDetection detectionExecutor : this.detections.values()) {
+                    if (detectionExecutor.name == null) {
+                        return detectionExecutor;
+                    }
+                }
             }
-            return this.detections.values().iterator().next();
+            return null;
         } else {
             return this.detections.get(detection);
         }
@@ -196,8 +193,27 @@ public abstract class CheckRunner extends CheckProcess {
         return result;
     }
 
-    public final CheckDetection removeDetection(CheckDetection detection) {
-        return this.detections.remove(detection.random);
+    public final void removeDetection(CheckDetection detection) {
+        this.detections.remove(detection.random);
+
+        for (Check.DataType dataType : Check.DataType.values()) {
+            this.supportsDataType[dataType.ordinal()] = false;
+        }
+        for (Check.DetectionType detectionType : Check.DetectionType.values()) {
+            this.supportsDetectionType[detectionType.ordinal()] = false;
+        }
+        for (CheckDetection other : this.getDetections()) {
+            for (Check.DataType dataType : Check.DataType.values()) {
+                if (other.supportsDataType(dataType)) {
+                    this.supportsDataType[dataType.ordinal()] = true;
+                }
+            }
+            for (Check.DetectionType detectionType : Check.DetectionType.values()) {
+                if (other.supportsDetectionType(detectionType)) {
+                    this.supportsDetectionType[detectionType.ordinal()] = true;
+                }
+            }
+        }
     }
 
     // Run
@@ -303,6 +319,7 @@ public abstract class CheckRunner extends CheckProcess {
             reason = this.hackType.getCheck().getName();
         }
         this.disableCauses.add(new CheckCancellation(reason, pointer, ticks));
+
         if (this.protocol != null) {
             InteractiveInventory.playerInfo.refresh(this.protocol.bukkit().getName());
         }

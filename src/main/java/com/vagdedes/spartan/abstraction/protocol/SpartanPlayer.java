@@ -67,7 +67,7 @@ public class SpartanPlayer {
         this.dataType = BedrockCompatibility.isPlayer(protocol.bukkit())
                 ? Check.DataType.BEDROCK
                 : Check.DataType.JAVA;
-        this.detectionType = this.protocol.packetsEnabled()
+        this.detectionType = this.packetsEnabled()
                 ? Check.DetectionType.PACKETS
                 : Check.DetectionType.BUKKIT;
         this.trackers = new PlayerTrackers();
@@ -111,6 +111,10 @@ public class SpartanPlayer {
 
     public boolean isBedrockPlayer() {
         return this.dataType == Check.DataType.BEDROCK;
+    }
+
+    public boolean packetsEnabled() {
+        return SpartanBukkit.packetsEnabled() && !this.isBedrockPlayer();
     }
 
     @Override
@@ -464,7 +468,7 @@ public class SpartanPlayer {
                 } else {
                     loopLocation.setY(Math.floor(progressiveY) + Math.max(blockBox, box));
                 }
-                if (this.protocol.packetsEnabled()) {
+                if (this.packetsEnabled()) {
                     this.protocol.teleport(loopLocation.bukkit());
                 }
                 break;

@@ -18,6 +18,7 @@ import com.vagdedes.spartan.utils.minecraft.entity.AxisAlignedBB;
 import com.vagdedes.spartan.utils.minecraft.protocol.ProtocolTools;
 import lombok.AccessLevel;
 import lombok.Data;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -55,6 +56,7 @@ public class SpartanProtocol {
             simulationFlag,
             teleported,
             pistonTick;
+    @Setter
     private Location location, from, teleport;
     public String fromWorld;
     public Location simulationStartPoint;
@@ -74,6 +76,7 @@ public class SpartanProtocol {
     public final TimerBalancer timerBalancer;
 
     private Set<AxisAlignedBB> axisMatrixCache;
+    @Setter
     private CheckBoundData checkBoundData;
     public final PacketWorld packetWorld;
     public long placeTime, placeHash;
@@ -305,10 +308,6 @@ public class SpartanProtocol {
         }
     }
 
-    public void setTeleport(Location teleport) {
-        this.teleport = teleport;
-    }
-
     public int getPing() {
         return Latency.ping(this.bukkit);
     }
@@ -377,10 +376,7 @@ public class SpartanProtocol {
     }
 
     public boolean packetsEnabled() {
-        return SpartanBukkit.packetsEnabled() && !this.spartan.isBedrockPlayer();
+        return this.spartan.packetsEnabled();
     }
 
-    public void setCheckBoundData(CheckBoundData checkBoundData) {
-        this.checkBoundData = checkBoundData;
-    }
 }
