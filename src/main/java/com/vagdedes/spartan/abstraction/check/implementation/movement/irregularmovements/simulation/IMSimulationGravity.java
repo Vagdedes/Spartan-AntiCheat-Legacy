@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.simulation;
 
+import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
 import com.vagdedes.spartan.abstraction.protocol.ExtendedPotionEffect;
@@ -40,13 +41,10 @@ public class IMSimulationGravity extends ProbabilityDetection {
     private double teleportExcept = 0;
 
     public IMSimulationGravity(CheckRunner executor) {
-        super(executor, null, "gravity_packets", true);
+        super(executor, null, Check.DetectionType.PACKETS, "gravity_packets", true);
     }
 
     public final void run() {
-        if (!this.protocol.packetsEnabled()) {
-            return;
-        }
         SpartanProtocol p = this.protocol;
         boolean ground = (this.protocol.spartan.getVehicle() != null)
                 ? this.protocol.spartan.getVehicle().isOnGround() : this.protocol.isOnGround();
@@ -463,9 +461,6 @@ public class IMSimulationGravity extends ProbabilityDetection {
     }
 
     public void teleport() {
-        if (!this.protocol.packetsEnabled()) {
-            return;
-        }
         this.air = 0;
         this.ground = 0;
         this.teleportExcept = 0.35;
@@ -474,9 +469,6 @@ public class IMSimulationGravity extends ProbabilityDetection {
     }
 
     private void ground(boolean isOnGround) {
-        if (!this.protocol.packetsEnabled()) {
-            return;
-        }
         this.limToUpdate++;
         //if (limToUpdate > 1) return;
         boolean ground = (this.protocol.spartan.getVehicle() != null)
@@ -486,16 +478,10 @@ public class IMSimulationGravity extends ProbabilityDetection {
     }
 
     public void groundSp(boolean isOnGround) {
-        if (!this.protocol.packetsEnabled()) {
-            return;
-        }
         this.ground(isOnGround);
     }
 
     public void trident() {
-        if (!this.protocol.packetsEnabled()) {
-            return;
-        }
         this.trident = true;
         this.levitation = 13;
         this.levitationA = 4;

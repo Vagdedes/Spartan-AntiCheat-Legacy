@@ -50,7 +50,7 @@ public class IrregularMovementsJump extends ProbabilityDetection {
             jump_height;
 
     IrregularMovementsJump(CheckRunner executor) {
-        super(executor, null, null, true);
+        super(executor, null, null, null, true);
         this.jump_ticks = new ImplementedProbabilityDetection(this, "jump_ticks", true);
         this.jump_height = new ImplementedProbabilityDetection(this, "jump_height", true);
     }

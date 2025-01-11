@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements;
 
+import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
@@ -82,7 +83,7 @@ public class IMStepBukkit extends ProbabilityDetection {
             step_abstract_down;
 
     IMStepBukkit(CheckRunner executor) {
-        super(executor, null, null, true);
+        super(executor, null, Check.DetectionType.BUKKIT, null, true);
         this.step_high = new ImplementedProbabilityDetection(this, "step_high", true);
         this.step_combination = new ImplementedProbabilityDetection(this, "step_combination", true);
         this.step_entity = new ImplementedProbabilityDetection(this, "step_entity", true);
@@ -95,9 +96,6 @@ public class IMStepBukkit extends ProbabilityDetection {
     final void run(boolean knownBox, boolean knownOldBox,
                    double box, double oldBox,
                    double vertical, boolean teleported) {
-        if (this.protocol.packetsEnabled()) {
-            return;
-        }
         Entity vehicle = this.protocol.spartan.getVehicle();
 
         if (knownBox && knownOldBox) {

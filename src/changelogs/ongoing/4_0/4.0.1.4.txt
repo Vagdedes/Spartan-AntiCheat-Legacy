@@ -1,3 +1,4 @@
 [#] Fixed a null console error
 [#] Removed time warnings from runnables
 [#] Corrected certain mistakes in the statistics
+[#] Added detection types to improve the statistics and the menu descriptions

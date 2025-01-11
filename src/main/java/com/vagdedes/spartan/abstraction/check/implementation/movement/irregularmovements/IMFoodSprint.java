@@ -10,7 +10,7 @@ public class IMFoodSprint extends ProbabilityDetection {
     private final Buffer.IndividualBuffer buffer;
 
     IMFoodSprint(CheckRunner executor) {
-        super(executor, null, "food_sprint", true);
+        super(executor, null, null, "food_sprint", true);
         this.buffer = new Buffer.IndividualBuffer();
     }
 

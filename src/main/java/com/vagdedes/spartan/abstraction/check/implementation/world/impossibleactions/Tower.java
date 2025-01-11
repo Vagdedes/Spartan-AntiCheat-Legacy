@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.abstraction.check.implementation.world.impossibleactions;
 
+import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
 import com.vagdedes.spartan.abstraction.data.Buffer;
@@ -23,7 +24,7 @@ public class Tower extends ProbabilityDetection {
     private final Map<Integer, Buffer.IndividualBuffer> buffers;
 
     Tower(CheckRunner executor) {
-        super(executor, null, null, "tower", true);
+        super(executor, null, Check.DetectionType.BUKKIT, "tower", true);
         this.buffers = new OverflowMap<>(new ConcurrentHashMap<>(2), 124);
     }
 
@@ -31,9 +32,6 @@ public class Tower extends ProbabilityDetection {
                    Location playerLocation,
                    int playerY,
                    int blockY) {
-        if (this.protocol.packetsEnabled()) {
-            return;
-        }
         Double deltaXZ = AlgebraUtils.getHorizontalDistance(this.protocol.getLocation(), this.protocol.getFromLocation());
 
         if (deltaXZ == null) {

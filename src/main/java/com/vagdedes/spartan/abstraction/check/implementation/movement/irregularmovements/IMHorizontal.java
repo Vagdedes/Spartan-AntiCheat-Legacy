@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements;
 
+import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
@@ -14,14 +15,13 @@ public class IMHorizontal extends ProbabilityDetection {
     private final CheckDetection horizontal_known, horizontal_abstract;
 
     IMHorizontal(CheckRunner executor) {
-        super(executor, null, null, true);
+        super(executor, null, Check.DetectionType.BUKKIT, null, true);
         this.horizontal_known = new ImplementedProbabilityDetection(this, "horizontal_known", true);
         this.horizontal_abstract = new ImplementedProbabilityDetection(this, "horizontal_abstract", true);
     }
 
     final void run(boolean knownBox, boolean knownOldBox, double box, double oldBox, double vertical) {
-        if (!this.protocol.packetsEnabled()
-                && this.protocol.spartan.getVehicle() == null
+        if (this.protocol.spartan.getVehicle() == null
                 && !this.protocol.spartan.trackers.has(PlayerTrackers.TrackerType.BUBBLE_WATER, "soul-sand")) {
             int airTicks = this.protocol.spartan.movement.getTicksOnAir();
 

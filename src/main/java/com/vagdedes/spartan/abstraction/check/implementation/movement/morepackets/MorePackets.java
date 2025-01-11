@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.abstraction.check.implementation.movement.morepackets;
 
+import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
@@ -30,25 +31,29 @@ public class MorePackets extends CheckRunner {
         this.packetVL = 0;
         this.positive_net = new ImplementedProbabilityDetection(
                 this,
-                null,
+                Check.DataType.JAVA,
+                Check.DetectionType.PACKETS,
                 "positive_net",
                 true
         );
         this.positive_latency = new ImplementedProbabilityDetection(
                 this,
-                null,
+                Check.DataType.JAVA,
+                Check.DetectionType.PACKETS,
                 "positive_latency",
                 true
         );
         this.positive_balance = new ImplementedProbabilityDetection(
                 this,
-                null,
+                Check.DataType.JAVA,
+                Check.DetectionType.PACKETS,
                 "positive_balance",
                 true
         );
         this.negative = new ImplementedProbabilityDetection(
                 this,
-                null,
+                Check.DataType.JAVA,
+                Check.DetectionType.PACKETS,
                 "negative",
                 true
         );
@@ -116,12 +121,11 @@ public class MorePackets extends CheckRunner {
 
     @Override
     protected boolean canRun() {
-        return !this.protocol.spartan.isBedrockPlayer()
-                && !this.protocol.spartan.isAFK()
+        return !this.protocol.spartan.isAFK()
                 && this.teleported < System.currentTimeMillis()
                 && MovementProcessing.canCheck(
                 this.protocol,
-                this.protocol.packetsEnabled(),
+                true,
                 true,
                 true,
                 true

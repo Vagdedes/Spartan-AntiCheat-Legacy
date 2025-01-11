@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements;
 
+import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
@@ -76,16 +77,13 @@ public class IMBukkitSpeed extends ProbabilityDetection {
     private boolean simulationFlag = false;
 
     public IMBukkitSpeed(CheckRunner executor) {
-        super(executor, null, null, true);
+        super(executor, null, Check.DetectionType.BUKKIT, null, true);
         this.strafeLineSpeeding = new ImplementedProbabilityDetection(this, "speed_strafe_line_speeding", true);
         this.strafeJumpSpeeding = new ImplementedProbabilityDetection(this, "speed_strafe_jump_speeding", true);
         this.straightLineSpeeding = new ImplementedProbabilityDetection(this, "speed_straight_line_speeding", true);
     }
 
     final void velocity(PlayerVelocityEvent e) {
-        if (this.protocol.packetsEnabled()) {
-            return;
-        }
         Vector v = e.getVelocity();
         double dx = v.getX();
         double dz = v.getZ();
@@ -98,15 +96,11 @@ public class IMBukkitSpeed extends ProbabilityDetection {
     }
 
     final void trident(int level) {
-        if (this.protocol.packetsEnabled()) {
-            return;
-        }
         multiply = level * 5;
     }
 
     final void run(PlayerMoveEvent e) {
-        if (this.protocol.packetsEnabled()
-                || this.protocol.spartan.trackers.has(PlayerTrackers.TrackerType.PISTON)) {
+        if (this.protocol.spartan.trackers.has(PlayerTrackers.TrackerType.PISTON)) {
             return;
         }
         Location location = this.protocol.getLocation().clone();

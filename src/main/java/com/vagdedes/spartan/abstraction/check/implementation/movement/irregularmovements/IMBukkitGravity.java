@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements;
 
+import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
@@ -34,15 +35,14 @@ public class IMBukkitGravity extends ProbabilityDetection {
     private boolean ignore, sensitive;
 
     IMBukkitGravity(CheckRunner executor) {
-        super(executor, null, null, true);
+        super(executor, null, Check.DetectionType.PACKETS, null, true);
         this.gravity_climb_stable = new ImplementedProbabilityDetection(this, "climb", true);
         this.gravity_prediction = new ImplementedProbabilityDetection(this, "gravity_bukkit", true);
     }
 
     final void run(SpartanLocation to, SpartanLocation from,
                    double vertical, double oldVertical, double box, double oldBox) {
-        if (this.protocol.packetsEnabled()
-                || isUsingMace()) {
+        if (isUsingMace()) {
             return;
         }
         int airTicks = this.protocol.spartan.movement.getTicksOnAir();
