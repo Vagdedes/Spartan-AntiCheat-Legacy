@@ -76,7 +76,7 @@ public class ImpossibleActions extends CheckRunner {
                                         ? this.getDirection(blockFace).distance(playerLocation.getDirection())
                                         : Double.MAX_VALUE;
 
-                                if (directionDistance <= 1.35) {
+                                if (directionDistance <= 1.25) {
                                     this.scaffoldDirection.call(() -> this.scaffoldDirection.cancel(
                                             "type: scaffold(direction)"
                                                     + ", vector-distance: " + directionDistance
