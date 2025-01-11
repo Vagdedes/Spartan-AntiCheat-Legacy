@@ -35,7 +35,7 @@ public class IMBukkitGravity extends ProbabilityDetection {
     private boolean ignore, sensitive;
 
     IMBukkitGravity(CheckRunner executor) {
-        super(executor, null, Check.DetectionType.PACKETS, null, true);
+        super(executor, null, Check.DetectionType.BUKKIT, null, true);
         this.gravity_climb_stable = new ImplementedProbabilityDetection(this, "climb", true);
         this.gravity_prediction = new ImplementedProbabilityDetection(this, "gravity_bukkit", true);
     }
