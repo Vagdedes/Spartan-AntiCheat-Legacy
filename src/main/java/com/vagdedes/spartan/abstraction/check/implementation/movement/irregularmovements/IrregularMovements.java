@@ -24,7 +24,6 @@ public class IrregularMovements extends CheckRunner {
     private long teleport;
     public final CheckDetection limitServerFlying;
     private final IMStepBukkit step;
-    private final IMBukkitGravity gravityBukkit;
     private final IMSimulationGravity gravityPackets;
     private final IMBukkitSpeed speedBukkit;
     private final IMSimulationSpeed speedPackets;
@@ -37,7 +36,6 @@ public class IrregularMovements extends CheckRunner {
         super(hackType, protocol);
         limitServerFlying = new ImplementedProbabilityDetection(this, null, null, "limit_server_flying", false);
         step = new IMStepBukkit(this);
-        gravityBukkit = new IMBukkitGravity(this);
         gravityPackets = new IMSimulationGravity(this);
         jump = new IrregularMovementsJump(this);
         horizontal = new IMHorizontal(this);
@@ -76,15 +74,6 @@ public class IrregularMovements extends CheckRunner {
                 } else {
                     step.run(knownBox, knownOldBox, box, oldBox, vertical, teleported);
                 }
-            } else {
-                gravityBukkit.run(
-                        new SpartanLocation(event.getTo()),
-                        new SpartanLocation(event.getFrom()),
-                        vertical,
-                        oldVertical,
-                        box,
-                        oldBox
-                );
             }
             if (!teleported) {
                 jump.run(vertical, box);
