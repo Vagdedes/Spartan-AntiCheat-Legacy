@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.abstraction.check.implementation.combat.fastclicks;
 
+import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
@@ -30,7 +31,7 @@ public class FastClicksPackets extends ProbabilityDetection {
             samplesMassive = new CopyOnWriteArrayList<>();
 
     FastClicksPackets(CheckRunner executor) {
-        super(executor, null, null, true);
+        super(executor, null, Check.DetectionType.PACKETS, null, true);
         this.floorTempo = new ImplementedProbabilityDetection(this, "floor_tempo", true);
         this.deviation = new ImplementedProbabilityDetection(this, "deviation", true);
         this.skewness = new ImplementedProbabilityDetection(this, "skewness", true);
@@ -39,9 +40,6 @@ public class FastClicksPackets extends ProbabilityDetection {
     }
 
     void run(long delay) {
-        if (!this.protocol.packetsEnabled()) {
-            return;
-        }
         if (!tickingCorrect()) return;
         long t = System.currentTimeMillis();
         this.samples.add(delay);

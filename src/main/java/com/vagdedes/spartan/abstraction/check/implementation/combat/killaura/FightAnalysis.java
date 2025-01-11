@@ -27,7 +27,7 @@ public class FightAnalysis extends ProbabilityDetection {
     );
 
     FightAnalysis(CheckRunner executor) {
-        super(executor, null, "fight_analysis", true);
+        super(executor, null, null, "fight_analysis", true);
     }
 
     final void runDealDamage(PlayerAttackEvent e) {
@@ -79,7 +79,7 @@ public class FightAnalysis extends ProbabilityDetection {
 
     private double probability(int identifier, double selfRatio) {
         double sum = 0.0,
-                squareSum = 0.0;
+                variance = 0.0;
         int count = 0;
 
         for (Map<Integer, int[]> subData : data.values()) {
@@ -88,7 +88,6 @@ public class FightAnalysis extends ProbabilityDetection {
             if (hitsDamages != null) {
                 double ratio = hitsDamages[0] / (double) hitsDamages[1];
                 sum += ratio;
-                squareSum += ratio * ratio;
                 count++;
             }
         }
@@ -96,7 +95,16 @@ public class FightAnalysis extends ProbabilityDetection {
             return -1.0;
         }
         sum /= count;
-        squareSum = Math.sqrt(squareSum / count);
+
+        for (Map<Integer, int[]> subData : data.values()) {
+            int[] hitsDamages = subData.get(identifier);
+
+            if (hitsDamages != null) {
+                double ratio = hitsDamages[0] / (double) hitsDamages[1];
+                variance += Math.pow(ratio - sum, 2);
+            }
+        }
+        double squareSum = Math.sqrt(variance / count);
         return StatisticsMath.getCumulativeProbability(
                 (sum - selfRatio) / squareSum
         );

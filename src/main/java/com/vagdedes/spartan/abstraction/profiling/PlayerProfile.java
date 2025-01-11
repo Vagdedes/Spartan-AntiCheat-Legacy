@@ -142,7 +142,10 @@ public class PlayerProfile {
         List<Enums.HackType> set = new ArrayList<>();
 
         for (CheckRunner executor : this.getRunners()) {
-            double probability = executor.getExtremeProbability(this.lastDataType);
+            double probability = executor.getExtremeProbability(
+                    this.lastDataType,
+                    this.lastDetectionType
+            );
 
             if (PlayerEvidence.surpassedProbability(probability, threshold)) {
                 set.add(executor.hackType);
@@ -155,7 +158,10 @@ public class PlayerProfile {
         Map<Enums.HackType, Double> set = new HashMap<>();
 
         for (CheckRunner executor : this.getRunners()) {
-            double probability = executor.getExtremeProbability(this.lastDataType);
+            double probability = executor.getExtremeProbability(
+                    this.lastDataType,
+                    this.lastDetectionType
+            );
 
             if (PlayerEvidence.surpassedProbability(probability, threshold)) {
                 set.put(executor.hackType, probability);

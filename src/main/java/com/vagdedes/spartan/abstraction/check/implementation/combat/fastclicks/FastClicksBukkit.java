@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.abstraction.check.implementation.combat.fastclicks;
 
+import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
@@ -14,14 +15,11 @@ public class FastClicksBukkit extends ProbabilityDetection {
     private final CheckDetection clicksPattern;
 
     FastClicksBukkit(CheckRunner executor) {
-        super(executor, null, null, true);
+        super(executor, null, Check.DetectionType.BUKKIT, null, true);
         this.clicksPattern = new ImplementedProbabilityDetection(this, "click_pattern", true);
     }
 
     void run() {
-        if (this.protocol.packetsEnabled()) {
-            return;
-        }
         int limit = hackType.getCheck().getNumericalOption(
                 "clicks_per_second_limit",
                 15

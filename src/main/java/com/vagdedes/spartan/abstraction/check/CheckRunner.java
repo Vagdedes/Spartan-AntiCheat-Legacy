@@ -52,7 +52,11 @@ public abstract class CheckRunner extends CheckProcess {
 
     // Probability
 
-    public final boolean hasSufficientData(Check.DataType dataType, double ratio) {
+    public final boolean hasSufficientData(
+            Check.DataType dataType,
+            Check.DetectionType detectionType,
+            double ratio
+    ) {
         if (this.detections.isEmpty()) {
             return false;
         } else if (ratio > 0.0) {
@@ -61,7 +65,8 @@ public abstract class CheckRunner extends CheckProcess {
 
             for (CheckDetection detectionExecutor : new TreeMap<>(this.detections).values()) {
                 if (detectionExecutor instanceof ProbabilityDetection
-                        && detectionExecutor.supportsDataType(dataType)) { // todo
+                        && detectionExecutor.supportsDataType(dataType)
+                        && detectionExecutor.supportsDetectionType(detectionType)) {
                     total++;
 
                     if (detectionExecutor.hasSufficientData(dataType)) {
@@ -79,7 +84,8 @@ public abstract class CheckRunner extends CheckProcess {
 
             for (CheckDetection detectionExecutor : this.getDetections()) {
                 if (detectionExecutor instanceof ProbabilityDetection
-                        && detectionExecutor.supportsDataType(dataType)) { // todo
+                        && detectionExecutor.supportsDataType(dataType)
+                        && detectionExecutor.supportsDetectionType(detectionType)) {
                     found = true;
 
                     if (detectionExecutor.hasSufficientData(dataType)) {
@@ -91,7 +97,7 @@ public abstract class CheckRunner extends CheckProcess {
         }
     }
 
-    public final double getExtremeProbability(Check.DataType dataType) {
+    public final double getExtremeProbability(Check.DataType dataType, Check.DetectionType detectionType) {
         double num = PlayerEvidence.emptyProbability;
 
         for (CheckDetection detectionExecutor : this.getDetections()) {
@@ -106,7 +112,7 @@ public abstract class CheckRunner extends CheckProcess {
         return num;
     }
 
-    public final long getRemainingCompletionTime(Check.DataType dataType) {
+    public final long getRemainingCompletionTime(Check.DataType dataType, Check.DetectionType detectionType) {
         Collection<PlayerProfile> playerProfiles = ResearchEngine.getPlayerProfiles();
 
         if (playerProfiles.isEmpty()) {
@@ -118,7 +124,8 @@ public abstract class CheckRunner extends CheckProcess {
 
             for (PlayerProfile profile : playerProfiles) {
                 for (CheckDetection detection : profile.getRunner(this.hackType).getDetections()) {
-                    if (detection.supportsDataType(dataType)) { // todo
+                    if (detection.supportsDataType(dataType)
+                            && detection.supportsDetectionType(detectionType)) {
                         long firstTime = detection.getFirstTime(dataType);
 
                         if (firstTime != -1L) {
@@ -187,6 +194,10 @@ public abstract class CheckRunner extends CheckProcess {
         return result;
     }
 
+    public final CheckDetection removeDetection(CheckDetection detection) {
+        return this.detections.remove(detection.random);
+    }
+
     // Run
 
     public final void run(boolean cancelled) {
@@ -220,6 +231,14 @@ public abstract class CheckRunner extends CheckProcess {
     }
 
     // Separator
+
+    final boolean supportsDataType(Check.DataType dataType) {
+        return this.supportsDataType[dataType.ordinal()];
+    }
+
+    final boolean supportsDetectionType(Check.DetectionType detectionType) {
+        return this.supportsDetectionType[detectionType.ordinal()];
+    }
 
     final boolean canFunction() {
         return this.protocol != null

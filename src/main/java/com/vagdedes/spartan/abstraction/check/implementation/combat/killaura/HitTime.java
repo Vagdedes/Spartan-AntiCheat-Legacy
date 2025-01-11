@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.abstraction.check.implementation.combat.killaura;
 
+import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
 import com.vagdedes.spartan.listeners.protocol.standalone.LegacyLagCompensationListener;
@@ -7,7 +8,7 @@ import com.vagdedes.spartan.listeners.protocol.standalone.LegacyLagCompensationL
 public class HitTime extends ProbabilityDetection {
 
     HitTime(CheckRunner executor) {
-        super(executor, null, "hit_time", true);
+        super(executor, null, Check.DetectionType.PACKETS, "hit_time", true);
     }
 
     private int
@@ -23,9 +24,6 @@ public class HitTime extends ProbabilityDetection {
             oldHitTiming = 0;
 
     final void run() {
-        if (!this.protocol.packetsEnabled()) {
-            return;
-        }
         long hitTime = System.currentTimeMillis() - lastHitTime;
         int deviance = (int) Math.abs(hitTime - oldHitTiming);
         devianceTotal += deviance;

@@ -21,7 +21,7 @@ import java.util.Set;
 public class BlockRaytrace extends ProbabilityDetection {
 
     BlockRaytrace(CheckRunner executor) {
-        super(executor, null, "block_raytrace", true);
+        super(executor, null, null, "block_raytrace", true);
     }
 
     public void run(Entity targetHandle) {

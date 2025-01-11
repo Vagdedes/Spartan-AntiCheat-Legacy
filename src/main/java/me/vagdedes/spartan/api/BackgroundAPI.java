@@ -119,7 +119,10 @@ public class BackgroundAPI {
     static double getCertainty(Player p, HackType hackType) {
         SpartanProtocol protocol = SpartanBukkit.getProtocol(p);
         return PlayerEvidence.probabilityToCertainty(
-                protocol.profile().getRunner(hackType).getExtremeProbability(protocol.spartan.dataType)
+                protocol.profile().getRunner(hackType).getExtremeProbability(
+                        protocol.spartan.dataType,
+                        protocol.spartan.detectionType
+                )
         );
     }
 

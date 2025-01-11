@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.abstraction.check.implementation.combat;
 
+import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
@@ -23,8 +24,8 @@ public class Velocity extends CheckRunner {
 
     public Velocity(Enums.HackType hackType, SpartanProtocol protocol) {
         super(hackType, protocol);
-        this.vertical = new ImplementedProbabilityDetection(this, null, "vertical", true);
-        this.horizontal = new ImplementedProbabilityDetection(this, null, "horizontal", true);
+        this.vertical = new ImplementedProbabilityDetection(this, null, Check.DetectionType.PACKETS, "vertical", true);
+        this.horizontal = new ImplementedProbabilityDetection(this, null, Check.DetectionType.PACKETS, "horizontal", true);
     }
 
     private final double[] jumpReset = new double[]{0.248136, 0.3332};
@@ -161,8 +162,7 @@ public class Velocity extends CheckRunner {
 
     @Override
     protected boolean canRun() {
-        return this.protocol.packetsEnabled()
-                && !this.protocol.spartan.trackers.has(PlayerTrackers.TrackerType.BOUNCING_BLOCKS)
+        return !this.protocol.spartan.trackers.has(PlayerTrackers.TrackerType.BOUNCING_BLOCKS)
                 && CombatUtils.canCheck(this.protocol)
                 && !this.protocol.spartan.isOutsideOfTheBorder(-1.0);
     }

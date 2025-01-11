@@ -30,9 +30,9 @@ public class MoveDirection extends ProbabilityDetection {
     private final List<Double> rayTraceAnalysis;
 
     public MoveDirection(CheckRunner executor) {
-        super(executor, null, true);
-        this.layer1 = new ImplementedProbabilityDetection(executor, "move_direction_1", true);
-        this.layer2 = new ImplementedProbabilityDetection(executor, "move_direction_2", true);
+        super(executor, null, null, null, true);
+        this.layer1 = new ImplementedProbabilityDetection(this, "move_direction_1", true);
+        this.layer2 = new ImplementedProbabilityDetection(this, "move_direction_2", true);
         this.aimAnalysis = new CopyOnWriteArrayList<>();
         this.attackHandle = new AttackHandle(null, System.currentTimeMillis());
 

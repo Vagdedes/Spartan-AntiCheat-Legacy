@@ -169,11 +169,15 @@ public class PlayerInfo extends InventoryMenu {
                             hackType
                     ).hasSufficientData(
                             profile.getLastDataType(),
+                            profile.getLastDetectionType(),
                             PlayerEvidence.dataRatio
                     );
                     long remainingTime = sufficientData
                             ? 0L
-                            : profile.getRunner(hackType).getRemainingCompletionTime(profile.getLastDataType());
+                            : profile.getRunner(hackType).getRemainingCompletionTime(
+                            profile.getLastDataType(),
+                            profile.getLastDetectionType()
+                    );
                     String remainingDataPrompt = "";
 
                     if (remainingTime > 0L) {

@@ -41,7 +41,10 @@ public abstract class ProbabilityDetection extends CheckDetection {
     // Data
 
     @Override
-    protected final boolean hasData(PlayerProfile profile, Check.DataType dataType) {
+    protected final boolean hasData(
+            PlayerProfile profile,
+            Check.DataType dataType
+    ) {
         return getFirstTime(dataType) != -1L;
     }
 

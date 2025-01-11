@@ -17,7 +17,7 @@ public class Criticals extends CheckRunner {
 
     public Criticals(HackType hackType, SpartanProtocol protocol) {
         super(hackType, protocol);
-        this.detection = new ImplementedProbabilityDetection(this, null, null, true);
+        this.detection = new ImplementedProbabilityDetection(this, null, null, null, true);
     }
 
     @Override

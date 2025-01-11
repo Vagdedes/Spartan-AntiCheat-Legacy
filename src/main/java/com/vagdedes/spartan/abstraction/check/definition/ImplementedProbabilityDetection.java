@@ -23,6 +23,10 @@ public class ImplementedProbabilityDetection extends ProbabilityDetection {
             boolean def
     ) {
         super(executor.executor, executor.forcedDataType, executor.detectionType, name, def);
+
+        if (executor.name == null) {
+            executor.executor.removeDetection(executor);
+        }
     }
 
 }

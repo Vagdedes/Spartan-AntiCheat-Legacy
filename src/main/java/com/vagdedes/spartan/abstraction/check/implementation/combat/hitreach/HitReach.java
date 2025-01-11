@@ -42,8 +42,8 @@ public class HitReach extends CheckRunner {
 
     public HitReach(HackType hackType, SpartanProtocol protocol) {
         super(hackType, protocol);
-        hitboxRaytrace = new ImplementedProbabilityDetection(this, null, "hitbox_raytrace", true);
-        simple = new ImplementedProbabilityDetection(this, null, "simple", true);
+        hitboxRaytrace = new ImplementedProbabilityDetection(this, null, null, "hitbox_raytrace", true);
+        simple = new ImplementedProbabilityDetection(this, null, null, "simple", true);
     }
 
     @Override

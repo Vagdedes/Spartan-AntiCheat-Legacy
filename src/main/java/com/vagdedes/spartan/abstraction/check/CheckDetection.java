@@ -129,7 +129,10 @@ public abstract class CheckDetection extends CheckProcess {
 
     // Data
 
-    protected boolean hasData(PlayerProfile profile, Check.DataType dataType) {
+    protected boolean hasData(
+            PlayerProfile profile,
+            Check.DataType dataType
+    ) {
         return true;
     }
 
@@ -245,7 +248,9 @@ public abstract class CheckDetection extends CheckProcess {
 
     protected void notify(double probability, boolean enabled, boolean sufficientData, long time, String information) {
         double certainty = PlayerEvidence.probabilityToCertainty(probability) * 100.0,
-                dataCompletion = sufficientData ? 100.0 : this.getDataCompletion(this.protocol.spartan.dataType) * 100.0;
+                dataCompletion = sufficientData
+                        ? 100.0
+                        : this.getDataCompletion(this.protocol.spartan.dataType) * 100.0;
         int roundedCertainty = AlgebraUtils.integerRound(certainty);
         String notification = ConfigUtils.replaceWithSyntax(
                 this.protocol,

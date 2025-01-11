@@ -6,7 +6,7 @@ import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
 public class EntityRaytrace extends ProbabilityDetection {
 
     EntityRaytrace(CheckRunner executor) {
-        super(executor, null, "entity_raytrace", true);
+        super(executor, null, null, "entity_raytrace", true);
     }
 
     final void run() {

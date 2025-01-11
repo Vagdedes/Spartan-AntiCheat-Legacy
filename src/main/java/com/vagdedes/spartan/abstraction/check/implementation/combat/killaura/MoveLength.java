@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.abstraction.check.implementation.combat.killaura;
 
+import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
 import com.vagdedes.spartan.abstraction.data.Buffer;
@@ -21,7 +22,7 @@ public class MoveLength extends ProbabilityDetection {
     private long hit, hitBy;
 
     MoveLength(CheckRunner executor) {
-        super(executor, null, "move_length", true);
+        super(executor, Check.DataType.JAVA, Check.DetectionType.PACKETS, "move_length", true);
         previousPitch = 0.0f;
         previousPitchDifference = 0.0f;
         this.buffer = new Buffer.IndividualBuffer();
@@ -29,9 +30,7 @@ public class MoveLength extends ProbabilityDetection {
     }
 
     final void run() {
-        if (!this.protocol.spartan.isBedrockPlayer()
-                && !this.protocol.packetsEnabled()
-                && this.hit - System.currentTimeMillis() <= 2_000L
+        if (this.hit - System.currentTimeMillis() <= 2_000L
                 && this.hitBy - System.currentTimeMillis() <= 1_000L) {
             float pitch = this.protocol.getLocation().getPitch(),
                     pitchDifference = Math.abs(pitch - previousPitch);

@@ -19,8 +19,6 @@ public class KillAura extends CheckRunner {
     private final EntityRaytrace entityRaytrace;
     private final BlockRaytrace blockRaytrace;
     private final HitTime hitTime;
-    private final HitDirection hitDirection;
-    private final ResponseTime responseTime;
     private final MoveDirection moveDirection;
     private final FightAnalysis analysis;
     private final MoveLength moveLength;
@@ -32,8 +30,6 @@ public class KillAura extends CheckRunner {
         blockRaytrace = new BlockRaytrace(this);
         analysis = new FightAnalysis(this);
         hitTime = new HitTime(this);
-        hitDirection = new HitDirection(this);
-        responseTime = new ResponseTime(this);
         moveDirection = new MoveDirection(this);
         moveLength = new MoveLength(this);
     }
@@ -47,11 +43,6 @@ public class KillAura extends CheckRunner {
                     && hackType.getCheck().getBooleanOption("detection." + (isPlayer ? "players" : "entities"), true);
         }
         return false;
-    }
-
-    @Override
-    protected void runInternal(boolean cancelled) {
-        responseTime.run();
     }
 
     @Override
@@ -69,7 +60,6 @@ public class KillAura extends CheckRunner {
                 entityRaytrace.run();
                 moveDirection.run(target);
                 hitTime.run();
-                hitDirection.run();
                 analysis.runDealDamage(event);
                 moveLength.runHit();
             }
