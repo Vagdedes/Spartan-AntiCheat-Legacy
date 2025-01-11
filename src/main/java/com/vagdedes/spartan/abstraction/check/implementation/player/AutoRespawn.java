@@ -28,17 +28,19 @@ public class AutoRespawn extends CheckRunner {
 
     @Override
     protected void runInternal(boolean cancelled) {
-        long time = System.currentTimeMillis() - this.memory,
-                limit = 750L;
+        this.detection.call(() -> {
+            long time = System.currentTimeMillis() - this.memory,
+                    limit = 750L;
 
-        if (time <= limit && !this.protocol.spartan.isDead()) {
-            memory = 0L;
-            this.detection.cancel(
-                    "type: default, ms: " + time,
-                    this.protocol.getFromLocation(),
-                    AlgebraUtils.integerCeil(TPS.maximum)
-            );
-        }
+            if (time <= limit && !this.protocol.spartan.isDead()) {
+                memory = 0L;
+                this.detection.cancel(
+                        "type: default, ms: " + time,
+                        this.protocol.getFromLocation(),
+                        AlgebraUtils.integerCeil(TPS.maximum)
+                );
+            }
+        });
     }
 
     @Override

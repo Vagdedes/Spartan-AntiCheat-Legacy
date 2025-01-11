@@ -46,35 +46,37 @@ public class FastHeal extends CheckRunner {
 
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
-        if (object instanceof EntityRegainHealthEvent) {
-            RegainReason reason = ((EntityRegainHealthEvent) object).getRegainReason();
+        this.detection.call(() -> {
+            if (object instanceof EntityRegainHealthEvent) {
+                RegainReason reason = ((EntityRegainHealthEvent) object).getRegainReason();
 
-            if (reason != RegainReason.CUSTOM
-                    && reason != RegainReason.MAGIC) {
-                double health = this.protocol.spartan.getHealth();
-                long timePassed = System.currentTimeMillis() - time;
-                time = System.currentTimeMillis();
+                if (reason != RegainReason.CUSTOM
+                        && reason != RegainReason.MAGIC) {
+                    double health = this.protocol.spartan.getHealth();
+                    long timePassed = System.currentTimeMillis() - time;
+                    time = System.currentTimeMillis();
 
-                if (previousHealth != health) {
-                    long limit = calculate();
+                    if (previousHealth != health) {
+                        long limit = calculate();
 
-                    if (limit > 0L) {
-                        if (timePassed < limit
-                                && buffer.count(1, 10) == 3) {
-                            buffer.reset();
-                            this.detection.cancel(
-                                    "type: default, ms: " + timePassed + ", limit: " + limit
-                            );
+                        if (limit > 0L) {
+                            if (timePassed < limit
+                                    && buffer.count(1, 10) == 3) {
+                                buffer.reset();
+                                this.detection.cancel(
+                                        "type: default, ms: " + timePassed + ", limit: " + limit
+                                );
+                            }
                         }
                     }
+                    previousHealth = health;
                 }
-                previousHealth = health;
+            } else if (((FoodLevelChangeEvent) object).getFoodLevel() > this.protocol.bukkit().getFoodLevel()
+                    && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
+                    || this.protocol.spartan.getItemInHand().getType() != Material.DRIED_KELP)) {
+                this.protocol.profile().getRunner(hackType).addDisableCause(null, null, 10);
             }
-        } else if (((FoodLevelChangeEvent) object).getFoodLevel() > this.protocol.bukkit().getFoodLevel()
-                && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
-                || this.protocol.spartan.getItemInHand().getType() != Material.DRIED_KELP)) {
-            this.protocol.profile().getRunner(hackType).addDisableCause(null, null, 10);
-        }
+        });
     }
 
     @Override

@@ -9,8 +9,10 @@ public class EntityRaytrace extends ProbabilityDetection {
         super(executor, null, null, "entity_raytrace", true);
     }
 
-    final void run() {
-        // todo
+    void run() {
+        this.call(() -> {
+            // todo
+        });
     }
 
 }

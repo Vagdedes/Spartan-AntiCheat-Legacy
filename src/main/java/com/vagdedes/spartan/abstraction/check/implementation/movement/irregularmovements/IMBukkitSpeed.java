@@ -83,7 +83,7 @@ public class IMBukkitSpeed extends ProbabilityDetection {
         this.straightLineSpeeding = new ImplementedProbabilityDetection(this, "speed_straight_line_speeding", true);
     }
 
-    final void velocity(PlayerVelocityEvent e) {
+    void velocity(PlayerVelocityEvent e) {
         Vector v = e.getVelocity();
         double dx = v.getX();
         double dz = v.getZ();
@@ -95,11 +95,11 @@ public class IMBukkitSpeed extends ProbabilityDetection {
         velocity = 2;
     }
 
-    final void trident(int level) {
+    void trident(int level) {
         multiply = level * 5;
     }
 
-    final void run(PlayerMoveEvent e) {
+    void run(PlayerMoveEvent e) {
         if (this.protocol.spartan.trackers.has(PlayerTrackers.TrackerType.PISTON)) {
             return;
         }
@@ -179,9 +179,8 @@ public class IMBukkitSpeed extends ProbabilityDetection {
             this.vl /= 2;
 
             if (this.violation != null) {
-                ((CheckDetection) this.violation[1]).cancel(
-                        (String) this.violation[0]
-                );
+                CheckDetection detection = (CheckDetection) this.violation[1];
+                detection.call(() -> detection.cancel((String) this.violation[0]));
             }
             startSimulationFlag();
         }

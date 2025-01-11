@@ -40,198 +40,200 @@ public class IMBukkitGravity extends ProbabilityDetection {
         this.gravity_prediction = new ImplementedProbabilityDetection(this, "gravity_bukkit", true);
     }
 
-    final void run(SpartanLocation to, SpartanLocation from,
+    void run(SpartanLocation to, SpartanLocation from,
                    double vertical, double oldVertical, double box, double oldBox) {
-        if (isUsingMace()) {
-            return;
-        }
-        int airTicks = this.protocol.spartan.movement.getTicksOnAir();
-        int levitationLevel = PlayerUtils.levitation
-                ? PlayerUtils.getPotionLevel(this.protocol.spartan, PotionEffectType.LEVITATION)
-                : -1;
-        List<Double> predictions = new ArrayList<>(5);
-        boolean levitation = levitationLevel != -1,
-                slowFall = PlayerUtils.slowFall && this.protocol.spartan.hasPotionEffect(PotionEffectType.SLOW_FALLING, 0),
-                liquid = this.protocol.spartan.movement.isInLiquids(),
-                climb = this.protocol.spartan.isFrozen() || canClimb(to) || canClimb(from),
-                web = BlockPatternUtils.isBlockPattern(
-                        new double[][]{
-                                {GroundUtils.contactBoundingBox, 0.0, GroundUtils.contactBoundingBox},
-                                {GroundUtils.contactBoundingBox, 1.0, GroundUtils.contactBoundingBox},
-                                {GroundUtils.contactBoundingBox, Math.ceil(this.protocol.bukkit().getEyeHeight()), GroundUtils.contactBoundingBox}
-                        },
-                        to,
-                        true,
-                        BlockUtils.web
-                ) || BlockPatternUtils.isBlockPattern(
-                        new double[][]{
-                                {GroundUtils.contactBoundingBox, 0.0, GroundUtils.contactBoundingBox},
-                                {GroundUtils.contactBoundingBox, 1.0, GroundUtils.contactBoundingBox},
-                                {GroundUtils.contactBoundingBox, Math.ceil(this.protocol.bukkit().getEyeHeight()), GroundUtils.contactBoundingBox}
-                        },
-                        from,
-                        true,
-                        BlockUtils.web
-                ),
-                honey = !web && (BlockPatternUtils.isBlockPattern(
-                        new double[][]{
-                                {GroundUtils.contactBoundingBox, 0.0, GroundUtils.contactBoundingBox},
-                                {GroundUtils.contactBoundingBox, 1.0, GroundUtils.contactBoundingBox}
-                        },
-                        to,
-                        true,
-                        BlockUtils.honey_block
-                ) || BlockPatternUtils.isBlockPattern(
-                        new double[][]{
-                                {GroundUtils.contactBoundingBox, 0.0, GroundUtils.contactBoundingBox},
-                                {GroundUtils.contactBoundingBox, 1.0, GroundUtils.contactBoundingBox}
-                        },
-                        from,
-                        true,
-                        BlockUtils.honey_block
-                ));
+        this.call(() -> {
+            if (isUsingMace()) {
+                return;
+            }
+            int airTicks = this.protocol.spartan.movement.getTicksOnAir();
+            int levitationLevel = PlayerUtils.levitation
+                    ? PlayerUtils.getPotionLevel(this.protocol.spartan, PotionEffectType.LEVITATION)
+                    : -1;
+            List<Double> predictions = new ArrayList<>(5);
+            boolean levitation = levitationLevel != -1,
+                    slowFall = PlayerUtils.slowFall && this.protocol.spartan.hasPotionEffect(PotionEffectType.SLOW_FALLING, 0),
+                    liquid = this.protocol.spartan.movement.isInLiquids(),
+                    climb = this.protocol.spartan.isFrozen() || canClimb(to) || canClimb(from),
+                    web = BlockPatternUtils.isBlockPattern(
+                            new double[][]{
+                                    {GroundUtils.contactBoundingBox, 0.0, GroundUtils.contactBoundingBox},
+                                    {GroundUtils.contactBoundingBox, 1.0, GroundUtils.contactBoundingBox},
+                                    {GroundUtils.contactBoundingBox, Math.ceil(this.protocol.bukkit().getEyeHeight()), GroundUtils.contactBoundingBox}
+                            },
+                            to,
+                            true,
+                            BlockUtils.web
+                    ) || BlockPatternUtils.isBlockPattern(
+                            new double[][]{
+                                    {GroundUtils.contactBoundingBox, 0.0, GroundUtils.contactBoundingBox},
+                                    {GroundUtils.contactBoundingBox, 1.0, GroundUtils.contactBoundingBox},
+                                    {GroundUtils.contactBoundingBox, Math.ceil(this.protocol.bukkit().getEyeHeight()), GroundUtils.contactBoundingBox}
+                            },
+                            from,
+                            true,
+                            BlockUtils.web
+                    ),
+                    honey = !web && (BlockPatternUtils.isBlockPattern(
+                            new double[][]{
+                                    {GroundUtils.contactBoundingBox, 0.0, GroundUtils.contactBoundingBox},
+                                    {GroundUtils.contactBoundingBox, 1.0, GroundUtils.contactBoundingBox}
+                            },
+                            to,
+                            true,
+                            BlockUtils.honey_block
+                    ) || BlockPatternUtils.isBlockPattern(
+                            new double[][]{
+                                    {GroundUtils.contactBoundingBox, 0.0, GroundUtils.contactBoundingBox},
+                                    {GroundUtils.contactBoundingBox, 1.0, GroundUtils.contactBoundingBox}
+                            },
+                            from,
+                            true,
+                            BlockUtils.honey_block
+                    ));
 
-        if (levitation) {
-            predictions.add(
-                    (oldVertical + ((0.05 * (levitationLevel + 1) - oldVertical) * 0.2)) * PlayerUtils.airDrag
+            if (levitation) {
+                predictions.add(
+                        (oldVertical + ((0.05 * (levitationLevel + 1) - oldVertical) * 0.2)) * PlayerUtils.airDrag
+                );
+            }
+            predictions.add( // Always second
+                    PlayerUtils.calculateNextFallMotion(
+                            oldVertical,
+                            -this.protocol.spartan.movement.getAirAcceleration(),
+                            PlayerUtils.airDrag
+                    )
             );
-        }
-        predictions.add( // Always second
-                PlayerUtils.calculateNextFallMotion(
+
+            if (web) {
+                if (levitation) {
+                    predictions.add(predictions.get(0) - PlayerUtils.webBlockDownDefault);
+                }
+                predictions.add(-PlayerUtils.webBlockDownDefault);
+            }
+            if (liquid) {
+                double calculation = PlayerUtils.calculateNextFallMotion(
                         oldVertical,
-                        -this.protocol.spartan.movement.getAirAcceleration(),
-                        PlayerUtils.airDrag
-                )
-        );
+                        -PlayerUtils.liquidAcceleration,
+                        this.protocol.spartan.movement.getLastLiquidMaterial() == Material.LAVA
+                                ? PlayerUtils.lavaDrag
+                                : PlayerUtils.waterDrag
+                );
+                if (levitation) {
+                    predictions.add(predictions.get(0) - calculation);
+                }
+                predictions.add(-calculation);
+            }
+            if (slowFall) {
+                if (levitation) {
+                    predictions.add(predictions.get(0) - PlayerUtils.slowFallAcceleration);
+                }
+                predictions.add(-PlayerUtils.slowFallAcceleration);
+            }
+            if (climb) {
+                if (vertical == 0.0 && oldVertical == 0.0) {
+                    if (!this.protocol.spartan.isOnGround(to.bukkit(), true)
+                            && !this.protocol.isSneaking()
+                            && this.protocol.spartan.getNearbyEntities(1.0, 1.0, 1.0).isEmpty()
+                            && !BlockPatternUtils.isBlockPattern(
+                            new double[]{
+                                    GroundUtils.boundingBox,
+                                    Math.ceil(this.protocol.bukkit().getEyeHeight()),
+                                    GroundUtils.boundingBox
+                            },
+                            to,
+                            true,
+                            BlockUtils.solid, BlockUtils.semi_solid
+                    )) {
+                        this.gravity_climb_stable.cancel(
+                                "type: gravity(climb-stable)"
+                                        + ", vertical: " + vertical
+                                        + ", old-vertical: " + oldVertical
+                                        + ", box: " + box
+                                        + ", old-box: " + oldBox
+                                        + ", air-ticks: " + airTicks,
+                                this.protocol.getFromLocation(),
+                                0,
+                                true
+                        );
+                    }
+                    return;
+                } else if (levitation) {
+                    predictions.add(PlayerUtils.climbingUpDefault);
+                    predictions.add(predictions.get(0) + PlayerUtils.climbingUpDefault);
+                } else {
+                    predictions.set(0, PlayerUtils.climbingUpDefault);
+                    predictions.add(-PlayerUtils.climbingDownDefault);
+                }
+            }
+            if (honey) {
+                if (levitation) {
+                    predictions.add(predictions.get(0) - PlayerUtils.honeyBlockDownDefault);
+                }
+                predictions.add(-PlayerUtils.honeyBlockDownDefault);
+            }
+            boolean sensitive = predictions.size() > 1;
+            this.ignore |= sensitive && !this.sensitive;
+            this.sensitive = sensitive;
+            String violation = null;
 
-        if (web) {
-            if (levitation) {
-                predictions.add(predictions.get(0) - PlayerUtils.webBlockDownDefault);
+            for (double prediction : predictions) {
+                if (Math.abs(prediction) > PlayerUtils.optimizationY) {
+                    double difference = Math.abs(vertical - prediction), product;
+
+                    if (this.protocol.spartan.isBedrockPlayer()) {
+                        product = PlayerUtils.calculateTerminalVelocity(
+                                PlayerUtils.airDrag,
+                                this.protocol.spartan.movement.getAirAcceleration()
+                        ) * 2;
+                    } else {
+                        product = !sensitive
+                                && !this.protocol.spartan.movement.isJumping(vertical) && !this.protocol.spartan.movement.isJumping(oldVertical)
+                                && !this.protocol.spartan.movement.isFalling(vertical, -this.protocol.spartan.movement.getAirAcceleration(), PlayerUtils.airDrag, GroundUtils.maxHeightLengthRatio)
+                                && !this.protocol.spartan.movement.isFalling(oldVertical, -this.protocol.spartan.movement.getAirAcceleration(), PlayerUtils.airDrag, GroundUtils.maxHeightLengthRatio)
+                                ? GroundUtils.maxPlayerStep
+                                : PlayerUtils.getJumpTicks(PlayerUtils.getPotionLevel(this.protocol.spartan, PotionEffectUtils.JUMP) + 1);
+                    }
+                    double limit = Math.max(
+                            this.sensitive ? product : product / (double) airTicks,
+                            this.protocol.spartan.trackers.has(PlayerTrackers.TrackerFamily.VELOCITY)
+                                    || this.protocol.spartan.trackers.has(PlayerTrackers.TrackerFamily.MOTION) ? (GroundUtils.maxBoundingBox * 2.0) :
+                                    liquid ? GroundUtils.maxPlayerStep :
+                                            this.protocol.spartan.isBedrockPlayer() || sensitive ? PlayerUtils.climbingDownDefault :
+                                                    GroundUtils.maxHeightLengthRatio
+                    );
+
+                    if (difference >= limit) {
+                        violation = "type: gravity(prediction)"
+                                + ", product: " + product
+                                + ", limit: " + limit
+                                + ", difference: " + difference
+                                + ", prediction: " + prediction
+                                + ", vertical: " + vertical
+                                + ", old-vertical: " + oldVertical
+                                + ", box: " + box
+                                + ", old-box: " + oldBox
+                                + ", air-ticks: " + airTicks
+                                + ", sensitive: " + this.sensitive;
+                    } else {
+                        return;
+                    }
+                }
             }
-            predictions.add(-PlayerUtils.webBlockDownDefault);
-        }
-        if (liquid) {
-            double calculation = PlayerUtils.calculateNextFallMotion(
-                    oldVertical,
-                    -PlayerUtils.liquidAcceleration,
-                    this.protocol.spartan.movement.getLastLiquidMaterial() == Material.LAVA
-                            ? PlayerUtils.lavaDrag
-                            : PlayerUtils.waterDrag
-            );
-            if (levitation) {
-                predictions.add(predictions.get(0) - calculation);
-            }
-            predictions.add(-calculation);
-        }
-        if (slowFall) {
-            if (levitation) {
-                predictions.add(predictions.get(0) - PlayerUtils.slowFallAcceleration);
-            }
-            predictions.add(-PlayerUtils.slowFallAcceleration);
-        }
-        if (climb) {
-            if (vertical == 0.0 && oldVertical == 0.0) {
-                if (!this.protocol.spartan.isOnGround(to.bukkit(), true)
-                        && !this.protocol.isSneaking()
-                        && this.protocol.spartan.getNearbyEntities(1.0, 1.0, 1.0).isEmpty()
-                        && !BlockPatternUtils.isBlockPattern(
-                        new double[]{
-                                GroundUtils.boundingBox,
-                                Math.ceil(this.protocol.bukkit().getEyeHeight()),
-                                GroundUtils.boundingBox
-                        },
-                        to,
-                        true,
-                        BlockUtils.solid, BlockUtils.semi_solid
-                )) {
-                    this.gravity_climb_stable.cancel(
-                            "type: gravity(climb-stable)"
-                                    + ", vertical: " + vertical
-                                    + ", old-vertical: " + oldVertical
-                                    + ", box: " + box
-                                    + ", old-box: " + oldBox
-                                    + ", air-ticks: " + airTicks,
+
+            if (violation != null) {
+                if (ignore) {
+                    ignore = false;
+                } else {
+                    this.gravity_prediction.cancel(
+                            violation,
                             this.protocol.getFromLocation(),
                             0,
                             true
                     );
                 }
-                return;
-            } else if (levitation) {
-                predictions.add(PlayerUtils.climbingUpDefault);
-                predictions.add(predictions.get(0) + PlayerUtils.climbingUpDefault);
-            } else {
-                predictions.set(0, PlayerUtils.climbingUpDefault);
-                predictions.add(-PlayerUtils.climbingDownDefault);
             }
-        }
-        if (honey) {
-            if (levitation) {
-                predictions.add(predictions.get(0) - PlayerUtils.honeyBlockDownDefault);
-            }
-            predictions.add(-PlayerUtils.honeyBlockDownDefault);
-        }
-        boolean sensitive = predictions.size() > 1;
-        this.ignore |= sensitive && !this.sensitive;
-        this.sensitive = sensitive;
-        String violation = null;
-
-        for (double prediction : predictions) {
-            if (Math.abs(prediction) > PlayerUtils.optimizationY) {
-                double difference = Math.abs(vertical - prediction), product;
-
-                if (this.protocol.spartan.isBedrockPlayer()) {
-                    product = PlayerUtils.calculateTerminalVelocity(
-                            PlayerUtils.airDrag,
-                            this.protocol.spartan.movement.getAirAcceleration()
-                    ) * 2;
-                } else {
-                    product = !sensitive
-                            && !this.protocol.spartan.movement.isJumping(vertical) && !this.protocol.spartan.movement.isJumping(oldVertical)
-                            && !this.protocol.spartan.movement.isFalling(vertical, -this.protocol.spartan.movement.getAirAcceleration(), PlayerUtils.airDrag, GroundUtils.maxHeightLengthRatio)
-                            && !this.protocol.spartan.movement.isFalling(oldVertical, -this.protocol.spartan.movement.getAirAcceleration(), PlayerUtils.airDrag, GroundUtils.maxHeightLengthRatio)
-                            ? GroundUtils.maxPlayerStep
-                            : PlayerUtils.getJumpTicks(PlayerUtils.getPotionLevel(this.protocol.spartan, PotionEffectUtils.JUMP) + 1);
-                }
-                double limit = Math.max(
-                        this.sensitive ? product : product / (double) airTicks,
-                        this.protocol.spartan.trackers.has(PlayerTrackers.TrackerFamily.VELOCITY)
-                                || this.protocol.spartan.trackers.has(PlayerTrackers.TrackerFamily.MOTION) ? (GroundUtils.maxBoundingBox * 2.0) :
-                                liquid ? GroundUtils.maxPlayerStep :
-                                        this.protocol.spartan.isBedrockPlayer() || sensitive ? PlayerUtils.climbingDownDefault :
-                                                GroundUtils.maxHeightLengthRatio
-                );
-
-                if (difference >= limit) {
-                    violation = "type: gravity(prediction)"
-                            + ", product: " + product
-                            + ", limit: " + limit
-                            + ", difference: " + difference
-                            + ", prediction: " + prediction
-                            + ", vertical: " + vertical
-                            + ", old-vertical: " + oldVertical
-                            + ", box: " + box
-                            + ", old-box: " + oldBox
-                            + ", air-ticks: " + airTicks
-                            + ", sensitive: " + this.sensitive;
-                } else {
-                    return;
-                }
-            }
-        }
-
-        if (violation != null) {
-            if (ignore) {
-                ignore = false;
-            } else {
-                this.gravity_prediction.cancel(
-                        violation,
-                        this.protocol.getFromLocation(),
-                        0,
-                        true
-                );
-            }
-        }
+        });
     }
 
     private static boolean canClimb(SpartanLocation location) {

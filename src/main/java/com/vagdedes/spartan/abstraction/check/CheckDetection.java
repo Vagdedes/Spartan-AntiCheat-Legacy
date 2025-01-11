@@ -118,12 +118,9 @@ public abstract class CheckDetection extends CheckProcess {
                 && this.supportsDetectionType(this.protocol.spartan.detectionType);
     }
 
-    public final boolean call(Runnable runnable) {
+    public final void call(Runnable runnable) {
         if (this.canCall()) {
             runnable.run();
-            return true;
-        } else {
-            return false;
         }
     }
 

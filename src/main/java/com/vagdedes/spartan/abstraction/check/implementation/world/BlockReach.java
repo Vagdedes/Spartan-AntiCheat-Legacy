@@ -52,38 +52,43 @@ public class BlockReach extends CheckRunner {
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
         if (object instanceof BlockBreakEvent) {
-            Block block = ((BlockBreakEvent) object).getBlock();
+            this.breaking.call(() -> {
+                Block block = ((BlockBreakEvent) object).getBlock();
 
-            if (canDo(block)
-                    && !TreeFeller.canCancel(block)) {
-                double distance = SpartanLocation.distance(this.protocol.getLocationOrVehicle(), block.getLocation()),
-                        limit = getLimit();
+                if (canDo(block)
+                        && !TreeFeller.canCancel(block)) {
+                    double distance = SpartanLocation.distance(this.protocol.getLocationOrVehicle(), block.getLocation()),
+                            limit = getLimit();
 
-                if (distance >= limit) {
-                    this.breaking.cancel(
-                            "type: breaking, distance: " + distance
-                                    + ", limit: " + limit
-                                    + ", block: " + BlockUtils.blockToString(block)
-                    );
+                    if (distance >= limit) {
+                        this.breaking.cancel(
+                                "type: breaking, distance: " + distance
+                                        + ", limit: " + limit
+                                        + ", block: " + BlockUtils.blockToString(block)
+                        );
+                    }
                 }
-            }
+            });
         } else if (object instanceof PlayerInteractEvent) {
-            Block block = ((PlayerInteractEvent) object).getClickedBlock();
+            this.interact.call(() -> {
+                Block block = ((PlayerInteractEvent) object).getClickedBlock();
 
-            if (canDo(block)
-                    && BlockUtils.isChangeable(block.getType())) {
-                double distance = SpartanLocation.distance(this.protocol.getLocationOrVehicle(), block.getLocation()),
-                        limit = getLimit();
+                if (canDo(block)
+                        && BlockUtils.isChangeable(block.getType())) {
+                    double distance = SpartanLocation.distance(this.protocol.getLocationOrVehicle(), block.getLocation()),
+                            limit = getLimit();
 
-                if (distance >= limit) {
-                    this.interact.cancel(
-                            "type: interact, distance: " + distance
-                                    + ", limit: " + limit
-                                    + ", block: " + BlockUtils.blockToString(block)
-                    );
+                    if (distance >= limit) {
+                        this.interact.cancel(
+                                "type: interact, distance: " + distance
+                                        + ", limit: " + limit
+                                        + ", block: " + BlockUtils.blockToString(block)
+                        );
+                    }
                 }
-            }
-        } else {
+            });
+        } else if (this.place.canCall()
+                || this.unusual.canCall()) {
             Block[] blocks = (Block[]) object;
             Block blockAgainst = blocks[1];
 
@@ -103,21 +108,25 @@ public class BlockReach extends CheckRunner {
                             || block.getType() != Material.BARRIER)
                             && this.protocol.spartan.getVehicle() == null
                             && distance > (ab_distance + GroundUtils.boundingBox + 0.1)) {
-                        this.unusual.cancel(
-                                "type: unusual, distance: " + distance
-                                        + ", block-against-distance: " + ab_distance
-                                        + ", block: " + BlockUtils.blockToString(block)
-                        );
-                    } else {
-                        double limit = getLimit();
-
-                        if (distance >= limit) {
-                            this.place.cancel(
-                                    "type: place, distance: " + distance
-                                            + ", limit: " + limit
+                        this.unusual.call(() -> {
+                            this.unusual.cancel(
+                                    "type: unusual, distance: " + distance
+                                            + ", block-against-distance: " + ab_distance
                                             + ", block: " + BlockUtils.blockToString(block)
                             );
-                        }
+                        });
+                    } else {
+                        this.place.call(() -> {
+                            double limit = getLimit();
+
+                            if (distance >= limit) {
+                                this.place.cancel(
+                                        "type: place, distance: " + distance
+                                                + ", limit: " + limit
+                                                + ", block: " + BlockUtils.blockToString(block)
+                                );
+                            }
+                        });
                     }
                 }
             }

@@ -44,41 +44,43 @@ public class MoveDirection extends ProbabilityDetection {
         this.rayTraceAnalysis = new CopyOnWriteArrayList<>();
     }
 
-    public final void run() {
-        if (attackHandle.time + 3000 > System.currentTimeMillis()) {
-            // main
-            Entity target = attackHandle.target;
+    public void run() {
+        this.call(() -> {
+            if (attackHandle.time + 3000 > System.currentTimeMillis()) {
+                // main
+                Entity target = attackHandle.target;
 
-            if (target != null) {
-                Location targetLoc = ProtocolLib.getLocationOrNull(target);
+                if (target != null) {
+                    Location targetLoc = ProtocolLib.getLocationOrNull(target);
 
-                if (targetLoc == null) {
-                    return;
-                }
-                double bruteforceRayTrace = RayUtils.bruteforceRayTrace(this.protocol, target);
-                double diff = bruteforceRayTrace - 0.4;
-                double predict = RayUtils.castTo360(
-                        calculate(
-                                this.protocol.getLocation().toVector(),
-                                new SpartanLocation(targetLoc).toVector()
-                        ).x
-                );
-                double yaw360 = RayUtils.castTo360(this.protocol.getLocation().getYaw());
-                rayTraceAnalysis.add(bruteforceRayTrace);
-                aimAnalysis.add(
-                        new AttackData(
-                                Math.abs(predict - yaw360),
-                                this.protocol.getLocation().getYaw(),
-                                this.protocol.getLocation().getPitch(),
-                                System.currentTimeMillis(),
-                                ProtocolLib.getUUID(target)
-                        )
-                );
-                if (rayTraceAnalysis.size() >= 10) {
-                    analyze(this.protocol.getLocation());
+                    if (targetLoc == null) {
+                        return;
+                    }
+                    double bruteforceRayTrace = RayUtils.bruteforceRayTrace(this.protocol, target);
+                    double diff = bruteforceRayTrace - 0.4;
+                    double predict = RayUtils.castTo360(
+                            calculate(
+                                    this.protocol.getLocation().toVector(),
+                                    new SpartanLocation(targetLoc).toVector()
+                            ).x
+                    );
+                    double yaw360 = RayUtils.castTo360(this.protocol.getLocation().getYaw());
+                    rayTraceAnalysis.add(bruteforceRayTrace);
+                    aimAnalysis.add(
+                            new AttackData(
+                                    Math.abs(predict - yaw360),
+                                    this.protocol.getLocation().getYaw(),
+                                    this.protocol.getLocation().getPitch(),
+                                    System.currentTimeMillis(),
+                                    ProtocolLib.getUUID(target)
+                            )
+                    );
+                    if (rayTraceAnalysis.size() >= 10) {
+                        analyze(this.protocol.getLocation());
+                    }
                 }
             }
-        }
+        });
     }
 
     private void analyze(Location to) {
@@ -207,13 +209,15 @@ public class MoveDirection extends ProbabilityDetection {
 
     }
 
-    public final void run(Entity targetHandle) {
-        if (targetHandle instanceof Player
-                || targetHandle instanceof Zombie
-                || targetHandle instanceof Creeper
-                || targetHandle instanceof Skeleton) {
-            attackHandle = new AttackHandle(targetHandle, System.currentTimeMillis());
-        }
+    public void run(Entity targetHandle) {
+        this.call(() -> {
+            if (targetHandle instanceof Player
+                    || targetHandle instanceof Zombie
+                    || targetHandle instanceof Creeper
+                    || targetHandle instanceof Skeleton) {
+                attackHandle = new AttackHandle(targetHandle, System.currentTimeMillis());
+            }
+        });
     }
 
     private static SpartanVector2F calculate(final Vector from, final Vector to) {

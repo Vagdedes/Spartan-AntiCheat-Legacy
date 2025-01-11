@@ -29,53 +29,55 @@ public class MoveLength extends ProbabilityDetection {
         this.safeBuffer = new Buffer.IndividualBuffer();
     }
 
-    final void run() {
-        if (this.hit - System.currentTimeMillis() <= 2_000L
-                && this.hitBy - System.currentTimeMillis() <= 1_000L) {
-            float pitch = this.protocol.getLocation().getPitch(),
-                    pitchDifference = Math.abs(pitch - previousPitch);
+    void run() {
+        this.call(() -> {
+            if (this.hit - System.currentTimeMillis() <= 2_000L
+                    && this.hitBy - System.currentTimeMillis() <= 1_000L) {
+                float pitch = this.protocol.getLocation().getPitch(),
+                        pitchDifference = Math.abs(pitch - previousPitch);
 
-            if (pitchDifference > 0.0
-                    && this.previousPitchDifference > 0.0) {
-                double gcd = AlgebraUtils.findGCD(
-                        gcdLimit,
-                        pitchDifference * gcdMultiplier,
-                        this.previousPitchDifference * gcdMultiplier
-                ) / gcdMultiplier;
+                if (pitchDifference > 0.0
+                        && this.previousPitchDifference > 0.0) {
+                    double gcd = AlgebraUtils.findGCD(
+                            gcdLimit,
+                            pitchDifference * gcdMultiplier,
+                            this.previousPitchDifference * gcdMultiplier
+                    ) / gcdMultiplier;
 
-                if (gcd <= minimumGCD) {
-                    boolean safe = gcd <= safeGCD;
-                    Buffer.IndividualBuffer buffer = safe ? safeBuffer : this.buffer;
+                    if (gcd <= minimumGCD) {
+                        boolean safe = gcd <= safeGCD;
+                        Buffer.IndividualBuffer buffer = safe ? safeBuffer : this.buffer;
 
-                    if (buffer.count(1, 20) >= (safe ? 5 : 13)) {
-                        buffer.reset();
-                        cancel(
-                                "type: move-length"
-                                        + ", pitch: " + pitch
-                                        + ", previous-pitch: " + previousPitch
-                                        + ", pitch-difference: " + pitchDifference
-                                        + ", previous-pitch-difference: " + this.previousPitchDifference
-                                        + ", greatest-common-divisor: " + gcd
-                                        + ", limit: " + minimumGCD,
-                                null,
-                                AlgebraUtils.integerCeil(TPS.maximum)
-                        );
+                        if (buffer.count(1, 20) >= (safe ? 5 : 13)) {
+                            buffer.reset();
+                            cancel(
+                                    "type: move-length"
+                                            + ", pitch: " + pitch
+                                            + ", previous-pitch: " + previousPitch
+                                            + ", pitch-difference: " + pitchDifference
+                                            + ", previous-pitch-difference: " + this.previousPitchDifference
+                                            + ", greatest-common-divisor: " + gcd
+                                            + ", limit: " + minimumGCD,
+                                    null,
+                                    AlgebraUtils.integerCeil(TPS.maximum)
+                            );
+                        }
+                    } else { // Some players may false this due to their client, so this helps prevent it
+                        buffer.decrease(1);
                     }
-                } else { // Some players may false this due to their client, so this helps prevent it
-                    buffer.decrease(1);
                 }
+                previousPitchDifference = pitchDifference;
+                previousPitch = pitch;
             }
-            previousPitchDifference = pitchDifference;
-            previousPitch = pitch;
-        }
+        });
     }
 
-    final void runHit() {
-        this.hit = System.currentTimeMillis();
+    void runHit() {
+        this.call(() -> this.hit = System.currentTimeMillis());
     }
 
-    final void runHitBy() {
-        this.hitBy = System.currentTimeMillis();
+    void runHitBy() {
+        this.call(() -> this.hitBy = System.currentTimeMillis());
     }
 
 }

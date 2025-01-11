@@ -44,319 +44,320 @@ public class IMSimulationGravity extends ProbabilityDetection {
         super(executor, null, Check.DetectionType.PACKETS, "gravity_packets", true);
     }
 
-    public final void run() {
-        SpartanProtocol p = this.protocol;
-        boolean ground = (this.protocol.spartan.getVehicle() != null)
-                ? this.protocol.spartan.getVehicle().isOnGround() : this.protocol.isOnGround();
-        Location to = p.getLocation();
-        Location from = this.protocol.getFromLocation();
-        double dx = to.getX() - from.getX();
-        double dz = to.getZ() - from.getZ();
-        double speed = Math.sqrt(dx * dx + dz * dz);
-        //this.protocol.bukkit().sendMessage(protocol().pistonHandle + " " + protocol().pistonTick + " " + protocol().explosionHandle);
-        if (to.getX() != from.getX() || to.getY() != from.getY() || to.getZ() != from.getZ()) {
-            double motion = to.getY() - from.getY();
-            double gravity = 0.08;
-            this.limToUpdate = 0;
-            double jumpStartMotionY =
-                    (atJumpModifyBlock()
-                            && this.jumpMotion() * 1.5 > motion)
-                            ? motion : this.jumpMotion();
-            if (BlockUtils.areWebs(new SpartanLocation(to).getBlock().getType())) {
-                jumpStartMotionY /= 10;
-            }
+    public void run() {
+        this.call(() -> {
+            SpartanProtocol p = this.protocol;
+            boolean ground = (this.protocol.spartan.getVehicle() != null)
+                    ? this.protocol.spartan.getVehicle().isOnGround() : this.protocol.isOnGround();
+            Location to = p.getLocation();
+            Location from = this.protocol.getFromLocation();
+            double dx = to.getX() - from.getX();
+            double dz = to.getZ() - from.getZ();
+            double speed = Math.sqrt(dx * dx + dz * dz);
+            //this.protocol.bukkit().sendMessage(protocol().pistonHandle + " " + protocol().pistonTick + " " + protocol().explosionHandle);
+            if (to.getX() != from.getX() || to.getY() != from.getY() || to.getZ() != from.getZ()) {
+                double motion = to.getY() - from.getY();
+                double gravity = 0.08;
+                this.limToUpdate = 0;
+                double jumpStartMotionY =
+                        (atJumpModifyBlock()
+                                && this.jumpMotion() * 1.5 > motion)
+                                ? motion : this.jumpMotion();
+                if (BlockUtils.areWebs(new SpartanLocation(to).getBlock().getType())) {
+                    jumpStartMotionY /= 10;
+                }
                 /*
                 this.air = isOnGround ? 0 : this.air + 1;
                 this.ground = isOnGround ? this.ground + 1 : 0;
                  */
-            boolean isOnWater = this.isOnWater();
-            double pr2;
-            PlayerMovement playerMovement;
-            if (this.isOnSlime()) this.allowMinorGravityChange = true;
-            if (ground) {
-                if (this.protocol.getLocation().getY() > this.lastGroundY)
-                    allowLowJump = true;
-                if (this.ground != 1) {
-                    this.setPredict(0.0);
-                    if (this.abs(motion) < 0.08 && this.abs(motion) > 0.0
-                            && (this.isBlocksOnTop(to)
-                            || this.isOnSlime()
-                            || isNearGlideBlocks())) {
-                        this.setPredict(motion);
-                    }
-                } else {
-                    playerMovement = this.protocol.spartan.movement;
-                    pr2 = playerMovement.motionY -= gravity;
-                    pr2 *= 0.9800000190734863;
-                    this.setPredict(0.0);
-                    if (motion > pr2 && motion < 0.0) {
-                        this.setPredict(motion);
-                    } else if (cringeBlockClimb && motion < 0.5) {
-                        // skull
-                        this.setPredict(motion);
-                    }
-                    if (this.isOnSlime()) {
-                        this.slime = true;
-                    }
-                }
-
-                if (this.isOnSemi() || this.isOnSemi()) {
-                    this.semi = 2;
-                }
-                if (this.semi > 0 && motion != 0.0 && motion < 0.785) {
-                    this.setPredict(motion);
-                    this.semi--;
-                }
-                this.lastGroundY = this.protocol.getLocation().getY();
-            } else if (this.air == 1) {
-                if (motion > 0.0) {
-                    this.setPredict((float) jumpStartMotionY);
-                } else {
-                    this.setPredict(-gravity * 0.9800000190734863);
-                }
-
-                if (this.slime) {
-                    this.slimeTicks = 3;
-                }
-                if (this.slimeTicks > 0) {
-                    pr2 = this.jumpMotion() + this.abs(this.fallDistance) * 0.09;
-                    if (motion == 0.0) {
+                boolean isOnWater = this.isOnWater();
+                double pr2;
+                PlayerMovement playerMovement;
+                if (this.isOnSlime()) this.allowMinorGravityChange = true;
+                if (ground) {
+                    if (this.protocol.getLocation().getY() > this.lastGroundY)
+                        allowLowJump = true;
+                    if (this.ground != 1) {
                         this.setPredict(0.0);
-                    } else if (pr2 > motion) {
-                        this.setPredict(motion);
+                        if (this.abs(motion) < 0.08 && this.abs(motion) > 0.0
+                                && (this.isBlocksOnTop(to)
+                                || this.isOnSlime()
+                                || isNearGlideBlocks())) {
+                            this.setPredict(motion);
+                        }
+                    } else {
+                        playerMovement = this.protocol.spartan.movement;
+                        pr2 = playerMovement.motionY -= gravity;
+                        pr2 *= 0.9800000190734863;
+                        this.setPredict(0.0);
+                        if (motion > pr2 && motion < 0.0) {
+                            this.setPredict(motion);
+                        } else if (cringeBlockClimb && motion < 0.5) {
+                            // skull
+                            this.setPredict(motion);
+                        }
+                        if (this.isOnSlime()) {
+                            this.slime = true;
+                        }
                     }
-                    this.slimeTicks--;
+
+                    if (this.isOnSemi() || this.isOnSemi()) {
+                        this.semi = 2;
+                    }
+                    if (this.semi > 0 && motion != 0.0 && motion < 0.785) {
+                        this.setPredict(motion);
+                        this.semi--;
+                    }
+                    this.lastGroundY = this.protocol.getLocation().getY();
+                } else if (this.air == 1) {
+                    if (motion > 0.0) {
+                        this.setPredict((float) jumpStartMotionY);
+                    } else {
+                        this.setPredict(-gravity * 0.9800000190734863);
+                    }
+
+                    if (this.slime) {
+                        this.slimeTicks = 3;
+                    }
+                    if (this.slimeTicks > 0) {
+                        pr2 = this.jumpMotion() + this.abs(this.fallDistance) * 0.09;
+                        if (motion == 0.0) {
+                            this.setPredict(0.0);
+                        } else if (pr2 > motion) {
+                            this.setPredict(motion);
+                        }
+                        this.slimeTicks--;
+                    }
+                } else {
+                    this.cringeBlockClimb = (this.air == 14);
+                    playerMovement = this.protocol.spartan.movement;
+                    playerMovement.motionY -= gravity;
+                    playerMovement.motionY *= 0.9800000190734863;
+                    if (this.protocol.spartan.movement.motionY < -3.92) {
+                        this.protocol.spartan.movement.motionY = -3.92;
+                    }
+                    this.slime = false;
                 }
-            } else {
-                this.cringeBlockClimb = (this.air == 14);
-                playerMovement = this.protocol.spartan.movement;
-                playerMovement.motionY -= gravity;
-                playerMovement.motionY *= 0.9800000190734863;
-                if (this.protocol.spartan.movement.motionY < -3.92) {
-                    this.protocol.spartan.movement.motionY = -3.92;
-                }
-                this.slime = false;
-            }
-            if (p.getComponentY().pistonTick)
-                this.pistonTicks = 2;
-            if (this.getDeviantity(motion) > 0.01
-                    && p.getComponentY().pistonTick
-                    && motion <= 0.25) {
-                this.setPredict(motion);
-                p.getComponentY().pistonTick = false;
-            }
-            if (pistonTicks > 0) pistonTicks--;
-            if (this.getDeviantity(motion) > 0.01
-                    && p.getComponentY().pistonTick
-                    && motion <= 1.0) {
-                this.setPredict(motion);
-                p.getComponentY().pistonTick = false;
-            }
-            boolean slimeEvent = (this.getDeviantity(motion) > 0.001)
-                    && (p.getComponentY().pistonHandle
-                    && this.slime0Tick);
-            if (slimeEvent) {
-                p.getComponentY().pistonHandle = false;
-                slimePunch = 4;
-            }
-            if ((this.isOnSemi() || this.isOnSemi() || this.isOnSlimeHeight()) && motion != 0.0 && motion < 0.51) {
-                this.setPredict(motion);
-            }
-            pr2 = this.abs(this.abs(motion) - this.abs(this.predictY()));
-            if (!this.protocol.claimedVeloGravity.isEmpty() && pr2 > 0.001) {
-                this.velocity(motion);
-            }
-
-            double devPreTotal2 = this.abs(this.abs(motion) - this.abs(this.predictY()));
-
-            if (this.climbBlocks > 0 && devPreTotal2 > 0.001 && motion < 0.118 && motion > -0.16) {
-                this.setPredict(motion);
-                this.climbBlocks--;
-            } else if (devPreTotal2 > 0.001 && motion < 0.118 && motion > -0.16 && isNearClimbBlocks()) {
-                this.setPredict(motion);
-                this.climbBlocks = 2;
-            }
-
-            double dev1 = this.abs(this.abs(motion) - this.abs(this.predictY()));
-            if (dev1 > 0.008 && this.isBlocksOnTop(to)) {
-                if (motion < this.predictY() && motion > -0.08) {
+                if (p.getComponentY().pistonTick)
+                    this.pistonTicks = 2;
+                if (this.getDeviantity(motion) > 0.01
+                        && p.getComponentY().pistonTick
+                        && motion <= 0.25) {
                     this.setPredict(motion);
-                    this.top = 3;
-                    this.topReset = 0;
+                    p.getComponentY().pistonTick = false;
                 }
-            } else if (dev1 > 0.008 && this.top > 0) {
-                if (motion < this.predictY() && motion > -0.08) {
+                if (pistonTicks > 0) pistonTicks--;
+                if (this.getDeviantity(motion) > 0.01
+                        && p.getComponentY().pistonTick
+                        && motion <= 1.0) {
                     this.setPredict(motion);
+                    p.getComponentY().pistonTick = false;
+                }
+                boolean slimeEvent = (this.getDeviantity(motion) > 0.001)
+                        && (p.getComponentY().pistonHandle
+                        && this.slime0Tick);
+                if (slimeEvent) {
+                    p.getComponentY().pistonHandle = false;
+                    slimePunch = 4;
+                }
+                if ((this.isOnSemi() || this.isOnSemi() || this.isOnSlimeHeight()) && motion != 0.0 && motion < 0.51) {
+                    this.setPredict(motion);
+                }
+                pr2 = this.abs(this.abs(motion) - this.abs(this.predictY()));
+                if (!this.protocol.claimedVeloGravity.isEmpty() && pr2 > 0.001) {
+                    this.velocity(motion);
+                }
+
+                double devPreTotal2 = this.abs(this.abs(motion) - this.abs(this.predictY()));
+
+                if (this.climbBlocks > 0 && devPreTotal2 > 0.001 && motion < 0.118 && motion > -0.16) {
+                    this.setPredict(motion);
+                    this.climbBlocks--;
+                } else if (devPreTotal2 > 0.001 && motion < 0.118 && motion > -0.16 && isNearClimbBlocks()) {
+                    this.setPredict(motion);
+                    this.climbBlocks = 2;
+                }
+
+                double dev1 = this.abs(this.abs(motion) - this.abs(this.predictY()));
+                if (dev1 > 0.008 && this.isBlocksOnTop(to)) {
+                    if (motion < this.predictY() && motion > -0.08) {
+                        this.setPredict(motion);
+                        this.top = 3;
+                        this.topReset = 0;
+                    }
+                } else if (dev1 > 0.008 && this.top > 0) {
+                    if (motion < this.predictY() && motion > -0.08) {
+                        this.setPredict(motion);
+                        --this.top;
+                        this.topReset = 0;
+                    }
+                } else if (this.topReset > 18 && this.top > 0) {
                     --this.top;
                     this.topReset = 0;
                 }
-            } else if (this.topReset > 18 && this.top > 0) {
-                --this.top;
-                this.topReset = 0;
-            }
-            boolean onWaterBubble = this.isOnWaterBubble();
-            if (MultiVersion.isOrGreater(MCVersion.V1_13)
-                    && this.protocol.bukkit().isSwimming()) {
-                this.swimming = 2;
-            } else if (this.swimming > 0) {
-                this.swimming--;
-            }
-            double waterLimClimb = (this.isOnSolidGround(to)) ? 0.4 : 0.2;
-            double waterLim = (MultiVersion.isOrGreater(MCVersion.V1_13))
-                    ? (this.swimming > 0) ? 0.4 : waterLimClimb : waterLimClimb;
-            if (dev1 > 0.01 && isOnWater && motion > -3.92
-                    && motion < (onWaterBubble ? 0.8 : waterLim)) {
-                this.setPredict(motion);
-                this.sub = (onWaterBubble) ? 8 : 5;
-            }
+                boolean onWaterBubble = this.isOnWaterBubble();
+                if (MultiVersion.isOrGreater(MCVersion.V1_13)
+                        && this.protocol.bukkit().isSwimming()) {
+                    this.swimming = 2;
+                } else if (this.swimming > 0) {
+                    this.swimming--;
+                }
+                double waterLimClimb = (this.isOnSolidGround(to)) ? 0.4 : 0.2;
+                double waterLim = (MultiVersion.isOrGreater(MCVersion.V1_13))
+                        ? (this.swimming > 0) ? 0.4 : waterLimClimb : waterLimClimb;
+                if (dev1 > 0.01 && isOnWater && motion > -3.92
+                        && motion < (onWaterBubble ? 0.8 : waterLim)) {
+                    this.setPredict(motion);
+                    this.sub = (onWaterBubble) ? 8 : 5;
+                }
 
-            if (this.abs(this.abs(motion)
-                    - this.abs(this.predictY())) > 0.01
-                    && this.trident && motion < 4.2) {
-                this.setPredict(motion);
-            }
+                if (this.abs(this.abs(motion)
+                        - this.abs(this.predictY())) > 0.01
+                        && this.trident && motion < 4.2) {
+                    this.setPredict(motion);
+                }
 
-            if (this.sub > 0 && this.abs(this.abs(motion) - this.abs(this.predictY())) < 0.14) {
-                this.sub--;
-                this.setPredict(motion);
-            }
+                if (this.sub > 0 && this.abs(this.abs(motion) - this.abs(this.predictY())) < 0.14) {
+                    this.sub--;
+                    this.setPredict(motion);
+                }
 
-            ExtendedPotionEffect slowFalling;
-            double pr;
-            if (MultiVersion.isOrGreater(MCVersion.V1_9)) {
-                slowFalling = this.protocol.spartan.getPotionEffect(PotionEffectType.LEVITATION, 0L);
-                if (slowFalling != null || this.levitation > 0) {
-                    if (slowFalling != null) {
-                        this.levitation = 2;
-                        pr = 0.05 * (double) slowFalling.bukkitEffect.getAmplifier() + 1.0;
-                        this.levitationA = slowFalling.bukkitEffect.getAmplifier() + 1;
-                    } else {
-                        pr = 0.05 * (double) this.levitationA;
+                ExtendedPotionEffect slowFalling;
+                double pr;
+                if (MultiVersion.isOrGreater(MCVersion.V1_9)) {
+                    slowFalling = this.protocol.spartan.getPotionEffect(PotionEffectType.LEVITATION, 0L);
+                    if (slowFalling != null || this.levitation > 0) {
+                        if (slowFalling != null) {
+                            this.levitation = 2;
+                            pr = 0.05 * (double) slowFalling.bukkitEffect.getAmplifier() + 1.0;
+                            this.levitationA = slowFalling.bukkitEffect.getAmplifier() + 1;
+                        } else {
+                            pr = 0.05 * (double) this.levitationA;
+                        }
+                        if (motion < pr && motion >= 0.0) {
+                            this.setPredict(motion);
+                            this.fallDistance = 0.0;
+                        }
+
+                        if (this.levitation > 0) {
+                            --this.levitationA;
+                        }
                     }
-                    if (motion < pr && motion >= 0.0) {
-                        this.setPredict(motion);
+                }
+
+                if (MultiVersion.isOrGreater(MCVersion.V1_13)) {
+                    slowFalling = this.protocol.spartan.getPotionEffect(PotionEffectType.SLOW_FALLING, 0L);
+                    if (slowFalling != null || this.slowFalling > 0) {
+                        if (slowFalling != null) {
+                            this.slowFalling = 2;
+                            pr = 0.02 * (double) slowFalling.bukkitEffect.getAmplifier() + 0.5;
+                            this.slowFallingA = slowFalling.bukkitEffect.getAmplifier() + 1;
+                        } else {
+                            pr = 0.02 * (double) this.slowFallingA + 0.5;
+                        }
+                        if (motion < pr && motion < 0.0) {
+                            this.setPredict(motion);
+                        }
+
+                        if (this.slowFalling > 0) {
+                            --this.slowFallingA;
+                        }
+                    }
+                }
+
+                if (this.protocol.spartan.movement.isFlying()
+                        || this.protocol.spartan.movement.isGliding()
+                        || this.protocol.flyingTicks > 0) {
+                    this.setPredict(motion);
+                    this.levitation = 3;
+                    this.levitationA = 3;
+                }
+                if (!ground) {
+                    if (this.air == 1) {
+                        if (motion < 0.0) {
+                            this.fallDistance = motion;
+                        }
+                    } else if (motion < 0.0) {
+                        this.fallDistance += motion;
+                    } else {
                         this.fallDistance = 0.0;
                     }
+                }
+                double devPreTotal = this.abs(this.abs(motion) - this.abs(this.predictY()));
 
-                    if (this.levitation > 0) {
-                        --this.levitationA;
+                if (this.glideBlocks > 0 && devPreTotal > 0.001 && motion < 0 && motion > -0.16) {
+                    this.setPredict(motion);
+                    this.glideBlocks--;
+                } else if (devPreTotal > 0.001 && motion < 0 && motion > -0.16 && isNearGlideBlocks()) {
+                    this.setPredict(motion);
+                    this.glideBlocks = 2;
+                }
+
+                if (this.getDeviantity(motion) > 0.001
+                        && this.slimePunch > 0
+                        && motion > 0 && motion < 1.52) {
+                    this.setPredict(motion);
+                    this.allowLowMinorAccel = true;
+                    this.slimePunch--;
+                }
+                if (this.getDeviantity(motion) > 0.001 &&
+                        this.teleportExcept > 0 && this.getDeviantity(motion) <= this.teleportExcept) {
+                    this.setPredict(motion);
+                    this.teleportExcept = 0;
+                }
+
+                boolean boat = false;
+                List<Entity> nearbyEntities = this.protocol.spartan.getNearbyEntities(2);
+                for (Entity vehicle : nearbyEntities) {
+                    if (vehicle instanceof Boat) {
+                        boat = true;
+                        break;
                     }
                 }
-            }
+                if (this.protocol.spartan.getVehicle() == null
+                        && boat &&
+                        this.abs(this.abs(motion) - this.abs(this.predictY())) < 0.6) {
+                    this.setPredict(motion);
+                }
+                if (this.protocol.spartan.getVehicle() != null) {
+                    this.airVehicle = (this.isOnSolidGround(
+                            this.protocol.spartan.getVehicle().getLocation())) ? this.airVehicle + 1 : 0;
+                }
+                if (this.abs(this.abs(motion) - this.abs(this.predictY())) > 0.005
+                        && this.protocol.spartan.getVehicle() != null) {
+                    Entity v = this.protocol.spartan.getVehicle();
+                    boolean isJumpingEntity = EntityUtils.abstractHorseClass
+                            ? v instanceof AbstractHorse // Covers horse, donkey, skeleton-horse, llama, mule
+                            : v instanceof Horse;
 
-            if (MultiVersion.isOrGreater(MCVersion.V1_13)) {
-                slowFalling = this.protocol.spartan.getPotionEffect(PotionEffectType.SLOW_FALLING, 0L);
-                if (slowFalling != null || this.slowFalling > 0) {
-                    if (slowFalling != null) {
-                        this.slowFalling = 2;
-                        pr = 0.02 * (double) slowFalling.bukkitEffect.getAmplifier() + 0.5;
-                        this.slowFallingA = slowFalling.bukkitEffect.getAmplifier() + 1;
-                    } else {
-                        pr = 0.02 * (double) this.slowFallingA + 0.5;
-                    }
-                    if (motion < pr && motion < 0.0) {
+                    if (this.isOnSolidGround(v.getLocation()) && this.abs(motion) <=
+                            ((isJumpingEntity || (boat && v.isOnGround())) ? 1.0 : 0.3)) {
+                        this.setPredict(motion);
+                    } else if (!this.isOnSolidGround(v.getLocation())
+                            && motion < ((v instanceof Minecart) ? 0.16 : (this.predictY() / 1.6))) {
                         this.setPredict(motion);
                     }
-
-                    if (this.slowFalling > 0) {
-                        --this.slowFallingA;
-                    }
                 }
-            }
-
-            if (this.protocol.spartan.movement.isFlying()
-                    || this.protocol.spartan.movement.isGliding()
-                    || this.protocol.flyingTicks > 0) {
-                this.setPredict(motion);
-                this.levitation = 3;
-                this.levitationA = 3;
-            }
-            if (!ground) {
-                if (this.air == 1) {
-                    if (motion < 0.0) {
-                        this.fallDistance = motion;
-                    }
-                } else if (motion < 0.0) {
-                    this.fallDistance += motion;
-                } else {
-                    this.fallDistance = 0.0;
-                }
-            }
-            double devPreTotal = this.abs(this.abs(motion) - this.abs(this.predictY()));
-
-            if (this.glideBlocks > 0 && devPreTotal > 0.001 && motion < 0 && motion > -0.16) {
-                this.setPredict(motion);
-                this.glideBlocks--;
-            } else if (devPreTotal > 0.001 && motion < 0 && motion > -0.16 && isNearGlideBlocks()) {
-                this.setPredict(motion);
-                this.glideBlocks = 2;
-            }
-
-            if (this.getDeviantity(motion) > 0.001
-                    && this.slimePunch > 0
-                    && motion > 0 && motion < 1.52) {
-                this.setPredict(motion);
-                this.allowLowMinorAccel = true;
-                this.slimePunch--;
-            }
-            if (this.getDeviantity(motion) > 0.001 &&
-                    this.teleportExcept > 0 && this.getDeviantity(motion) <= this.teleportExcept) {
-                this.setPredict(motion);
-                this.teleportExcept = 0;
-            }
-
-            boolean boat = false;
-            List<Entity> nearbyEntities = this.protocol.spartan.getNearbyEntities(2);
-            for (Entity vehicle : nearbyEntities) {
-                if (vehicle instanceof Boat) {
-                    boat = true;
-                    break;
-                }
-            }
-            if (this.protocol.spartan.getVehicle() == null
-                    && boat &&
-                    this.abs(this.abs(motion) - this.abs(this.predictY())) < 0.6) {
-                this.setPredict(motion);
-            }
-            if (this.protocol.spartan.getVehicle() != null) {
-                this.airVehicle = (this.isOnSolidGround(
-                        this.protocol.spartan.getVehicle().getLocation())) ? this.airVehicle + 1 : 0;
-            }
-            if (this.abs(this.abs(motion) - this.abs(this.predictY())) > 0.005
-                    && this.protocol.spartan.getVehicle() != null) {
-                Entity v = this.protocol.spartan.getVehicle();
-                boolean isJumpingEntity = EntityUtils.abstractHorseClass
-                        ? v instanceof AbstractHorse // Covers horse, donkey, skeleton-horse, llama, mule
-                        : v instanceof Horse;
-
-                if (this.isOnSolidGround(v.getLocation()) && this.abs(motion) <=
-                        ((isJumpingEntity || (boat && v.isOnGround())) ? 1.0 : 0.3)) {
-                    this.setPredict(motion);
-                } else if (!this.isOnSolidGround(v.getLocation())
-                        && motion < ((v instanceof Minecart) ? 0.16 : (this.predictY() / 1.6))) {
-                    this.setPredict(motion);
-                }
-            }
 
 
                 /*
                 Brainrot 1.18< version cringe fix...
                  */
-            if (!this.protocol.isUsingVersionOrGreater(MCVersion.V1_19)
-                    && (air > 5 && air < 10)
-                    && (motion < this.predictY() + 0.04)
-                    && speed < 0.1) {
-                double allowedDeviantity = 0.076;
-                ExtendedPotionEffect jumpEffect = this.protocol.spartan.getPotionEffect(PotionEffectUtils.JUMP, 1L);
+                if (!this.protocol.isUsingVersionOrGreater(MCVersion.V1_19)
+                        && (air > 5 && air < 10)
+                        && (motion < this.predictY() + 0.04)
+                        && speed < 0.1) {
+                    double allowedDeviantity = 0.076;
+                    ExtendedPotionEffect jumpEffect = this.protocol.spartan.getPotionEffect(PotionEffectUtils.JUMP, 1L);
 
-                if (jumpEffect != null) {
-                    allowedDeviantity += 0.04 * (double) (jumpEffect.bukkitEffect.getAmplifier() + 1);
-                    if (allowedDeviantity > 0.16) allowedDeviantity = 0.16;
+                    if (jumpEffect != null) {
+                        allowedDeviantity += 0.04 * (double) (jumpEffect.bukkitEffect.getAmplifier() + 1);
+                        if (allowedDeviantity > 0.16) allowedDeviantity = 0.16;
+                    }
+
+                    if (this.getDeviantity(motion) < allowedDeviantity)
+                        this.setPredict(motion);
                 }
-
-                if (this.getDeviantity(motion) < allowedDeviantity)
-                    this.setPredict(motion);
-            }
 
                 /*
                 Sometimes after the explosion comes first
@@ -364,79 +365,80 @@ public class IMSimulationGravity extends ProbabilityDetection {
                 and then with in the next tick already from the recoil,
                 let's take into account this nonsense
                  */
-            if (this.protocol.getComponentY().explosionTick && this.getDeviantity(motion) < 1.2) {
-                this.setPredict(motion);
-                this.protocol.getComponentY().explosionTick = false;
-            }
-            if (this.allowMinorGravityChange && this.predictY() > motion
-                    && getDeviantity(motion) <= 0.08) {
-                this.setPredict(motion);
-                this.allowMinorGravityChange = false;
-            }
-            if (this.allowLowMinorAccel && this.predictY() > motion && getDeviantity(motion) <= 0.1) {
-                this.setPredict(motion);
-                this.allowLowMinorAccel = false;
-            }
-            if (this.protocol.spartan.trackers.has(
-                    PlayerTrackers.TrackerType.TELEPORT, "tp")
-                    && getDeviantity(motion) < 0.16) {
-                this.setPredict(motion);
-            }
-
-            double devTotal = this.abs(this.abs(motion) - this.abs(this.predictY()));
-            //this.protocol.bukkit().sendMessage("m: " + motion + " p: " + this.predictY() + " air: " + air);
-            if (devTotal > ((this.protocol.spartan.getVehicle()
-                    != null && motion < 0 && airVehicle < 10)
-                    ? 0.36 : (this.protocol.spartan.getVehicle()
-                    != null) ? 0.09 : 0.009)) {
+                if (this.protocol.getComponentY().explosionTick && this.getDeviantity(motion) < 1.2) {
+                    this.setPredict(motion);
+                    this.protocol.getComponentY().explosionTick = false;
+                }
+                if (this.allowMinorGravityChange && this.predictY() > motion
+                        && getDeviantity(motion) <= 0.08) {
+                    this.setPredict(motion);
+                    this.allowMinorGravityChange = false;
+                }
+                if (this.allowLowMinorAccel && this.predictY() > motion && getDeviantity(motion) <= 0.1) {
+                    this.setPredict(motion);
+                    this.allowLowMinorAccel = false;
+                }
                 if (this.protocol.spartan.trackers.has(
-                        PlayerTrackers.TrackerType.VEHICLE, "vh_tp")
-                        && devTotal < 1.9) {
-                    this.setPredict(0.0);
-                } else {
-                    if (allowLowJump && air == 1
-                            && this.predictY() > motion
-                            && getDeviantity(motion) <= 0.03) {
-                        return;
-                    }
-                    if (this.isSolidBlock(from.clone().add(0, 0.5, 0))
-                            && to.distance(from) < 0.3) {
-                        return;
-                    }
-                    this.vl += devTotal;
-                    this.vlCount += 1;
+                        PlayerTrackers.TrackerType.TELEPORT, "tp")
+                        && getDeviantity(motion) < 0.16) {
+                    this.setPredict(motion);
+                }
 
-                    if (this.vl > ((this.protocol.spartan.getVehicle() != null) ? 0.6 : 0.05)) {
-                        StringBuilder alertBuilder = new StringBuilder(String.valueOf(RayUtils.scaleVal(devTotal, 6.0)));
-                        if (devTotal < 1.0) {
-                            alertBuilder.deleteCharAt(0);
+                double devTotal = this.abs(this.abs(motion) - this.abs(this.predictY()));
+                //this.protocol.bukkit().sendMessage("m: " + motion + " p: " + this.predictY() + " air: " + air);
+                if (devTotal > ((this.protocol.spartan.getVehicle()
+                        != null && motion < 0 && airVehicle < 10)
+                        ? 0.36 : (this.protocol.spartan.getVehicle()
+                        != null) ? 0.09 : 0.009)) {
+                    if (this.protocol.spartan.trackers.has(
+                            PlayerTrackers.TrackerType.VEHICLE, "vh_tp")
+                            && devTotal < 1.9) {
+                        this.setPredict(0.0);
+                    } else {
+                        if (allowLowJump && air == 1
+                                && this.predictY() > motion
+                                && getDeviantity(motion) <= 0.03) {
+                            return;
                         }
-                        if (this.vlCount > ((this.air == 1) ? 0 : (this.vl > 0.3) ? 0 : (this.vl > 0.16) ? 1 : 3)) {
-                            this.cancel("type: simulation[gravity], y: " + alertBuilder);
+                        if (this.isSolidBlock(from.clone().add(0, 0.5, 0))
+                                && to.distance(from) < 0.3) {
+                            return;
                         }
-                        //this.protocol.bukkit().sendMessage("hacks: " + devTotal);
+                        this.vl += devTotal;
+                        this.vlCount += 1;
+
+                        if (this.vl > ((this.protocol.spartan.getVehicle() != null) ? 0.6 : 0.05)) {
+                            StringBuilder alertBuilder = new StringBuilder(String.valueOf(RayUtils.scaleVal(devTotal, 6.0)));
+                            if (devTotal < 1.0) {
+                                alertBuilder.deleteCharAt(0);
+                            }
+                            if (this.vlCount > ((this.air == 1) ? 0 : (this.vl > 0.3) ? 0 : (this.vl > 0.16) ? 1 : 3)) {
+                                this.cancel("type: simulation[gravity], y: " + alertBuilder);
+                            }
+                            //this.protocol.bukkit().sendMessage("hacks: " + devTotal);
                             /*
                             Bukkit.getScheduler().runTask(Register.plugin, () -> {
                                 this.protocol.bukkit().teleport(from);
                             });
                              */
-                    }
+                        }
 
-                    this.setPredict(motion);
-                    if (this.vl > 0) this.vl -= 0.004;
-                    if (this.vlCount > 0) this.vlCount -= 0.3;
-                    this.vlCount /= 1.08;
-                    this.vl /= (this.vlCount < 4) ? 1.17 : 1.04;
-                }
-            } else {
-                ++this.topReset;
-                this.vl /= 1.01;
-                if (this.topReset == 48) {
-                    this.topReset = 0;
+                        this.setPredict(motion);
+                        if (this.vl > 0) this.vl -= 0.004;
+                        if (this.vlCount > 0) this.vlCount -= 0.3;
+                        this.vlCount /= 1.08;
+                        this.vl /= (this.vlCount < 4) ? 1.17 : 1.04;
+                    }
+                } else {
+                    ++this.topReset;
+                    this.vl /= 1.01;
+                    if (this.topReset == 48) {
+                        this.topReset = 0;
+                    }
                 }
             }
-        }
-        slime0Tick = (this.isOnSlimeWide() || this.isOnSlimeWide());
+            slime0Tick = (this.isOnSlimeWide() || this.isOnSlimeWide());
+        });
     }
 
     private double getDeviantity(double motion) {
@@ -461,11 +463,13 @@ public class IMSimulationGravity extends ProbabilityDetection {
     }
 
     public void teleport() {
-        this.air = 0;
-        this.ground = 0;
-        this.teleportExcept = 0.35;
-        this.vl /= 1.5;
-        this.setPredict(0.0);
+        this.call(() -> {
+            this.air = 0;
+            this.ground = 0;
+            this.teleportExcept = 0.35;
+            this.vl /= 1.5;
+            this.setPredict(0.0);
+        });
     }
 
     private void ground(boolean isOnGround) {
@@ -478,13 +482,15 @@ public class IMSimulationGravity extends ProbabilityDetection {
     }
 
     public void groundSp(boolean isOnGround) {
-        this.ground(isOnGround);
+        this.call(() -> this.ground(isOnGround));
     }
 
     public void trident() {
-        this.trident = true;
-        this.levitation = 13;
-        this.levitationA = 4;
+        this.call(() -> {
+            this.trident = true;
+            this.levitation = 13;
+            this.levitationA = 4;
+        });
     }
 
     private double jumpMotion() {

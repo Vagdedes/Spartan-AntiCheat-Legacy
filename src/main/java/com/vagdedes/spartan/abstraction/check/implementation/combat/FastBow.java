@@ -46,33 +46,37 @@ public class FastBow extends CheckRunner {
     }
 
     private void checkBowForce(float force) {
-        if (force != 1.0f) {
-            return;
-        }
-        long timePassed = System.currentTimeMillis() - interactTime;
+        this.bowForceDetection.call(() -> {
+            if (force != 1.0f) {
+                return;
+            }
+            long timePassed = System.currentTimeMillis() - interactTime;
 
-        if (timePassed > 500L) {
-            return;
-        }
-        int buffer = bowForce.count(1, 20),
-                threshold = 2;
+            if (timePassed > 500L) {
+                return;
+            }
+            int buffer = bowForce.count(1, 20),
+                    threshold = 2;
 
-        if (buffer >= threshold) {
-            bowForce.reset();
-            this.bowForceDetection.cancel(
-                    "type: bow-force, ms: " + timePassed
-            );
-        }
+            if (buffer >= threshold) {
+                bowForce.reset();
+                this.bowForceDetection.cancel(
+                        "type: bow-force, ms: " + timePassed
+                );
+            }
+        });
     }
 
     private void checkBowShots() {
-        int buffer = bowShots.count(1, 10),
-                threshold = 7;
-        if (buffer >= threshold) {
-            this.bowShotsDetection.cancel(
-                    "type: bow-shots"
-            );
-        }
+        this.bowShotsDetection.call(() -> {
+            int buffer = bowShots.count(1, 10),
+                    threshold = 7;
+            if (buffer >= threshold) {
+                this.bowShotsDetection.cancel(
+                        "type: bow-shots"
+                );
+            }
+        });
     }
 
 }

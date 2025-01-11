@@ -55,75 +55,84 @@ public class IrregularMovementsJump extends ProbabilityDetection {
         this.jump_height = new ImplementedProbabilityDetection(this, "jump_height", true);
     }
 
-    final void run(double vertical, double box) {
-        if (this.protocol.spartan.trackers.has(PlayerTrackers.TrackerFamily.VELOCITY)
-                ? this.protocol.spartan.movement.justJumped(vertical)
-                : this.protocol.spartan.movement.isJumping(vertical)) {
-            int jumpEffect = PlayerUtils.getPotionLevel(this.protocol.spartan, PotionEffectUtils.JUMP) + 1,
-                    jumpTicks = PlayerUtils.getJumpTicks(jumpEffect);
-            boolean contains = heights.get(jumpEffect).contains(AlgebraUtils.cut(box, MovementProcessing.heightPrecision));
+    void run(double vertical, double box) {
+        if (this.jump_ticks.canCall()
+                || this.jump_height.canCall()) {
+            if (this.protocol.spartan.trackers.has(PlayerTrackers.TrackerFamily.VELOCITY)
+                    ? this.protocol.spartan.movement.justJumped(vertical)
+                    : this.protocol.spartan.movement.isJumping(vertical)) {
+                int jumpEffect = PlayerUtils.getPotionLevel(this.protocol.spartan, PotionEffectUtils.JUMP) + 1,
+                        jumpTicks = PlayerUtils.getJumpTicks(jumpEffect);
+                boolean contains = heights.get(jumpEffect).contains(AlgebraUtils.cut(box, MovementProcessing.heightPrecision));
 
-            if (!contains && this.protocol.spartan.isBedrockPlayer()) {
-                for (double height : heightsBedrock.get(jumpEffect)) {
-                    if (Math.abs(height - box) < MovementProcessing.heightPrecision) {
-                        contains = true;
-                        break;
+                if (!contains && this.protocol.spartan.isBedrockPlayer()) {
+                    for (double height : heightsBedrock.get(jumpEffect)) {
+                        if (Math.abs(height - box) < MovementProcessing.heightPrecision) {
+                            contains = true;
+                            break;
+                        }
                     }
                 }
-            }
 
-            if (!contains) {
-                int airTicks = this.protocol.spartan.movement.getTicksOnAir();
+                if (!contains) {
+                    this.jump_height.call(() -> {
+                        int airTicks = this.protocol.spartan.movement.getTicksOnAir();
 
-                if (airTicks > jumpTicks) {
-                    int blocks = AlgebraUtils.integerCeil(PlayerUtils.getJumpMotionSum(jumpEffect));
-                    double[][] patterns = new double[blocks][3];
+                        if (airTicks > jumpTicks) {
+                            int blocks = AlgebraUtils.integerCeil(PlayerUtils.getJumpMotionSum(jumpEffect));
+                            double[][] patterns = new double[blocks][3];
 
-                    for (int current = 1; current <= blocks; current++) {
-                        int position = current - 1;
-                        patterns[position][0] = GroundUtils.boundingBox;
-                        patterns[position][1] = -current;
-                        patterns[position][2] = GroundUtils.boundingBox;
-                    }
-                    if (!BlockPatternUtils.isBlockPattern(
-                            patterns,
-                            this.protocol.getLocationOrVehicle(),
-                            true,
-                            GroundUtils.abstractMaterials
-                    )) {
-                        this.jump_height.cancel("type: jump(height)"
-                                        + ", box: " + box
-                                        + ", vertical: " + vertical
-                                        + ", jump-effect: " + jumpEffect
-                                        + ", air-ticks: " + airTicks,
-                                this.protocol.getFromLocation(),
-                                0,
-                                true
-                        );
-                    }
-                }
-            } else if (this.protocol.version == MultiVersion.MCVersion.OTHER
-                    || this.protocol.isUsingVersionOrGreater(MultiVersion.serverVersion)) {
-                int limit = Math.max(jumpTicks, AlgebraUtils.integerCeil(TPS.maximum));
+                            for (int current = 1; current <= blocks; current++) {
+                                int position = current - 1;
+                                patterns[position][0] = GroundUtils.boundingBox;
+                                patterns[position][1] = -current;
+                                patterns[position][2] = GroundUtils.boundingBox;
+                            }
+                            if (!BlockPatternUtils.isBlockPattern(
+                                    patterns,
+                                    this.protocol.getLocationOrVehicle(),
+                                    true,
+                                    GroundUtils.abstractMaterials
+                            )) {
+                                this.jump_height.cancel("type: jump(height)"
+                                                + ", box: " + box
+                                                + ", vertical: " + vertical
+                                                + ", jump-effect: " + jumpEffect
+                                                + ", air-ticks: " + airTicks,
+                                        this.protocol.getFromLocation(),
+                                        0,
+                                        true
+                                );
+                            }
+                        }
+                    });
+                } else {
+                    this.jump_ticks.call(() -> {
+                        if (this.protocol.version == MultiVersion.MCVersion.OTHER
+                                || this.protocol.isUsingVersionOrGreater(MultiVersion.serverVersion)) {
+                            int limit = Math.max(jumpTicks, AlgebraUtils.integerCeil(TPS.maximum));
 
-                if (!this.protocol.spartan.isOnGround(this.protocol.getLocation(), true)
-                        && !this.protocol.spartan.isOnGround(this.protocol.getFromLocation(), false)
-                        && !this.protocol.spartan.movement.isInLiquids()) {
-                    int airTicks = this.protocol.spartan.movement.getTicksOnAir();
+                            if (!this.protocol.spartan.isOnGround(this.protocol.getLocation(), true)
+                                    && !this.protocol.spartan.isOnGround(this.protocol.getFromLocation(), false)
+                                    && !this.protocol.spartan.movement.isInLiquids()) {
+                                int airTicks = this.protocol.spartan.movement.getTicksOnAir();
 
-                    if (airTicks > limit) {
-                        this.jump_ticks.cancel(
-                                "type: jump(ticks)"
-                                        + ", box: " + box
-                                        + ", vertical: " + vertical
-                                        + ", jump-effect: " + jumpEffect
-                                        + ", air-ticks: " + airTicks
-                                        + ", limit: " + limit,
-                                this.protocol.getFromLocation(),
-                                0,
-                                true
-                        );
-                    }
+                                if (airTicks > limit) {
+                                    this.jump_ticks.cancel(
+                                            "type: jump(ticks)"
+                                                    + ", box: " + box
+                                                    + ", vertical: " + vertical
+                                                    + ", jump-effect: " + jumpEffect
+                                                    + ", air-ticks: " + airTicks
+                                                    + ", limit: " + limit,
+                                            this.protocol.getFromLocation(),
+                                            0,
+                                            true
+                                    );
+                                }
+                            }
+                        }
+                    });
                 }
             }
         }

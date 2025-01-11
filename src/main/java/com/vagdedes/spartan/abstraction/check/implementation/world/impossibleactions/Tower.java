@@ -28,53 +28,55 @@ public class Tower extends ProbabilityDetection {
         this.buffers = new OverflowMap<>(new ConcurrentHashMap<>(2), 124);
     }
 
-    final void run(Block block,
-                   Location playerLocation,
-                   int playerY,
-                   int blockY) {
-        Double deltaXZ = AlgebraUtils.getHorizontalDistance(this.protocol.getLocation(), this.protocol.getFromLocation());
+    void run(Block block,
+             Location playerLocation,
+             int playerY,
+             int blockY) {
+        this.call(() -> {
+            Double deltaXZ = AlgebraUtils.getHorizontalDistance(this.protocol.getLocation(), this.protocol.getFromLocation());
 
-        if (deltaXZ == null) {
-            return;
-        }
-        if (AlgebraUtils.getHorizontalDistance(
-                SpartanLocation.getBlockLocation(playerLocation),
-                block.getLocation()
-        ) <= 1.0) {
-            ItemStack handItem = this.protocol.spartan.getItemInHand();
-            int jumpLevel = PlayerUtils.getPotionLevel(this.protocol.spartan, PotionEffectUtils.JUMP) + 1,
-                    motionTicks = PlayerUtils.getJumpTicks(jumpLevel);
-            double motionSum = PlayerUtils.getJumpMotionSum(jumpLevel),
-                    blockHeight = GroundUtils.getMinHeight(
-                            handItem == null ? Material.AIR : handItem.getType()
-                    );
-            int deltaYMinus1 = playerY - blockY,
-                    possiblePlacements = AlgebraUtils.integerFloor(
-                            motionSum / (blockHeight == 0.0 ? 1.0 : blockHeight)
-                    ) + deltaYMinus1;
-
-            if (deltaXZ > 0.1) {
-                possiblePlacements += AlgebraUtils.integerCeil(deltaXZ / 0.25);
+            if (deltaXZ == null) {
+                return;
             }
-            possiblePlacements = Math.max(possiblePlacements, 2);
-            Buffer.IndividualBuffer buffer = this.buffers.computeIfAbsent(
-                    (block.getX() * SpartanBukkit.hashCodeMultiplier) + block.getZ(),
-                    k -> new Buffer.IndividualBuffer()
-            );
+            if (AlgebraUtils.getHorizontalDistance(
+                    SpartanLocation.getBlockLocation(playerLocation),
+                    block.getLocation()
+            ) <= 1.0) {
+                ItemStack handItem = this.protocol.spartan.getItemInHand();
+                int jumpLevel = PlayerUtils.getPotionLevel(this.protocol.spartan, PotionEffectUtils.JUMP) + 1,
+                        motionTicks = PlayerUtils.getJumpTicks(jumpLevel);
+                double motionSum = PlayerUtils.getJumpMotionSum(jumpLevel),
+                        blockHeight = GroundUtils.getMinHeight(
+                                handItem == null ? Material.AIR : handItem.getType()
+                        );
+                int deltaYMinus1 = playerY - blockY,
+                        possiblePlacements = AlgebraUtils.integerFloor(
+                                motionSum / (blockHeight == 0.0 ? 1.0 : blockHeight)
+                        ) + deltaYMinus1;
 
-            if (buffer.count(1, motionTicks) > possiblePlacements) {
-                buffer.reset();
-                this.cancel(
-                        "type: tower"
-                                + ", placements: " + possiblePlacements
-                                + ", horizontal: " + deltaXZ
-                                + ", vertical: " + deltaYMinus1,
-                        this.protocol.getFromLocation(),
-                        0,
-                        true
+                if (deltaXZ > 0.1) {
+                    possiblePlacements += AlgebraUtils.integerCeil(deltaXZ / 0.25);
+                }
+                possiblePlacements = Math.max(possiblePlacements, 2);
+                Buffer.IndividualBuffer buffer = this.buffers.computeIfAbsent(
+                        (block.getX() * SpartanBukkit.hashCodeMultiplier) + block.getZ(),
+                        k -> new Buffer.IndividualBuffer()
                 );
+
+                if (buffer.count(1, motionTicks) > possiblePlacements) {
+                    buffer.reset();
+                    this.cancel(
+                            "type: tower"
+                                    + ", placements: " + possiblePlacements
+                                    + ", horizontal: " + deltaXZ
+                                    + ", vertical: " + deltaYMinus1,
+                            this.protocol.getFromLocation(),
+                            0,
+                            true
+                    );
+                }
             }
-        }
+        });
     }
 
 }

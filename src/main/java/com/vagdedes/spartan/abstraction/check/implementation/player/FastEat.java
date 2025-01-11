@@ -10,7 +10,6 @@ import com.vagdedes.spartan.utils.minecraft.inventory.MaterialUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.Difficulty;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
@@ -63,34 +62,31 @@ public class FastEat extends CheckRunner {
         return 0L;
     }
 
-    private boolean checkDelay() {
-        boolean bool;
-        long time = System.currentTimeMillis() - delayTime;
-        this.delayTime = System.currentTimeMillis();
-        long delay = getDelay();
+    private void checkDelay() {
+        this.eat.call(() -> {
+            long time = System.currentTimeMillis() - delayTime;
+            this.delayTime = System.currentTimeMillis();
+            long delay = getDelay();
 
-        if (delay > 0L && time <= delay) {
-            this.eat.cancel(
-                    "type: eat, ms: " + time
-            );
-            bool = true;
-        } else {
-            bool = false;
-        }
-        return bool;
+            if (delay > 0L && time <= delay) {
+                this.eat.cancel(
+                        "type: eat, ms: " + time
+                );
+            }
+        });
     }
 
-    private boolean checkEating() {
-        long time = System.currentTimeMillis() - eatTime,
-                delay = getDelay();
+    private void checkEating() {
+        this.interact.call(() -> {
+            long time = System.currentTimeMillis() - eatTime,
+                    delay = getDelay();
 
-        if (delay > 0L && time <= delay) {
-            this.interact.cancel(
-                    "type: interact, ms: " + time + ", delay: " + delay
-            );
-            return true;
-        }
-        return false;
+            if (delay > 0L && time <= delay) {
+                this.interact.cancel(
+                        "type: interact, ms: " + time + ", delay: " + delay
+                );
+            }
+        });
     }
 
     @Override
@@ -98,10 +94,9 @@ public class FastEat extends CheckRunner {
         if (object instanceof FoodLevelChangeEvent) {
             int lvl = ((FoodLevelChangeEvent) object).getFoodLevel();
 
-            if (lvl > this.protocol.bukkit().getFoodLevel()
-                    && (checkDelay() || checkEating())) {
-                Player p = this.protocol.bukkit();
-                p.setFoodLevel(p.getFoodLevel() - (lvl - p.getFoodLevel()));
+            if (lvl > this.protocol.bukkit().getFoodLevel()) {
+                checkDelay();
+                checkEating();
             }
         } else {
             PlayerInteractEvent e = (PlayerInteractEvent) object;

@@ -25,26 +25,28 @@ public class BlockRaytrace extends ProbabilityDetection {
     }
 
     public void run(Entity targetHandle) {
-        if (true) {
-            return;
-        }
-        if (targetHandle instanceof Player) {
-            SpartanProtocol target = SpartanBukkit.getProtocol((Player) targetHandle);
+        this.call(() -> {
+            if (true) {
+                return;
+            }
+            if (targetHandle instanceof Player) {
+                SpartanProtocol target = SpartanBukkit.getProtocol((Player) targetHandle);
 
-            if (target != null) {
-                Location playerLocation = this.protocol.getLocation();
-                worldInit(this.protocol, playerLocation);
-                this.protocol.setCheckBoundData(new CheckBoundData(this.protocol, target));
-                Vector result = isBoundThrough(this.protocol.getCheckBoundData());
-                if (result != null) {
-                    cancel("attack through block at " + result);
-                    this.protocol.setCheckBoundData(null);
+                if (target != null) {
+                    Location playerLocation = this.protocol.getLocation();
+                    worldInit(playerLocation);
+                    this.protocol.setCheckBoundData(new CheckBoundData(this.protocol, target));
+                    Vector result = isBoundThrough(this.protocol.getCheckBoundData());
+                    if (result != null) {
+                        cancel("attack through block at " + result);
+                        this.protocol.setCheckBoundData(null);
+                    }
                 }
             }
-        }
+        });
     }
 
-    public static void worldInit(SpartanProtocol iPlayer, Location location) {
+    private void worldInit(Location location) {
         World world = location.getWorld();
         for (int x = location.getBlockX() - 3; x <= location.getBlockX() + 3; x++) {
             for (int y = location.getBlockY() - 3; y <= location.getBlockY() + 3; y++) {
@@ -53,7 +55,7 @@ public class BlockRaytrace extends ProbabilityDetection {
                     double s = 0.5;
 
                     if (material.isSolid() && !ignore(material)) {
-                        iPlayer.getAxisMatrixCache().add(
+                        this.protocol.getAxisMatrixCache().add(
                                 new AxisAlignedBB(
                                         x - s, y - s, z - s,
                                         x + s, y + s, z + s)
@@ -64,7 +66,7 @@ public class BlockRaytrace extends ProbabilityDetection {
         }
     }
 
-    public static Vector isBoundThrough(CheckBoundData data) {
+    private static Vector isBoundThrough(CheckBoundData data) {
         if (data == null && data.getAttacker().getAxisMatrixCache() == null) return null;
         SpartanProtocol attacker = data.getAttacker();
         Set<AxisAlignedBB> blocks = attacker.getAxisMatrixCache();

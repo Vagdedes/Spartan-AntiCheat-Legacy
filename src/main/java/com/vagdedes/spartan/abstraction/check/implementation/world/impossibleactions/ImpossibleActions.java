@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.abstraction.check.implementation.world.impossibleactions;
 
+import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
@@ -33,8 +34,8 @@ public class ImpossibleActions extends CheckRunner {
     public ImpossibleActions(Enums.HackType hackType, SpartanProtocol protocol) {
         super(hackType, protocol);
         this.scaffoldDirection = new ImplementedProbabilityDetection(this, null, null, "scaffold_direction", true);
-        this.scaffoldUp = new ImplementedProbabilityDetection(this, null, null, "scaffold_up", true);
-        this.scaffoldYaw = new ImplementedProbabilityDetection(this, null, null, "scaffold_yaw", true);
+        this.scaffoldUp = new ImplementedProbabilityDetection(this, Check.DataType.JAVA, null, "scaffold_up", true);
+        this.scaffoldYaw = new ImplementedProbabilityDetection(this, Check.DataType.JAVA, null, "scaffold_yaw", true);
         this.actions = new ImplementedProbabilityDetection(this, null, null, "actions", true);
         this.tower = new Tower(this);
         this.scaffoldAnalysis = new ScaffoldAnalysis(this);
@@ -68,55 +69,61 @@ public class ImpossibleActions extends CheckRunner {
                         case SOUTH:
                         case SOUTH_EAST:
                         case SOUTH_SOUTH_EAST:
-                            double directionDistance = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)
-                                    ? this.getDirection(blockFace).distance(playerLocation.getDirection())
-                                    : Double.MAX_VALUE;
+                            if (this.scaffoldDirection.canCall()
+                                    || this.scaffoldUp.canCall()
+                                    || this.scaffoldYaw.canCall()) {
+                                double directionDistance = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)
+                                        ? this.getDirection(blockFace).distance(playerLocation.getDirection())
+                                        : Double.MAX_VALUE;
 
-                            if (directionDistance <= 1.35) {
-                                this.scaffoldDirection.cancel(
-                                        "type: scaffold(direction)"
-                                                + ", vector-distance: " + directionDistance
-                                                + ", block-distance: " + SpartanLocation.distance(playerLocation, blockAgainst.getLocation())
-                                );
-                            } else if (!this.protocol.spartan.isBedrockPlayer()) {
-                                float pitch = playerLocation.getPitch();
-
-                                if (pitch <= 0.0) {
-                                    this.scaffoldUp.cancel(
-                                            "type: scaffold(up)"
-                                                    + ", pitch: " + pitch
+                                if (directionDistance <= 1.35) {
+                                    this.scaffoldDirection.call(() -> this.scaffoldDirection.cancel(
+                                            "type: scaffold(direction)"
+                                                    + ", vector-distance: " + directionDistance
                                                     + ", block-distance: " + SpartanLocation.distance(playerLocation, blockAgainst.getLocation())
-                                    );
+                                    ));
                                 } else {
-                                    List<SpartanLocation> fromLocations = this.protocol.spartan.movement.getLocations();
-                                    int requiredComparisons = 5, requiredSize = requiredComparisons + 1;
+                                    float pitch = playerLocation.getPitch();
 
-                                    if (fromLocations.size() >= requiredSize) { // 6-1 comparisons = 5
-                                        fromLocations = fromLocations.subList(fromLocations.size() - requiredSize, fromLocations.size());
-                                        Iterator<SpartanLocation> iterator = fromLocations.iterator();
-                                        SpartanLocation previousLocation = iterator.next();
-                                        double yawDeviation = 0.0;
+                                    if (pitch <= 0.0) {
+                                        this.scaffoldUp.call(() -> this.scaffoldUp.cancel(
+                                                "type: scaffold(up)"
+                                                        + ", pitch: " + pitch
+                                                        + ", block-distance: " + SpartanLocation.distance(playerLocation, blockAgainst.getLocation())
+                                        ));
+                                    } else {
+                                        this.scaffoldYaw.call(() -> {
+                                            List<SpartanLocation> fromLocations = this.protocol.spartan.movement.getLocations();
+                                            int requiredComparisons = 5, requiredSize = requiredComparisons + 1;
 
-                                        while (iterator.hasNext()) {
-                                            SpartanLocation loopLocation = iterator.next();
+                                            if (fromLocations.size() >= requiredSize) { // 6-1 comparisons = 5
+                                                fromLocations = fromLocations.subList(fromLocations.size() - requiredSize, fromLocations.size());
+                                                Iterator<SpartanLocation> iterator = fromLocations.iterator();
+                                                SpartanLocation previousLocation = iterator.next();
+                                                double yawDeviation = 0.0;
 
-                                            if (loopLocation.timePassed() <= requiredComparisons * 2 * TPS.tickTime) {
-                                                double diff = (previousLocation.getYaw() - loopLocation.getYaw()) % 360.0f;
-                                                yawDeviation += diff * diff;
-                                                previousLocation = loopLocation;
-                                            } else {
-                                                return;
+                                                while (iterator.hasNext()) {
+                                                    SpartanLocation loopLocation = iterator.next();
+
+                                                    if (loopLocation.timePassed() <= requiredComparisons * 2 * TPS.tickTime) {
+                                                        double diff = (previousLocation.getYaw() - loopLocation.getYaw()) % 360.0f;
+                                                        yawDeviation += diff * diff;
+                                                        previousLocation = loopLocation;
+                                                    } else {
+                                                        return;
+                                                    }
+                                                }
+                                                yawDeviation = Math.sqrt(yawDeviation / ((double) requiredComparisons));
+
+                                                if (yawDeviation >= 270.0) {
+                                                    this.scaffoldYaw.cancel(
+                                                            "type: scaffold(yaw)"
+                                                                    + ", deviation: " + yawDeviation
+                                                                    + ", block-distance: " + SpartanLocation.distance(playerLocation, blockAgainst.getLocation())
+                                                    );
+                                                }
                                             }
-                                        }
-                                        yawDeviation = Math.sqrt(yawDeviation / ((double) requiredComparisons));
-
-                                        if (yawDeviation >= 270.0) {
-                                            this.scaffoldYaw.cancel(
-                                                    "type: scaffold(yaw)"
-                                                            + ", deviation: " + yawDeviation
-                                                            + ", block-distance: " + SpartanLocation.distance(playerLocation, blockAgainst.getLocation())
-                                            );
-                                        }
+                                        });
                                     }
                                 }
                             }
@@ -130,37 +137,39 @@ public class ImpossibleActions extends CheckRunner {
                 }
             }
         } else {
-            PlayerInteractEvent event = (PlayerInteractEvent) object;
-            Action action = event.getAction();
+            this.actions.call(() -> {
+                PlayerInteractEvent event = (PlayerInteractEvent) object;
+                Action action = event.getAction();
 
-            if ((action == Action.LEFT_CLICK_AIR
-                    || action == Action.LEFT_CLICK_BLOCK
-                    || action == Action.RIGHT_CLICK_AIR
-                    || action == Action.RIGHT_CLICK_BLOCK)
-                    && !Compatibility.CompatibilityType.MC_MMO.isFunctional()) {
-                int cases;
+                if ((action == Action.LEFT_CLICK_AIR
+                        || action == Action.LEFT_CLICK_BLOCK
+                        || action == Action.RIGHT_CLICK_AIR
+                        || action == Action.RIGHT_CLICK_BLOCK)
+                        && !Compatibility.CompatibilityType.MC_MMO.isFunctional()) {
+                    int cases;
 
-                if (this.protocol.bukkit().isSleeping()) {
-                    cases = 1;
-                } else if (this.protocol.spartan.isDead()) {
-                    cases = 2;
-                } else if (BlockUtils.hasMaterial(this.protocol.bukkit().getOpenInventory().getCursor())) {
-                    cases = 3;
-                } else {
-                    cases = 0;
-                }
-
-                if (cases != 0) {
-                    String action_string = action.toString().toLowerCase().replace("_", "-");
-                    Block b = event.getClickedBlock();
-
-                    if (b == null) {
-                        this.actions.cancel("type: actions, action: " + action_string + ", case: " + cases);
+                    if (this.protocol.bukkit().isSleeping()) {
+                        cases = 1;
+                    } else if (this.protocol.spartan.isDead()) {
+                        cases = 2;
+                    } else if (BlockUtils.hasMaterial(this.protocol.bukkit().getOpenInventory().getCursor())) {
+                        cases = 3;
                     } else {
-                        this.actions.cancel("type: actions, action: " + action_string + ", case: " + cases + ", block: " + BlockUtils.blockToString(b));
+                        cases = 0;
+                    }
+
+                    if (cases != 0) {
+                        String action_string = action.toString().toLowerCase().replace("_", "-");
+                        Block b = event.getClickedBlock();
+
+                        if (b == null) {
+                            this.actions.cancel("type: actions, action: " + action_string + ", case: " + cases);
+                        } else {
+                            this.actions.cancel("type: actions, action: " + action_string + ", case: " + cases + ", block: " + BlockUtils.blockToString(b));
+                        }
                     }
                 }
-            }
+            });
         }
     }
 

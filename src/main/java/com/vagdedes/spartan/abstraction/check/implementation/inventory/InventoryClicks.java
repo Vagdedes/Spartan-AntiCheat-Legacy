@@ -43,46 +43,57 @@ public class InventoryClicks extends CheckRunner {
 
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
-        InventoryClickEvent event = (InventoryClickEvent) object;
-        ItemStack item = event.getCurrentItem();
-        ClickType click = event.getClick();
+        if (this.shift.canCall()
+                || this.slow.canCall()
+                || this.medium.canCall()
+                || this.fast.canCall()) {
+            InventoryClickEvent event = (InventoryClickEvent) object;
+            ItemStack item = event.getCurrentItem();
+            ClickType click = event.getClick();
 
-        if (!click.isCreativeAction()
-                && !click.isKeyboardClick()
-                && item != null
-                && item.getItemMeta() != null) {
-            Material material = item.getType();
+            if (!click.isCreativeAction()
+                    && !click.isKeyboardClick()
+                    && item != null
+                    && item.getItemMeta() != null) {
+                Material material = item.getType();
 
-            if (!BlockUtils.isSensitive(this.protocol, material)) {
-                boolean quick = this.protocol.bukkit().getOpenInventory().countSlots() <= PlayerUtils.playerInventorySlots,
-                        shift = click.isShiftClick();
-                String type = BlockUtils.materialToString(material);
+                if (!BlockUtils.isSensitive(this.protocol, material)) {
+                    boolean quick = this.protocol.bukkit().getOpenInventory().countSlots() <= PlayerUtils.playerInventorySlots,
+                            shift = click.isShiftClick();
+                    String type = BlockUtils.materialToString(material);
 
-                int newHash = type.hashCode(),
-                        oldHash = this.oldHash;
-                this.oldHash = newHash;
+                    int newHash = type.hashCode(),
+                            oldHash = this.oldHash;
+                    this.oldHash = newHash;
 
-                if (shift
-                        && !quick
-                        && !BlockUtils.hasMaterial(this.protocol.bukkit().getOpenInventory().getCursor())
-                        && shiftBuffer.count(1, 5) == 4) { // Inventory
-                    shiftBuffer.reset();
-                    this.shift.cancel("type: shift, item: " + type);
-                } else {
-                    long timePassed = System.currentTimeMillis() - time;
-                    time = System.currentTimeMillis();
+                    if (shift
+                            && !quick
+                            && !BlockUtils.hasMaterial(this.protocol.bukkit().getOpenInventory().getCursor())
+                            && shiftBuffer.count(1, 5) == 4) { // Inventory
+                        shiftBuffer.reset();
+                        this.shift.call(() -> this.shift.cancel("type: shift, item: " + type));
+                    } else {
+                        long timePassed = System.currentTimeMillis() - time;
+                        time = System.currentTimeMillis();
 
-                    if ((!shift && !quick || newHash != oldHash)) {
-                        if (timePassed < 150L) {
-                            if (slowBuffer.count(1, 10) >= 8) {
-                                this.slow.cancel("type: slow, ms: " + timePassed + ", item: " + type);
-                            }
-                            if (timePassed < 100L) {
-                                if (mediumBuffer.count(1, 5) >= 4) {
-                                    this.medium.cancel("type: medium, ms: " + timePassed + ", item: " + type);
-                                }
-                                if (timePassed < 50L && fastBuffer.count(1, 5) >= 4) {
-                                    this.fast.cancel("type: fast, ms: " + timePassed + ", item: " + type);
+                        if ((!shift && !quick || newHash != oldHash)) {
+                            if (timePassed < 150L) {
+                                this.slow.call(() -> {
+                                    if (slowBuffer.count(1, 10) >= 8) {
+                                        this.slow.cancel("type: slow, ms: " + timePassed + ", item: " + type);
+                                    }
+                                });
+                                if (timePassed < 100L) {
+                                    this.medium.call(() -> {
+                                        if (mediumBuffer.count(1, 5) >= 4) {
+                                            this.medium.cancel("type: medium, ms: " + timePassed + ", item: " + type);
+                                        }
+                                    });
+                                    this.fast.call(() -> {
+                                        if (timePassed < 50L && fastBuffer.count(1, 5) >= 4) {
+                                            this.fast.cancel("type: fast, ms: " + timePassed + ", item: " + type);
+                                        }
+                                    });
                                 }
                             }
                         }
@@ -91,4 +102,5 @@ public class InventoryClicks extends CheckRunner {
             }
         }
     }
+
 }

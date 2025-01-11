@@ -12,7 +12,7 @@ public class TimerBalancer {
         latency = 0;
     }
 
-    final void pushDelay(long delay) {
+    void pushDelay(long delay) {
         forced = ((delay > 15 && delay < 48) ? forced + 1 : 0);
         latency = ((delay > 40 && delay < 48) ? latency + 10 : latency / 2);
         if (delay > 50) {
@@ -55,7 +55,7 @@ public class TimerBalancer {
         return this.result;
     }
 
-    public final void addBalance(long balance) {
+    public void addBalance(long balance) {
         this.balancer += balance;
     }
 }

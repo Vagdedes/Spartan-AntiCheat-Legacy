@@ -64,59 +64,67 @@ public class ImpossibleInventory extends CheckRunner {
 
     @Override
     protected void runInternal(boolean cancelled) {
-        if (!this.protocol.spartan.movement.isSwimming() && this.protocol.spartan.getVehicle() == null) {
-            ItemStack cursor = this.protocol.bukkit().getOpenInventory().getCursor();
+        this.cursorUsageDetection.call(() -> {
+            if (!this.protocol.spartan.movement.isSwimming() && this.protocol.spartan.getVehicle() == null) {
+                ItemStack cursor = this.protocol.bukkit().getOpenInventory().getCursor();
 
-            if (BlockUtils.hasMaterial(cursor)) {
-                int cases = getActionCase();
+                if (BlockUtils.hasMaterial(cursor)) {
+                    int cases = getActionCase();
 
-                if (cases != 0) {
-                    this.cursorUsageDetection.cancel(
-                            "type: cursor-usage, case: " + cases,
-                            this.protocol.getFromLocation(),
-                            0,
-                            false
-                    );
+                    if (cases != 0) {
+                        this.cursorUsageDetection.cancel(
+                                "type: cursor-usage, case: " + cases,
+                                this.protocol.getFromLocation(),
+                                0,
+                                false
+                        );
+                    }
                 }
             }
-        }
+        });
     }
 
     private void trackAutoTotem(ItemStack itemStack) {
-        if (totem_of_undying != null
-                && itemStack != null
-                && itemStack.getType() == totem_of_undying) {
-            this.autoTotem = System.currentTimeMillis() + (3L * TPS.tickTime);
-        }
+        this.autoTotemDetection.call(() -> {
+            if (totem_of_undying != null
+                    && itemStack != null
+                    && itemStack.getType() == totem_of_undying) {
+                this.autoTotem = System.currentTimeMillis() + (3L * TPS.tickTime);
+            }
+        });
     }
 
     private void runClosedInventory(ClickType click) {
-        int cases = getActionCase();
+        this.closedInventoryDetection.call(() -> {
+            int cases = getActionCase();
 
-        if (cases != 0
-                && !click.isCreativeAction()
-                && !click.isKeyboardClick()
-                && !this.protocol.spartan.movement.isSwimming()
-                && this.protocol.spartan.getVehicle() == null
-                && this.protocol.bukkit().getOpenInventory().countSlots() > PlayerUtils.playerInventorySlots
-                && !BlockPatternUtils.isBlockPattern(
-                belowBlocks,
-                this.protocol.getLocationOrVehicle(),
-                true,
-                BlockUtils.ice, BlockUtils.blue_ice)) {
-            this.closedInventoryDetection.cancel("type: closed-inventory, case: " + cases);
-        }
+            if (cases != 0
+                    && !click.isCreativeAction()
+                    && !click.isKeyboardClick()
+                    && !this.protocol.spartan.movement.isSwimming()
+                    && this.protocol.spartan.getVehicle() == null
+                    && this.protocol.bukkit().getOpenInventory().countSlots() > PlayerUtils.playerInventorySlots
+                    && !BlockPatternUtils.isBlockPattern(
+                    belowBlocks,
+                    this.protocol.getLocationOrVehicle(),
+                    true,
+                    BlockUtils.ice, BlockUtils.blue_ice)) {
+                this.closedInventoryDetection.cancel("type: closed-inventory, case: " + cases);
+            }
+        });
     }
 
     private void runPortalInventory(ItemStack item) {
-        if (BlockUtils.hasMaterial(item)) {
-            SpartanLocation loc = new SpartanLocation(this.protocol.getLocation());
+        this.portalInventoryDetection.call(() -> {
+            if (BlockUtils.hasMaterial(item)) {
+                SpartanLocation loc = new SpartanLocation(this.protocol.getLocation());
 
-            if (loc.getBlock().getType() == nether_portal
-                    || loc.clone().add(0, 1, 0).getBlock().getType() == nether_portal) {
-                this.portalInventoryDetection.cancel("type: portal-inventory");
+                if (loc.getBlock().getType() == nether_portal
+                        || loc.clone().add(0, 1, 0).getBlock().getType() == nether_portal) {
+                    this.portalInventoryDetection.cancel("type: portal-inventory");
+                }
             }
-        }
+        });
     }
 
     private int getActionCase() {

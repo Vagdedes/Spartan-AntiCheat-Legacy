@@ -50,52 +50,56 @@ public class NoSwing extends CheckRunner {
         } else if (object instanceof PlayerAnimationEvent) {
             this.animationTime = System.currentTimeMillis();
         } else if (object instanceof BlockBreakEvent) {
-            if (MineBomb.isUsing(this.protocol.spartan)
-                    || AureliumSkills.isUsing(this.protocol)) {
-                return;
-            }
-            Block block = ((BlockBreakEvent) object).getBlock();
-
-            if (!BlockUtils.isSensitive(this.protocol, block.getType())
-                    && !TreeFeller.canCancel(block)
-                    && System.currentTimeMillis() - breakTime > TPS.tickTime) {
-                if (this.animationTime == Long.MAX_VALUE) {
-                    this.breaking.cancel(
-                            "type: breaking"
-                                    + ", block: " + BlockUtils.blockToString(block)
-                                    + ", item: " + BlockUtils.materialToString(this.protocol.spartan.getItemInHand().getType()));
-                } else {
-                    resetAnimationData();
+            this.breaking.call(() -> {
+                if (MineBomb.isUsing(this.protocol.spartan)
+                        || AureliumSkills.isUsing(this.protocol)) {
+                    return;
                 }
-            }
-        } else if (object instanceof PlayerAttackEvent) {
-            if (this.protocol.spartan.getAttackCooldown() != 1.0f
-                    || this.protocol.spartan.trackers.has(PlayerTrackers.TrackerType.TRIDENT)) {
-                return;
-            }
-            LivingEntity entity = ((PlayerAttackEvent) object).target;
+                Block block = ((BlockBreakEvent) object).getBlock();
 
-            if (!CombatUtils.canCheck(this.protocol, entity)) {
-                return;
-            }
-            long time = System.currentTimeMillis();
-
-            if (checkDamage < time) {
-                checkDamage = time + (20L * TPS.tickTime);
-
-                if (this.animationTime == Long.MAX_VALUE) {
-                    if (damageBuffer.count(1, refreshTime) >= 3) {
-                        damageBuffer.reset();
-                        this.damage.cancel(
-                                "type: damage"
-                                        + ", entity: " + CombatUtils.entityToString(entity)
-                                        + ", item: " + BlockUtils.materialToString(this.protocol.spartan.getItemInHand().getType())
-                        );
+                if (!BlockUtils.isSensitive(this.protocol, block.getType())
+                        && !TreeFeller.canCancel(block)
+                        && System.currentTimeMillis() - breakTime > TPS.tickTime) {
+                    if (this.animationTime == Long.MAX_VALUE) {
+                        this.breaking.cancel(
+                                "type: breaking"
+                                        + ", block: " + BlockUtils.blockToString(block)
+                                        + ", item: " + BlockUtils.materialToString(this.protocol.spartan.getItemInHand().getType()));
+                    } else {
+                        resetAnimationData();
                     }
-                } else {
-                    resetAnimationData();
                 }
-            }
+            });
+        } else if (object instanceof PlayerAttackEvent) {
+            this.damage.call(() -> {
+                if (this.protocol.spartan.getAttackCooldown() != 1.0f
+                        || this.protocol.spartan.trackers.has(PlayerTrackers.TrackerType.TRIDENT)) {
+                    return;
+                }
+                LivingEntity entity = ((PlayerAttackEvent) object).target;
+
+                if (!CombatUtils.canCheck(this.protocol, entity)) {
+                    return;
+                }
+                long time = System.currentTimeMillis();
+
+                if (checkDamage < time) {
+                    checkDamage = time + (20L * TPS.tickTime);
+
+                    if (this.animationTime == Long.MAX_VALUE) {
+                        if (damageBuffer.count(1, refreshTime) >= 3) {
+                            damageBuffer.reset();
+                            this.damage.cancel(
+                                    "type: damage"
+                                            + ", entity: " + CombatUtils.entityToString(entity)
+                                            + ", item: " + BlockUtils.materialToString(this.protocol.spartan.getItemInHand().getType())
+                            );
+                        }
+                    } else {
+                        resetAnimationData();
+                    }
+                }
+            });
         }
     }
 

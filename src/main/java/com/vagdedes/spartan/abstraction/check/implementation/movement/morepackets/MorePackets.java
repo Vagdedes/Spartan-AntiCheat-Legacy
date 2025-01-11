@@ -62,39 +62,52 @@ public class MorePackets extends CheckRunner {
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
         if (object instanceof PlayerTickEvent) {
-            PlayerTickEvent event = (PlayerTickEvent) object;
-            long delay = event.getDelay();
-            TimerBalancer timerBalancer = event.protocol.timerBalancer;
-            timerBalancer.pushDelay(delay);
-            double multiply = RayUtils.scaleVal((double) TPS.tickTime / delay, 2);
+            if (this.positive_balance.canCall()
+                    || this.positive_latency.canCall()
+                    || this.positive_net.canCall()
+                    || this.negative.canCall()) {
+                PlayerTickEvent event = (PlayerTickEvent) object;
+                long delay = event.getDelay();
+                TimerBalancer timerBalancer = event.protocol.timerBalancer;
+                timerBalancer.pushDelay(delay);
+                double multiply = RayUtils.scaleVal((double) TPS.tickTime / delay, 2);
 
-            if (timerBalancer.isNegativeTimer() && delay > 50) {
-                if (multiply < 1.0) {
-                    punish(
-                            this.negative,
-                            "type: negative, multiply: " + multiply
-                    );
-                }
-            } else if (delay < 50 && timerBalancer.getResult() > 100) {
-                if (multiply >= 1.1) {
-                    punish(
-                            this.positive_balance,
-                            "type: positive(balance), multiply: " + multiply
-                    );
-                }
-            } else if (delay < 50 && timerBalancer.getForced() > 8) {
-                if (multiply >= 1.1) {
-                    punish(
-                            this.positive_net,
-                            "type: positive(NET), multiply: " + multiply
-                    );
-                }
-            } else if (delay < 50 && timerBalancer.getLatency() > 40) {
-                if (multiply >= 1.1) {
-                    punish(
-                            this.positive_latency,
-                            "type: positive(latency), multiply: " + multiply
-                    );
+                if (timerBalancer.isNegativeTimer() && delay > 50) {
+                    this.negative.call(() -> {
+                        if (multiply < 1.0) {
+                            punish(
+                                    this.negative,
+                                    "type: negative, multiply: " + multiply
+                            );
+                        }
+                    });
+                } else if (delay < 50 && timerBalancer.getResult() > 100) {
+                    this.positive_balance.call(() -> {
+                        if (multiply >= 1.1) {
+                            punish(
+                                    this.positive_balance,
+                                    "type: positive(balance), multiply: " + multiply
+                            );
+                        }
+                    });
+                } else if (delay < 50 && timerBalancer.getForced() > 8) {
+                    this.positive_net.call(() -> {
+                        if (multiply >= 1.1) {
+                            punish(
+                                    this.positive_net,
+                                    "type: positive(NET), multiply: " + multiply
+                            );
+                        }
+                    });
+                } else if (delay < 50 && timerBalancer.getLatency() > 40) {
+                    this.positive_latency.call(() -> {
+                        if (multiply >= 1.1) {
+                            punish(
+                                    this.positive_latency,
+                                    "type: positive(latency), multiply: " + multiply
+                            );
+                        }
+                    });
                 }
             }
         } else {

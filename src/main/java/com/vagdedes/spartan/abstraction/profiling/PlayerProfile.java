@@ -8,6 +8,7 @@ import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
 import com.vagdedes.spartan.utils.minecraft.inventory.InventoryUtils;
 import lombok.Getter;
+import lombok.Setter;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
@@ -26,6 +27,7 @@ public class PlayerProfile {
     @Getter
     private final CheckRunner[] runners;
     @Getter
+    @Setter
     private Check.DataType lastDataType;
     @Getter
     private Check.DetectionType lastDetectionType;

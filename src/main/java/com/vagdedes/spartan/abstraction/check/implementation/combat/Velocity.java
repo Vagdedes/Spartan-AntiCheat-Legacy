@@ -63,62 +63,67 @@ public class Velocity extends CheckRunner {
 
             if (vl > 0) vl -= 5;
         } else if (object instanceof PlayerMoveEvent) {
-            long delay = System.currentTimeMillis() - oldTime;
-            PlayerMoveEvent event = (PlayerMoveEvent) object;
-            Location from = event.getFrom();
-            Location to = event.getTo();
+            if (this.horizontal.canCall()
+                    || this.vertical.canCall()) {
+                long delay = System.currentTimeMillis() - oldTime;
+                PlayerMoveEvent event = (PlayerMoveEvent) object;
+                Location from = event.getFrom();
+                Location to = event.getTo();
 
-            double x = to.getX() - from.getX();
-            double y = to.getY() - from.getY();
-            double z = to.getZ() - from.getZ();
+                double x = to.getX() - from.getX();
+                double y = to.getY() - from.getY();
+                double z = to.getZ() - from.getZ();
 
-            //this.protocol.bukkit().sendMessage("m: " + y);
-            if (velocity != null) {
-                if (abs(abs(y) - abs(velocity.getY())) < mostCloseYMotion)
-                    mostCloseYMotion = y;
-                // time for vertical
-                if (abs(abs(y) - abs(velocity.getY())) < 0.0001) {
-                    { // time for horizontal
-                        double xDiff = x - velocity.getX();
-                        double zDiff = z - velocity.getZ();
-                        double total = abs(xDiff) + abs(zDiff);
-                        double multi = 1.0;
-                        if ((!this.protocol.isOnGround() && !this.protocol.isOnGroundFrom())) {
-                            // time for horizontal flag 1
-                            if (total > 0.05 * multi) {
-                                this.flag("velocity manipulation [xz] (air deviation: " + total + ")", 14, horizontal);
+                //this.protocol.bukkit().sendMessage("m: " + y);
+                if (velocity != null) {
+                    if (abs(abs(y) - abs(velocity.getY())) < mostCloseYMotion)
+                        mostCloseYMotion = y;
+                    // time for vertical
+                    if (abs(abs(y) - abs(velocity.getY())) < 0.0001) {
+                        { // time for horizontal
+                            double xDiff = x - velocity.getX();
+                            double zDiff = z - velocity.getZ();
+                            double total = abs(xDiff) + abs(zDiff);
+                            double multi = 1.0;
+                            if ((!this.protocol.isOnGround() && !this.protocol.isOnGroundFrom())) {
+                                // time for horizontal flag 1
+                                if (total > 0.05 * multi) {
+                                    this.flag("velocity manipulation [xz] (air deviation: " + total + ")", 14, horizontal);
+                                }
+                            } else if (total > 0.2 * multi) {
+                                this.flag("velocity manipulation [xz] (ground deviation: " + total + ")", 30, horizontal);
                             }
-                        } else if (total > 0.2 * multi) {
-                            this.flag("velocity manipulation [xz] (ground deviation: " + total + ")", 30, horizontal);
                         }
-                    }
-                    //this.protocol.bukkit().sendMessage(x + " " + velocity.getX() + " | " + z + " " + velocity.getZ());
-                    this.velocity = null;
-                    this.timing = 0;
-                } else if (delay > 25) {
-                    if (timing < 2) {
-                        if (!transactionLock) timing++;
-                    } else {
-                        // time for vertical flag
-                        if (this.velocity.getY() != 0.003) {
-                            this.flag("velocity manipulation [y] (motion: " + r(this.mostCloseYMotion)
-                                    + ", velocity: " + r(this.velocity.getY()) + ")", this.isJumpReset(this.mostCloseYMotion) ? 12 : 25, vertical);
-                        }
+                        //this.protocol.bukkit().sendMessage(x + " " + velocity.getX() + " | " + z + " " + velocity.getZ());
                         this.velocity = null;
+                        this.timing = 0;
+                    } else if (delay > 25) {
+                        if (timing < 2) {
+                            if (!transactionLock) timing++;
+                        } else {
+                            // time for vertical flag
+                            if (this.velocity.getY() != 0.003) {
+                                this.flag("velocity manipulation [y] (motion: " + r(this.mostCloseYMotion)
+                                        + ", velocity: " + r(this.velocity.getY()) + ")", this.isJumpReset(this.mostCloseYMotion) ? 12 : 25, vertical);
+                            }
+                            this.velocity = null;
+                        }
                     }
                 }
+                this.oldTime = System.currentTimeMillis();
             }
-            this.oldTime = System.currentTimeMillis();
         }
     }
 
     private void flag(String reason, double vl, CheckDetection e) {
-        this.vl += (float) vl;
-        if (this.vl > 60) {
-            //this.protocol.bukkit().sendMessage("flag: " + reason);
-            e.cancel(reason);
-            this.vl = 50;
-        }
+        e.call(() -> {
+            this.vl += (float) vl;
+            if (this.vl > 60) {
+                //this.protocol.bukkit().sendMessage("flag: " + reason);
+                e.cancel(reason);
+                this.vl = 50;
+            }
+        });
     }
 
     private boolean isJumpReset(double v) {

@@ -391,9 +391,10 @@ public class ResearchEngine {
                             if (player != null) {
                                 for (Enums.HackType hackType : Enums.HackType.values()) {
                                     if (hackTypeString.equals(hackType.toString())) {
-                                        CheckDetection detectionExecutor = getPlayerProfile(
-                                                player
-                                        ).getRunner(
+                                        Check.DataType dataType = findDataType(data);
+                                        PlayerProfile profile = getPlayerProfile(player);
+                                        profile.setLastDataType(dataType);
+                                        CheckDetection detectionExecutor = profile.getRunner(
                                                 hackType
                                         ).getDetection(
                                                 detection
@@ -404,7 +405,7 @@ public class ResearchEngine {
 
                                             try {
                                                 detectionExecutor.store(
-                                                        findDataType(data),
+                                                        dataType,
                                                         sdf.parse(fullDate).getTime()
                                                 );
                                             } catch (Exception ignored) {

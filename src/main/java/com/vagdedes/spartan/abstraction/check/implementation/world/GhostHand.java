@@ -30,40 +30,10 @@ public class GhostHand extends CheckRunner {
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
         if (object instanceof Block) {
-            Block b = (Block) object;
+            this.breaking.call(() -> {
+                Block b = (Block) object;
 
-            if (canDo(b)) {
-                Location location = this.protocol.getLocationOrVehicle().clone().add(
-                        0,
-                        this.protocol.bukkit().getEyeHeight(),
-                        0
-                );
-                double bDistance = SpartanLocation.distance(location, b.getLocation());
-                SpartanLocation t = this.protocol.spartan.getTargetBlock(bDistance, PlayerUtils.chunk);
-
-                if (t != null) {
-                    double tDistance = t.distance(location);
-
-                    if (tDistance < bDistance) {
-                        this.breaking.cancel(
-                                "type: breaking"
-                                        + ", interacted-block: " + BlockUtils.blockToString(b)
-                                        + ", blocking-block: " + BlockUtils.blockToString(t.getBlock())
-                                        + ", interacted-distance: " + bDistance
-                                        + ", blocking-distance: " + tDistance,
-                                null,
-                                1
-                        );
-                    }
-                }
-            }
-        } else {
-            PlayerInteractEvent event = (PlayerInteractEvent) object;
-
-            if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-                Block b = event.getClickedBlock();
-
-                if (canDo(b) && BlockUtils.isChangeable(b.getType())) {
+                if (canDo(b)) {
                     Location location = this.protocol.getLocationOrVehicle().clone().add(
                             0,
                             this.protocol.bukkit().getEyeHeight(),
@@ -76,8 +46,8 @@ public class GhostHand extends CheckRunner {
                         double tDistance = t.distance(location);
 
                         if (tDistance < bDistance) {
-                            this.interact.cancel(
-                                    "type: interact"
+                            this.breaking.cancel(
+                                    "type: breaking"
                                             + ", interacted-block: " + BlockUtils.blockToString(b)
                                             + ", blocking-block: " + BlockUtils.blockToString(t.getBlock())
                                             + ", interacted-distance: " + bDistance
@@ -88,7 +58,41 @@ public class GhostHand extends CheckRunner {
                         }
                     }
                 }
-            }
+            });
+        } else {
+            this.interact.call(() -> {
+                PlayerInteractEvent event = (PlayerInteractEvent) object;
+
+                if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+                    Block b = event.getClickedBlock();
+
+                    if (canDo(b) && BlockUtils.isChangeable(b.getType())) {
+                        Location location = this.protocol.getLocationOrVehicle().clone().add(
+                                0,
+                                this.protocol.bukkit().getEyeHeight(),
+                                0
+                        );
+                        double bDistance = SpartanLocation.distance(location, b.getLocation());
+                        SpartanLocation t = this.protocol.spartan.getTargetBlock(bDistance, PlayerUtils.chunk);
+
+                        if (t != null) {
+                            double tDistance = t.distance(location);
+
+                            if (tDistance < bDistance) {
+                                this.interact.cancel(
+                                        "type: interact"
+                                                + ", interacted-block: " + BlockUtils.blockToString(b)
+                                                + ", blocking-block: " + BlockUtils.blockToString(t.getBlock())
+                                                + ", interacted-distance: " + bDistance
+                                                + ", blocking-distance: " + tDistance,
+                                        null,
+                                        1
+                                );
+                            }
+                        }
+                    }
+                }
+            });
         }
     }
 

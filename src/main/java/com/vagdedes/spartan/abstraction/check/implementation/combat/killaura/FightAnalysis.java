@@ -30,51 +30,55 @@ public class FightAnalysis extends ProbabilityDetection {
         super(executor, null, null, "fight_analysis", true);
     }
 
-    final void runDealDamage(PlayerAttackEvent e) {
-        LivingEntity target = e.target;
-        int identifier;
+    void runDealDamage(PlayerAttackEvent e) {
+        this.call(() -> {
+            LivingEntity target = e.target;
+            int identifier;
 
-        if (target instanceof Player) {
-            identifier = target.getName().hashCode();
-        } else {
-            identifier = target.getType().toString().hashCode();
-        }
-        Map<Integer, int[]> subData = data.computeIfAbsent(
-                this.protocol.getUUID(),
-                k -> new ConcurrentHashMap<>(2)
-        );
-        int[] hitsDamages = subData.getOrDefault(identifier, new int[2]);
-        hitsDamages[0]++;
-        subData.put(identifier, hitsDamages);
-        double ratio = hitsDamages[0] / (double) hitsDamages[1],
-                probability = probability(identifier, ratio);
-
-        if (probability >= desiredConfidence) {
-            cancel(
-                    "type: fight-analysis, ratio: " + ratio + ", probability: " + probability
+            if (target instanceof Player) {
+                identifier = target.getName().hashCode();
+            } else {
+                identifier = target.getType().toString().hashCode();
+            }
+            Map<Integer, int[]> subData = data.computeIfAbsent(
+                    this.protocol.getUUID(),
+                    k -> new ConcurrentHashMap<>(2)
             );
-        }
+            int[] hitsDamages = subData.getOrDefault(identifier, new int[2]);
+            hitsDamages[0]++;
+            subData.put(identifier, hitsDamages);
+            double ratio = hitsDamages[0] / (double) hitsDamages[1],
+                    probability = probability(identifier, ratio);
+
+            if (probability >= desiredConfidence) {
+                cancel(
+                        "type: fight-analysis, ratio: " + ratio + ", probability: " + probability
+                );
+            }
+        });
     }
 
-    final void runReceiveDamage(EntityAttackPlayerEvent e) {
-        LivingEntity damager = e.damager;
-        int identifier;
+    void runReceiveDamage(EntityAttackPlayerEvent e) {
+        this.call(() -> {
+            LivingEntity damager = e.damager;
+            int identifier;
 
-        if (damager instanceof Player) {
-            identifier = damager.getName().hashCode();
-        } else {
-            identifier = damager.getType().toString().hashCode();
-        }
-        Map<Integer, int[]> subData = data.computeIfAbsent(
-                this.protocol.getUUID(),
-                k -> new OverflowMap<>(
-                        new ConcurrentHashMap<>(2),
-                        EntityType.values().length
-                )
-        );
-        int[] hitsDamages = subData.getOrDefault(identifier, new int[2]);
-        hitsDamages[1]++;
-        subData.put(identifier, hitsDamages);
+            if (damager instanceof Player) {
+                identifier = damager.getName().hashCode();
+            } else {
+                identifier = damager.getType().toString().hashCode();
+            }
+            Map<Integer, int[]> subData = data.computeIfAbsent(
+                    this.protocol.getUUID(),
+                    k -> new OverflowMap<>(
+                            new ConcurrentHashMap<>(2),
+                            EntityType.values().length
+                    )
+            );
+            int[] hitsDamages = subData.getOrDefault(identifier, new int[2]);
+            hitsDamages[1]++;
+            subData.put(identifier, hitsDamages);
+        });
     }
 
     private double probability(int identifier, double selfRatio) {

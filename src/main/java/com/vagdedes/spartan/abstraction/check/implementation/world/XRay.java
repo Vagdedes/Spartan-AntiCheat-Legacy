@@ -81,31 +81,35 @@ public class XRay extends CheckRunner {
     protected void handleInternal(boolean cancelled, Object object) {
         Object[] objects = (Object[]) object;
         World.Environment environment = World.Environment.valueOf(objects[0].toString());
-        double[] statistics = getStatistics(environment, (MiningHistory.MiningOre) objects[2]);
+        HardcodedDetection detection = this.detections[environment.ordinal()];
 
-        if (statistics.length > 0) {
-            double individual = ((MiningHistory) objects[1]).getMinesToTimeRatio(environment);
+        detection.call(() -> {
+            double[] statistics = getStatistics(environment, (MiningHistory.MiningOre) objects[2]);
 
-            if (individual > 0.0) {
-                double probability = StatisticsMath.getCumulativeProbability(
-                        (individual - statistics[0]) / statistics[1]
-                );
-                this.detections[environment.ordinal()].setHackingRatio(probability);
+            if (statistics.length > 0) {
+                double individual = ((MiningHistory) objects[1]).getMinesToTimeRatio(environment);
 
-                if (probability >= threshold) {
-                    this.detections[environment.ordinal()].cancel(
-                            "Unfair gathering of " + objects[3]
-                                    + " in " + environment.name().toLowerCase() + " world"
-                                    + ", surpassed " + AlgebraUtils.cut(probability * 100.0, 2)
-                                    + "% of players"
+                if (individual > 0.0) {
+                    double probability = StatisticsMath.getCumulativeProbability(
+                            (individual - statistics[0]) / statistics[1]
                     );
+                    detection.setHackingRatio(probability);
+
+                    if (probability >= threshold) {
+                        detection.cancel(
+                                "Unfair gathering of " + objects[3]
+                                        + " in " + environment.name().toLowerCase() + " world"
+                                        + ", surpassed " + AlgebraUtils.cut(probability * 100.0, 2)
+                                        + "% of players"
+                        );
+                    }
+                } else {
+                    detection.setHackingRatio(PlayerEvidence.emptyProbability);
                 }
             } else {
-                this.detections[environment.ordinal()].setHackingRatio(PlayerEvidence.emptyProbability);
+                detection.setHackingRatio(PlayerEvidence.emptyProbability);
             }
-        } else {
-            this.detections[environment.ordinal()].setHackingRatio(PlayerEvidence.emptyProbability);
-        }
+        });
     }
 
 }

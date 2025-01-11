@@ -48,37 +48,43 @@ public class FastPlace extends CheckRunner {
                 int ticks = 20;
 
                 if (timePassed <= 150L) {
-                    if (slowBuffer.count(1, ticks) >= 9) {
-                        this.slow.cancel(
-                                "type: slow"
-                                        + ", ms: " + timePassed
-                                        + ", block: " + BlockUtils.materialToString(material),
-                                null,
-                                ticks
-                        );
-                    }
+                    this.slow.call(() -> {
+                        if (slowBuffer.count(1, ticks) >= 9) {
+                            this.slow.cancel(
+                                    "type: slow"
+                                            + ", ms: " + timePassed
+                                            + ", block: " + BlockUtils.materialToString(material),
+                                    null,
+                                    ticks
+                            );
+                        }
+                    });
                     if (timePassed <= 100L) {
-                        if (mediumBuffer.count(1, ticks) >= 8) {
-                            this.medium.cancel(
-                                    "type: medium"
-                                            + ", ms: " + timePassed
-                                            + ", block: " + BlockUtils.materialToString(material),
-                                    null,
-                                    ticks
-                            );
-                        }
-                        if (timePassed <= 50L
-                                && !this.protocol.spartan.isBedrockPlayer()
-                                && !Compatibility.CompatibilityType.VEIN_MINER.isFunctional()
-                                && fastBuffer.count(1, ticks) >= 5) {
-                            this.fast.cancel(
-                                    "type: fast"
-                                            + ", ms: " + timePassed
-                                            + ", block: " + BlockUtils.materialToString(material),
-                                    null,
-                                    ticks
-                            );
-                        }
+                        this.medium.call(() -> {
+                            if (mediumBuffer.count(1, ticks) >= 8) {
+                                this.medium.cancel(
+                                        "type: medium"
+                                                + ", ms: " + timePassed
+                                                + ", block: " + BlockUtils.materialToString(material),
+                                        null,
+                                        ticks
+                                );
+                            }
+                        });
+                        this.fast.call(() -> {
+                            if (timePassed <= 50L
+                                    && !this.protocol.spartan.isBedrockPlayer()
+                                    && !Compatibility.CompatibilityType.VEIN_MINER.isFunctional()
+                                    && fastBuffer.count(1, ticks) >= 5) {
+                                this.fast.cancel(
+                                        "type: fast"
+                                                + ", ms: " + timePassed
+                                                + ", block: " + BlockUtils.materialToString(material),
+                                        null,
+                                        ticks
+                                );
+                            }
+                        });
                     }
                 }
             }

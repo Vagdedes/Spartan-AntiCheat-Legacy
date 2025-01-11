@@ -12,20 +12,22 @@ public class Irregular extends ProbabilityDetection {
         super(executor, null, null, "irregular", true);
     }
 
-    final void run() {
-        if (this.protocol.spartan.isDead()) {
-            cancel("type: irregular, scenario: death");
-        } else if (this.protocol.bukkit().isSleeping()) {
-            cancel("type: irregular, scenario: sleeping");
-        } else {
-            InventoryView inventoryView = this.protocol.bukkit().getOpenInventory();
+    void run() {
+        this.call(() -> {
+            if (this.protocol.spartan.isDead()) {
+                cancel("type: irregular, scenario: death");
+            } else if (this.protocol.bukkit().isSleeping()) {
+                cancel("type: irregular, scenario: sleeping");
+            } else {
+                InventoryView inventoryView = this.protocol.bukkit().getOpenInventory();
 
-            if (BlockUtils.hasMaterial(inventoryView.getCursor())) {
-                cancel("type: irregular, scenario: cursor");
-            } else if (inventoryView.countSlots() > PlayerUtils.playerInventorySlots) {
-                cancel("type: irregular, scenario: inventory");
+                if (BlockUtils.hasMaterial(inventoryView.getCursor())) {
+                    cancel("type: irregular, scenario: cursor");
+                } else if (inventoryView.countSlots() > PlayerUtils.playerInventorySlots) {
+                    cancel("type: irregular, scenario: inventory");
+                }
             }
-        }
+        });
     }
 
 }
