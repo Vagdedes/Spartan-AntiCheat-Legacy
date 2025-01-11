@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.abstraction.check.implementation.inventory;
 
+import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
@@ -30,10 +31,10 @@ public class InventoryClicks extends CheckRunner {
 
     public InventoryClicks(Enums.HackType hackType, SpartanProtocol protocol) {
         super(hackType, protocol);
-        this.shift = new ImplementedProbabilityDetection(this, null, "shift", true);
-        this.slow = new ImplementedProbabilityDetection(this, null, "slow", true);
-        this.medium = new ImplementedProbabilityDetection(this, null, "medium", true);
-        this.fast = new ImplementedProbabilityDetection(this, null, "fast", true);
+        this.shift = new ImplementedProbabilityDetection(this, Check.DataType.BEDROCK, null, "shift", true);
+        this.slow = new ImplementedProbabilityDetection(this, Check.DataType.BEDROCK, null, "slow", true);
+        this.medium = new ImplementedProbabilityDetection(this, Check.DataType.BEDROCK, null, "medium", true);
+        this.fast = new ImplementedProbabilityDetection(this, Check.DataType.BEDROCK, null, "fast", true);
         this.slowBuffer = new Buffer.IndividualBuffer();
         this.mediumBuffer = new Buffer.IndividualBuffer();
         this.fastBuffer = new Buffer.IndividualBuffer();
@@ -89,10 +90,5 @@ public class InventoryClicks extends CheckRunner {
                 }
             }
         }
-    }
-
-    @Override
-    protected boolean canRun() {
-        return !this.protocol.spartan.isBedrockPlayer();
     }
 }

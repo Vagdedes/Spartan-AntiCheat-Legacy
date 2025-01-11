@@ -24,7 +24,7 @@ public class ScaffoldAnalysis extends ProbabilityDetection {
     private Block oldBlock;
 
     ScaffoldAnalysis(CheckRunner executor) {
-        super(executor, null, "scaffold_analysis", true);
+        super(executor, null, null, "scaffold_analysis", true);
         this.buffers = new OverflowMap<>(new ConcurrentHashMap<>(2), 124);
     }
 

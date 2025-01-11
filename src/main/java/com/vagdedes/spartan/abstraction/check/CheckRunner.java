@@ -37,6 +37,7 @@ public abstract class CheckRunner extends CheckProcess {
     CheckPrevention prevention;
     private boolean cancelled;
     private final Map<String, CheckDetection> detections;
+    private final boolean[] supportsDataType, supportsDetectionType;
 
     public CheckRunner(Enums.HackType hackType, SpartanProtocol protocol) {
         super(hackType, protocol);
@@ -45,6 +46,8 @@ public abstract class CheckRunner extends CheckProcess {
         this.detections = new ConcurrentHashMap<>(2);
         this.disableCauses = Collections.synchronizedList(new ArrayList<>(1));
         this.silentCauses = Collections.synchronizedList(new ArrayList<>(1));
+        this.supportsDataType = new boolean[Check.DataType.values().length];
+        this.supportsDetectionType = new boolean[Check.DetectionType.values().length];
     }
 
     // Probability
@@ -169,7 +172,19 @@ public abstract class CheckRunner extends CheckProcess {
     }
 
     protected final CheckDetection addDetection(String name, CheckDetection detection) {
-        return this.detections.putIfAbsent(name, detection);
+        CheckDetection result = this.detections.putIfAbsent(name, detection);
+
+        for (Check.DataType dataType : Check.DataType.values()) {
+            if (detection.supportsDataType(dataType)) {
+                this.supportsDataType[dataType.ordinal()] = true;
+            }
+        }
+        for (Check.DetectionType detectionType : Check.DetectionType.values()) {
+            if (detection.supportsDetectionType(detectionType)) {
+                this.supportsDetectionType[detectionType.ordinal()] = true;
+            }
+        }
+        return result;
     }
 
     // Run
@@ -208,6 +223,8 @@ public abstract class CheckRunner extends CheckProcess {
 
     final boolean canFunction() {
         return this.protocol != null
+                && this.supportsDataType[this.protocol.spartan.dataType.ordinal()]
+                && this.supportsDetectionType[this.protocol.spartan.detectionType.ordinal()]
                 && (System.currentTimeMillis() - this.creation) > TPS.maximum * TPS.tickTime
                 && (!cancelled || hackType.getCheck().handleCancelledEvents)
                 && (!v1_8 || this.protocol.bukkit().getGameMode() != GameMode.SPECTATOR)

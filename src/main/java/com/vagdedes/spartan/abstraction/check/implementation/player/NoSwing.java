@@ -35,8 +35,8 @@ public class NoSwing extends CheckRunner {
         this.breakTime = Long.MAX_VALUE;
         this.animationTime = Long.MAX_VALUE;
         this.damageBuffer = new Buffer.IndividualBuffer();
-        this.breaking = new ImplementedProbabilityDetection(this, null, "breaking", true);
-        this.damage = new ImplementedProbabilityDetection(this, null, "damage", true);
+        this.breaking = new ImplementedProbabilityDetection(this, null, null, "breaking", true);
+        this.damage = new ImplementedProbabilityDetection(this, null, null, "damage", true);
     }
 
     @Override

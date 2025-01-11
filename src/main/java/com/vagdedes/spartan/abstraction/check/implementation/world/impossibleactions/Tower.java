@@ -23,7 +23,7 @@ public class Tower extends ProbabilityDetection {
     private final Map<Integer, Buffer.IndividualBuffer> buffers;
 
     Tower(CheckRunner executor) {
-        super(executor, null, "tower", true);
+        super(executor, null, null, "tower", true);
         this.buffers = new OverflowMap<>(new ConcurrentHashMap<>(2), 124);
     }
 

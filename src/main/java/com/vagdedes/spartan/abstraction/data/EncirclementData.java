@@ -87,9 +87,6 @@ public class EncirclementData {
                                 || BlockUtils.isLiquid(protocol.packetWorld.getBlock(
                                 new Location(protocol.getWorld(), x + (double) dx * 0.3, y, z + (double) dz * 0.3)
                         ))
-                                || BlockUtils.isWaterLogged(protocol.packetWorld.getBlock(
-                                new Location(protocol.getWorld(), x + (double) dx * 0.3, y, z + (double) dz * 0.3)
-                        ))
                                 || BlockUtils.isLiquid(material)
                                 || BlockUtils.isLiquid(m2)
                                 || BlockUtils.isWaterLogged(b)) {

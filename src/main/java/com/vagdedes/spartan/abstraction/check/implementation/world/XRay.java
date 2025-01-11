@@ -70,6 +70,7 @@ public class XRay extends CheckRunner {
             this.detections[environment.ordinal()] = new ImplementedHardcodedDetection(
                     this,
                     null,
+                    null,
                     environment.name().toLowerCase(),
                     true
             );

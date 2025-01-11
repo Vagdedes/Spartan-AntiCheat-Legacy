@@ -23,8 +23,8 @@ public class GhostHand extends CheckRunner {
 
     public GhostHand(HackType hackType, SpartanProtocol protocol) {
         super(hackType, protocol);
-        this.breaking = new ImplementedProbabilityDetection(this, null, "breaking", true);
-        this.interact = new ImplementedProbabilityDetection(this, null, "interact", true);
+        this.breaking = new ImplementedProbabilityDetection(this, null, null, "breaking", true);
+        this.interact = new ImplementedProbabilityDetection(this, null, null, "interact", true);
     }
 
     @Override
