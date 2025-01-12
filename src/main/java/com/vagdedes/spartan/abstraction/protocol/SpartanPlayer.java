@@ -106,7 +106,7 @@ public class SpartanPlayer {
     }
 
     public boolean isAFK() {
-        return this.afk;
+        return this.afk || this.protocol.npc;
     }
 
     public boolean isBedrockPlayer() {

@@ -1,1 +1,5 @@
 [#] Fixed a few scaffold false positives
+[#] Improved the identifications of NPC players
+[#] Fixed a few detection null errors
+[#] Prompted statistics to recalculated when max data has been updated
+[#] Prevented certain statistics from running when not needed

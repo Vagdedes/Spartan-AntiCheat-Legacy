@@ -41,21 +41,27 @@ public class SpartanProtocol {
     public final SpartanPlayer spartan;
 
     // Custom
-    public boolean onGround,
-            onGroundFrom;
     private int hashPosBuffer;
     public int
             rightClickCounter,
             transactionVl,
             flyingTicks;
+    public final boolean npc;
     public boolean
+            onGround,
+            onGroundFrom,
             mutateTeleport,
             sprinting,
             sneaking,
             vehicleStatus,
             simulationFlag,
             teleported,
-            pistonTick;
+            pistonTick,
+            transactionBoot,
+            clickBlocker,
+            transactionLocal,
+            transactionSentKeep,
+            useItemPacket;
     @Setter
     private Location location, from, teleport;
     public String fromWorld;
@@ -88,9 +94,6 @@ public class SpartanProtocol {
             transactionLastTime,
             transactionPing,
             lagTick, oldClickTime;
-    public boolean transactionBoot, clickBlocker,
-            transactionLocal,
-            transactionSentKeep, useItemPacket;
     public boolean entityHandle;
 
     private ComponentY componentY;
@@ -102,6 +105,7 @@ public class SpartanProtocol {
         this.bukkit = player;
         this.version = MultiVersion.get(player);
         this.packetWorld = new PacketWorld(player);
+        this.npc = player.getAddress() == null;
 
         this.placeTime = time;
         this.placeHash = 0;
@@ -331,10 +335,6 @@ public class SpartanProtocol {
         if (this.onGround) {
             this.spartan.movement.resetAirTicks();
         }
-    }
-
-    public void setLocation(Location location) {
-        this.location = location;
     }
 
     public void setFromLocation(Location location) {

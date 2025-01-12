@@ -37,7 +37,6 @@ public abstract class CheckRunner extends CheckProcess {
     private boolean cancelled;
     private final Map<String, CheckDetection> detections;
     private final boolean[] supportsDataType, supportsDetectionType;
-    private final boolean npc;
 
     public CheckRunner(Enums.HackType hackType, SpartanProtocol protocol) {
         super(hackType, protocol);
@@ -48,7 +47,6 @@ public abstract class CheckRunner extends CheckProcess {
         this.silentCauses = Collections.synchronizedList(new ArrayList<>(1));
         this.supportsDataType = new boolean[Check.DataType.values().length];
         this.supportsDetectionType = new boolean[Check.DetectionType.values().length];
-        this.npc = protocol != null && protocol.bukkit().getAddress() == null;
     }
 
     // Probability
@@ -262,7 +260,7 @@ public abstract class CheckRunner extends CheckProcess {
 
     final boolean canFunction() {
         return this.protocol != null
-                && !this.npc
+                && !this.protocol.npc
                 && this.supportsDataType[this.protocol.spartan.dataType.ordinal()]
                 && this.supportsDetectionType[this.protocol.spartan.detectionType.ordinal()]
                 && (System.currentTimeMillis() - this.creation) > TPS.maximum * TPS.tickTime

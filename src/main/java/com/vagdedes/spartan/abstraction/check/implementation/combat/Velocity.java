@@ -167,7 +167,8 @@ public class Velocity extends CheckRunner {
 
     @Override
     protected boolean canRun() {
-        return !this.protocol.spartan.trackers.has(PlayerTrackers.TrackerType.BOUNCING_BLOCKS)
+        return this.protocol.spartan.getVehicle() == null
+                && !this.protocol.spartan.trackers.has(PlayerTrackers.TrackerType.BOUNCING_BLOCKS)
                 && CombatUtils.canCheck(this.protocol)
                 && !this.protocol.spartan.isOutsideOfTheBorder(-1.0);
     }

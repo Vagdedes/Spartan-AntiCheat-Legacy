@@ -59,17 +59,21 @@ public abstract class ProbabilityDetection extends CheckDetection {
             int halfRequirement = AlgebraUtils.integerCeil(PlayerEvidence.factorRequirement / 2.0);
 
             for (PlayerProfile profile : playerProfiles) {
-                int individualCount = profile.getRunner(this.hackType).getDetection(this.name).getDataCount(dataType);
+                CheckDetection detection = profile.getRunner(this.hackType).getDetection(this.name);
 
-                if (individualCount > 0) {
-                    count += individualCount;
-                    pass++;
+                if (detection != null) {
+                    int individualCount = detection.getDataCount(dataType);
 
-                    if (pass == PlayerEvidence.factorRequirement) {
-                        return true;
-                    } else if (pass >= halfRequirement
-                            && (count / (double) total) > PlayerEvidence.factorRequirement) {
-                        return true;
+                    if (individualCount > 0) {
+                        count += individualCount;
+                        pass++;
+
+                        if (pass == PlayerEvidence.factorRequirement) {
+                            return true;
+                        } else if (pass >= halfRequirement
+                                && (count / (double) total) > PlayerEvidence.factorRequirement) {
+                            return true;
+                        }
                     }
                 }
             }
@@ -202,7 +206,10 @@ public abstract class ProbabilityDetection extends CheckDetection {
             int count = 0;
 
             for (PlayerProfile profile : playerProfiles) {
-                if (profile.getRunner(this.hackType).getDetection(this.name).hasData(profile, dataType)) {
+                CheckDetection detection = profile.getRunner(this.hackType).getDetection(this.name);
+
+                if (detection != null
+                        && detection.hasData(profile, dataType)) {
                     count++;
 
                     if (count == PlayerEvidence.factorRequirement) {

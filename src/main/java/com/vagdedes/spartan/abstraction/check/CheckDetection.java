@@ -16,6 +16,7 @@ import com.vagdedes.spartan.utils.minecraft.server.ConfigUtils;
 import me.vagdedes.spartan.api.API;
 import me.vagdedes.spartan.api.PlayerViolationCommandEvent;
 import me.vagdedes.spartan.api.PlayerViolationEvent;
+import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
@@ -39,7 +40,15 @@ public abstract class CheckDetection extends CheckProcess {
     }
 
     protected static void setDefaultData(double newData) {
-        CheckDetection.defaultData = Math.max(CheckDetection.defaultData, newData);
+        if (newData > CheckDetection.defaultData) {
+            CheckDetection.defaultData = newData;
+
+            for (Enums.HackType hackType : Enums.HackType.values()) {
+                for (Check.DataType dataType : Check.DataType.values()) {
+                    ResearchEngine.queueToCache(hackType, dataType);
+                }
+            }
+        }
     }
 
     // Separator
@@ -145,7 +154,7 @@ public abstract class CheckDetection extends CheckProcess {
     }
 
     public double getData(PlayerProfile profile, Check.DataType dataType) {
-        return defaultData();
+        return -1.0;
     }
 
     protected int getDataCount(Check.DataType dataType) {
@@ -194,7 +203,8 @@ public abstract class CheckDetection extends CheckProcess {
         if (ticks == 0) {
             return true;
         } else if (this.notifications <= time) {
-            if (probability == -1.0 || detection == null) {
+            if (probability == -1.0
+                    || detection == null) {
                 this.notifications = System.currentTimeMillis() + (ticks * TPS.tickTime);
                 return true;
             } else {
@@ -217,13 +227,17 @@ public abstract class CheckDetection extends CheckProcess {
 
                         for (SpartanProtocol protocol : protocols) {
                             if (!protocol.spartan.isAFK()) {
-                                individual = protocol.profile().getRunner(
+                                CheckDetection protocolDetection = protocol.profile().getRunner(
                                         this.hackType
                                 ).getDetection(
                                         this.name
-                                ).getAccumulatedProbabilityTime(time);
-                                sum += individual * individual;
-                                total++;
+                                );
+
+                                if (protocolDetection != null) {
+                                    individual = protocolDetection.getAccumulatedProbabilityTime(time);
+                                    sum += individual * individual;
+                                    total++;
+                                }
                             }
                         }
                     }
@@ -305,7 +319,10 @@ public abstract class CheckDetection extends CheckProcess {
 
                 if (!protocols.isEmpty()) {
                     for (SpartanProtocol staff : protocols) {
-                        if (staff.profile().getRunner(this.hackType).getDetection(this.name).canSendNotification(this, time, certainty)) {
+                        CheckDetection detection = staff.profile().getRunner(this.hackType).getDetection(this.name);
+
+                        if (detection != null
+                                && detection.canSendNotification(this, time, certainty)) {
                             ClickableMessage.sendCommand(
                                     staff.bukkit(),
                                     notification,

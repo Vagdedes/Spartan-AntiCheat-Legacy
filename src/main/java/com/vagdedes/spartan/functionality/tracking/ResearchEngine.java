@@ -533,13 +533,17 @@ public class ResearchEngine {
                     if (hackType.getCheck().isEnabled(dataType, null)) {
                         for (PlayerProfile profile : profiles) {
                             for (CheckDetection detectionExecutor : profile.getRunner(hackType).getDetections()) {
-                                wave.computeIfAbsent(
-                                        detectionExecutor.name,
-                                        k -> new LinkedHashMap<>()
-                                ).put(
-                                        detectionExecutor,
-                                        detectionExecutor.getData(profile, dataType)
-                                );
+                                double data = detectionExecutor.getData(profile, dataType);
+
+                                if (data != -1.0) {
+                                    wave.computeIfAbsent(
+                                            detectionExecutor.name,
+                                            k -> new LinkedHashMap<>()
+                                    ).put(
+                                            detectionExecutor,
+                                            data
+                                    );
+                                }
                             }
                         }
                     }
