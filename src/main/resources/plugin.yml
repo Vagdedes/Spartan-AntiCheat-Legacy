@@ -13,5 +13,3 @@ load: POSTWORLD
 folia-supported: true
 commands:
   spartan:
-    description: "Main command for the Spartan anti-cheat."
-    permission: spartan.admin
