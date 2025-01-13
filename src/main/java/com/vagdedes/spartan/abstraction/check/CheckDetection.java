@@ -135,13 +135,6 @@ public abstract class CheckDetection extends CheckProcess {
 
     // Data
 
-    protected boolean hasData(
-            PlayerProfile profile,
-            Check.DataType dataType
-    ) {
-        return true;
-    }
-
     abstract protected boolean hasSufficientData(Check.DataType dataType);
 
     public void clearData(Check.DataType dataType) {

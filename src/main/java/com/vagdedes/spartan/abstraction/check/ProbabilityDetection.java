@@ -3,7 +3,6 @@ package com.vagdedes.spartan.abstraction.check;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
 import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
-import com.vagdedes.spartan.utils.math.AlgebraUtils;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -13,7 +12,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public abstract class ProbabilityDetection extends CheckDetection {
 
-    private final int[] dataCount;
     private final long[] firstTime, lastTime;
     private final List<Long>[] data;
 
@@ -26,13 +24,11 @@ public abstract class ProbabilityDetection extends CheckDetection {
     ) {
         super(executor, forcedDataType, detectionType, name, def);
         this.data = new List[Check.DataType.values().length];
-        this.dataCount = new int[Check.DataType.values().length];
         this.firstTime = new long[Check.DataType.values().length];
         this.lastTime = new long[Check.DataType.values().length];
 
         for (Check.DataType dataType : Check.DataType.values()) {
             this.data[dataType.ordinal()] = new CopyOnWriteArrayList<>();
-            this.dataCount[dataType.ordinal()] = 0;
             this.firstTime[dataType.ordinal()] = -1L;
             this.lastTime[dataType.ordinal()] = -1L;
         }
@@ -41,22 +37,12 @@ public abstract class ProbabilityDetection extends CheckDetection {
     // Data
 
     @Override
-    protected final boolean hasData(
-            PlayerProfile profile,
-            Check.DataType dataType
-    ) {
-        return getFirstTime(dataType) != -1L;
-    }
-
-    @Override
     protected final boolean hasSufficientData(Check.DataType dataType) {
         Collection<PlayerProfile> playerProfiles = ResearchEngine.getPlayerProfiles();
         int total = playerProfiles.size();
 
         if (total >= PlayerEvidence.factorRequirement) {
-            int pass = 0,
-                    count = 0;
-            int halfRequirement = AlgebraUtils.integerCeil(PlayerEvidence.factorRequirement / 2.0);
+            int pass = 0;
 
             for (PlayerProfile profile : playerProfiles) {
                 CheckDetection detection = profile.getRunner(this.hackType).getDetection(this.name);
@@ -65,13 +51,9 @@ public abstract class ProbabilityDetection extends CheckDetection {
                     int individualCount = detection.getDataCount(dataType);
 
                     if (individualCount > 0) {
-                        count += individualCount;
                         pass++;
 
                         if (pass == PlayerEvidence.factorRequirement) {
-                            return true;
-                        } else if (pass >= halfRequirement
-                                && (count / (double) total) > PlayerEvidence.factorRequirement) {
                             return true;
                         }
                     }
@@ -95,7 +77,6 @@ public abstract class ProbabilityDetection extends CheckDetection {
     @Override
     public void clearData(Check.DataType dataType) {
         this.data[dataType.ordinal()].clear();
-        this.dataCount[dataType.ordinal()] = 0;
         this.firstTime[dataType.ordinal()] = -1L;
         this.lastTime[dataType.ordinal()] = -1L;
     }
@@ -126,66 +107,61 @@ public abstract class ProbabilityDetection extends CheckDetection {
         } else if (time > this.lastTime[dataType.ordinal()]) {
             this.lastTime[dataType.ordinal()] = time;
         }
-        this.dataCount[dataType.ordinal()]++;
     }
 
     @Override
     public final double getData(PlayerProfile profile, Check.DataType dataType) {
-        if (getFirstTime(dataType) == -1L) {
-            return CheckDetection.defaultData();
+        Collection<Long> data = this.data[dataType.ordinal()];
+
+        if (data == null) {
+            return -1.0;
         } else {
-            Collection<Long> data = this.data[dataType.ordinal()];
+            double violationCount = data.size(),
+                    averageViolationVelocity,
+                    comparisonCount = 0.0;
+            long violationVelocitySquareSum = 0;
+            Iterator<Long> iterator = data.iterator();
 
-            if (data == null) {
-                return CheckDetection.defaultData();
-            } else {
-                double violationCount = data.size(),
-                        averageViolationVelocity,
-                        comparisonCount = 0.0;
-                long violationVelocitySquareSum = 0;
-                Iterator<Long> iterator = data.iterator();
+            if (iterator.hasNext()) {
+                long previous = iterator.next();
 
-                if (iterator.hasNext()) {
-                    long previous = iterator.next();
+                while (iterator.hasNext()) {
+                    long current = iterator.next();
 
-                    while (iterator.hasNext()) {
-                        long current = iterator.next();
-
-                        if (profile.getContinuity().wasOnline(current, previous)) {
-                            comparisonCount++;
-                            long difference = current - previous;
-                            previous = current;
-                            violationVelocitySquareSum += difference * difference;
-                        }
+                    if (profile.getContinuity().wasOnline(current, previous)) {
+                        comparisonCount++;
+                        long difference = current - previous;
+                        previous = current;
+                        violationVelocitySquareSum += difference * difference;
                     }
                 }
-                long onlineTime = profile.getContinuity().getOnlineTime();
+            }
+            long onlineTime = profile.getContinuity().getOnlineTime();
 
-                if (onlineTime > 0L) {
-                    onlineTime /= 1_000L; // Convert to seconds
-                    violationCount /= (double) onlineTime;
-                }
-                if (comparisonCount == 0.0) {
-                    averageViolationVelocity = Long.MAX_VALUE;
-                } else {
-                    averageViolationVelocity = Math.sqrt(violationVelocitySquareSum / comparisonCount);
-                }
-                double result = averageViolationVelocity / violationCount;
+            if (onlineTime > 0L) {
+                onlineTime /= 1_000L; // Convert to seconds
+                violationCount /= (double) onlineTime;
+            }
+            if (comparisonCount == 0.0) {
+                averageViolationVelocity = Long.MAX_VALUE;
+            } else {
+                averageViolationVelocity = Math.sqrt(violationVelocitySquareSum / comparisonCount);
+            }
+            double result = averageViolationVelocity / violationCount;
 
-                if (result == Double.POSITIVE_INFINITY
-                        || result == Double.NEGATIVE_INFINITY) {
-                    return CheckDetection.defaultData();
-                } else {
-                    CheckDetection.setDefaultData(result);
-                    return result;
-                }
+            if (result == Double.POSITIVE_INFINITY
+                    || result == Double.NEGATIVE_INFINITY) {
+                return -1.0;
+            } else {
+                CheckDetection.setDefaultData(result);
+                return result;
             }
         }
     }
 
     @Override
     protected final int getDataCount(Check.DataType dataType) {
-        return this.dataCount[dataType.ordinal()];
+        return this.data[dataType.ordinal()].size();
     }
 
     @Override
@@ -209,7 +185,7 @@ public abstract class ProbabilityDetection extends CheckDetection {
                 CheckDetection detection = profile.getRunner(this.hackType).getDetection(this.name);
 
                 if (detection != null
-                        && detection.hasData(profile, dataType)) {
+                        && detection.getData(profile, dataType) != -1.0) {
                     count++;
 
                     if (count == PlayerEvidence.factorRequirement) {
