@@ -6,8 +6,8 @@ public class PlayerEvidence {
     public static final int factorRequirement = 3;
     public static final double
             dataRatio = 2.0 / 3.0,
-            preventionProbability = createProbability(0.25),
-            punishmentProbability = createProbability(0.05),
+            preventionProbability = createProbability(0.1),
+            punishmentProbability = createProbability(0.01),
             slightestProbability = createProbability(0.99),
             emptyProbability = createProbability(1.0);
 

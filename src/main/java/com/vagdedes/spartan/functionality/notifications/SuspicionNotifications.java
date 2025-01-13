@@ -49,7 +49,7 @@ public class SuspicionNotifications {
         for (SpartanProtocol protocol : online) {
             PlayerProfile profile = protocol.profile();
             Collection<Enums.HackType> list = profile.getEvidenceList(
-                    PlayerEvidence.createProbability(1.0 / 3.0)
+                    PlayerEvidence.createProbability(0.2)
             );
 
             if (!list.isEmpty()) {
