@@ -11,7 +11,7 @@ public class PlayerEvidence {
             slightestProbability = createProbability(0.99),
             emptyProbability = createProbability(1.0);
 
-    private static double createProbability(double probability) {
+    public static double createProbability(double probability) {
         return POSITIVE ? 1.0 - probability : probability;
     }
 

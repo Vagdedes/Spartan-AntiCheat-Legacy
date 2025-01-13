@@ -4,8 +4,8 @@ import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
 import com.vagdedes.spartan.abstraction.event.EntityAttackPlayerEvent;
 import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
+import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
 import com.vagdedes.spartan.utils.java.OverflowMap;
-import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.math.statistics.StatisticsMath;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -21,10 +21,6 @@ public class FightAnalysis extends ProbabilityDetection {
             new ConcurrentHashMap<>(2),
             2_048
     );
-    private static final double desiredConfidence = 0.9;
-    private static final int desiredCount = AlgebraUtils.integerCeil(
-            1.0 / (1.0 - desiredConfidence)
-    );
 
     FightAnalysis(CheckRunner executor) {
         super(executor, null, null, "fight_analysis", true);
@@ -33,13 +29,7 @@ public class FightAnalysis extends ProbabilityDetection {
     void runDealDamage(PlayerAttackEvent e) {
         this.call(() -> {
             LivingEntity target = e.target;
-            int identifier;
-
-            if (target instanceof Player) {
-                identifier = target.getName().hashCode();
-            } else {
-                identifier = target.getType().toString().hashCode();
-            }
+            int identifier = target.getType().toString().hashCode();
             Map<Integer, int[]> subData = data.computeIfAbsent(
                     this.protocol.getUUID(),
                     k -> new ConcurrentHashMap<>(2)
@@ -50,7 +40,7 @@ public class FightAnalysis extends ProbabilityDetection {
             double ratio = hitsDamages[0] / (double) hitsDamages[1],
                     probability = probability(identifier, ratio);
 
-            if (probability >= desiredConfidence) {
+            if (probability >= 0.9) {
                 cancel(
                         "type: fight-analysis, ratio: " + ratio + ", probability: " + probability
                 );
@@ -81,7 +71,7 @@ public class FightAnalysis extends ProbabilityDetection {
         });
     }
 
-    private double probability(int identifier, double selfRatio) {
+    private static double probability(int identifier, double selfRatio) {
         double sum = 0.0,
                 variance = 0.0;
         int count = 0;
@@ -95,7 +85,7 @@ public class FightAnalysis extends ProbabilityDetection {
                 count++;
             }
         }
-        if (count < desiredCount) {
+        if (count < PlayerEvidence.factorRequirement) {
             return -1.0;
         }
         sum /= count;

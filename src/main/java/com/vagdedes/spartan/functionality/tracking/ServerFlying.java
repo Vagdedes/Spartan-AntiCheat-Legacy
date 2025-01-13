@@ -1,6 +1,6 @@
 package com.vagdedes.spartan.functionality.tracking;
 
-import com.vagdedes.spartan.abstraction.check.CheckDetection;
+import com.vagdedes.spartan.abstraction.check.HardcodedDetection;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.IrregularMovements;
 import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
@@ -12,7 +12,7 @@ import me.vagdedes.spartan.system.Enums;
 public class ServerFlying {
 
     static void run(SpartanProtocol p) {
-        CheckDetection detection = ((IrregularMovements) p.profile().getRunner(Enums.HackType.IrregularMovements)).limitServerFlying;
+        HardcodedDetection detection = ((IrregularMovements) p.profile().getRunner(Enums.HackType.IrregularMovements)).limitServerFlying;
 
         detection.call(() -> {
             if (detection.isEnabled()
@@ -26,15 +26,18 @@ public class ServerFlying {
                     && !p.spartan.trackers.has(PlayerTrackers.TrackerFamily.VELOCITY)
                     && !p.spartan.trackers.has(PlayerTrackers.TrackerFamily.MOTION)
                     && Attributes.getAmount(p, Attributes.GENERIC_FLYING_SPEED) == 0.0) {
-                double limit = (p.bukkit().getFlySpeed() * 10.0) + 1.0;
-                Double nmsDistance = p.getLocation().distance(p.getFromLocation());
+                double limit = (p.bukkit().getFlySpeed() * 10.0) + 1.0,
+                        nmsDistance = p.getLocation().distance(p.getFromLocation());
 
-                if (nmsDistance != null && nmsDistance >= limit
+                if (nmsDistance >= limit
                         || SpartanLocation.distance(
                         p.getLocation(),
                         p.spartan.movement.getSchedulerFromLocation()
                 ) >= limit) {
+                    detection.setHackingRatio(1.0);
                     p.teleport(p.getFromLocation());
+                } else {
+                    detection.setHackingRatio(0.0);
                 }
             }
         });

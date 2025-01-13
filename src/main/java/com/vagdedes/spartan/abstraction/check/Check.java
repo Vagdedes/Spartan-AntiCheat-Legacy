@@ -159,7 +159,10 @@ public class Check {
         // Separator
 
         if (name != null) {
-            this.setName(name);
+            if (name.length() > 32) {
+                name = name.substring(0, 32);
+            }
+            this.name = name;
         } else {
             this.name = hackType.toString();
         }

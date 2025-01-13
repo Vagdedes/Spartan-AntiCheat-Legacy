@@ -1,8 +1,8 @@
 package com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements;
 
-import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
-import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
+import com.vagdedes.spartan.abstraction.check.HardcodedDetection;
+import com.vagdedes.spartan.abstraction.check.definition.ImplementedHardcodedDetection;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.simulation.IMSimulationGravity;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.simulation.IMSimulationSpeed;
 import com.vagdedes.spartan.abstraction.event.PlayerTickEvent;
@@ -19,9 +19,8 @@ import org.bukkit.event.vehicle.VehicleEnterEvent;
 
 public class IrregularMovements extends CheckRunner {
 
-    private double oldVertical;
     private long teleport;
-    public final CheckDetection limitServerFlying;
+    public final HardcodedDetection limitServerFlying;
     private final IMStepBukkit step;
     private final IMSimulationGravity gravityPackets;
     private final IMBukkitSpeed speedBukkit;
@@ -33,7 +32,7 @@ public class IrregularMovements extends CheckRunner {
 
     public IrregularMovements(HackType hackType, SpartanProtocol protocol) {
         super(hackType, protocol);
-        limitServerFlying = new ImplementedProbabilityDetection(this, null, null, "limit_server_flying", false);
+        limitServerFlying = new ImplementedHardcodedDetection(this, null, null, "limit_server_flying", false);
         step = new IMStepBukkit(this);
         gravityPackets = new IMSimulationGravity(this);
         jump = new IrregularMovementsJump(this);
@@ -77,7 +76,6 @@ public class IrregularMovements extends CheckRunner {
             if (!teleported) {
                 jump.run(vertical, box);
             }
-            this.oldVertical = vertical;
         } else if (object instanceof PlayerVelocityEvent) {
             speedBukkit.velocity((PlayerVelocityEvent) object);
         } else if (object instanceof PlayerTickEvent) {

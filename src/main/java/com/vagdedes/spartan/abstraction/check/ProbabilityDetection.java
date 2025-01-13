@@ -34,6 +34,13 @@ public abstract class ProbabilityDetection extends CheckDetection {
         }
     }
 
+    // Probability
+
+    @Override
+    public final double getProbability(Check.DataType dataType) {
+        return super.getProbability(dataType);
+    }
+
     // Data
 
     @Override

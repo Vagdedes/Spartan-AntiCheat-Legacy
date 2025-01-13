@@ -5,3 +5,5 @@
 [#] Prevented certain statistics from running when not needed
 [#] Pushed the requirements of statistics to their minimum
 [#] Fixed punishments toggle not working via the menu
+[#] Made probabilities of hardcoded detections to decay over time
+[#] Changed certain detections from probabilistic to hardcoded

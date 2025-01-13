@@ -104,10 +104,10 @@ public class XRay extends CheckRunner {
                         );
                     }
                 } else {
-                    detection.setHackingRatio(PlayerEvidence.emptyProbability);
+                    detection.setHackingRatio(0.0);
                 }
             } else {
-                detection.setHackingRatio(PlayerEvidence.emptyProbability);
+                detection.setHackingRatio(0.0);
             }
         });
     }
