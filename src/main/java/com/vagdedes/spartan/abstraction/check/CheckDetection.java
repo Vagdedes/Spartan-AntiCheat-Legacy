@@ -16,7 +16,6 @@ import com.vagdedes.spartan.utils.minecraft.server.ConfigUtils;
 import me.vagdedes.spartan.api.API;
 import me.vagdedes.spartan.api.PlayerViolationCommandEvent;
 import me.vagdedes.spartan.api.PlayerViolationEvent;
-import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
@@ -33,23 +32,6 @@ public abstract class CheckDetection extends CheckProcess {
             checkIdentifier = "Check:",
             detectionIdentifier = "Detection:",
             certaintyIdentifier = "Certainty:";
-    private static double defaultData = (double) Long.MAX_VALUE;
-
-    protected static double defaultData() {
-        return defaultData;
-    }
-
-    protected static void setDefaultData(double newData) {
-        if (newData > CheckDetection.defaultData) {
-            CheckDetection.defaultData = newData;
-
-            for (Enums.HackType hackType : Enums.HackType.values()) {
-                for (Check.DataType dataType : Check.DataType.values()) {
-                    ResearchEngine.queueToCache(hackType, dataType);
-                }
-            }
-        }
-    }
 
     // Separator
 
@@ -144,6 +126,13 @@ public abstract class CheckDetection extends CheckProcess {
     }
 
     public void sort() {
+    }
+
+    protected boolean hasData(
+            PlayerProfile profile,
+            Check.DataType dataType
+    ) {
+        return true;
     }
 
     public double getData(PlayerProfile profile, Check.DataType dataType) {
@@ -291,7 +280,7 @@ public abstract class CheckDetection extends CheckProcess {
                         && sufficientData
                         && PlayerEvidence.surpassedProbability(
                         probability,
-                        PlayerEvidence.notificationProbability
+                        PlayerEvidence.preventionProbability
                 ),
                 null,
                 this.hackType,

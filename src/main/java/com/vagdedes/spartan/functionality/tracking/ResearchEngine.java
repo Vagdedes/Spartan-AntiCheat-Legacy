@@ -556,28 +556,38 @@ public class ResearchEngine {
                         }
                     } else {
                         for (Map<CheckDetection, Double> map : wave.values()) {
-                            double sum = 0,
-                                    variance = 0;
+                            double divisor = map.size();
 
-                            for (double value : map.values()) {
-                                sum += value;
-                            }
-                            double divisor = map.size(),
-                                    mean = sum / divisor;
+                            if (divisor < PlayerEvidence.factorRequirement) {
+                                for (CheckDetection detection : map.keySet()) {
+                                    detection.setProbability(
+                                            dataType,
+                                            PlayerEvidence.emptyProbability
+                                    );
+                                }
+                            } else {
+                                double sum = 0,
+                                        variance = 0;
 
-                            for (double value : map.values()) {
-                                double difference = value - mean;
-                                variance += difference * difference;
-                            }
-                            double deviation = Math.sqrt(variance / divisor);
+                                for (double value : map.values()) {
+                                    sum += value;
+                                }
+                                double mean = sum / divisor;
 
-                            for (Map.Entry<CheckDetection, Double> entry : map.entrySet()) {
-                                entry.getKey().setProbability(
-                                        dataType,
-                                        StatisticsMath.getCumulativeProbability(
-                                                (entry.getValue() - mean) / deviation
-                                        )
-                                );
+                                for (double value : map.values()) {
+                                    double difference = value - mean;
+                                    variance += difference * difference;
+                                }
+                                double deviation = Math.sqrt(variance / divisor);
+
+                                for (Map.Entry<CheckDetection, Double> entry : map.entrySet()) {
+                                    entry.getKey().setProbability(
+                                            dataType,
+                                            StatisticsMath.getCumulativeProbability(
+                                                    (entry.getValue() - mean) / deviation
+                                            )
+                                    );
+                                }
                             }
                         }
                     }

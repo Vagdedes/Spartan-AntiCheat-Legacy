@@ -150,9 +150,8 @@ public abstract class CheckRunner extends CheckProcess {
             averageTime = Math.sqrt(averageTime / size);
             averageCompletion = Math.sqrt(averageCompletion / size);
             long time = (long) ((1.0 - averageCompletion) * averageTime);
-            return time < 1_000L // Less than a second is quite irrelevant
-                    ? 0L
-                    : time;
+            // Less than a second is quite irrelevant
+            return Math.max(time, 1_000L);
         }
     }
 

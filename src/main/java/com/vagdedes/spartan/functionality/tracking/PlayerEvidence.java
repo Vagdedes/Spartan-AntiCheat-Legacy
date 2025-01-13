@@ -1,14 +1,11 @@
 package com.vagdedes.spartan.functionality.tracking;
 
-import com.vagdedes.spartan.utils.math.AlgebraUtils;
-
 public class PlayerEvidence {
 
     public static final boolean POSITIVE = false;
     public static final int factorRequirement = 3;
     public static final double
             dataRatio = 2.0 / 3.0,
-            notificationProbability = createProbability(0.4),
             preventionProbability = createProbability(0.25),
             punishmentProbability = createProbability(0.05),
             slightestProbability = createProbability(0.99),
@@ -24,10 +21,6 @@ public class PlayerEvidence {
 
     public static boolean surpassedProbability(double probability, double threshold) {
         return POSITIVE ? probability >= threshold : probability <= threshold;
-    }
-
-    public static int probabilityToFactors(double probability) {
-        return AlgebraUtils.integerCeil(1.0 / createProbability(probability));
     }
 
 }

@@ -211,28 +211,18 @@ public class PlayerInfo extends InventoryMenu {
                                             + "§8: §e" + AlgebraUtils.integerRound(probability * 100.0) + "%"
                                             + remainingDataPrompt
                             );
-                        } else if (PlayerEvidence.surpassedProbability(
-                                probability,
-                                PlayerEvidence.notificationProbability
-                        )) {
-                            probability = PlayerEvidence.probabilityToCertainty(probability);
-                            lore.add(
-                                    "§2" + hackType.getCheck().getName()
-                                            + "§8: §a" + AlgebraUtils.integerRound(probability * 100.0) + "%"
-                                            + remainingDataPrompt
-                            );
                         } else {
                             probability = PlayerEvidence.probabilityToCertainty(probability);
                             int showProbability = AlgebraUtils.integerRound(probability * 100.0);
 
                             if (showProbability > 0) {
                                 lore.add(
-                                        "§3" + hackType.getCheck().getName() + "§8: §b" + showProbability + "%"
+                                        "§2" + hackType.getCheck().getName() + "§8: §a" + showProbability + "%"
                                                 + remainingDataPrompt
                                 );
                             } else {
                                 lore.add(
-                                        "§3" + hackType.getCheck().getName() + "§8: §b1%"
+                                        "§2" + hackType.getCheck().getName() + "§8: §a1%"
                                                 + remainingDataPrompt
                                 );
                             }
