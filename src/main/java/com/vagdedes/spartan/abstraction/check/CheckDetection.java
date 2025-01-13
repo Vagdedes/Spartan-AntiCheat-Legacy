@@ -326,8 +326,8 @@ public abstract class CheckDetection extends CheckProcess {
         if (check.canPunish(this.protocol.spartan.dataType)
                 && PlayerEvidence.surpassedProbability(
                 probability,
-                PlayerEvidence.punishmentProbability)
-        ) {
+                PlayerEvidence.punishmentProbability
+        )) {
             List<String> commands = check.getPunishmentCommands();
 
             if (!commands.isEmpty()) {

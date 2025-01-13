@@ -6,6 +6,7 @@ import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.server.ConfigUtils;
+import lombok.Getter;
 import me.vagdedes.spartan.api.CheckPunishmentToggleEvent;
 import me.vagdedes.spartan.api.CheckSilentToggleEvent;
 import me.vagdedes.spartan.api.CheckToggleEvent;
@@ -85,6 +86,7 @@ public class Check {
     // Object
 
     public final Enums.HackType hackType;
+    @Getter
     private String name;
     private final Map<String, Object> options;
     public final boolean handleCancelledEvents;
@@ -148,7 +150,7 @@ public class Check {
         // Separator
 
         if (name != null) {
-            this.name = name;
+            this.setName(name);
         } else {
             this.name = hackType.toString();
         }
@@ -326,16 +328,14 @@ public class Check {
 
     // Separator
 
-    public String getName() {
-        return name;
-    }
-
     public void setName(String name) {
         if (name.length() > 32) {
             name = name.substring(0, 32);
         }
         for (Enums.HackType hackType : Enums.HackType.values()) {
-            if (!hackType.equals(this.hackType) && name.equalsIgnoreCase(hackType.toString())) {
+            if (!hackType.equals(this.hackType)
+                    && (name.equalsIgnoreCase(hackType.toString()))
+                    || name.equalsIgnoreCase(hackType.getCheck().getName())) {
                 return;
             }
         }
@@ -500,15 +500,12 @@ public class Check {
             return true;
         }
         if (dataType == null) {
-            boolean enabled = false;
-
             for (Check.DataType type : DataType.values()) {
                 if (this.silent[type.ordinal()]) {
-                    enabled = true;
-                    break;
+                    return true;
                 }
             }
-            return enabled;
+            return false;
         } else return this.silent[dataType.ordinal()];
     }
 
@@ -559,18 +556,7 @@ public class Check {
         if (dataType == null) {
             dataTypes = DataType.values();
         } else {
-            dataTypes = null;
-
-            for (Check.DataType type : DataType.values()) {
-                if (type == dataType) {
-                    dataTypes = new Check.DataType[]{dataType};
-                    break;
-                }
-            }
-
-            if (dataTypes == null) {
-                return;
-            }
+            dataTypes = new Check.DataType[]{dataType};
         }
         for (Check.DataType type : dataTypes) {
             CheckPunishmentToggleEvent event;
@@ -584,7 +570,7 @@ public class Check {
 
             if (event == null || !event.isCancelled()) {
                 this.punish[type.ordinal()] = b;
-                setOption("punishments.enabled" + type.toString().toLowerCase(), b);
+                setOption("punishments.enabled." + type.toString().toLowerCase(), b);
                 options.clear();
             }
         }

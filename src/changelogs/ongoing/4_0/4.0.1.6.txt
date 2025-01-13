@@ -4,3 +4,4 @@
 [#] Prompted statistics to recalculated when max data has been updated
 [#] Prevented certain statistics from running when not needed
 [#] Pushed the requirements of statistics to their minimum
+[#] Fixed punishments toggle not working via the menu
