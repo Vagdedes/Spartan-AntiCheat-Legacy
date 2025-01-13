@@ -335,9 +335,9 @@ public class CommandExecution implements CommandExecutor {
                         );
                         return true;
                     }
-                    Check.panic = !Check.panic;
+                    Check.setPanic(!Check.getPanic());
 
-                    if (Check.panic) {
+                    if (Check.getPanic()) {
                         ClickableMessage.sendURL(
                                 sender,
                                 Config.messages.getColorfulString("panic_mode_enable"),

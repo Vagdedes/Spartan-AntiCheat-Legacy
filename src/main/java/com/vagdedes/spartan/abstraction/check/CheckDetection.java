@@ -139,10 +139,6 @@ public abstract class CheckDetection extends CheckProcess {
         return -1.0;
     }
 
-    protected int getDataCount(Check.DataType dataType) {
-        return 0;
-    }
-
     long getFirstTime(Check.DataType dataType) {
         return -1L;
     }

@@ -546,6 +546,12 @@ public class ResearchEngine {
                                 }
                             }
                         }
+                    } else {
+                        for (PlayerProfile profile : profiles) {
+                            for (CheckDetection detectionExecutor : profile.getRunner(hackType).getDetections()) {
+                                detectionExecutor.clearProbability(dataType);
+                            }
+                        }
                     }
 
                     if (wave.isEmpty()) {
@@ -560,10 +566,7 @@ public class ResearchEngine {
 
                             if (divisor < PlayerEvidence.factorRequirement) {
                                 for (CheckDetection detection : map.keySet()) {
-                                    detection.setProbability(
-                                            dataType,
-                                            PlayerEvidence.emptyProbability
-                                    );
+                                    detection.clearProbability(dataType);
                                 }
                             } else {
                                 double sum = 0,

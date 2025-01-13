@@ -67,13 +67,22 @@ public class Check {
         }
     }
 
-    public static boolean panic = false;
+    private static boolean panic = false;
     public static final int maxCommands = 10;
     private static final File file = new File(
             Register.plugin.getDataFolder() + "/checks.yml"
     );
 
     private static final List<String> defaultPunishments = new ArrayList<>(Check.maxCommands);
+
+    public static void setPanic(boolean panic) {
+        Check.panic = panic;
+        Config.create();
+    }
+
+    public static boolean getPanic() {
+        return Check.panic;
+    }
 
     static {
         defaultPunishments.add("spartan kick {player} {detections}");
@@ -345,7 +354,7 @@ public class Check {
 
     // Separator
 
-    private boolean setOption(String option, Object value) {
+    private void setOption(String option, Object value) {
         try {
             String key = this.hackType + "." + option;
             YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
@@ -358,13 +367,12 @@ public class Check {
                 AwarenessNotifications.forcefullySend("Failed to store '" + key + "' option in '" + file.getName() + "' file.");
                 ex.printStackTrace();
             }
-            return true;
+            return;
         } catch (Exception ex) {
             AwarenessNotifications.forcefullySend("Failed to find/create the '" + file.getName() + "' file.");
             ex.printStackTrace();
         }
         AwarenessNotifications.forcefullySend("Failed to find/create the '" + file.getName() + "' file.");
-        return false;
     }
 
     public Object getOption(String option, Object def, boolean cache) {
