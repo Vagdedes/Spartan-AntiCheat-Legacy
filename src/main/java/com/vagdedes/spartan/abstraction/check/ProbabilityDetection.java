@@ -163,11 +163,6 @@ public abstract class ProbabilityDetection extends CheckDetection {
     }
 
     @Override
-    protected final int getDataCount(Check.DataType dataType) {
-        return this.data[dataType.ordinal()].size();
-    }
-
-    @Override
     final long getFirstTime(Check.DataType dataType) {
         return this.firstTime[dataType.ordinal()];
     }
