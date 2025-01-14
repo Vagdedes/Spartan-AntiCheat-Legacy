@@ -175,13 +175,17 @@ public abstract class CheckDetection extends CheckProcess {
         return Math.max(this.accumulatedProbabilityTime - time, 0L);
     }
 
-    public final boolean canSendNotification(CheckDetection detection, long time, double probability) {
+    public final boolean canSendNotification(CheckDetection detection, long time, double certainty) {
         int ticks = this.executor.getNotificationTicksCooldown(protocol);
+        boolean canSend = PlayerEvidence.surpassedProbability(
+                PlayerEvidence.probabilityToCertainty(certainty / 100.0),
+                PlayerEvidence.preventionProbability
+        ) || DetectionNotifications.isVerboseEnabled(this.protocol);
 
         if (ticks == 0) {
-            return true;
-        } else if (this.notifications <= time) {
-            if (probability == -1.0
+            return canSend;
+        } else if (canSend && this.notifications <= time) {
+            if (certainty == -1.0
                     || detection == null) {
                 this.notifications = System.currentTimeMillis() + (ticks * TPS.tickTime);
                 return true;
@@ -189,9 +193,12 @@ public abstract class CheckDetection extends CheckProcess {
                 int threshold = 1_000;
 
                 if (detection.accumulatedProbabilityTime < time) {
-                    detection.accumulatedProbabilityTime = System.currentTimeMillis() + AlgebraUtils.integerRound(probability * threshold);
+                    detection.accumulatedProbabilityTime = System.currentTimeMillis()
+                            + AlgebraUtils.integerRound((certainty / 100.0) * threshold);
                 } else {
-                    detection.accumulatedProbabilityTime += AlgebraUtils.integerRound(probability * threshold);
+                    detection.accumulatedProbabilityTime += AlgebraUtils.integerRound(
+                            (certainty / 100.0) * threshold
+                    );
                 }
                 long remaining = detection.getAccumulatedProbabilityTime(time);
 

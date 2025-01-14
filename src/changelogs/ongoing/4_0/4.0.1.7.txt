@@ -1,3 +1,4 @@
 [#] Removed some more busy task warnings
 [#] Fixed an overflow bug that lead to high probabilities in certain cases
 [#] Fixed a few remaining GhostHand false positives
+[#] Introduced the command '/spartan verbose' to differentiate between important or not notifications
