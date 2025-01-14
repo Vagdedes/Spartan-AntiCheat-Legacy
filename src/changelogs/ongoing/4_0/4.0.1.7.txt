@@ -1,2 +1,3 @@
 [#] Removed some more busy task warnings
 [#] Fixed an overflow bug that lead to high probabilities in certain cases
+[#] Fixed a few remaining GhostHand false positives

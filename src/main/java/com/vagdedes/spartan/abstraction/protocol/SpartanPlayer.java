@@ -258,7 +258,7 @@ public class SpartanPlayer {
             );
 
             if (BlockUtils.isFullSolid(location.getBlock().getType())) {
-                return location;
+                return location.getBlockLocation();
             }
         }
         return null;
