@@ -85,11 +85,13 @@ public class SpartanScheduler {
                 }
 
             } finally {
-                long after = System.currentTimeMillis() - start;
-                if (after > STOP_WATCH_TIME_MILLIS) {
-                    String l = SpartanScheduler.toString(originalRunnable);
-                    if (l.length() > 26) l = l.substring(0, 26) + "...";
-                    log.warning("Busy task " + l + ", it was performed " + after + "ms.");
+                if (debug) {
+                    long after = System.currentTimeMillis() - start;
+                    if (after > STOP_WATCH_TIME_MILLIS) {
+                        String l = SpartanScheduler.toString(originalRunnable);
+                        if (l.length() > 26) l = l.substring(0, 26) + "...";
+                        log.warning("Busy task " + l + ", it was performed " + after + "ms.");
+                    }
                 }
             }
         }
@@ -119,12 +121,11 @@ public class SpartanScheduler {
                 e.printStackTrace();
                 throw e;
             } finally {
-                long after = System.currentTimeMillis() - start;
-                if (after > STOP_WATCH_TIME_MILLIS) {
-                    String l = SpartanScheduler.toString(originalCallable);
-                    if (l.length() > 26) l = l.substring(0, 26) + "...";
-
-                    if (debug) {
+                if (debug) {
+                    long after = System.currentTimeMillis() - start;
+                    if (after > STOP_WATCH_TIME_MILLIS) {
+                        String l = SpartanScheduler.toString(originalCallable);
+                        if (l.length() > 26) l = l.substring(0, 26) + "...";
                         log.warning("Busy task " + l + ", it was performed " + after + "ms.");
                     }
                 }

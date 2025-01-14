@@ -14,6 +14,7 @@ public abstract class HardcodedDetection extends CheckDetection {
             boolean def
     ) {
         super(executor, forcedDataType, detectionType, name, def);
+        this.lastUpdate = System.currentTimeMillis();
     }
 
     public final void setHackingRatio(double ratio) {
