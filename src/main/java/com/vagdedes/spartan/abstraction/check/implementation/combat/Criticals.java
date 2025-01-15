@@ -39,7 +39,7 @@ public class Criticals extends CheckRunner {
                     && this.protocol.spartan.movement.getTicksOnAir() == 1
                     && !new SpartanLocation(this.protocol.getLocation()).getBlock().getType().isBlock()
                     && !RayUtils.onSolidBlock(this.protocol, this.protocol.getLocation().clone().add(0, 2, 0))) {
-                this.detection.cancel("type: packet");
+                this.detection.cancel("packet");
             }
         });
     }

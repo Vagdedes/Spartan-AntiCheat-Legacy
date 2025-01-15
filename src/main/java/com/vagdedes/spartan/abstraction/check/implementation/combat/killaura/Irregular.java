@@ -16,19 +16,19 @@ public class Irregular extends HardcodedDetection {
         this.call(() -> {
             if (this.protocol.spartan.isDead()) {
                 this.setHackingRatio(1.0);
-                cancel("type: irregular, scenario: death");
+                cancel("irregular, scenario: death");
             } else if (this.protocol.bukkit().isSleeping()) {
                 this.setHackingRatio(1.0);
-                cancel("type: irregular, scenario: sleeping");
+                cancel("irregular, scenario: sleeping");
             } else {
                 InventoryView inventoryView = this.protocol.bukkit().getOpenInventory();
 
                 if (BlockUtils.hasMaterial(inventoryView.getCursor())) {
                     this.setHackingRatio(1.0);
-                    cancel("type: irregular, scenario: cursor");
+                    cancel("irregular, scenario: cursor");
                 } else if (inventoryView.countSlots() > PlayerUtils.playerInventorySlots) {
                     this.setHackingRatio(1.0);
-                    cancel("type: irregular, scenario: inventory");
+                    cancel("irregular, scenario: inventory");
                 } else {
                     this.setHackingRatio(0.0);
                 }

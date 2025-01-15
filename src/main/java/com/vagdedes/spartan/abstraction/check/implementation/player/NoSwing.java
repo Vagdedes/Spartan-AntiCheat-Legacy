@@ -62,7 +62,7 @@ public class NoSwing extends CheckRunner {
                         && System.currentTimeMillis() - breakTime > TPS.tickTime) {
                     if (this.animationTime == Long.MAX_VALUE) {
                         this.breaking.cancel(
-                                "type: breaking"
+                                "breaking"
                                         + ", block: " + BlockUtils.blockToString(block)
                                         + ", item: " + BlockUtils.materialToString(this.protocol.spartan.getItemInHand().getType()));
                     } else {
@@ -90,7 +90,7 @@ public class NoSwing extends CheckRunner {
                         if (damageBuffer.count(1, refreshTime) >= 3) {
                             damageBuffer.reset();
                             this.damage.cancel(
-                                    "type: damage"
+                                    "damage"
                                             + ", entity: " + CombatUtils.entityToString(entity)
                                             + ", item: " + BlockUtils.materialToString(this.protocol.spartan.getItemInHand().getType())
                             );

@@ -35,7 +35,7 @@ public class AutoRespawn extends CheckRunner {
             if (time <= limit && !this.protocol.spartan.isDead()) {
                 memory = 0L;
                 this.detection.cancel(
-                        "type: default, ms: " + time,
+                        "default, ms: " + time,
                         this.protocol.getFromLocation(),
                         AlgebraUtils.integerCeil(TPS.maximum)
                 );

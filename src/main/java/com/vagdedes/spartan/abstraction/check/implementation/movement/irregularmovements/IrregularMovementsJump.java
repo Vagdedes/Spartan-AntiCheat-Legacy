@@ -94,7 +94,7 @@ public class IrregularMovementsJump extends ProbabilityDetection {
                                     true,
                                     GroundUtils.abstractMaterials
                             )) {
-                                this.jump_height.cancel("type: jump(height)"
+                                this.jump_height.cancel("jump(height)"
                                                 + ", box: " + box
                                                 + ", vertical: " + vertical
                                                 + ", jump-effect: " + jumpEffect
@@ -119,7 +119,7 @@ public class IrregularMovementsJump extends ProbabilityDetection {
 
                                 if (airTicks > limit) {
                                     this.jump_ticks.cancel(
-                                            "type: jump(ticks)"
+                                            "jump(ticks)"
                                                     + ", box: " + box
                                                     + ", vertical: " + vertical
                                                     + ", jump-effect: " + jumpEffect

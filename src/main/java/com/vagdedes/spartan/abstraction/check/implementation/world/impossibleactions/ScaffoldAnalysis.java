@@ -113,7 +113,7 @@ public class ScaffoldAnalysis extends ProbabilityDetection {
                 }
 
                 if (buffer.count > 12 && flag) {
-                    this.cancel("type: scaffold analysis ("
+                    this.cancel("scaffold analysis ("
                             + (long) Math.abs((((double) 400 / (double) delay) * 100) - 100)
                             + "% faster than possible) [VL: " + buffer.count + "]");
                     buffer.count = 10;

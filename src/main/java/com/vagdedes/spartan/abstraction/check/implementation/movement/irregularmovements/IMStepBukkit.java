@@ -111,7 +111,7 @@ public class IMStepBukkit extends ProbabilityDetection {
 
                         if (vertical > limit) {
                             this.step_high.cancel(
-                                    "type: step(high)"
+                                    "step(high)"
                                             + ", box: " + box
                                             + ", old-box: " + oldBox
                                             + ", vertical: " + vertical
@@ -131,7 +131,7 @@ public class IMStepBukkit extends ProbabilityDetection {
                         if (!this.protocol.spartan.trackers.has(PlayerTrackers.TrackerType.VEHICLE, "exit") && vertical < -downLimit
                                 || !this.protocol.spartan.trackers.has(PlayerTrackers.TrackerType.VEHICLE, "enter") && vertical > upLimit) {
                             this.step_combination.cancel(
-                                    "type: step(combination)"
+                                    "step(combination)"
                                             + ", box: " + box
                                             + ", old-box: " + oldBox
                                             + ", vertical: " + vertical
@@ -152,7 +152,7 @@ public class IMStepBukkit extends ProbabilityDetection {
 
                     if (vertical > limit) {
                         this.step_entity.cancel(
-                                "type: step(entity)"
+                                "step(entity)"
                                         + ", box: " + box
                                         + ", old-box: " + oldBox
                                         + ", vertical: " + vertical
@@ -210,7 +210,7 @@ public class IMStepBukkit extends ProbabilityDetection {
                                     && (!this.protocol.spartan.trackers.has(PlayerTrackers.TrackerType.BOUNCING_BLOCKS, "slime") || oldBox != 0.0)
                                     && (!this.protocol.spartan.trackers.has(PlayerTrackers.TrackerType.BOUNCING_BLOCKS, "bed") || oldBox != 0.5625)) {
                                 this.step_abstract_up.cancel(
-                                        "type: step(abstract-up)"
+                                        "step(abstract-up)"
                                                 + ", box: " + box
                                                 + ", old-box: " + oldBox
                                                 + ", vertical: " + vertical
@@ -228,7 +228,7 @@ public class IMStepBukkit extends ProbabilityDetection {
                     this.step_high_first_fall.call(() -> {
                         if (vertical < -this.protocol.spartan.movement.getAirAcceleration()) {
                             this.step_high_first_fall.cancel(
-                                    "type: step(high-first-fall)"
+                                    "step(high-first-fall)"
                                             + ", box: " + box
                                             + ", old-box: " + oldBox
                                             + ", vertical: " + vertical,
@@ -251,7 +251,7 @@ public class IMStepBukkit extends ProbabilityDetection {
                                 }
                                 if (verticalPrediction != motionRemainder) {
                                     this.step_landing.cancel(
-                                            "type: step(landing)"
+                                            "step(landing)"
                                                     + ", box: " + box
                                                     + ", old-box: " + oldBox
                                                     + ", vertical: " + vertical
@@ -273,7 +273,7 @@ public class IMStepBukkit extends ProbabilityDetection {
 
                                 if (vertical <= -limit) {
                                     this.step_abstract_down.cancel(
-                                            "type: step(abstract-down)"
+                                            "step(abstract-down)"
                                                     + ", box: " + box
                                                     + ", old-box: " + oldBox
                                                     + ", vertical: " + vertical

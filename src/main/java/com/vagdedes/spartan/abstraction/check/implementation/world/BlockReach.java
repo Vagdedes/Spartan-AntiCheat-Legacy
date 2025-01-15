@@ -62,7 +62,7 @@ public class BlockReach extends CheckRunner {
 
                     if (distance >= limit) {
                         this.breaking.cancel(
-                                "type: breaking, distance: " + distance
+                                "breaking, distance: " + distance
                                         + ", limit: " + limit
                                         + ", block: " + BlockUtils.blockToString(block)
                         );
@@ -80,7 +80,7 @@ public class BlockReach extends CheckRunner {
 
                     if (distance >= limit) {
                         this.interact.cancel(
-                                "type: interact, distance: " + distance
+                                "interact, distance: " + distance
                                         + ", limit: " + limit
                                         + ", block: " + BlockUtils.blockToString(block)
                         );
@@ -110,7 +110,7 @@ public class BlockReach extends CheckRunner {
                             && distance > (ab_distance + GroundUtils.boundingBox + 0.1)) {
                         this.unusual.call(() -> {
                             this.unusual.cancel(
-                                    "type: unusual, distance: " + distance
+                                    "unusual, distance: " + distance
                                             + ", block-against-distance: " + ab_distance
                                             + ", block: " + BlockUtils.blockToString(block)
                             );
@@ -121,7 +121,7 @@ public class BlockReach extends CheckRunner {
 
                             if (distance >= limit) {
                                 this.place.cancel(
-                                        "type: place, distance: " + distance
+                                        "place, distance: " + distance
                                                 + ", limit: " + limit
                                                 + ", block: " + BlockUtils.blockToString(block)
                                 );

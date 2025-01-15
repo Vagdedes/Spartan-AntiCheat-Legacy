@@ -70,7 +70,7 @@ public class FastEat extends CheckRunner {
 
             if (delay > 0L && time <= delay) {
                 this.eat.cancel(
-                        "type: eat, ms: " + time
+                        "eat, ms: " + time
                 );
             }
         });
@@ -83,7 +83,7 @@ public class FastEat extends CheckRunner {
 
             if (delay > 0L && time <= delay) {
                 this.interact.cancel(
-                        "type: interact, ms: " + time + ", delay: " + delay
+                        "interact, ms: " + time + ", delay: " + delay
                 );
             }
         });

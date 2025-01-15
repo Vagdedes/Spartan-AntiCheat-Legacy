@@ -413,7 +413,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
                                 alertBuilder.deleteCharAt(0);
                             }
                             if (this.vlCount > ((this.air == 1) ? 0 : (this.vl > 0.3) ? 0 : (this.vl > 0.16) ? 1 : 3)) {
-                                this.cancel("type: simulation[gravity], y: " + alertBuilder);
+                                this.cancel("simulation[gravity], y: " + alertBuilder);
                             }
                             //this.protocol.bukkit().sendMessage("hacks: " + devTotal);
                             /*

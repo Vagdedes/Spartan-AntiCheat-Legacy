@@ -36,7 +36,7 @@ public class IMBaritone extends ProbabilityDetection {
                 if (this.yawMoved > 45 && Math.abs(yawMoved % 360.0 - 1.0) < 1e-9) {
                     this.vl += 3;
                     if (this.vl > 14)
-                        punish(3, "type: baritone[rotation], euler-y-total: " + this.yawMoved);
+                        punish(3, "baritone[rotation], euler-y-total: " + this.yawMoved);
                 }
                 //player.getInstance().sendMessage(jiffDeltaYaw + " " + jiffDeltaPitch);
             }

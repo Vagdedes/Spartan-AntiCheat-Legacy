@@ -51,7 +51,7 @@ public class MoveLength extends ProbabilityDetection {
                         if (buffer.count(1, 20) >= (safe ? 5 : 13)) {
                             buffer.reset();
                             cancel(
-                                    "type: move-length"
+                                    "move-length"
                                             + ", pitch: " + pitch
                                             + ", previous-pitch: " + previousPitch
                                             + ", pitch-difference: " + pitchDifference

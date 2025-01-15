@@ -29,7 +29,7 @@ public class IMFoodSprint extends HardcodedDetection {
 
                     if (ratio >= 0.4) {
                         cancel(
-                                "type: food-sprint"
+                                "food-sprint"
                                         + ", game-mode: " + gameMode.toString().toLowerCase().replace("_", "-")
                                         + ", food: " + food,
                                 this.protocol.getFromLocation(),

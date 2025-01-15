@@ -66,7 +66,7 @@ public class Tower extends ProbabilityDetection {
                 if (buffer.count(1, motionTicks) > possiblePlacements) {
                     buffer.reset();
                     this.cancel(
-                            "type: tower"
+                            "tower"
                                     + ", placements: " + possiblePlacements
                                     + ", horizontal: " + deltaXZ
                                     + ", vertical: " + deltaYMinus1,

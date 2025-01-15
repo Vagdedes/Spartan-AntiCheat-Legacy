@@ -71,7 +71,7 @@ public class InventoryClicks extends CheckRunner {
                             && !BlockUtils.hasMaterial(this.protocol.bukkit().getOpenInventory().getCursor())
                             && shiftBuffer.count(1, 5) == 4) { // Inventory
                         shiftBuffer.reset();
-                        this.shift.call(() -> this.shift.cancel("type: shift, item: " + type));
+                        this.shift.call(() -> this.shift.cancel("shift, item: " + type));
                     } else {
                         long timePassed = System.currentTimeMillis() - time;
                         time = System.currentTimeMillis();
@@ -80,18 +80,18 @@ public class InventoryClicks extends CheckRunner {
                             if (timePassed < 150L) {
                                 this.slow.call(() -> {
                                     if (slowBuffer.count(1, 10) >= 8) {
-                                        this.slow.cancel("type: slow, ms: " + timePassed + ", item: " + type);
+                                        this.slow.cancel("slow, ms: " + timePassed + ", item: " + type);
                                     }
                                 });
                                 if (timePassed < 100L) {
                                     this.medium.call(() -> {
                                         if (mediumBuffer.count(1, 5) >= 4) {
-                                            this.medium.cancel("type: medium, ms: " + timePassed + ", item: " + type);
+                                            this.medium.cancel("medium, ms: " + timePassed + ", item: " + type);
                                         }
                                     });
                                     this.fast.call(() -> {
                                         if (timePassed < 50L && fastBuffer.count(1, 5) >= 4) {
-                                            this.fast.cancel("type: fast, ms: " + timePassed + ", item: " + type);
+                                            this.fast.cancel("fast, ms: " + timePassed + ", item: " + type);
                                         }
                                     });
                                 }

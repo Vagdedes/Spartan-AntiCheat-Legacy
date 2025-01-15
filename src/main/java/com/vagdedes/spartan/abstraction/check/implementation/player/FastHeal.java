@@ -64,7 +64,7 @@ public class FastHeal extends CheckRunner {
                                     && buffer.count(1, 10) == 3) {
                                 buffer.reset();
                                 this.detection.cancel(
-                                        "type: default, ms: " + timePassed + ", limit: " + limit
+                                        "default, ms: " + timePassed + ", limit: " + limit
                                 );
                             }
                         }

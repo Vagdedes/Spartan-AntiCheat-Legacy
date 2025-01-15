@@ -47,7 +47,7 @@ public class GhostHand extends CheckRunner {
 
                         if (tDistance < bDistance) {
                             this.breaking.cancel(
-                                    "type: breaking"
+                                    "breaking"
                                             + ", interacted-block: " + BlockUtils.blockToString(b)
                                             + ", blocking-block: " + BlockUtils.blockToString(t.getBlock())
                                             + ", interacted-distance: " + bDistance
@@ -80,7 +80,7 @@ public class GhostHand extends CheckRunner {
 
                             if (tDistance < bDistance) {
                                 this.interact.cancel(
-                                        "type: interact"
+                                        "interact"
                                                 + ", interacted-block: " + BlockUtils.blockToString(b)
                                                 + ", blocking-block: " + BlockUtils.blockToString(t.getBlock())
                                                 + ", interacted-distance: " + bDistance

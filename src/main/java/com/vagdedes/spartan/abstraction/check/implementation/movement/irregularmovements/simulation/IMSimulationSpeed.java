@@ -217,7 +217,7 @@ public class IMSimulationSpeed extends ProbabilityDetection {
                                 flagged = true;
                             }
                             if (this.vl > 1 || (this.vl > 0.4 && this.vlCount > 10)) {
-                                this.cancel("type: simulation[accel], diff: " + d);
+                                this.cancel("simulation[accel], diff: " + d);
                                 this.vl -= 0.1;
                             }
                         }

@@ -42,24 +42,24 @@ public class HitTime extends ProbabilityDetection {
             if (nullPacket > 1) {
                 vl += 55;
                 if (vl >= 300) {
-                    cancel("type: switch", this.protocol.getFromLocation());
+                    cancel("switch", this.protocol.getFromLocation());
                 }
             }
             if (packets >= 5 && LegacyLagCompensationListener.getPlayerTicksDelay(this.protocol.spartan.getEntityId()) < 2) {
                 if (devianceTotal < 35) {
                     vlAnalysis += (devianceTotal < 10) ? 150 : 75;
                     if (vlAnalysis >= 300) {
-                        cancel("type: post(linear-analysis)", this.protocol.getFromLocation());
+                        cancel("post(linear-analysis)", this.protocol.getFromLocation());
                     }
                 } else if (devianceTotal > 45 && devianceTotal < 55) {
                     vlAnalysis += 150;
                     if (vlAnalysis >= 300) {
-                        cancel("type: post(default)", this.protocol.getFromLocation());
+                        cancel("post(default)", this.protocol.getFromLocation());
                     }
                 } else if (lowPackets >= 3) {
                     vlAnalysis += 100;
                     if (vlAnalysis >= 300) {
-                        cancel("type: post(low)", this.protocol.getFromLocation());
+                        cancel("post(low)", this.protocol.getFromLocation());
                     }
                 } else {
                     if (vlAnalysis > 0) vlAnalysis -= 50;

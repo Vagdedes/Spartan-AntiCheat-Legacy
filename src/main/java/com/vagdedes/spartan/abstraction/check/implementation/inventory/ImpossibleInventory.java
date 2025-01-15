@@ -51,7 +51,7 @@ public class ImpossibleInventory extends CheckRunner {
             long ticks = this.autoTotem - System.currentTimeMillis();
 
             if (ticks > 0L) {
-                this.autoTotemDetection.cancel("type: auto-totem, remaining-ticks: " + ticks);
+                this.autoTotemDetection.cancel("auto-totem, remaining-ticks: " + ticks);
             }
         } else {
             InventoryClickEvent e = (InventoryClickEvent) object;
@@ -73,7 +73,7 @@ public class ImpossibleInventory extends CheckRunner {
 
                     if (cases != 0) {
                         this.cursorUsageDetection.cancel(
-                                "type: cursor-usage, case: " + cases,
+                                "cursor-usage, case: " + cases,
                                 this.protocol.getFromLocation(),
                                 0,
                                 false
@@ -109,7 +109,7 @@ public class ImpossibleInventory extends CheckRunner {
                     this.protocol.getLocationOrVehicle(),
                     true,
                     BlockUtils.ice, BlockUtils.blue_ice)) {
-                this.closedInventoryDetection.cancel("type: closed-inventory, case: " + cases);
+                this.closedInventoryDetection.cancel("closed-inventory, case: " + cases);
             }
         });
     }
@@ -121,7 +121,7 @@ public class ImpossibleInventory extends CheckRunner {
 
                 if (loc.getBlock().getType() == nether_portal
                         || loc.clone().add(0, 1, 0).getBlock().getType() == nether_portal) {
-                    this.portalInventoryDetection.cancel("type: portal-inventory");
+                    this.portalInventoryDetection.cancel("portal-inventory");
                 }
             }
         });

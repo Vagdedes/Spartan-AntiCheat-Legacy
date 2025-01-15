@@ -54,13 +54,13 @@ public class FastClicksPackets extends ProbabilityDetection {
                     );
                     final double variance = StatisticsMath.getVariance(this.samples);
                     final double kurtosis = StatisticsMath.getKurtosis(this.samples);
-                    if (cps > limit) this.cancel("type: limit ("
+                    if (cps > limit) this.cancel("limit ("
                             + (int) cps + "/" + (int) limit + ")");
                     { // floor
                         final double floor = Math.abs(Math.floor(cps) - cps);
                         if (floor < 0.07) {
                             if (addToBuffer(1, 2) > 3) {
-                                this.floorTempo.cancel("type: floor tempo (" + floor + ")");
+                                this.floorTempo.cancel("floor tempo (" + floor + ")");
                                 addToBuffer(1, -1);
                             }
                         } else {
@@ -70,7 +70,7 @@ public class FastClicksPackets extends ProbabilityDetection {
                     { // kurtosis
                         if (kurtosis < 45000) {
                             if (addToBuffer(4, 3) > 6) {
-                                this.kurtosis.cancel("type: kurtosis (" + (int) kurtosis + ")");
+                                this.kurtosis.cancel("kurtosis (" + (int) kurtosis + ")");
                                 addToBuffer(4, -1);
                             }
                         } else {
@@ -80,7 +80,7 @@ public class FastClicksPackets extends ProbabilityDetection {
                     { // variance
                         if (variance < 1100 && variance > 200 && cps > 7) {
                             if (addToBuffer(5, 3) > 6) {
-                                this.variance.cancel("type: variance (" + (int) variance + ")");
+                                this.variance.cancel("variance (" + (int) variance + ")");
                                 addToBuffer(5, -1);
                             }
                         } else {
@@ -96,7 +96,7 @@ public class FastClicksPackets extends ProbabilityDetection {
                     final double skewness = StatisticsMath.getSkewness(this.samplesMassive);
                     if (standardDev < 50) {
                         if (addToBuffer(2, 2) > 3) {
-                            this.deviation.cancel("type: low deviation (" + standardDev + ")");
+                            this.deviation.cancel("low deviation (" + standardDev + ")");
                             addToBuffer(2, -1);
                         }
                     } else {
@@ -104,7 +104,7 @@ public class FastClicksPackets extends ProbabilityDetection {
                     }
                     if (skewness < -0.01) {
                         if (addToBuffer(3, 2) > 3) {
-                            this.skewness.cancel("type: invalid skewness (" + skewness + ")");
+                            this.skewness.cancel("invalid skewness (" + skewness + ")");
                             addToBuffer(3, -1);
                         }
                     } else {

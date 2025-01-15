@@ -78,7 +78,7 @@ public class ImpossibleActions extends CheckRunner {
 
                                 if (directionDistance <= 1.25) {
                                     this.scaffoldDirection.call(() -> this.scaffoldDirection.cancel(
-                                            "type: scaffold(direction)"
+                                            "scaffold(direction)"
                                                     + ", vector-distance: " + directionDistance
                                                     + ", block-distance: " + SpartanLocation.distance(playerLocation, blockAgainst.getLocation())
                                     ));
@@ -87,7 +87,7 @@ public class ImpossibleActions extends CheckRunner {
 
                                     if (pitch <= 0.0) {
                                         this.scaffoldUp.call(() -> this.scaffoldUp.cancel(
-                                                "type: scaffold(up)"
+                                                "scaffold(up)"
                                                         + ", pitch: " + pitch
                                                         + ", block-distance: " + SpartanLocation.distance(playerLocation, blockAgainst.getLocation())
                                         ));
@@ -117,7 +117,7 @@ public class ImpossibleActions extends CheckRunner {
 
                                                 if (yawDeviation >= 270.0) {
                                                     this.scaffoldYaw.cancel(
-                                                            "type: scaffold(yaw)"
+                                                            "scaffold(yaw)"
                                                                     + ", deviation: " + yawDeviation
                                                                     + ", block-distance: " + SpartanLocation.distance(playerLocation, blockAgainst.getLocation())
                                                     );
@@ -163,9 +163,9 @@ public class ImpossibleActions extends CheckRunner {
                         Block b = event.getClickedBlock();
 
                         if (b == null) {
-                            this.actions.cancel("type: actions, action: " + action_string + ", case: " + cases);
+                            this.actions.cancel("actions, action: " + action_string + ", case: " + cases);
                         } else {
-                            this.actions.cancel("type: actions, action: " + action_string + ", case: " + cases + ", block: " + BlockUtils.blockToString(b));
+                            this.actions.cancel("actions, action: " + action_string + ", case: " + cases + ", block: " + BlockUtils.blockToString(b));
                         }
                     }
                 }

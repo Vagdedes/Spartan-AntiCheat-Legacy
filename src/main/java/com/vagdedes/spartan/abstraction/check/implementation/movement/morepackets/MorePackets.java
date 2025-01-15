@@ -77,7 +77,7 @@ public class MorePackets extends CheckRunner {
                         if (multiply < 1.0) {
                             punish(
                                     this.negative,
-                                    "type: negative, multiply: " + multiply
+                                    "negative, multiply: " + multiply
                             );
                         }
                     });
@@ -86,7 +86,7 @@ public class MorePackets extends CheckRunner {
                         if (multiply >= 1.1) {
                             punish(
                                     this.positive_balance,
-                                    "type: positive(balance), multiply: " + multiply
+                                    "positive(balance), multiply: " + multiply
                             );
                         }
                     });
@@ -95,7 +95,7 @@ public class MorePackets extends CheckRunner {
                         if (multiply >= 1.1) {
                             punish(
                                     this.positive_net,
-                                    "type: positive(NET), multiply: " + multiply
+                                    "positive(NET), multiply: " + multiply
                             );
                         }
                     });
@@ -104,7 +104,7 @@ public class MorePackets extends CheckRunner {
                         if (multiply >= 1.1) {
                             punish(
                                     this.positive_latency,
-                                    "type: positive(latency), multiply: " + multiply
+                                    "positive(latency), multiply: " + multiply
                             );
                         }
                     });

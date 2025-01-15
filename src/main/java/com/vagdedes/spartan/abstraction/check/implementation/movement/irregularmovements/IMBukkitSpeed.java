@@ -134,7 +134,7 @@ public class IMBukkitSpeed extends ProbabilityDetection {
             this.multiplyViolation = speed / speedLimit;
             this.vl += 35 * multiplyViolation;
             this.violation = new Object[]{
-                    "type: straight line speeding [" + speed + "/" + speedLimit + "], onGround: " + onGround,
+                    "straight line speeding [" + speed + "/" + speedLimit + "], onGround: " + onGround,
                     this.straightLineSpeeding
             };
         }
@@ -158,7 +158,7 @@ public class IMBukkitSpeed extends ProbabilityDetection {
                 this.multiplyViolation = speed / localSpeedLimit;
                 this.vl += 25 * multiplyViolation;
                 this.violation = new Object[]{
-                        "type: strafe line speeding [" +
+                        "strafe line speeding [" +
                                 speed + "/" + localSpeedLimit + "], onGround: " + onGround + ", diff: " + rayDiff,
                         this.strafeLineSpeeding
                 };
@@ -167,7 +167,7 @@ public class IMBukkitSpeed extends ProbabilityDetection {
                 this.multiplyViolation = speed / localSpeedLimit2;
                 this.vl += 75 * multiplyViolation;
                 this.violation = new Object[]{
-                        "type: strafe jump speeding [" +
+                        "strafe jump speeding [" +
                                 speed + "/" + localSpeedLimit2 + "], onGround: " + onGround + ", diff: " + rayDiff,
                         this.strafeJumpSpeeding
                 };

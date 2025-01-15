@@ -97,7 +97,7 @@ public class FastBreak extends CheckRunner {
                                         }
                                         effectsString = new StringBuilder(effectsString.substring(0, effectsString.length() - 2));
                                     }
-                                    String prevention = "type: delay"
+                                    String prevention = "delay"
                                             + ", time: " + time
                                             + ", original-limit: " + originalLimit
                                             + ", limit: " + limit
@@ -132,7 +132,7 @@ public class FastBreak extends CheckRunner {
 
                     if (buffer >= limit) {
                         this.breaksPerSecond.cancel(
-                                "type: breaks-per-second"
+                                "breaks-per-second"
                                         + ", type: " + BlockUtils.blockToString(block)
                                         + ", limit: " + limit,
                                 null,
@@ -180,7 +180,7 @@ public class FastBreak extends CheckRunner {
                     }
 
                     if (bufferThreshold >= limit) {
-                        String prevention = "type: indirect-surroundings-per-second"
+                        String prevention = "indirect-surroundings-per-second"
                                 + ", type: " + BlockUtils.blockToString(block)
                                 + ", limit: " + limit;
                         this.indirectSurroundingsPerSecond.cancel(

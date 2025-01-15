@@ -35,7 +35,7 @@ public class IMHorizontal extends ProbabilityDetection {
                         if (airTicks > limit
                                 && !this.protocol.spartan.isOnGround(true)) {
                             this.horizontal_known.cancel(
-                                    "type: horizontal(known)"
+                                    "horizontal(known)"
                                             + ", box: " + box
                                             + ", old-box: " + oldBox
                                             + ", vertical: " + vertical
@@ -48,7 +48,7 @@ public class IMHorizontal extends ProbabilityDetection {
                         }
                     } else {
                         this.horizontal_abstract.cancel(
-                                "type: horizontal(abstract)"
+                                "horizontal(abstract)"
                                         + ", box: " + box
                                         + ", old-box: " + oldBox
                                         + ", vertical: " + vertical

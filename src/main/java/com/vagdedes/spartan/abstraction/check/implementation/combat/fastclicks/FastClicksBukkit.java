@@ -51,7 +51,7 @@ public class FastClicksBukkit extends ProbabilityDetection {
                     if (deviation > 10.0) { // Used for latency to judge when many packets are sent in a short period of time
                         if (checkLimit) {
                             this.cancel(
-                                    "type: clicks-per-second"
+                                    "clicks-per-second"
                                             + ", count: " + count
                                             + ", limit: " + limit
                                             + ", deviation: " + deviation
@@ -64,7 +64,7 @@ public class FastClicksBukkit extends ProbabilityDetection {
 
                             if (absolute < TPS.tickTime) {
                                 this.clicksPattern.cancel(
-                                        "type: clicks-pattern"
+                                        "clicks-pattern"
                                                 + ", count: " + count
                                                 + ", difference: " + absolute
                                                 + ", deviation: " + deviation

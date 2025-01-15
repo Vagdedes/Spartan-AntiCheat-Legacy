@@ -51,7 +51,7 @@ public class FastPlace extends CheckRunner {
                     this.slow.call(() -> {
                         if (slowBuffer.count(1, ticks) >= 9) {
                             this.slow.cancel(
-                                    "type: slow"
+                                    "slow"
                                             + ", ms: " + timePassed
                                             + ", block: " + BlockUtils.materialToString(material),
                                     null,
@@ -63,7 +63,7 @@ public class FastPlace extends CheckRunner {
                         this.medium.call(() -> {
                             if (mediumBuffer.count(1, ticks) >= 8) {
                                 this.medium.cancel(
-                                        "type: medium"
+                                        "medium"
                                                 + ", ms: " + timePassed
                                                 + ", block: " + BlockUtils.materialToString(material),
                                         null,
@@ -77,7 +77,7 @@ public class FastPlace extends CheckRunner {
                                     && !Compatibility.CompatibilityType.VEIN_MINER.isFunctional()
                                     && fastBuffer.count(1, ticks) >= 5) {
                                 this.fast.cancel(
-                                        "type: fast"
+                                        "fast"
                                                 + ", ms: " + timePassed
                                                 + ", block: " + BlockUtils.materialToString(material),
                                         null,

@@ -42,7 +42,7 @@ public class FightAnalysis extends ProbabilityDetection {
 
             if (probability >= 0.9) {
                 cancel(
-                        "type: fight-analysis, ratio: " + ratio + ", probability: " + probability
+                        "fight-analysis, ratio: " + ratio + ", probability: " + probability
                 );
             }
         });
