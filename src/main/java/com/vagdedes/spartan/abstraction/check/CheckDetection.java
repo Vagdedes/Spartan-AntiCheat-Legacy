@@ -244,7 +244,7 @@ public abstract class CheckDetection extends CheckProcess {
                         .replace("{info}", information)
                         .replace("{detection:percentage}",
                                 sufficientData
-                                        ? ((roundedCertainty == 0 ? 1 : roundedCertainty) + "%")
+                                        ? ((roundedCertainty == 0 ? 1 : roundedCertainty) + "/100")
                                         : "DATA " + AlgebraUtils.integerRound(100.0 - dataCompletion) + "% INCOMPLETE"
                         ),
                 hackType
