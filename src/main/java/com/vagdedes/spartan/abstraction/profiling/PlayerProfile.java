@@ -119,7 +119,7 @@ public class PlayerProfile {
                 if (oldRunner != null) {
                     for (CheckDetection detection : oldRunner.getDetections()) {
                         for (Check.DataType dataType : Check.DataType.values()) {
-                            CheckDetection newDetection = runner.getDetection(detection.random);
+                            CheckDetection newDetection = runner.getDetection(detection.name);
 
                             if (newDetection != null) {
                                 newDetection.setProbability(

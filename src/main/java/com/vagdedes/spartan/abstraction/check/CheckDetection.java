@@ -22,7 +22,6 @@ import org.bukkit.Location;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class CheckDetection extends CheckProcess {
@@ -37,7 +36,8 @@ public abstract class CheckDetection extends CheckProcess {
 
     private long accumulatedProbabilityTime;
     public final CheckRunner executor;
-    public final String name, random;
+    public final String name;
+    public final boolean hasName;
     private final boolean def;
     private final Map<Check.DataType, Double> probability;
     public final Check.DataType forcedDataType;
@@ -53,43 +53,32 @@ public abstract class CheckDetection extends CheckProcess {
     ) {
         super(executor.hackType, executor.protocol);
         this.executor = executor;
-        this.name = name;
+        this.name = name == null
+                ? Integer.toString(this.getClass().getName().hashCode())
+                : name;
+        this.hasName = name != null;
         this.def = def;
         this.probability = new ConcurrentHashMap<>(Check.DataType.values().length);
         this.forcedDataType = forcedDataType;
         this.detectionType = detectionType;
         this.isEnabled();
 
-        if (this.name == null) {
-            String random;
-
-            while (true) {
-                random = Integer.toString(new Random().nextInt());
-
-                if (executor.addDetection(random, this) == null) {
-                    break;
-                }
-            }
-            this.random = random;
-        } else {
-            if (executor.addDetection(this.name, this) != null) {
-                throw new IllegalArgumentException(
-                        "Detection '" + this.name + "' already exists for enum '" + executor.hackType.toString() + "'."
-                );
-            }
-            this.random = this.name;
+        if (executor.addDetection(this.name, this) != null) {
+            throw new IllegalArgumentException(
+                    "Detection '" + this.name + "' already exists for enum '" + executor.hackType.toString() + "'."
+            );
         }
     }
 
     @Override
     public int hashCode() {
-        return this.hackType.hashCode() * SpartanBukkit.hashCodeMultiplier + this.random.hashCode();
+        return this.hackType.hashCode() * SpartanBukkit.hashCodeMultiplier + this.name.hashCode();
     }
 
     // Check
 
     public final boolean isEnabled() {
-        return this.name == null
+        return !this.hasName
                 || this.hackType.getCheck().getBooleanOption("check_" + this.name, this.def);
     }
 

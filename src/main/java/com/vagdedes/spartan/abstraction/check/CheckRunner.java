@@ -158,18 +158,7 @@ public abstract class CheckRunner extends CheckProcess {
     // Detections
 
     public final CheckDetection getDetection(String detection) {
-        if (detection == null) {
-            if (!this.detections.isEmpty()) {
-                for (CheckDetection detectionExecutor : this.detections.values()) {
-                    if (detectionExecutor.name == null) {
-                        return detectionExecutor;
-                    }
-                }
-            }
-            return null;
-        } else {
-            return this.detections.get(detection);
-        }
+        return this.detections.get(detection);
     }
 
     public final Collection<CheckDetection> getDetections() {
@@ -193,7 +182,7 @@ public abstract class CheckRunner extends CheckProcess {
     }
 
     public final void removeDetection(CheckDetection detection) {
-        this.detections.remove(detection.random);
+        this.detections.remove(detection.name);
 
         for (Check.DataType dataType : Check.DataType.values()) {
             this.supportsDataType[dataType.ordinal()] = false;

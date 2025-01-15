@@ -24,7 +24,7 @@ public class ImplementedProbabilityDetection extends ProbabilityDetection {
     ) {
         super(executor.executor, executor.forcedDataType, executor.detectionType, name, def);
 
-        if (executor.name == null) {
+        if (!executor.hasName) {
             executor.executor.removeDetection(executor);
         }
     }

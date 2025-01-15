@@ -3,3 +3,4 @@
 [#] Fixed a few remaining GhostHand false positives
 [#] Introduced the command '/spartan verbose' to differentiate between important or not notifications
 [#] Made detection information shorter for almost all checks
+[#] Made detections without options to have more deterministic names
