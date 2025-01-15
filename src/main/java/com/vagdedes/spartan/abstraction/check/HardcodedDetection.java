@@ -11,7 +11,7 @@ public abstract class HardcodedDetection extends CheckDetection {
             Check.DataType forcedDataType,
             Check.DetectionType detectionType,
             String name,
-            boolean def
+            Boolean def
     ) {
         super(executor, forcedDataType, detectionType, name, def);
         this.lastUpdate = System.currentTimeMillis();

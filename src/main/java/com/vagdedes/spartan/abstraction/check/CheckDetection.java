@@ -38,7 +38,7 @@ public abstract class CheckDetection extends CheckProcess {
     public final CheckRunner executor;
     public final String name;
     public final boolean hasName;
-    private final boolean def;
+    private final Boolean def;
     private final Map<Check.DataType, Double> probability;
     public final Check.DataType forcedDataType;
     public final Check.DetectionType detectionType;
@@ -49,7 +49,7 @@ public abstract class CheckDetection extends CheckProcess {
             Check.DataType forcedDataType,
             Check.DetectionType detectionType,
             String name,
-            boolean def
+            Boolean def
     ) {
         super(executor.hackType, executor.protocol);
         this.executor = executor;
@@ -79,6 +79,7 @@ public abstract class CheckDetection extends CheckProcess {
 
     public final boolean isEnabled() {
         return !this.hasName
+                || this.def == null
                 || this.hackType.getCheck().getBooleanOption("check_" + this.name, this.def);
     }
 

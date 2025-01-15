@@ -12,7 +12,7 @@ public class ImplementedProbabilityDetection extends ProbabilityDetection {
             Check.DataType forcedDataType,
             Check.DetectionType detectionType,
             String name,
-            boolean def
+            Boolean def
     ) {
         super(executor, forcedDataType, detectionType, name, def);
     }
@@ -20,7 +20,7 @@ public class ImplementedProbabilityDetection extends ProbabilityDetection {
     public ImplementedProbabilityDetection(
             CheckDetection executor,
             String name,
-            boolean def
+            Boolean def
     ) {
         super(executor.executor, executor.forcedDataType, executor.detectionType, name, def);
 

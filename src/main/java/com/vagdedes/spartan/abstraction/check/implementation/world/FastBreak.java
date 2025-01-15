@@ -45,8 +45,8 @@ public class FastBreak extends CheckRunner {
     public FastBreak(HackType hackType, SpartanProtocol protocol) {
         super(hackType, protocol);
         this.delay = new ImplementedProbabilityDetection(this, null, null, "delay", true);
-        this.breaksPerSecond = new ImplementedProbabilityDetection(this, null, null, null, true);
-        this.indirectSurroundingsPerSecond = new ImplementedProbabilityDetection(this, null, null, null, true);
+        this.breaksPerSecond = new ImplementedProbabilityDetection(this, null, null, "breaks_per_second", null);
+        this.indirectSurroundingsPerSecond = new ImplementedProbabilityDetection(this, null, null, "indirect_surroundings_per_second", null);
         this.interactTime = new ConcurrentHashMap<>(2);
         this.breaksPerSecondBuffer = new Buffer.IndividualBuffer();
         this.individualSurroundingsPerSecondBuffer = new Buffer.IndividualBuffer();

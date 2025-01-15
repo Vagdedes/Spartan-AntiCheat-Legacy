@@ -20,7 +20,7 @@ public abstract class ProbabilityDetection extends CheckDetection {
             Check.DataType forcedDataType,
             Check.DetectionType detectionType,
             String name,
-            boolean def
+            Boolean def
     ) {
         super(executor, forcedDataType, detectionType, name, def);
         this.data = new List[Check.DataType.values().length];
