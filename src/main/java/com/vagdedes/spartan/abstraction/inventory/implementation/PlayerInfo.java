@@ -198,7 +198,7 @@ public class PlayerInfo extends InventoryMenu {
                             probability = PlayerEvidence.probabilityToCertainty(probability);
                             lore.add(
                                     "§4" + hackType.getCheck().getName()
-                                            + "§8: §c" + AlgebraUtils.integerRound(probability * 100.0) + "%"
+                                            + "§8: §c" + AlgebraUtils.integerRound(probability * 100.0) + "/100"
                                             + remainingDataPrompt
                             );
                         } else if (PlayerEvidence.surpassedProbability(
@@ -208,7 +208,7 @@ public class PlayerInfo extends InventoryMenu {
                             probability = PlayerEvidence.probabilityToCertainty(probability);
                             lore.add(
                                     "§6" + hackType.getCheck().getName()
-                                            + "§8: §e" + AlgebraUtils.integerRound(probability * 100.0) + "%"
+                                            + "§8: §e" + AlgebraUtils.integerRound(probability * 100.0) + "/100"
                                             + remainingDataPrompt
                             );
                         } else {
@@ -217,12 +217,12 @@ public class PlayerInfo extends InventoryMenu {
 
                             if (showProbability > 0) {
                                 lore.add(
-                                        "§2" + hackType.getCheck().getName() + "§8: §a" + showProbability + "%"
+                                        "§2" + hackType.getCheck().getName() + "§8: §a" + showProbability + "/100"
                                                 + remainingDataPrompt
                                 );
                             } else {
                                 lore.add(
-                                        "§2" + hackType.getCheck().getName() + "§8: §a1%"
+                                        "§2" + hackType.getCheck().getName() + "§8: §a1/100"
                                                 + remainingDataPrompt
                                 );
                             }

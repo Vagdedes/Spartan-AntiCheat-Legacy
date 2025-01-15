@@ -8,7 +8,7 @@ public class PlayerEvidence {
             dataRatio = 2.0 / 3.0,
             preventionProbability = createProbability(0.1),
             punishmentProbability = createProbability(0.01),
-            slightestProbability = createProbability(0.99),
+            slightestProbability = createProbability(0.9999),
             emptyProbability = createProbability(1.0);
 
     public static double createProbability(double probability) {
