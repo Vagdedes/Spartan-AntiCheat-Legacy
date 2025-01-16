@@ -6,6 +6,7 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import org.bukkit.entity.Player;
@@ -36,15 +37,15 @@ public class BlockPlaceBalancerListener extends PacketAdapter {
 
     private static PacketType[] resolvePacketTypes() {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
-            return new PacketType[]{ PacketType.Play.Client.USE_ITEM,
-                            (Register.isNewProtocolLib)
+            return new PacketType[]{PacketType.Play.Client.USE_ITEM,
+                    ProtocolLib.isPacketSupported("USE_ITEM_ON")
                             ? PacketType.Play.Client.USE_ITEM_ON
-                            : PacketType.Play.Client.BLOCK_PLACE };
+                            : PacketType.Play.Client.BLOCK_PLACE};
         } else {
             return new PacketType[]{
-                            (Register.isNewProtocolLib)
-                                            ? PacketType.Play.Client.USE_ITEM_ON
-                                            : PacketType.Play.Client.BLOCK_PLACE };
+                    ProtocolLib.isPacketSupported("USE_ITEM_ON")
+                            ? PacketType.Play.Client.USE_ITEM_ON
+                            : PacketType.Play.Client.BLOCK_PLACE};
         }
     }
 }

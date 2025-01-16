@@ -10,6 +10,7 @@ import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.event.ServerBlockChange;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.concurrent.SpartanScheduler;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
@@ -63,10 +64,10 @@ public class BlockPlaceListener extends PacketAdapter {
                     }
 
                     Location l = new Location(
-                                    protocol.getWorld(),
-                                    blockPosition.toVector().getBlockX(),
-                                    blockPosition.toVector().getBlockY(),
-                                    blockPosition.toVector().getBlockZ()
+                            protocol.getWorld(),
+                            blockPosition.toVector().getBlockX(),
+                            blockPosition.toVector().getBlockY(),
+                            blockPosition.toVector().getBlockZ()
                     );
                     if (direction == null) return;
                     l.add(getDirection(BlockFace.valueOf(direction.name())));
@@ -76,19 +77,19 @@ public class BlockPlaceListener extends PacketAdapter {
 
                     if (block == null) return;
                     boolean isMainHand = !MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)
-                                    || event.getPacket().getHands().read(0) == EnumWrappers.Hand.MAIN_HAND;
+                            || event.getPacket().getHands().read(0) == EnumWrappers.Hand.MAIN_HAND;
 
                     ItemStack itemInHand = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)
-                                    ? (isMainHand ? player.getInventory().getItemInMainHand()
-                                    : player.getInventory().getItemInOffHand()) : player.getItemInHand();
+                            ? (isMainHand ? player.getInventory().getItemInMainHand()
+                            : player.getInventory().getItemInOffHand()) : player.getItemInHand();
                     if (itemInHand.getType().isBlock()) {
                         if (!isInPlayer(protocol.getLocation(), block.getLocation())) {
                             Block blockAgainst = player.getLocation().getBlock();
                             Material material = itemInHand.getType();
                             protocol.packetWorld.worldChange(new ServerBlockChange(blockPosition, material));
                             protocol.packetWorld.worldChange(new ServerBlockChange(
-                                            new BlockPosition(blockPosition.getX(), blockPosition.getY() + 1, blockPosition.getZ()),
-                                            material
+                                    new BlockPosition(blockPosition.getX(), blockPosition.getY() + 1, blockPosition.getZ()),
+                                    material
                             ));
 
                             BlockPlaceEvent.event(protocol, block, blockAgainst, event.isCancelled());
@@ -120,7 +121,7 @@ public class BlockPlaceListener extends PacketAdapter {
             return (blockPosition.getY() != -1);
         } else {
             return ((packet.getType().equals(PacketType.Play.Client.USE_ITEM)
-                    ||packet.getType().toString().contains("USE_ITEM_ON"))
+                    || packet.getType().toString().contains("USE_ITEM_ON"))
                     && packet.getHands().read(0).equals(EnumWrappers.Hand.MAIN_HAND));
         }
     }
@@ -163,7 +164,7 @@ public class BlockPlaceListener extends PacketAdapter {
         listeners.add(PacketType.Play.Client.BLOCK_PLACE);
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9))
             listeners.add(PacketType.Play.Client.USE_ITEM);
-        if (Register.isNewProtocolLib)
+        if (ProtocolLib.isPacketSupported("USE_ITEM_ON"))
             listeners.add(PacketType.Play.Client.USE_ITEM_ON);
         return listeners;
     }
