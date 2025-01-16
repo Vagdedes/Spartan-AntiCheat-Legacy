@@ -24,12 +24,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class BlockPlaceListener extends PacketAdapter {
 
     public BlockPlaceListener() {
-        super(Register.plugin, ListenerPriority.HIGHEST,
-                via8blockPlace(), PacketType.Play.Client.BLOCK_PLACE,
-                via21blockPlace());
+        super(Register.plugin, ListenerPriority.HIGHEST, init());
         // Method: Event_BlockPlace.event()
     }
 
@@ -119,8 +120,8 @@ public class BlockPlaceListener extends PacketAdapter {
             return (blockPosition.getY() != -1);
         } else {
             return ((packet.getType().equals(PacketType.Play.Client.USE_ITEM)
-                    ||packet.getType().equals(PacketType.Play.Client.USE_ITEM_ON)))
-                    && packet.getHands().read(0).equals(EnumWrappers.Hand.MAIN_HAND);
+                    ||packet.getType().toString().contains("USE_ITEM_ON"))
+                    && packet.getHands().read(0).equals(EnumWrappers.Hand.MAIN_HAND));
         }
     }
 
@@ -157,20 +158,13 @@ public class BlockPlaceListener extends PacketAdapter {
         return direction;
     }
 
-    private static PacketType via21blockPlace() {
-        return PacketType.Play.Client.USE_ITEM_ON;
-        /*
-        return MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_21)
-                ? PacketType.Play.Client.USE_ITEM_ON
-                : PacketType.Play.Client.BLOCK_PLACE;
-         */
+    private static List<PacketType> init() {
+        List<PacketType> listeners = new ArrayList<>();
+        listeners.add(PacketType.Play.Client.BLOCK_PLACE);
+        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9))
+            listeners.add(PacketType.Play.Client.USE_ITEM);
+        if (Register.isNewProtocolLib)
+            listeners.add(PacketType.Play.Client.USE_ITEM_ON);
+        return listeners;
     }
-
-    private static PacketType via8blockPlace() {
-        return MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)
-                ? PacketType.Play.Client.USE_ITEM
-                : PacketType.Play.Client.BLOCK_DIG;
-    }
-
-
 }

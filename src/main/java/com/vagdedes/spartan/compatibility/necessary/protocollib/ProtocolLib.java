@@ -5,6 +5,7 @@ import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.utils.java.ReflectionUtils;
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
@@ -18,6 +19,7 @@ import java.util.UUID;
 
 public class ProtocolLib {
 
+    @Getter
     private static boolean
             temporaryClass = false,
             bukkit = false;

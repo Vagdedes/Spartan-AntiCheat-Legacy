@@ -5,6 +5,8 @@ import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.abstraction.world.SpartanBlock;
+import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.math.ClientMath;
@@ -15,28 +17,34 @@ import com.vagdedes.spartan.utils.minecraft.entity.AxisAlignedBB;
 import com.vagdedes.spartan.utils.minecraft.entity.CombatUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.MovingObjectPosition;
 import com.vagdedes.spartan.utils.minecraft.vector.Vec3;
+import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.type.Slab;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class HitReach extends CheckRunner {
 
     private final CheckDetection
-            hitboxRaytrace,
-            simple;
+            hitboxRaytrace, throughblocks, simple;
     private final List<Double> rayTraceAnalysis = new CopyOnWriteArrayList<>();
     private int vl = 0;
     private static final boolean[] BOOLEANS = {true, false};
     private static final double REACH_DIST = 3.001, HIT_BOX_VAL = 10.0;
     private double hitBoxVL = -1;
     private double reachVl = 0;
+    private double blocksVl = 0;
     private final OptifineMath optifineMath = new OptifineMath();
     private final VanillaMath vanillaMath = new VanillaMath();
 
@@ -44,6 +52,7 @@ public class HitReach extends CheckRunner {
         super(hackType, protocol);
         hitboxRaytrace = new ImplementedProbabilityDetection(this, null, null, "hitbox_raytrace", true);
         simple = new ImplementedProbabilityDetection(this, null, null, "simple", true);
+        throughblocks = new ImplementedProbabilityDetection(this, null, null, "throughblocks", true);
     }
 
     @Override
@@ -56,9 +65,48 @@ public class HitReach extends CheckRunner {
                     && !this.protocol.bukkit().getGameMode().equals(GameMode.CREATIVE)) {
                 SpartanProtocol target = SpartanBukkit.getProtocol((Player) event.target);
                 List<Location> h = target.getPositionHistory();
+                Set<AxisAlignedBB> cachedBlocks = new HashSet<>();
+                { // caching blocks
+                    final Location t = target.getLocation();
+                    final double s = 0.5d - 1E-12d;
+                    for (int dx = -2; dx <= 2; ++dx) {
+                        for (int dy = -2; dy <= 2; ++dy) {
+                            for (int dz = -2; dz <= 2; ++dz) {
+                                final Location l = new Location(protocol.getWorld(),
+                                                t.getX() + (double) dx,
+                                                t.getY() + (double) dy,
+                                                t.getZ() + (double) dz);
+                                final Material material = protocol.packetWorld.getBlock(l);
+                                final BlockData blockData = material.createBlockData();
+                                if (blockData instanceof Slab) {
+                                    Slab slab = (Slab) blockData;
+                                    if (slab.getType().equals(Slab.Type.TOP)) {
+                                        cachedBlocks.add(new AxisAlignedBB(
+                                                        l.getX() - s, l.getY(), l.getZ() - s,
+                                                        l.getX() + s, l.getY() + s, l.getZ() + s
+                                        ));
+                                    } else if (slab.getType().equals(Slab.Type.BOTTOM)) {
+                                        cachedBlocks.add(new AxisAlignedBB(
+                                                        l.getX() - s, l.getY() - s, l.getZ() - s,
+                                                        l.getX() + s, l.getY(), l.getZ() + s
+                                        ));
+                                    }
+                                } else {
+                                    if (BlockUtils.isFullSolid(material)) {
+                                        cachedBlocks.add(new AxisAlignedBB(
+                                                        l.getX() - s, l.getY() - s, l.getZ() - s,
+                                                        l.getX() + s, l.getY() + s, l.getZ() + s
+                                        ));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
                 boolean is1_8 = this.protocol.isUsingVersion(MultiVersion.MCVersion.V1_8);
                 float hitbox = (is1_8) ? 0.4F : 0.3F;
                 AtomicReference<Double> minDistance = new AtomicReference<>(Double.MAX_VALUE);
+                AtomicReference<Double> minBlockDist = new AtomicReference<>(Double.MAX_VALUE);
                 {
                     for (boolean fastMath : BOOLEANS) {
                         ClientMath clientMath = fastMath ? optifineMath : vanillaMath;
@@ -102,11 +150,24 @@ public class HitReach extends CheckRunner {
                                         }
                                     }
                                 }
+                                for (AxisAlignedBB block : cachedBlocks) {
+                                    MovingObjectPosition intercept = block.calculateIntercept(eyePos, endReachRay);
+                                    if (intercept != null) {
+                                        double range = intercept.hitVec.distanceTo(eyePos);
+                                        if (range < minBlockDist.get()) {
+                                            minBlockDist.set(range);
+                                        } else {
+                                            final double dev = Math.abs(Math.abs(range) - Math.abs(minBlockDist.get()));
+                                            if (dev <= 0.03 + 3e-3) minBlockDist.set(range);
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
-
+                    boolean flagged = false;
                     if (minDistance.get() > HIT_BOX_VAL) {
+                        flagged = true;
                         if (++hitBoxVL > 3D) {
                             hitboxRaytrace.cancel("Missing HitBox of " + target.bukkit().getName());
                         }
@@ -116,11 +177,27 @@ public class HitReach extends CheckRunner {
 
                     if (minDistance.get() > REACH_DIST && minDistance.get() < HIT_BOX_VAL) {
                         reachVl++;
+                        flagged = true;
                         if (reachVl > 2.5D) {
-                            hitboxRaytrace.cancel("Reach " + minDistance.get());
+                            hitboxRaytrace.cancel("Reach " + RayUtils.scaleVal(minDistance.get(), 6));
                         }
                     } else if (minDistance.get() < REACH_DIST && reachVl > 0) {
                         reachVl -= 0.05;
+                    }
+                    /*
+                    Checking blocks bound
+                     */
+                    if (!flagged) {
+                        double dev = (minBlockDist.get() + 0.03 + 3e-3) - minDistance.get();
+                        if (dev < -1.3) {
+                            if (blocksVl++ >= 2) {
+                                throughblocks.cancel("Hitting through block [dev: "
+                                                + RayUtils.scaleVal(Math.abs(dev), 6) + "]");
+                                blocksVl = 1.5;
+                            }
+                        } else if (blocksVl > 0) {
+                            blocksVl -= 0.5;
+                        }
                     }
                 }
             }

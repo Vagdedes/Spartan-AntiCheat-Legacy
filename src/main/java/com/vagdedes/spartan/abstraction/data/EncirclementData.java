@@ -42,6 +42,9 @@ public class EncirclementData {
                         Material material = protocol.packetWorld.getBlock(
                                 new Location(protocol.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
                         );
+                        Material materialTop = protocol.packetWorld.getBlock(
+                                        new Location(protocol.getWorld(), x + (double) dx * 0.3, y + (double) (dy * 0.5) + 1d, z + (double) dz * 0.3)
+                        );
                         Material materialFrom = protocol.packetWorld.getBlock(
                                 new Location(protocol.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
                         );
@@ -60,14 +63,16 @@ public class EncirclementData {
                                 || BlockUtils.isPowderSnow(material))) {
                             this.jumpModify = true;
                         }
-                        if (BlockUtils.canClimb(material, false)) {
+                        if (BlockUtils.canClimb(material, false) || BlockUtils.canClimb(materialTop, false)) {
                             this.climb = true;
                         }
                         if (Math.abs(dy) < 2 && h
                                 && (BlockUtils.isPowderSnow(material)
+                                        || (BlockUtils.isPowderSnow(materialTop)
                                 || BlockUtils.areHoneyBlocks(material)
-                                || BlockUtils.areWebs(material)
-                                || BlockUtils.areInteractiveBushes(material))) {
+                                || BlockUtils.areWebs(material) || BlockUtils.areWebs(materialTop)
+                                || BlockUtils.areInteractiveBushes(material)
+                                        || BlockUtils.areInteractiveBushes(materialTop)))) {
                             this.glide = true;
                         }
                         if (!BlockUtils.canClimb(material, false) &&
@@ -76,12 +81,13 @@ public class EncirclementData {
                                         || BlockUtils.areCobbleWalls(materialFrom)
                                         || BlockUtils.areSlimeBlocks(material)
                                         || BlockUtils.areHoneyBlocks(material)
-                                        || BlockUtils.areWebs(material))) {
+                                        || BlockUtils.areWebs(material)
+                                                || BlockUtils.areWebs(materialTop))) {
                             this.semi = true;
                         }
                         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
                                 && (material.equals(Material.BUBBLE_COLUMN) || m2.equals(Material.BUBBLE_COLUMN))) {
-                            if (h) this.bubble = true;
+                            this.bubble = true;
                         }
                         if (BlockUtils.isLiquidOrWaterLogged(b, true)
                                 || BlockUtils.isLiquid(protocol.packetWorld.getBlock(

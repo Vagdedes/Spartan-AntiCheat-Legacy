@@ -1,5 +1,7 @@
 package com.vagdedes.spartan;
 
+import com.comphenix.protocol.PacketType;
+import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.command.CommandExecution;
 import com.vagdedes.spartan.functionality.command.CommandTab;
 import com.vagdedes.spartan.functionality.connection.cloud.JarVerification;
@@ -23,6 +25,7 @@ import java.util.Set;
 public class Register extends JavaPlugin {
 
     public static Plugin plugin = null;
+    public static boolean isNewProtocolLib = false;
     public static final String pluginName = "Spartan";
     public static final String command = "spartan";
 
@@ -44,6 +47,21 @@ public class Register extends JavaPlugin {
 
         // Base
         Config.settings.runOnLogin();
+
+         if (!ProtocolLib.isBukkit()) { // Check protocolLib
+            for (PacketType type : PacketType.Play.Client.getInstance()) {
+                if (type.toString().contains("USE_ITEM_ON")) {
+                    isNewProtocolLib = true;
+                    break;
+                }
+            }
+            if (!isNewProtocolLib) {
+                AwarenessNotifications.forcefullySend(
+                                "It is recommended to use newer" +
+                                 " versions of ProtocolLib. Upgrade if you can!"
+                );
+            }
+        }
 
         // Listeners (More may be registered elsewhere)
         enable(new JoinEvent());

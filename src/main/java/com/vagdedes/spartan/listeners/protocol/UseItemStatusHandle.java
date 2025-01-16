@@ -47,7 +47,7 @@ public class UseItemStatusHandle extends PacketAdapter {
                 ItemStack itemStack = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)
                                 ? (isMainHand ? player.getInventory().getItemInMainHand()
                                 : player.getInventory().getItemInOffHand()) : player.getItemInHand();
-                if (packet.getType().equals(PacketType.Play.Client.USE_ITEM_ON)) {
+                if (packet.getType().toString().contains("USE_ITEM_ON")) {
                     if (event.getPacket().getStructures().getValues().toString().contains("Serverbound"))
                         return;
                 }
@@ -66,7 +66,14 @@ public class UseItemStatusHandle extends PacketAdapter {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)) {
             return new PacketType[]{ PacketType.Play.Client.USE_ITEM, PacketType.Play.Client.BLOCK_DIG };
         } else {
-            return new PacketType[]{ PacketType.Play.Client.USE_ITEM_ON, PacketType.Play.Client.BLOCK_PLACE, PacketType.Play.Client.BLOCK_DIG };
+            if (Register.isNewProtocolLib) {
+                return new PacketType[]{
+                                PacketType.Play.Client.BLOCK_PLACE,
+                                PacketType.Play.Client.BLOCK_DIG };
+            } else return new PacketType[]{
+                            PacketType.Play.Client.USE_ITEM_ON,
+                            PacketType.Play.Client.BLOCK_PLACE,
+                            PacketType.Play.Client.BLOCK_DIG };
         }
     }
 
