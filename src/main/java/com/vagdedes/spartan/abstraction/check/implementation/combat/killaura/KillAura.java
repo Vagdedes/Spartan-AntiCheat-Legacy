@@ -17,7 +17,6 @@ public class KillAura extends CheckRunner {
 
     private final Irregular irregular;
     private final EntityRaytrace entityRaytrace;
-    private final BlockRaytrace blockRaytrace;
     private final HitTime hitTime;
     private final MoveDirection moveDirection;
     private final FightAnalysis analysis;
@@ -27,7 +26,6 @@ public class KillAura extends CheckRunner {
         super(hackType, protocol);
         irregular = new Irregular(this);
         entityRaytrace = new EntityRaytrace(this);
-        blockRaytrace = new BlockRaytrace(this);
         analysis = new FightAnalysis(this);
         hitTime = new HitTime(this);
         moveDirection = new MoveDirection(this);
@@ -56,7 +54,6 @@ public class KillAura extends CheckRunner {
 
             if (canRunEntity(target)) {
                 irregular.run();
-                blockRaytrace.run(target);
                 entityRaytrace.run();
                 moveDirection.run(target);
                 hitTime.run();
