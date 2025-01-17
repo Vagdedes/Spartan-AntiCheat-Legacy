@@ -227,7 +227,8 @@ public class SpartanEdition {
             );
         }
 
-        if (AwarenessNotifications.canSend(protocol.getUUID(), "alternative-version", notificationCooldown)) {
+        if (message != null
+                && AwarenessNotifications.canSend(protocol.getUUID(), "alternative-version", notificationCooldown)) {
             protocol.spartan.sendImportantMessage(message);
         }
     }
