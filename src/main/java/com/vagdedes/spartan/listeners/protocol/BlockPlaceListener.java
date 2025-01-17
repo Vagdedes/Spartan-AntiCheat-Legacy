@@ -41,8 +41,6 @@ public class BlockPlaceListener extends PacketAdapter {
         SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
         PacketContainer packet = event.getPacket();
         SpartanScheduler.run(() -> {
-            if (event.getPacket().getType().equals(PacketType.Play.Client.BLOCK_DIG))
-                return;
             if (isPlacingBlock(packet)) {
                 if (packet.getBlockPositionModifier().getValues().isEmpty() && packet.getMovingBlockPositions().getValues().isEmpty()) {
                     // stub for debug
