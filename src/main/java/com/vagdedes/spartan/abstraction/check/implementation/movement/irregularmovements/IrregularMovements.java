@@ -3,6 +3,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.irregular
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.HardcodedDetection;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedHardcodedDetection;
+import com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.simulation.IMSimulationElytra;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.simulation.IMSimulationGravity;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.simulation.IMSimulationSpeed;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.simulation.IMSimulationVehicle;
@@ -27,6 +28,7 @@ public class IrregularMovements extends CheckRunner {
     private final IMBukkitSpeed speedBukkit;
     private final IMSimulationSpeed speedPackets;
     private final IMSimulationVehicle vehiclePackets;
+    private final IMSimulationElytra elytraPackets;
     private final IrregularMovementsJump jump;
     private final IMHorizontal horizontal;
     private final IMFoodSprint foodSprint;
@@ -44,6 +46,7 @@ public class IrregularMovements extends CheckRunner {
         speedBukkit = new IMBukkitSpeed(this);
         speedPackets = new IMSimulationSpeed(this);
         vehiclePackets = new IMSimulationVehicle(this);
+        elytraPackets = new IMSimulationElytra(this);
     }
 
     @Override
@@ -63,6 +66,7 @@ public class IrregularMovements extends CheckRunner {
             gravityPackets.run();
             speedPackets.run();
             vehiclePackets.run();
+            elytraPackets.run();
             double vertical = this.protocol.getLocation().getY() - this.protocol.getFromLocation().getY(),
                     box = this.protocol.getLocation().getY(),
                     oldBox = this.protocol.getFromLocation().getY();
@@ -92,6 +96,7 @@ public class IrregularMovements extends CheckRunner {
             speedPackets.teleport();
             baritone.teleport();
             vehiclePackets.teleport();
+            elytraPackets.teleport();
             this.teleport = System.currentTimeMillis()
                     + (AlgebraUtils.integerCeil(TPS.maximum / 2.0) * TPS.tickTime);
         }

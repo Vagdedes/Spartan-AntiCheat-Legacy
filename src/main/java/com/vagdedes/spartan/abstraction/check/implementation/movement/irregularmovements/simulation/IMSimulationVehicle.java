@@ -25,7 +25,7 @@ import org.bukkit.potion.PotionEffectType;
 public class IMSimulationVehicle extends ProbabilityDetection {
 
     private double vl = 0, oldY = 0, oldSpeed, oldAccel;
-    private int ground = 0, air = 0, ticks = 0, postFly = 0, postSpeed;
+    private int ground = 0, air = 0, ticks = 0, postFly = 0, postSpeed = 0;
     private Location from = null;
 
     public IMSimulationVehicle(CheckRunner executor) {
@@ -170,7 +170,10 @@ public class IMSimulationVehicle extends ProbabilityDetection {
     }
 
     public void teleport() {
-        this.call(() -> this.air = 0);
+        this.call(() -> {
+            this.air = 0;
+            this.ticks = 0;
+        });
     }
 
     public void ground(boolean isOnGround) {
