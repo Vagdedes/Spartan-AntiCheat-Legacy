@@ -26,7 +26,9 @@ public class EncirclementData {
     private boolean bubble = false;
 
     public EncirclementData(SpartanProtocol protocol) {
-        Location location = protocol.getLocation();
+        Location location = (protocol.spartan.getVehicle() == null) ?
+                        protocol.getLocation()
+                        : protocol.spartan.getVehicle().getLocation();
         SpartanScheduler.run(() -> {
             double x = location.getX();
             double y = location.getY() - 0.1;
@@ -118,5 +120,8 @@ public class EncirclementData {
                 }
             }
         });
+    }
+    public boolean isAllFalse() {
+        return !(isIce() || isSemi() || isSlime() || isSlimeHeight() || isWater() || isJumpModify() || isBubble());
     }
 }
