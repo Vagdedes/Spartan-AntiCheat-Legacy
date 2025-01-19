@@ -43,7 +43,7 @@ public class EncirclementData {
                                 new Location(protocol.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
                         );
                         Material materialTop = protocol.packetWorld.getBlock(
-                                        new Location(protocol.getWorld(), x + (double) dx * 0.3, y + (double) (dy * 0.5) + 1d, z + (double) dz * 0.3)
+                                        new Location(protocol.getWorld(), x + (double) dx * 0.5, y + (double) (dy * 0.5) + 1.0, z + (double) dz * 0.5)
                         );
                         Material materialFrom = protocol.packetWorld.getBlock(
                                 new Location(protocol.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)

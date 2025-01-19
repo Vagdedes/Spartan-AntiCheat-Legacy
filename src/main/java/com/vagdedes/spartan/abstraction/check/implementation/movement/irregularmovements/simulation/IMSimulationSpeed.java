@@ -190,23 +190,10 @@ public class IMSimulationSpeed extends ProbabilityDetection {
                                 || this.vhact > 0)) {
                             this.setPredict(dx, dz);
                         }
-                        if (d > 0.005 && this.protocol.spartan.getVehicle() != null) {
-                            Entity v = this.protocol.spartan.getVehicle();
-                            boolean isJumpingEntity = EntityUtils.abstractHorseClass
-                                    ? v instanceof AbstractHorse
-                                    : v instanceof Horse;
-                            if (d < 2.2 && v instanceof Boat && this.isOnIce(v.getLocation().add(0, -0.45, 0))) {
-                                this.setPredict(dx, dz);
-                            } else if (d < 0.5 && v instanceof Boat) {
-                                this.setPredict(dx, dz);
-                            } else if (d < (isOnGround ? 0.63 : 0.2) * this.multiplex() && isJumpingEntity) {
-                                this.setPredict(dx, dz);
-                            } else if (d < 0.6 && v instanceof Minecart) {
-                                this.setPredict(dx, dz);
-                            } else if (d < 0.3 * this.multiplex()) {
-                                this.setPredict(dx, dz);
-                            }
+                        if (this.protocol.spartan.getVehicle() != null) {
+                            this.setPredict(dx, dz);
                         }
+                        //protocol.getBukkit().sendMessage("v: " + (this.protocol.spartan.getVehicle() != null));
                         pr = Math.sqrt(predictX * predictX + predictZ * predictZ);
                         d = getDeviantity(pr, speed);
                         if (!(dx == predictX && dz == predictZ)) {

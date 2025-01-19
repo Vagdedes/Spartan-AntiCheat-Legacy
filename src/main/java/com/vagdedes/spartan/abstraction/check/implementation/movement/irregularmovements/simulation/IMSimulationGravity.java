@@ -306,39 +306,10 @@ public class IMSimulationGravity extends ProbabilityDetection {
                     this.teleportExcept = 0;
                 }
 
-                boolean boat = false;
-                List<Entity> nearbyEntities = this.protocol.spartan.getNearbyEntities(2);
-                for (Entity vehicle : nearbyEntities) {
-                    if (vehicle instanceof Boat) {
-                        boat = true;
-                        break;
-                    }
-                }
-                if (this.protocol.spartan.getVehicle() == null
-                        && boat &&
-                        this.abs(this.abs(motion) - this.abs(this.predictY())) < 0.6) {
+                // ignore
+                if (this.protocol.spartan.getVehicle() != null) {
                     this.setPredict(motion);
                 }
-                if (this.protocol.spartan.getVehicle() != null) {
-                    this.airVehicle = (this.isOnSolidGround(
-                            this.protocol.spartan.getVehicle().getLocation())) ? this.airVehicle + 1 : 0;
-                }
-                if (this.abs(this.abs(motion) - this.abs(this.predictY())) > 0.005
-                        && this.protocol.spartan.getVehicle() != null) {
-                    Entity v = this.protocol.spartan.getVehicle();
-                    boolean isJumpingEntity = EntityUtils.abstractHorseClass
-                            ? v instanceof AbstractHorse // Covers horse, donkey, skeleton-horse, llama, mule
-                            : v instanceof Horse;
-
-                    if (this.isOnSolidGround(v.getLocation()) && this.abs(motion) <=
-                            ((isJumpingEntity || (boat && v.isOnGround())) ? 1.0 : 0.3)) {
-                        this.setPredict(motion);
-                    } else if (!this.isOnSolidGround(v.getLocation())
-                            && motion < ((v instanceof Minecart) ? 0.16 : (this.predictY() / 1.6))) {
-                        this.setPredict(motion);
-                    }
-                }
-
 
                 /*
                 Brainrot 1.18< version cringe fix...
@@ -394,7 +365,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
                             PlayerTrackers.TrackerType.VEHICLE, "vh_tp")
                             && devTotal < 1.9) {
                         this.setPredict(0.0);
-                    } else {
+                    } else if (this.protocol.spartan.getVehicle() == null) {
                         if (allowLowJump && air == 1
                                 && this.predictY() > motion
                                 && getDeviantity(motion) <= 0.03) {

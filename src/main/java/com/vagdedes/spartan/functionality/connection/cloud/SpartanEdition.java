@@ -47,7 +47,7 @@ public class SpartanEdition {
             firstLoad = true,
             notifyCache = false,
             currentVersion = true,
-            alternativeVersion = false;
+            alternativeVersion = true;
 
     // Verification
 
@@ -72,7 +72,7 @@ public class SpartanEdition {
             if (currentVersion
                     && alternativeVersion
                     && !CloudConnections.ownsProduct("26")) {
-                alternativeVersion = false;
+                alternativeVersion = true;
             }
             hasAccount = !IDs.hasToken() || CloudConnections.hasAccount();
         });
