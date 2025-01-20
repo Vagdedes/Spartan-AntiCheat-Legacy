@@ -190,7 +190,7 @@ public class MovementListener extends PacketAdapter {
                 } else {
                     if (!player.getInventory().getItemInHand().getType().isEdible()) p.useItemPacket = false;
                 }
-                if (player.getFoodLevel() == 20) p.useItemPacket = false;
+                if (player.getFoodLevel() == 20 || p.useItemPacketReset) p.useItemPacket = false;
             }
             SpartanScheduler.run(() -> {
                 PlayerMoveEvent moveEvent = new PlayerMoveEvent(

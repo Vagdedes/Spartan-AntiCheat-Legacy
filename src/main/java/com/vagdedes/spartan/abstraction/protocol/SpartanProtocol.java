@@ -61,7 +61,7 @@ public class SpartanProtocol {
             clickBlocker,
             transactionLocal,
             transactionSentKeep,
-            useItemPacket;
+            useItemPacket, useItemPacketReset;
     @Setter
     private Location location, from, teleport;
     public String fromWorld;
@@ -157,6 +157,7 @@ public class SpartanProtocol {
         this.componentY = new ComponentY();
         this.componentXZ = new ComponentXZ();
         this.useItemPacket = false;
+        this.useItemPacketReset = false;
 
         // Always last
         this.profile().update(this);
