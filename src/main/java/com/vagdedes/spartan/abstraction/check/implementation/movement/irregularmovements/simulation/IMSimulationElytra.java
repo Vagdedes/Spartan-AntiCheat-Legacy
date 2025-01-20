@@ -44,19 +44,19 @@ public class IMSimulationElytra extends ProbabilityDetection {
                     //this.protocol.bukkit().sendMessage("d: " + postSpeed);
                     this.postSpeed++;
                     if (this.postSpeed > 7) {
-                        this.cancel("type: invalid elytra speed " + speed);
+                        this.cancel("invalid elytra speed " + speed);
                         this.postSpeed = 6;
                     }
                 } else if (this.postSpeed > 0) this.postSpeed -= 2;
                 if (pr == 0.0 && ec.isAllFalse()) {
                     this.vl += 2.0;
                     if (this.vl >= 5.0) {
-                        this.cancel("type: invalid elytra gravity " + y);
+                        this.cancel("invalid elytra gravity " + y);
                         this.vl /= 1.3;
                     }
                 }
                 if (speed > 2.4 || y > 1.7) {
-                    this.cancel("type: elytra limit");
+                    this.cancel("elytra limit");
                 }
                 this.vl /= 1.15;
             }

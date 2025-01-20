@@ -53,13 +53,13 @@ public class IMSimulationVehicle extends ProbabilityDetection {
                 this.postFly++;
                 //this.protocol.bukkit().sendMessage("p: " + postFly);
                 if (this.postFly > 10) {
-                    this.cancel("type: prediction vehicle gravity " + pr);
+                    this.cancel("prediction vehicle gravity " + pr);
                     this.postFly = 9;
                 }
             } else if (!(vehicle instanceof Minecart) && getDeviantity(oldY, prV) < 1e-10) {
                 this.postFly++;
                 if (this.postFly > 7) {
-                    this.cancel("type: prediction vehicle gravity " + pr);
+                    this.cancel("prediction vehicle gravity " + pr);
                     this.postFly = 6;
                 }
             } else if (this.postFly > 0) {
@@ -69,7 +69,7 @@ public class IMSimulationVehicle extends ProbabilityDetection {
                 if (postSpeed < 0) postSpeed = 0;
                 this.postSpeed++;
                 if (this.postSpeed > 8) {
-                    this.cancel("type: prediction vehicle speed " + diffAccel);
+                    this.cancel("prediction vehicle speed " + diffAccel);
                     this.postSpeed = 7;
                 }
             } else if (this.postSpeed > 0) this.postSpeed -= 2;
@@ -105,7 +105,7 @@ public class IMSimulationVehicle extends ProbabilityDetection {
                 if (speed > allowedSpeed) {
                     this.vl += speed / allowedSpeed;
                     if (this.vl > 12.0) {
-                        this.cancel("type: vehicle limit speed " + speed);
+                        this.cancel("vehicle limit speed " + speed);
                         this.vl /= 1.3;
                     }
                 }
@@ -118,7 +118,7 @@ public class IMSimulationVehicle extends ProbabilityDetection {
                 if (y > allowedVertical) {
                     this.vl += Math.abs(y / allowedVertical);
                     if (this.vl > 15.0) {
-                        this.cancel("type: vehicle limit gravity " + y);
+                        this.cancel("vehicle limit gravity " + y);
                         this.vl /= 1.3;
                     }
                 }

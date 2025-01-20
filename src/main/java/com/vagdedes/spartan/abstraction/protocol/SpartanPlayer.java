@@ -361,6 +361,8 @@ public class SpartanPlayer {
             List<Entity> list = this.protocol.bukkit().getNearbyEntities(radius, radius, radius);
             this.nearbyEntities = list.toArray(new Entity[0]);
             return list;
+        } else if (this.nearbyEntities.length == 0) {
+            return new ArrayList<>(0);
         } else {
             List<Entity> entities = new ArrayList<>();
             Location location = protocol.getLocation();
@@ -400,6 +402,8 @@ public class SpartanPlayer {
             List<Entity> list = this.protocol.bukkit().getNearbyEntities(x, y, z);
             this.nearbyEntities = list.toArray(new Entity[0]);
             return list;
+        } else if (this.nearbyEntities.length == 0) {
+            return new ArrayList<>(0);
         } else {
             List<Entity> entities = new ArrayList<>();
             Location location = protocol.getLocation();
