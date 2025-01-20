@@ -47,9 +47,10 @@ public class ClicksListener extends PacketAdapter {
         }
     }
 
-    private void handleLeftClick(Player player, long delay) {
+    private static void handleLeftClick(Player player, long delay) {
         SpartanBukkit.getProtocol(player)
                         .profile().getRunner(Enums.HackType.FastClicks)
                         .handle(false, delay);
     }
+
 }

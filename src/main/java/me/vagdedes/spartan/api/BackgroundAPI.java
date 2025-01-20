@@ -319,9 +319,10 @@ public class BackgroundAPI {
         setNotifications(p, value);
     }
 
+    @Deprecated
     static int getCPS(Player p) {
-        SpartanPlayer player = SpartanBukkit.getProtocol(p).spartan;
-        return player == null ? 0 : player.clicks.getCount();
+        AwarenessNotifications.forcefullySend("The API method 'getCPS' has been removed.");
+        return 0;
     }
 
     @Deprecated

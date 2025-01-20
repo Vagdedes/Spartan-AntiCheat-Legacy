@@ -44,8 +44,6 @@ public class CombatEvent implements Listener {
             if (protocol.packetsEnabled() == packets) {
                 // Detections
                 if (entityAttack) {
-                    protocol.spartan.calculateClicks(true);
-
                     if (entityIsPlayer || entity instanceof LivingEntity) {
                         boolean cancelled = e.isCancelled();
                         PlayerAttackEvent event = new PlayerAttackEvent(

@@ -125,7 +125,7 @@ public class IMStepBukkit extends ProbabilityDetection {
                 } else {
                     this.step_combination.call(() -> {
                         double extra = this.protocol.spartan.isBedrockPlayer() ? bedrockPlayerStepExtra : 0.0,
-                                downLimit = extra + this.protocol.spartan.movement.getAirAcceleration(),
+                                downLimit = extra + this.getAirAcceleration(),
                                 upLimit = extra + GroundUtils.maxPlayerStep;
 
                         if (!this.protocol.spartan.trackers.has(PlayerTrackers.TrackerType.VEHICLE, "exit") && vertical < -downLimit
@@ -226,7 +226,7 @@ public class IMStepBukkit extends ProbabilityDetection {
             } else {
                 if (firstFallingBox.contains(AlgebraUtils.cut(box, GroundUtils.maxHeightLength))) {
                     this.step_high_first_fall.call(() -> {
-                        if (vertical < -this.protocol.spartan.movement.getAirAcceleration()) {
+                        if (vertical < -this.getAirAcceleration()) {
                             this.step_high_first_fall.cancel(
                                     "step(high-first-fall)"
                                             + ", box: " + box
@@ -269,7 +269,7 @@ public class IMStepBukkit extends ProbabilityDetection {
                             if (!this.protocol.spartan.isOnGround(this.protocol.getLocation(), true)
                                     && !BlockUtils.isInteractiveAndPassable(this.protocol.spartan, new SpartanLocation(this.protocol.getLocation()).getBlock().getType())) {
                                 double limit = (this.protocol.spartan.isBedrockPlayer() ? bedrockPlayerStepExtra : 0.0)
-                                        + this.protocol.spartan.movement.getAirAcceleration();
+                                        + this.getAirAcceleration();
 
                                 if (vertical <= -limit) {
                                     this.step_abstract_down.cancel(
@@ -289,6 +289,12 @@ public class IMStepBukkit extends ProbabilityDetection {
                 }
             }
         }
+    }
+
+    private double getAirAcceleration() {
+        return new SpartanLocation(this.protocol.getLocationOrVehicle()).isChunkLoaded()
+                ? PlayerUtils.airAcceleration
+                : PlayerUtils.airAccelerationUnloaded;
     }
 
 }

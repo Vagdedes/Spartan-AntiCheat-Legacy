@@ -66,7 +66,6 @@ public class ConfigUtils {
         message = replace(message, "{z}", String.valueOf(loc.getBlockZ()));
         message = replace(message, "{yaw}", String.valueOf(AlgebraUtils.integerRound(loc.getYaw())));
         message = replace(message, "{pitch}", String.valueOf(AlgebraUtils.integerRound(loc.getPitch())));
-        message = replace(message, "{cps}", String.valueOf(p.spartan.clicks.getCount()));
 
         if (hackType != null) {
             message = replace(message, "{detection:silent}", String.valueOf(hackType.getCheck().isSilent(p.spartan.dataType, worldName)));

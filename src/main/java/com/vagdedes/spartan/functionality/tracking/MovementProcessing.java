@@ -86,7 +86,6 @@ public class MovementProcessing {
 
     private static boolean calculateLiquid(SpartanProtocol protocol, SpartanLocation location) {
         if (location.getBlock().isLiquidOrWaterLogged(false)) {
-            protocol.spartan.movement.setLastLiquid(WATER);
 
             if (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
                     && protocol.spartan.movement.isLowEyeHeight()) {
@@ -95,13 +94,11 @@ public class MovementProcessing {
             calculateBubbleWater(protocol, location);
             return true;
         } else if (location.getBlock().isLiquid(LAVA)) {
-            protocol.spartan.movement.setLastLiquid(LAVA);
             return true;
         } else {
             for (double i = 0.0; i < Math.ceil(protocol.bukkit().getEyeHeight()); i++) {
                 for (SpartanLocation locationModified : location.getSurroundingLocations(GroundUtils.boundingBox, i, GroundUtils.boundingBox)) {
                     if (locationModified.getBlock().isLiquidOrWaterLogged(false)) {
-                        protocol.spartan.movement.setLastLiquid(WATER);
 
                         if (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
                                 && protocol.spartan.movement.isLowEyeHeight()) {
@@ -110,7 +107,6 @@ public class MovementProcessing {
                         calculateBubbleWater(protocol, locationModified);
                         return true;
                     } else if (locationModified.getBlock().isLiquid(LAVA)) {
-                        protocol.spartan.movement.setLastLiquid(LAVA);
                         return true;
                     }
                 }

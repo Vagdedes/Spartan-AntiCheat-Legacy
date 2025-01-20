@@ -9,18 +9,11 @@ import me.vagdedes.spartan.system.Enums;
 
 public class FastClicks extends CheckRunner {
 
-    private final FastClicksBukkit bukkit;
-    private final FastClicksPackets packets;
+    private final FastClicksDetections packets;
 
     public FastClicks(Enums.HackType hackType, SpartanProtocol protocol) {
         super(hackType, protocol);
-        this.bukkit = new FastClicksBukkit(this);
-        this.packets = new FastClicksPackets(this);
-    }
-
-    @Override
-    protected void runInternal(boolean cancelled) {
-        bukkit.run();
+        this.packets = new FastClicksDetections(this);
     }
 
     @Override

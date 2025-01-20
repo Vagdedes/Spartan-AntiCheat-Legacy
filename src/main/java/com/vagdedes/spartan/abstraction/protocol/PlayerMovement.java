@@ -8,7 +8,6 @@ import com.vagdedes.spartan.utils.minecraft.entity.PotionEffectUtils;
 import com.vagdedes.spartan.utils.minecraft.protocol.ProtocolTools;
 import com.vagdedes.spartan.utils.minecraft.world.GroundUtils;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
@@ -26,14 +25,12 @@ public class PlayerMovement {
             lastGlide,
             artificialSwimming,
             lastLiquidTicks;
-    private Material lastLiquidMaterial;
     Location schedulerFrom;
     private Vector clampVector;
     public double motionY;
 
     PlayerMovement(SpartanPlayer parent) {
         this.parent = parent;
-        this.lastLiquidMaterial = Material.AIR;
 
         Location bukkit = ProtocolTools.getLoadLocation(this.parent.protocol.bukkit());
         SpartanLocation location = new SpartanLocation(bukkit);
@@ -54,15 +51,6 @@ public class PlayerMovement {
                 this.parent.protocol.getPing(),
                 5L * TPS.tickTime
         );
-    }
-
-    public Material getLastLiquidMaterial() {
-        return lastLiquidMaterial;
-    }
-
-    public void setLastLiquid(Material material) {
-        lastLiquidTicks = System.currentTimeMillis();
-        lastLiquidMaterial = material;
     }
 
     public void removeLastLiquidTime() {
@@ -127,33 +115,6 @@ public class PlayerMovement {
                 PlayerUtils.getPotionLevel(this.parent, PotionEffectUtils.JUMP) + 1,
                 GroundUtils.maxHeightLengthRatio
         );
-    }
-
-    // Separator
-
-    public double getAirAcceleration() {
-        return new SpartanLocation(this.parent.protocol.getLocationOrVehicle()).isChunkLoaded()
-                ? PlayerUtils.airAcceleration
-                : PlayerUtils.airAccelerationUnloaded;
-    }
-
-    public int getFallTick(double d, double acceleration, double drag, double precision) {
-        return PlayerUtils.getFallTick(
-                d,
-                acceleration,
-                drag,
-                precision,
-                PlayerUtils.getPotionLevel(this.parent, PotionEffectUtils.JUMP) + 1
-        );
-    }
-
-    public boolean isFalling(double d, double acceleration, double drag, double precision) {
-        return getFallTick(
-                d,
-                acceleration,
-                drag,
-                precision
-        ) != -1;
     }
 
     // Separator

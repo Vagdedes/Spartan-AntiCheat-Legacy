@@ -16,7 +16,6 @@ import org.bukkit.event.player.PlayerMoveEvent;
 public class KillAura extends CheckRunner {
 
     private final Irregular irregular;
-    private final EntityRaytrace entityRaytrace;
     private final HitTime hitTime;
     private final MoveDirection moveDirection;
     private final FightAnalysis analysis;
@@ -25,7 +24,6 @@ public class KillAura extends CheckRunner {
     public KillAura(Enums.HackType hackType, SpartanProtocol protocol) {
         super(hackType, protocol);
         irregular = new Irregular(this);
-        entityRaytrace = new EntityRaytrace(this);
         analysis = new FightAnalysis(this);
         hitTime = new HitTime(this);
         moveDirection = new MoveDirection(this);
@@ -54,7 +52,6 @@ public class KillAura extends CheckRunner {
 
             if (canRunEntity(target)) {
                 irregular.run();
-                entityRaytrace.run();
                 moveDirection.run(target);
                 hitTime.run();
                 analysis.runDealDamage(event);

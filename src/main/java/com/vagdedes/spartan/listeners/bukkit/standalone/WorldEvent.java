@@ -1,18 +1,15 @@
 package com.vagdedes.spartan.listeners.bukkit.standalone;
 
 import com.vagdedes.spartan.abstraction.profiling.MiningHistory;
-import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.Piston;
-import com.vagdedes.spartan.utils.minecraft.entity.CombatUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.SignChangeEvent;
@@ -71,21 +68,9 @@ public class WorldEvent implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Interact(PlayerInteractEvent e) {
         SpartanProtocol protocol = SpartanBukkit.getProtocol(e.getPlayer(), true);
-        SpartanPlayer p = protocol.spartan;
         Block nb = e.getClickedBlock();
-        Action action = e.getAction();
         boolean notNull = nb != null,
                 customBlock = notNull && ItemsAdder.is(nb);
-
-        // Object
-        p.calculateClicks(
-                action == Action.LEFT_CLICK_AIR
-                        && !p.getNearbyEntities(
-                        CombatUtils.maxHitDistance,
-                        CombatUtils.maxHitDistance,
-                        CombatUtils.maxHitDistance
-                ).isEmpty()
-        );
 
         if (notNull) {
             // Detections

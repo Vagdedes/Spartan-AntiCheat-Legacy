@@ -11,7 +11,7 @@ import com.vagdedes.spartan.utils.math.statistics.StatisticsMath;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class FastClicksPackets extends ProbabilityDetection {
+public class FastClicksDetections extends ProbabilityDetection {
 
     private long lastTickTime = System.currentTimeMillis();
     private final List<Integer> buffer = new CopyOnWriteArrayList<>();
@@ -30,7 +30,7 @@ public class FastClicksPackets extends ProbabilityDetection {
             samples = new CopyOnWriteArrayList<>(),
             samplesMassive = new CopyOnWriteArrayList<>();
 
-    FastClicksPackets(CheckRunner executor) {
+    FastClicksDetections(CheckRunner executor) {
         super(executor, null, Check.DetectionType.PACKETS, null, true);
         this.floorTempo = new ImplementedProbabilityDetection(this, "floor_tempo", true);
         this.deviation = new ImplementedProbabilityDetection(this, "deviation", true);

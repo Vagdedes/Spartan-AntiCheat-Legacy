@@ -5,7 +5,6 @@ import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.Compatibility;
 import com.vagdedes.spartan.compatibility.necessary.BedrockCompatibility;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
-import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
@@ -37,7 +36,6 @@ public class SpartanPlayer {
     public final PlayerMovement movement;
     public final PlayerPunishments punishments;
     public final PlayerTrackers trackers;
-    public final PlayerClicks clicks;
     private long lastInteraction;
     private boolean afk;
     private Entity[] nearbyEntities;
@@ -83,7 +81,6 @@ public class SpartanPlayer {
         this.potionEffects = new ConcurrentHashMap<>(2);
         this.setStoredPotionEffects();
 
-        this.clicks = new PlayerClicks();
         this.movement = new PlayerMovement(this);
         this.punishments = new PlayerPunishments(this);
 
@@ -186,16 +183,6 @@ public class SpartanPlayer {
         }
         if (!this.movement.judgeGround()) {
             this.movement.resetAirTicks();
-        }
-    }
-
-    // Separator
-
-    public void calculateClicks(boolean run) {
-        if (run) {
-            clicks.calculate();
-            this.protocol.profile().getRunner(Enums.HackType.FastClicks).run(false);
-            InteractiveInventory.playerInfo.refresh(this.protocol.bukkit().getName());
         }
     }
 
@@ -366,7 +353,9 @@ public class SpartanPlayer {
         this.maxNearbyEntitiesCoordinate[2] = Math.max(radius, this.maxNearbyEntitiesCoordinate[2]);
 
         if (SpartanBukkit.isSynchronised()) {
-            return this.protocol.bukkit().getNearbyEntities(radius, radius, radius);
+            List<Entity> list = this.protocol.bukkit().getNearbyEntities(radius, radius, radius);
+            this.nearbyEntities = list.toArray(new Entity[0]);
+            return list;
         } else {
             List<Entity> entities = new ArrayList<>();
             Location location = protocol.getLocation();
@@ -403,7 +392,9 @@ public class SpartanPlayer {
         this.maxNearbyEntitiesCoordinate[2] = Math.max(z, this.maxNearbyEntitiesCoordinate[2]);
 
         if (SpartanBukkit.isSynchronised()) {
-            return this.protocol.bukkit().getNearbyEntities(x, y, z);
+            List<Entity> list = this.protocol.bukkit().getNearbyEntities(x, y, z);
+            this.nearbyEntities = list.toArray(new Entity[0]);
+            return list;
         } else {
             List<Entity> entities = new ArrayList<>();
             Location location = protocol.getLocation();
