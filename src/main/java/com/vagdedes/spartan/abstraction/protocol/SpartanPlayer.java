@@ -435,9 +435,6 @@ public class SpartanPlayer {
     // Teleport
 
     public void groundTeleport() {
-        if (!Config.settings.getBoolean("Detections.ground_teleport_on_detection")) {
-            return;
-        }
         Location location = this.protocol.getLocation();
 
         if (this.isOnGround(location, true)) {

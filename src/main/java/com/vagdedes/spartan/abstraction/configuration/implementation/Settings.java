@@ -34,7 +34,7 @@ public class Settings extends ConfigurationBuilder {
         addOption("Important.enable_watermark", true);
 
         addOption("Detections.ground_teleport_on_detection", true);
-        addOption("Detections.fall_damage_on_teleport", false);
+        addOption("Detections.damage_on_detection", false);
 
         addOption("Discord.webhook_hex_color", "4caf50");
         addOption("Discord.checks_webhook_url", "");

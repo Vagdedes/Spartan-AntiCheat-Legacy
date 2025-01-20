@@ -412,9 +412,7 @@ public abstract class CheckDetection extends CheckProcess {
             if (groundTeleport) {
                 protocol.spartan.groundTeleport();
             }
-            if (damage > 0.0
-                    && (location == null && !groundTeleport
-                    || Config.settings.getBoolean("Detections.fall_damage_on_teleport"))) {
+            if (damage > 0.0) {
                 protocol.spartan.damage(damage);
             }
         };

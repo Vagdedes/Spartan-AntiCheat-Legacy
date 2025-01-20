@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.abstraction.check;
 
+import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
 import org.bukkit.Location;
@@ -23,8 +24,11 @@ public class CheckPrevention {
     CheckPrevention(Location location, int cancelTicks, boolean groundTeleport, double damage) {
         this.canPrevent = false;
         this.location = location;
-        this.groundTeleport = groundTeleport;
-        this.damage = damage;
+        this.groundTeleport = groundTeleport
+                && Config.settings.getBoolean("Detections.ground_teleport_on_detection");
+        this.damage = Config.settings.getBoolean("Detections.damage_on_detection")
+                ? damage
+                : 0.0;
         this.expiration = cancelTicks <= 1
                 ? Long.MAX_VALUE
                 : System.currentTimeMillis() + (cancelTicks * TPS.tickTime);
