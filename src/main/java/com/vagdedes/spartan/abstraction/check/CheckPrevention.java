@@ -1,7 +1,5 @@
 package com.vagdedes.spartan.abstraction.check;
 
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
-import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
 import org.bukkit.Location;
@@ -36,25 +34,22 @@ public class CheckPrevention {
         return this.canPrevent && System.currentTimeMillis() <= this.expiration;
     }
 
-    void handle(SpartanProtocol protocol) {
-        Runnable runnable = () -> {
-            if (this.location != null) {
-                protocol.teleport(this.location);
-            }
-            if (this.groundTeleport) {
-                protocol.spartan.groundTeleport();
-            }
-            if (this.damage > 0.0
-                    && (this.location == null && !this.groundTeleport
-                    || Config.settings.getBoolean("Detections.fall_damage_on_teleport"))) {
-                protocol.spartan.damage(this.damage);
-            }
-        };
-
+    void handle(CheckDetection detection) {
         if (SpartanBukkit.isSynchronised()) {
-            runnable.run();
+            detection.prevention(
+                    this.location,
+                    this.groundTeleport,
+                    this.damage
+            ).run();
         } else {
-            SpartanBukkit.transferTask(protocol, runnable);
+            SpartanBukkit.transferTask(
+                    detection.protocol,
+                    detection.prevention(
+                            this.location,
+                            this.groundTeleport,
+                            this.damage
+                    )
+            );
         }
     }
 

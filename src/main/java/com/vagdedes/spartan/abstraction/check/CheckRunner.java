@@ -11,17 +11,13 @@ import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
-import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
-import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
 import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
-import me.vagdedes.spartan.api.CheckCancelEvent;
 import me.vagdedes.spartan.system.Enums;
-import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 
 import java.util.*;
@@ -33,7 +29,6 @@ public abstract class CheckRunner extends CheckProcess {
 
     final long creation;
     private final Collection<CheckCancellation> disableCauses, silentCauses;
-    CheckPrevention prevention;
     private boolean cancelled;
     private final Map<String, CheckDetection> detections;
     private final boolean[] supportsDataType, supportsDetectionType;
@@ -41,7 +36,6 @@ public abstract class CheckRunner extends CheckProcess {
     public CheckRunner(Enums.HackType hackType, SpartanProtocol protocol) {
         super(hackType, protocol);
         this.creation = System.currentTimeMillis();
-        this.prevention = new CheckPrevention();
         this.detections = new ConcurrentHashMap<>(2);
         this.disableCauses = Collections.synchronizedList(new ArrayList<>(1));
         this.silentCauses = Collections.synchronizedList(new ArrayList<>(1));
@@ -343,29 +337,14 @@ public abstract class CheckRunner extends CheckProcess {
     // Prevention
 
     public final boolean prevent() {
-        if (this.prevention.complete()) {
-            if (SpartanBukkit.isSynchronised()) {
-                if (Config.settings.getBoolean("Important.enable_developer_api")) {
-                    CheckCancelEvent checkCancelEvent = new CheckCancelEvent(this.protocol.bukkit(), hackType);
-                    Bukkit.getPluginManager().callEvent(checkCancelEvent);
-
-                    if (checkCancelEvent.isCancelled()) {
-                        return false;
-                    } else {
-                        this.prevention.handle(this.protocol);
-                        return true;
-                    }
-                } else {
-                    this.prevention.handle(this.protocol);
+        if (!this.detections.isEmpty()) {
+            for (CheckDetection detection : this.getDetections()) {
+                if (detection.prevent()) {
                     return true;
                 }
-            } else {
-                this.prevention.handle(this.protocol);
-                return true;
             }
-        } else {
-            return false;
         }
+        return false;
     }
 
     // Notification

@@ -14,6 +14,7 @@ import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.server.ConfigUtils;
 import me.vagdedes.spartan.api.API;
+import me.vagdedes.spartan.api.CheckCancelEvent;
 import me.vagdedes.spartan.api.PlayerViolationCommandEvent;
 import me.vagdedes.spartan.api.PlayerViolationEvent;
 import org.bukkit.Bukkit;
@@ -34,6 +35,7 @@ public abstract class CheckDetection extends CheckProcess {
 
     // Separator
 
+    CheckPrevention prevention;
     private long accumulatedProbabilityTime;
     public final CheckRunner executor;
     public final String name;
@@ -61,6 +63,7 @@ public abstract class CheckDetection extends CheckProcess {
         this.probability = new ConcurrentHashMap<>(Check.DataType.values().length);
         this.forcedDataType = forcedDataType;
         this.detectionType = detectionType;
+        this.prevention = new CheckPrevention();
         this.isEnabled();
 
         if (executor.addDetection(this.name, this) != null) {
@@ -375,6 +378,50 @@ public abstract class CheckDetection extends CheckProcess {
 
     // Prevention
 
+    public final boolean prevent() {
+        if (this.prevention.complete()) {
+            if (SpartanBukkit.isSynchronised()) {
+                if (Config.settings.getBoolean("Important.enable_developer_api")) {
+                    CheckCancelEvent checkCancelEvent = new CheckCancelEvent(this.protocol.bukkit(), hackType);
+                    Bukkit.getPluginManager().callEvent(checkCancelEvent);
+
+                    if (checkCancelEvent.isCancelled()) {
+                        return false;
+                    } else {
+                        this.prevention.handle(this);
+                        return true;
+                    }
+                } else {
+                    this.prevention.handle(this);
+                    return true;
+                }
+            } else {
+                this.prevention.handle(this);
+                return true;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    protected Runnable prevention(Location location, boolean groundTeleport, double damage) {
+        return () -> {
+            if (location != null) {
+                protocol.teleport(location);
+            }
+            if (groundTeleport) {
+                protocol.spartan.groundTeleport();
+            }
+            if (damage > 0.0
+                    && (location == null && !groundTeleport
+                    || Config.settings.getBoolean("Detections.fall_damage_on_teleport"))) {
+                protocol.spartan.damage(damage);
+            }
+        };
+    }
+
+    // Cancel
+
     public final void cancel(String information, Location location,
                              int cancelTicks, boolean groundTeleport, double damage) {
         if (!this.executor.canFunction()
@@ -435,8 +482,8 @@ public abstract class CheckDetection extends CheckProcess {
                 if (sufficientData) {
                     this.punish(probability);
                 }
-                this.executor.prevention = newPrevention;
-                this.executor.prevention.canPrevent =
+                this.prevention = newPrevention;
+                this.prevention.canPrevent =
                         sufficientData
                                 && !hackType.getCheck().isSilent(this.protocol.spartan.dataType, this.protocol.getWorld().getName())
                                 && (silentCause == null
