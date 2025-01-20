@@ -44,6 +44,9 @@ public class EncirclementData {
                         Material material = protocol.packetWorld.getBlock(
                                 new Location(protocol.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
                         );
+                        Material materialWide = protocol.packetWorld.getBlock(
+                                        new Location(protocol.getWorld(), x + (double) dx * 0.5, y + (double) (dy * 0.5) - 0.3, z + (double) dz * 0.5)
+                        );
                         Material materialTop = protocol.packetWorld.getBlock(
                                         new Location(protocol.getWorld(), x + (double) dx * 0.5, y + (double) (dy * 0.5) + 1.0, z + (double) dz * 0.5)
                         );
@@ -79,6 +82,8 @@ public class EncirclementData {
                         }
                         if (!BlockUtils.canClimb(material, false) &&
                                 (BlockUtils.isSemiSolid(material)
+                                                || BlockUtils.isSemiSolid(materialFrom)
+                                                || BlockUtils.isSemiSolid(materialWide)
                                         || BlockUtils.areWalls(materialFrom)
                                         || BlockUtils.areCobbleWalls(materialFrom)
                                         || BlockUtils.areSlimeBlocks(material)
@@ -105,12 +110,19 @@ public class EncirclementData {
                             this.ice = true;
                         }
                         {
+                            double xF = protocol.getFromLocation().getX();
+                            double yF = protocol.getFromLocation().getY();
+                            double zF = protocol.getFromLocation().getZ();
                             Material materialBig = protocol.packetWorld.getBlock(
                                     new Location(protocol.getWorld(), x + (double) dx, y + (double) dy, z + (double) dz)
+                            );
+                            Material materialBigFrom = protocol.packetWorld.getBlock(
+                                            new Location(protocol.getWorld(), xF + (double) dx, yF + (double) dy + 0.5, zF + (double) dz)
                             );
                             if (materialBig == null) return;
                             if ((BlockUtils.areHoneyBlocks(materialBig)
                                     || BlockUtils.areBeds(materialBig)
+                                    || BlockUtils.areSlimeBlocks(materialBigFrom)
                                     || BlockUtils.areSlimeBlocks(materialBig))) {
                                 this.slimeHeight = true;
                                 this.slimeWide = true;
