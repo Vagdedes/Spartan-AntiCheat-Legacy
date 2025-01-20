@@ -38,8 +38,7 @@ public class CheckPrevention {
 
     void handle(SpartanProtocol protocol) {
         Runnable runnable = () -> {
-            if (this.location != null
-                    && protocol.packetsEnabled()) {
+            if (this.location != null) {
                 protocol.teleport(this.location);
             }
             if (this.groundTeleport) {
