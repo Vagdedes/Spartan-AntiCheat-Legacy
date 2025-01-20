@@ -31,7 +31,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
             allowMinorGravityChange = false, allowLowMinorAccel = false;
     private int slimePunch = 0, slimeTicks = 0, pistonTicks = 0, sub = 0;
     private double vl = 0.0, vlCount = 0.0;
-    private int semi = 0;
+    private int semi = 0, ignoreTicks = 0;
     private double fallDistance = 0.0;
     private double lastGroundY = 0;
     private double teleportExcept = 0;
@@ -50,6 +50,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
             double dx = to.getX() - from.getX();
             double dz = to.getZ() - from.getZ();
             double speed = Math.sqrt(dx * dx + dz * dz);
+            if (p.spartan.movement.isGliding()) ignoreTicks = 5;
             //this.protocol.bukkit().sendMessage(protocol().pistonHandle + " " + protocol().pistonTick + " " + protocol().explosionHandle);
             if (to.getX() != from.getX() || to.getY() != from.getY() || to.getZ() != from.getZ()) {
                 double motion = to.getY() - from.getY();
@@ -371,8 +372,13 @@ public class IMSimulationGravity extends ProbabilityDetection {
                                 && to.distance(from) < 0.3) {
                             return;
                         }
-                        this.vl += devTotal;
-                        this.vlCount += 1;
+
+                        if (ignoreTicks > 0 && getDeviantity(motion) < 1.5) {
+                            ignoreTicks--;
+                        } else {
+                            this.vl += devTotal;
+                            this.vlCount += 1;
+                        }
 
                         if (this.vl > ((this.protocol.spartan.getVehicle() != null) ? 0.6 : 0.05)) {
                             StringBuilder alertBuilder = new StringBuilder(String.valueOf(RayUtils.scaleVal(devTotal, 6.0)));
