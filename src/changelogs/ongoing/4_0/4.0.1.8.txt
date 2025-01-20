@@ -1,3 +1,4 @@
 [+] New recoded vehicle movement checks
 [+] New elytra movement checks
-[#] Fixed a null message error.
+[#] Fixed a null message error
+[#] Fixed nearby entities console errors
