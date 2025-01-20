@@ -75,21 +75,7 @@ public class HitReach extends CheckRunner {
                                                 t.getY() + (double) dy,
                                                 t.getZ() + (double) dz);
                                 final Material material = protocol.packetWorld.getBlock(l);
-                                final BlockData blockData = material.createBlockData();
-                                if (blockData instanceof Slab) {
-                                    Slab slab = (Slab) blockData;
-                                    if (slab.getType().equals(Slab.Type.TOP)) {
-                                        cachedBlocks.add(new AxisAlignedBB(
-                                                        l.getX() - s, l.getY(), l.getZ() - s,
-                                                        l.getX() + s, l.getY() + s, l.getZ() + s
-                                        ));
-                                    } else if (slab.getType().equals(Slab.Type.BOTTOM)) {
-                                        cachedBlocks.add(new AxisAlignedBB(
-                                                        l.getX() - s, l.getY() - s, l.getZ() - s,
-                                                        l.getX() + s, l.getY(), l.getZ() + s
-                                        ));
-                                    }
-                                } else {
+                                {
                                     if (BlockUtils.isFullSolid(material)) {
                                         cachedBlocks.add(new AxisAlignedBB(
                                                         l.getX() - s, l.getY() - s, l.getZ() - s,
