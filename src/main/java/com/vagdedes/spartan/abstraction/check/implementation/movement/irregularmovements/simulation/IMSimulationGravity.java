@@ -11,16 +11,12 @@ import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.MultiVersion.MCVersion;
 import com.vagdedes.spartan.utils.math.RayUtils;
-import com.vagdedes.spartan.utils.minecraft.entity.EntityUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PotionEffectUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.entity.*;
 import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.potion.PotionEffectType;
-
-import java.util.List;
 
 public class IMSimulationGravity extends ProbabilityDetection {
 

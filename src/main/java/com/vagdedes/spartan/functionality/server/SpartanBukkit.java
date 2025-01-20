@@ -167,7 +167,7 @@ public class SpartanBukkit {
                         protocol.getActiveTimePlayed(),
                         true
                 );
-                protocol.profile().update(protocol);
+                new SpartanProtocol(player); // Call to update profile object with emptier object
             }
             return protocol;
         }

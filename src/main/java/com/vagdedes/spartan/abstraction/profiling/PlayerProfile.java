@@ -87,9 +87,7 @@ public class PlayerProfile {
     public void update(SpartanProtocol protocol) {
         this.offlinePlayer = protocol.bukkit();
         this.lastDataType = protocol.spartan.dataType;
-        this.lastDetectionType = protocol.packetsEnabled()
-                ? Check.DetectionType.PACKETS
-                : Check.DetectionType.BUKKIT;
+        this.lastDetectionType = protocol.spartan.detectionType;
         this.registerRunners(protocol);
     }
 

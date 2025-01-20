@@ -5,21 +5,14 @@ import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
 import com.vagdedes.spartan.abstraction.data.EncirclementData;
 import com.vagdedes.spartan.abstraction.protocol.ExtendedPotionEffect;
-import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
-import com.vagdedes.spartan.abstraction.world.SpartanLocation;
-import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
-import com.vagdedes.spartan.utils.math.MathHelper;
-import com.vagdedes.spartan.utils.math.RayLine;
-import com.vagdedes.spartan.utils.math.RayUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
-import com.vagdedes.spartan.utils.minecraft.vector.SpartanVector2D;
-import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.*;
-import org.bukkit.event.player.PlayerVelocityEvent;
+import org.bukkit.entity.Boat;
+import org.bukkit.entity.Horse;
+import org.bukkit.entity.Minecart;
+import org.bukkit.entity.Vehicle;
 import org.bukkit.potion.PotionEffectType;
 
 public class IMSimulationVehicle extends ProbabilityDetection {

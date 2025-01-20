@@ -10,7 +10,6 @@ import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
-import com.vagdedes.spartan.listeners.bukkit.standalone.ChunksEvent;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.math.MathHelper;
@@ -41,6 +40,8 @@ public class SpartanPlayer {
     public final PlayerClicks clicks;
     private long lastInteraction;
     private boolean afk;
+    private Entity[] nearbyEntities;
+    private final double[] maxNearbyEntitiesCoordinate;
 
     static {
         SpartanBukkit.runRepeatingTask(() -> {
@@ -55,6 +56,11 @@ public class SpartanPlayer {
                     protocol.profile().getRunner(Enums.HackType.Exploits).run(false);
                     protocol.spartan.movement.schedulerFrom = protocol.getLocation();
                     protocol.spartan.checkForAFK();
+                    protocol.spartan.nearbyEntities = protocol.bukkit().getNearbyEntities(
+                            protocol.spartan.maxNearbyEntitiesCoordinate[0],
+                            protocol.spartan.maxNearbyEntitiesCoordinate[1],
+                            protocol.spartan.maxNearbyEntitiesCoordinate[2]
+                    ).toArray(new Entity[0]);
                 }
             }
         }, 1L, 1L);
@@ -71,6 +77,8 @@ public class SpartanPlayer {
                 ? Check.DetectionType.PACKETS
                 : Check.DetectionType.BUKKIT;
         this.trackers = new PlayerTrackers();
+        this.nearbyEntities = new Entity[0];
+        this.maxNearbyEntitiesCoordinate = new double[3];
 
         this.potionEffects = new ConcurrentHashMap<>(2);
         this.setStoredPotionEffects();
@@ -353,12 +361,15 @@ public class SpartanPlayer {
     // Separator
 
     public List<Entity> getNearbyEntities(double radius) {
+        this.maxNearbyEntitiesCoordinate[0] = Math.max(radius, this.maxNearbyEntitiesCoordinate[0]);
+        this.maxNearbyEntitiesCoordinate[1] = Math.max(radius, this.maxNearbyEntitiesCoordinate[1]);
+        this.maxNearbyEntitiesCoordinate[2] = Math.max(radius, this.maxNearbyEntitiesCoordinate[2]);
+
         if (SpartanBukkit.isSynchronised()) {
             return this.protocol.bukkit().getNearbyEntities(radius, radius, radius);
         } else {
             List<Entity> entities = new ArrayList<>();
             Location location = protocol.getLocation();
-            World world = location.getWorld();
             int smallX = MathHelper.floor_double((location.getX() - radius) / PlayerUtils.chunk);
             int bigX = MathHelper.floor_double((location.getX() + radius) / PlayerUtils.chunk);
             int smallZ = MathHelper.floor_double((location.getZ() - radius) / PlayerUtils.chunk);
@@ -367,17 +378,15 @@ public class SpartanPlayer {
 
             for (int xx = smallX; xx <= bigX; xx++) {
                 for (int zz = smallZ; zz <= bigZ; zz++) {
-                    if (ChunksEvent.isLoaded(world, xx, zz)) {
-                        for (Entity entity : world.getChunkAt(xx, zz).getEntities()) {
-                            Location eLoc = ProtocolLib.getLocationOrNull(entity);
+                    for (Entity entity : nearbyEntities) {
+                        Location eLoc = ProtocolLib.getLocationOrNull(entity);
 
-                            if (eLoc != null) {
-                                if (SpartanLocation.distanceSquared(
-                                        eLoc,
-                                        location
-                                ) <= radiusSquared) {
-                                    entities.add(entity);
-                                }
+                        if (eLoc != null) {
+                            if (SpartanLocation.distanceSquared(
+                                    eLoc,
+                                    location
+                            ) <= radiusSquared) {
+                                entities.add(entity);
                             }
                         }
                     }
@@ -389,12 +398,15 @@ public class SpartanPlayer {
     }
 
     public List<Entity> getNearbyEntities(double x, double y, double z) {
+        this.maxNearbyEntitiesCoordinate[0] = Math.max(x, this.maxNearbyEntitiesCoordinate[0]);
+        this.maxNearbyEntitiesCoordinate[1] = Math.max(y, this.maxNearbyEntitiesCoordinate[1]);
+        this.maxNearbyEntitiesCoordinate[2] = Math.max(z, this.maxNearbyEntitiesCoordinate[2]);
+
         if (SpartanBukkit.isSynchronised()) {
             return this.protocol.bukkit().getNearbyEntities(x, y, z);
         } else {
             List<Entity> entities = new ArrayList<>();
             Location location = protocol.getLocation();
-            World world = location.getWorld();
             int smallX = MathHelper.floor_double((location.getX() - x) / PlayerUtils.chunk);
             int bigX = MathHelper.floor_double((location.getX() + x) / PlayerUtils.chunk);
             int smallZ = MathHelper.floor_double((location.getZ() - z) / PlayerUtils.chunk);
@@ -402,16 +414,14 @@ public class SpartanPlayer {
 
             for (int xx = smallX; xx <= bigX; xx++) {
                 for (int zz = smallZ; zz <= bigZ; zz++) {
-                    if (ChunksEvent.isLoaded(world, xx, zz)) {
-                        for (Entity entity : world.getChunkAt(xx, zz).getEntities()) {
-                            Location eLoc = ProtocolLib.getLocationOrNull(entity);
+                    for (Entity entity : nearbyEntities) {
+                        Location eLoc = ProtocolLib.getLocationOrNull(entity);
 
-                            if (eLoc != null) {
-                                if (Math.abs(eLoc.getX() - location.getX()) <= x
-                                        && Math.abs(eLoc.getY() - location.getY()) <= y
-                                        && Math.abs(eLoc.getZ() - location.getZ()) <= z) {
-                                    entities.add(entity);
-                                }
+                        if (eLoc != null) {
+                            if (Math.abs(eLoc.getX() - location.getX()) <= x
+                                    && Math.abs(eLoc.getY() - location.getY()) <= y
+                                    && Math.abs(eLoc.getZ() - location.getZ()) <= z) {
+                                entities.add(entity);
                             }
                         }
                     }
