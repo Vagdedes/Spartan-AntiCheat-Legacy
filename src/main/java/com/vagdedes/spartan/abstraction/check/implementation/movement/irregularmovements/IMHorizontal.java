@@ -22,10 +22,8 @@ public class IMHorizontal extends ProbabilityDetection {
 
     void run(boolean knownBox, boolean knownOldBox, double box, double oldBox, double vertical) {
         this.call(() -> {
-            if (this.protocol.spartan.movement.wasGliding()) {
-                return;
-            }
-            if (this.protocol.spartan.getVehicle() == null
+            if (!this.protocol.spartan.movement.wasGliding()
+                    && this.protocol.spartan.getVehicle() == null
                     && !this.protocol.spartan.trackers.has(PlayerTrackers.TrackerType.BUBBLE_WATER, "soul-sand")) {
                 int airTicks = this.protocol.spartan.movement.getTicksOnAir();
 

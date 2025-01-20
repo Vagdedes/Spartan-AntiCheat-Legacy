@@ -56,11 +56,9 @@ public class IrregularMovementsJump extends ProbabilityDetection {
     }
 
     void run(double vertical, double box) {
-        if (this.jump_ticks.canCall()
-                || this.jump_height.canCall()) {
-            if (this.protocol.spartan.movement.wasGliding()) {
-                return;
-            }
+        if ((this.jump_ticks.canCall()
+                || this.jump_height.canCall())
+                && !this.protocol.spartan.movement.wasGliding()) {
             if (this.protocol.spartan.trackers.has(PlayerTrackers.TrackerFamily.VELOCITY)
                     ? this.protocol.spartan.movement.justJumped(vertical)
                     : this.protocol.spartan.movement.isJumping(vertical)) {
