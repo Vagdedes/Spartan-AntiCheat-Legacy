@@ -7,3 +7,4 @@
 [#] Fixed nearby entities console errors
 [#] Fixed issue with big number probabilities in Discord webhooks
 [#] Fixed Discord webhooks firing for disabled checks
+[#] Improved the preventions by abstracting the method responsible for every detection
