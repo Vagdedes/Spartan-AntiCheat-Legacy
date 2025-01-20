@@ -16,7 +16,8 @@ public class IMFoodSprint extends HardcodedDetection {
 
     void run() {
         this.call(() -> {
-            if (this.protocol.isSprinting()) {
+            if (this.protocol.isSprinting()
+                    && !this.protocol.spartan.movement.wasGliding()) {
                 GameMode gameMode = this.protocol.bukkit().getGameMode();
                 int food = this.protocol.bukkit().getFoodLevel(),
                         threshold = 6;

@@ -96,6 +96,9 @@ public class IMStepBukkit extends ProbabilityDetection {
     void run(boolean knownBox, boolean knownOldBox,
              double box, double oldBox,
              double vertical, boolean teleported) {
+        if (this.protocol.spartan.movement.wasGliding()) {
+            return;
+        }
         Entity vehicle = this.protocol.spartan.getVehicle();
 
         if (knownBox && knownOldBox) {
