@@ -110,7 +110,7 @@ public class IrregularMovements extends CheckRunner {
                 false,
                 true,
                 false
-        ) && !this.protocol.spartan.movement.wasGliding();
+        );
     }
 
 }
