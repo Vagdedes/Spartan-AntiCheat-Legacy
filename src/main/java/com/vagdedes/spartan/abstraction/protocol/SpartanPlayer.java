@@ -54,11 +54,16 @@ public class SpartanPlayer {
                     protocol.profile().getRunner(Enums.HackType.Exploits).run(false);
                     protocol.spartan.movement.schedulerFrom = protocol.getLocation();
                     protocol.spartan.checkForAFK();
-                    protocol.spartan.nearbyEntities = protocol.bukkit().getNearbyEntities(
-                            protocol.spartan.maxNearbyEntitiesCoordinate[0],
-                            protocol.spartan.maxNearbyEntitiesCoordinate[1],
-                            protocol.spartan.maxNearbyEntitiesCoordinate[2]
-                    ).toArray(new Entity[0]);
+
+                    if (protocol.spartan.maxNearbyEntitiesCoordinate[0] > 0.0
+                            || protocol.spartan.maxNearbyEntitiesCoordinate[1] > 0.0
+                            || protocol.spartan.maxNearbyEntitiesCoordinate[2] > 0.0) {
+                        protocol.spartan.nearbyEntities = protocol.bukkit().getNearbyEntities(
+                                protocol.spartan.maxNearbyEntitiesCoordinate[0],
+                                protocol.spartan.maxNearbyEntitiesCoordinate[1],
+                                protocol.spartan.maxNearbyEntitiesCoordinate[2]
+                        ).toArray(new Entity[0]);
+                    }
                 }
             }
         }, 1L, 1L);
