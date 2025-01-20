@@ -4,6 +4,8 @@ import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
 
 public abstract class HardcodedDetection extends CheckDetection {
 
+    private static final long decay = 60_000;
+
     private long lastUpdate;
 
     public HardcodedDetection(
@@ -23,21 +25,22 @@ public abstract class HardcodedDetection extends CheckDetection {
                     this.protocol.spartan.dataType,
                     PlayerEvidence.probabilityToCertainty(ratio)
             );
-            this.lastUpdate = System.currentTimeMillis();
+            this.lastUpdate = System.currentTimeMillis() + decay;
         }
     }
 
     @Override
     public final double getProbability(Check.DataType dataType) {
-        long max = 60_000;
-        double passed = max - (System.currentTimeMillis() - this.lastUpdate) / (double) max;
+        if (this.lastUpdate > System.currentTimeMillis()) {
+            double passed = decay - (this.lastUpdate - System.currentTimeMillis()) / (double) decay;
 
-        if (passed <= 0.0) {
-            return PlayerEvidence.emptyProbability;
-        } else if (PlayerEvidence.POSITIVE) {
-            return passed * super.getProbability(dataType);
+            if (PlayerEvidence.POSITIVE) {
+                return passed * super.getProbability(dataType);
+            } else {
+                return 1.0 - (passed * (1.0 - super.getProbability(dataType)));
+            }
         } else {
-            return 1.0 - (passed * (1.0 - super.getProbability(dataType)));
+            return PlayerEvidence.emptyProbability;
         }
     }
 

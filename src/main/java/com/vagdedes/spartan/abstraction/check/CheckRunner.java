@@ -99,14 +99,16 @@ public abstract class CheckRunner extends CheckProcess {
     public final double getExtremeProbability(Check.DataType dataType, Check.DetectionType detectionType) {
         double num = PlayerEvidence.emptyProbability;
 
-        for (CheckDetection detectionExecutor : this.getDetections()) {
-            if (detectionExecutor.supportsDataType(dataType)
-                    && detectionExecutor.supportsDetectionType(detectionType)
-                    && detectionExecutor.hasSufficientData(dataType)) {
-                if (PlayerEvidence.POSITIVE) {
-                    num = Math.max(num, detectionExecutor.getProbability(dataType));
-                } else {
-                    num = Math.min(num, detectionExecutor.getProbability(dataType));
+        if (this.hackType.getCheck().isEnabled(dataType, null)) {
+            for (CheckDetection detectionExecutor : this.getDetections()) {
+                if (detectionExecutor.supportsDataType(dataType)
+                        && detectionExecutor.supportsDetectionType(detectionType)
+                        && detectionExecutor.hasSufficientData(dataType)) {
+                    if (PlayerEvidence.POSITIVE) {
+                        num = Math.max(num, detectionExecutor.getProbability(dataType));
+                    } else {
+                        num = Math.min(num, detectionExecutor.getProbability(dataType));
+                    }
                 }
             }
         }

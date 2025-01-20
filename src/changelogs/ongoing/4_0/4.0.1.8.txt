@@ -2,3 +2,5 @@
 [+] New elytra movement checks
 [#] Fixed a null message error
 [#] Fixed nearby entities console errors
+[#] Fixed issue with big number probabilities in Discord webhooks
+[#] Fixed Discord webhooks firing for disabled checks
