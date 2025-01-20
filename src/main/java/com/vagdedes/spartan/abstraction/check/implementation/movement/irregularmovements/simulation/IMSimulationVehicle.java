@@ -104,7 +104,7 @@ public class IMSimulationVehicle extends ProbabilityDetection {
                 }
                 if (speed > allowedSpeed) {
                     this.vl += speed / allowedSpeed;
-                    if (this.vl > 10.0) {
+                    if (this.vl > 12.0) {
                         this.cancel("type: vehicle limit speed " + speed);
                         this.vl /= 1.3;
                     }
@@ -117,12 +117,12 @@ public class IMSimulationVehicle extends ProbabilityDetection {
 
                 if (y > allowedVertical) {
                     this.vl += Math.abs(y / allowedVertical);
-                    if (this.vl > 10.0) {
+                    if (this.vl > 15.0) {
                         this.cancel("type: vehicle limit gravity " + y);
                         this.vl /= 1.3;
                     }
                 }
-                this.vl /= 1.15;
+                this.vl /= 1.2;
             }
             from = to.clone();
             oldY = y;
