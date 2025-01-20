@@ -106,7 +106,7 @@ public class IrregularMovements extends CheckRunner {
     protected boolean canRun() {
         return MovementProcessing.canCheck(
                 this.protocol,
-                false,
+                true,
                 false,
                 true,
                 false
