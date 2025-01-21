@@ -28,13 +28,16 @@ public class CrossServerNotifications {
         SpartanBukkit.runRepeatingTask(() -> SpartanBukkit.connectionThread.executeIfFree(() -> {
             if (Config.sql.isEnabled()) {
                 List<SpartanProtocol> protocols = DetectionNotifications.getPlayers();
-                if (!protocols.isEmpty()) result(protocols);
+
+                if (!protocols.isEmpty()) {
+                    run(protocols);
+                }
             }
         }), 1L, 1L);
     }
 
     @SneakyThrows
-    private static void result(List<SpartanProtocol> protocols) {
+    private static void run(List<SpartanProtocol> protocols) {
         @Cleanup
         ResultSet rs = Config.sql.query("SELECT "
                 + "id, player_name, server_name, notification, information, functionality"
@@ -64,25 +67,27 @@ public class CrossServerNotifications {
                                                 CheckDetection.certaintyIdentifier
                                         );
 
-                                notification = "§l[" + serverName + "]§r " + notification;
+                                if (certaintyString != null) {
+                                    notification = "§l[" + serverName + "]§r " + notification;
 
-                                for (SpartanProtocol protocol : protocols) {
-                                    CheckDetection
-                                            staffDetection = protocol.profile().getRunner(hackType).getDetection(detection),
-                                            playerDetection = ResearchEngine.getPlayerProfile(playerName).getRunner(hackType).getDetection(detection);
+                                    for (SpartanProtocol protocol : protocols) {
+                                        CheckDetection
+                                                staffDetection = protocol.profile().getRunner(hackType).getDetection(detection),
+                                                playerDetection = ResearchEngine.getPlayerProfile(playerName).getRunner(hackType).getDetection(detection);
 
-                                    if (staffDetection != null
-                                            && playerDetection != null
-                                            && staffDetection.canSendNotification(
-                                            playerDetection,
-                                            System.currentTimeMillis(),
-                                            certaintyString == null ? -1.0 : Double.parseDouble(certaintyString)
-                                    )) {
-                                        protocol.bukkit().sendMessage(notification);
-                                        processed.put(id, true);
+                                        if (staffDetection != null
+                                                && playerDetection != null
+                                                && staffDetection.canSendNotification(
+                                                playerDetection,
+                                                System.currentTimeMillis(),
+                                                Double.parseDouble(certaintyString)
+                                        )) {
+                                            protocol.bukkit().sendMessage(notification);
+                                            processed.put(id, true);
+                                        }
                                     }
+                                    break;
                                 }
-                                break;
                             }
                         }
                     }

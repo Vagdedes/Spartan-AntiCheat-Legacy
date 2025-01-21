@@ -178,57 +178,51 @@ public abstract class CheckDetection extends CheckProcess {
         if (ticks == 0) {
             return canSend;
         } else if (canSend && this.notifications <= time) {
-            if (certainty == -1.0
-                    || detection == null) {
-                this.notifications = System.currentTimeMillis() + (ticks * TPS.tickTime);
-                return true;
+            int threshold = 1_000;
+
+            if (detection.accumulatedProbabilityTime < time) {
+                detection.accumulatedProbabilityTime = System.currentTimeMillis()
+                        + AlgebraUtils.integerRound((certainty / 100.0) * threshold);
             } else {
-                int threshold = 1_000;
+                detection.accumulatedProbabilityTime += AlgebraUtils.integerRound(
+                        (certainty / 100.0) * threshold
+                );
+            }
+            long remaining = detection.getAccumulatedProbabilityTime(time);
 
-                if (detection.accumulatedProbabilityTime < time) {
-                    detection.accumulatedProbabilityTime = System.currentTimeMillis()
-                            + AlgebraUtils.integerRound((certainty / 100.0) * threshold);
-                } else {
-                    detection.accumulatedProbabilityTime += AlgebraUtils.integerRound(
-                            (certainty / 100.0) * threshold
-                    );
-                }
-                long remaining = detection.getAccumulatedProbabilityTime(time);
+            if (remaining >= threshold) {
+                Collection<SpartanProtocol> protocols = SpartanBukkit.getProtocols();
+                long sum = 0L;
+                int total = 0;
 
-                if (remaining >= threshold) {
-                    Collection<SpartanProtocol> protocols = SpartanBukkit.getProtocols();
-                    long sum = 0L;
-                    int total = 0;
+                if (!protocols.isEmpty()) {
+                    long individual;
 
-                    if (!protocols.isEmpty()) {
-                        long individual;
+                    for (SpartanProtocol protocol : protocols) {
+                        if (!protocol.spartan.isAFK()) {
+                            CheckDetection protocolDetection = protocol.profile().getRunner(
+                                    this.hackType
+                            ).getDetection(
+                                    this.name
+                            );
 
-                        for (SpartanProtocol protocol : protocols) {
-                            if (!protocol.spartan.isAFK()) {
-                                CheckDetection protocolDetection = protocol.profile().getRunner(
-                                        this.hackType
-                                ).getDetection(
-                                        this.name
-                                );
-
-                                if (protocolDetection != null) {
-                                    individual = protocolDetection.getAccumulatedProbabilityTime(time);
-                                    sum += individual * individual;
-                                    total++;
-                                }
+                            if (protocolDetection != null) {
+                                individual = protocolDetection.getAccumulatedProbabilityTime(time);
+                                sum += individual * individual;
+                                total++;
                             }
                         }
                     }
+                }
 
-                    if (total > 0) {
-                        if (remaining >= Math.sqrt(sum / (double) total)) {
-                            detection.notifications = System.currentTimeMillis() + (ticks * TPS.tickTime);
-                            return true;
-                        }
-                    } else {
-                        this.notifications = System.currentTimeMillis() + (ticks * TPS.tickTime);
+                if (total > 0) {
+                    if (remaining >= Math.sqrt(sum / (double) total)) {
+                        detection.notifications = System.currentTimeMillis() + (ticks * TPS.tickTime);
                         return true;
                     }
+                } else {
+                    this.notifications = System.currentTimeMillis() + (ticks * TPS.tickTime);
+                    return true;
                 }
             }
         }
@@ -289,7 +283,7 @@ public abstract class CheckDetection extends CheckProcess {
                     .replace("{player}", this.protocol.bukkit().getName());
 
             if (Config.settings.getBoolean("Notifications.individual_only_notifications")) {
-                if (DetectionNotifications.isEnabled(this.protocol)) { // Attention
+                if (this.canSendNotification(this, time, certainty)) {
                     ClickableMessage.sendCommand(this.protocol.bukkit(), notification, command, command);
                 }
             } else {
