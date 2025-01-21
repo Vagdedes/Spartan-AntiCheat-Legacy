@@ -1,1 +1,2 @@
 [#] Fixed error with bukkit speed detection
+[#] Fixed error with packets vehicle detection
