@@ -223,7 +223,7 @@ public class ManageChecks extends InventoryMenu {
 
         if (notEnoughData != null && (!silent || punish)) {
             lore.add("");
-            lore.add("§eData pending to enable preventions & punishments.");
+            lore.add("§eData incomplete in order to enable preventions & punishments.");
         }
         if (enabled && silent) {
             item.addUnsafeEnchantment(EnchantmentUtils.DURABILITY, 1);

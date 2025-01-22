@@ -146,13 +146,13 @@ public abstract class ProbabilityDetection extends CheckDetection {
 
         if (iterator.hasNext()) {
             long previous = iterator.next(),
-                    firstTime = -1;
+                    firstTime = -1L;
 
             while (iterator.hasNext()) {
                 long current = iterator.next();
 
                 if (profile.getContinuity().wasOnline(current, previous)) {
-                    if (firstTime == -1) {
+                    if (firstTime == -1L) {
                         firstTime = previous;
                         violationCount = 2; // Current & previous
                     } else {
@@ -161,7 +161,7 @@ public abstract class ProbabilityDetection extends CheckDetection {
                     comparisonCount++;
                     long delta = current - previous;
                     violationVelocitySquareSum += delta * delta;
-                } else if (firstTime != -1) {
+                } else if (firstTime != -1L) {
                     // Calculate
                     violationCount /= (previous - firstTime) / 1000.0; // Convert online time to seconds
                     double averageViolationVelocity = Math.sqrt(violationVelocitySquareSum / comparisonCount),
@@ -176,7 +176,7 @@ public abstract class ProbabilityDetection extends CheckDetection {
                     // Reset
                     comparisonCount = 0.0;
                     violationVelocitySquareSum = 0;
-                    firstTime = -1;
+                    firstTime = -1L;
                 }
                 previous = current;
             }
