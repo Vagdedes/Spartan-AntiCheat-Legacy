@@ -82,6 +82,20 @@ public abstract class ProbabilityDetection extends CheckDetection {
         data.add(time);
     }
 
+    private static double prepareData(
+            double violationCount,
+            double violationVelocitySquareSum,
+            double comparisonCount,
+            double onlineTime
+    ) {
+        violationCount /= onlineTime / 1000.0; // Convert online time to seconds
+        double averageViolationVelocity = Math.sqrt(violationVelocitySquareSum / comparisonCount),
+                result = averageViolationVelocity / violationCount;
+        return Double.isInfinite(result) || Double.isNaN(result)
+                ? -1.0
+                : result;
+    }
+
     @Override
     public final double getAllData(PlayerProfile profile, Check.DataType dataType) {
         Collection<Long> data = this.data[dataType.ordinal()];
@@ -106,9 +120,9 @@ public abstract class ProbabilityDetection extends CheckDetection {
                 long current = iterator.next();
 
                 if (profile.getContinuity().wasOnline(current, previous)) {
-                    comparisonCount++;
                     long delta = current - previous;
                     violationVelocitySquareSum += delta * delta;
+                    comparisonCount++;
                 }
                 previous = current;
             }
@@ -116,16 +130,12 @@ public abstract class ProbabilityDetection extends CheckDetection {
         if (comparisonCount == 0.0) {
             return -1.0;
         }
-        violationCount /= onlineTime / 1000.0; // Convert online time to seconds
-
-        double averageViolationVelocity = Math.sqrt(violationVelocitySquareSum / comparisonCount),
-                result = averageViolationVelocity / violationCount;
-
-        if (Double.isInfinite(result)
-                || Double.isNaN(result)) {
-            return -1.0;
-        }
-        return result;
+        return prepareData(
+                violationCount,
+                violationVelocitySquareSum,
+                comparisonCount,
+                onlineTime
+        );
     }
 
     @Override
@@ -138,15 +148,16 @@ public abstract class ProbabilityDetection extends CheckDetection {
         if (!profile.getContinuity().hasOnlineTime()) {
             return new ArrayList<>(0);
         }
-        List<Double> samples = new ArrayList<>();
-        double violationCount = 0.0,
-                comparisonCount = 0.0;
-        long violationVelocitySquareSum = 0;
         Iterator<Long> iterator = data.iterator();
 
         if (iterator.hasNext()) {
+            List<Double> samples = new ArrayList<>();
+
+            double violationCount = 0.0,
+                    comparisonCount = 0.0;
             long previous = iterator.next(),
-                    firstTime = -1L;
+                    firstTime = -1L,
+                    violationVelocitySquareSum = 0L;
 
             while (iterator.hasNext()) {
                 long current = iterator.next();
@@ -158,30 +169,47 @@ public abstract class ProbabilityDetection extends CheckDetection {
                     } else {
                         violationCount++;
                     }
-                    comparisonCount++;
                     long delta = current - previous;
                     violationVelocitySquareSum += delta * delta;
-                } else if (firstTime != -1L) {
-                    // Calculate
-                    violationCount /= (previous - firstTime) / 1000.0; // Convert online time to seconds
-                    double averageViolationVelocity = Math.sqrt(violationVelocitySquareSum / comparisonCount),
-                            result = averageViolationVelocity / violationCount;
+                    comparisonCount++;
+                    long onlineTime = current - firstTime;
 
-                    // Queue
-                    if (!Double.isInfinite(result)
-                            && !Double.isNaN(result)) {
+                    if (onlineTime >= 300_000L) {
+                        double result = prepareData(
+                                violationCount,
+                                violationVelocitySquareSum,
+                                comparisonCount,
+                                onlineTime
+                        );
+
+                        if (result != -1.0) {
+                            samples.add(result);
+                        }
+                        comparisonCount = 0.0;
+                        violationVelocitySquareSum = 0;
+                        firstTime = -1L;
+                    }
+                } else if (firstTime != -1L) {
+                    double result = prepareData(
+                            violationCount,
+                            violationVelocitySquareSum,
+                            comparisonCount,
+                            current - firstTime
+                    );
+
+                    if (result != -1.0) {
                         samples.add(result);
                     }
-
-                    // Reset
                     comparisonCount = 0.0;
                     violationVelocitySquareSum = 0;
                     firstTime = -1L;
                 }
                 previous = current;
             }
+            return samples;
+        } else {
+            return new ArrayList<>(0);
         }
-        return samples;
     }
 
 }
