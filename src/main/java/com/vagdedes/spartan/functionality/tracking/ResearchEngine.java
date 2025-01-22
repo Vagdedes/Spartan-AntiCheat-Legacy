@@ -404,7 +404,7 @@ public class ResearchEngine {
                                             SimpleDateFormat sdf = new SimpleDateFormat(AntiCheatLogs.dateFormat);
 
                                             try {
-                                                detectionExecutor.store(
+                                                detectionExecutor.storeData(
                                                         dataType,
                                                         sdf.parse(fullDate).getTime()
                                                 );
@@ -494,7 +494,7 @@ public class ResearchEngine {
         for (PlayerProfile profile : playerProfiles.values()) {
             for (CheckRunner runner : profile.getRunners()) {
                 for (CheckDetection detection : runner.getDetections()) {
-                    detection.sort();
+                    detection.sortData();
                 }
             }
         }
@@ -528,69 +528,80 @@ public class ResearchEngine {
                         : (dataTypes == null || dataTypes.isEmpty()
                         ? Arrays.asList(Check.DataType.values()) :
                         dataTypes))) {
-                    Map<String, Map<CheckDetection, Double>> wave = new LinkedHashMap<>();
+                    Map<String, Map<CheckDetection, List<Double>>> wave = new LinkedHashMap<>();
 
                     if (hackType.getCheck().isEnabled(dataType, null)) {
                         for (PlayerProfile profile : profiles) {
                             for (CheckDetection detectionExecutor : profile.getRunner(hackType).getDetections()) {
-                                double data = detectionExecutor.getData(profile, dataType);
+                                List<Double> dataSamples = detectionExecutor.getDataSamples(profile, dataType);
+                                double allData = detectionExecutor.getAllData(profile, dataType);
 
-                                if (data != -1.0) {
+                                if (allData != -1.0) {
+                                    dataSamples.add(allData);
                                     wave.computeIfAbsent(
                                             detectionExecutor.name,
                                             k -> new LinkedHashMap<>()
                                     ).put(
                                             detectionExecutor,
-                                            data
+                                            dataSamples
                                     );
+                                }
+                            }
+                        }
+
+                        if (wave.isEmpty()) {
+                            for (PlayerProfile profile : profiles) {
+                                for (CheckDetection detection : profile.getRunner(hackType).getDetections()) {
+                                    detection.setProbability(dataType, PlayerEvidence.nullProbability);
+                                }
+                            }
+                        } else {
+                            for (Map<CheckDetection, List<Double>> map : wave.values()) {
+                                Collection<List<Double>> allValues = map.values();
+                                double divisor = 0;
+
+                                for (List<Double> values : allValues) {
+                                    divisor += values.size();
+                                }
+                                if (divisor < PlayerEvidence.factorRequirement) {
+                                    for (CheckDetection detection : map.keySet()) {
+                                        detection.setProbability(dataType, PlayerEvidence.nullProbability);
+                                    }
+                                } else {
+                                    double sum = 0,
+                                            variance = 0;
+
+                                    for (List<Double> values : allValues) {
+                                        for (double value : values) {
+                                            sum += value;
+                                        }
+                                    }
+                                    double mean = sum / divisor;
+
+                                    for (List<Double> values : allValues) {
+                                        for (double value : values) {
+                                            double difference = value - mean;
+                                            variance += difference * difference;
+                                        }
+                                    }
+                                    double deviation = Math.sqrt(variance / divisor);
+
+                                    for (Map.Entry<CheckDetection, List<Double>> entry : map.entrySet()) {
+                                        List<Double> collection = entry.getValue();
+                                        entry.getKey().setProbability(
+                                                dataType,
+                                                StatisticsMath.getCumulativeProbability(
+                                                        (collection.get(collection.size() - 1) - mean) / deviation
+                                                )
+                                        );
+                                    }
                                 }
                             }
                         }
                     } else {
                         for (PlayerProfile profile : profiles) {
-                            for (CheckDetection detectionExecutor : profile.getRunner(hackType).getDetections()) {
-                                detectionExecutor.clearProbability(dataType);
-                            }
-                        }
-                    }
-
-                    if (wave.isEmpty()) {
-                        for (PlayerProfile profile : profiles) {
-                            for (CheckDetection detectionExecutor : profile.getRunner(hackType).getDetections()) {
-                                detectionExecutor.clearProbability(dataType);
-                            }
-                        }
-                    } else {
-                        for (Map<CheckDetection, Double> map : wave.values()) {
-                            double divisor = map.size();
-
-                            if (divisor < PlayerEvidence.factorRequirement) {
-                                for (CheckDetection detection : map.keySet()) {
-                                    detection.clearProbability(dataType);
-                                }
-                            } else {
-                                double sum = 0,
-                                        variance = 0;
-
-                                for (double value : map.values()) {
-                                    sum += value;
-                                }
-                                double mean = sum / divisor;
-
-                                for (double value : map.values()) {
-                                    double difference = value - mean;
-                                    variance += difference * difference;
-                                }
-                                double deviation = Math.sqrt(variance / divisor);
-
-                                for (Map.Entry<CheckDetection, Double> entry : map.entrySet()) {
-                                    entry.getKey().setProbability(
-                                            dataType,
-                                            StatisticsMath.getCumulativeProbability(
-                                                    (entry.getValue() - mean) / deviation
-                                            )
-                                    );
-                                }
+                            for (CheckDetection detection : profile.getRunner(hackType).getDetections()) {
+                                detection.clearProbability(dataType);
                             }
                         }
                     }

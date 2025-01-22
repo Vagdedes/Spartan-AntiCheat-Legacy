@@ -1,6 +1,5 @@
 package com.vagdedes.spartan.abstraction.check;
 
-import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.compatibility.Compatibility;
 import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
@@ -14,7 +13,6 @@ import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
-import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import me.vagdedes.spartan.system.Enums;
@@ -107,48 +105,6 @@ public abstract class CheckRunner extends CheckProcess {
             }
         }
         return num;
-    }
-
-    public final long getRemainingCompletionTime(Check.DataType dataType, Check.DetectionType detectionType) {
-        Collection<PlayerProfile> playerProfiles = ResearchEngine.getPlayerProfiles();
-
-        if (playerProfiles.isEmpty()) {
-            return 0L;
-        } else {
-            double averageTime = 0.0,
-                    averageCompletion = 0.0;
-            int size = 0;
-
-            for (PlayerProfile profile : playerProfiles) {
-                for (CheckDetection detection : profile.getRunner(this.hackType).getDetections()) {
-                    if (detection.supportsDataType(dataType)
-                            && detection.supportsDetectionType(detectionType)) {
-                        long firstTime = detection.getFirstTime(dataType);
-
-                        if (firstTime != -1L) {
-                            long lastTime = detection.getLastTime(dataType);
-
-                            if (lastTime != -1L) {
-                                double completion = detection.getDataCompletion(dataType);
-                                averageCompletion += completion * completion;
-                                lastTime -= firstTime;
-                                averageTime += lastTime * lastTime;
-                                size++;
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (size == 0) {
-                return 0L;
-            }
-            averageTime = Math.sqrt(averageTime / size);
-            averageCompletion = Math.sqrt(averageCompletion / size);
-            long time = (long) ((1.0 - averageCompletion) * averageTime);
-            // Less than a second is quite irrelevant
-            return Math.max(time, 1_000L);
-        }
     }
 
     // Detections

@@ -4,7 +4,6 @@ import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
 import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
-import com.vagdedes.spartan.utils.java.TimeUtils;
 import com.vagdedes.spartan.utils.minecraft.inventory.InventoryUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.inventory.Inventory;
@@ -125,23 +124,14 @@ public class PlayerStateLists {
                         lore.add("§7Has data for§8:");
 
                         for (Enums.HackType hackType : evidenceDetails) {
-                            boolean sufficientData = profile.getRunner(hackType).hasSufficientData(
+                            String description = "§4" + hackType.getCheck().getName();
+
+                            if (!profile.getRunner(hackType).hasSufficientData(
                                     profile.getLastDataType(),
                                     profile.getLastDetectionType(),
                                     PlayerEvidence.dataRatio
-                            );
-                            long remainingTime = sufficientData
-                                    ? 0L
-                                    : profile.getRunner(hackType).getRemainingCompletionTime(
-                                    profile.getLastDataType(),
-                                    profile.getLastDetectionType()
-                            );
-                            String description = "§4" + hackType.getCheck().getName();
-
-                            if (remainingTime > 0L) {
-                                description += " §8(§7Data pending: " + TimeUtils.convertMilliseconds(remainingTime) + "§8)";
-                            } else if (!sufficientData) {
-                                description += " §8(§7Data pending§8)";
+                            )) {
+                                description += " §8(§7Data incomplete§8)";
                             }
                             lore.add(description);
                         }

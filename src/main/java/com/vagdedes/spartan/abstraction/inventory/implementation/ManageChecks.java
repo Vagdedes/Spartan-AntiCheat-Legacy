@@ -14,7 +14,6 @@ import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
 import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
-import com.vagdedes.spartan.utils.java.TimeUtils;
 import com.vagdedes.spartan.utils.minecraft.inventory.EnchantmentUtils;
 import com.vagdedes.spartan.utils.minecraft.inventory.MaterialUtils;
 import me.vagdedes.spartan.system.Enums;
@@ -223,18 +222,8 @@ public class ManageChecks extends InventoryMenu {
         // Separator
 
         if (notEnoughData != null && (!silent || punish)) {
-            long remainingTime = protocol.profile().getRunner(hackType).getRemainingCompletionTime(
-                    notEnoughData,
-                    null
-            );
             lore.add("");
-
-            if (remainingTime > 0L) {
-                lore.add("§eData pending to enable preventions & punishments:");
-                lore.add("§e" + TimeUtils.convertMilliseconds(remainingTime));
-            } else {
-                lore.add("§eData pending to enable preventions & punishments.");
-            }
+            lore.add("§eData pending to enable preventions & punishments.");
         }
         if (enabled && silent) {
             item.addUnsafeEnchantment(EnchantmentUtils.DURABILITY, 1);

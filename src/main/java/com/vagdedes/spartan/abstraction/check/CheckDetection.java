@@ -20,6 +20,7 @@ import me.vagdedes.spartan.api.PlayerViolationEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -73,11 +74,6 @@ public abstract class CheckDetection extends CheckProcess {
         }
     }
 
-    @Override
-    public int hashCode() {
-        return this.hackType.hashCode() * SpartanBukkit.hashCodeMultiplier + this.name.hashCode();
-    }
-
     // Check
 
     public final boolean isEnabled() {
@@ -112,35 +108,19 @@ public abstract class CheckDetection extends CheckProcess {
 
     abstract protected boolean hasSufficientData(Check.DataType dataType);
 
-    public void clearData(Check.DataType dataType) {
-    }
+    public abstract void clearData(Check.DataType dataType);
 
-    public void store(Check.DataType dataType, long time) {
-    }
+    public abstract void storeData(Check.DataType dataType, long time);
 
-    public void sort() {
-    }
+    public abstract void sortData();
 
-    protected boolean hasData(
-            PlayerProfile profile,
-            Check.DataType dataType
-    ) {
-        return true;
-    }
-
-    public double getData(PlayerProfile profile, Check.DataType dataType) {
+    public double getAllData(PlayerProfile profile, Check.DataType dataType) {
         return -1.0;
     }
 
-    long getFirstTime(Check.DataType dataType) {
-        return -1L;
+    public List<Double> getDataSamples(PlayerProfile profile, Check.DataType dataType) {
+        return new ArrayList<>(0);
     }
-
-    long getLastTime(Check.DataType dataType) {
-        return -1L;
-    }
-
-    abstract double getDataCompletion(Check.DataType dataType);
 
     // Probability
 
@@ -148,7 +128,7 @@ public abstract class CheckDetection extends CheckProcess {
         this.probability.remove(dataType);
     }
 
-    public final void setProbability(Check.DataType dataType, double probability) {
+    public void setProbability(Check.DataType dataType, double probability) {
         if (probability == PlayerEvidence.emptyProbability) {
             this.probability.remove(dataType);
         } else {
@@ -156,10 +136,17 @@ public abstract class CheckDetection extends CheckProcess {
         }
     }
 
-    public double getProbability(Check.DataType dataType) {
+    protected final double getRawProbability(Check.DataType dataType) {
         return isEnabled()
                 ? this.probability.getOrDefault(dataType, PlayerEvidence.emptyProbability)
                 : PlayerEvidence.emptyProbability;
+    }
+
+    public double getProbability(Check.DataType dataType) {
+        double probability = this.getRawProbability(dataType);
+        return probability == PlayerEvidence.nullProbability
+                ? PlayerEvidence.emptyProbability
+                : probability;
     }
 
     // Notification
@@ -229,11 +216,8 @@ public abstract class CheckDetection extends CheckProcess {
         return false;
     }
 
-    protected void notify(double probability, boolean enabled, boolean sufficientData, long time, String information) {
-        double certainty = PlayerEvidence.probabilityToCertainty(probability) * 100.0,
-                dataCompletion = sufficientData
-                        ? 100.0
-                        : this.getDataCompletion(this.protocol.spartan.dataType) * 100.0;
+    private void notify(double probability, boolean enabled, boolean sufficientData, long time, String information) {
+        double certainty = PlayerEvidence.probabilityToCertainty(probability) * 100.0;
         int roundedCertainty = AlgebraUtils.integerRound(certainty);
         String notification = ConfigUtils.replaceWithSyntax(
                 this.protocol,
@@ -242,7 +226,7 @@ public abstract class CheckDetection extends CheckProcess {
                         .replace("{detection:percentage}",
                                 sufficientData
                                         ? ((roundedCertainty == 0 ? 1 : roundedCertainty) + "/100")
-                                        : "DATA " + AlgebraUtils.integerRound(100.0 - dataCompletion) + "% INCOMPLETE"
+                                        : "DATA INCOMPLETE"
                         ),
                 hackType
         );
@@ -253,7 +237,7 @@ public abstract class CheckDetection extends CheckProcess {
                 + "(" + javaPlayerIdentifier + " " + (!this.protocol.spartan.isBedrockPlayer()) + ")" + ", "
                 + "(" + detectionIdentifier + " " + this.name + ")" + ", "
                 + "(" + certaintyIdentifier + " " + AlgebraUtils.cut(certainty, 2) + "),"
-                + "(Data-Completion: " + AlgebraUtils.cut(dataCompletion, 2) + "), "
+                + "(Data-Completed: " + sufficientData + "), "
                 + "(Server-Version: " + MultiVersion.serverVersion.toString() + "), "
                 + "(Plugin-Version: " + API.getVersion() + "), "
                 + "(Silent: " + hackType.getCheck().isSilent(this.protocol.spartan.dataType, this.protocol.getWorld().getName()) + "), "
@@ -458,7 +442,7 @@ public abstract class CheckDetection extends CheckProcess {
                 }
             }
             // Store, potentially recalculate and check data
-            this.store(
+            this.storeData(
                     this.protocol.spartan.dataType,
                     time
             );

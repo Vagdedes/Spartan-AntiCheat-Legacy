@@ -170,25 +170,16 @@ public class PlayerInfo extends InventoryMenu {
                             lore.add("");
                             lore.add("§7Certainty of cheating§8:");
                         }
-                        boolean sufficientData = profile.getRunner(
+                        String remainingDataPrompt = "";
+
+                        if (!profile.getRunner(
                                 hackType
                         ).hasSufficientData(
                                 profile.getLastDataType(),
                                 profile.getLastDetectionType(),
                                 PlayerEvidence.dataRatio
-                        );
-                        long remainingTime = sufficientData
-                                ? 0L
-                                : profile.getRunner(hackType).getRemainingCompletionTime(
-                                profile.getLastDataType(),
-                                profile.getLastDetectionType()
-                        );
-                        String remainingDataPrompt = "";
-
-                        if (remainingTime > 0L) {
-                            remainingDataPrompt = " §8(§7Data pending: " + TimeUtils.convertMilliseconds(remainingTime) + "§8)";
-                        } else if (!sufficientData) {
-                            remainingDataPrompt = " §8(§7Data pending§8)";
+                        )) {
+                            remainingDataPrompt = " §8(§7Data incomplete§8)";
                         }
                         if (PlayerEvidence.surpassedProbability(
                                 probability,
