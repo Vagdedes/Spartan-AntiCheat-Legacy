@@ -3,6 +3,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.irregular
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
+import com.vagdedes.spartan.abstraction.event.CPlayerVelocityEvent;
 import com.vagdedes.spartan.abstraction.protocol.ExtendedPotionEffect;
 import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
@@ -18,7 +19,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
-import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.potion.PotionEffectType;
 
 public class IMSimulationSpeed extends ProbabilityDetection {
@@ -272,8 +272,9 @@ public class IMSimulationSpeed extends ProbabilityDetection {
     }
 
     private void velocity(double motion, double allowedDev, SpartanVector2D move) {
-        PlayerVelocityEvent claimed = null;
-        for (PlayerVelocityEvent velo : this.protocol.claimedVeloSpeed) {
+        CPlayerVelocityEvent claimed = null;
+
+        for (CPlayerVelocityEvent velo : this.protocol.claimedVeloSpeed) {
             if (this.veloIsValid(motion, velo.getVelocity().getY())) {
                 double speed = Math.sqrt(move.x * move.x + move.y * move.y);
                 double pr = Math.sqrt(

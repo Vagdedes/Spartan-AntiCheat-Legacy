@@ -6,12 +6,12 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.vagdedes.spartan.Register;
+import com.vagdedes.spartan.abstraction.event.CPlayerVelocityEvent;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.concurrent.SpartanScheduler;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.listeners.bukkit.VelocityEvent;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.util.Vector;
 
 public class VelocityListener extends PacketAdapter {
@@ -42,7 +42,7 @@ public class VelocityListener extends PacketAdapter {
                     double x = packet.getIntegers().read(1).doubleValue() / 8000.0D,
                                     y = packet.getIntegers().read(2).doubleValue() / 8000.0D,
                                     z = packet.getIntegers().read(3).doubleValue() / 8000.0D;
-                    PlayerVelocityEvent velocityEvent = new PlayerVelocityEvent(player, new Vector(x, y, z));
+                    CPlayerVelocityEvent velocityEvent = new CPlayerVelocityEvent(player, new Vector(x, y, z));
                     velocityEvent.setCancelled(event.isCancelled());
                     VelocityEvent.event(velocityEvent, true);
                 });

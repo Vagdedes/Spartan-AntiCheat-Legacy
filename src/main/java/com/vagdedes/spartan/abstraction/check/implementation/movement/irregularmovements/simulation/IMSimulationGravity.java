@@ -3,6 +3,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.irregular
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
+import com.vagdedes.spartan.abstraction.event.CPlayerVelocityEvent;
 import com.vagdedes.spartan.abstraction.protocol.ExtendedPotionEffect;
 import com.vagdedes.spartan.abstraction.protocol.PlayerMovement;
 import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
@@ -15,7 +16,6 @@ import com.vagdedes.spartan.utils.minecraft.entity.PotionEffectUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.potion.PotionEffectType;
 
 public class IMSimulationGravity extends ProbabilityDetection {
@@ -419,8 +419,9 @@ public class IMSimulationGravity extends ProbabilityDetection {
     }
 
     private void velocity(double motion) {
-        PlayerVelocityEvent claimed = null;
-        for (PlayerVelocityEvent velo : this.protocol.claimedVeloGravity) {
+        CPlayerVelocityEvent claimed = null;
+
+        for (CPlayerVelocityEvent velo : this.protocol.claimedVeloGravity) {
             if (this.veloIsValid(motion, velo.getVelocity().getY())) {
                 this.setPredict(motion);
                 this.allowMinorGravityChange = true;

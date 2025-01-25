@@ -6,6 +6,7 @@ import com.vagdedes.spartan.abstraction.check.implementation.movement.morepacket
 import com.vagdedes.spartan.abstraction.data.CheckBoundData;
 import com.vagdedes.spartan.abstraction.data.EncirclementData;
 import com.vagdedes.spartan.abstraction.data.PacketWorld;
+import com.vagdedes.spartan.abstraction.event.CPlayerVelocityEvent;
 import com.vagdedes.spartan.abstraction.event.PlayerTickEvent;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
@@ -26,7 +27,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Vehicle;
-import org.bukkit.event.player.PlayerVelocityEvent;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -73,8 +73,8 @@ public class SpartanProtocol {
             positionHistory,
             positionHistoryLong,
             positionHistoryShort;
-    public PlayerVelocityEvent claimedVelocity;
-    public final List<PlayerVelocityEvent>
+    public CPlayerVelocityEvent claimedVelocity;
+    public final List<CPlayerVelocityEvent>
             claimedVeloGravity,
             claimedVeloSpeed;
     public long tickTime;
