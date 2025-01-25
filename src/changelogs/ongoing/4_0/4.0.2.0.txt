@@ -1,0 +1,1 @@
+[#] Implemented a copy of the velocity event to avoid certain version errors
