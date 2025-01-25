@@ -64,14 +64,10 @@ public class SpartanEdition {
                 currentVersion = true;
             }
             if (!alternativeVersion
+                    && (!currentVersion || CloudConnections.ownsProduct("26"))
                     && CloudConnections.ownsProduct(
                     getProductID(alternativeType)
             )) {
-                alternativeVersion = true;
-            }
-            if (currentVersion
-                    && alternativeVersion
-                    && !CloudConnections.ownsProduct("26")) {
                 alternativeVersion = true;
             }
             hasAccount = !IDs.hasToken() || CloudConnections.hasAccount();
@@ -123,11 +119,6 @@ public class SpartanEdition {
 
     // Notifications
 
-    // Priority:
-    // 1. Verify (No Version)
-    // 2. Detection (No Slots)
-    // 3. Alternative (No Other Version)
-    // 4. Account (No Account)
     public static void attemptNotifications(SpartanProtocol protocol) {
         Check.DataType[] missingDetections =
                 !currentVersion && !alternativeVersion
