@@ -6,6 +6,9 @@ import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 
 public class FastClicks extends CheckRunner {
 
@@ -18,7 +21,8 @@ public class FastClicks extends CheckRunner {
 
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
-        if (object == null) {
+        if (object instanceof BlockBreakEvent
+                || object instanceof PlayerDropItemEvent) {
             this.addDisableCause(
                     null,
                     null,
@@ -28,6 +32,10 @@ public class FastClicks extends CheckRunner {
             packets.run((long) object);
         } else if (object instanceof PlayerTickEvent) {
             packets.tick((PlayerTickEvent) object);
+        } else if (object instanceof PlayerInteractEvent) {
+            if (this.prevent()) {
+                ((PlayerInteractEvent) object).setCancelled(true);
+            }
         }
     }
 

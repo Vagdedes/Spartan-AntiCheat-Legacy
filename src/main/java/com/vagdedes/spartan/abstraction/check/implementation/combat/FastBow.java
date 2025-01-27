@@ -31,23 +31,29 @@ public class FastBow extends CheckRunner {
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
         if (object instanceof EntityShootBowEvent) {
-            if (this.protocol.bukkitExtra.getItemInHand().getType() == Material.BOW) {
-                checkBowShots();
-                checkBowForce(((EntityShootBowEvent) object).getForce());
-            }
-        } else if (((PlayerInteractEvent) object).getAction() == Action.RIGHT_CLICK_AIR) {
-            PlayerInventory inventory = this.protocol.bukkit().getInventory();
+            EntityShootBowEvent event = (EntityShootBowEvent) object;
 
-            if (inventory.getItemInHand().getType() == Material.BOW
-                    && inventory.contains(Material.ARROW)) {
-                this.interactTime = System.currentTimeMillis();
+            if (this.protocol.bukkitExtra.getItemInHand().getType() == Material.BOW) {
+                checkBowShots(event);
+                checkBowForce(event);
+            }
+        } else if (object instanceof PlayerInteractEvent) {
+            PlayerInteractEvent event = (PlayerInteractEvent) object;
+
+            if (event.getAction() == Action.RIGHT_CLICK_AIR) {
+                PlayerInventory inventory = this.protocol.bukkit().getInventory();
+
+                if (inventory.getItemInHand().getType() == Material.BOW
+                        && inventory.contains(Material.ARROW)) {
+                    this.interactTime = System.currentTimeMillis();
+                }
             }
         }
     }
 
-    private void checkBowForce(float force) {
+    private void checkBowForce(EntityShootBowEvent event) {
         this.bowForceDetection.call(() -> {
-            if (force != 1.0f) {
+            if (event.getForce() != 1.0f) {
                 return;
             }
             long timePassed = System.currentTimeMillis() - interactTime;
@@ -63,11 +69,15 @@ public class FastBow extends CheckRunner {
                 this.bowForceDetection.cancel(
                         "bow-force, ms: " + timePassed
                 );
+
+                if (this.prevent()) {
+                    event.setCancelled(true);
+                }
             }
         });
     }
 
-    private void checkBowShots() {
+    private void checkBowShots(EntityShootBowEvent event) {
         this.bowShotsDetection.call(() -> {
             int buffer = bowShots.count(1, 10),
                     threshold = 7;
@@ -75,6 +85,10 @@ public class FastBow extends CheckRunner {
                 this.bowShotsDetection.cancel(
                         "bow-shots"
                 );
+
+                if (this.prevent()) {
+                    event.setCancelled(true);
+                }
             }
         });
     }

@@ -10,6 +10,7 @@ import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.server.PluginUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.GameRule;
+import org.bukkit.event.entity.PlayerDeathEvent;
 
 public class AutoRespawn extends CheckRunner {
 
@@ -23,30 +24,29 @@ public class AutoRespawn extends CheckRunner {
 
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
-        this.memory = System.currentTimeMillis();
-    }
+        if (object == null) {
+            this.detection.call(() -> {
+                long time = System.currentTimeMillis() - this.memory,
+                        limit = 750L;
 
-    @Override
-    protected void runInternal(boolean cancelled) {
-        this.detection.call(() -> {
-            long time = System.currentTimeMillis() - this.memory,
-                    limit = 750L;
-
-            if (time <= limit && !this.protocol.bukkitExtra.isDead()) {
-                memory = 0L;
-                this.detection.cancel(
-                        "default, ms: " + time,
-                        this.protocol.getFromLocation(),
-                        AlgebraUtils.integerCeil(TPS.maximum)
-                );
-            }
-        });
+                if (time <= limit && !this.protocol.bukkitExtra.isDead()) {
+                    memory = 0L;
+                    this.detection.cancel(
+                            "default, ms: " + time,
+                            this.protocol.getFromLocation(),
+                            AlgebraUtils.integerCeil(TPS.maximum)
+                    );
+                }
+            });
+        } else if (object instanceof PlayerDeathEvent) {
+            this.memory = System.currentTimeMillis();
+        }
     }
 
     @Override
     protected boolean canRun() {
         return !PluginUtils.contains("respawn")
                 && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_15)
-                || !this.protocol.getWorld().getGameRuleValue(GameRule.DO_IMMEDIATE_RESPAWN) == true);
+                || !(this.protocol.getWorld().getGameRuleValue(GameRule.DO_IMMEDIATE_RESPAWN) == true));
     }
 }

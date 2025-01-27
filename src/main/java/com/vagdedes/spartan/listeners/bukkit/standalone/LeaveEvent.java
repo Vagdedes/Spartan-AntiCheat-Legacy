@@ -17,8 +17,6 @@ public class LeaveEvent implements Listener {
         if (protocol == null) {
             return;
         }
-
-        // Features
         DetectionNotifications.runOnLeave(protocol);
     }
 

@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.abstraction.check.implementation.inventory;
 
+import com.comphenix.protocol.PacketType;
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
@@ -8,14 +9,17 @@ import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.TPS;
+import com.vagdedes.spartan.listeners.protocol.DeathListener;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import com.vagdedes.spartan.utils.minecraft.inventory.MaterialUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockPatternUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Material;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 
 public class ImpossibleInventory extends CheckRunner {
@@ -47,41 +51,46 @@ public class ImpossibleInventory extends CheckRunner {
 
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
-        if (object == null) {
-            long ticks = this.autoTotem - System.currentTimeMillis();
-
-            if (ticks > 0L) {
-                this.autoTotemDetection.cancel("auto-totem, remaining-ticks: " + ticks);
-            }
-        } else {
+        if (object instanceof PlayerDeathEvent) {
+            this.death();
+        } else if (object instanceof InventoryClickEvent) {
             InventoryClickEvent e = (InventoryClickEvent) object;
             ItemStack item = e.getCurrentItem();
             runClosedInventory(e.getClick());
             runPortalInventory(item);
             trackAutoTotem(item);
-        }
-    }
 
-    @Override
-    protected void runInternal(boolean cancelled) {
-        this.cursorUsageDetection.call(() -> {
-            if (!this.protocol.bukkitExtra.movement.isSwimming() && this.protocol.bukkitExtra.getVehicle() == null) {
-                ItemStack cursor = this.protocol.bukkit().getOpenInventory().getCursor();
+            if (this.prevent()) {
+                e.setCancelled(true);
+            }
+        } else if (object instanceof PlayerMoveEvent) {
+            this.cursorUsageDetection.call(() -> {
+                if (!this.protocol.bukkitExtra.movement.isSwimming() && this.protocol.bukkitExtra.getVehicle() == null) {
+                    ItemStack cursor = this.protocol.bukkit().getOpenInventory().getCursor();
 
-                if (BlockUtils.hasMaterial(cursor)) {
-                    int cases = getActionCase();
+                    if (BlockUtils.hasMaterial(cursor)) {
+                        int cases = getActionCase();
 
-                    if (cases != 0) {
-                        this.cursorUsageDetection.cancel(
-                                "cursor-usage, case: " + cases,
-                                this.protocol.getFromLocation(),
-                                0,
-                                false
-                        );
+                        if (cases != 0) {
+                            this.cursorUsageDetection.cancel(
+                                    "cursor-usage, case: " + cases,
+                                    this.protocol.getFromLocation(),
+                                    0,
+                                    false
+                            );
+                        }
                     }
                 }
+            });
+        } else {
+            for (PacketType type : DeathListener.packetTypes) {
+                if (object instanceof PacketType
+                        && type.equals(object)) {
+                    this.death();
+                    break;
+                }
             }
-        });
+        }
     }
 
     private void trackAutoTotem(ItemStack itemStack) {
@@ -92,6 +101,14 @@ public class ImpossibleInventory extends CheckRunner {
                 this.autoTotem = System.currentTimeMillis() + (3L * TPS.tickTime);
             }
         });
+    }
+
+    private void death() {
+        long ticks = this.autoTotem - System.currentTimeMillis();
+
+        if (ticks > 0L) {
+            this.autoTotemDetection.cancel("auto-totem, remaining-ticks: " + ticks);
+        }
     }
 
     private void runClosedInventory(ClickType click) {

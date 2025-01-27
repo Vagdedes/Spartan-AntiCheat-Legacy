@@ -17,6 +17,7 @@ import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.GameMode;
+import org.bukkit.event.Cancellable;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -156,25 +157,29 @@ public abstract class CheckRunner extends CheckProcess {
         }
     }
 
-    // Run
-
-    public final void run(boolean cancelled) {
-        if (this.protocol != null) {
-            this.cancelled = cancelled;
-            this.runInternal(cancelled);
-        }
-    }
-
-    protected void runInternal(boolean cancelled) {
-
-    }
-
     // Handle
 
-    public final void handle(boolean cancelled, Object object) {
+    public final void handle(Object cancelled, Object object) {
         if (this.protocol != null) {
-            this.cancelled = cancelled;
-            this.handleInternal(cancelled, object);
+            boolean result;
+
+            if (cancelled == null) {
+                if (object instanceof Cancellable) {
+                    result = ((Cancellable) object).isCancelled();
+                } else {
+                    result = false;
+                }
+            } else if (cancelled instanceof Boolean) {
+                result = (Boolean) cancelled;
+            } else {
+                if (cancelled instanceof Cancellable) {
+                    result = ((Cancellable) cancelled).isCancelled();
+                } else {
+                    result = false;
+                }
+            }
+            this.cancelled = result;
+            this.handleInternal(result, object);
         }
     }
 

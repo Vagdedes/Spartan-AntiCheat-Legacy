@@ -104,6 +104,12 @@ public class PlayerProfile {
         return this.runners[hackType.ordinal()];
     }
 
+    public void executeRunners(Object cancelled, Object object) {
+        for (CheckRunner runner : this.getRunners()) {
+            runner.handle(cancelled, object);
+        }
+    }
+
     private void registerRunners(PlayerProtocol protocol) {
         for (Enums.HackType hackType : Enums.HackType.values()) {
             try {

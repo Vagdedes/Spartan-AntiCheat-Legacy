@@ -24,6 +24,7 @@ public class WorldEvent implements Listener {
         Block nb = e.getBlock();
         boolean cancelled = e.isCancelled();
         protocol.bukkitExtra.movement.judgeGround();
+        protocol.profile().executeRunners(e.isCancelled(), e);
 
         // Detections
         if (!ItemsAdder.is(nb)) {
@@ -33,7 +34,6 @@ public class WorldEvent implements Listener {
             protocol.profile().getRunner(Enums.HackType.GhostHand).handle(cancelled, nb);
         }
         protocol.profile().getRunner(Enums.HackType.Exploits).handle(cancelled, e);
-        protocol.profile().getRunner(Enums.HackType.FastClicks).handle(cancelled, null);
         MiningHistory.log(protocol, nb, cancelled);
 
         if (protocol.profile().getRunner(Enums.HackType.NoSwing).prevent()
@@ -48,21 +48,13 @@ public class WorldEvent implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Sign(SignChangeEvent e) {
         PlayerProtocol p = PluginBase.getProtocol(e.getPlayer(), true);
-
-        // Detections
-        p.profile().getRunner(Enums.HackType.Exploits).handle(e.isCancelled(), e.getLines());
-
-        if (p.profile().getRunner(Enums.HackType.Exploits).prevent()) {
-            e.setCancelled(true);
-        }
+        p.profile().executeRunners(e.isCancelled(), e);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Animation(PlayerAnimationEvent e) {
         PlayerProtocol protocol = PluginBase.getProtocol(e.getPlayer(), true);
-
-        // Detections
-        protocol.profile().getRunner(Enums.HackType.NoSwing).handle(e.isCancelled(), e);
+        protocol.profile().executeRunners(e.isCancelled(), e);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -94,8 +86,7 @@ public class WorldEvent implements Listener {
         }
         protocol.profile().getRunner(Enums.HackType.FastBow).handle(false, e);
 
-        if (protocol.profile().getRunner(Enums.HackType.GhostHand).prevent()
-                || protocol.profile().getRunner(Enums.HackType.FastClicks).prevent()) {
+        if (protocol.profile().getRunner(Enums.HackType.GhostHand).prevent()) {
             e.setCancelled(true);
         }
     }
@@ -103,7 +94,6 @@ public class WorldEvent implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Piston(BlockPistonExtendEvent e) {
         if (!e.isCancelled()) {
-            // Handlers
             Piston.run(e.getBlock(), e.getBlocks());
         }
     }

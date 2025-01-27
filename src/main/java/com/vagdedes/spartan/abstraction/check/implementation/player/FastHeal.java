@@ -46,9 +46,10 @@ public class FastHeal extends CheckRunner {
 
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
-        this.detection.call(() -> {
-            if (object instanceof EntityRegainHealthEvent) {
-                RegainReason reason = ((EntityRegainHealthEvent) object).getRegainReason();
+        if (object instanceof EntityRegainHealthEvent) {
+            this.detection.call(() -> {
+                EntityRegainHealthEvent event = (EntityRegainHealthEvent) object;
+                RegainReason reason = event.getRegainReason();
 
                 if (reason != RegainReason.CUSTOM
                         && reason != RegainReason.MAGIC) {
@@ -66,17 +67,23 @@ public class FastHeal extends CheckRunner {
                                 this.detection.cancel(
                                         "default, ms: " + timePassed + ", limit: " + limit
                                 );
+
+                                if (this.prevent()) {
+                                    event.setCancelled(true);
+                                }
                             }
                         }
                     }
                     previousHealth = health;
                 }
-            } else if (((FoodLevelChangeEvent) object).getFoodLevel() > this.protocol.bukkit().getFoodLevel()
+            });
+        } else if (object instanceof FoodLevelChangeEvent) {
+            if (((FoodLevelChangeEvent) object).getFoodLevel() > this.protocol.bukkit().getFoodLevel()
                     && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
                     || this.protocol.bukkitExtra.getItemInHand().getType() != Material.DRIED_KELP)) {
                 this.protocol.profile().getRunner(hackType).addDisableCause(null, null, 10);
             }
-        });
+        }
     }
 
     @Override

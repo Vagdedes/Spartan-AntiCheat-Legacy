@@ -12,12 +12,15 @@ import com.vagdedes.spartan.listeners.bukkit.DeathEvent;
 
 public class DeathListener extends PacketAdapter {
 
+    public static final PacketType[] packetTypes = new PacketType[]{
+            PacketType.Play.Server.UPDATE_HEALTH
+    };
 
     public DeathListener() {
         super(
                 Register.plugin,
                 ListenerPriority.HIGHEST,
-                PacketType.Play.Server.UPDATE_HEALTH
+                packetTypes
         );
     }
 
@@ -32,7 +35,7 @@ public class DeathListener extends PacketAdapter {
 
         if (packet.getType().equals(PacketType.Play.Server.UPDATE_HEALTH)
                 && packet.getFloat().read(0) <= 0.0F) {
-            DeathEvent.event(event.getPlayer(), true);
+            DeathEvent.event(event.getPlayer(), true, event);
             protocol.useItemPacket = false;
         }
     }

@@ -5,7 +5,7 @@ import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
 import com.vagdedes.spartan.abstraction.event.PlayerUseEvent;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.functionality.server.PluginBase;
-import com.vagdedes.spartan.listeners.bukkit.standalone.DamagedEvent;
+import com.vagdedes.spartan.listeners.bukkit.standalone.DamageEvent;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -86,7 +86,7 @@ public class CombatEvent implements Listener {
                 }
             }
         } else {
-            DamagedEvent.handlePassengers(entity, packets, e);
+            DamageEvent.handlePassengers(entity, packets, e);
         }
     }
 

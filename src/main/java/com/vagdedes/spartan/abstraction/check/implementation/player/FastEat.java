@@ -92,13 +92,18 @@ public class FastEat extends CheckRunner {
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
         if (object instanceof FoodLevelChangeEvent) {
-            int lvl = ((FoodLevelChangeEvent) object).getFoodLevel();
+            FoodLevelChangeEvent e = (FoodLevelChangeEvent) object;
+            int lvl = e.getFoodLevel();
 
             if (lvl > this.protocol.bukkit().getFoodLevel()) {
                 checkDelay();
                 checkEating();
+
+                if (this.prevent()) {
+                    e.setCancelled(true);
+                }
             }
-        } else {
+        } else if (object instanceof PlayerInteractEvent) {
             PlayerInteractEvent e = (PlayerInteractEvent) object;
 
             switch (e.getAction()) {

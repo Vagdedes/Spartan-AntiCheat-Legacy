@@ -10,7 +10,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 
-public class DamagedEvent implements Listener {
+public class DamageEvent implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Event(EntityDamageEvent e) {

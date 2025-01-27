@@ -15,7 +15,7 @@ public class BlockPlaceEvent implements Listener {
     public static void event(org.bukkit.event.block.BlockPlaceEvent e) {
         PlayerProtocol protocol = PluginBase.getProtocol(e.getPlayer(), true);
 
-        if (event(protocol, e.getBlock(), e.getBlockAgainst(), e.isCancelled())) {
+        if (event(protocol, e.getBlock(), e.getBlockAgainst(), e)) {
             e.setCancelled(true);
         }
     }
@@ -24,25 +24,26 @@ public class BlockPlaceEvent implements Listener {
             PlayerProtocol protocol,
             Block block,
             Block blockAgainst,
-            boolean cancelled
+            Object event
     ) {
         protocol.bukkitExtra.movement.judgeGround();
 
         if (protocol.getWorld() != block.getWorld()) {
             return false;
         }
+        protocol.profile().executeRunners(null, event);
 
         // Detections
         if (!ItemsAdder.is(block)) {
             protocol.profile().getRunner(Enums.HackType.ImpossibleActions).handle(
-                    cancelled,
+                    event,
                     new Block[]{block, blockAgainst}
             );
             protocol.profile().getRunner(Enums.HackType.BlockReach).handle(
-                    cancelled,
+                    event,
                     new Block[]{block, blockAgainst}
             );
-            protocol.profile().getRunner(Enums.HackType.FastPlace).handle(cancelled, block);
+            protocol.profile().getRunner(Enums.HackType.FastPlace).handle(event, block);
         }
         return protocol.profile().getRunner(Enums.HackType.FastPlace).prevent()
                 || protocol.profile().getRunner(Enums.HackType.BlockReach).prevent()

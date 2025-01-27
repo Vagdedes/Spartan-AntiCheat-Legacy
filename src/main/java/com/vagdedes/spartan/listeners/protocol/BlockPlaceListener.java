@@ -90,7 +90,7 @@ public class BlockPlaceListener extends PacketAdapter {
                                     material
                             ));
 
-                            BlockPlaceEvent.event(protocol, block, blockAgainst, event.isCancelled());
+                            BlockPlaceEvent.event(protocol, block, blockAgainst, event);
                             protocol.rightClickCounter = 0;
                         } else {
                             protocol.rightClickCounter++;

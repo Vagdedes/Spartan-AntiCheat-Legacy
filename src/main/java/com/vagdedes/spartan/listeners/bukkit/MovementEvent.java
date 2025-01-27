@@ -64,9 +64,7 @@ public class MovementEvent implements Listener {
 
             // Detections
             boolean cancelled = e.isCancelled();
-            protocol.profile().getRunner(Enums.HackType.Exploits).handle(cancelled, null);
             protocol.profile().getRunner(Enums.HackType.Exploits).handle(cancelled, e);
-            protocol.profile().getRunner(Enums.HackType.ImpossibleInventory).run(cancelled);
             protocol.profile().getRunner(Enums.HackType.IrregularMovements).handle(cancelled, e);
             protocol.profile().getRunner(Enums.HackType.Velocity).handle(cancelled, e);
             protocol.profile().getRunner(Enums.HackType.KillAura).handle(cancelled, e);
@@ -78,8 +76,8 @@ public class MovementEvent implements Listener {
         PlayerProtocol protocol = tickEvent.protocol;
         protocol.lastTickEvent = tickEvent;
         protocol.packetWorld.tick(tickEvent);
+        protocol.profile().executeRunners(false, tickEvent);
         protocol.profile().getRunner(Enums.HackType.MorePackets).handle(false, tickEvent);
-        protocol.profile().getRunner(Enums.HackType.FastClicks).handle(false, tickEvent);
         protocol.profile().getRunner(Enums.HackType.IrregularMovements).handle(false, tickEvent);
     }
 

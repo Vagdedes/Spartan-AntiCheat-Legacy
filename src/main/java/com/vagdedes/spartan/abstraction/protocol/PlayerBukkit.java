@@ -16,7 +16,6 @@ import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import com.vagdedes.spartan.utils.minecraft.server.PluginUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import com.vagdedes.spartan.utils.minecraft.world.GroundUtils;
-import me.vagdedes.spartan.system.Enums;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.inventory.Inventory;
@@ -50,8 +49,7 @@ public class PlayerBukkit {
                     if (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
                         protocol.bukkitExtra.setStoredPotionEffects();
                     }
-                    protocol.profile().getRunner(Enums.HackType.AutoRespawn).run(false);
-                    protocol.profile().getRunner(Enums.HackType.Exploits).run(false);
+                    protocol.profile().executeRunners(false, null);
                     protocol.bukkitExtra.movement.schedulerFrom = protocol.getLocation();
                     protocol.bukkitExtra.checkForAFK();
 
