@@ -3,6 +3,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.world;
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
+import com.vagdedes.spartan.abstraction.event.CBlockPlaceEvent;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.Compatibility;
@@ -96,33 +97,31 @@ public class BlockReach extends CheckRunner {
                     }
                 }
             });
-        } else if (object instanceof Block[]) {
+        } else if (object instanceof CBlockPlaceEvent) {
             if (this.place.canCall()
                     || this.unusual.canCall()) {
-                Block[] blocks = (Block[]) object;
-                Block blockAgainst = blocks[1];
+                CBlockPlaceEvent event = (CBlockPlaceEvent) object;
 
-                if (BlockUtils.isSolid(blockAgainst.getType())) {
-                    Block block = blocks[0];
-
-                    if (canDo(block)
-                            && BlockUtils.isSolid(block.getType())
-                            && !BlockUtils.isScaffoldingBlock(block.getType())) {
+                if (BlockUtils.isSolid(event.placedAgainstBlock.getType())) {
+                    if (canDo(event.placedBlock)
+                            && !ItemsAdder.is(event.placedBlock)
+                            && BlockUtils.isSolid(event.placedBlock.getType())
+                            && !BlockUtils.isScaffoldingBlock(event.placedBlock.getType())) {
                         Location to = this.protocol.getLocationOrVehicle();
-                        double distance = SpartanLocation.distance(to, block.getLocation()),
-                                ab_distance = SpartanLocation.distance(to, blockAgainst.getLocation());
+                        double distance = SpartanLocation.distance(to, event.placedBlock.getLocation()),
+                                ab_distance = SpartanLocation.distance(to, event.placedAgainstBlock.getLocation());
 
                         if (!this.protocol.bukkitExtra.isBedrockPlayer()
-                                && BlockUtils.isFullSolid(block.getType())
+                                && BlockUtils.isFullSolid(event.placedBlock.getType())
                                 && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
-                                || block.getType() != Material.BARRIER)
+                                || event.placedBlock.getType() != Material.BARRIER)
                                 && this.protocol.bukkitExtra.getVehicle() == null
                                 && distance > (ab_distance + GroundUtils.boundingBox + 0.1)) {
                             this.unusual.call(() -> {
                                 this.unusual.cancel(
                                         "unusual, distance: " + distance
                                                 + ", block-against-distance: " + ab_distance
-                                                + ", block: " + BlockUtils.blockToString(block)
+                                                + ", block: " + BlockUtils.blockToString(event.placedBlock)
                                 );
                             });
                         } else {
@@ -133,7 +132,7 @@ public class BlockReach extends CheckRunner {
                                     this.place.cancel(
                                             "place, distance: " + distance
                                                     + ", limit: " + limit
-                                                    + ", block: " + BlockUtils.blockToString(block)
+                                                    + ", block: " + BlockUtils.blockToString(event.placedBlock)
                                     );
                                 }
                             });

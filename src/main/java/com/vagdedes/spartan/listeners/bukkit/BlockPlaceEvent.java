@@ -1,10 +1,12 @@
 package com.vagdedes.spartan.listeners.bukkit;
 
+import com.vagdedes.spartan.abstraction.event.CBlockPlaceEvent;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import com.vagdedes.spartan.functionality.server.PluginBase;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.block.Block;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -35,15 +37,15 @@ public class BlockPlaceEvent implements Listener {
 
         // Detections
         if (!ItemsAdder.is(block)) {
-            protocol.profile().getRunner(Enums.HackType.ImpossibleActions).handle(
+            protocol.profile().executeRunners(
                     event,
-                    new Block[]{block, blockAgainst}
+                    new CBlockPlaceEvent(
+                            protocol.bukkit(),
+                            block,
+                            blockAgainst,
+                            event instanceof Cancellable && ((Cancellable) event).isCancelled()
+                    )
             );
-            protocol.profile().getRunner(Enums.HackType.BlockReach).handle(
-                    event,
-                    new Block[]{block, blockAgainst}
-            );
-            protocol.profile().getRunner(Enums.HackType.FastPlace).handle(event, block);
         }
         return protocol.profile().getRunner(Enums.HackType.FastPlace).prevent()
                 || protocol.profile().getRunner(Enums.HackType.BlockReach).prevent()

@@ -4,15 +4,16 @@ import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.data.Buffer;
+import com.vagdedes.spartan.abstraction.event.CBlockPlaceEvent;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.compatibility.Compatibility;
+import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import com.vagdedes.spartan.compatibility.manual.building.PrinterMode;
 import com.vagdedes.spartan.compatibility.manual.entity.Vehicles;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 
 public class FastPlace extends CheckRunner {
 
@@ -32,11 +33,12 @@ public class FastPlace extends CheckRunner {
 
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
-        if (object instanceof Block) {
-            Block b = (Block) object;
+        if (object instanceof CBlockPlaceEvent) {
+            CBlockPlaceEvent event = (CBlockPlaceEvent) object;
 
-            if (!BlockUtils.isScaffoldingBlock(b.getType())) {
-                Material material = b.getType();
+            if (!ItemsAdder.is(event.placedBlock)
+                    && !BlockUtils.isScaffoldingBlock(event.placedBlock.getType())) {
+                Material material = event.placedBlock.getType();
 
                 if (material != Material.FIRE
                         && material != Material.AIR

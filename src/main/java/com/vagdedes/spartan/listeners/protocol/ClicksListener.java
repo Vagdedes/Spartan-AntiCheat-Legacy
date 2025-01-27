@@ -9,7 +9,6 @@ import com.vagdedes.spartan.abstraction.event.PlayerLeftClickEvent;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.PluginBase;
-import me.vagdedes.spartan.system.Enums;
 import org.bukkit.entity.Player;
 
 public class ClicksListener extends PacketAdapter {
@@ -38,7 +37,7 @@ public class ClicksListener extends PacketAdapter {
                     protocol.clickBlocker = false;
                 }
                 if (!protocol.clickBlocker) {
-                    protocol.profile().getRunner(Enums.HackType.FastClicks).handle(
+                    protocol.profile().executeRunners(
                             false,
                             new PlayerLeftClickEvent(
                                     player,

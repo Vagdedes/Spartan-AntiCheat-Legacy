@@ -4,6 +4,7 @@ import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
+import com.vagdedes.spartan.abstraction.event.CBlockPlaceEvent;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.Compatibility;
@@ -44,96 +45,97 @@ public class ImpossibleActions extends CheckRunner {
 
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
-        if (object instanceof Block[]) {
-            Block[] blocks = (Block[]) object;
-            Block block = blocks[0];
-            Location playerLocation = this.protocol.getLocationOrVehicle();
-            int playerY = playerLocation.getBlockY(),
-                    blockY = block.getY();
-            this.scaffoldAnalysis.run(block);
+        if (object instanceof CBlockPlaceEvent) {
+            CBlockPlaceEvent event = (CBlockPlaceEvent) object;
 
-            if (blockY < playerY) {
-                Block blockAgainst = blocks[1];
-                BlockFace blockFace = blockAgainst.getFace(block);
+            if (!ItemsAdder.is(event.placedBlock)) {
+                Location playerLocation = this.protocol.getLocationOrVehicle();
+                int playerY = playerLocation.getBlockY(),
+                        blockY = event.placedBlock.getY();
+                this.scaffoldAnalysis.run(event.placedBlock);
 
-                if (blockFace != null) {
-                    switch (blockFace) {
-                        case EAST:
-                        case EAST_NORTH_EAST:
-                        case EAST_SOUTH_EAST:
-                        case WEST:
-                        case WEST_NORTH_WEST:
-                        case WEST_SOUTH_WEST:
-                        case NORTH:
-                        case NORTH_EAST:
-                        case NORTH_NORTH_EAST:
-                        case SOUTH:
-                        case SOUTH_EAST:
-                        case SOUTH_SOUTH_EAST:
-                            if (this.scaffoldDirection.canCall()
-                                    || this.scaffoldUp.canCall()
-                                    || this.scaffoldYaw.canCall()) {
-                                double directionDistance = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)
-                                        ? this.getDirection(blockFace).distance(playerLocation.getDirection())
-                                        : Double.MAX_VALUE;
+                if (blockY < playerY) {
+                    BlockFace blockFace = event.placedAgainstBlock.getFace(event.placedBlock);
 
-                                if (directionDistance <= 1.25) {
-                                    this.scaffoldDirection.call(() -> this.scaffoldDirection.cancel(
-                                            "scaffold(direction)"
-                                                    + ", vector-distance: " + directionDistance
-                                                    + ", block-distance: " + SpartanLocation.distance(playerLocation, blockAgainst.getLocation())
-                                    ));
-                                } else {
-                                    float pitch = playerLocation.getPitch();
+                    if (blockFace != null) {
+                        switch (blockFace) {
+                            case EAST:
+                            case EAST_NORTH_EAST:
+                            case EAST_SOUTH_EAST:
+                            case WEST:
+                            case WEST_NORTH_WEST:
+                            case WEST_SOUTH_WEST:
+                            case NORTH:
+                            case NORTH_EAST:
+                            case NORTH_NORTH_EAST:
+                            case SOUTH:
+                            case SOUTH_EAST:
+                            case SOUTH_SOUTH_EAST:
+                                if (this.scaffoldDirection.canCall()
+                                        || this.scaffoldUp.canCall()
+                                        || this.scaffoldYaw.canCall()) {
+                                    double directionDistance = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)
+                                            ? this.getDirection(blockFace).distance(playerLocation.getDirection())
+                                            : Double.MAX_VALUE;
 
-                                    if (pitch <= 0.0) {
-                                        this.scaffoldUp.call(() -> this.scaffoldUp.cancel(
-                                                "scaffold(up)"
-                                                        + ", pitch: " + pitch
-                                                        + ", block-distance: " + SpartanLocation.distance(playerLocation, blockAgainst.getLocation())
+                                    if (directionDistance <= 1.25) {
+                                        this.scaffoldDirection.call(() -> this.scaffoldDirection.cancel(
+                                                "scaffold(direction)"
+                                                        + ", vector-distance: " + directionDistance
+                                                        + ", block-distance: " + SpartanLocation.distance(playerLocation, event.placedAgainstBlock.getLocation())
                                         ));
                                     } else {
-                                        this.scaffoldYaw.call(() -> {
-                                            List<SpartanLocation> fromLocations = this.protocol.bukkitExtra.movement.getLocations();
-                                            int requiredComparisons = 5, requiredSize = requiredComparisons + 1;
+                                        float pitch = playerLocation.getPitch();
 
-                                            if (fromLocations.size() >= requiredSize) { // 6-1 comparisons = 5
-                                                fromLocations = fromLocations.subList(fromLocations.size() - requiredSize, fromLocations.size());
-                                                Iterator<SpartanLocation> iterator = fromLocations.iterator();
-                                                SpartanLocation previousLocation = iterator.next();
-                                                double yawDeviation = 0.0;
+                                        if (pitch <= 0.0) {
+                                            this.scaffoldUp.call(() -> this.scaffoldUp.cancel(
+                                                    "scaffold(up)"
+                                                            + ", pitch: " + pitch
+                                                            + ", block-distance: " + SpartanLocation.distance(playerLocation, event.placedAgainstBlock.getLocation())
+                                            ));
+                                        } else {
+                                            this.scaffoldYaw.call(() -> {
+                                                List<SpartanLocation> fromLocations = this.protocol.bukkitExtra.movement.getLocations();
+                                                int requiredComparisons = 5, requiredSize = requiredComparisons + 1;
 
-                                                while (iterator.hasNext()) {
-                                                    SpartanLocation loopLocation = iterator.next();
+                                                if (fromLocations.size() >= requiredSize) { // 6-1 comparisons = 5
+                                                    fromLocations = fromLocations.subList(fromLocations.size() - requiredSize, fromLocations.size());
+                                                    Iterator<SpartanLocation> iterator = fromLocations.iterator();
+                                                    SpartanLocation previousLocation = iterator.next();
+                                                    double yawDeviation = 0.0;
 
-                                                    if (loopLocation.timePassed() <= requiredComparisons * 2 * TPS.tickTime) {
-                                                        double diff = (previousLocation.getYaw() - loopLocation.getYaw()) % 360.0f;
-                                                        yawDeviation += diff * diff;
-                                                        previousLocation = loopLocation;
-                                                    } else {
-                                                        return;
+                                                    while (iterator.hasNext()) {
+                                                        SpartanLocation loopLocation = iterator.next();
+
+                                                        if (loopLocation.timePassed() <= requiredComparisons * 2 * TPS.tickTime) {
+                                                            double diff = (previousLocation.getYaw() - loopLocation.getYaw()) % 360.0f;
+                                                            yawDeviation += diff * diff;
+                                                            previousLocation = loopLocation;
+                                                        } else {
+                                                            return;
+                                                        }
+                                                    }
+                                                    yawDeviation = Math.sqrt(yawDeviation / ((double) requiredComparisons));
+
+                                                    if (yawDeviation >= 270.0) {
+                                                        this.scaffoldYaw.cancel(
+                                                                "scaffold(yaw)"
+                                                                        + ", deviation: " + yawDeviation
+                                                                        + ", block-distance: " + SpartanLocation.distance(playerLocation, event.placedAgainstBlock.getLocation())
+                                                        );
                                                     }
                                                 }
-                                                yawDeviation = Math.sqrt(yawDeviation / ((double) requiredComparisons));
-
-                                                if (yawDeviation >= 270.0) {
-                                                    this.scaffoldYaw.cancel(
-                                                            "scaffold(yaw)"
-                                                                    + ", deviation: " + yawDeviation
-                                                                    + ", block-distance: " + SpartanLocation.distance(playerLocation, blockAgainst.getLocation())
-                                                    );
-                                                }
-                                            }
-                                        });
+                                            });
+                                        }
                                     }
                                 }
-                            }
-                            break;
-                        case UP:
-                            this.tower.run(block, playerLocation, playerY, blockY);
-                            break;
-                        default:
-                            break;
+                                break;
+                            case UP:
+                                this.tower.run(event.placedBlock, playerLocation, playerY, blockY);
+                                break;
+                            default:
+                                break;
+                        }
                     }
                 }
             }
