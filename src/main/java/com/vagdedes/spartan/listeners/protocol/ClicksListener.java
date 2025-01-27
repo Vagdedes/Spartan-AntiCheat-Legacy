@@ -5,9 +5,9 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
-import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.functionality.server.PluginBase;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.entity.Player;
 
@@ -27,7 +27,7 @@ public class ClicksListener extends PacketAdapter {
     @Override
     public void onPacketReceiving(PacketEvent event) {
         Player player = event.getPlayer();
-        SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
+        PlayerProtocol protocol = PluginBase.getProtocol(player);
         synchronized (protocol) {
             if (event.getPacket().getType().equals(PacketType.Play.Client.ARM_ANIMATION)) {
                 {
@@ -48,7 +48,7 @@ public class ClicksListener extends PacketAdapter {
     }
 
     private static void handleLeftClick(Player player, long delay) {
-        SpartanBukkit.getProtocol(player)
+        PluginBase.getProtocol(player)
                         .profile().getRunner(Enums.HackType.FastClicks)
                         .handle(false, delay);
     }

@@ -1,9 +1,9 @@
 package com.vagdedes.spartan.listeners.bukkit.standalone;
 
 import com.vagdedes.spartan.abstraction.profiling.MiningHistory;
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
-import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.functionality.server.PluginBase;
 import com.vagdedes.spartan.functionality.tracking.Piston;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.block.Block;
@@ -20,10 +20,10 @@ public class WorldEvent implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void BlockBreak(BlockBreakEvent e) {
-        SpartanProtocol protocol = SpartanBukkit.getProtocol(e.getPlayer(), true);
+        PlayerProtocol protocol = PluginBase.getProtocol(e.getPlayer(), true);
         Block nb = e.getBlock();
         boolean cancelled = e.isCancelled();
-        protocol.spartan.movement.judgeGround();
+        protocol.bukkitExtra.movement.judgeGround();
 
         // Detections
         if (!ItemsAdder.is(nb)) {
@@ -47,7 +47,7 @@ public class WorldEvent implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Sign(SignChangeEvent e) {
-        SpartanProtocol p = SpartanBukkit.getProtocol(e.getPlayer(), true);
+        PlayerProtocol p = PluginBase.getProtocol(e.getPlayer(), true);
 
         // Detections
         p.profile().getRunner(Enums.HackType.Exploits).handle(e.isCancelled(), e.getLines());
@@ -59,7 +59,7 @@ public class WorldEvent implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Animation(PlayerAnimationEvent e) {
-        SpartanProtocol protocol = SpartanBukkit.getProtocol(e.getPlayer(), true);
+        PlayerProtocol protocol = PluginBase.getProtocol(e.getPlayer(), true);
 
         // Detections
         protocol.profile().getRunner(Enums.HackType.NoSwing).handle(e.isCancelled(), e);
@@ -67,7 +67,7 @@ public class WorldEvent implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Interact(PlayerInteractEvent e) {
-        SpartanProtocol protocol = SpartanBukkit.getProtocol(e.getPlayer(), true);
+        PlayerProtocol protocol = PluginBase.getProtocol(e.getPlayer(), true);
         Block nb = e.getClickedBlock();
         boolean notNull = nb != null,
                 customBlock = notNull && ItemsAdder.is(nb);

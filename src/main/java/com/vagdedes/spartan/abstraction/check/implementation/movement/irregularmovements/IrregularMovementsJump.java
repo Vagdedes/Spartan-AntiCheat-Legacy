@@ -58,15 +58,15 @@ public class IrregularMovementsJump extends ProbabilityDetection {
     void run(double vertical, double box) {
         if ((this.jump_ticks.canCall()
                 || this.jump_height.canCall())
-                && !this.protocol.spartan.movement.wasGliding()) {
-            if (this.protocol.spartan.trackers.has(PlayerTrackers.TrackerFamily.VELOCITY)
-                    ? this.protocol.spartan.movement.justJumped(vertical)
-                    : this.protocol.spartan.movement.isJumping(vertical)) {
-                int jumpEffect = PlayerUtils.getPotionLevel(this.protocol.spartan, PotionEffectUtils.JUMP) + 1,
+                && !this.protocol.bukkitExtra.movement.wasGliding()) {
+            if (this.protocol.bukkitExtra.trackers.has(PlayerTrackers.TrackerFamily.VELOCITY)
+                    ? this.protocol.bukkitExtra.movement.justJumped(vertical)
+                    : this.protocol.bukkitExtra.movement.isJumping(vertical)) {
+                int jumpEffect = PlayerUtils.getPotionLevel(this.protocol.bukkitExtra, PotionEffectUtils.JUMP) + 1,
                         jumpTicks = PlayerUtils.getJumpTicks(jumpEffect);
                 boolean contains = heights.get(jumpEffect).contains(AlgebraUtils.cut(box, heightPrecision));
 
-                if (!contains && this.protocol.spartan.isBedrockPlayer()) {
+                if (!contains && this.protocol.bukkitExtra.isBedrockPlayer()) {
                     for (double height : heightsBedrock.get(jumpEffect)) {
                         if (Math.abs(height - box) < heightPrecision) {
                             contains = true;
@@ -77,7 +77,7 @@ public class IrregularMovementsJump extends ProbabilityDetection {
 
                 if (!contains) {
                     this.jump_height.call(() -> {
-                        int airTicks = this.protocol.spartan.movement.getTicksOnAir();
+                        int airTicks = this.protocol.bukkitExtra.movement.getTicksOnAir();
 
                         if (airTicks > jumpTicks) {
                             int blocks = AlgebraUtils.integerCeil(PlayerUtils.getJumpMotionSum(jumpEffect));
@@ -115,8 +115,8 @@ public class IrregularMovementsJump extends ProbabilityDetection {
 
                             if (!this.protocol.isOnGround()
                                     && !this.protocol.isOnGroundFrom()
-                                    && !this.protocol.spartan.movement.isInLiquids()) {
-                                int airTicks = this.protocol.spartan.movement.getTicksOnAir();
+                                    && !this.protocol.bukkitExtra.movement.isInLiquids()) {
+                                int airTicks = this.protocol.bukkitExtra.movement.getTicksOnAir();
 
                                 if (airTicks > limit) {
                                     this.jump_ticks.cancel(

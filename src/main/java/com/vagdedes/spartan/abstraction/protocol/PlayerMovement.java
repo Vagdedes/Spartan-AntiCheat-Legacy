@@ -16,7 +16,7 @@ import java.util.*;
 
 public class PlayerMovement {
 
-    private final SpartanPlayer parent;
+    private final PlayerBukkit parent;
     private final Map<Long, SpartanLocation> locations;
     int airTicks;
     private long
@@ -28,7 +28,7 @@ public class PlayerMovement {
     private Vector clampVector;
     public double motionY;
 
-    PlayerMovement(SpartanPlayer parent) {
+    PlayerMovement(PlayerBukkit parent) {
         this.parent = parent;
 
         Location bukkit = ProtocolTools.getLoadLocation(this.parent.protocol.bukkit());
@@ -79,7 +79,7 @@ public class PlayerMovement {
     }
 
     public boolean isFlying() {
-        Entity vehicle = this.parent.protocol.spartan.getVehicle();
+        Entity vehicle = this.parent.protocol.bukkitExtra.getVehicle();
         boolean flying;
 
         if (vehicle != null) {

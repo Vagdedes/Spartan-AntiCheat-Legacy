@@ -3,8 +3,8 @@ package com.vagdedes.spartan.listeners.bukkit;
 import com.vagdedes.spartan.abstraction.event.EntityAttackPlayerEvent;
 import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
 import com.vagdedes.spartan.abstraction.event.PlayerUseEvent;
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
-import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
+import com.vagdedes.spartan.functionality.server.PluginBase;
 import com.vagdedes.spartan.listeners.bukkit.standalone.DamagedEvent;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.entity.Entity;
@@ -39,7 +39,7 @@ public class CombatEvent implements Listener {
                 entityAttack = e.getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK;
         if (damagerIsPlayer) {
             Player player = (Player) damager;
-            SpartanProtocol protocol = SpartanBukkit.getProtocol(player, true);
+            PlayerProtocol protocol = PluginBase.getProtocol(player, true);
 
             if (protocol.packetsEnabled() == packets) {
                 // Detections
@@ -68,11 +68,11 @@ public class CombatEvent implements Listener {
 
         if (entityIsPlayer) {
             Player player = (Player) entity;
-            SpartanProtocol protocol = SpartanBukkit.getProtocol(player, true);
+            PlayerProtocol protocol = PluginBase.getProtocol(player, true);
 
             if (protocol.packetsEnabled() == packets) {
                 // Objects
-                protocol.spartan.handleReceivedDamage();
+                protocol.bukkitExtra.handleReceivedDamage();
 
                 // Detections
                 if (entityAttack && (damagerIsPlayer || damager instanceof LivingEntity)) {
@@ -91,7 +91,7 @@ public class CombatEvent implements Listener {
     }
 
     public static void use(PlayerUseEvent e) {
-        SpartanProtocol protocol = SpartanBukkit.getProtocol(e.getPlayer(), true);
+        PlayerProtocol protocol = PluginBase.getProtocol(e.getPlayer(), true);
         PlayerAttackEvent attackEvent = new PlayerAttackEvent(e.getPlayer(), e.getTarget(), false);
         protocol.profile().getRunner(Enums.HackType.HitReach).handle(false, attackEvent);
     }

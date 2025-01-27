@@ -2,7 +2,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.combat.fastclicks;
 
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.event.PlayerTickEvent;
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
@@ -11,7 +11,7 @@ public class FastClicks extends CheckRunner {
 
     private final FastClicksDetections packets;
 
-    public FastClicks(Enums.HackType hackType, SpartanProtocol protocol) {
+    public FastClicks(Enums.HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);
         this.packets = new FastClicksDetections(this);
     }

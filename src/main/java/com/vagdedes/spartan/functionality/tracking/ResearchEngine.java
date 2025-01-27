@@ -7,11 +7,11 @@ import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.inventory.implementation.MainMenu;
 import com.vagdedes.spartan.abstraction.profiling.MiningHistory;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
-import com.vagdedes.spartan.functionality.concurrent.Threads;
+import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
+import com.vagdedes.spartan.functionality.concurrent.GeneralThread;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
 import com.vagdedes.spartan.functionality.server.Config;
-import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.functionality.server.PluginBase;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.math.statistics.StatisticsMath;
@@ -34,10 +34,10 @@ public class ResearchEngine {
     public static Map<Enums.HackType, Collection<Check.DataType>> violationFired = new ConcurrentHashMap<>();
     private static long schedulerTicks = 0L;
     private static final Map<String, PlayerProfile> playerProfiles = new ConcurrentHashMap<>();
-    private static final Threads.ThreadPool statisticsThread = new Threads.ThreadPool(1L);
+    private static final GeneralThread.ThreadPool statisticsThread = new GeneralThread.ThreadPool(1L);
 
     static {
-        SpartanBukkit.runRepeatingTask(() -> {
+        PluginBase.runRepeatingTask(() -> {
             if (firstLoad) {
                 if (schedulerTicks == 0) {
                     schedulerTicks = 1200L;
@@ -92,7 +92,7 @@ public class ResearchEngine {
         return null;
     }
 
-    public static PlayerProfile getPlayerProfile(SpartanProtocol protocol) {
+    public static PlayerProfile getPlayerProfile(PlayerProtocol protocol) {
         PlayerProfile playerProfile = playerProfiles.get(protocol.bukkit().getName());
 
         if (playerProfile == null) {
@@ -102,7 +102,7 @@ public class ResearchEngine {
         return playerProfile;
     }
 
-    private static void createPlayerProfile(SpartanProtocol protocol) {
+    private static void createPlayerProfile(PlayerProtocol protocol) {
         PlayerProfile profile = new PlayerProfile(protocol);
         profile.update(protocol);
         playerProfiles.put(protocol.bukkit().getName(), new PlayerProfile(protocol));
@@ -167,7 +167,7 @@ public class ResearchEngine {
     public static void resetData(String playerName) {
         if (firstLoad) {
             // Clear Violations
-            SpartanProtocol player = SpartanBukkit.getProtocol(playerName);
+            PlayerProtocol player = PluginBase.getProtocol(playerName);
 
             if (isStorageMode()) {
                 // Clear Files/Database
@@ -206,7 +206,7 @@ public class ResearchEngine {
                 createPlayerProfile(player);
             }
             MainMenu.refresh();
-            SpartanBukkit.playerInfo.refresh(playerName);
+            PluginBase.playerInfo.refresh(playerName);
         }
     }
 
@@ -279,7 +279,7 @@ public class ResearchEngine {
 
         if (Config.sql.isEnabled()) {
             try {
-                ResultSet rs = Config.sql.query("SELECT creation_date, information FROM " + Config.sql.getTable() + " ORDER BY id DESC LIMIT " + SpartanBukkit.maxSQLRows + ";");
+                ResultSet rs = Config.sql.query("SELECT creation_date, information FROM " + Config.sql.getTable() + " ORDER BY id DESC LIMIT " + PluginBase.maxSQLRows + ";");
 
                 if (rs != null) {
                     while (rs.next()) {
@@ -288,7 +288,7 @@ public class ResearchEngine {
                         cache.put(date, data);
                         byteSize += date.length() + data.length();
 
-                        if (byteSize >= SpartanBukkit.maxBytes) {
+                        if (byteSize >= PluginBase.maxBytes) {
                             isFull = true;
                             break;
                         }
@@ -324,7 +324,7 @@ public class ResearchEngine {
                             cache.put(key, data);
                             byteSize += key.length() + data.length();
 
-                            if (byteSize >= SpartanBukkit.maxBytes) {
+                            if (byteSize >= PluginBase.maxBytes) {
                                 isFull = true;
                                 break;
                             }

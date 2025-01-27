@@ -4,7 +4,7 @@ import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.data.Buffer;
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.compatibility.Compatibility;
 import com.vagdedes.spartan.compatibility.manual.abilities.AureliumSkills;
 import com.vagdedes.spartan.compatibility.manual.building.MineBomb;
@@ -42,7 +42,7 @@ public class FastBreak extends CheckRunner {
             breaksPerSecondBuffer,
             individualSurroundingsPerSecondBuffer;
 
-    public FastBreak(HackType hackType, SpartanProtocol protocol) {
+    public FastBreak(HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);
         this.delay = new ImplementedProbabilityDetection(this, null, null, "delay", true);
         this.breaksPerSecond = new ImplementedProbabilityDetection(this, null, null, "breaks_per_second", null);
@@ -67,7 +67,7 @@ public class FastBreak extends CheckRunner {
                         time = System.currentTimeMillis() - time;
 
                         if (time > 0L) { // Make sure the plugin knows when the player started breaking the block
-                            ItemStack itemStack = this.protocol.spartan.getItemInHand();
+                            ItemStack itemStack = this.protocol.bukkitExtra.getItemInHand();
                             long originalLimit = MaterialUtils.getBlockBreakTime(this.protocol, itemStack, block.getType()),
                                     limit = originalLimit;
 
@@ -76,7 +76,7 @@ public class FastBreak extends CheckRunner {
 
                                 if (limit > (TPS.tickTime * 2L) && time < limit) {
                                     boolean emptyItem = itemStack == null || itemStack.getType() == Material.AIR;
-                                    Collection<PotionEffect> potionEffects = this.protocol.spartan.getActivePotionEffects();
+                                    Collection<PotionEffect> potionEffects = this.protocol.bukkitExtra.getActivePotionEffects();
                                     Set<Map.Entry<Enchantment, Integer>> enchantments = !emptyItem
                                             ? itemStack.getEnchantments().entrySet()
                                             : new HashSet<>();
@@ -224,9 +224,9 @@ public class FastBreak extends CheckRunner {
 
     @Override
     protected boolean canRun() {
-        return !MineBomb.isUsing(this.protocol.spartan)
+        return !MineBomb.isUsing(this.protocol.bukkitExtra)
                 && !Vehicles.has(this.protocol, Vehicles.DRILL)
-                && !SuperPickaxe.isUsing(this.protocol.spartan)
+                && !SuperPickaxe.isUsing(this.protocol.bukkitExtra)
                 && !AureliumSkills.isUsing(this.protocol)
                 && !Compatibility.CompatibilityType.CRAFT_BOOK.isFunctional()
                 && Attributes.getAmount(this.protocol, Attributes.PLAYER_BLOCK_BREAK_SPEED) == 0.0;

@@ -4,9 +4,9 @@ import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
-import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.functionality.server.PluginBase;
 import com.vagdedes.spartan.utils.math.ClientMath;
 import com.vagdedes.spartan.utils.math.OptifineMath;
 import com.vagdedes.spartan.utils.math.RayUtils;
@@ -44,7 +44,7 @@ public class HitReach extends CheckRunner {
     private final OptifineMath optifineMath = new OptifineMath();
     private final VanillaMath vanillaMath = new VanillaMath();
 
-    public HitReach(HackType hackType, SpartanProtocol protocol) {
+    public HitReach(HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);
         hitboxRaytrace = new ImplementedProbabilityDetection(this, null, null, "hitbox_raytrace", true);
         simple = new ImplementedProbabilityDetection(this, null, null, "simple", true);
@@ -55,11 +55,11 @@ public class HitReach extends CheckRunner {
     protected void handleInternal(boolean cancelled, Object object) {
         PlayerAttackEvent event = (PlayerAttackEvent) object;
         if (!(event.target instanceof Player)) return;
-        if (event.target.getVehicle() != null || this.protocol.spartan.getVehicle() != null) return;
+        if (event.target.getVehicle() != null || this.protocol.bukkitExtra.getVehicle() != null) return;
         if (this.protocol.packetsEnabled()) {
-            if (CombatUtils.canCheck(this.protocol, SpartanBukkit.getProtocol((Player) event.target).bukkit())
+            if (CombatUtils.canCheck(this.protocol, PluginBase.getProtocol((Player) event.target).bukkit())
                     && !this.protocol.bukkit().getGameMode().equals(GameMode.CREATIVE)) {
-                SpartanProtocol target = SpartanBukkit.getProtocol((Player) event.target);
+                PlayerProtocol target = PluginBase.getProtocol((Player) event.target);
                 List<Location> h = target.getPositionHistory();
                 Set<AxisAlignedBB> cachedBlocks = new HashSet<>();
                 { // caching blocks

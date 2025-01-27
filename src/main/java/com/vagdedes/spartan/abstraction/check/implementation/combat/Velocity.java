@@ -5,8 +5,8 @@ import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.event.PlayerTransactionEvent;
+import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.CombatUtils;
@@ -22,7 +22,7 @@ public class Velocity extends CheckRunner {
 
     private final CheckDetection vertical, horizontal;
 
-    public Velocity(Enums.HackType hackType, SpartanProtocol protocol) {
+    public Velocity(Enums.HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);
         this.vertical = new ImplementedProbabilityDetection(this, null, Check.DetectionType.PACKETS, "vertical", true);
         this.horizontal = new ImplementedProbabilityDetection(this, null, Check.DetectionType.PACKETS, "horizontal", true);
@@ -167,10 +167,10 @@ public class Velocity extends CheckRunner {
 
     @Override
     protected boolean canRun() {
-        return this.protocol.spartan.getVehicle() == null
-                && !this.protocol.spartan.trackers.has(PlayerTrackers.TrackerType.BOUNCING_BLOCKS)
+        return this.protocol.bukkitExtra.getVehicle() == null
+                && !this.protocol.bukkitExtra.trackers.has(PlayerTrackers.TrackerType.BOUNCING_BLOCKS)
                 && CombatUtils.canCheck(this.protocol)
-                && !this.protocol.spartan.isOutsideOfTheBorder(-1.0);
+                && !this.protocol.bukkitExtra.isOutsideOfTheBorder(-1.0);
     }
 
 }

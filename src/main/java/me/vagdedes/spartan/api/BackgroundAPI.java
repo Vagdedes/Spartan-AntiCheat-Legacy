@@ -1,14 +1,14 @@
 package me.vagdedes.spartan.api;
 
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.functionality.connection.cloud.IDs;
 import com.vagdedes.spartan.functionality.moderation.Wave;
-import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
-import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
+import com.vagdedes.spartan.functionality.moderation.AwarenessNotifications;
+import com.vagdedes.spartan.functionality.moderation.DetectionNotifications;
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.Permissions;
-import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.functionality.server.PluginBase;
 import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.Enums.HackType;
@@ -44,12 +44,12 @@ public class BackgroundAPI {
     }
 
     static boolean hasVerboseEnabled(Player p) {
-        SpartanProtocol protocol = SpartanBukkit.getProtocol(p);
+        PlayerProtocol protocol = PluginBase.getProtocol(p);
         return DetectionNotifications.isVerboseEnabled(protocol);
     }
 
     static boolean hasNotificationsEnabled(Player p) {
-        SpartanProtocol protocol = SpartanBukkit.getProtocol(p);
+        PlayerProtocol protocol = PluginBase.getProtocol(p);
         return DetectionNotifications.isEnabled(protocol);
     }
 
@@ -60,7 +60,7 @@ public class BackgroundAPI {
     }
 
     static void setVerbose(Player p, boolean value) {
-        SpartanProtocol protocol = SpartanBukkit.getProtocol(p);
+        PlayerProtocol protocol = PluginBase.getProtocol(p);
 
         if (value) {
             DetectionNotifications.addVerbose(protocol);
@@ -70,7 +70,7 @@ public class BackgroundAPI {
     }
 
     static void setNotifications(Player p, boolean value) {
-        SpartanProtocol protocol = SpartanBukkit.getProtocol(p);
+        PlayerProtocol protocol = PluginBase.getProtocol(p);
 
         if (value) {
             DetectionNotifications.set(protocol, DetectionNotifications.defaultFrequency);
@@ -86,13 +86,13 @@ public class BackgroundAPI {
 
     static void setNotifications(Player p, int frequency) {
         if (Config.settings.getBoolean("Important.enable_developer_api")) {
-            SpartanProtocol protocol = SpartanBukkit.getProtocol(p);
+            PlayerProtocol protocol = PluginBase.getProtocol(p);
             DetectionNotifications.set(protocol, Math.abs(frequency));
         }
     }
 
     static int getPing(Player p) {
-        return SpartanBukkit.getProtocol(p).getPing();
+        return PluginBase.getProtocol(p).getPing();
     }
 
     @Deprecated
@@ -120,11 +120,11 @@ public class BackgroundAPI {
     }
 
     static double getCertainty(Player p, HackType hackType) {
-        SpartanProtocol protocol = SpartanBukkit.getProtocol(p);
+        PlayerProtocol protocol = PluginBase.getProtocol(p);
         return PlayerEvidence.probabilityToCertainty(
                 protocol.profile().getRunner(hackType).getExtremeProbability(
-                        protocol.spartan.dataType,
-                        protocol.spartan.detectionType
+                        protocol.bukkitExtra.dataType,
+                        protocol.bukkitExtra.detectionType
                 )
         );
     }
@@ -193,14 +193,14 @@ public class BackgroundAPI {
 
     static void cancelCheck(Player p, HackType hackType, int ticks) {
         if (Config.settings.getBoolean("Important.enable_developer_api")) {
-            SpartanProtocol protocol = SpartanBukkit.getProtocol(p);
+            PlayerProtocol protocol = PluginBase.getProtocol(p);
             protocol.profile().getRunner(hackType).addDisableCause("Developer-API", null, ticks);
         }
     }
 
     static void cancelCheckPerVerbose(Player p, String string, int ticks) {
         if (Config.settings.getBoolean("Important.enable_developer_api")) { // Keep the null pointer protection to prevent the method from acting differently
-            SpartanProtocol protocol = SpartanBukkit.getProtocol(p);
+            PlayerProtocol protocol = PluginBase.getProtocol(p);
 
             for (HackType hackType : Enums.HackType.values()) {
                 protocol.profile().getRunner(hackType).addDisableCause("Developer-API", string, ticks);
@@ -222,28 +222,28 @@ public class BackgroundAPI {
 
     static void enableSilentChecking(Player p, HackType hackType) {
         if (Config.settings.getBoolean("Important.enable_developer_api")) {
-            SpartanProtocol protocol = SpartanBukkit.getProtocol(p);
+            PlayerProtocol protocol = PluginBase.getProtocol(p);
             protocol.profile().getRunner(hackType).addSilentCause("Developer-API", null, 0);
         }
     }
 
     static void disableSilentChecking(Player p, HackType hackType) {
         if (Config.settings.getBoolean("Important.enable_developer_api")) {
-            SpartanProtocol protocol = SpartanBukkit.getProtocol(p);
+            PlayerProtocol protocol = PluginBase.getProtocol(p);
             protocol.profile().getRunner(hackType).removeSilentCause();
         }
     }
 
     static void startCheck(Player p, HackType hackType) {
         if (Config.settings.getBoolean("Important.enable_developer_api")) {
-            SpartanProtocol protocol = SpartanBukkit.getProtocol(p);
+            PlayerProtocol protocol = PluginBase.getProtocol(p);
             protocol.profile().getRunner(hackType).removeDisableCause();
         }
     }
 
     static void stopCheck(Player p, HackType hackType) {
         if (Config.settings.getBoolean("Important.enable_developer_api")) {
-            SpartanProtocol protocol = SpartanBukkit.getProtocol(p);
+            PlayerProtocol protocol = PluginBase.getProtocol(p);
             protocol.profile().getRunner(hackType).addDisableCause("Developer-API", null, 0);
         }
     }

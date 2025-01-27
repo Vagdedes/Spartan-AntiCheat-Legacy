@@ -6,8 +6,8 @@ import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
 import com.vagdedes.spartan.abstraction.event.CPlayerVelocityEvent;
 import com.vagdedes.spartan.abstraction.protocol.ExtendedPotionEffect;
 import com.vagdedes.spartan.abstraction.protocol.PlayerMovement;
+import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.MultiVersion.MCVersion;
@@ -42,15 +42,15 @@ public class IMSimulationGravity extends ProbabilityDetection {
 
     public void run() {
         this.call(() -> {
-            SpartanProtocol p = this.protocol;
-            boolean ground = (this.protocol.spartan.getVehicle() != null)
-                    ? this.protocol.spartan.getVehicle().isOnGround() : this.protocol.isOnGround();
+            PlayerProtocol p = this.protocol;
+            boolean ground = (this.protocol.bukkitExtra.getVehicle() != null)
+                    ? this.protocol.bukkitExtra.getVehicle().isOnGround() : this.protocol.isOnGround();
             Location to = p.getLocation();
             Location from = this.protocol.getFromLocation();
             double dx = to.getX() - from.getX();
             double dz = to.getZ() - from.getZ();
             double speed = Math.sqrt(dx * dx + dz * dz);
-            if (p.spartan.movement.isGliding()) ignoreTicks = 5;
+            if (p.bukkitExtra.movement.isGliding()) ignoreTicks = 5;
             //this.protocol.bukkit().sendMessage(protocol().pistonHandle + " " + protocol().pistonTick + " " + protocol().explosionHandle);
             if (to.getX() != from.getX() || to.getY() != from.getY() || to.getZ() != from.getZ()) {
                 double motion = to.getY() - from.getY();
@@ -83,7 +83,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
                             this.setPredict(motion);
                         }
                     } else {
-                        playerMovement = this.protocol.spartan.movement;
+                        playerMovement = this.protocol.bukkitExtra.movement;
                         pr2 = playerMovement.motionY -= gravity;
                         pr2 *= 0.9800000190734863;
                         this.setPredict(0.0);
@@ -127,11 +127,11 @@ public class IMSimulationGravity extends ProbabilityDetection {
                     }
                 } else {
                     this.cringeBlockClimb = (this.air == 14);
-                    playerMovement = this.protocol.spartan.movement;
+                    playerMovement = this.protocol.bukkitExtra.movement;
                     playerMovement.motionY -= gravity;
                     playerMovement.motionY *= 0.9800000190734863;
-                    if (this.protocol.spartan.movement.motionY < -3.92) {
-                        this.protocol.spartan.movement.motionY = -3.92;
+                    if (this.protocol.bukkitExtra.movement.motionY < -3.92) {
+                        this.protocol.bukkitExtra.movement.motionY = -3.92;
                     }
                     this.slime = false;
                 }
@@ -222,7 +222,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
                 ExtendedPotionEffect slowFalling;
                 double pr;
                 if (MultiVersion.isOrGreater(MCVersion.V1_9)) {
-                    slowFalling = this.protocol.spartan.getPotionEffect(PotionEffectType.LEVITATION, 0L);
+                    slowFalling = this.protocol.bukkitExtra.getPotionEffect(PotionEffectType.LEVITATION, 0L);
                     if (slowFalling != null || this.levitation > 0) {
                         if (slowFalling != null) {
                             this.levitation = 2;
@@ -243,7 +243,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
                 }
 
                 if (MultiVersion.isOrGreater(MCVersion.V1_13)) {
-                    slowFalling = this.protocol.spartan.getPotionEffect(PotionEffectType.SLOW_FALLING, 0L);
+                    slowFalling = this.protocol.bukkitExtra.getPotionEffect(PotionEffectType.SLOW_FALLING, 0L);
                     if (slowFalling != null || this.slowFalling > 0) {
                         if (slowFalling != null) {
                             this.slowFalling = 2;
@@ -262,8 +262,8 @@ public class IMSimulationGravity extends ProbabilityDetection {
                     }
                 }
 
-                if (this.protocol.spartan.movement.isFlying()
-                        || this.protocol.spartan.movement.isGliding()
+                if (this.protocol.bukkitExtra.movement.isFlying()
+                        || this.protocol.bukkitExtra.movement.isGliding()
                         || this.protocol.flyingTicks > 0) {
                     this.setPredict(motion);
                     this.levitation = 3;
@@ -304,7 +304,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
                 }
 
                 // ignore
-                if (this.protocol.spartan.getVehicle() != null) {
+                if (this.protocol.bukkitExtra.getVehicle() != null) {
                     this.setPredict(motion);
                 }
 
@@ -316,7 +316,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
                         && (motion < this.predictY() + 0.04)
                         && speed < 0.1) {
                     double allowedDeviantity = 0.076;
-                    ExtendedPotionEffect jumpEffect = this.protocol.spartan.getPotionEffect(PotionEffectUtils.JUMP, 1L);
+                    ExtendedPotionEffect jumpEffect = this.protocol.bukkitExtra.getPotionEffect(PotionEffectUtils.JUMP, 1L);
 
                     if (jumpEffect != null) {
                         allowedDeviantity += 0.04 * (double) (jumpEffect.bukkitEffect.getAmplifier() + 1);
@@ -346,7 +346,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
                     this.setPredict(motion);
                     this.allowLowMinorAccel = false;
                 }
-                if (this.protocol.spartan.trackers.has(
+                if (this.protocol.bukkitExtra.trackers.has(
                         PlayerTrackers.TrackerType.TELEPORT, "tp")
                         && getDeviantity(motion) < 0.16) {
                     this.setPredict(motion);
@@ -354,15 +354,15 @@ public class IMSimulationGravity extends ProbabilityDetection {
 
                 double devTotal = this.abs(this.abs(motion) - this.abs(this.predictY()));
                 //this.protocol.bukkit().sendMessage("m: " + motion + " p: " + this.predictY() + " air: " + air);
-                if (devTotal > ((this.protocol.spartan.getVehicle()
+                if (devTotal > ((this.protocol.bukkitExtra.getVehicle()
                         != null && motion < 0 && airVehicle < 10)
-                        ? 0.36 : (this.protocol.spartan.getVehicle()
+                        ? 0.36 : (this.protocol.bukkitExtra.getVehicle()
                         != null) ? 0.09 : 0.009)) {
-                    if (this.protocol.spartan.trackers.has(
+                    if (this.protocol.bukkitExtra.trackers.has(
                             PlayerTrackers.TrackerType.VEHICLE, "vh_tp")
                             && devTotal < 1.9) {
                         this.setPredict(0.0);
-                    } else if (this.protocol.spartan.getVehicle() == null) {
+                    } else if (this.protocol.bukkitExtra.getVehicle() == null) {
                         if (allowLowJump && air == 1
                                 && this.predictY() > motion
                                 && getDeviantity(motion) <= 0.03) {
@@ -380,7 +380,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
                             this.vlCount += 1;
                         }
 
-                        if (this.vl > ((this.protocol.spartan.getVehicle() != null) ? 0.6 : 0.05)) {
+                        if (this.vl > ((this.protocol.bukkitExtra.getVehicle() != null) ? 0.6 : 0.05)) {
                             StringBuilder alertBuilder = new StringBuilder(String.valueOf(RayUtils.scaleVal(devTotal, 6.0)));
                             if (devTotal < 1.0) {
                                 alertBuilder.deleteCharAt(0);
@@ -449,8 +449,8 @@ public class IMSimulationGravity extends ProbabilityDetection {
     private void ground(boolean isOnGround) {
         this.limToUpdate++;
         //if (limToUpdate > 1) return;
-        boolean ground = (this.protocol.spartan.getVehicle() != null)
-                ? this.protocol.spartan.getVehicle().isOnGround() : isOnGround;
+        boolean ground = (this.protocol.bukkitExtra.getVehicle() != null)
+                ? this.protocol.bukkitExtra.getVehicle().isOnGround() : isOnGround;
         this.ground = ground ? this.ground + 1 : 0;
         this.air = ground ? 0 : this.air + 1;
     }
@@ -469,7 +469,7 @@ public class IMSimulationGravity extends ProbabilityDetection {
 
     private double jumpMotion() {
         double jumpPower = 0.42;
-        ExtendedPotionEffect jumpEffect = this.protocol.spartan.getPotionEffect(PotionEffectUtils.JUMP, 1L);
+        ExtendedPotionEffect jumpEffect = this.protocol.bukkitExtra.getPotionEffect(PotionEffectUtils.JUMP, 1L);
 
         if (jumpEffect != null) {
             jumpPower += 0.1 * (double) (jumpEffect.bukkitEffect.getAmplifier() + 1);
@@ -483,11 +483,11 @@ public class IMSimulationGravity extends ProbabilityDetection {
     }
 
     private double predictY() {
-        return this.protocol.spartan.movement.motionY;
+        return this.protocol.bukkitExtra.movement.motionY;
     }
 
     private void setPredict(double v) {
-        this.protocol.spartan.movement.motionY = v;
+        this.protocol.bukkitExtra.movement.motionY = v;
     }
 
     private boolean isOnWater() {

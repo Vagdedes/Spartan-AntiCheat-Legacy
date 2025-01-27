@@ -4,7 +4,7 @@ import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.data.Buffer;
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
@@ -24,14 +24,14 @@ public class FastHeal extends CheckRunner {
     private long time;
     private final Buffer.IndividualBuffer buffer;
 
-    public FastHeal(HackType hackType, SpartanProtocol protocol) {
+    public FastHeal(HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);
         this.detection = new ImplementedProbabilityDetection(this, null, null, null, true);
         this.buffer = new Buffer.IndividualBuffer();
     }
 
     private long calculate() {
-        int level = PlayerUtils.getPotionLevel(this.protocol.spartan, PotionEffectType.REGENERATION);
+        int level = PlayerUtils.getPotionLevel(this.protocol.bukkitExtra, PotionEffectType.REGENERATION);
         long i = 0L;
 
         if (level > -1) {
@@ -52,7 +52,7 @@ public class FastHeal extends CheckRunner {
 
                 if (reason != RegainReason.CUSTOM
                         && reason != RegainReason.MAGIC) {
-                    double health = this.protocol.spartan.getHealth();
+                    double health = this.protocol.bukkitExtra.getHealth();
                     long timePassed = System.currentTimeMillis() - time;
                     time = System.currentTimeMillis();
 
@@ -73,7 +73,7 @@ public class FastHeal extends CheckRunner {
                 }
             } else if (((FoodLevelChangeEvent) object).getFoodLevel() > this.protocol.bukkit().getFoodLevel()
                     && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
-                    || this.protocol.spartan.getItemInHand().getType() != Material.DRIED_KELP)) {
+                    || this.protocol.bukkitExtra.getItemInHand().getType() != Material.DRIED_KELP)) {
                 this.protocol.profile().getRunner(hackType).addDisableCause(null, null, 10);
             }
         });

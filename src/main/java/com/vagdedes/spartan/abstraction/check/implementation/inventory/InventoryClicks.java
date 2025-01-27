@@ -5,7 +5,7 @@ import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.data.Buffer;
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import me.vagdedes.spartan.system.Enums;
@@ -29,7 +29,7 @@ public class InventoryClicks extends CheckRunner {
             fastBuffer,
             shiftBuffer;
 
-    public InventoryClicks(Enums.HackType hackType, SpartanProtocol protocol) {
+    public InventoryClicks(Enums.HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);
         this.shift = new ImplementedProbabilityDetection(this, Check.DataType.BEDROCK, null, "shift", true);
         this.slow = new ImplementedProbabilityDetection(this, Check.DataType.BEDROCK, null, "slow", true);

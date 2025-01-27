@@ -22,16 +22,16 @@ public class IMHorizontal extends ProbabilityDetection {
 
     void run(boolean knownBox, boolean knownOldBox, double box, double oldBox, double vertical) {
         this.call(() -> {
-            if (!this.protocol.spartan.movement.wasGliding()
-                    && this.protocol.spartan.getVehicle() == null
-                    && !this.protocol.spartan.trackers.has(PlayerTrackers.TrackerType.BUBBLE_WATER, "soul-sand")) {
-                int airTicks = this.protocol.spartan.movement.getTicksOnAir();
+            if (!this.protocol.bukkitExtra.movement.wasGliding()
+                    && this.protocol.bukkitExtra.getVehicle() == null
+                    && !this.protocol.bukkitExtra.trackers.has(PlayerTrackers.TrackerType.BUBBLE_WATER, "soul-sand")) {
+                int airTicks = this.protocol.bukkitExtra.movement.getTicksOnAir();
 
                 if (airTicks > 0
                         && !BlockUtils.canClimb(new SpartanLocation(this.protocol.getLocation()).getBlock().getType(), false)
                         && !BlockUtils.canClimb(new SpartanLocation(this.protocol.getFromLocation()).getBlock().getType(), false)) {
                     if (knownBox || knownOldBox) {
-                        int limit = PlayerUtils.getJumpTicks(0) * (this.protocol.spartan.isBedrockPlayer() ? PlayerUtils.getJumpTicks(0) : 1);
+                        int limit = PlayerUtils.getJumpTicks(0) * (this.protocol.bukkitExtra.isBedrockPlayer() ? PlayerUtils.getJumpTicks(0) : 1);
 
                         if (airTicks > limit
                                 && !this.protocol.isOnGround()) {

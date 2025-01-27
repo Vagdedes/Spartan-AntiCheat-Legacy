@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.functionality.tracking;
 
+import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -15,7 +15,7 @@ public class TridentUse {
 
     private static final double riptideMaxSafeLevel = 3.0;
 
-    public static void run(SpartanProtocol p) {
+    public static void run(PlayerProtocol p) {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
             PlayerInventory inventory = p.bukkit().getInventory();
 
@@ -26,12 +26,12 @@ public class TridentUse {
                         int ticks = AlgebraUtils.integerRound(Math.log(level) * TPS.maximum);
 
                         if (level > riptideMaxSafeLevel) {
-                            p.spartan.trackers.add(
+                            p.bukkitExtra.trackers.add(
                                     PlayerTrackers.TrackerType.TRIDENT,
                                     AlgebraUtils.integerCeil(ticks * (level / riptideMaxSafeLevel))
                             );
                         } else {
-                            p.spartan.trackers.add(PlayerTrackers.TrackerType.TRIDENT, ticks);
+                            p.bukkitExtra.trackers.add(PlayerTrackers.TrackerType.TRIDENT, ticks);
                         }
 
                         p.profile().getRunner(Enums.HackType.IrregularMovements).handle(false, level);

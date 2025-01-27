@@ -5,7 +5,7 @@ import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedHardcodedDetection;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import me.vagdedes.spartan.system.Enums;
 
 public class CheckExecutorExample extends CheckRunner {
@@ -15,7 +15,7 @@ public class CheckExecutorExample extends CheckRunner {
     private final CheckDetection detection3;
     private final CheckDetection detection4;
 
-    public CheckExecutorExample(Enums.HackType hackType, SpartanProtocol protocol, String playerName) {
+    public CheckExecutorExample(Enums.HackType hackType, PlayerProtocol protocol, String playerName) {
         super(hackType, protocol);
 
         this.detection2 = new DetectionExecutorHardcodedExample(

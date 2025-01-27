@@ -1,8 +1,8 @@
 package com.vagdedes.spartan.listeners.bukkit;
 
 import com.vagdedes.spartan.abstraction.event.CPlayerVelocityEvent;
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
-import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
+import com.vagdedes.spartan.functionality.server.PluginBase;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -23,7 +23,7 @@ public class VelocityEvent implements Listener {
     }
 
     public static void event(CPlayerVelocityEvent e, boolean packets) {
-        SpartanProtocol protocol = SpartanBukkit.getProtocol(e.getPlayer());
+        PlayerProtocol protocol = PluginBase.getProtocol(e.getPlayer());
 
         if (protocol.packetsEnabled() == packets) {
             protocol.claimedVelocity = e;

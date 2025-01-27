@@ -6,9 +6,9 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.event.SpartanPlayerRiptideEvent;
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
-import com.vagdedes.spartan.functionality.concurrent.SpartanScheduler;
-import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
+import com.vagdedes.spartan.functionality.concurrent.CheckThread;
+import com.vagdedes.spartan.functionality.server.PluginBase;
 import com.vagdedes.spartan.listeners.bukkit.TridentEvent;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -30,14 +30,14 @@ public class TridentListener extends PacketAdapter {
     public void onPacketReceiving(PacketEvent event) {
         if (!event.isCancelled()) { // PlayerRiptideEvent does not implement cancellable
             Player player = event.getPlayer();
-            SpartanProtocol protocol = SpartanBukkit.getProtocol(player);
-            if (protocol.spartan.isBedrockPlayer()) {
+            PlayerProtocol protocol = PluginBase.getProtocol(player);
+            if (protocol.bukkitExtra.isBedrockPlayer()) {
                 return;
             }
             ItemStack item = player.getInventory().getItemInMainHand();
             if (item.getType().equals(Material.TRIDENT)) {
                 double r = Math.toRadians(protocol.getLocation().getYaw());
-                SpartanScheduler.run(() -> {
+                CheckThread.run(() -> {
                     TridentEvent.event(
                                     new SpartanPlayerRiptideEvent(
                                                     player,

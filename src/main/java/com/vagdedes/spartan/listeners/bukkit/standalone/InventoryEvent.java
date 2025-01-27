@@ -1,9 +1,9 @@
 package com.vagdedes.spartan.listeners.bukkit.standalone;
 
 import com.vagdedes.spartan.abstraction.inventory.InventoryMenu;
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
-import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.functionality.server.PluginBase;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import me.vagdedes.spartan.system.Enums;
@@ -20,7 +20,7 @@ public class InventoryEvent implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void ItemDrop(PlayerDropItemEvent e) {
-        SpartanProtocol p = SpartanBukkit.getProtocol(e.getPlayer(), true);
+        PlayerProtocol p = PluginBase.getProtocol(e.getPlayer(), true);
 
         // Detections
         p.profile().getRunner(Enums.HackType.FastClicks).handle(false, null);
@@ -32,7 +32,7 @@ public class InventoryEvent implements Listener {
 
         if (BlockUtils.hasMaterial(item)) {
             Player n = (Player) e.getWhoClicked();
-            SpartanProtocol p = SpartanBukkit.getProtocol(n, true);
+            PlayerProtocol p = PluginBase.getProtocol(n, true);
             boolean cancelled = e.isCancelled();
             ClickType click = e.getClick();
             String title = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13) ? StringUtils.getClearColorString(n.getOpenInventory().getTitle()) : n.getOpenInventory().getTitle();
@@ -47,7 +47,7 @@ public class InventoryEvent implements Listener {
                     | p.profile().getRunner(Enums.HackType.InventoryClicks).prevent()) {
                 e.setCancelled(true);
             } else if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
-                for (InventoryMenu menu : SpartanBukkit.menus) {
+                for (InventoryMenu menu : PluginBase.menus) {
                     if (menu.handle(p, title, item, click, slot)) {
                         e.setCancelled(true);
                         break;

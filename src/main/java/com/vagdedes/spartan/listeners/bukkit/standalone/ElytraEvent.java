@@ -1,6 +1,6 @@
 package com.vagdedes.spartan.listeners.bukkit.standalone;
 
-import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.functionality.server.PluginBase;
 import com.vagdedes.spartan.functionality.tracking.Elytra;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -16,7 +16,7 @@ public class ElytraEvent implements Listener {
         Entity entity = e.getEntity();
 
         if (entity instanceof Player) {
-            Elytra.judge(SpartanBukkit.getProtocol((Player) entity, true));
+            Elytra.judge(PluginBase.getProtocol((Player) entity, true));
         }
     }
 }

@@ -4,7 +4,7 @@ import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.data.Buffer;
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.compatibility.Compatibility;
 import com.vagdedes.spartan.compatibility.manual.building.PrinterMode;
 import com.vagdedes.spartan.compatibility.manual.entity.Vehicles;
@@ -20,7 +20,7 @@ public class FastPlace extends CheckRunner {
     private long time;
     private final Buffer.IndividualBuffer fastBuffer, mediumBuffer, slowBuffer;
 
-    public FastPlace(HackType hackType, SpartanProtocol protocol) {
+    public FastPlace(HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);
         this.fast = new ImplementedProbabilityDetection(this, null, null, "fast", true);
         this.medium = new ImplementedProbabilityDetection(this, null, null, "medium", true);
@@ -73,7 +73,7 @@ public class FastPlace extends CheckRunner {
                         });
                         this.fast.call(() -> {
                             if (timePassed <= 50L
-                                    && !this.protocol.spartan.isBedrockPlayer()
+                                    && !this.protocol.bukkitExtra.isBedrockPlayer()
                                     && !Compatibility.CompatibilityType.VEIN_MINER.isFunctional()
                                     && fastBuffer.count(1, ticks) >= 5) {
                                 this.fast.cancel(
@@ -93,7 +93,7 @@ public class FastPlace extends CheckRunner {
 
     @Override
     protected boolean canRun() {
-        return !this.protocol.spartan.movement.isFlying()
+        return !this.protocol.bukkitExtra.movement.isFlying()
                 && !PrinterMode.isUsing(this.protocol)
                 && !Vehicles.has(this.protocol, new String[]{Vehicles.DRILL, Vehicles.TRACTOR});
     }

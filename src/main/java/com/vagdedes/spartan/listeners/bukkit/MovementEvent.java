@@ -2,10 +2,10 @@ package com.vagdedes.spartan.listeners.bukkit;
 
 import com.vagdedes.spartan.abstraction.event.PlayerTickEvent;
 import com.vagdedes.spartan.abstraction.event.PlayerTransactionEvent;
-import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.abstraction.protocol.PlayerBukkit;
+import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
-import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.functionality.server.PluginBase;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Location;
@@ -24,14 +24,14 @@ public class MovementEvent implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void WorldEvent(PlayerChangedWorldEvent e) {
-        SpartanBukkit.getProtocol(e.getPlayer(), true).spartan.resetCrucialData();
+        PluginBase.getProtocol(e.getPlayer(), true).bukkitExtra.resetCrucialData();
     }
 
     public static void event(PlayerMoveEvent e, boolean packets) {
-        SpartanProtocol protocol = SpartanBukkit.getProtocol(e.getPlayer());
+        PlayerProtocol protocol = PluginBase.getProtocol(e.getPlayer());
 
         if (protocol.packetsEnabled() == packets) {
-            SpartanPlayer p = protocol.spartan;
+            PlayerBukkit p = protocol.bukkitExtra;
 
             Location nto = e.getTo();
 
@@ -75,7 +75,7 @@ public class MovementEvent implements Listener {
     }
 
     public static void tick(PlayerTickEvent tickEvent) {
-        SpartanProtocol protocol = tickEvent.protocol;
+        PlayerProtocol protocol = tickEvent.protocol;
         protocol.lastTickEvent = tickEvent;
         protocol.packetWorld.tick(tickEvent);
         protocol.profile().getRunner(Enums.HackType.MorePackets).handle(false, tickEvent);
@@ -84,7 +84,7 @@ public class MovementEvent implements Listener {
     }
 
     public static void transaction(PlayerTransactionEvent event) {
-        SpartanProtocol protocol = event.protocol;
+        PlayerProtocol protocol = event.protocol;
         protocol.profile().getRunner(Enums.HackType.Velocity).handle(false, event);
     }
 

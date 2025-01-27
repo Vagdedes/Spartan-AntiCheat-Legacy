@@ -45,7 +45,7 @@ public class HitTime extends ProbabilityDetection {
                     cancel("switch", this.protocol.getFromLocation());
                 }
             }
-            if (packets >= 5 && LegacyLagCompensationListener.getPlayerTicksDelay(this.protocol.spartan.getEntityId()) < 2) {
+            if (packets >= 5 && LegacyLagCompensationListener.getPlayerTicksDelay(this.protocol.bukkitExtra.getEntityId()) < 2) {
                 if (devianceTotal < 35) {
                     vlAnalysis += (devianceTotal < 10) ? 150 : 75;
                     if (vlAnalysis >= 300) {

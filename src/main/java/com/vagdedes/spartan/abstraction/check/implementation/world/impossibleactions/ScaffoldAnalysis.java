@@ -3,7 +3,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.world.impossibleac
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
 import com.vagdedes.spartan.abstraction.data.Buffer;
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.java.OverflowMap;
@@ -30,7 +30,7 @@ public class ScaffoldAnalysis extends ProbabilityDetection {
 
     void run(Block currentBlock) {
         this.call(() -> {
-            SpartanProtocol p = this.protocol;
+            PlayerProtocol p = this.protocol;
 
             if (this.oldBlock == null) {
                 this.oldBlock = currentBlock;

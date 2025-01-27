@@ -25,7 +25,7 @@ public abstract class HardcodedDetection extends CheckDetection {
     public final void setHackingRatio(double ratio) {
         if (this.protocol != null) {
             this.setProbability(
-                    this.protocol.spartan.dataType,
+                    this.protocol.bukkitExtra.dataType,
                     PlayerEvidence.probabilityToCertainty(ratio)
             );
             this.lastUpdate = System.currentTimeMillis() + decay;

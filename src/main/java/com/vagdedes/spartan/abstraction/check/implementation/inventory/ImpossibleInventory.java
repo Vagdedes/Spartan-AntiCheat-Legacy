@@ -4,7 +4,7 @@ import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.TPS;
@@ -37,7 +37,7 @@ public class ImpossibleInventory extends CheckRunner {
 
     private long autoTotem;
 
-    public ImpossibleInventory(Enums.HackType hackType, SpartanProtocol protocol) {
+    public ImpossibleInventory(Enums.HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);
         this.autoTotemDetection = new ImplementedProbabilityDetection(this, null, null, "auto_totem", true);
         this.closedInventoryDetection = new ImplementedProbabilityDetection(this, null, null, "closed_inventory", true);
@@ -65,7 +65,7 @@ public class ImpossibleInventory extends CheckRunner {
     @Override
     protected void runInternal(boolean cancelled) {
         this.cursorUsageDetection.call(() -> {
-            if (!this.protocol.spartan.movement.isSwimming() && this.protocol.spartan.getVehicle() == null) {
+            if (!this.protocol.bukkitExtra.movement.isSwimming() && this.protocol.bukkitExtra.getVehicle() == null) {
                 ItemStack cursor = this.protocol.bukkit().getOpenInventory().getCursor();
 
                 if (BlockUtils.hasMaterial(cursor)) {
@@ -101,8 +101,8 @@ public class ImpossibleInventory extends CheckRunner {
             if (cases != 0
                     && !click.isCreativeAction()
                     && !click.isKeyboardClick()
-                    && !this.protocol.spartan.movement.isSwimming()
-                    && this.protocol.spartan.getVehicle() == null
+                    && !this.protocol.bukkitExtra.movement.isSwimming()
+                    && this.protocol.bukkitExtra.getVehicle() == null
                     && this.protocol.bukkit().getOpenInventory().countSlots() > PlayerUtils.playerInventorySlots
                     && !BlockPatternUtils.isBlockPattern(
                     belowBlocks,
@@ -128,8 +128,8 @@ public class ImpossibleInventory extends CheckRunner {
     }
 
     private int getActionCase() {
-        if (this.protocol.spartan.movement.isFlying()
-                || this.protocol.spartan.movement.isLowEyeHeight()) {
+        if (this.protocol.bukkitExtra.movement.isFlying()
+                || this.protocol.bukkitExtra.movement.isLowEyeHeight()) {
             return 0;
         } else {
             Check check = hackType.getCheck();
@@ -141,15 +141,15 @@ public class ImpossibleInventory extends CheckRunner {
                     : check.getBooleanOption("check_sleeping", true)
                     && this.protocol.bukkit().isSleeping() ? 3
                     : check.getBooleanOption("check_dead", true)
-                    && this.protocol.spartan.isDead() ? 5
+                    && this.protocol.bukkitExtra.isDead() ? 5
                     : check.getBooleanOption("check_sprint_jumping", true)
                     && this.protocol.isSprinting()
-                    && this.protocol.spartan.movement.isJumping(this.getVertical()) ? 6
+                    && this.protocol.bukkitExtra.movement.isJumping(this.getVertical()) ? 6
                     : check.getBooleanOption("check_walk_jumping", true)
                     && !this.protocol.isSprinting()
-                    && this.protocol.spartan.movement.isJumping(this.getVertical()) ? 7
+                    && this.protocol.bukkitExtra.movement.isJumping(this.getVertical()) ? 7
                     : check.getBooleanOption("check_jumping", true)
-                    && this.protocol.spartan.movement.isJumping(this.getVertical()) ? 8
+                    && this.protocol.bukkitExtra.movement.isJumping(this.getVertical()) ? 8
                     : 0;
         }
     }

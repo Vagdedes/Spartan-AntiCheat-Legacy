@@ -7,7 +7,7 @@ import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
-import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.functionality.server.PluginBase;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.EntityUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
@@ -43,7 +43,7 @@ public class IMStepBukkit extends ProbabilityDetection {
     }
 
     private static int hash(double before, double after) {
-        return (Double.hashCode(before) * SpartanBukkit.hashCodeMultiplier)
+        return (Double.hashCode(before) * PluginBase.hashCodeMultiplier)
                 + Double.hashCode(after);
     }
 
@@ -72,10 +72,10 @@ public class IMStepBukkit extends ProbabilityDetection {
     void run(boolean knownBox, boolean knownOldBox,
              double box, double oldBox,
              double vertical, boolean teleported) {
-        if (this.protocol.spartan.movement.wasGliding()) {
+        if (this.protocol.bukkitExtra.movement.wasGliding()) {
             return;
         }
-        Entity vehicle = this.protocol.spartan.getVehicle();
+        Entity vehicle = this.protocol.bukkitExtra.getVehicle();
 
         if (knownBox && knownOldBox) {
             int hash = hash(oldBox, box);
@@ -83,9 +83,9 @@ public class IMStepBukkit extends ProbabilityDetection {
             if (vehicle == null) {
                 if (stepCombination.get(hash)) {
                     this.step_high.call(() -> {
-                        double limit = (this.protocol.spartan.isBedrockPlayer() ? bedrockPlayerStepExtra : 0.0)
-                                + (this.protocol.spartan.trackers.has(PlayerTrackers.TrackerType.VEHICLE, "exit")
-                                || this.protocol.spartan.trackers.has(PlayerTrackers.TrackerFamily.VELOCITY) ? 1.0 : 0.0)
+                        double limit = (this.protocol.bukkitExtra.isBedrockPlayer() ? bedrockPlayerStepExtra : 0.0)
+                                + (this.protocol.bukkitExtra.trackers.has(PlayerTrackers.TrackerType.VEHICLE, "exit")
+                                || this.protocol.bukkitExtra.trackers.has(PlayerTrackers.TrackerFamily.VELOCITY) ? 1.0 : 0.0)
                                 + GroundUtils.maxPlayerStep;
 
                         if (vertical > limit) {
@@ -103,12 +103,12 @@ public class IMStepBukkit extends ProbabilityDetection {
                     });
                 } else {
                     this.step_combination.call(() -> {
-                        double extra = this.protocol.spartan.isBedrockPlayer() ? bedrockPlayerStepExtra : 0.0,
+                        double extra = this.protocol.bukkitExtra.isBedrockPlayer() ? bedrockPlayerStepExtra : 0.0,
                                 downLimit = extra + this.getAirAcceleration(),
                                 upLimit = extra + GroundUtils.maxPlayerStep;
 
-                        if (!this.protocol.spartan.trackers.has(PlayerTrackers.TrackerType.VEHICLE, "exit") && vertical < -downLimit
-                                || !this.protocol.spartan.trackers.has(PlayerTrackers.TrackerType.VEHICLE, "enter") && vertical > upLimit) {
+                        if (!this.protocol.bukkitExtra.trackers.has(PlayerTrackers.TrackerType.VEHICLE, "exit") && vertical < -downLimit
+                                || !this.protocol.bukkitExtra.trackers.has(PlayerTrackers.TrackerType.VEHICLE, "enter") && vertical > upLimit) {
                             this.step_combination.cancel(
                                     "step(combination)"
                                             + ", box: " + box
@@ -146,12 +146,12 @@ public class IMStepBukkit extends ProbabilityDetection {
         } else {
             if (vertical > 0.0) {
                 this.step_abstract_up.call(() -> {
-                    if (!this.protocol.spartan.movement.isJumping(vertical)
-                            && !BlockUtils.isInteractiveAndPassable(this.protocol.spartan, new SpartanLocation(this.protocol.getLocation()).getBlock().getType())) {
-                        double limit = (this.protocol.spartan.isBedrockPlayer() ? bedrockPlayerStepExtra : 0.0)
-                                + (this.protocol.spartan.trackers.has(PlayerTrackers.TrackerFamily.VELOCITY) ? 1.0 : 0.0)
+                    if (!this.protocol.bukkitExtra.movement.isJumping(vertical)
+                            && !BlockUtils.isInteractiveAndPassable(this.protocol.bukkitExtra, new SpartanLocation(this.protocol.getLocation()).getBlock().getType())) {
+                        double limit = (this.protocol.bukkitExtra.isBedrockPlayer() ? bedrockPlayerStepExtra : 0.0)
+                                + (this.protocol.bukkitExtra.trackers.has(PlayerTrackers.TrackerFamily.VELOCITY) ? 1.0 : 0.0)
                                 + PlayerUtils.getJumpMotion(
-                                PlayerUtils.getPotionLevel(this.protocol.spartan, PotionEffectUtils.JUMP) + 1,
+                                PlayerUtils.getPotionLevel(this.protocol.bukkitExtra, PotionEffectUtils.JUMP) + 1,
                                 0
                         );
 
@@ -169,7 +169,7 @@ public class IMStepBukkit extends ProbabilityDetection {
                             }
 
                             if (vehicleLimit > 0.0) {
-                                if (this.protocol.spartan.isBedrockPlayer()) {
+                                if (this.protocol.bukkitExtra.isBedrockPlayer()) {
                                     limit = Math.max(limit, vehicleLimit);
                                 } else {
                                     limit = vehicleLimit;
@@ -186,8 +186,8 @@ public class IMStepBukkit extends ProbabilityDetection {
 
                             if ((predictedHeight != vertical
                                     || vertical > GroundUtils.maxPlayerStep)
-                                    && (!this.protocol.spartan.trackers.has(PlayerTrackers.TrackerType.BOUNCING_BLOCKS, "slime") || oldBox != 0.0)
-                                    && (!this.protocol.spartan.trackers.has(PlayerTrackers.TrackerType.BOUNCING_BLOCKS, "bed") || oldBox != 0.5625)) {
+                                    && (!this.protocol.bukkitExtra.trackers.has(PlayerTrackers.TrackerType.BOUNCING_BLOCKS, "slime") || oldBox != 0.0)
+                                    && (!this.protocol.bukkitExtra.trackers.has(PlayerTrackers.TrackerType.BOUNCING_BLOCKS, "bed") || oldBox != 0.5625)) {
                                 this.step_abstract_up.cancel(
                                         "step(abstract-up)"
                                                 + ", box: " + box
@@ -204,7 +204,7 @@ public class IMStepBukkit extends ProbabilityDetection {
                 });
             } else {
                 if (vehicle == null
-                        && !this.protocol.spartan.trackers.has(PlayerTrackers.TrackerType.VEHICLE, "exit")) {
+                        && !this.protocol.bukkitExtra.trackers.has(PlayerTrackers.TrackerType.VEHICLE, "exit")) {
                     if (knownBox) {
                         this.step_landing.call(() -> {
                             if (!teleported) {
@@ -232,8 +232,8 @@ public class IMStepBukkit extends ProbabilityDetection {
                     } else {
                         this.step_abstract_down.call(() -> {
                             if (!this.protocol.isOnGround()
-                                    && !BlockUtils.isInteractiveAndPassable(this.protocol.spartan, new SpartanLocation(this.protocol.getLocation()).getBlock().getType())) {
-                                double limit = (this.protocol.spartan.isBedrockPlayer() ? bedrockPlayerStepExtra : 0.0)
+                                    && !BlockUtils.isInteractiveAndPassable(this.protocol.bukkitExtra, new SpartanLocation(this.protocol.getLocation()).getBlock().getType())) {
+                                double limit = (this.protocol.bukkitExtra.isBedrockPlayer() ? bedrockPlayerStepExtra : 0.0)
                                         + this.getAirAcceleration();
 
                                 if (vertical <= -limit) {

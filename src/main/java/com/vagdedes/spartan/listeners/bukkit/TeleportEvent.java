@@ -1,10 +1,10 @@
 package com.vagdedes.spartan.listeners.bukkit;
 
 import com.vagdedes.spartan.abstraction.check.implementation.movement.morepackets.MorePackets;
+import com.vagdedes.spartan.abstraction.protocol.PlayerBukkit;
+import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
-import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
-import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.functionality.server.PluginBase;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -21,10 +21,10 @@ public class TeleportEvent implements Listener {
     }
 
     public static void teleport(Player player, boolean packets) {
-        SpartanProtocol protocol = SpartanBukkit.getProtocol(player, true);
+        PlayerProtocol protocol = PluginBase.getProtocol(player, true);
 
         if (protocol.packetsEnabled() == packets) {
-            SpartanPlayer p = protocol.spartan;
+            PlayerBukkit p = protocol.bukkitExtra;
 
             // Object
             p.resetCrucialData();
@@ -42,11 +42,11 @@ public class TeleportEvent implements Listener {
     }
 
     public static void respawn(Player player, boolean packets) {
-        SpartanProtocol protocol = SpartanBukkit.getProtocol(player, true);
+        PlayerProtocol protocol = PluginBase.getProtocol(player, true);
 
         if (protocol.packetsEnabled() == packets) {
             // Objects
-            protocol.spartan.resetCrucialData();
+            protocol.bukkitExtra.resetCrucialData();
         }
     }
 

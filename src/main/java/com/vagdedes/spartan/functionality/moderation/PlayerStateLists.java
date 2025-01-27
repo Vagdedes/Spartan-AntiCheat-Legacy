@@ -1,7 +1,7 @@
-package com.vagdedes.spartan.functionality.inventory;
+package com.vagdedes.spartan.functionality.moderation;
 
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
-import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.functionality.server.PluginBase;
 import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
 import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
 import com.vagdedes.spartan.utils.minecraft.inventory.InventoryUtils;
@@ -42,7 +42,7 @@ public class PlayerStateLists {
         item.setItemMeta(meta);
         inventory.setItem(slot, item);
 
-        SpartanBukkit.headThread.executeWithPriority(() -> {
+        PluginBase.headThread.executeWithPriority(() -> {
             ItemStack itemNew = profile.getSkull();
             ItemMeta metaNew = itemNew.getItemMeta();
             metaNew.setDisplayName(meta.getDisplayName());

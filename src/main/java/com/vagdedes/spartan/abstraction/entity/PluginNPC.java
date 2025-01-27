@@ -1,10 +1,10 @@
 package com.vagdedes.spartan.abstraction.entity;
 
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
-import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.functionality.server.PluginBase;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import com.vagdedes.spartan.utils.minecraft.inventory.EnchantmentUtils;
 import com.vagdedes.spartan.utils.minecraft.inventory.InventoryUtils;
@@ -20,7 +20,7 @@ import org.bukkit.util.Vector;
 import java.util.List;
 import java.util.UUID;
 
-public class SpartanNPC {
+public class PluginNPC {
 
     public static final boolean
             hasSecondHand = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9),
@@ -34,7 +34,7 @@ public class SpartanNPC {
     public final Location location;
     private double handPose, headPose;
 
-    public SpartanNPC(Location location) {
+    public PluginNPC(Location location) {
         Location loc = location.clone();
         loc.setX(loc.getBlockX() + 0.5);
         loc.setZ(loc.getBlockZ() + 0.5);
@@ -101,7 +101,7 @@ public class SpartanNPC {
         ));
     }
 
-    public boolean animate(List<SpartanProtocol> protocols) {
+    public boolean animate(List<PlayerProtocol> protocols) {
         if (armorStand.isDead()) {
             return false;
         } else {
@@ -141,9 +141,9 @@ public class SpartanNPC {
                     0.0,
                     -Math.toRadians(Math.abs(handPose))
             ));
-            SpartanProtocol closest = null;
+            PlayerProtocol closest = null;
 
-            for (SpartanProtocol protocol : protocols) {
+            for (PlayerProtocol protocol : protocols) {
                 if (closest == null
                         || SpartanLocation.distance(protocol.getLocationOrVehicle(), location)
                         < SpartanLocation.distance(closest.getLocationOrVehicle(), location)) {
@@ -159,7 +159,7 @@ public class SpartanNPC {
     }
 
     public void updateHead() {
-        SpartanBukkit.headThread.executeWithPriority(
+        PluginBase.headThread.executeWithPriority(
                 () -> armorStand.getEquipment().setHelmet(
                         InventoryUtils.getSkull(offlinePlayer, backupName, true)
                 )

@@ -5,7 +5,7 @@ import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.event.PlayerTickEvent;
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -26,7 +26,7 @@ public class MorePackets extends CheckRunner {
             negative;
     private long teleported;
 
-    public MorePackets(HackType hackType, SpartanProtocol protocol) {
+    public MorePackets(HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);
         this.packetVL = 0;
         this.positive_net = new ImplementedProbabilityDetection(
@@ -134,7 +134,7 @@ public class MorePackets extends CheckRunner {
 
     @Override
     protected boolean canRun() {
-        return !this.protocol.spartan.isAFK()
+        return !this.protocol.bukkitExtra.isAFK()
                 && this.teleported < System.currentTimeMillis()
                 && MovementProcessing.canCheck(
                 this.protocol,

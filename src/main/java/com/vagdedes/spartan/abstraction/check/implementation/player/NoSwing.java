@@ -5,8 +5,8 @@ import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
+import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.compatibility.manual.abilities.AureliumSkills;
 import com.vagdedes.spartan.compatibility.manual.building.MineBomb;
 import com.vagdedes.spartan.compatibility.manual.building.TreeFeller;
@@ -30,7 +30,7 @@ public class NoSwing extends CheckRunner {
     private final Buffer.IndividualBuffer damageBuffer;
     private long checkDamage;
 
-    public NoSwing(Enums.HackType hackType, SpartanProtocol protocol) {
+    public NoSwing(Enums.HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);
         this.breakTime = Long.MAX_VALUE;
         this.animationTime = Long.MAX_VALUE;
@@ -51,7 +51,7 @@ public class NoSwing extends CheckRunner {
             this.animationTime = System.currentTimeMillis();
         } else if (object instanceof BlockBreakEvent) {
             this.breaking.call(() -> {
-                if (MineBomb.isUsing(this.protocol.spartan)
+                if (MineBomb.isUsing(this.protocol.bukkitExtra)
                         || AureliumSkills.isUsing(this.protocol)) {
                     return;
                 }
@@ -64,7 +64,7 @@ public class NoSwing extends CheckRunner {
                         this.breaking.cancel(
                                 "breaking"
                                         + ", block: " + BlockUtils.blockToString(block)
-                                        + ", item: " + BlockUtils.materialToString(this.protocol.spartan.getItemInHand().getType()));
+                                        + ", item: " + BlockUtils.materialToString(this.protocol.bukkitExtra.getItemInHand().getType()));
                     } else {
                         resetAnimationData();
                     }
@@ -72,8 +72,8 @@ public class NoSwing extends CheckRunner {
             });
         } else if (object instanceof PlayerAttackEvent) {
             this.damage.call(() -> {
-                if (this.protocol.spartan.getAttackCooldown() != 1.0f
-                        || this.protocol.spartan.trackers.has(PlayerTrackers.TrackerType.TRIDENT)) {
+                if (this.protocol.bukkitExtra.getAttackCooldown() != 1.0f
+                        || this.protocol.bukkitExtra.trackers.has(PlayerTrackers.TrackerType.TRIDENT)) {
                     return;
                 }
                 LivingEntity entity = ((PlayerAttackEvent) object).target;
@@ -92,7 +92,7 @@ public class NoSwing extends CheckRunner {
                             this.damage.cancel(
                                     "damage"
                                             + ", entity: " + CombatUtils.entityToString(entity)
-                                            + ", item: " + BlockUtils.materialToString(this.protocol.spartan.getItemInHand().getType())
+                                            + ", item: " + BlockUtils.materialToString(this.protocol.bukkitExtra.getItemInHand().getType())
                             );
                         }
                     } else {

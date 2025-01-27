@@ -3,7 +3,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.player;
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.minecraft.inventory.MaterialUtils;
@@ -26,7 +26,7 @@ public class FastEat extends CheckRunner {
 
     private long delayTime, eatTime;
 
-    public FastEat(HackType hackType, SpartanProtocol protocol) {
+    public FastEat(HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);
         this.interact = new ImplementedProbabilityDetection(this, null, null, "interact", true);
         this.eat = new ImplementedProbabilityDetection(this, null, null, "eat", true);
@@ -49,7 +49,7 @@ public class FastEat extends CheckRunner {
                 }
             }
         } else {
-            ItemStack itemStack = this.protocol.spartan.getItemInHand();
+            ItemStack itemStack = this.protocol.bukkitExtra.getItemInHand();
 
             if (itemStack != null) {
                 Material type = itemStack.getType();
@@ -108,7 +108,7 @@ public class FastEat extends CheckRunner {
                     }
                     break;
                 case RIGHT_CLICK_AIR:
-                    if (this.protocol.spartan.getItemInHand().getType().isEdible()) {
+                    if (this.protocol.bukkitExtra.getItemInHand().getType().isEdible()) {
                         this.eatTime = System.currentTimeMillis();
                     }
                     break;
@@ -121,7 +121,7 @@ public class FastEat extends CheckRunner {
     @Override
     protected boolean canRun() {
         return this.protocol.getWorld().getDifficulty() != Difficulty.PEACEFUL
-                && !this.protocol.spartan.hasPotionEffect(PotionEffectType.SATURATION, 0)
+                && !this.protocol.bukkitExtra.hasPotionEffect(PotionEffectType.SATURATION, 0)
                 && Attributes.getAmount(this.protocol, Attributes.GENERIC_MAX_ABSORPTION) == 0.0;
     }
 }

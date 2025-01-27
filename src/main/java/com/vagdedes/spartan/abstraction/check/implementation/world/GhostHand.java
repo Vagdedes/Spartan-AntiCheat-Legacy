@@ -3,7 +3,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.world;
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.manual.building.PrinterMode;
 import com.vagdedes.spartan.compatibility.manual.entity.Vehicles;
@@ -21,7 +21,7 @@ public class GhostHand extends CheckRunner {
 
     private final CheckDetection breaking, interact;
 
-    public GhostHand(HackType hackType, SpartanProtocol protocol) {
+    public GhostHand(HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);
         this.breaking = new ImplementedProbabilityDetection(this, null, null, "breaking", true);
         this.interact = new ImplementedProbabilityDetection(this, null, null, "interact", true);
@@ -40,7 +40,7 @@ public class GhostHand extends CheckRunner {
                             0
                     );
                     double bDistance = SpartanLocation.distance(location, b.getLocation());
-                    SpartanLocation t = this.protocol.spartan.getTargetBlock(bDistance, PlayerUtils.chunk);
+                    SpartanLocation t = this.protocol.bukkitExtra.getTargetBlock(bDistance, PlayerUtils.chunk);
 
                     if (t != null) {
                         double tDistance = t.distance(location);
@@ -73,7 +73,7 @@ public class GhostHand extends CheckRunner {
                                 0
                         );
                         double bDistance = SpartanLocation.distance(location, b.getLocation());
-                        SpartanLocation t = this.protocol.spartan.getTargetBlock(bDistance, PlayerUtils.chunk);
+                        SpartanLocation t = this.protocol.bukkitExtra.getTargetBlock(bDistance, PlayerUtils.chunk);
 
                         if (t != null) {
                             double tDistance = t.distance(location);
@@ -102,7 +102,7 @@ public class GhostHand extends CheckRunner {
 
     @Override
     protected boolean canRun() {
-        if (!this.protocol.spartan.movement.isFlying()
+        if (!this.protocol.bukkitExtra.movement.isFlying()
                 && !Vehicles.has(this.protocol, Vehicles.DRILL)
                 && !PrinterMode.isUsing(this.protocol)
                 && Attributes.getAmount(this.protocol, Attributes.PLAYER_BLOCK_INTERACTION_RANGE) == 0.0) {

@@ -1,9 +1,9 @@
 package com.vagdedes.spartan.abstraction.data;
 
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanBlock;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
-import com.vagdedes.spartan.functionality.concurrent.SpartanScheduler;
+import com.vagdedes.spartan.functionality.concurrent.CheckThread;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import lombok.Data;
@@ -25,11 +25,11 @@ public class EncirclementData {
     private boolean climb = false;
     private boolean bubble = false;
 
-    public EncirclementData(SpartanProtocol protocol) {
-        Location location = (protocol.spartan.getVehicle() == null) ?
+    public EncirclementData(PlayerProtocol protocol) {
+        Location location = (protocol.bukkitExtra.getVehicle() == null) ?
                         protocol.getLocation()
-                        : protocol.spartan.getVehicle().getLocation();
-        SpartanScheduler.run(() -> {
+                        : protocol.bukkitExtra.getVehicle().getLocation();
+        CheckThread.run(() -> {
             double x = location.getX();
             double y = location.getY() - 0.1;
             double z = location.getZ();

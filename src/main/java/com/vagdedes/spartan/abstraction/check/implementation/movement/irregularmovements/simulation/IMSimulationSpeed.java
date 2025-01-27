@@ -5,8 +5,8 @@ import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
 import com.vagdedes.spartan.abstraction.event.CPlayerVelocityEvent;
 import com.vagdedes.spartan.abstraction.protocol.ExtendedPotionEffect;
+import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
 import com.vagdedes.spartan.utils.math.MathHelper;
@@ -48,9 +48,9 @@ public class IMSimulationSpeed extends ProbabilityDetection {
 
     public void run() {
         this.call(() -> {
-            SpartanProtocol p = this.protocol;
-            boolean isOnGround = (p.spartan.getVehicle() != null)
-                    ? p.spartan.getVehicle().isOnGround() : p.isOnGround();
+            PlayerProtocol p = this.protocol;
+            boolean isOnGround = (p.bukkitExtra.getVehicle() != null)
+                    ? p.bukkitExtra.getVehicle().isOnGround() : p.isOnGround();
             Location to = p.getLocation();
             Location from = this.protocol.getFromLocation();
             double dx = to.getX() - from.getX();
@@ -64,7 +64,7 @@ public class IMSimulationSpeed extends ProbabilityDetection {
             boolean isOnAngle80 = RayUtils.validRayLines(
                     yawLine, moveLine, 80.0);
             boolean flagged = false;
-            if (p.spartan.movement.isGliding()) ignoreTicks = 6;
+            if (p.bukkitExtra.movement.isGliding()) ignoreTicks = 6;
             if (!this.protocol.useItemPacket) this.action = 0;
             double atr = Attributes.getAmount(this.protocol, Attributes.GENERIC_MOVEMENT_SPEED) * 1.2;
             if (to.getX() != from.getX() || to.getY() != from.getY() || to.getZ() != from.getZ()) {
@@ -125,7 +125,7 @@ public class IMSimulationSpeed extends ProbabilityDetection {
                                 ? ACCELERATION_ACTION : (this.action > 1) ?
                                 ACCELERATION_BASIC : ACCELERATION_SPRINT) * this.multiplex();
                         boolean nearbyEntities = false;
-                        for (Entity entity : this.protocol.spartan.getNearbyEntities(2.4)) {
+                        for (Entity entity : this.protocol.bukkitExtra.getNearbyEntities(2.4)) {
                             if (entity.getUniqueId() != this.protocol.getUUID()) {
                                 nearbyEntities = true;
                                 break;
@@ -187,11 +187,11 @@ public class IMSimulationSpeed extends ProbabilityDetection {
                             this.removePistonTick = true;
                         }
                         if (d >= 0.01 && d <= 4.3
-                                && (this.protocol.spartan.trackers.has(PlayerTrackers.TrackerType.VEHICLE, "vh_tp")
+                                && (this.protocol.bukkitExtra.trackers.has(PlayerTrackers.TrackerType.VEHICLE, "vh_tp")
                                 || this.vhact > 0)) {
                             this.setPredict(dx, dz);
                         }
-                        if (this.protocol.spartan.getVehicle() != null) {
+                        if (this.protocol.bukkitExtra.getVehicle() != null) {
                             this.setPredict(dx, dz);
                         }
                         //protocol.getBukkit().sendMessage("v: " + (this.protocol.spartan.getVehicle() != null));
@@ -237,7 +237,7 @@ public class IMSimulationSpeed extends ProbabilityDetection {
 
     private double multiplex() {
         double m = 1.0;
-        ExtendedPotionEffect speedEffect = this.protocol.spartan.getPotionEffect(PotionEffectType.SPEED, 5);
+        ExtendedPotionEffect speedEffect = this.protocol.bukkitExtra.getPotionEffect(PotionEffectType.SPEED, 5);
         Location l = this.protocol.getLocation().clone().add(0, -0.5, 0);
         Location lF = this.protocol.getFromLocation().clone().add(0, -0.5, 0);
         if (PlayerUtils.soulSpeed && this.protocol.bukkit().getInventory().getBoots() != null) {
@@ -249,20 +249,20 @@ public class IMSimulationSpeed extends ProbabilityDetection {
             m += (double) (speedEffect.bukkitEffect.getAmplifier() + 1) * 0.2;
         if (this.isOnIce(l) || this.isOnSlime(l) || this.isOnIce(lF) || this.isOnSlime(lF))
             m *= 1.6;
-        if (this.protocol.spartan.getNearbyEntities(2).size() > 1)
+        if (this.protocol.bukkitExtra.getNearbyEntities(2).size() > 1)
             m *= 1.4;
         if (BlockUtils.areWebs(new SpartanLocation(this.protocol.getLocation()).getBlock().getType())) {
             m *= 0.2;
         }
         if (this.isOnWater() || this.isOnWater()) {
             ExtendedPotionEffect dolphinEffect = PlayerUtils.dolphinsGrace
-                    ? this.protocol.spartan.getPotionEffect(PotionEffectType.DOLPHINS_GRACE, 0)
+                    ? this.protocol.bukkitExtra.getPotionEffect(PotionEffectType.DOLPHINS_GRACE, 0)
                     : null;
             if (dolphinEffect != null) m *= 6.2;
         }
         if (this.isOnSemi(l)) m *= 1.4;
-        if (this.protocol.spartan.movement.isGliding()) m *= 18.0;
-        if (this.protocol.spartan.movement.isFlying() || this.protocol.flyingTicks > 0) m *= 25.0;
+        if (this.protocol.bukkitExtra.movement.isGliding()) m *= 18.0;
+        if (this.protocol.bukkitExtra.movement.isFlying() || this.protocol.flyingTicks > 0) m *= 25.0;
         m *= (this.protocol.bukkit().getWalkSpeed() * 5);
         return m;
     }

@@ -100,7 +100,7 @@ public class IMBukkitSpeed extends ProbabilityDetection {
     }
 
     void run(PlayerMoveEvent e) {
-        if (this.protocol.spartan.trackers.has(PlayerTrackers.TrackerType.PISTON)) {
+        if (this.protocol.bukkitExtra.trackers.has(PlayerTrackers.TrackerType.PISTON)) {
             return;
         }
         Location location = this.protocol.getLocation().clone();
@@ -125,10 +125,10 @@ public class IMBukkitSpeed extends ProbabilityDetection {
         }
         double rayDiff = RayUtils.calculateRayLines(lookRay, moveRay);
         ExtendedPotionEffect glideEffect = PlayerUtils.slowFall
-                ? this.protocol.spartan.getPotionEffect(PotionEffectType.SLOW_FALLING, 0)
+                ? this.protocol.bukkitExtra.getPotionEffect(PotionEffectType.SLOW_FALLING, 0)
                 : null;
         ExtendedPotionEffect levitationEffect = PlayerUtils.levitation
-                ? this.protocol.spartan.getPotionEffect(PotionEffectType.LEVITATION, 0)
+                ? this.protocol.bukkitExtra.getPotionEffect(PotionEffectType.LEVITATION, 0)
                 : null;
 
         if (speed > speedLimit && onAir < 24) {
@@ -139,8 +139,8 @@ public class IMBukkitSpeed extends ProbabilityDetection {
                     this.straightLineSpeeding
             };
         }
-        if (velocity == 0 && !this.protocol.spartan.isBedrockPlayer() && levitationEffect == null
-                && glideEffect == null && !this.protocol.spartan.movement.isSwimming()) {
+        if (velocity == 0 && !this.protocol.bukkitExtra.isBedrockPlayer() && levitationEffect == null
+                && glideEffect == null && !this.protocol.bukkitExtra.movement.isSwimming()) {
             double localSpeedLimit = r((speedLimit / 1.35) + 0.01);
             double localSpeedLimit2 = r((speedLimit / 1.6) + 0.01);
             double[] allowedRots = new double[]{0.0, 45.0, -45.0};
@@ -207,20 +207,20 @@ public class IMBukkitSpeed extends ProbabilityDetection {
         }
         SpartanLocation to = new SpartanLocation(this.protocol.getLocation().clone());
         PlayerInventory inventory = this.protocol.bukkit().getInventory();
-        Entity vehicle = this.protocol.spartan.getVehicle();
+        Entity vehicle = this.protocol.bukkitExtra.getVehicle();
         if (onGround == 1) this.multiplyFriction = 0.26;
         double m = (this.protocol.bukkit().getWalkSpeed() * 5);
         boolean solidBlockOnTop = RayUtils.onSolidBlock(this.protocol, to.clone().add(0, 2, 0).bukkit());
         m += getMaxSpeedAmplifier();
         ExtendedPotionEffect dolphinEffect = PlayerUtils.dolphinsGrace
-                ? this.protocol.spartan.getPotionEffect(PotionEffectType.DOLPHINS_GRACE, 0)
+                ? this.protocol.bukkitExtra.getPotionEffect(PotionEffectType.DOLPHINS_GRACE, 0)
                 : null;
-        ExtendedPotionEffect speedEffect = this.protocol.spartan.getPotionEffect(PotionEffectType.SPEED, 0);
+        ExtendedPotionEffect speedEffect = this.protocol.bukkitExtra.getPotionEffect(PotionEffectType.SPEED, 0);
         ExtendedPotionEffect glideEffect = PlayerUtils.slowFall
-                ? this.protocol.spartan.getPotionEffect(PotionEffectType.SLOW_FALLING, 0)
+                ? this.protocol.bukkitExtra.getPotionEffect(PotionEffectType.SLOW_FALLING, 0)
                 : null;
         ExtendedPotionEffect levitationEffect = PlayerUtils.levitation
-                ? this.protocol.spartan.getPotionEffect(PotionEffectType.LEVITATION, 0)
+                ? this.protocol.bukkitExtra.getPotionEffect(PotionEffectType.LEVITATION, 0)
                 : null;
         if (PlayerUtils.soulSpeed && inventory.getBoots() != null) {
             int e = inventory.getBoots().getEnchantmentLevel(Enchantment.SOUL_SPEED);
@@ -250,13 +250,13 @@ public class IMBukkitSpeed extends ProbabilityDetection {
         if (RayUtils.onBlock(this.protocol, to.bukkit(), BlockUtils.stairs)) {
             if (multiply < 0.35) multiply = 0.35;
         }
-        if (this.protocol.spartan.movement.isGliding() || vehicle != null) {
+        if (this.protocol.bukkitExtra.movement.isGliding() || vehicle != null) {
             if (multiply < 18.0) multiply = 18.0;
         }
-        if (this.protocol.spartan.movement.isFlying()) {
+        if (this.protocol.bukkitExtra.movement.isFlying()) {
             multiply = 25.0;
         }
-        for (Entity e : this.protocol.spartan.getNearbyEntities(2, 2, 2)) {
+        for (Entity e : this.protocol.bukkitExtra.getNearbyEntities(2, 2, 2)) {
             if (multiply < 0.4 && !(e instanceof Player)) {
                 multiply = 0.4;
                 break;

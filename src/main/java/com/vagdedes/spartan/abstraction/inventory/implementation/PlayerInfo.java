@@ -5,14 +5,14 @@ import com.vagdedes.spartan.abstraction.check.CheckCancellation;
 import com.vagdedes.spartan.abstraction.data.Cooldowns;
 import com.vagdedes.spartan.abstraction.inventory.InventoryMenu;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.functionality.command.CommandExecution;
 import com.vagdedes.spartan.functionality.connection.DiscordMemberCount;
 import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
-import com.vagdedes.spartan.functionality.notifications.clickable.ClickableMessage;
+import com.vagdedes.spartan.functionality.moderation.clickable.ClickableMessage;
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.Permissions;
-import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.functionality.server.PluginBase;
 import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
 import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
 import com.vagdedes.spartan.utils.java.OverflowMap;
@@ -46,9 +46,9 @@ public class PlayerInfo extends InventoryMenu {
     }
 
     @Override
-    public boolean internalOpen(SpartanProtocol protocol, boolean permissionMessage, Object object) {
+    public boolean internalOpen(PlayerProtocol protocol, boolean permissionMessage, Object object) {
         boolean back = !permissionMessage;
-        SpartanProtocol target = SpartanBukkit.getAnyCaseProtocol(object.toString());
+        PlayerProtocol target = PluginBase.getAnyCaseProtocol(object.toString());
         boolean isOnline = target != null;
         PlayerProfile profile = isOnline
                 ? target.profile()
@@ -75,7 +75,7 @@ public class PlayerInfo extends InventoryMenu {
             if (isOnline) {
                 lore.add("§7Version§8:§c " + target.version.toString());
                 lore.add("§7Latency§8:§c " + target.getPing() + "ms");
-                lore.add("§7Edition§8:§c " + target.spartan.dataType);
+                lore.add("§7Edition§8:§c " + target.bukkitExtra.dataType);
             } else {
                 lore.add("§7Last Known Edition§8:§c " + profile.getLastDataType());
             }
@@ -103,7 +103,7 @@ public class PlayerInfo extends InventoryMenu {
 
     private void addChecks(int slot,
                            boolean isOnline,
-                           SpartanProtocol protocol,
+                           PlayerProtocol protocol,
                            PlayerProfile profile,
                            List<String> lore,
                            Enums.HackCategoryType checkType,
@@ -226,7 +226,7 @@ public class PlayerInfo extends InventoryMenu {
         add("§2" + checkType + " Checks", lore, item, slot);
     }
 
-    private String getDetectionNotification(SpartanProtocol protocol,
+    private String getDetectionNotification(PlayerProtocol protocol,
                                             HackType hackType,
                                             Check.DataType dataType,
                                             boolean hasPlayer) {
@@ -251,23 +251,23 @@ public class PlayerInfo extends InventoryMenu {
     }
 
     public void refresh(String targetName) {
-        Collection<SpartanProtocol> protocols = SpartanBukkit.getProtocols();
+        Collection<PlayerProtocol> protocols = PluginBase.getProtocols();
 
         if (!protocols.isEmpty()) {
-            for (SpartanProtocol protocol : protocols) {
+            for (PlayerProtocol protocol : protocols) {
                 InventoryView inventoryView = protocol.bukkit().getOpenInventory();
 
                 if (inventoryView.getTitle().equals(PlayerInfo.menu + targetName)
                         && cooldowns.canDo("player-info=" + protocol.getUUID())) {
                     cooldowns.add("player-info=" + protocol.getUUID(), 1);
-                    SpartanBukkit.playerInfo.open(protocol, targetName);
+                    PluginBase.playerInfo.open(protocol, targetName);
                 }
             }
         }
     }
 
     @Override
-    public boolean internalHandle(SpartanProtocol protocol) {
+    public boolean internalHandle(PlayerProtocol protocol) {
         String item = itemStack.getItemMeta().getDisplayName();
         item = item.startsWith("§") ? item.substring(2) : item;
         String playerName = title.substring(menu.length());
@@ -300,9 +300,9 @@ public class PlayerInfo extends InventoryMenu {
         } else if (item.equals("Close")) {
             protocol.bukkit().closeInventory();
         } else if (item.equals("Back")) {
-            SpartanBukkit.mainMenu.open(protocol);
+            PluginBase.mainMenu.open(protocol);
         } else {
-            protocol.spartan.sendImportantMessage("§7Click to learn more about the detection states§8: \n§a§n" + documentationURL);
+            protocol.bukkitExtra.sendImportantMessage("§7Click to learn more about the detection states§8: \n§a§n" + documentationURL);
         }
         return true;
     }

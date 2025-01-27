@@ -5,7 +5,7 @@ import com.vagdedes.spartan.abstraction.check.HardcodedDetection;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedHardcodedDetection;
 import com.vagdedes.spartan.abstraction.profiling.MiningHistory;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
 import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -62,7 +62,7 @@ public class XRay extends CheckRunner {
 
     private final HardcodedDetection[] detections;
 
-    public XRay(Enums.HackType hackType, SpartanProtocol protocol) {
+    public XRay(Enums.HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);
         this.detections = new HardcodedDetection[World.Environment.values().length];
 

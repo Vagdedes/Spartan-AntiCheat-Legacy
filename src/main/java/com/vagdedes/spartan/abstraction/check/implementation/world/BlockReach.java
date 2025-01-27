@@ -3,7 +3,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.world;
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.Compatibility;
 import com.vagdedes.spartan.compatibility.manual.abilities.AureliumSkills;
@@ -29,7 +29,7 @@ public class BlockReach extends CheckRunner {
             place,
             unusual;
 
-    public BlockReach(HackType hackType, SpartanProtocol protocol) {
+    public BlockReach(HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);
         this.breaking = new ImplementedProbabilityDetection(this, null, null, "breaking", true);
         this.interact = new ImplementedProbabilityDetection(this, null, null, "interact", true);
@@ -102,11 +102,11 @@ public class BlockReach extends CheckRunner {
                     double distance = SpartanLocation.distance(to, block.getLocation()),
                             ab_distance = SpartanLocation.distance(to, blockAgainst.getLocation());
 
-                    if (!this.protocol.spartan.isBedrockPlayer()
+                    if (!this.protocol.bukkitExtra.isBedrockPlayer()
                             && BlockUtils.isFullSolid(block.getType())
                             && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
                             || block.getType() != Material.BARRIER)
-                            && this.protocol.spartan.getVehicle() == null
+                            && this.protocol.bukkitExtra.getVehicle() == null
                             && distance > (ab_distance + GroundUtils.boundingBox + 0.1)) {
                         this.unusual.call(() -> {
                             this.unusual.cancel(
@@ -139,7 +139,7 @@ public class BlockReach extends CheckRunner {
                 && !Compatibility.CompatibilityType.CRAFT_BOOK.isFunctional()
                 && !PrinterMode.isUsing(this.protocol)
                 && !AureliumSkills.isUsing(this.protocol)
-                && !MineBomb.isUsing(this.protocol.spartan)
+                && !MineBomb.isUsing(this.protocol.bukkitExtra)
                 && Attributes.getAmount(this.protocol, Attributes.PLAYER_BLOCK_INTERACTION_RANGE) == 0.0;
     }
 }

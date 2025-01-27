@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.listeners.bukkit.standalone;
 
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
-import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
+import com.vagdedes.spartan.functionality.server.PluginBase;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -12,7 +12,7 @@ public class ChatEvent implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Event(AsyncPlayerChatEvent e) {
-        SpartanProtocol p = SpartanBukkit.getProtocol(e.getPlayer());
+        PlayerProtocol p = PluginBase.getProtocol(e.getPlayer());
 
         // Detections
         p.profile().getRunner(Enums.HackType.Exploits).handle(e.isCancelled(), e.getMessage());

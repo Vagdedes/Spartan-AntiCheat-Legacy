@@ -5,7 +5,7 @@ import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
-import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.functionality.server.PluginBase;
 import com.vagdedes.spartan.utils.java.OverflowMap;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
@@ -40,7 +40,7 @@ public class Tower extends ProbabilityDetection {
                     SpartanLocation.getBlockLocation(playerLocation),
                     block.getLocation()
             ) <= 1.0) {
-                int jumpLevel = PlayerUtils.getPotionLevel(this.protocol.spartan, PotionEffectUtils.JUMP) + 1,
+                int jumpLevel = PlayerUtils.getPotionLevel(this.protocol.bukkitExtra, PotionEffectUtils.JUMP) + 1,
                         motionTicks = PlayerUtils.getJumpTicks(jumpLevel);
                 double motionSum = PlayerUtils.getJumpMotionSum(jumpLevel),
                         blockHeight = (GroundUtils.minBoundingBox + GroundUtils.maxBoundingBox) / 2.0;
@@ -54,7 +54,7 @@ public class Tower extends ProbabilityDetection {
                 }
                 possiblePlacements = Math.max(possiblePlacements, 2);
                 Buffer.IndividualBuffer buffer = this.buffers.computeIfAbsent(
-                        (block.getX() * SpartanBukkit.hashCodeMultiplier) + block.getZ(),
+                        (block.getX() * PluginBase.hashCodeMultiplier) + block.getZ(),
                         k -> new Buffer.IndividualBuffer()
                 );
 

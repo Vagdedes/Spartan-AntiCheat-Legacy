@@ -4,7 +4,7 @@ import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.data.Buffer;
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.Material;
 import org.bukkit.event.block.Action;
@@ -20,7 +20,7 @@ public class FastBow extends CheckRunner {
     private long interactTime;
     private final Buffer.IndividualBuffer bowForce, bowShots;
 
-    public FastBow(HackType hackType, SpartanProtocol protocol) {
+    public FastBow(HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);
         this.bowForceDetection = new ImplementedProbabilityDetection(this, null, null, "bow_force", true);
         this.bowShotsDetection = new ImplementedProbabilityDetection(this, null, null, "bow_shots", true);
@@ -31,7 +31,7 @@ public class FastBow extends CheckRunner {
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
         if (object instanceof EntityShootBowEvent) {
-            if (this.protocol.spartan.getItemInHand().getType() == Material.BOW) {
+            if (this.protocol.bukkitExtra.getItemInHand().getType() == Material.BOW) {
                 checkBowShots();
                 checkBowForce(((EntityShootBowEvent) object).getForce());
             }

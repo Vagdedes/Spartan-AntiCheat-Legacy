@@ -7,7 +7,7 @@ import com.vagdedes.spartan.compatibility.necessary.BedrockCompatibility;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
-import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.functionality.server.PluginBase;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -27,9 +27,9 @@ import org.bukkit.potion.PotionEffectType;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class SpartanPlayer {
+public class PlayerBukkit {
 
-    final SpartanProtocol protocol;
+    final PlayerProtocol protocol;
     private final Map<PotionEffectType, ExtendedPotionEffect> potionEffects;
     public final Check.DataType dataType;
     public final Check.DetectionType detectionType;
@@ -42,26 +42,26 @@ public class SpartanPlayer {
     private final double[] maxNearbyEntitiesCoordinate;
 
     static {
-        SpartanBukkit.runRepeatingTask(() -> {
-            Collection<SpartanProtocol> protocols = SpartanBukkit.getProtocols();
+        PluginBase.runRepeatingTask(() -> {
+            Collection<PlayerProtocol> protocols = PluginBase.getProtocols();
 
             if (!protocols.isEmpty()) {
-                for (SpartanProtocol protocol : protocols) {
+                for (PlayerProtocol protocol : protocols) {
                     if (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
-                        protocol.spartan.setStoredPotionEffects();
+                        protocol.bukkitExtra.setStoredPotionEffects();
                     }
                     protocol.profile().getRunner(Enums.HackType.AutoRespawn).run(false);
                     protocol.profile().getRunner(Enums.HackType.Exploits).run(false);
-                    protocol.spartan.movement.schedulerFrom = protocol.getLocation();
-                    protocol.spartan.checkForAFK();
+                    protocol.bukkitExtra.movement.schedulerFrom = protocol.getLocation();
+                    protocol.bukkitExtra.checkForAFK();
 
-                    if (protocol.spartan.maxNearbyEntitiesCoordinate[0] > 0.0
-                            || protocol.spartan.maxNearbyEntitiesCoordinate[1] > 0.0
-                            || protocol.spartan.maxNearbyEntitiesCoordinate[2] > 0.0) {
-                        protocol.spartan.nearbyEntities = protocol.bukkit().getNearbyEntities(
-                                protocol.spartan.maxNearbyEntitiesCoordinate[0],
-                                protocol.spartan.maxNearbyEntitiesCoordinate[1],
-                                protocol.spartan.maxNearbyEntitiesCoordinate[2]
+                    if (protocol.bukkitExtra.maxNearbyEntitiesCoordinate[0] > 0.0
+                            || protocol.bukkitExtra.maxNearbyEntitiesCoordinate[1] > 0.0
+                            || protocol.bukkitExtra.maxNearbyEntitiesCoordinate[2] > 0.0) {
+                        protocol.bukkitExtra.nearbyEntities = protocol.bukkit().getNearbyEntities(
+                                protocol.bukkitExtra.maxNearbyEntitiesCoordinate[0],
+                                protocol.bukkitExtra.maxNearbyEntitiesCoordinate[1],
+                                protocol.bukkitExtra.maxNearbyEntitiesCoordinate[2]
                         ).toArray(new Entity[0]);
                     }
                 }
@@ -71,7 +71,7 @@ public class SpartanPlayer {
 
     // Object
 
-    public SpartanPlayer(SpartanProtocol protocol) {
+    public PlayerBukkit(PlayerProtocol protocol) {
         this.protocol = protocol;
         this.dataType = BedrockCompatibility.isPlayer(protocol.bukkit())
                 ? Check.DataType.BEDROCK
@@ -124,7 +124,7 @@ public class SpartanPlayer {
     }
 
     public boolean packetsEnabled() {
-        return SpartanBukkit.packetsEnabled() && !this.isBedrockPlayer();
+        return PluginBase.packetsEnabled() && !this.isBedrockPlayer();
     }
 
     @Override
@@ -160,13 +160,13 @@ public class SpartanPlayer {
                     }
                     string += StringUtils.toString(message, " ");
                 }
-                Collection<SpartanProtocol> protocols = SpartanBukkit.getProtocols();
+                Collection<PlayerProtocol> protocols = PluginBase.getProtocols();
 
                 if (!protocols.isEmpty()) {
                     if (broadcast) {
                         Bukkit.broadcastMessage(string);
                     } else {
-                        for (SpartanProtocol protocol : protocols) {
+                        for (PlayerProtocol protocol : protocols) {
                             if (protocol.bukkit().isOp()) {
                                 protocol.bukkit().sendMessage(string);
                             }
@@ -219,7 +219,7 @@ public class SpartanPlayer {
     }
 
     boolean isOnGround() {
-        Entity vehicle = this.protocol.spartan.getVehicle();
+        Entity vehicle = this.protocol.bukkitExtra.getVehicle();
 
         if (vehicle != null) {
             return vehicle.isOnGround();
@@ -297,7 +297,7 @@ public class SpartanPlayer {
 
     private void setStoredPotionEffects() {
         if (!ProtocolLib.isTemporary(this.protocol.bukkit())) {
-            SpartanBukkit.transferTask(
+            PluginBase.transferTask(
                     protocol,
                     () -> {
                         for (PotionEffect effect : this.protocol.bukkit().getActivePotionEffects()) {
@@ -342,7 +342,7 @@ public class SpartanPlayer {
         this.maxNearbyEntitiesCoordinate[1] = Math.max(radius, this.maxNearbyEntitiesCoordinate[1]);
         this.maxNearbyEntitiesCoordinate[2] = Math.max(radius, this.maxNearbyEntitiesCoordinate[2]);
 
-        if (SpartanBukkit.isSynchronised()) {
+        if (PluginBase.isSynchronised()) {
             List<Entity> list = this.protocol.bukkit().getNearbyEntities(radius, radius, radius);
             this.nearbyEntities = list.toArray(new Entity[0]);
             return list;
@@ -383,7 +383,7 @@ public class SpartanPlayer {
         this.maxNearbyEntitiesCoordinate[1] = Math.max(y, this.maxNearbyEntitiesCoordinate[1]);
         this.maxNearbyEntitiesCoordinate[2] = Math.max(z, this.maxNearbyEntitiesCoordinate[2]);
 
-        if (SpartanBukkit.isSynchronised()) {
+        if (PluginBase.isSynchronised()) {
             List<Entity> list = this.protocol.bukkit().getNearbyEntities(x, y, z);
             this.nearbyEntities = list.toArray(new Entity[0]);
             return list;

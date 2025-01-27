@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.abstraction.check;
 
 import com.vagdedes.spartan.functionality.server.Config;
-import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.functionality.server.PluginBase;
 import com.vagdedes.spartan.functionality.server.TPS;
 import org.bukkit.Location;
 
@@ -39,14 +39,14 @@ public class CheckPrevention {
     }
 
     void handle(CheckDetection detection) {
-        if (SpartanBukkit.isSynchronised()) {
+        if (PluginBase.isSynchronised()) {
             detection.prevention(
                     this.location,
                     this.groundTeleport,
                     this.damage
             ).run();
         } else {
-            SpartanBukkit.transferTask(
+            PluginBase.transferTask(
                     detection.protocol,
                     detection.prevention(
                             this.location,

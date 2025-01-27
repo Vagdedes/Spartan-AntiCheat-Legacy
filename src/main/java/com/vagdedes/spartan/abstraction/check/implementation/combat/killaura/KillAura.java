@@ -4,7 +4,7 @@ import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.implementation.combat.killaura.movedirection.MoveDirection;
 import com.vagdedes.spartan.abstraction.event.EntityAttackPlayerEvent;
 import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.minecraft.entity.CombatUtils;
@@ -21,7 +21,7 @@ public class KillAura extends CheckRunner {
     private final FightAnalysis analysis;
     private final MoveLength moveLength;
 
-    public KillAura(Enums.HackType hackType, SpartanProtocol protocol) {
+    public KillAura(Enums.HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);
         irregular = new Irregular(this);
         analysis = new FightAnalysis(this);

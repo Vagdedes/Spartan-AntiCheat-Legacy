@@ -1,11 +1,11 @@
 package com.vagdedes.spartan.abstraction.check;
 
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudConnections;
-import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
-import com.vagdedes.spartan.functionality.notifications.clickable.ClickableMessage;
+import com.vagdedes.spartan.functionality.moderation.DetectionNotifications;
+import com.vagdedes.spartan.functionality.moderation.clickable.ClickableMessage;
 import com.vagdedes.spartan.functionality.server.*;
 import com.vagdedes.spartan.functionality.tracking.AntiCheatLogs;
 import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
@@ -94,8 +94,8 @@ public abstract class CheckDetection extends CheckProcess {
 
     public final boolean canCall() {
         return this.protocol != null
-                && this.supportsDataType(this.protocol.spartan.dataType)
-                && this.supportsDetectionType(this.protocol.spartan.detectionType);
+                && this.supportsDataType(this.protocol.bukkitExtra.dataType)
+                && this.supportsDetectionType(this.protocol.bukkitExtra.detectionType);
     }
 
     public final void call(Runnable runnable) {
@@ -178,15 +178,15 @@ public abstract class CheckDetection extends CheckProcess {
             long remaining = detection.getAccumulatedProbabilityTime(time);
 
             if (remaining >= threshold) {
-                Collection<SpartanProtocol> protocols = SpartanBukkit.getProtocols();
+                Collection<PlayerProtocol> protocols = PluginBase.getProtocols();
                 long sum = 0L;
                 int total = 0;
 
                 if (!protocols.isEmpty()) {
                     long individual;
 
-                    for (SpartanProtocol protocol : protocols) {
-                        if (!protocol.spartan.isAFK()) {
+                    for (PlayerProtocol protocol : protocols) {
+                        if (!protocol.bukkitExtra.isAFK()) {
                             CheckDetection protocolDetection = protocol.profile().getRunner(
                                     this.hackType
                             ).getDetection(
@@ -234,14 +234,14 @@ public abstract class CheckDetection extends CheckProcess {
         Location location = this.protocol.getLocation();
         information = "(" + AntiCheatLogs.playerIdentifier + " " + this.protocol.bukkit().getName() + "), "
                 + "(" + checkIdentifier + " " + this.hackType + "), "
-                + "(" + javaPlayerIdentifier + " " + (!this.protocol.spartan.isBedrockPlayer()) + ")" + ", "
+                + "(" + javaPlayerIdentifier + " " + (!this.protocol.bukkitExtra.isBedrockPlayer()) + ")" + ", "
                 + "(" + detectionIdentifier + " " + this.name + ")" + ", "
                 + "(" + certaintyIdentifier + " " + AlgebraUtils.cut(certainty, 2) + "),"
                 + "(Data-Completed: " + sufficientData + "), "
                 + "(Server-Version: " + MultiVersion.serverVersion.toString() + "), "
                 + "(Plugin-Version: " + API.getVersion() + "), "
-                + "(Silent: " + hackType.getCheck().isSilent(this.protocol.spartan.dataType, this.protocol.getWorld().getName()) + "), "
-                + "(Punish: " + hackType.getCheck().canPunish(this.protocol.spartan.dataType) + "), "
+                + "(Silent: " + hackType.getCheck().isSilent(this.protocol.bukkitExtra.dataType, this.protocol.getWorld().getName()) + "), "
+                + "(Punish: " + hackType.getCheck().canPunish(this.protocol.bukkitExtra.dataType) + "), "
                 + "(Packets: " + this.protocol.packetsEnabled() + "), "
                 + "(Ping: " + this.protocol.getPing() + "ms), "
                 + "(W-XYZ: " + location.getWorld().getName() + " " + location.getBlockX() + " " + location.getBlockY() + " " + location.getBlockZ() + "), "
@@ -271,10 +271,10 @@ public abstract class CheckDetection extends CheckProcess {
                     ClickableMessage.sendCommand(this.protocol.bukkit(), notification, command, command);
                 }
             } else {
-                List<SpartanProtocol> protocols = DetectionNotifications.getPlayers();
+                List<PlayerProtocol> protocols = DetectionNotifications.getPlayers();
 
                 if (!protocols.isEmpty()) {
-                    for (SpartanProtocol staff : protocols) {
+                    for (PlayerProtocol staff : protocols) {
                         CheckDetection detection = staff.profile().getRunner(this.hackType).getDetection(this.name);
 
                         if (detection != null
@@ -297,7 +297,7 @@ public abstract class CheckDetection extends CheckProcess {
     private void punish(double probability) {
         Check check = hackType.getCheck();
 
-        if (check.canPunish(this.protocol.spartan.dataType)
+        if (check.canPunish(this.protocol.bukkitExtra.dataType)
                 && PlayerEvidence.surpassedProbability(
                 probability,
                 PlayerEvidence.punishmentProbability
@@ -326,17 +326,17 @@ public abstract class CheckDetection extends CheckProcess {
                             Bukkit.getPluginManager().callEvent(event);
 
                             if (!event.isCancelled()) {
-                                SpartanBukkit.runCommand(modifiedCommand);
+                                PluginBase.runCommand(modifiedCommand);
                             }
                         };
 
-                        if (SpartanBukkit.isSynchronised()) {
+                        if (PluginBase.isSynchronised()) {
                             runnable.run();
                         } else {
-                            SpartanBukkit.transferTask(this.protocol, runnable);
+                            PluginBase.transferTask(this.protocol, runnable);
                         }
                     } else {
-                        SpartanBukkit.runCommand(modifiedCommand);
+                        PluginBase.runCommand(modifiedCommand);
                     }
                 }
                 Location location = this.protocol.getLocation();
@@ -358,7 +358,7 @@ public abstract class CheckDetection extends CheckProcess {
 
     public final boolean prevent() {
         if (this.prevention.complete()) {
-            if (SpartanBukkit.isSynchronised()) {
+            if (PluginBase.isSynchronised()) {
                 if (Config.settings.getBoolean("Important.enable_developer_api")) {
                     CheckCancelEvent checkCancelEvent = new CheckCancelEvent(this.protocol.bukkit(), hackType);
                     Bukkit.getPluginManager().callEvent(checkCancelEvent);
@@ -388,10 +388,10 @@ public abstract class CheckDetection extends CheckProcess {
                 protocol.teleport(location);
             }
             if (groundTeleport) {
-                protocol.spartan.groundTeleport();
+                protocol.bukkitExtra.groundTeleport();
             }
             if (damage > 0.0) {
-                protocol.spartan.damage(damage);
+                protocol.bukkitExtra.damage(damage);
             }
         };
     }
@@ -412,7 +412,7 @@ public abstract class CheckDetection extends CheckProcess {
                 damage
         );
         boolean isEnabled =
-                hackType.getCheck().isEnabled(this.protocol.spartan.dataType, this.protocol.getWorld().getName())
+                hackType.getCheck().isEnabled(this.protocol.bukkitExtra.dataType, this.protocol.getWorld().getName())
                         && this.isEnabled()
                         && !Permissions.isBypassing(this.protocol.bukkit(), hackType)
                         && !CloudBase.isInformationCancelled(this.hackType, information);
@@ -443,12 +443,12 @@ public abstract class CheckDetection extends CheckProcess {
             }
             // Store, potentially recalculate and check data
             this.storeData(
-                    this.protocol.spartan.dataType,
+                    this.protocol.bukkitExtra.dataType,
                     time
             );
-            ResearchEngine.queueToCache(this.hackType, this.protocol.spartan.dataType);
-            boolean sufficientData = this.hasSufficientData(this.protocol.spartan.dataType);
-            double probability = this.getProbability(this.protocol.spartan.dataType);
+            ResearchEngine.queueToCache(this.hackType, this.protocol.bukkitExtra.dataType);
+            boolean sufficientData = this.hasSufficientData(this.protocol.bukkitExtra.dataType);
+            double probability = this.getProbability(this.protocol.bukkitExtra.dataType);
 
             // Notification
             this.notify(probability, finalIsEnabled, sufficientData, time, information);
@@ -461,7 +461,7 @@ public abstract class CheckDetection extends CheckProcess {
                 this.prevention = newPrevention;
                 this.prevention.canPrevent =
                         sufficientData
-                                && !hackType.getCheck().isSilent(this.protocol.spartan.dataType, this.protocol.getWorld().getName())
+                                && !hackType.getCheck().isSilent(this.protocol.bukkitExtra.dataType, this.protocol.getWorld().getName())
                                 && (silentCause == null
                                 || silentCause.hasExpired()
                                 || !silentCause.pointerMatches(information))
@@ -469,12 +469,12 @@ public abstract class CheckDetection extends CheckProcess {
             }
         };
 
-        if (SpartanBukkit.isSynchronised()) {
+        if (PluginBase.isSynchronised()) {
             runnable.run();
         } else if (!event) {
-            SpartanBukkit.dataThread.executeIfUnknownThreadElseHere(runnable);
+            PluginBase.dataThread.executeIfUnknownThreadElseHere(runnable);
         } else {
-            SpartanBukkit.transferTask(this.protocol, runnable);
+            PluginBase.transferTask(this.protocol, runnable);
         }
     }
 

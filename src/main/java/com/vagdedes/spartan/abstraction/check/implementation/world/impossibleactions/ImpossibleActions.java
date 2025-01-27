@@ -4,7 +4,7 @@ import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.Compatibility;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
@@ -31,7 +31,7 @@ public class ImpossibleActions extends CheckRunner {
     private final Tower tower;
     private final ScaffoldAnalysis scaffoldAnalysis;
 
-    public ImpossibleActions(Enums.HackType hackType, SpartanProtocol protocol) {
+    public ImpossibleActions(Enums.HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);
         this.scaffoldDirection = new ImplementedProbabilityDetection(this, null, null, "scaffold_direction", true);
         this.scaffoldUp = new ImplementedProbabilityDetection(this, Check.DataType.JAVA, null, "scaffold_up", true);
@@ -93,7 +93,7 @@ public class ImpossibleActions extends CheckRunner {
                                         ));
                                     } else {
                                         this.scaffoldYaw.call(() -> {
-                                            List<SpartanLocation> fromLocations = this.protocol.spartan.movement.getLocations();
+                                            List<SpartanLocation> fromLocations = this.protocol.bukkitExtra.movement.getLocations();
                                             int requiredComparisons = 5, requiredSize = requiredComparisons + 1;
 
                                             if (fromLocations.size() >= requiredSize) { // 6-1 comparisons = 5
@@ -150,7 +150,7 @@ public class ImpossibleActions extends CheckRunner {
 
                     if (this.protocol.bukkit().isSleeping()) {
                         cases = 1;
-                    } else if (this.protocol.spartan.isDead()) {
+                    } else if (this.protocol.bukkitExtra.isDead()) {
                         cases = 2;
                     } else if (BlockUtils.hasMaterial(this.protocol.bukkit().getOpenInventory().getCursor())) {
                         cases = 3;

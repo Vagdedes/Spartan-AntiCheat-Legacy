@@ -9,7 +9,7 @@ import com.vagdedes.spartan.abstraction.check.implementation.movement.irregularm
 import com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.simulation.IMSimulationVehicle;
 import com.vagdedes.spartan.abstraction.event.PlayerTickEvent;
 import com.vagdedes.spartan.abstraction.event.SuperPositionPacketEvent;
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -34,7 +34,7 @@ public class IrregularMovements extends CheckRunner {
     private final IMFoodSprint foodSprint;
     private final IMBaritone baritone;
 
-    public IrregularMovements(HackType hackType, SpartanProtocol protocol) {
+    public IrregularMovements(HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);
         limitServerFlying = new ImplementedHardcodedDetection(this, null, null, "limit_server_flying", false);
         step = new IMStepBukkit(this);

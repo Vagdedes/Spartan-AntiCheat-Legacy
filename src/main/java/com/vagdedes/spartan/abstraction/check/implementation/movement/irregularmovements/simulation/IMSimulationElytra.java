@@ -4,7 +4,7 @@ import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
 import com.vagdedes.spartan.abstraction.data.EncirclementData;
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import org.bukkit.Location;
 
 public class IMSimulationElytra extends ProbabilityDetection {
@@ -19,8 +19,8 @@ public class IMSimulationElytra extends ProbabilityDetection {
 
     public void run() {
         this.call(() -> {
-            SpartanProtocol p = this.protocol;
-            if (!p.spartan.movement.isGliding()) {
+            PlayerProtocol p = this.protocol;
+            if (!p.bukkitExtra.movement.isGliding()) {
                 this.ticks = 0;
                 this.air = 0;
                 return;

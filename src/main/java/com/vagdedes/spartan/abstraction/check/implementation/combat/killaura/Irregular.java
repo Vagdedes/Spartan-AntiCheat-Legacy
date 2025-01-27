@@ -14,7 +14,7 @@ public class Irregular extends HardcodedDetection {
 
     void run() {
         this.call(() -> {
-            if (this.protocol.spartan.isDead()) {
+            if (this.protocol.bukkitExtra.isDead()) {
                 this.setHackingRatio(1.0);
                 cancel("irregular, scenario: death");
             } else if (this.protocol.bukkit().isSleeping()) {

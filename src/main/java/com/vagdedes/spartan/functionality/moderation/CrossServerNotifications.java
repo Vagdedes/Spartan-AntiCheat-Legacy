@@ -1,10 +1,10 @@
-package com.vagdedes.spartan.functionality.notifications;
+package com.vagdedes.spartan.functionality.moderation;
 
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Settings;
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.functionality.server.Config;
-import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.functionality.server.PluginBase;
 import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
 import com.vagdedes.spartan.utils.java.OverflowMap;
 import lombok.Cleanup;
@@ -25,9 +25,9 @@ public class CrossServerNotifications {
     );
 
     static {
-        SpartanBukkit.runRepeatingTask(() -> SpartanBukkit.connectionThread.executeIfFree(() -> {
+        PluginBase.runRepeatingTask(() -> PluginBase.connectionThread.executeIfFree(() -> {
             if (Config.sql.isEnabled()) {
-                List<SpartanProtocol> protocols = DetectionNotifications.getPlayers();
+                List<PlayerProtocol> protocols = DetectionNotifications.getPlayers();
 
                 if (!protocols.isEmpty()) {
                     run(protocols);
@@ -37,7 +37,7 @@ public class CrossServerNotifications {
     }
 
     @SneakyThrows
-    private static void run(List<SpartanProtocol> protocols) {
+    private static void run(List<PlayerProtocol> protocols) {
         @Cleanup
         ResultSet rs = Config.sql.query("SELECT "
                 + "id, player_name, server_name, notification, information, functionality"
@@ -70,7 +70,7 @@ public class CrossServerNotifications {
                                 if (certaintyString != null) {
                                     notification = "§l[" + serverName + "]§r " + notification;
 
-                                    for (SpartanProtocol protocol : protocols) {
+                                    for (PlayerProtocol protocol : protocols) {
                                         CheckDetection
                                                 staffDetection = protocol.profile().getRunner(hackType).getDetection(detection),
                                                 playerDetection = ResearchEngine.getPlayerProfile(playerName).getRunner(hackType).getDetection(detection);

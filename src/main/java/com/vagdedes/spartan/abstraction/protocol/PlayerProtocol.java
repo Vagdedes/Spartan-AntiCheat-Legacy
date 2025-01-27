@@ -12,7 +12,7 @@ import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
-import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.functionality.server.PluginBase;
 import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
 import com.vagdedes.spartan.utils.minecraft.entity.AxisAlignedBB;
 import com.vagdedes.spartan.utils.minecraft.protocol.ProtocolTools;
@@ -32,12 +32,12 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class SpartanProtocol {
+public class PlayerProtocol {
 
     public long activeCreationTime;
     private Player bukkit;
     private EncirclementData encirclementData;
-    public final SpartanPlayer spartan;
+    public final PlayerBukkit bukkitExtra;
 
     // Custom
     private int hashPosBuffer;
@@ -98,7 +98,7 @@ public class SpartanProtocol {
     private ComponentY componentY;
     private ComponentXZ componentXZ;
 
-    public SpartanProtocol(Player player) {
+    public PlayerProtocol(Player player) {
         long time = System.currentTimeMillis();
         this.activeCreationTime = time;
         this.bukkit = player;
@@ -119,7 +119,7 @@ public class SpartanProtocol {
         this.teleport = null;
         this.simulationFlag = false;
         this.transactionVl = 0;
-        this.spartan = new SpartanPlayer(this);
+        this.bukkitExtra = new PlayerBukkit(this);
         this.timerBalancer = new TimerBalancer();
         this.simulationStartPoint = null;
         this.simulationDelayPerTP = 1;
@@ -209,13 +209,13 @@ public class SpartanProtocol {
     public boolean isOnGround() {
         return packetsEnabled()
                 ? this.onGround
-                : this.spartan.isOnGround();
+                : this.bukkitExtra.isOnGround();
     }
 
     public boolean isOnGroundFrom() {
         return packetsEnabled()
                 ? this.onGroundFrom
-                : this.spartan.isOnGround();
+                : this.bukkitExtra.isOnGround();
     }
 
     public boolean isSprinting() {
@@ -246,7 +246,7 @@ public class SpartanProtocol {
     }
 
     public Location getVehicleLocation() {
-        Entity vehicle = this.spartan.getVehicle();
+        Entity vehicle = this.bukkitExtra.getVehicle();
 
         if (vehicle instanceof LivingEntity || vehicle instanceof Vehicle) {
             return ProtocolLib.getLocationOrNull(vehicle);
@@ -292,16 +292,16 @@ public class SpartanProtocol {
 
     public boolean teleport(Location location) {
         if (this.getWorld().equals(location.getWorld())) {
-            if (SpartanBukkit.isSynchronised()) {
+            if (PluginBase.isSynchronised()) {
                 this.bukkit().leaveVehicle();
             }
-            this.spartan.movement.removeLastLiquidTime();
-            this.spartan.trackers.removeMany(PlayerTrackers.TrackerFamily.VELOCITY);
+            this.bukkitExtra.movement.removeLastLiquidTime();
+            this.bukkitExtra.trackers.removeMany(PlayerTrackers.TrackerFamily.VELOCITY);
 
             if (MultiVersion.folia) {
                 this.bukkit().teleportAsync(location);
             } else {
-                SpartanBukkit.transferTask(
+                PluginBase.transferTask(
                         this,
                         () -> this.bukkit().teleport(location)
                 );
@@ -317,7 +317,7 @@ public class SpartanProtocol {
             return this.bukkit().isOnline() ? this.bukkit().getPing() : 0;
         } else {
             try {
-                Object obj = SpartanBukkit.getCraftPlayerMethod(this.bukkit(), "ping");
+                Object obj = PluginBase.getCraftPlayerMethod(this.bukkit(), "ping");
                 return obj instanceof Integer ? Math.max((int) obj, 0) : 0;
             } catch (Exception ignored) {
                 return 0;
@@ -342,9 +342,9 @@ public class SpartanProtocol {
         this.onGround = isOnGround;
 
         if (this.onGround) {
-            this.spartan.movement.airTicks = 0;
+            this.bukkitExtra.movement.airTicks = 0;
         } else {
-            this.spartan.movement.airTicks++;
+            this.bukkitExtra.movement.airTicks++;
         }
     }
 
@@ -387,7 +387,7 @@ public class SpartanProtocol {
     }
 
     public boolean packetsEnabled() {
-        return this.spartan.packetsEnabled();
+        return this.bukkitExtra.packetsEnabled();
     }
 
 }

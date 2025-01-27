@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.listeners.bukkit;
 
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
-import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
+import com.vagdedes.spartan.functionality.server.PluginBase;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -17,7 +17,7 @@ public class DeathEvent implements Listener {
     }
 
     public static void event(Player player, boolean packets) {
-        SpartanProtocol protocol = SpartanBukkit.getProtocol(player, true);
+        PlayerProtocol protocol = PluginBase.getProtocol(player, true);
         protocol.timerBalancer.addBalance(50);
 
         if (protocol.packetsEnabled() == packets) {
@@ -26,7 +26,7 @@ public class DeathEvent implements Listener {
             protocol.profile().getRunner(Enums.HackType.ImpossibleInventory).handle(false, null);
 
             // Objects
-            protocol.spartan.resetCrucialData();
+            protocol.bukkitExtra.resetCrucialData();
         }
     }
 

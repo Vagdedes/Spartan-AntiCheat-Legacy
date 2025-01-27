@@ -5,7 +5,7 @@ import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
 import com.vagdedes.spartan.abstraction.data.EncirclementData;
 import com.vagdedes.spartan.abstraction.protocol.ExtendedPotionEffect;
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import org.bukkit.Location;
 import org.bukkit.enchantments.Enchantment;
@@ -24,21 +24,21 @@ public class IMSimulationVehicle extends ProbabilityDetection {
 
     public void run() {
         this.call(() -> {
-            SpartanProtocol p = this.protocol;
-            if (p.spartan.getVehicle() == null) {
+            PlayerProtocol p = this.protocol;
+            if (p.bukkitExtra.getVehicle() == null) {
                 this.ticks = 0;
                 return;
             }
-            Entity vehicleEntity = p.spartan.getVehicle();
+            Entity vehicleEntity = p.bukkitExtra.getVehicle();
 
             if (!(vehicleEntity instanceof Vehicle)) {
                 return;
             }
             Vehicle vehicle = (Vehicle) vehicleEntity;
             this.ticks++;
-            boolean isOnGround = p.spartan.getVehicle().isOnGround();
+            boolean isOnGround = p.bukkitExtra.getVehicle().isOnGround();
             this.ground(isOnGround);
-            Location to = p.spartan.getVehicle().getLocation();
+            Location to = p.bukkitExtra.getVehicle().getLocation();
             if (from == null) from = to.clone();
             double dx = to.getX() - from.getX();
             double dz = to.getZ() - from.getZ();
@@ -135,7 +135,7 @@ public class IMSimulationVehicle extends ProbabilityDetection {
 
     private double multiplex() {
         double m = 1.0;
-        ExtendedPotionEffect speedEffect = this.protocol.spartan.getPotionEffect(PotionEffectType.SPEED, 5);
+        ExtendedPotionEffect speedEffect = this.protocol.bukkitExtra.getPotionEffect(PotionEffectType.SPEED, 5);
         Location l = this.protocol.getLocation().clone().add(0, -0.5, 0);
         Location lF = this.protocol.getFromLocation().clone().add(0, -0.5, 0);
         if (PlayerUtils.soulSpeed && this.protocol.bukkit().getInventory().getBoots() != null) {
@@ -149,13 +149,13 @@ public class IMSimulationVehicle extends ProbabilityDetection {
             m *= 1.6;
         if (this.isOnWater() || this.isOnWater()) {
             ExtendedPotionEffect dolphinEffect = PlayerUtils.dolphinsGrace
-                    ? this.protocol.spartan.getPotionEffect(PotionEffectType.DOLPHINS_GRACE, 0)
+                    ? this.protocol.bukkitExtra.getPotionEffect(PotionEffectType.DOLPHINS_GRACE, 0)
                     : null;
             if (dolphinEffect != null) m *= 6.2;
         }
         if (this.isOnSemi(l)) m *= 1.4;
-        if (this.protocol.spartan.movement.isGliding()) m *= 18.0;
-        if (this.protocol.spartan.movement.isFlying() || this.protocol.flyingTicks > 0) m *= 25.0;
+        if (this.protocol.bukkitExtra.movement.isGliding()) m *= 18.0;
+        if (this.protocol.bukkitExtra.movement.isFlying() || this.protocol.flyingTicks > 0) m *= 25.0;
         m *= (this.protocol.bukkit().getWalkSpeed() * 5);
         return m;
     }

@@ -2,15 +2,15 @@ package com.vagdedes.spartan.functionality.command;
 
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.Check;
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.functionality.connection.DiscordMemberCount;
 import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
+import com.vagdedes.spartan.functionality.moderation.DetectionNotifications;
 import com.vagdedes.spartan.functionality.moderation.Wave;
-import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
-import com.vagdedes.spartan.functionality.notifications.clickable.ClickableMessage;
+import com.vagdedes.spartan.functionality.moderation.clickable.ClickableMessage;
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.Permissions;
-import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.functionality.server.PluginBase;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.listeners.NPCManager;
 import com.vagdedes.spartan.utils.java.StringUtils;
@@ -82,7 +82,7 @@ public class CommandExecution implements CommandExecutor {
 
     public static void completeMessage(CommandSender sender, String list) {
         boolean isPlayer = sender instanceof Player;
-        SpartanProtocol protocol = isPlayer ? SpartanBukkit.getProtocol((Player) sender) : null;
+        PlayerProtocol protocol = isPlayer ? PluginBase.getProtocol((Player) sender) : null;
         isPlayer &= protocol != null;
 
         boolean info = !isPlayer || Permissions.has(protocol.bukkit(), Enums.Permission.INFO),
@@ -308,7 +308,7 @@ public class CommandExecution implements CommandExecutor {
         boolean isPlayer = sender instanceof Player;
 
         if (label.equalsIgnoreCase(Register.command) && (isPlayer || sender instanceof ConsoleCommandSender)) {
-            SpartanProtocol protocol = isPlayer ? SpartanBukkit.getProtocol((Player) sender) : null;
+            PlayerProtocol protocol = isPlayer ? PluginBase.getProtocol((Player) sender) : null;
 
             if (args.length == 0) {
                 if (isPlayer) {
@@ -316,18 +316,18 @@ public class CommandExecution implements CommandExecutor {
                         if (Config.settings.getBoolean("Important.enable_npc")) {
                             NPCManager.create(protocol);
                         } else {
-                            SpartanBukkit.mainMenu.open(protocol, false);
+                            PluginBase.mainMenu.open(protocol, false);
                         }
                     } else {
-                        SpartanBukkit.mainMenu.open(protocol, false);
+                        PluginBase.mainMenu.open(protocol, false);
                     }
                 }
                 completeMessage(sender, "default");
             } else if (args.length == 1) {
                 if (isPlayer && args[0].equalsIgnoreCase("Menu")) {
-                    SpartanBukkit.mainMenu.open(protocol);
+                    PluginBase.mainMenu.open(protocol);
                 } else if (isPlayer && args[0].equalsIgnoreCase("Manage-Checks")) {
-                    SpartanBukkit.manageChecks.open(protocol);
+                    PluginBase.manageChecks.open(protocol);
                 } else if (args[0].equalsIgnoreCase("Panic")) {
                     if (isPlayer && !Permissions.has(protocol.bukkit(), Permission.MANAGE)) {
                         ClickableMessage.sendURL(
@@ -383,7 +383,7 @@ public class CommandExecution implements CommandExecutor {
                         );
                         return true;
                     }
-                    SpartanBukkit.playerInfo.open(protocol, sender.getName());
+                    PluginBase.playerInfo.open(protocol, sender.getName());
 
                 } else if (isPlayer && args[0].equalsIgnoreCase("Notifications")) {
                     if (!DetectionNotifications.hasPermission(protocol)) {
@@ -433,7 +433,7 @@ public class CommandExecution implements CommandExecutor {
                     }
                     String argumentsToString = argumentsToStringBuilder.substring(0, argumentsToStringBuilder.length() - 1);
 
-                    if (isPlayer ? argumentsToString.length() > protocol.spartan.getMaxChatLength() : argumentsToString.length() > maxConnectedArgumentLength) {
+                    if (isPlayer ? argumentsToString.length() > protocol.bukkitExtra.getMaxChatLength() : argumentsToString.length() > maxConnectedArgumentLength) {
                         ClickableMessage.sendURL(
                                 sender,
                                 Config.messages.getColorfulString("massive_command_reason"),
@@ -520,7 +520,7 @@ public class CommandExecution implements CommandExecutor {
                                 );
                                 return true;
                             }
-                            SpartanBukkit.playerInfo.open(protocol, ConfigUtils.replaceWithSyntax(args[1], null));
+                            PluginBase.playerInfo.open(protocol, ConfigUtils.replaceWithSyntax(args[1], null));
 
                         } else if (args[0].equalsIgnoreCase("Toggle")) {
                             String check = args[1];
@@ -727,7 +727,7 @@ public class CommandExecution implements CommandExecutor {
                                 );
                                 return true;
                             }
-                            if (isPlayer ? argumentsToString.length() > protocol.spartan.getMaxChatLength() : argumentsToString.length() > maxConnectedArgumentLength) {
+                            if (isPlayer ? argumentsToString.length() > protocol.bukkitExtra.getMaxChatLength() : argumentsToString.length() > maxConnectedArgumentLength) {
                                 ClickableMessage.sendURL(
                                         sender,
                                         Config.messages.getColorfulString("massive_command_reason"),
@@ -736,7 +736,7 @@ public class CommandExecution implements CommandExecutor {
                                 );
                                 return true;
                             }
-                            SpartanProtocol t = SpartanBukkit.getAnyCaseProtocol(args[1]);
+                            PlayerProtocol t = PluginBase.getAnyCaseProtocol(args[1]);
 
                             if (t == null) {
                                 ClickableMessage.sendURL(
@@ -747,7 +747,7 @@ public class CommandExecution implements CommandExecutor {
                                 );
                                 return true;
                             }
-                            if (!t.spartan.punishments.kick(sender, argumentsToString)) {
+                            if (!t.bukkitExtra.punishments.kick(sender, argumentsToString)) {
                                 ClickableMessage.sendURL(
                                         sender,
                                         Config.messages.getColorfulString("failed_command").replace(
@@ -769,7 +769,7 @@ public class CommandExecution implements CommandExecutor {
                                 );
                                 return true;
                             }
-                            if (isPlayer ? argumentsToString.length() > protocol.spartan.getMaxChatLength() : argumentsToString.length() > maxConnectedArgumentLength) {
+                            if (isPlayer ? argumentsToString.length() > protocol.bukkitExtra.getMaxChatLength() : argumentsToString.length() > maxConnectedArgumentLength) {
                                 ClickableMessage.sendURL(
                                         sender,
                                         Config.messages.getColorfulString("massive_command_reason"),
@@ -778,7 +778,7 @@ public class CommandExecution implements CommandExecutor {
                                 );
                                 return true;
                             }
-                            SpartanProtocol t = SpartanBukkit.getAnyCaseProtocol(args[1]);
+                            PlayerProtocol t = PluginBase.getAnyCaseProtocol(args[1]);
 
                             if (t == null) {
                                 ClickableMessage.sendURL(
@@ -789,7 +789,7 @@ public class CommandExecution implements CommandExecutor {
                                 );
                                 return true;
                             }
-                            if (!t.spartan.punishments.warn(sender, argumentsToString)) {
+                            if (!t.bukkitExtra.punishments.warn(sender, argumentsToString)) {
                                 ClickableMessage.sendURL(
                                         sender,
                                         Config.messages.getColorfulString("failed_command").replace(
@@ -819,7 +819,7 @@ public class CommandExecution implements CommandExecutor {
                                     );
                                     return true;
                                 }
-                                SpartanProtocol t = SpartanBukkit.getAnyCaseProtocol(args[1]);
+                                PlayerProtocol t = PluginBase.getAnyCaseProtocol(args[1]);
 
                                 if (t == null) {
                                     ClickableMessage.sendURL(
@@ -897,7 +897,7 @@ public class CommandExecution implements CommandExecutor {
                                 }
                                 argumentsToString = argumentsToStringBuilder.substring(0, argumentsToStringBuilder.length() - 1);
 
-                                if (isPlayer ? argumentsToString.length() > protocol.spartan.getMaxChatLength() : argumentsToString.length() > maxConnectedArgumentLength) {
+                                if (isPlayer ? argumentsToString.length() > protocol.bukkitExtra.getMaxChatLength() : argumentsToString.length() > maxConnectedArgumentLength) {
                                     ClickableMessage.sendURL(
                                             sender,
                                             Config.messages.getColorfulString("massive_command_reason"),
@@ -944,7 +944,7 @@ public class CommandExecution implements CommandExecutor {
                                     );
                                     return true;
                                 }
-                                SpartanProtocol t = SpartanBukkit.getAnyCaseProtocol(args[0]);
+                                PlayerProtocol t = PluginBase.getAnyCaseProtocol(args[0]);
 
                                 if (t == null) {
                                     ClickableMessage.sendURL(
@@ -969,18 +969,18 @@ public class CommandExecution implements CommandExecutor {
                                         case "equals":
                                         case "=":
                                             if (condition.equalsIgnoreCase(result)) {
-                                                SpartanBukkit.runCommand(command);
+                                                PluginBase.runCommand(command);
                                             }
                                             break;
                                         case "not-equals":
                                         case "/=":
                                             if (!condition.equalsIgnoreCase(result)) {
-                                                SpartanBukkit.runCommand(command);
+                                                PluginBase.runCommand(command);
                                             }
                                             break;
                                         case "contains":
                                             if (condition.contains(result)) {
-                                                SpartanBukkit.runCommand(command);
+                                                PluginBase.runCommand(command);
                                             }
                                             break;
                                         case "is-less-than":
@@ -989,7 +989,7 @@ public class CommandExecution implements CommandExecutor {
                                                     || AlgebraUtils.validDecimal(condition) && AlgebraUtils.validDecimal(result) && dbl(condition) < dbl(result)
                                                     || AlgebraUtils.validInteger(condition) && AlgebraUtils.validDecimal(result) && num(condition) < dbl(result)
                                                     || AlgebraUtils.validDecimal(condition) && AlgebraUtils.validInteger(result) && dbl(condition) < num(result)) {
-                                                SpartanBukkit.runCommand(command);
+                                                PluginBase.runCommand(command);
                                             }
                                             break;
                                         case "is-greater-than":
@@ -998,7 +998,7 @@ public class CommandExecution implements CommandExecutor {
                                                     || AlgebraUtils.validDecimal(condition) && AlgebraUtils.validDecimal(result) && dbl(condition) > dbl(result)
                                                     || AlgebraUtils.validInteger(condition) && AlgebraUtils.validDecimal(result) && num(condition) > dbl(result)
                                                     || AlgebraUtils.validDecimal(condition) && AlgebraUtils.validInteger(result) && dbl(condition) > num(result)) {
-                                                SpartanBukkit.runCommand(command);
+                                                PluginBase.runCommand(command);
                                             }
                                             break;
                                         default:

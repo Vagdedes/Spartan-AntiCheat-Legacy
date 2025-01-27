@@ -3,7 +3,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.player;
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -16,7 +16,7 @@ public class AutoRespawn extends CheckRunner {
     private final CheckDetection detection;
     private long memory;
 
-    public AutoRespawn(HackType hackType, SpartanProtocol protocol) {
+    public AutoRespawn(HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);
         this.detection = new ImplementedProbabilityDetection(this, null, null, null, true);
     }
@@ -32,7 +32,7 @@ public class AutoRespawn extends CheckRunner {
             long time = System.currentTimeMillis() - this.memory,
                     limit = 750L;
 
-            if (time <= limit && !this.protocol.spartan.isDead()) {
+            if (time <= limit && !this.protocol.bukkitExtra.isDead()) {
                 memory = 0L;
                 this.detection.cancel(
                         "default, ms: " + time,

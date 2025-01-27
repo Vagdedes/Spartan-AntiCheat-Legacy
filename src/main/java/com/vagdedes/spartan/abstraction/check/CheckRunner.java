@@ -1,6 +1,6 @@
 package com.vagdedes.spartan.abstraction.check;
 
-import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
+import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.compatibility.Compatibility;
 import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import com.vagdedes.spartan.compatibility.manual.building.MythicMobs;
@@ -8,9 +8,9 @@ import com.vagdedes.spartan.compatibility.manual.enchants.CustomEnchantsPlus;
 import com.vagdedes.spartan.compatibility.manual.enchants.EcoEnchants;
 import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
-import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
+import com.vagdedes.spartan.functionality.moderation.DetectionNotifications;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
-import com.vagdedes.spartan.functionality.server.SpartanBukkit;
+import com.vagdedes.spartan.functionality.server.PluginBase;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -31,7 +31,7 @@ public abstract class CheckRunner extends CheckProcess {
     private final Map<String, CheckDetection> detections;
     private final boolean[] supportsDataType, supportsDetectionType;
 
-    public CheckRunner(Enums.HackType hackType, SpartanProtocol protocol) {
+    public CheckRunner(Enums.HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);
         this.creation = System.currentTimeMillis();
         this.detections = new ConcurrentHashMap<>(2);
@@ -201,8 +201,8 @@ public abstract class CheckRunner extends CheckProcess {
     final boolean canFunction() {
         return this.protocol != null
                 && !this.protocol.npc
-                && this.supportsDataType[this.protocol.spartan.dataType.ordinal()]
-                && this.supportsDetectionType[this.protocol.spartan.detectionType.ordinal()]
+                && this.supportsDataType[this.protocol.bukkitExtra.dataType.ordinal()]
+                && this.supportsDetectionType[this.protocol.bukkitExtra.detectionType.ordinal()]
                 && (System.currentTimeMillis() - this.creation) > TPS.maximum * TPS.tickTime
                 && (!cancelled || hackType.getCheck().handleCancelledEvents)
                 && (!v1_8 || this.protocol.bukkit().getGameMode() != GameMode.SPECTATOR)
@@ -262,7 +262,7 @@ public abstract class CheckRunner extends CheckProcess {
         this.disableCauses.add(new CheckCancellation(reason, pointer, ticks));
 
         if (this.protocol != null) {
-            SpartanBukkit.playerInfo.refresh(this.protocol.bukkit().getName());
+            PluginBase.playerInfo.refresh(this.protocol.bukkit().getName());
         }
     }
 
@@ -270,7 +270,7 @@ public abstract class CheckRunner extends CheckProcess {
         this.silentCauses.add(new CheckCancellation(reason, pointer, ticks));
 
         if (this.protocol != null) {
-            SpartanBukkit.playerInfo.refresh(this.protocol.bukkit().getName());
+            PluginBase.playerInfo.refresh(this.protocol.bukkit().getName());
         }
     }
 
@@ -278,7 +278,7 @@ public abstract class CheckRunner extends CheckProcess {
         this.disableCauses.clear();
 
         if (this.protocol != null) {
-            SpartanBukkit.playerInfo.refresh(this.protocol.bukkit().getName());
+            PluginBase.playerInfo.refresh(this.protocol.bukkit().getName());
         }
     }
 
@@ -286,7 +286,7 @@ public abstract class CheckRunner extends CheckProcess {
         this.silentCauses.clear();
 
         if (this.protocol != null) {
-            SpartanBukkit.playerInfo.refresh(this.protocol.bukkit().getName());
+            PluginBase.playerInfo.refresh(this.protocol.bukkit().getName());
         }
     }
 
@@ -305,7 +305,7 @@ public abstract class CheckRunner extends CheckProcess {
 
     // Notification
 
-    final int getNotificationTicksCooldown(SpartanProtocol detected) {
+    final int getNotificationTicksCooldown(PlayerProtocol detected) {
         Integer frequency = DetectionNotifications.getFrequency(this.protocol);
 
         if (frequency != null
