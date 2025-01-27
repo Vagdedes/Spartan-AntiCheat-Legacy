@@ -13,31 +13,16 @@ import org.bukkit.entity.Player;
 
 public class TeleportListener extends PacketAdapter {
 
-    public static class TeleportData {
-
-        private final Location location;
-        private final boolean silent;
-
-        public TeleportData(Location location, boolean silent) {
-            this.location = location;
-            this.silent = silent;
-        }
-
-        public Location getLocation() {
-            return location;
-        }
-
-        public boolean isSilent() {
-            return silent;
-        }
-    }
+    public static final PacketType[] packetTypes = new PacketType[]{
+            PacketType.Play.Server.POSITION,
+            PacketType.Play.Server.RESPAWN
+    };
 
     public TeleportListener() {
         super(
                 Register.plugin,
                 ListenerPriority.HIGHEST,
-                PacketType.Play.Server.POSITION,
-                PacketType.Play.Server.RESPAWN
+                packetTypes
         );
     }
 
@@ -53,7 +38,7 @@ public class TeleportListener extends PacketAdapter {
 
         if (packetType.equals(PacketType.Play.Server.POSITION)) {
             protocol.teleported = true;
-            TeleportEvent.teleport(player, true);
+            TeleportEvent.teleport(player, true, event);
             /*
             Location teleportLocation = add(
                     protocol.getLocation().clone(),
@@ -75,7 +60,7 @@ public class TeleportListener extends PacketAdapter {
             protocol.mutateTeleport = true;
              */
             protocol.teleported = true;
-            TeleportEvent.respawn(player, true);
+            TeleportEvent.respawn(player, true, event);
         }
     }
 

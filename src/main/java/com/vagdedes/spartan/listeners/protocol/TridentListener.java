@@ -37,16 +37,14 @@ public class TridentListener extends PacketAdapter {
             ItemStack item = player.getInventory().getItemInMainHand();
             if (item.getType().equals(Material.TRIDENT)) {
                 double r = Math.toRadians(protocol.getLocation().getYaw());
-                CheckThread.run(() -> {
-                    TridentEvent.event(
-                                    new SpartanPlayerRiptideEvent(
-                                                    player,
-                                                    item,
-                                                    new Vector(-Math.sin(r), protocol.getLocation().getPitch() / 90, Math.cos(r))
-                                    ),
-                                    true
-                    );
-                });
+                CheckThread.run(() -> TridentEvent.event(
+                        new SpartanPlayerRiptideEvent(
+                                player,
+                                item,
+                                new Vector(-Math.sin(r), protocol.getLocation().getPitch() / 90, Math.cos(r))
+                        ),
+                        true
+                ));
             }
         }
     }

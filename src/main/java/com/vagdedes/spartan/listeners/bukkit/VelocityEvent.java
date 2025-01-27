@@ -3,7 +3,6 @@ package com.vagdedes.spartan.listeners.bukkit;
 import com.vagdedes.spartan.abstraction.event.CPlayerVelocityEvent;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.functionality.server.PluginBase;
-import me.vagdedes.spartan.system.Enums;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -28,16 +27,16 @@ public class VelocityEvent implements Listener {
         if (protocol.packetsEnabled() == packets) {
             protocol.claimedVelocity = e;
             protocol.claimedVeloGravity.add(e);
-            if (protocol.claimedVeloGravity.size() > 2)
-                protocol.claimedVeloGravity.remove(0);
-            protocol.claimedVeloSpeed.add(e);
-            if (protocol.claimedVeloSpeed.size() > 2)
-                protocol.claimedVeloSpeed.remove(0);
 
-            // Detections
-            boolean cancelled = e.isCancelled();
-            protocol.profile().getRunner(Enums.HackType.IrregularMovements).handle(cancelled, e);
-            protocol.profile().getRunner(Enums.HackType.Velocity).handle(cancelled, e);
+            if (protocol.claimedVeloGravity.size() > 2) {
+                protocol.claimedVeloGravity.remove(0);
+            }
+            protocol.claimedVeloSpeed.add(e);
+
+            if (protocol.claimedVeloSpeed.size() > 2) {
+                protocol.claimedVeloSpeed.remove(0);
+            }
+            protocol.profile().executeRunners(e.isCancelled(), e);
         }
     }
 

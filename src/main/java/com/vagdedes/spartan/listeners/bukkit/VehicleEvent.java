@@ -21,7 +21,6 @@ public class VehicleEvent implements Listener {
             if (entity instanceof Player) {
                 PlayerBukkit p = PluginBase.getProtocol((Player) entity, true).bukkitExtra;
                 p.trackers.add(PlayerTrackers.TrackerType.VEHICLE, "enter", 5);
-
             }
         }
     }

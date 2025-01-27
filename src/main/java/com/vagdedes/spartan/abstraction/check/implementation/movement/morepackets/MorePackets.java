@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.abstraction.check.implementation.movement.morepackets;
 
+import com.comphenix.protocol.PacketType;
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
@@ -8,15 +9,13 @@ import com.vagdedes.spartan.abstraction.event.PlayerTickEvent;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
+import com.vagdedes.spartan.listeners.protocol.TeleportListener;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
+import org.bukkit.event.player.PlayerTeleportEvent;
 
 public class MorePackets extends CheckRunner {
-
-    public static final byte TELEPORT = 0;
-
-    // Separator
 
     private int packetVL;
     private final ImplementedProbabilityDetection
@@ -110,10 +109,21 @@ public class MorePackets extends CheckRunner {
                     });
                 }
             }
-        } else {
-            this.teleported = System.currentTimeMillis()
-                    + (AlgebraUtils.integerCeil(TPS.maximum) * TPS.tickTime * 4L);
+        } else if (object instanceof PlayerTeleportEvent) {
+            this.teleport();
+        } else if (object instanceof PacketType) {
+            for (PacketType type : TeleportListener.packetTypes) {
+                if (type.equals(object)) {
+                    this.teleport();
+                    break;
+                }
+            }
         }
+    }
+
+    private void teleport() {
+        this.teleported = System.currentTimeMillis()
+                + (AlgebraUtils.integerCeil(TPS.maximum) * TPS.tickTime * 4L);
     }
 
     private void punish(CheckDetection executor, String info) {

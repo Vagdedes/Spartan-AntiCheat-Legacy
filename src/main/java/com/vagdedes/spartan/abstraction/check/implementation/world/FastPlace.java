@@ -32,59 +32,61 @@ public class FastPlace extends CheckRunner {
 
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
-        Block b = (Block) object;
+        if (object instanceof Block) {
+            Block b = (Block) object;
 
-        if (!BlockUtils.isScaffoldingBlock(b.getType())) {
-            Material material = b.getType();
+            if (!BlockUtils.isScaffoldingBlock(b.getType())) {
+                Material material = b.getType();
 
-            if (material != Material.FIRE
-                    && material != Material.AIR
+                if (material != Material.FIRE
+                        && material != Material.AIR
 
-                    && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
-                    || material != Material.CAVE_AIR
-                    && material != Material.VOID_AIR)) {
-                long timePassed = System.currentTimeMillis() - time;
-                time = System.currentTimeMillis();
-                int ticks = 20;
+                        && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
+                        || material != Material.CAVE_AIR
+                        && material != Material.VOID_AIR)) {
+                    long timePassed = System.currentTimeMillis() - time;
+                    time = System.currentTimeMillis();
+                    int ticks = 20;
 
-                if (timePassed <= 150L) {
-                    this.slow.call(() -> {
-                        if (slowBuffer.count(1, ticks) >= 9) {
-                            this.slow.cancel(
-                                    "slow"
-                                            + ", ms: " + timePassed
-                                            + ", block: " + BlockUtils.materialToString(material),
-                                    null,
-                                    ticks
-                            );
+                    if (timePassed <= 150L) {
+                        this.slow.call(() -> {
+                            if (slowBuffer.count(1, ticks) >= 9) {
+                                this.slow.cancel(
+                                        "slow"
+                                                + ", ms: " + timePassed
+                                                + ", block: " + BlockUtils.materialToString(material),
+                                        null,
+                                        ticks
+                                );
+                            }
+                        });
+                        if (timePassed <= 100L) {
+                            this.medium.call(() -> {
+                                if (mediumBuffer.count(1, ticks) >= 8) {
+                                    this.medium.cancel(
+                                            "medium"
+                                                    + ", ms: " + timePassed
+                                                    + ", block: " + BlockUtils.materialToString(material),
+                                            null,
+                                            ticks
+                                    );
+                                }
+                            });
+                            this.fast.call(() -> {
+                                if (timePassed <= 50L
+                                        && !this.protocol.bukkitExtra.isBedrockPlayer()
+                                        && !Compatibility.CompatibilityType.VEIN_MINER.isFunctional()
+                                        && fastBuffer.count(1, ticks) >= 5) {
+                                    this.fast.cancel(
+                                            "fast"
+                                                    + ", ms: " + timePassed
+                                                    + ", block: " + BlockUtils.materialToString(material),
+                                            null,
+                                            ticks
+                                    );
+                                }
+                            });
                         }
-                    });
-                    if (timePassed <= 100L) {
-                        this.medium.call(() -> {
-                            if (mediumBuffer.count(1, ticks) >= 8) {
-                                this.medium.cancel(
-                                        "medium"
-                                                + ", ms: " + timePassed
-                                                + ", block: " + BlockUtils.materialToString(material),
-                                        null,
-                                        ticks
-                                );
-                            }
-                        });
-                        this.fast.call(() -> {
-                            if (timePassed <= 50L
-                                    && !this.protocol.bukkitExtra.isBedrockPlayer()
-                                    && !Compatibility.CompatibilityType.VEIN_MINER.isFunctional()
-                                    && fastBuffer.count(1, ticks) >= 5) {
-                                this.fast.cancel(
-                                        "fast"
-                                                + ", ms: " + timePassed
-                                                + ", block: " + BlockUtils.materialToString(material),
-                                        null,
-                                        ticks
-                                );
-                            }
-                        });
                     }
                 }
             }

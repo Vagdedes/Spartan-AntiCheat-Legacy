@@ -42,10 +42,9 @@ public class AutoRespawn extends CheckRunner {
             });
         } else if (object instanceof PlayerDeathEvent) {
             this.death();
-        } else {
+        } else if (object instanceof PacketType) {
             for (PacketType type : DeathListener.packetTypes) {
-                if (object instanceof PacketType
-                        && type.equals(object)) {
+                if (type.equals(object)) {
                     this.death();
                     break;
                 }

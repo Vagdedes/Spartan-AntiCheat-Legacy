@@ -51,11 +51,8 @@ public class CombatEvent implements Listener {
                                 (LivingEntity) entity,
                                 cancelled
                         );
-                        protocol.profile().getRunner(Enums.HackType.NoSwing).handle(cancelled, event);
-                        protocol.profile().getRunner(Enums.HackType.KillAura).handle(cancelled, event);
-                        protocol.profile().getRunner(Enums.HackType.Exploits).handle(cancelled, event);
-                        if (!protocol.packetsEnabled())
-                            protocol.profile().getRunner(Enums.HackType.HitReach).handle(cancelled, event);
+                        protocol.profile().executeRunners(cancelled, event);
+
                         for (Enums.HackType hackType : handledChecks) {
                             if (protocol.profile().getRunner(hackType).prevent()) {
                                 e.setCancelled(true);
@@ -77,12 +74,14 @@ public class CombatEvent implements Listener {
                 // Detections
                 if (entityAttack && (damagerIsPlayer || damager instanceof LivingEntity)) {
                     boolean cancelled = e.isCancelled();
-                    EntityAttackPlayerEvent event = new EntityAttackPlayerEvent(
-                            player,
-                            (LivingEntity) damager,
-                            cancelled
+                    protocol.profile().executeRunners(
+                            cancelled,
+                            new EntityAttackPlayerEvent(
+                                    player,
+                                    (LivingEntity) damager,
+                                    cancelled
+                            )
                     );
-                    protocol.profile().getRunner(Enums.HackType.KillAura).handle(cancelled, event);
                 }
             }
         } else {
@@ -92,8 +91,10 @@ public class CombatEvent implements Listener {
 
     public static void use(PlayerUseEvent e) {
         PlayerProtocol protocol = PluginBase.getProtocol(e.getPlayer(), true);
-        PlayerAttackEvent attackEvent = new PlayerAttackEvent(e.getPlayer(), e.getTarget(), false);
-        protocol.profile().getRunner(Enums.HackType.HitReach).handle(false, attackEvent);
+        protocol.profile().executeRunners(
+                false,
+                new PlayerAttackEvent(e.getPlayer(), e.getTarget(), false)
+        );
     }
 
 }

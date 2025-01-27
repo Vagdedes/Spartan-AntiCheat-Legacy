@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements;
 
+import com.comphenix.protocol.PacketType;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.HardcodedDetection;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedHardcodedDetection;
@@ -12,10 +13,12 @@ import com.vagdedes.spartan.abstraction.event.SuperPositionPacketEvent;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
+import com.vagdedes.spartan.listeners.protocol.TeleportListener;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.world.GroundUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 
@@ -51,7 +54,9 @@ public class IrregularMovements extends CheckRunner {
 
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
-        if (object instanceof Integer) {
+        if (object instanceof PlayerTeleportEvent) {
+            this.teleport();
+        } else if (object instanceof Integer) {
             gravityPackets.trident();
             speedPackets.trident();
             speedBukkit.trident((int) object);
@@ -91,15 +96,24 @@ public class IrregularMovements extends CheckRunner {
             gravityPackets.groundSp(e.onGround);
         } else if (object instanceof VehicleEnterEvent) {
             speedPackets.vhAct();
-        } else {
-            gravityPackets.teleport();
-            speedPackets.teleport();
-            baritone.teleport();
-            vehiclePackets.teleport();
-            elytraPackets.teleport();
-            this.teleport = System.currentTimeMillis()
-                    + (AlgebraUtils.integerCeil(TPS.maximum / 2.0) * TPS.tickTime);
+        } else if (object instanceof PacketType) {
+            for (PacketType type : TeleportListener.packetTypes) {
+                if (type.equals(object)) {
+                    this.teleport();
+                    break;
+                }
+            }
         }
+    }
+
+    private void teleport() {
+        gravityPackets.teleport();
+        speedPackets.teleport();
+        baritone.teleport();
+        vehiclePackets.teleport();
+        elytraPackets.teleport();
+        teleport = System.currentTimeMillis()
+                + (AlgebraUtils.integerCeil(TPS.maximum / 2.0) * TPS.tickTime);
     }
 
     @Override

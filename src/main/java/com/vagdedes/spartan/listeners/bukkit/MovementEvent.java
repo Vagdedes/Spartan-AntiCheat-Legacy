@@ -7,7 +7,6 @@ import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.PluginBase;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
-import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -61,14 +60,7 @@ public class MovementEvent implements Listener {
                 return;
             }
             MovementProcessing.run(protocol, to, ver, box);
-
-            // Detections
-            boolean cancelled = e.isCancelled();
-            protocol.profile().getRunner(Enums.HackType.Exploits).handle(cancelled, e);
-            protocol.profile().getRunner(Enums.HackType.IrregularMovements).handle(cancelled, e);
-            protocol.profile().getRunner(Enums.HackType.Velocity).handle(cancelled, e);
-            protocol.profile().getRunner(Enums.HackType.KillAura).handle(cancelled, e);
-            protocol.profile().getRunner(Enums.HackType.Criticals).handle(cancelled, e);
+            protocol.profile().executeRunners(e.isCancelled(), e);
         }
     }
 
@@ -77,13 +69,11 @@ public class MovementEvent implements Listener {
         protocol.lastTickEvent = tickEvent;
         protocol.packetWorld.tick(tickEvent);
         protocol.profile().executeRunners(false, tickEvent);
-        protocol.profile().getRunner(Enums.HackType.MorePackets).handle(false, tickEvent);
-        protocol.profile().getRunner(Enums.HackType.IrregularMovements).handle(false, tickEvent);
     }
 
     public static void transaction(PlayerTransactionEvent event) {
         PlayerProtocol protocol = event.protocol;
-        protocol.profile().getRunner(Enums.HackType.Velocity).handle(false, event);
+        protocol.profile().executeRunners(false, event);
     }
 
 }

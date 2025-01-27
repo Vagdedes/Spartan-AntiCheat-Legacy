@@ -22,6 +22,7 @@ public class TridentUse {
             for (ItemStack item : new ItemStack[]{inventory.getItemInHand(), inventory.getItemInOffHand()}) {
                 if (item.getType() == Material.TRIDENT) {
                     int level = item.getEnchantmentLevel(Enchantment.RIPTIDE);
+                    
                     if (level > 0) {
                         int ticks = AlgebraUtils.integerRound(Math.log(level) * TPS.maximum);
 
