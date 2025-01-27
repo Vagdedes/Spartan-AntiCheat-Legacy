@@ -18,8 +18,7 @@ public class PlayerMovement {
 
     private final SpartanPlayer parent;
     private final Map<Long, SpartanLocation> locations;
-    private int
-            airTicks;
+    int airTicks;
     private long
             lastFlight,
             lastGlide,
@@ -211,7 +210,6 @@ public class PlayerMovement {
         if (!packets) {
             this.parent.protocol.setFromLocation(from);
         }
-        this.judgeGround(true);
         return true;
     }
 
@@ -221,24 +219,10 @@ public class PlayerMovement {
 
     // Separator
 
-    private boolean judgeGround(boolean increase) {
-        if (this.parent.isOnGround(false)) {
-            this.resetAirTicks();
-            return true;
-        } else {
-            if (increase) {
-                this.airTicks++;
-            }
-            return false;
+    public void judgeGround() {
+        if (this.parent.protocol.isOnGround()) {
+            this.airTicks = 0;
         }
-    }
-
-    public boolean judgeGround() {
-        return this.judgeGround(false);
-    }
-
-    public void resetAirTicks() {
-        this.airTicks = 0;
     }
 
 }

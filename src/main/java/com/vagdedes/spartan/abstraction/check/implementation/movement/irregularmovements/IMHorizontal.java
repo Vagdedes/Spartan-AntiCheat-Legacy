@@ -34,7 +34,7 @@ public class IMHorizontal extends ProbabilityDetection {
                         int limit = PlayerUtils.getJumpTicks(0) * (this.protocol.spartan.isBedrockPlayer() ? PlayerUtils.getJumpTicks(0) : 1);
 
                         if (airTicks > limit
-                                && !this.protocol.spartan.isOnGround(true)) {
+                                && !this.protocol.isOnGround()) {
                             this.horizontal_known.cancel(
                                     "horizontal(known)"
                                             + ", box: " + box

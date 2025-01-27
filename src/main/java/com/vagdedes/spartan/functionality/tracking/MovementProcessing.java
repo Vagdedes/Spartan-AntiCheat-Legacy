@@ -29,11 +29,7 @@ public class MovementProcessing {
             v1_8 = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8);
     private static final Material
             MAGMA_BLOCK = MaterialUtils.get("magma"),
-            WATER = MaterialUtils.get("water"),
             LAVA = MaterialUtils.get("lava");
-    public static final int
-            motionPrecision = 4,
-            heightPrecision = 3;
 
     public static void run(SpartanProtocol protocol,
                            SpartanLocation to,
@@ -53,7 +49,7 @@ public class MovementProcessing {
 
     private static boolean calculateGroundCollision(SpartanProtocol protocol,
                                                     double vertical, double box) {
-        if (protocol.spartan.isOnGround(true)
+        if (protocol.isOnGround()
                 && protocol.spartan.movement.getTicksOnAir() == 0
                 && protocol.spartan.getVehicle() == null
                 && vertical == 0.0

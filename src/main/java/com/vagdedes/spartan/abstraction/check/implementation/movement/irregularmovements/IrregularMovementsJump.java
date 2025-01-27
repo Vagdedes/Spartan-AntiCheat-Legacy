@@ -7,7 +7,6 @@ import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityD
 import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.TPS;
-import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PotionEffectUtils;
@@ -24,6 +23,7 @@ public class IrregularMovementsJump extends ProbabilityDetection {
     private static final Map<Integer, Set<Double>>
             heights = new LinkedHashMap<>(),
             heightsBedrock = new LinkedHashMap<>();
+    private static final int heightPrecision = 3;
 
     static {
         for (int jumpEffect = 0; jumpEffect < 255; jumpEffect++) {
@@ -34,7 +34,7 @@ public class IrregularMovementsJump extends ProbabilityDetection {
             for (double height : GroundUtils.getHeights()) {
                 for (double motion : PlayerUtils.getJumpMotions(jumpEffect)) {
                     height += motion;
-                    collection.add(AlgebraUtils.cut(AlgebraUtils.removeBase(height), MovementProcessing.heightPrecision));
+                    collection.add(AlgebraUtils.cut(AlgebraUtils.removeBase(height), heightPrecision));
                     collectionBedrock.add(AlgebraUtils.removeBase(height));
                 }
             }
@@ -64,11 +64,11 @@ public class IrregularMovementsJump extends ProbabilityDetection {
                     : this.protocol.spartan.movement.isJumping(vertical)) {
                 int jumpEffect = PlayerUtils.getPotionLevel(this.protocol.spartan, PotionEffectUtils.JUMP) + 1,
                         jumpTicks = PlayerUtils.getJumpTicks(jumpEffect);
-                boolean contains = heights.get(jumpEffect).contains(AlgebraUtils.cut(box, MovementProcessing.heightPrecision));
+                boolean contains = heights.get(jumpEffect).contains(AlgebraUtils.cut(box, heightPrecision));
 
                 if (!contains && this.protocol.spartan.isBedrockPlayer()) {
                     for (double height : heightsBedrock.get(jumpEffect)) {
-                        if (Math.abs(height - box) < MovementProcessing.heightPrecision) {
+                        if (Math.abs(height - box) < heightPrecision) {
                             contains = true;
                             break;
                         }
@@ -93,7 +93,7 @@ public class IrregularMovementsJump extends ProbabilityDetection {
                                     patterns,
                                     this.protocol.getLocationOrVehicle(),
                                     true,
-                                    GroundUtils.abstractMaterials
+                                    GroundUtils.getAbstractMaterials()
                             )) {
                                 this.jump_height.cancel("jump(height)"
                                                 + ", box: " + box
@@ -113,8 +113,8 @@ public class IrregularMovementsJump extends ProbabilityDetection {
                                 || this.protocol.isUsingVersionOrGreater(MultiVersion.serverVersion)) {
                             int limit = Math.max(jumpTicks, AlgebraUtils.integerCeil(TPS.maximum));
 
-                            if (!this.protocol.spartan.isOnGround(this.protocol.getLocation(), true)
-                                    && !this.protocol.spartan.isOnGround(this.protocol.getFromLocation(), false)
+                            if (!this.protocol.isOnGround()
+                                    && !this.protocol.isOnGroundFrom()
                                     && !this.protocol.spartan.movement.isInLiquids()) {
                                 int airTicks = this.protocol.spartan.movement.getTicksOnAir();
 

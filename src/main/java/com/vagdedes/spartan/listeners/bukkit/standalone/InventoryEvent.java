@@ -2,7 +2,6 @@ package com.vagdedes.spartan.listeners.bukkit.standalone;
 
 import com.vagdedes.spartan.abstraction.inventory.InventoryMenu;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
-import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.utils.java.StringUtils;
@@ -48,7 +47,7 @@ public class InventoryEvent implements Listener {
                     | p.profile().getRunner(Enums.HackType.InventoryClicks).prevent()) {
                 e.setCancelled(true);
             } else if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
-                for (InventoryMenu menu : InteractiveInventory.menus) {
+                for (InventoryMenu menu : SpartanBukkit.menus) {
                     if (menu.handle(p, title, item, click, slot)) {
                         e.setCancelled(true);
                         break;

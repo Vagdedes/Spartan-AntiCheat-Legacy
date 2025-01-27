@@ -15,23 +15,20 @@ public class Elytra {
                 && !Permissions.isBypassing(p.bukkit(), Enums.HackType.Exploits)) {
             if (p.spartan.getVehicle() == null) {
                 PlayerInventory inventory = p.bukkit().getInventory();
+                ItemStack i = inventory.getChestplate();
 
-                if (inventory != null) {
-                    ItemStack i = inventory.getChestplate();
-
-                    if (i != null) {
-                        if (i.getType() == Material.ELYTRA) {
-                            if (i.getDurability() < 432) {
-                                p.profile().getRunner(Enums.HackType.Exploits).handle(false, Elytra.class);
-                            } else {
-                                p.bukkit().setGliding(false);
-                            }
+                if (i != null) {
+                    if (i.getType() == Material.ELYTRA) {
+                        if (i.getDurability() < 432) {
+                            p.profile().getRunner(Enums.HackType.Exploits).handle(false, Elytra.class);
                         } else {
                             p.bukkit().setGliding(false);
                         }
                     } else {
                         p.bukkit().setGliding(false);
                     }
+                } else {
+                    p.bukkit().setGliding(false);
                 }
             } else {
                 p.bukkit().setGliding(false);

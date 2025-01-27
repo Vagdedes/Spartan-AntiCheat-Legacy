@@ -12,9 +12,7 @@ import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PotionEffectUtils;
 import com.vagdedes.spartan.utils.minecraft.world.GroundUtils;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -42,16 +40,13 @@ public class Tower extends ProbabilityDetection {
                     SpartanLocation.getBlockLocation(playerLocation),
                     block.getLocation()
             ) <= 1.0) {
-                ItemStack handItem = this.protocol.spartan.getItemInHand();
                 int jumpLevel = PlayerUtils.getPotionLevel(this.protocol.spartan, PotionEffectUtils.JUMP) + 1,
                         motionTicks = PlayerUtils.getJumpTicks(jumpLevel);
                 double motionSum = PlayerUtils.getJumpMotionSum(jumpLevel),
-                        blockHeight = GroundUtils.getMinHeight(
-                                handItem == null ? Material.AIR : handItem.getType()
-                        );
+                        blockHeight = (GroundUtils.minBoundingBox + GroundUtils.maxBoundingBox) / 2.0;
                 int deltaYMinus1 = playerY - blockY,
                         possiblePlacements = AlgebraUtils.integerFloor(
-                                motionSum / (blockHeight == 0.0 ? 1.0 : blockHeight)
+                                motionSum / blockHeight
                         ) + deltaYMinus1;
 
                 if (deltaXZ > 0.1) {

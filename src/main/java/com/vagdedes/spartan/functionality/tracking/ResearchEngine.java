@@ -10,7 +10,6 @@ import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.concurrent.Threads;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
-import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
@@ -207,7 +206,7 @@ public class ResearchEngine {
                 createPlayerProfile(player);
             }
             MainMenu.refresh();
-            InteractiveInventory.playerInfo.refresh(playerName);
+            SpartanBukkit.playerInfo.refresh(playerName);
         }
     }
 

@@ -1,11 +1,15 @@
 package com.vagdedes.spartan.functionality.server;
 
 import com.vagdedes.spartan.Register;
+import com.vagdedes.spartan.abstraction.inventory.InventoryMenu;
+import com.vagdedes.spartan.abstraction.inventory.implementation.MainMenu;
+import com.vagdedes.spartan.abstraction.inventory.implementation.ManageChecks;
+import com.vagdedes.spartan.abstraction.inventory.implementation.PlayerInfo;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.compatibility.Compatibility;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.concurrent.Threads;
-import com.vagdedes.spartan.functionality.npc.NPCManager;
+import com.vagdedes.spartan.listeners.NPCManager;
 import com.vagdedes.spartan.utils.java.ReflectionUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import org.bukkit.Bukkit;
@@ -24,6 +28,15 @@ public class SpartanBukkit {
             connectionThread = new Threads.ThreadPool(TPS.tickTime),
             headThread = new Threads.ThreadPool(TPS.tickTime),
             dataThread = new Threads.ThreadPool(1L);
+
+    public static final ManageChecks manageChecks = new ManageChecks();
+    public static final MainMenu mainMenu = new MainMenu();
+    public static final PlayerInfo playerInfo = new PlayerInfo();
+    public static final InventoryMenu[] menus = new InventoryMenu[]{
+            manageChecks,
+            mainMenu,
+            playerInfo
+    };
 
     public static final int
             hashCodeMultiplier = 31,

@@ -5,15 +5,14 @@ import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.connection.DiscordMemberCount;
 import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
-import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.functionality.moderation.Wave;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.notifications.clickable.ClickableMessage;
-import com.vagdedes.spartan.functionality.npc.NPCManager;
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
+import com.vagdedes.spartan.listeners.NPCManager;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.server.ConfigUtils;
@@ -317,18 +316,18 @@ public class CommandExecution implements CommandExecutor {
                         if (Config.settings.getBoolean("Important.enable_npc")) {
                             NPCManager.create(protocol);
                         } else {
-                            InteractiveInventory.mainMenu.open(protocol, false);
+                            SpartanBukkit.mainMenu.open(protocol, false);
                         }
                     } else {
-                        InteractiveInventory.mainMenu.open(protocol, false);
+                        SpartanBukkit.mainMenu.open(protocol, false);
                     }
                 }
                 completeMessage(sender, "default");
             } else if (args.length == 1) {
                 if (isPlayer && args[0].equalsIgnoreCase("Menu")) {
-                    InteractiveInventory.mainMenu.open(protocol);
+                    SpartanBukkit.mainMenu.open(protocol);
                 } else if (isPlayer && args[0].equalsIgnoreCase("Manage-Checks")) {
-                    InteractiveInventory.manageChecks.open(protocol);
+                    SpartanBukkit.manageChecks.open(protocol);
                 } else if (args[0].equalsIgnoreCase("Panic")) {
                     if (isPlayer && !Permissions.has(protocol.bukkit(), Permission.MANAGE)) {
                         ClickableMessage.sendURL(
@@ -384,7 +383,7 @@ public class CommandExecution implements CommandExecutor {
                         );
                         return true;
                     }
-                    InteractiveInventory.playerInfo.open(protocol, sender.getName());
+                    SpartanBukkit.playerInfo.open(protocol, sender.getName());
 
                 } else if (isPlayer && args[0].equalsIgnoreCase("Notifications")) {
                     if (!DetectionNotifications.hasPermission(protocol)) {
@@ -521,7 +520,7 @@ public class CommandExecution implements CommandExecutor {
                                 );
                                 return true;
                             }
-                            InteractiveInventory.playerInfo.open(protocol, ConfigUtils.replaceWithSyntax(args[1], null));
+                            SpartanBukkit.playerInfo.open(protocol, ConfigUtils.replaceWithSyntax(args[1], null));
 
                         } else if (args[0].equalsIgnoreCase("Toggle")) {
                             String check = args[1];

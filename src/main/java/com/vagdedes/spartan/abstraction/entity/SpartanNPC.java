@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.functionality.npc;
+package com.vagdedes.spartan.abstraction.entity;
 
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
@@ -30,8 +30,8 @@ public class SpartanNPC {
     );
     private static final String backupName = "IdealisticAI";
 
-    final ArmorStand armorStand;
-    final Location location;
+    public final ArmorStand armorStand;
+    public final Location location;
     private double handPose, headPose;
 
     public SpartanNPC(Location location) {
@@ -101,7 +101,7 @@ public class SpartanNPC {
         ));
     }
 
-    boolean animate(List<SpartanProtocol> protocols) {
+    public boolean animate(List<SpartanProtocol> protocols) {
         if (armorStand.isDead()) {
             return false;
         } else {
@@ -158,7 +158,7 @@ public class SpartanNPC {
         }
     }
 
-    void updateHead() {
+    public void updateHead() {
         SpartanBukkit.headThread.executeWithPriority(
                 () -> armorStand.getEquipment().setHelmet(
                         InventoryUtils.getSkull(offlinePlayer, backupName, true)
@@ -166,11 +166,11 @@ public class SpartanNPC {
         );
     }
 
-    void remove() {
+    public void remove() {
         armorStand.remove();
     }
 
-    UUID getUniqueId() {
+    public UUID getUniqueId() {
         return armorStand.getUniqueId();
     }
 

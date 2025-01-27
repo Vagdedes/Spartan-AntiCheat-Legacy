@@ -282,7 +282,7 @@ public class MaterialUtils {
                     multiplier /= 5.0;
                 }
             }
-            if (!protocol.spartan.isOnGround(false)) {
+            if (!protocol.isOnGround()) {
                 multiplier /= 5.0;
             }
 

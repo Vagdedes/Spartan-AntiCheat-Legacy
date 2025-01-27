@@ -1556,7 +1556,7 @@ public class BlockUtils {
 
     public static boolean isSlime(SpartanProtocol p, SpartanLocation loc, int blocks) {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)) {
-            if (p.spartan.isOnGround(false)) {
+            if (p.isOnGround()) {
                 return loc.getBlock().getType() == Material.SLIME_BLOCK;
             } else {
                 SpartanLocation loopLocation = loc.clone();
@@ -1587,7 +1587,7 @@ public class BlockUtils {
 
     public static boolean isBed(SpartanProtocol p, SpartanLocation loc, int blocks) {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_12)) {
-            if (p.spartan.isOnGround(false)) {
+            if (p.isOnGround()) {
                 return areBeds(loc.getBlock().getType());
             } else {
                 SpartanLocation loopLocation = loc.clone();

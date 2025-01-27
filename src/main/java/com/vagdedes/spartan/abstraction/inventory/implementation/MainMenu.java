@@ -9,7 +9,6 @@ import com.vagdedes.spartan.compatibility.Compatibility;
 import com.vagdedes.spartan.functionality.command.CommandExecution;
 import com.vagdedes.spartan.functionality.connection.DiscordMemberCount;
 import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
-import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.functionality.inventory.PlayerStateLists;
 import com.vagdedes.spartan.functionality.notifications.clickable.ClickableMessage;
 import com.vagdedes.spartan.functionality.server.Config;
@@ -47,7 +46,7 @@ public class MainMenu extends InventoryMenu {
 
                     if (title.startsWith(name)) {
                         DiscordMemberCount.ignore();
-                        InteractiveInventory.mainMenu.open(protocol);
+                        SpartanBukkit.mainMenu.open(protocol);
                     }
                 });
             }
@@ -184,7 +183,7 @@ public class MainMenu extends InventoryMenu {
                         DiscordMemberCount.discordURL
                 );
             } else {
-                InteractiveInventory.manageChecks.open(protocol);
+                SpartanBukkit.manageChecks.open(protocol);
             }
 
         } else if (item.startsWith("Page")) {
@@ -212,7 +211,7 @@ public class MainMenu extends InventoryMenu {
             }
         } else if (!name.startsWith(PlayerStateLists.inactiveColour)
                 && !item.equals("Summary")) {
-            InteractiveInventory.playerInfo.open(protocol, false, item);
+            SpartanBukkit.playerInfo.open(protocol, false, item);
         }
         return true;
     }

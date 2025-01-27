@@ -1,8 +1,8 @@
-package com.vagdedes.spartan.functionality.npc;
+package com.vagdedes.spartan.listeners;
 
+import com.vagdedes.spartan.abstraction.entity.SpartanNPC;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
-import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.SpartanBukkit;
@@ -121,7 +121,7 @@ public class NPCManager implements Listener {
                             e.setCancelled(true);
                             npc.updateHead();
                             SpartanProtocol protocol = SpartanBukkit.getProtocol(e.getPlayer());
-                            InteractiveInventory.mainMenu.open(protocol, Permissions.has(protocol.bukkit()));
+                            SpartanBukkit.mainMenu.open(protocol, Permissions.has(protocol.bukkit()));
                             break;
                         }
                     }
@@ -147,7 +147,7 @@ public class NPCManager implements Listener {
 
                             if (damager instanceof Player) {
                                 SpartanProtocol protocol = SpartanBukkit.getProtocol((Player) damager);
-                                InteractiveInventory.mainMenu.open(protocol, Permissions.has(protocol.bukkit()));
+                                SpartanBukkit.mainMenu.open(protocol, Permissions.has(protocol.bukkit()));
                             }
                             break;
                         }

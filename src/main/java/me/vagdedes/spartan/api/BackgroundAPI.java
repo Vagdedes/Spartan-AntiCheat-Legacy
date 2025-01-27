@@ -1,9 +1,7 @@
 package me.vagdedes.spartan.api;
 
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.abstraction.protocol.SpartanPlayer;
 import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
-import com.vagdedes.spartan.functionality.connection.Latency;
 import com.vagdedes.spartan.functionality.connection.cloud.IDs;
 import com.vagdedes.spartan.functionality.moderation.Wave;
 import com.vagdedes.spartan.functionality.notifications.AwarenessNotifications;
@@ -94,7 +92,7 @@ public class BackgroundAPI {
     }
 
     static int getPing(Player p) {
-        return Latency.ping(p);
+        return SpartanBukkit.getProtocol(p).getPing();
     }
 
     @Deprecated

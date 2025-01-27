@@ -18,40 +18,16 @@ import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Horse;
 
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
 
 public class IMStepBukkit extends ProbabilityDetection {
 
     private static final double bedrockPlayerStepExtra = 1.0;
     private static final Map<Integer, Boolean> stepCombination = new LinkedHashMap<>();
-    private static final Set<Double> firstFallingBox = new HashSet<>();
 
     static {
         for (double before : GroundUtils.getHeights()) {
-            firstFallingBox.add(AlgebraUtils.cut(
-                    AlgebraUtils.removeBase(before - (PlayerUtils.airAcceleration * PlayerUtils.airDrag)),
-                    GroundUtils.maxHeightLength
-            ));
-            firstFallingBox.add(AlgebraUtils.cut(
-                    AlgebraUtils.removeBase(before - (PlayerUtils.airAccelerationUnloaded * PlayerUtils.airDrag)),
-                    GroundUtils.maxHeightLength
-            ));
-            firstFallingBox.add(AlgebraUtils.cut(
-                    AlgebraUtils.removeBase(before - (PlayerUtils.slowFallAcceleration * PlayerUtils.airDrag)),
-                    GroundUtils.maxHeightLength
-            ));
-            firstFallingBox.add(AlgebraUtils.cut(
-                    AlgebraUtils.removeBase(before - (PlayerUtils.liquidAcceleration * PlayerUtils.waterDrag)),
-                    GroundUtils.maxHeightLength
-            ));
-            firstFallingBox.add(AlgebraUtils.cut(
-                    AlgebraUtils.removeBase(before - (PlayerUtils.liquidAcceleration * PlayerUtils.lavaDrag)),
-                    GroundUtils.maxHeightLength
-            ));
-
             for (double after : GroundUtils.getHeights()) {
                 int hash = hash(before, after);
 
@@ -227,21 +203,7 @@ public class IMStepBukkit extends ProbabilityDetection {
                     }
                 });
             } else {
-                if (firstFallingBox.contains(AlgebraUtils.cut(box, GroundUtils.maxHeightLength))) {
-                    this.step_high_first_fall.call(() -> {
-                        if (vertical < -this.getAirAcceleration()) {
-                            this.step_high_first_fall.cancel(
-                                    "step(high-first-fall)"
-                                            + ", box: " + box
-                                            + ", old-box: " + oldBox
-                                            + ", vertical: " + vertical,
-                                    this.protocol.getFromLocation(),
-                                    0,
-                                    true
-                            );
-                        }
-                    });
-                } else if (vehicle == null
+                if (vehicle == null
                         && !this.protocol.spartan.trackers.has(PlayerTrackers.TrackerType.VEHICLE, "exit")) {
                     if (knownBox) {
                         this.step_landing.call(() -> {
@@ -269,7 +231,7 @@ public class IMStepBukkit extends ProbabilityDetection {
                         });
                     } else {
                         this.step_abstract_down.call(() -> {
-                            if (!this.protocol.spartan.isOnGround(this.protocol.getLocation(), true)
+                            if (!this.protocol.isOnGround()
                                     && !BlockUtils.isInteractiveAndPassable(this.protocol.spartan, new SpartanLocation(this.protocol.getLocation()).getBlock().getType())) {
                                 double limit = (this.protocol.spartan.isBedrockPlayer() ? bedrockPlayerStepExtra : 0.0)
                                         + this.getAirAcceleration();

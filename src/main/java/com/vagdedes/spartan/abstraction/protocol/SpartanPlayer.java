@@ -186,9 +186,7 @@ public class SpartanPlayer {
         for (PlayerTrackers.TrackerType handlerType : PlayerTrackers.TrackerType.values()) {
             this.trackers.remove(handlerType);
         }
-        if (!this.movement.judgeGround()) {
-            this.movement.resetAirTicks();
-        }
+        this.movement.judgeGround();
     }
 
     // Separator
@@ -220,26 +218,13 @@ public class SpartanPlayer {
         return this.protocol.bukkit().getInventory().getItemInHand();
     }
 
-    // Separator
-
-    public boolean isOnGround(Location location, boolean checkEntities) {
-        return GroundUtils.isOnGround(
-                this.protocol,
-                location,
-                this.protocol.isOnGround(),
-                checkEntities
-        );
-    }
-
-    public boolean isOnGround(boolean custom) {
+    boolean isOnGround() {
         Entity vehicle = this.protocol.spartan.getVehicle();
 
         if (vehicle != null) {
             return vehicle.isOnGround();
         } else {
-            return this.protocol.isOnGround()
-                    || custom
-                    && GroundUtils.isOnGround(this.protocol, protocol.getLocation(), false, true);
+            return this.protocol.bukkit().isOnGround();
         }
     }
 
@@ -436,10 +421,6 @@ public class SpartanPlayer {
 
     public void groundTeleport() {
         Location location = this.protocol.getLocation();
-
-        if (this.isOnGround(location, true)) {
-            return;
-        }
         SpartanLocation locationP1 = new SpartanLocation(location.clone().add(0, 1, 0));
 
         if (BlockUtils.isSolid(locationP1.getBlock().getType())
@@ -468,13 +449,8 @@ public class SpartanPlayer {
                     || !BlockUtils.isSolid(material))) {
                 iterations++;
             } else {
-                double blockBox = GroundUtils.getMaxHeight(material);
+                loopLocation.setY(Math.floor(progressiveY) + 1.0);
 
-                if (blockBox == 0.0 || blockBox == 0.5) {
-                    loopLocation.setY(Math.floor(progressiveY) + 1.0);
-                } else {
-                    loopLocation.setY(Math.floor(progressiveY) + Math.max(blockBox, box));
-                }
                 if (this.packetsEnabled()) {
                     this.protocol.teleport(loopLocation.bukkit());
                 }

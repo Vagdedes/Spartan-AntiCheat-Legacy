@@ -8,9 +8,9 @@ import com.vagdedes.spartan.compatibility.manual.enchants.CustomEnchantsPlus;
 import com.vagdedes.spartan.compatibility.manual.enchants.EcoEnchants;
 import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
-import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.functionality.notifications.DetectionNotifications;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
+import com.vagdedes.spartan.functionality.server.SpartanBukkit;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -262,7 +262,7 @@ public abstract class CheckRunner extends CheckProcess {
         this.disableCauses.add(new CheckCancellation(reason, pointer, ticks));
 
         if (this.protocol != null) {
-            InteractiveInventory.playerInfo.refresh(this.protocol.bukkit().getName());
+            SpartanBukkit.playerInfo.refresh(this.protocol.bukkit().getName());
         }
     }
 
@@ -270,7 +270,7 @@ public abstract class CheckRunner extends CheckProcess {
         this.silentCauses.add(new CheckCancellation(reason, pointer, ticks));
 
         if (this.protocol != null) {
-            InteractiveInventory.playerInfo.refresh(this.protocol.bukkit().getName());
+            SpartanBukkit.playerInfo.refresh(this.protocol.bukkit().getName());
         }
     }
 
@@ -278,7 +278,7 @@ public abstract class CheckRunner extends CheckProcess {
         this.disableCauses.clear();
 
         if (this.protocol != null) {
-            InteractiveInventory.playerInfo.refresh(this.protocol.bukkit().getName());
+            SpartanBukkit.playerInfo.refresh(this.protocol.bukkit().getName());
         }
     }
 
@@ -286,7 +286,7 @@ public abstract class CheckRunner extends CheckProcess {
         this.silentCauses.clear();
 
         if (this.protocol != null) {
-            InteractiveInventory.playerInfo.refresh(this.protocol.bukkit().getName());
+            SpartanBukkit.playerInfo.refresh(this.protocol.bukkit().getName());
         }
     }
 

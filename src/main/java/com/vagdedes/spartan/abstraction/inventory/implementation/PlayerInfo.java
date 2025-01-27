@@ -9,7 +9,6 @@ import com.vagdedes.spartan.abstraction.protocol.SpartanProtocol;
 import com.vagdedes.spartan.functionality.command.CommandExecution;
 import com.vagdedes.spartan.functionality.connection.DiscordMemberCount;
 import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
-import com.vagdedes.spartan.functionality.inventory.InteractiveInventory;
 import com.vagdedes.spartan.functionality.notifications.clickable.ClickableMessage;
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.Permissions;
@@ -261,7 +260,7 @@ public class PlayerInfo extends InventoryMenu {
                 if (inventoryView.getTitle().equals(PlayerInfo.menu + targetName)
                         && cooldowns.canDo("player-info=" + protocol.getUUID())) {
                     cooldowns.add("player-info=" + protocol.getUUID(), 1);
-                    InteractiveInventory.playerInfo.open(protocol, targetName);
+                    SpartanBukkit.playerInfo.open(protocol, targetName);
                 }
             }
         }
@@ -301,7 +300,7 @@ public class PlayerInfo extends InventoryMenu {
         } else if (item.equals("Close")) {
             protocol.bukkit().closeInventory();
         } else if (item.equals("Back")) {
-            InteractiveInventory.mainMenu.open(protocol);
+            SpartanBukkit.mainMenu.open(protocol);
         } else {
             protocol.spartan.sendImportantMessage("§7Click to learn more about the detection states§8: \n§a§n" + documentationURL);
         }
