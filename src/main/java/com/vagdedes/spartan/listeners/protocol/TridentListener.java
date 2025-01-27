@@ -5,7 +5,7 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.abstraction.event.SpartanPlayerRiptideEvent;
+import com.vagdedes.spartan.abstraction.event.CPlayerRiptideEvent;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.functionality.concurrent.CheckThread;
 import com.vagdedes.spartan.functionality.server.PluginBase;
@@ -38,7 +38,7 @@ public class TridentListener extends PacketAdapter {
             if (item.getType().equals(Material.TRIDENT)) {
                 double r = Math.toRadians(protocol.getLocation().getYaw());
                 CheckThread.run(() -> TridentEvent.event(
-                        new SpartanPlayerRiptideEvent(
+                        new CPlayerRiptideEvent(
                                 player,
                                 item,
                                 new Vector(-Math.sin(r), protocol.getLocation().getPitch() / 90, Math.cos(r))

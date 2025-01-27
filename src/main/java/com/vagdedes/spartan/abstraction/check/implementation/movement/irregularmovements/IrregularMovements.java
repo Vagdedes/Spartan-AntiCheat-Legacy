@@ -8,6 +8,7 @@ import com.vagdedes.spartan.abstraction.check.implementation.movement.irregularm
 import com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.simulation.IMSimulationGravity;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.simulation.IMSimulationSpeed;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.simulation.IMSimulationVehicle;
+import com.vagdedes.spartan.abstraction.event.CPlayerRiptideEvent;
 import com.vagdedes.spartan.abstraction.event.PlayerTickEvent;
 import com.vagdedes.spartan.abstraction.event.SuperPositionPacketEvent;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
@@ -56,7 +57,7 @@ public class IrregularMovements extends CheckRunner {
     protected void handleInternal(boolean cancelled, Object object) {
         if (object instanceof PlayerTeleportEvent) {
             this.teleport();
-        } else if (object instanceof Integer) {
+        } else if (object instanceof CPlayerRiptideEvent) {
             gravityPackets.trident();
             speedPackets.trident();
             speedBukkit.trident((int) object);
