@@ -2,10 +2,8 @@ package com.vagdedes.spartan.listeners.bukkit.standalone;
 
 import com.vagdedes.spartan.abstraction.profiling.MiningHistory;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
-import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import com.vagdedes.spartan.functionality.server.PluginBase;
 import com.vagdedes.spartan.functionality.tracking.Piston;
-import me.vagdedes.spartan.system.Enums;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -25,24 +23,7 @@ public class WorldEvent implements Listener {
         boolean cancelled = e.isCancelled();
         protocol.bukkitExtra.movement.judgeGround();
         protocol.profile().executeRunners(e.isCancelled(), e);
-
-        // Detections
-        if (!ItemsAdder.is(nb)) {
-            protocol.profile().getRunner(Enums.HackType.NoSwing).handle(cancelled, e);
-            protocol.profile().getRunner(Enums.HackType.BlockReach).handle(cancelled, e);
-            protocol.profile().getRunner(Enums.HackType.FastBreak).handle(cancelled, e);
-            protocol.profile().getRunner(Enums.HackType.GhostHand).handle(cancelled, nb);
-        }
-        protocol.profile().getRunner(Enums.HackType.Exploits).handle(cancelled, e);
         MiningHistory.log(protocol, nb, cancelled);
-
-        if (protocol.profile().getRunner(Enums.HackType.NoSwing).prevent()
-                || protocol.profile().getRunner(Enums.HackType.BlockReach).prevent()
-                || protocol.profile().getRunner(Enums.HackType.FastBreak).prevent()
-                || protocol.profile().getRunner(Enums.HackType.GhostHand).prevent()
-                || protocol.profile().getRunner(Enums.HackType.XRay).prevent()) {
-            e.setCancelled(true);
-        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -60,35 +41,7 @@ public class WorldEvent implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     private void Interact(PlayerInteractEvent e) {
         PlayerProtocol protocol = PluginBase.getProtocol(e.getPlayer(), true);
-        Block nb = e.getClickedBlock();
-        boolean notNull = nb != null,
-                customBlock = notNull && ItemsAdder.is(nb);
-
-        if (notNull) {
-            // Detections
-            if (!customBlock) {
-                protocol.profile().getRunner(Enums.HackType.BlockReach).handle(false, e);
-                protocol.profile().getRunner(Enums.HackType.FastBreak).handle(false, e);
-                protocol.profile().getRunner(Enums.HackType.ImpossibleActions).handle(false, e);
-            }
-            protocol.profile().getRunner(Enums.HackType.FastEat).handle(false, e);
-
-            if (!customBlock) {
-                protocol.profile().getRunner(Enums.HackType.GhostHand).handle(false, e);
-            }
-        } else {
-            // Detections
-            protocol.profile().getRunner(Enums.HackType.FastEat).handle(false, e);
-        }
-        // Detections
-        if (!customBlock) {
-            protocol.profile().getRunner(Enums.HackType.NoSwing).handle(false, e);
-        }
-        protocol.profile().getRunner(Enums.HackType.FastBow).handle(false, e);
-
-        if (protocol.profile().getRunner(Enums.HackType.GhostHand).prevent()) {
-            e.setCancelled(true);
-        }
+        protocol.profile().executeRunners(false, e); // False because is cancelled is deprecated
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

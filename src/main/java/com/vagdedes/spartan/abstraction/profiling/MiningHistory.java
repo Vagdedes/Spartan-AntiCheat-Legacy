@@ -46,8 +46,7 @@ public class MiningHistory {
                     event = null;
                 }
 
-                if ((event == null || !event.isCancelled())
-                        && Enums.HackType.XRay.getCheck().isEnabled(protocol.bukkitExtra.dataType, protocol.getWorld().getName())) {
+                if (event == null || !event.isCancelled()) {
                     AntiCheatLogs.logInfo(
                             protocol,
                             null,

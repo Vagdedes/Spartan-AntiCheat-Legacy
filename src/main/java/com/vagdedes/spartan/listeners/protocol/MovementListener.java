@@ -18,7 +18,6 @@ import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.PluginBase;
 import com.vagdedes.spartan.listeners.bukkit.MovementEvent;
 import com.vagdedes.spartan.utils.minecraft.protocol.ProtocolTools;
-import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Boat;
@@ -206,14 +205,11 @@ public class MovementListener extends PacketAdapter {
 
             //player.sendMessage("event: " + moveEvent.getTo().toVector());
         } else {
-            superPosition(new SuperPositionPacketEvent(p, event));
+            p.profile().executeRunners(
+                    event.isCancelled(),
+                    new SuperPositionPacketEvent(p, event)
+            );
         }
-    }
-
-    private static void superPosition(SuperPositionPacketEvent packet) {
-        boolean cancelled = packet.packetEvent.isCancelled();
-        packet.protocol.profile().getRunner(Enums.HackType.Exploits).handle(cancelled, packet);
-        packet.protocol.profile().getRunner(Enums.HackType.IrregularMovements).handle(cancelled, packet);
     }
 
     public enum tpFlags {

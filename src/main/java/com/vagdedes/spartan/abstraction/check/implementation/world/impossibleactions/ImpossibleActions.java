@@ -7,6 +7,7 @@ import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityD
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.Compatibility;
+import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
@@ -136,7 +137,7 @@ public class ImpossibleActions extends CheckRunner {
                     }
                 }
             }
-        } else {
+        } else if (object instanceof PlayerInteractEvent) {
             this.actions.call(() -> {
                 PlayerInteractEvent event = (PlayerInteractEvent) object;
                 Action action = event.getAction();
@@ -164,7 +165,7 @@ public class ImpossibleActions extends CheckRunner {
 
                         if (b == null) {
                             this.actions.cancel("actions, action: " + action_string + ", case: " + cases);
-                        } else {
+                        } else if (!ItemsAdder.is(b)) {
                             this.actions.cancel("actions, action: " + action_string + ", case: " + cases + ", block: " + BlockUtils.blockToString(b));
                         }
                     }

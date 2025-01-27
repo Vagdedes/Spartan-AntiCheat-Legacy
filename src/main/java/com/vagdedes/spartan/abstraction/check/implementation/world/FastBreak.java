@@ -7,6 +7,7 @@ import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.compatibility.Compatibility;
 import com.vagdedes.spartan.compatibility.manual.abilities.AureliumSkills;
+import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import com.vagdedes.spartan.compatibility.manual.building.MineBomb;
 import com.vagdedes.spartan.compatibility.manual.building.SuperPickaxe;
 import com.vagdedes.spartan.compatibility.manual.building.TreeFeller;
@@ -203,21 +204,30 @@ public class FastBreak extends CheckRunner {
             if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
                 Block b = event.getClickedBlock();
 
-                if (interactTime.size() == TPS.maximum) {
-                    Iterator<Integer> iterator = interactTime.keySet().iterator();
-                    iterator.next();
-                    iterator.remove();
+                if (b != null
+                        && !ItemsAdder.is(b)) {
+                    if (interactTime.size() == TPS.maximum) {
+                        Iterator<Integer> iterator = interactTime.keySet().iterator();
+                        iterator.next();
+                        iterator.remove();
+                    }
+                    interactTime.put(Objects.hash(b.getWorld().getName(), b.getType(), b.getX(), b.getY(), b.getZ()), System.currentTimeMillis());
                 }
-                interactTime.put(Objects.hash(b.getWorld().getName(), b.getType(), b.getX(), b.getY(), b.getZ()), System.currentTimeMillis());
             }
-        } else {
-            Block b = ((BlockBreakEvent) object).getBlock();
+        } else if (object instanceof BlockBreakEvent) {
+            BlockBreakEvent event = (BlockBreakEvent) object;
+            Block b = event.getBlock();
 
-            if (!TreeFeller.canCancel(b)) {
+            if (!TreeFeller.canCancel(b)
+                    && !ItemsAdder.is(b)) {
                 int seconds = AlgebraUtils.integerCeil(TPS.maximum);
                 checkDelay(b, seconds);
                 checkBreaksPerSecond(seconds, b);
                 checkIndirectSurroundingsPerSecond(seconds, b);
+
+                if (this.prevent()) {
+                    event.setCancelled(true);
+                }
             }
         }
     }

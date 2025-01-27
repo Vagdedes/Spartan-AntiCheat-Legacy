@@ -70,7 +70,6 @@ public class VehicleHandle extends PacketAdapter {
                     Location location = vehicle.getLocation();
                     protocol.setLocation(location);
                     MovementEvent.event(new PlayerMoveEvent(player, protocol.getFromLocation(), protocol.getLocation()), true);
-                    //protocol.profile().getRunner(Enums.HackType.IrregularMovements).run(event.isCancelled());
                 }
             }
         });

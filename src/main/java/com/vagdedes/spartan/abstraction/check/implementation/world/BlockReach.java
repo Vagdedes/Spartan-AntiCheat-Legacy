@@ -7,6 +7,7 @@ import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.Compatibility;
 import com.vagdedes.spartan.compatibility.manual.abilities.AureliumSkills;
+import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import com.vagdedes.spartan.compatibility.manual.building.MineBomb;
 import com.vagdedes.spartan.compatibility.manual.building.PrinterMode;
 import com.vagdedes.spartan.compatibility.manual.building.TreeFeller;
@@ -53,9 +54,11 @@ public class BlockReach extends CheckRunner {
     protected void handleInternal(boolean cancelled, Object object) {
         if (object instanceof BlockBreakEvent) {
             this.breaking.call(() -> {
-                Block block = ((BlockBreakEvent) object).getBlock();
+                BlockBreakEvent event = (BlockBreakEvent) object;
+                Block block = event.getBlock();
 
                 if (canDo(block)
+                        && !ItemsAdder.is(block)
                         && !TreeFeller.canCancel(block)) {
                     double distance = SpartanLocation.distance(this.protocol.getLocationOrVehicle(), block.getLocation()),
                             limit = getLimit();
@@ -66,6 +69,10 @@ public class BlockReach extends CheckRunner {
                                         + ", limit: " + limit
                                         + ", block: " + BlockUtils.blockToString(block)
                         );
+
+                        if (this.breaking.prevent()) {
+                            event.setCancelled(true);
+                        }
                     }
                 }
             });
@@ -73,7 +80,9 @@ public class BlockReach extends CheckRunner {
             this.interact.call(() -> {
                 Block block = ((PlayerInteractEvent) object).getClickedBlock();
 
-                if (canDo(block)
+                if (block != null
+                        && canDo(block)
+                        && !ItemsAdder.is(block)
                         && BlockUtils.isChangeable(block.getType())) {
                     double distance = SpartanLocation.distance(this.protocol.getLocationOrVehicle(), block.getLocation()),
                             limit = getLimit();
@@ -87,46 +96,48 @@ public class BlockReach extends CheckRunner {
                     }
                 }
             });
-        } else if (this.place.canCall()
-                || this.unusual.canCall()) {
-            Block[] blocks = (Block[]) object;
-            Block blockAgainst = blocks[1];
+        } else if (object instanceof Block[]) {
+            if (this.place.canCall()
+                    || this.unusual.canCall()) {
+                Block[] blocks = (Block[]) object;
+                Block blockAgainst = blocks[1];
 
-            if (BlockUtils.isSolid(blockAgainst.getType())) {
-                Block block = blocks[0];
+                if (BlockUtils.isSolid(blockAgainst.getType())) {
+                    Block block = blocks[0];
 
-                if (canDo(block)
-                        && BlockUtils.isSolid(block.getType())
-                        && !BlockUtils.isScaffoldingBlock(block.getType())) {
-                    Location to = this.protocol.getLocationOrVehicle();
-                    double distance = SpartanLocation.distance(to, block.getLocation()),
-                            ab_distance = SpartanLocation.distance(to, blockAgainst.getLocation());
+                    if (canDo(block)
+                            && BlockUtils.isSolid(block.getType())
+                            && !BlockUtils.isScaffoldingBlock(block.getType())) {
+                        Location to = this.protocol.getLocationOrVehicle();
+                        double distance = SpartanLocation.distance(to, block.getLocation()),
+                                ab_distance = SpartanLocation.distance(to, blockAgainst.getLocation());
 
-                    if (!this.protocol.bukkitExtra.isBedrockPlayer()
-                            && BlockUtils.isFullSolid(block.getType())
-                            && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
-                            || block.getType() != Material.BARRIER)
-                            && this.protocol.bukkitExtra.getVehicle() == null
-                            && distance > (ab_distance + GroundUtils.boundingBox + 0.1)) {
-                        this.unusual.call(() -> {
-                            this.unusual.cancel(
-                                    "unusual, distance: " + distance
-                                            + ", block-against-distance: " + ab_distance
-                                            + ", block: " + BlockUtils.blockToString(block)
-                            );
-                        });
-                    } else {
-                        this.place.call(() -> {
-                            double limit = getLimit();
-
-                            if (distance >= limit) {
-                                this.place.cancel(
-                                        "place, distance: " + distance
-                                                + ", limit: " + limit
+                        if (!this.protocol.bukkitExtra.isBedrockPlayer()
+                                && BlockUtils.isFullSolid(block.getType())
+                                && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
+                                || block.getType() != Material.BARRIER)
+                                && this.protocol.bukkitExtra.getVehicle() == null
+                                && distance > (ab_distance + GroundUtils.boundingBox + 0.1)) {
+                            this.unusual.call(() -> {
+                                this.unusual.cancel(
+                                        "unusual, distance: " + distance
+                                                + ", block-against-distance: " + ab_distance
                                                 + ", block: " + BlockUtils.blockToString(block)
                                 );
-                            }
-                        });
+                            });
+                        } else {
+                            this.place.call(() -> {
+                                double limit = getLimit();
+
+                                if (distance >= limit) {
+                                    this.place.cancel(
+                                            "place, distance: " + distance
+                                                    + ", limit: " + limit
+                                                    + ", block: " + BlockUtils.blockToString(block)
+                                    );
+                                }
+                            });
+                        }
                     }
                 }
             }

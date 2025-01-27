@@ -5,6 +5,7 @@ import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
+import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import com.vagdedes.spartan.compatibility.manual.building.PrinterMode;
 import com.vagdedes.spartan.compatibility.manual.entity.Vehicles;
 import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
@@ -15,6 +16,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 public class GhostHand extends CheckRunner {
@@ -29,11 +31,13 @@ public class GhostHand extends CheckRunner {
 
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
-        if (object instanceof Block) {
+        if (object instanceof BlockBreakEvent) {
             this.breaking.call(() -> {
-                Block b = (Block) object;
+                BlockBreakEvent event = (BlockBreakEvent) object;
+                Block b = event.getBlock();
 
-                if (canDo(b)) {
+                if (canDo(b)
+                        && !ItemsAdder.is(b)) {
                     Location location = this.protocol.getLocationOrVehicle().clone().add(
                             0,
                             this.protocol.bukkit().getEyeHeight(),
@@ -55,18 +59,24 @@ public class GhostHand extends CheckRunner {
                                     null,
                                     1
                             );
+
+                            if (this.breaking.prevent()) {
+                                event.setCancelled(true);
+                            }
                         }
                     }
                 }
             });
-        } else {
+        } else if (object instanceof PlayerInteractEvent) {
             this.interact.call(() -> {
                 PlayerInteractEvent event = (PlayerInteractEvent) object;
 
                 if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
                     Block b = event.getClickedBlock();
 
-                    if (canDo(b) && BlockUtils.isChangeable(b.getType())) {
+                    if (b != null
+                            && canDo(b)
+                            && BlockUtils.isChangeable(b.getType())) {
                         Location location = this.protocol.getLocationOrVehicle().clone().add(
                                 0,
                                 this.protocol.bukkit().getEyeHeight(),
@@ -88,6 +98,10 @@ public class GhostHand extends CheckRunner {
                                         null,
                                         1
                                 );
+
+                                if (this.interact.prevent()) {
+                                    event.setCancelled(true);
+                                }
                             }
                         }
                     }

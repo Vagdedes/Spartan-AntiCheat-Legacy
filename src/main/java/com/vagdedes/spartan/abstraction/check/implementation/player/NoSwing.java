@@ -8,6 +8,7 @@ import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
 import com.vagdedes.spartan.compatibility.manual.abilities.AureliumSkills;
+import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
 import com.vagdedes.spartan.compatibility.manual.building.MineBomb;
 import com.vagdedes.spartan.compatibility.manual.building.TreeFeller;
 import com.vagdedes.spartan.compatibility.manual.entity.Vehicles;
@@ -45,7 +46,12 @@ public class NoSwing extends CheckRunner {
             PlayerInteractEvent e = (PlayerInteractEvent) object;
 
             if (e.getAction() == Action.LEFT_CLICK_BLOCK) {
-                this.breakTime = System.currentTimeMillis();
+                Block block = e.getClickedBlock();
+
+                if (block == null
+                        || !ItemsAdder.is(block)) {
+                    this.breakTime = System.currentTimeMillis();
+                }
             }
         } else if (object instanceof PlayerAnimationEvent) {
             this.animationTime = System.currentTimeMillis();
@@ -55,16 +61,22 @@ public class NoSwing extends CheckRunner {
                         || AureliumSkills.isUsing(this.protocol)) {
                     return;
                 }
-                Block block = ((BlockBreakEvent) object).getBlock();
+                BlockBreakEvent e = (BlockBreakEvent) object;
+                Block block = e.getBlock();
 
                 if (!BlockUtils.isSensitive(this.protocol, block.getType())
                         && !TreeFeller.canCancel(block)
+                        && !ItemsAdder.is(block)
                         && System.currentTimeMillis() - breakTime > TPS.tickTime) {
                     if (this.animationTime == Long.MAX_VALUE) {
                         this.breaking.cancel(
                                 "breaking"
                                         + ", block: " + BlockUtils.blockToString(block)
                                         + ", item: " + BlockUtils.materialToString(this.protocol.bukkitExtra.getItemInHand().getType()));
+
+                        if (this.breaking.prevent()) {
+                            e.setCancelled(true);
+                        }
                     } else {
                         resetAnimationData();
                     }

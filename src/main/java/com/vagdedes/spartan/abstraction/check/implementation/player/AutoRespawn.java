@@ -1,11 +1,13 @@
 package com.vagdedes.spartan.abstraction.check.implementation.player;
 
+import com.comphenix.protocol.PacketType;
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.TPS;
+import com.vagdedes.spartan.listeners.protocol.DeathListener;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.server.PluginUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
@@ -39,8 +41,20 @@ public class AutoRespawn extends CheckRunner {
                 }
             });
         } else if (object instanceof PlayerDeathEvent) {
-            this.memory = System.currentTimeMillis();
+            this.death();
+        } else {
+            for (PacketType type : DeathListener.packetTypes) {
+                if (object instanceof PacketType
+                        && type.equals(object)) {
+                    this.death();
+                    break;
+                }
+            }
         }
+    }
+
+    private void death() {
+        this.memory = System.currentTimeMillis();
     }
 
     @Override
