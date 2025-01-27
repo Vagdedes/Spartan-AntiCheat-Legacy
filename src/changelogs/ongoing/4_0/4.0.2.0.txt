@@ -1,1 +1,3 @@
 [#] Implemented a copy of the velocity event to avoid certain version errors
+[#] Removed a lot of legacy code from the plugin and replaced it with better and newer code
+[#] Rewrote part of the plugin's base to be more coherent and allow for more organized development
