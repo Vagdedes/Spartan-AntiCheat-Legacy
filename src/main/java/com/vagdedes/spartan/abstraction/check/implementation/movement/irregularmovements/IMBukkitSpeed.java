@@ -115,7 +115,7 @@ public class IMBukkitSpeed extends ProbabilityDetection {
         double speed = r(Math.sqrt(dx * dx + dz * dz));
         double speedLimit = r((onGround || onAir > BASIC_SPEED.length
                 ? BASIC_SPEED[BASIC_SPEED.length - 1]
-                : BASIC_SPEED[Math.min(onAir - 1, BASIC_SPEED.length - 1)]) * multiply);
+                : BASIC_SPEED[Math.max(Math.min(onAir - 1, BASIC_SPEED.length - 1), 0)]) * multiply);
         double radiYaw = Math.toRadians(location.getYaw());
         RayLine lookRay = new RayLine(-Math.sin(radiYaw), Math.cos(radiYaw));
         RayLine moveRay = new RayLine(dx, dz);
