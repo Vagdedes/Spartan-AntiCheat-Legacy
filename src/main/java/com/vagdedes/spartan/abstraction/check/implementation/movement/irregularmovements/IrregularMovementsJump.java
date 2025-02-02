@@ -25,6 +25,10 @@ public class IrregularMovementsJump extends ProbabilityDetection {
             heightsBedrock = new LinkedHashMap<>();
     private static final int heightPrecision = 3;
 
+    // Separator
+
+    private long teleport;
+
     static {
         for (int jumpEffect = 0; jumpEffect < 255; jumpEffect++) {
             Set<Double>
@@ -56,7 +60,8 @@ public class IrregularMovementsJump extends ProbabilityDetection {
     }
 
     void run(double vertical, double box) {
-        if ((this.jump_ticks.canCall()
+        if (this.teleport < System.currentTimeMillis()
+                && (this.jump_ticks.canCall()
                 || this.jump_height.canCall())
                 && !this.protocol.bukkitExtra.movement.wasGliding()) {
             if (this.protocol.bukkitExtra.trackers.has(PlayerTrackers.TrackerFamily.VELOCITY)
@@ -137,6 +142,10 @@ public class IrregularMovementsJump extends ProbabilityDetection {
                 }
             }
         }
+    }
+
+    void teleport() {
+        this.teleport = System.currentTimeMillis() + 1_000L;
     }
 
 }

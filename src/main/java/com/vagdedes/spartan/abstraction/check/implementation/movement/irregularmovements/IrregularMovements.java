@@ -113,6 +113,7 @@ public class IrregularMovements extends CheckRunner {
         baritone.teleport();
         vehiclePackets.teleport();
         elytraPackets.teleport();
+        jump.teleport();
         teleport = System.currentTimeMillis()
                 + (AlgebraUtils.integerCeil(TPS.maximum / 2.0) * TPS.tickTime);
     }
