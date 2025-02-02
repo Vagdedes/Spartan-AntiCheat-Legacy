@@ -114,15 +114,26 @@ public class EncirclementData {
                             double yF = protocol.getFromLocation().getY();
                             double zF = protocol.getFromLocation().getZ();
                             Material materialBig = protocol.packetWorld.getBlock(
-                                    new Location(protocol.getWorld(), x + (double) dx, y + (double) dy, z + (double) dz)
+                                    new Location(protocol.getWorld(), x + (double) dx,
+                                                    y + (double) dy, z + (double) dz)
+                            );
+                            Material materialBig2 = protocol.packetWorld.getBlock(
+                                            new Location(protocol.getWorld(),
+                                                            xF + (double) dx, yF + (double) dy - 1, zF + (double) dz)
+                            );
+                            Material materialBig3 = protocol.packetWorld.getBlock(
+                                            new Location(protocol.getWorld(),
+                                                            x + (double) dx, y + (double) dy - 1, z + (double) dz)
                             );
                             Material materialBigFrom = protocol.packetWorld.getBlock(
-                                            new Location(protocol.getWorld(), xF + (double) dx, yF + (double) dy + 0.5, zF + (double) dz)
+                                            new Location(protocol.getWorld(),
+                                            xF + (double) dx, yF + (double) dy + 0.5, zF + (double) dz)
                             );
                             if (materialBig == null) return;
                             if ((BlockUtils.areHoneyBlocks(materialBig)
                                     || BlockUtils.areBeds(materialBig)
                                     || BlockUtils.areSlimeBlocks(materialBigFrom)
+                                    || BlockUtils.areSlimeBlocks(materialBig2)
                                     || BlockUtils.areSlimeBlocks(materialBig))) {
                                 protocol.slime0Tick = 3;
                             }
