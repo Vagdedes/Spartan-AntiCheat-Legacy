@@ -124,8 +124,13 @@ public class EncirclementData {
                                     || BlockUtils.areBeds(materialBig)
                                     || BlockUtils.areSlimeBlocks(materialBigFrom)
                                     || BlockUtils.areSlimeBlocks(materialBig))) {
+                                protocol.slime0Tick = 3;
+                            }
+                            if (protocol.slime0Tick > 0) {
+                                protocol.slime0Tick--;
                                 this.slimeHeight = true;
                                 this.slimeWide = true;
+                                this.slime = true;
                             }
                         }
                     }

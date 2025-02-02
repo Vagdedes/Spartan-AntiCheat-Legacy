@@ -43,7 +43,7 @@ public class PlayerProtocol {
     private int hashPosBuffer;
     public int
             rightClickCounter,
-            transactionVl,
+            transactionVl, slime0Tick,
             flyingTicks;
     public final boolean npc;
     public boolean
@@ -136,6 +136,7 @@ public class PlayerProtocol {
         this.positionHistory = Collections.synchronizedList(new LinkedList<>());
         this.positionHistoryLong = Collections.synchronizedList(new LinkedList<>());
         this.hashPosBuffer = 0;
+        this.slime0Tick = 0;
         this.claimedVelocity = null;
         this.claimedVeloGravity = new CopyOnWriteArrayList<>();
         this.claimedVeloSpeed = new CopyOnWriteArrayList<>();
