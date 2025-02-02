@@ -40,10 +40,13 @@ public abstract class HardcodedDetection extends CheckDetection {
             double passed = decay - (this.lastUpdate - System.currentTimeMillis()) / (double) decay;
 
             if (PlayerEvidence.POSITIVE) {
-                return passed * super.getProbability(dataType);
+                passed = passed * super.getProbability(dataType);
             } else {
-                return 1.0 - (passed * (1.0 - super.getProbability(dataType)));
+                passed = 1.0 - (passed * (1.0 - super.getProbability(dataType)));
             }
+            return passed > 1.0 || passed < 0.0
+                    ? PlayerEvidence.emptyProbability
+                    : passed;
         } else {
             return PlayerEvidence.emptyProbability;
         }

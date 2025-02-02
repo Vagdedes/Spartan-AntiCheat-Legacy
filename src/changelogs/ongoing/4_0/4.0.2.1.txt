@@ -1,1 +1,3 @@
 [#] Fixed a Speed check array console error
+[#] Fixed a few rare XRay false punishments
+[#] Potentially fixed the issue with high probabilities in webhooks

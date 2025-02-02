@@ -18,9 +18,7 @@ import java.util.Collection;
 
 public class XRay extends CheckRunner {
 
-    private static final double threshold = PlayerEvidence.probabilityToCertainty(
-            PlayerEvidence.preventionProbability
-    );
+    private static final double threshold = 0.9999;
 
     private static double[] getStatistics(World.Environment environment, MiningHistory.MiningOre ore) {
         Collection<PlayerProfile> profiles = ResearchEngine.getPlayerProfiles();
