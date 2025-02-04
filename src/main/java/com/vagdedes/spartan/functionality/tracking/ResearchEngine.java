@@ -349,8 +349,6 @@ public class ResearchEngine {
             if (enabledPlugin) {
                 buildCache();
                 CloudBase.refresh();
-            } else {
-                CloudBase.clear();
             }
         };
 

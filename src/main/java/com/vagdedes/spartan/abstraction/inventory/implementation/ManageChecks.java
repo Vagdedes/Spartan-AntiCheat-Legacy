@@ -5,7 +5,6 @@ import com.vagdedes.spartan.abstraction.inventory.InventoryMenu;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.functionality.command.CommandExecution;
 import com.vagdedes.spartan.functionality.connection.DiscordMemberCount;
-import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
 import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
 import com.vagdedes.spartan.functionality.moderation.clickable.ClickableMessage;
 import com.vagdedes.spartan.functionality.server.Config;
@@ -117,7 +116,6 @@ public class ManageChecks extends InventoryMenu {
                 silent = check.isSilent(null, null),
                 bypassing = Permissions.isBypassing(protocol.bukkit(), hackType),
                 punish = check.canPunish(null);
-        String[] disabledDetections = CloudBase.getShownDisabledDetections(hackType);
         String enabledOption, silentOption, punishOption, colour, secondColour;
         ItemStack item;
 
@@ -149,24 +147,6 @@ public class ManageChecks extends InventoryMenu {
 
         for (String s : hackType.description) {
             lore.add("§7" + s);
-        }
-
-        // Separator
-        if (disabledDetections != null) {
-            List<String> extra = new ArrayList<>();
-            int normalPlaceholder = 0;
-            extra.add("");
-            extra.add("§7Forcefully Disabled Detections§8:");
-
-            for (String detection : disabledDetections) {
-                if (!detection.startsWith(" ")) {
-                    normalPlaceholder++;
-                    extra.add("§4" + detection);
-                }
-            }
-            if (normalPlaceholder > 0) {
-                lore.addAll(extra);
-            }
         }
 
         // Separator

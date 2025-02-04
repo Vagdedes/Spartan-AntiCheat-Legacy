@@ -2,7 +2,6 @@ package com.vagdedes.spartan.abstraction.check;
 
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
-import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
 import com.vagdedes.spartan.functionality.connection.cloud.CloudConnections;
 import com.vagdedes.spartan.functionality.moderation.DetectionNotifications;
 import com.vagdedes.spartan.functionality.moderation.clickable.ClickableMessage;
@@ -414,8 +413,7 @@ public abstract class CheckDetection extends CheckProcess {
         boolean isEnabled =
                 hackType.getCheck().isEnabled(this.protocol.bukkitExtra.dataType, this.protocol.getWorld().getName())
                         && this.isEnabled()
-                        && !Permissions.isBypassing(this.protocol.bukkit(), hackType)
-                        && !CloudBase.isInformationCancelled(this.hackType, information);
+                        && !Permissions.isBypassing(this.protocol.bukkit(), hackType);
 
         if (isEnabled) {
             CheckCancellation disableCause = this.executor.getDisableCause();
