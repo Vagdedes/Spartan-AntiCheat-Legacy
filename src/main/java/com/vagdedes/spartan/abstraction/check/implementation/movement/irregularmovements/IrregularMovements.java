@@ -12,6 +12,7 @@ import com.vagdedes.spartan.abstraction.event.CPlayerRiptideEvent;
 import com.vagdedes.spartan.abstraction.event.PlayerTickEvent;
 import com.vagdedes.spartan.abstraction.event.SuperPositionPacketEvent;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
+import com.vagdedes.spartan.functionality.server.PluginBase;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.listeners.protocol.TeleportListener;
@@ -97,7 +98,8 @@ public class IrregularMovements extends CheckRunner {
             gravityPackets.groundSp(e.onGround);
         } else if (object instanceof VehicleEnterEvent) {
             speedPackets.vhAct();
-        } else if (object instanceof PacketType) {
+        } else if (PluginBase.packetsEnabled()
+                && object instanceof PacketType) {
             for (PacketType type : TeleportListener.packetTypes) {
                 if (type.equals(object)) {
                     this.teleport();

@@ -7,6 +7,7 @@ import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.event.PlayerTickEvent;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
+import com.vagdedes.spartan.functionality.server.PluginBase;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.listeners.protocol.TeleportListener;
@@ -111,7 +112,8 @@ public class MorePackets extends CheckRunner {
             }
         } else if (object instanceof PlayerTeleportEvent) {
             this.teleport();
-        } else if (object instanceof PacketType) {
+        } else if (PluginBase.packetsEnabled()
+                && object instanceof PacketType) {
             for (PacketType type : TeleportListener.packetTypes) {
                 if (type.equals(object)) {
                     this.teleport();

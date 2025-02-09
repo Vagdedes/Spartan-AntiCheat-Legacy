@@ -6,6 +6,7 @@ import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
+import com.vagdedes.spartan.functionality.server.PluginBase;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.listeners.protocol.DeathListener;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -42,7 +43,8 @@ public class AutoRespawn extends CheckRunner {
             });
         } else if (object instanceof PlayerDeathEvent) {
             this.death();
-        } else if (object instanceof PacketType) {
+        } else if (PluginBase.packetsEnabled()
+                && object instanceof PacketType) {
             for (PacketType type : DeathListener.packetTypes) {
                 if (type.equals(object)) {
                     this.death();

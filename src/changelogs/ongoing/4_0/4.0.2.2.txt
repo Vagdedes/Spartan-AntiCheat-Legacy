@@ -1,2 +1,3 @@
 [#] Fixed a few slime false positives
 [#] Removed certain cloud features that were not being used
+[#] Fixed a few checks console errors
