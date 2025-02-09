@@ -26,7 +26,7 @@ public abstract class HardcodedDetection extends CheckDetection {
         if (this.protocol != null) {
             this.setProbability(
                     this.protocol.bukkitExtra.dataType,
-                    PlayerEvidence.probabilityToCertainty(ratio)
+                    PlayerEvidence.probabilityToCertainty(Math.max(0.0, Math.min(ratio, 1.0)))
             );
             this.lastUpdate = System.currentTimeMillis() + decay;
         }
