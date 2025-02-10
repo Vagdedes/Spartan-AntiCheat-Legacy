@@ -6,6 +6,7 @@ import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.inventory.InventoryMenu;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.compatibility.Compatibility;
+import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.command.CommandExecution;
 import com.vagdedes.spartan.functionality.connection.DiscordMemberCount;
 import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
@@ -160,7 +161,7 @@ public class MainMenu extends InventoryMenu {
             } else if (Compatibility.CompatibilityType.FILE_GUI.isFunctional()) {
                 Player n = protocol.bukkit();
 
-                if (n.hasPermission("filegui.modify")) {
+                if (ProtocolLib.hasPermission(n, "filegui.modify")) {
                     FileGUIAPI.openMenu(n, Config.compatibility.getFile().getPath(), 1);
                 } else {
                     protocol.bukkit().closeInventory();

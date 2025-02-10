@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.functionality.server;
 
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
+import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.entity.Player;
 
@@ -32,18 +33,18 @@ public class Permissions {
     }
 
     public static boolean has(Player p, Enums.Permission permission) {
-        if (p.hasPermission(permission.getKey())) {
+        if (ProtocolLib.hasPermission(p, permission.getKey())) {
             return true;
         } else {
             return permission != Enums.Permission.ADMIN
-                    ? p.hasPermission(Enums.Permission.ADMIN.getKey())
-                    || p.hasPermission(alternativeAdminKey)
-                    : p.hasPermission(alternativeAdminKey);
+                    ? ProtocolLib.hasPermission(p, Enums.Permission.ADMIN.getKey())
+                    || ProtocolLib.hasPermission(p, alternativeAdminKey)
+                    : ProtocolLib.hasPermission(p, alternativeAdminKey);
         }
     }
 
     public static boolean onlyHas(Player p, Enums.Permission permission) {
-        return p.hasPermission(permission.getKey());
+        return ProtocolLib.hasPermission(p, permission.getKey());
     }
 
     // Separator
@@ -54,10 +55,10 @@ public class Permissions {
         } else {
             String key = Enums.Permission.BYPASS.getKey();
 
-            if (p.hasPermission(key)) {
+            if (ProtocolLib.hasPermission(p, key)) {
                 return true;
             } else if (hackType != null) {
-                return p.hasPermission(key + "." + hackType.toString().toLowerCase());
+                return ProtocolLib.hasPermission(p, key + "." + hackType.toString().toLowerCase());
             } else {
                 return false;
             }

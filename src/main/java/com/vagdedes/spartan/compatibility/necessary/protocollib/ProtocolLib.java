@@ -9,6 +9,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
@@ -131,6 +132,15 @@ public class ProtocolLib {
             }
         } else {
             return entity.getWorld();
+        }
+    }
+
+    public static boolean hasPermission(CommandSender sender, String permission) {
+        if (sender instanceof Player) {
+            Player player = (Player) sender;
+            return !isTemporary(player) && player.hasPermission(permission);
+        } else {
+            return sender.hasPermission(permission);
         }
     }
 

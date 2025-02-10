@@ -2,3 +2,4 @@
 [#] Removed certain cloud features that were not being used
 [#] Fixed a few checks console errors
 [#] Fixed an issue with probabilities beyond 100%
+[#] Fixed a few temporary player permission console errors
