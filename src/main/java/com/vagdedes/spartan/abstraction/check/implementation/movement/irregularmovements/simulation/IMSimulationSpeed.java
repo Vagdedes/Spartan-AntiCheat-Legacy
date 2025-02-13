@@ -97,10 +97,11 @@ public class IMSimulationSpeed extends ProbabilityDetection {
                         double lim;
                         if (RayUtils.validRayLines(
                                 yawLine, moveLine, 46) || sprintStatus)
-                            lim = JUMP_SPRINT[air - 1];
+                            lim = JUMP_SPRINT[Math.max(0, Math.min(air - 1, JUMP_SPRINT.length - 1))];
                         else if (RayUtils.validRayLines(yawLine, moveLine, 65)) {
-                            lim = JUMP[air - 1] + (JUMP_SPRINT[air - 1] / 2.0);
-                        } else lim = JUMP[air - 1];
+                            lim = JUMP[Math.max(0, Math.min(air - 1, JUMP.length - 1))]
+                                    + (JUMP_SPRINT[Math.max(0, Math.min(air - 1, JUMP_SPRINT.length - 1))] / 2.0);
+                        } else lim = JUMP[Math.max(0, Math.min(air - 1, JUMP.length - 1))];
                         if (this.ACCELERATION_MOTION > 0.146)
                             lim += this.ACCELERATION_MOTION - 0.146;
                         lim += atr;
