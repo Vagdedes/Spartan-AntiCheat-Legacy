@@ -2,7 +2,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.player;
 
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
-import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
+import com.vagdedes.spartan.abstraction.check.definition.ImplementedDetection;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
@@ -36,8 +36,8 @@ public class NoSwing extends CheckRunner {
         this.breakTime = Long.MAX_VALUE;
         this.animationTime = Long.MAX_VALUE;
         this.damageBuffer = new Buffer.IndividualBuffer();
-        this.breaking = new ImplementedProbabilityDetection(this, null, null, "breaking", true);
-        this.damage = new ImplementedProbabilityDetection(this, null, null, "damage", true);
+        this.breaking = new ImplementedDetection(this, null, null, "breaking", true);
+        this.damage = new ImplementedDetection(this, null, null, "damage", true);
     }
 
     @Override

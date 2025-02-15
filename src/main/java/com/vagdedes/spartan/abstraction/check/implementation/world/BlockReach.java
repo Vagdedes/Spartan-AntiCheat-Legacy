@@ -2,7 +2,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.world;
 
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
-import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
+import com.vagdedes.spartan.abstraction.check.definition.ImplementedDetection;
 import com.vagdedes.spartan.abstraction.event.CBlockPlaceEvent;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
@@ -33,10 +33,10 @@ public class BlockReach extends CheckRunner {
 
     public BlockReach(HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);
-        this.breaking = new ImplementedProbabilityDetection(this, null, null, "breaking", true);
-        this.interact = new ImplementedProbabilityDetection(this, null, null, "interact", true);
-        this.place = new ImplementedProbabilityDetection(this, null, null, "place", true);
-        this.unusual = new ImplementedProbabilityDetection(this, null, null, "unusual", true);
+        this.breaking = new ImplementedDetection(this, null, null, "breaking", true);
+        this.interact = new ImplementedDetection(this, null, null, "interact", true);
+        this.place = new ImplementedDetection(this, null, null, "place", true);
+        this.unusual = new ImplementedDetection(this, null, null, "unusual", true);
     }
 
     private boolean canDo(Block b) {

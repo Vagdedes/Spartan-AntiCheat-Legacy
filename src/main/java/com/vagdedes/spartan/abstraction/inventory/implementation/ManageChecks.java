@@ -5,13 +5,11 @@ import com.vagdedes.spartan.abstraction.inventory.InventoryMenu;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.functionality.command.CommandExecution;
 import com.vagdedes.spartan.functionality.connection.DiscordMemberCount;
-import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
 import com.vagdedes.spartan.functionality.moderation.clickable.ClickableMessage;
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.PluginBase;
-import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
 import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
 import com.vagdedes.spartan.utils.minecraft.inventory.EnchantmentUtils;
 import com.vagdedes.spartan.utils.minecraft.inventory.MaterialUtils;
@@ -150,32 +148,11 @@ public class ManageChecks extends InventoryMenu {
         }
 
         // Separator
-        Check.DataType notEnoughData = null;
 
-        for (Check.DataType dataType : Check.DataType.values()) {
-            boolean broke = false;
-
-            for (Check.DetectionType detectionType : Check.DetectionType.values()) {
-                if (SpartanEdition.hasDetectionsPurchased(dataType)
-                        && !protocol.profile().getRunner(hackType).hasSufficientData(
-                        dataType,
-                        detectionType,
-                        PlayerEvidence.dataRatio
-                )) {
-                    notEnoughData = dataType;
-                    broke = true;
-                    break;
-                }
-            }
-
-            if (broke) {
-                break;
-            }
-        }
         lore.add("");
         lore.add((enabled ? "§a" : "§c") + "Enabled §8/ "
-                + (silent ? "§a" : (notEnoughData != null ? "§e" : "§c")) + "Silent §8/ "
-                + (punish ? (notEnoughData != null ? "§e" : "§a") : "§c") + "Punishments §8/ "
+                + (silent ? "§a" : "§c") + "Silent §8/ "
+                + (punish ? "§a" : "§c") + "Punishments §8/ "
                 + (bypassing ? "§a" : "§c") + "Bypassing");
         int counter = 0;
 
@@ -201,10 +178,6 @@ public class ManageChecks extends InventoryMenu {
 
         // Separator
 
-        if (notEnoughData != null && (!silent || punish)) {
-            lore.add("");
-            lore.add("§eData incomplete in order to enable preventions & punishments.");
-        }
         if (enabled && silent) {
             item.addUnsafeEnchantment(EnchantmentUtils.DURABILITY, 1);
         }

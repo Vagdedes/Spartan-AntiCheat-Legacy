@@ -4,7 +4,7 @@ import com.comphenix.protocol.PacketType;
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
-import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
+import com.vagdedes.spartan.abstraction.check.definition.ImplementedDetection;
 import com.vagdedes.spartan.abstraction.event.PlayerTickEvent;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.functionality.server.PluginBase;
@@ -19,7 +19,7 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 public class MorePackets extends CheckRunner {
 
     private int packetVL;
-    private final ImplementedProbabilityDetection
+    private final ImplementedDetection
             positive_net,
             positive_latency,
             positive_balance,
@@ -29,28 +29,28 @@ public class MorePackets extends CheckRunner {
     public MorePackets(HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);
         this.packetVL = 0;
-        this.positive_net = new ImplementedProbabilityDetection(
+        this.positive_net = new ImplementedDetection(
                 this,
                 Check.DataType.JAVA,
                 Check.DetectionType.PACKETS,
                 "positive_net",
                 true
         );
-        this.positive_latency = new ImplementedProbabilityDetection(
+        this.positive_latency = new ImplementedDetection(
                 this,
                 Check.DataType.JAVA,
                 Check.DetectionType.PACKETS,
                 "positive_latency",
                 true
         );
-        this.positive_balance = new ImplementedProbabilityDetection(
+        this.positive_balance = new ImplementedDetection(
                 this,
                 Check.DataType.JAVA,
                 Check.DetectionType.PACKETS,
                 "positive_balance",
                 true
         );
-        this.negative = new ImplementedProbabilityDetection(
+        this.negative = new ImplementedDetection(
                 this,
                 Check.DataType.JAVA,
                 Check.DetectionType.PACKETS,

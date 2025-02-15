@@ -1,13 +1,13 @@
 package com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.simulation;
 
 import com.vagdedes.spartan.abstraction.check.Check;
+import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
-import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
 import com.vagdedes.spartan.abstraction.data.EncirclementData;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import org.bukkit.Location;
 
-public class IMSimulationElytra extends ProbabilityDetection {
+public class IMSimulationElytra extends CheckDetection {
 
     private double vl = 0, oldY = 0, oldSpeed, oldAccel;
     private int ground = 0, air = 0, ticks = 0, postSpeed = 0;

@@ -62,25 +62,28 @@ public class CrossServerNotifications {
                                                 rs.getString("information"),
                                                 CheckDetection.detectionIdentifier
                                         ),
-                                        certaintyString = ResearchEngine.findInformation(
+                                        levelString = ResearchEngine.findInformation(
                                                 rs.getString("information"),
-                                                CheckDetection.certaintyIdentifier
+                                                CheckDetection.levelIdentifier
+                                        ),
+                                        notificationString = ResearchEngine.findInformation(
+                                                rs.getString("information"),
+                                                CheckDetection.notificationLevelIdentifier
                                         );
 
-                                if (certaintyString != null) {
+                                if (levelString != null
+                                        && notificationString != null) {
                                     notification = "§l[" + serverName + "]§r " + notification;
 
                                     for (PlayerProtocol protocol : protocols) {
                                         CheckDetection
-                                                staffDetection = protocol.profile().getRunner(hackType).getDetection(detection),
-                                                playerDetection = ResearchEngine.getPlayerProfile(playerName).getRunner(hackType).getDetection(detection);
+                                                staffDetection = protocol.profile().getRunner(hackType).getDetection(detection);
 
                                         if (staffDetection != null
-                                                && playerDetection != null
                                                 && staffDetection.canSendNotification(
-                                                playerDetection,
                                                 System.currentTimeMillis(),
-                                                Double.parseDouble(certaintyString)
+                                                Integer.parseInt(levelString),
+                                                Integer.parseInt(notificationString)
                                         )) {
                                             protocol.bukkit().sendMessage(notification);
                                             processed.put(id, true);

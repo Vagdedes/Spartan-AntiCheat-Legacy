@@ -7,7 +7,6 @@ import com.vagdedes.spartan.functionality.moderation.DetectionNotifications;
 import com.vagdedes.spartan.functionality.moderation.clickable.ClickableMessage;
 import com.vagdedes.spartan.functionality.server.*;
 import com.vagdedes.spartan.functionality.tracking.AntiCheatLogs;
-import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
 import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -19,11 +18,8 @@ import me.vagdedes.spartan.api.PlayerViolationEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public abstract class CheckDetection extends CheckProcess {
 
@@ -31,27 +27,42 @@ public abstract class CheckDetection extends CheckProcess {
             javaPlayerIdentifier = "Java:",
             checkIdentifier = "Check:",
             detectionIdentifier = "Detection:",
-            certaintyIdentifier = "Certainty:";
+            levelIdentifier = "Level:",
+            notificationLevelIdentifier = "Notification-Level:",
+            preventionLevelIdentifier = "Prevention-Level:",
+            punishmentLevelIdentifier = "Punishment-Level:";
+
+    private static final long
+            DEFAULT_AVERAGE_TIME = 1_000L,
+            TIME_TO_PUNISH = 60_000L,
+            TIME_TO_PREVENT = TIME_TO_PUNISH / 2L,
+            TIME_TO_NOTIFY = TIME_TO_PREVENT / 3L;
 
     // Separator
 
     CheckPrevention prevention;
-    private long accumulatedProbabilityTime;
     public final CheckRunner executor;
     public final String name;
     public final boolean hasName;
     private final Boolean def;
-    private final Map<Check.DataType, Double> probability;
     public final Check.DataType forcedDataType;
     public final Check.DetectionType detectionType;
-    protected long notifications;
 
-    protected CheckDetection(
+    public final long defaultAverageTime, timeToNotify, timeToPrevent, timeToPunish;
+    private final long[] accumulatedTime, previousTime;
+    private long notifications;
+    private final List<Long>[] data;
+
+    public CheckDetection(
             CheckRunner executor,
             Check.DataType forcedDataType,
             Check.DetectionType detectionType,
             String name,
-            Boolean def
+            Boolean def,
+            long defaultAverageTime,
+            long timeToNotify,
+            long timeToPrevent,
+            long timeToPunish
     ) {
         super(executor.hackType, executor.protocol);
         this.executor = executor;
@@ -60,10 +71,23 @@ public abstract class CheckDetection extends CheckProcess {
                 : name;
         this.hasName = name != null;
         this.def = def;
-        this.probability = new ConcurrentHashMap<>(Check.DataType.values().length);
         this.forcedDataType = forcedDataType;
         this.detectionType = detectionType;
         this.prevention = new CheckPrevention();
+        this.notifications = 0L;
+        this.defaultAverageTime = defaultAverageTime;
+        this.timeToNotify = timeToNotify;
+        this.timeToPrevent = timeToPrevent;
+        this.timeToPunish = timeToPunish;
+        this.accumulatedTime = new long[Check.DataType.values().length];
+        this.previousTime = new long[Check.DataType.values().length];
+        this.data = new List[Check.DataType.values().length];
+
+        for (Check.DataType dataType : Check.DataType.values()) {
+            this.data[dataType.ordinal()] = new CopyOnWriteArrayList<>();
+            this.accumulatedTime[dataType.ordinal()] = 0L;
+            this.previousTime[dataType.ordinal()] = -1L;
+        }
         this.isEnabled();
 
         if (executor.addDetection(this.name, this) != null) {
@@ -71,6 +95,31 @@ public abstract class CheckDetection extends CheckProcess {
                     "Detection '" + this.name + "' already exists for enum '" + executor.hackType.toString() + "'."
             );
         }
+    }
+
+    public CheckDetection(
+            CheckRunner executor,
+            Check.DataType forcedDataType,
+            Check.DetectionType detectionType,
+            String name,
+            Boolean def
+    ) {
+        this(
+                executor,
+                forcedDataType,
+                detectionType,
+                name,
+                def,
+                DEFAULT_AVERAGE_TIME,
+                TIME_TO_NOTIFY,
+                TIME_TO_PREVENT,
+                TIME_TO_PUNISH
+        );
+    }
+
+    public final int generalHashCode() {
+        return (this.hackType.hashCode() * PluginBase.hashCodeMultiplier)
+                + (this.name == null ? 0 : this.name.hashCode());
     }
 
     // Check
@@ -105,128 +154,143 @@ public abstract class CheckDetection extends CheckProcess {
 
     // Data
 
-    abstract protected boolean hasSufficientData(Check.DataType dataType);
-
-    public abstract void clearData(Check.DataType dataType);
-
-    public abstract void storeData(Check.DataType dataType, long time);
-
-    public abstract void sortData();
-
-    public double getAllData(PlayerProfile profile, Check.DataType dataType) {
-        return -1.0;
+    public final void clearData(Check.DataType dataType) {
+        this.data[dataType.ordinal()].clear();
+        this.accumulatedTime[dataType.ordinal()] = 0L;
+        this.previousTime[dataType.ordinal()] = -1L;
     }
 
-    public List<Double> getDataSamples(PlayerProfile profile, Check.DataType dataType) {
-        return new ArrayList<>(0);
+    public final void storeData(Check.DataType dataType, long time) {
+        Collection<Long> data = this.data[dataType.ordinal()];
+        int size = data.size() - 2_048;
+
+        if (size > 0) {
+            Iterator<Long> iterator = data.iterator();
+
+            while (iterator.hasNext() && size > 0) {
+                if (data.remove(iterator.next())) {
+                    size--;
+                }
+            }
+        }
+        data.add(time);
     }
 
-    // Probability
+    public final void sortData() {
+        for (Check.DataType dataType : Check.DataType.values()) {
+            List<Long> data = this.data[dataType.ordinal()];
 
-    public void clearProbability(Check.DataType dataType) {
-        this.probability.remove(dataType);
-    }
-
-    public void setProbability(Check.DataType dataType, double probability) {
-        if (probability == PlayerEvidence.emptyProbability) {
-            this.probability.remove(dataType);
-        } else {
-            this.probability.put(dataType, probability);
+            if (data != null) {
+                Collections.sort(data);
+            }
         }
     }
 
-    protected final double getRawProbability(Check.DataType dataType) {
-        return isEnabled()
-                ? this.probability.getOrDefault(dataType, PlayerEvidence.emptyProbability)
-                : PlayerEvidence.emptyProbability;
+    public List<Long> getTimeDifferences(PlayerProfile profile, Check.DataType dataType) {
+        List<Long> data = this.data[dataType.ordinal()];
+
+        if (data != null) {
+            Iterator<Long> iterator = data.iterator();
+
+            if (iterator.hasNext()) {
+                List<Long> differences = new ArrayList<>(data.size() - 1);
+                long previous = iterator.next();
+
+                while (iterator.hasNext()) {
+                    long current = iterator.next();
+
+                    if (profile.getContinuity().wasOnline(current, previous)) {
+                        differences.add(current - previous);
+                    }
+                    previous = current;
+                }
+                return differences;
+            }
+        }
+        return this.data[dataType.ordinal()];
     }
 
-    public double getProbability(Check.DataType dataType) {
-        double probability = this.getRawProbability(dataType);
-        return probability == PlayerEvidence.nullProbability
-                ? PlayerEvidence.emptyProbability
-                : probability;
+    // Accumulation
+
+    private void increaseAccumulationTime(Check.DataType dataType, long time) {
+        double average = ResearchEngine.getAverageViolationTime(this, dataType);
+        long previousTime = this.previousTime[dataType.ordinal()],
+                add;
+
+        if (previousTime == -1L) {
+            add = AlgebraUtils.integerRound(average);
+        } else {
+            double multiplier = Math.min(average / (double) (time - previousTime), 1.0);
+            add = AlgebraUtils.integerRound(average * multiplier);
+        }
+        this.previousTime[dataType.ordinal()] = time;
+
+        if (this.accumulatedTime[dataType.ordinal()] <= System.currentTimeMillis()) {
+            this.accumulatedTime[dataType.ordinal()] = System.currentTimeMillis() + add;
+        } else {
+            this.accumulatedTime[dataType.ordinal()] += add;
+        }
+    }
+
+    private long getAccumulatedTime(Check.DataType dataType) {
+        return Math.max(this.accumulatedTime[dataType.ordinal()] - System.currentTimeMillis(), 0L);
+    }
+
+    public final int getLevel(Check.DataType dataType) {
+        return AlgebraUtils.integerFloor( // Attention
+                this.getAccumulatedTime(dataType) / ResearchEngine.getAverageViolationTime(this, dataType)
+        );
+    }
+
+    public final int getNotificationLevel(Check.DataType dataType) {
+        return AlgebraUtils.integerCeil(
+                this.timeToNotify / ResearchEngine.getAverageViolationTime(this, dataType)
+        );
+    }
+
+    public final int getPreventionLevel(Check.DataType dataType) {
+        return AlgebraUtils.integerCeil(
+                this.timeToPrevent / ResearchEngine.getAverageViolationTime(this, dataType)
+        );
+    }
+
+    public final int getPunishmentLevel(Check.DataType dataType) {
+        return AlgebraUtils.integerCeil(
+                this.timeToPunish / ResearchEngine.getAverageViolationTime(this, dataType)
+        );
     }
 
     // Notification
 
-    private long getAccumulatedProbabilityTime(long time) {
-        return Math.max(this.accumulatedProbabilityTime - time, 0L);
-    }
-
-    public final boolean canSendNotification(CheckDetection detection, long time, double certainty) {
+    public final boolean canSendNotification(long time, int level, int notification) {
         int ticks = this.executor.getNotificationTicksCooldown(protocol);
-        boolean canSend = PlayerEvidence.surpassedProbability(
-                PlayerEvidence.probabilityToCertainty(certainty / 100.0),
-                PlayerEvidence.preventionProbability
-        ) || DetectionNotifications.isVerboseEnabled(this.protocol);
+        boolean canSend = level >= notification
+                || DetectionNotifications.isVerboseEnabled(this.protocol);
 
         if (ticks == 0) {
             return canSend;
         } else if (canSend && this.notifications <= time) {
-            int threshold = 1_000;
-
-            if (detection.accumulatedProbabilityTime < time) {
-                detection.accumulatedProbabilityTime = System.currentTimeMillis()
-                        + AlgebraUtils.integerRound((certainty / 100.0) * threshold);
-            } else {
-                detection.accumulatedProbabilityTime += AlgebraUtils.integerRound(
-                        (certainty / 100.0) * threshold
-                );
-            }
-            long remaining = detection.getAccumulatedProbabilityTime(time);
-
-            if (remaining >= threshold) {
-                Collection<PlayerProtocol> protocols = PluginBase.getProtocols();
-                long sum = 0L;
-                int total = 0;
-
-                if (!protocols.isEmpty()) {
-                    long individual;
-
-                    for (PlayerProtocol protocol : protocols) {
-                        if (!protocol.bukkitExtra.isAFK()) {
-                            CheckDetection protocolDetection = protocol.profile().getRunner(
-                                    this.hackType
-                            ).getDetection(
-                                    this.name
-                            );
-
-                            if (protocolDetection != null) {
-                                individual = protocolDetection.getAccumulatedProbabilityTime(time);
-                                sum += individual * individual;
-                                total++;
-                            }
-                        }
-                    }
-                }
-
-                if (total > 0) {
-                    if (remaining >= Math.sqrt(sum / (double) total)) {
-                        detection.notifications = System.currentTimeMillis() + (ticks * TPS.tickTime);
-                        return true;
-                    }
-                } else {
-                    this.notifications = System.currentTimeMillis() + (ticks * TPS.tickTime);
-                    return true;
-                }
-            }
+            this.notifications = System.currentTimeMillis() + (ticks * TPS.tickTime);
+            return true;
+        } else {
+            return false;
         }
-        return false;
     }
 
-    private void notify(double probability, boolean enabled, boolean sufficientData, long time, String information) {
-        double certainty = PlayerEvidence.probabilityToCertainty(probability) * 100.0;
-        int roundedCertainty = AlgebraUtils.integerRound(certainty);
-        String notification = ConfigUtils.replaceWithSyntax(
+    private void notify(
+            int level,
+            int notification,
+            int prevention,
+            int punishment,
+            boolean enabled,
+            long time,
+            String information
+    ) {
+        String notificationMsg = ConfigUtils.replaceWithSyntax(
                 this.protocol,
                 Config.messages.getColorfulString("detection_notification")
                         .replace("{info}", information)
-                        .replace("{detection:percentage}",
-                                sufficientData
-                                        ? ((roundedCertainty == 0 ? 1 : roundedCertainty) + "/100")
-                                        : "DATA INCOMPLETE"
-                        ),
+                        .replace("{detection:level}", level + "/" + punishment),
                 hackType
         );
 
@@ -235,8 +299,10 @@ public abstract class CheckDetection extends CheckProcess {
                 + "(" + checkIdentifier + " " + this.hackType + "), "
                 + "(" + javaPlayerIdentifier + " " + (!this.protocol.bukkitExtra.isBedrockPlayer()) + ")" + ", "
                 + "(" + detectionIdentifier + " " + this.name + ")" + ", "
-                + "(" + certaintyIdentifier + " " + AlgebraUtils.cut(certainty, 2) + "),"
-                + "(Data-Completed: " + sufficientData + "), "
+                + "(" + levelIdentifier + " " + AlgebraUtils.cut(level, 2) + "),"
+                + "(" + notificationLevelIdentifier + " " + notification + "),"
+                + "(" + preventionLevelIdentifier + " " + prevention + "),"
+                + "(" + punishmentLevelIdentifier + " " + AlgebraUtils.cut(punishment, 2) + "),"
                 + "(Server-Version: " + MultiVersion.serverVersion.toString() + "), "
                 + "(Plugin-Version: " + API.getVersion() + "), "
                 + "(Silent: " + hackType.getCheck().isSilent(this.protocol.bukkitExtra.dataType, this.protocol.getWorld().getName()) + "), "
@@ -245,20 +311,28 @@ public abstract class CheckDetection extends CheckProcess {
                 + "(Ping: " + this.protocol.getPing() + "ms), "
                 + "(W-XYZ: " + location.getWorld().getName() + " " + location.getBlockX() + " " + location.getBlockY() + " " + location.getBlockZ() + "), "
                 + "(Data: " + information + ")";
+        boolean canNotifyOutOfVerbose = level >= notification;
         AntiCheatLogs.logInfo(
                 this.protocol,
-                enabled ? notification : null,
+                enabled ? notificationMsg : null,
                 information,
-                enabled
-                        && sufficientData
-                        && PlayerEvidence.surpassedProbability(
-                        probability,
-                        PlayerEvidence.preventionProbability
-                ),
+                canNotifyOutOfVerbose,
                 null,
                 this.hackType,
                 time
         );
+        if (canNotifyOutOfVerbose) {
+            CloudConnections.executeDiscordWebhook(
+                    "checks",
+                    protocol.getUUID(),
+                    protocol.bukkit().getName(),
+                    location.getBlockX(),
+                    location.getBlockY(),
+                    location.getBlockZ(),
+                    "Suspected for",
+                    notificationMsg
+            );
+        }
 
         if (enabled) {
             // Local Notifications
@@ -266,8 +340,8 @@ public abstract class CheckDetection extends CheckProcess {
                     .replace("{player}", this.protocol.bukkit().getName());
 
             if (Config.settings.getBoolean("Notifications.individual_only_notifications")) {
-                if (this.canSendNotification(this, time, certainty)) {
-                    ClickableMessage.sendCommand(this.protocol.bukkit(), notification, command, command);
+                if (this.canSendNotification(time, level, notification)) {
+                    ClickableMessage.sendCommand(this.protocol.bukkit(), notificationMsg, command, command);
                 }
             } else {
                 List<PlayerProtocol> protocols = DetectionNotifications.getPlayers();
@@ -277,10 +351,10 @@ public abstract class CheckDetection extends CheckProcess {
                         CheckDetection detection = staff.profile().getRunner(this.hackType).getDetection(this.name);
 
                         if (detection != null
-                                && detection.canSendNotification(this, time, certainty)) {
+                                && detection.canSendNotification(time, level, notification)) {
                             ClickableMessage.sendCommand(
                                     staff.bukkit(),
-                                    notification,
+                                    notificationMsg,
                                     command,
                                     command
                             );
@@ -293,14 +367,11 @@ public abstract class CheckDetection extends CheckProcess {
 
     // Punishment
 
-    private void punish(double probability) {
+    private void punish(int level, int max) {
         Check check = hackType.getCheck();
 
-        if (check.canPunish(this.protocol.bukkitExtra.dataType)
-                && PlayerEvidence.surpassedProbability(
-                probability,
-                PlayerEvidence.punishmentProbability
-        )) {
+        if (level >= max
+                && check.canPunish(this.protocol.bukkitExtra.dataType)) {
             List<String> commands = check.getPunishmentCommands();
 
             if (!commands.isEmpty()) {
@@ -444,26 +515,29 @@ public abstract class CheckDetection extends CheckProcess {
                     this.protocol.bukkitExtra.dataType,
                     time
             );
+            this.increaseAccumulationTime(
+                    this.protocol.bukkitExtra.dataType,
+                    time
+            );
             ResearchEngine.queueToCache(this.hackType, this.protocol.bukkitExtra.dataType);
-            boolean sufficientData = this.hasSufficientData(this.protocol.bukkitExtra.dataType);
-            double probability = this.getProbability(this.protocol.bukkitExtra.dataType);
+            int max = this.getPunishmentLevel(this.protocol.bukkitExtra.dataType),
+                    notification = this.getNotificationLevel(this.protocol.bukkitExtra.dataType),
+                    prevention = this.getPreventionLevel(this.protocol.bukkitExtra.dataType),
+                    level = Math.min(this.getLevel(this.protocol.bukkitExtra.dataType), max);
 
             // Notification
-            this.notify(probability, finalIsEnabled, sufficientData, time, information);
+            this.notify(level, notification, prevention, max, finalIsEnabled, time, information);
 
             // Prevention & Punishment
             if (finalIsEnabled) {
-                if (sufficientData) {
-                    this.punish(probability);
-                }
+                this.punish(level, max);
                 this.prevention = newPrevention;
                 this.prevention.canPrevent =
-                        sufficientData
+                        level >= prevention
                                 && !hackType.getCheck().isSilent(this.protocol.bukkitExtra.dataType, this.protocol.getWorld().getName())
                                 && (silentCause == null
                                 || silentCause.hasExpired()
-                                || !silentCause.pointerMatches(information))
-                                && PlayerEvidence.surpassedProbability(probability, PlayerEvidence.preventionProbability);
+                                || !silentCause.pointerMatches(information));
             }
         };
 

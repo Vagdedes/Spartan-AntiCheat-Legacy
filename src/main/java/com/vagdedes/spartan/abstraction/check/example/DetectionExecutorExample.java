@@ -1,11 +1,11 @@
 package com.vagdedes.spartan.abstraction.check.example;
 
+import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
-import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
 
-public class DetectionExecutorProbabilityExample extends ProbabilityDetection {
+public class DetectionExecutorExample extends CheckDetection {
 
-    DetectionExecutorProbabilityExample(CheckRunner executor) {
+    DetectionExecutorExample(CheckRunner executor) {
         super(
                 executor,
                 null,
@@ -22,4 +22,5 @@ public class DetectionExecutorProbabilityExample extends ProbabilityDetection {
     boolean customMethod2() {
         return true;
     }
+
 }

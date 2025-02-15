@@ -3,21 +3,20 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.irregular
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
-import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
-import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
+import com.vagdedes.spartan.abstraction.check.definition.ImplementedDetection;
 import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 
-public class IMHorizontal extends ProbabilityDetection {
+public class IMHorizontal extends CheckDetection {
 
     private final CheckDetection horizontal_known, horizontal_abstract;
 
     IMHorizontal(CheckRunner executor) {
         super(executor, null, Check.DetectionType.BUKKIT, null, true);
-        this.horizontal_known = new ImplementedProbabilityDetection(this, "horizontal_known", true);
-        this.horizontal_abstract = new ImplementedProbabilityDetection(this, "horizontal_abstract", true);
+        this.horizontal_known = new ImplementedDetection(this, "horizontal_known", true);
+        this.horizontal_abstract = new ImplementedDetection(this, "horizontal_abstract", true);
     }
 
     void run(boolean knownBox, boolean knownOldBox, double box, double oldBox, double vertical) {

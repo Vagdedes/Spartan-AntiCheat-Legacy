@@ -2,7 +2,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.player;
 
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
-import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
+import com.vagdedes.spartan.abstraction.check.definition.ImplementedDetection;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
@@ -28,8 +28,8 @@ public class FastEat extends CheckRunner {
 
     public FastEat(HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);
-        this.interact = new ImplementedProbabilityDetection(this, null, null, "interact", true);
-        this.eat = new ImplementedProbabilityDetection(this, null, null, "eat", true);
+        this.interact = new ImplementedDetection(this, null, null, "interact", true);
+        this.eat = new ImplementedDetection(this, null, null, "eat", true);
     }
 
     private long getDelay() {

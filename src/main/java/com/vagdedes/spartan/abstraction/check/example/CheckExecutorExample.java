@@ -3,42 +3,27 @@ package com.vagdedes.spartan.abstraction.check.example;
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
-import com.vagdedes.spartan.abstraction.check.definition.ImplementedHardcodedDetection;
-import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
+import com.vagdedes.spartan.abstraction.check.definition.ImplementedDetection;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import me.vagdedes.spartan.system.Enums;
 
 public class CheckExecutorExample extends CheckRunner {
 
-    private final DetectionExecutorProbabilityExample detection1;
-    private final DetectionExecutorHardcodedExample detection2;
-    private final CheckDetection detection3;
-    private final CheckDetection detection4;
+    private final DetectionExecutorExample detection1;
+    private final CheckDetection detection2;
 
     public CheckExecutorExample(Enums.HackType hackType, PlayerProtocol protocol, String playerName) {
         super(hackType, protocol);
 
-        this.detection2 = new DetectionExecutorHardcodedExample(
-                this
-        );
-
-        this.detection1 = new DetectionExecutorProbabilityExample(
+        this.detection1 = new DetectionExecutorExample(
                 this
         );
 
 
-        this.detection3 = new ImplementedHardcodedDetection(
+        this.detection2 = new ImplementedDetection(
                 this,
                 Check.DataType.JAVA,
                 Check.DetectionType.PACKETS,
-                "detection_option_name_in_checks_yml",
-                true // Enabled By Default Or Not
-        );
-
-        this.detection4 = new ImplementedProbabilityDetection(
-                this,
-                Check.DataType.BEDROCK,
-                Check.DetectionType.BUKKIT,
                 "detection_option_name_in_checks_yml",
                 true // Enabled By Default Or Not
         );

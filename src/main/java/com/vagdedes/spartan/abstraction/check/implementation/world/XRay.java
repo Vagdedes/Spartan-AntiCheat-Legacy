@@ -1,12 +1,11 @@
 package com.vagdedes.spartan.abstraction.check.implementation.world;
 
+import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
-import com.vagdedes.spartan.abstraction.check.HardcodedDetection;
-import com.vagdedes.spartan.abstraction.check.definition.ImplementedHardcodedDetection;
+import com.vagdedes.spartan.abstraction.check.definition.ImplementedDetection;
 import com.vagdedes.spartan.abstraction.profiling.MiningHistory;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
-import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
 import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.math.statistics.StatisticsMath;
@@ -22,8 +21,9 @@ public class XRay extends CheckRunner {
 
     private static double[] getStatistics(World.Environment environment, MiningHistory.MiningOre ore) {
         Collection<PlayerProfile> profiles = ResearchEngine.getPlayerProfiles();
+        int factorRequirement = 10;
 
-        if (profiles.size() < PlayerEvidence.factorRequirement) {
+        if (profiles.size() < factorRequirement) {
             return new double[]{};
         } else {
             int profileCount = 0;
@@ -50,7 +50,7 @@ public class XRay extends CheckRunner {
             }
             double stdDev = Math.sqrt(variance / (double) profileCount);
 
-            if (profileCount >= PlayerEvidence.factorRequirement) {
+            if (profileCount >= factorRequirement) {
                 return new double[]{
                         mean / (double) profileCount,
                         Math.sqrt(stdDev / (double) profileCount)
@@ -61,19 +61,23 @@ public class XRay extends CheckRunner {
         }
     }
 
-    private final HardcodedDetection[] detections;
+    private final ImplementedDetection[] detections;
 
     public XRay(Enums.HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);
-        this.detections = new HardcodedDetection[World.Environment.values().length];
+        this.detections = new ImplementedDetection[World.Environment.values().length];
 
         for (World.Environment environment : World.Environment.values()) {
-            this.detections[environment.ordinal()] = new ImplementedHardcodedDetection(
+            this.detections[environment.ordinal()] = new ImplementedDetection(
                     this,
                     null,
                     null,
                     environment.name().toLowerCase(),
-                    true
+                    true,
+                    1L,
+                    1L,
+                    1L,
+                    1L
             );
         }
     }
@@ -83,7 +87,7 @@ public class XRay extends CheckRunner {
         if (object instanceof Object[]) {
             Object[] objects = (Object[]) object;
             World.Environment environment = World.Environment.valueOf(objects[0].toString());
-            HardcodedDetection detection = this.detections[environment.ordinal()];
+            CheckDetection detection = this.detections[environment.ordinal()];
 
             detection.call(() -> {
                 double[] statistics = getStatistics(environment, (MiningHistory.MiningOre) objects[2]);
@@ -95,7 +99,6 @@ public class XRay extends CheckRunner {
                         double probability = StatisticsMath.getCumulativeProbability(
                                 (individual - statistics[0]) / statistics[1]
                         );
-                        detection.setHackingRatio(probability);
 
                         if (probability >= threshold) {
                             detection.cancel(
@@ -105,11 +108,7 @@ public class XRay extends CheckRunner {
                                             + "% of players"
                             );
                         }
-                    } else {
-                        detection.setHackingRatio(0.0);
                     }
-                } else {
-                    detection.setHackingRatio(0.0);
                 }
             });
         } else if (object instanceof BlockBreakEvent) {

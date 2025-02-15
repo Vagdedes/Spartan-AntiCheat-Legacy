@@ -13,11 +13,9 @@ import com.vagdedes.spartan.functionality.moderation.clickable.ClickableMessage;
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.PluginBase;
-import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
 import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
 import com.vagdedes.spartan.utils.java.OverflowMap;
 import com.vagdedes.spartan.utils.java.TimeUtils;
-import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.Enums.HackType;
 import me.vagdedes.spartan.system.Enums.Permission;
@@ -68,9 +66,7 @@ public class PlayerInfo extends InventoryMenu {
             List<String> lore = new ArrayList<>();
             lore.add("");
 
-            Set<Map.Entry<HackType, Double>> evidenceDetails = profile.getEvidenceEntries(
-                    PlayerEvidence.emptyProbability
-            );
+            Set<Map.Entry<HackType, List<String>>> evidenceDetails = profile.getEvidenceEntries();
 
             if (isOnline) {
                 lore.add("§7Version§8:§c " + target.version.toString());
@@ -107,28 +103,9 @@ public class PlayerInfo extends InventoryMenu {
                            PlayerProfile profile,
                            List<String> lore,
                            Enums.HackCategoryType checkType,
-                           Set<Map.Entry<HackType, Double>> evidenceDetails) {
-        Map<Double, Collection<HackType>> map = PlayerEvidence.POSITIVE
-                ? new TreeMap<>(Collections.reverseOrder())
-                : new TreeMap<>();
+                           Set<Map.Entry<HackType, List<String>>> evidenceDetails) {
         lore.clear();
-
-        // Separator
-
         ItemStack item = new ItemStack(checkType.material);
-
-        // Separator
-
-        if (!evidenceDetails.isEmpty()) {
-            for (Map.Entry<HackType, Double> entry : evidenceDetails) {
-                if (entry.getKey().category == checkType) {
-                    map.computeIfAbsent(
-                            entry.getValue(),
-                            k -> new ArrayList<>()
-                    ).add(entry.getKey());
-                }
-            }
-        }
 
         // Separator
 
@@ -156,68 +133,15 @@ public class PlayerInfo extends InventoryMenu {
 
         // Separator
 
-        if (!map.isEmpty()) {
-            boolean added = false;
+        if (!evidenceDetails.isEmpty()) {
+            lore.add("");
+            lore.add("§7Suspected for§8:");
 
-            for (Map.Entry<Double, Collection<HackType>> entry : map.entrySet()) {
-                for (HackType hackType : entry.getValue()) {
-                    double probability = entry.getKey();
-
-                    if (PlayerEvidence.surpassedProbability(probability, PlayerEvidence.slightestProbability)) {
-                        if (!added) {
-                            added = true;
-                            lore.add("");
-                            lore.add("§7Certainty of cheating§8:");
-                        }
-                        String remainingDataPrompt = "";
-
-                        if (!profile.getRunner(
-                                hackType
-                        ).hasSufficientData(
-                                profile.getLastDataType(),
-                                profile.getLastDetectionType(),
-                                PlayerEvidence.dataRatio
-                        )) {
-                            remainingDataPrompt = " §8(§7Data incomplete§8)";
-                        }
-                        if (PlayerEvidence.surpassedProbability(
-                                probability,
-                                PlayerEvidence.punishmentProbability
-                        )) {
-                            probability = PlayerEvidence.probabilityToCertainty(probability);
-                            lore.add(
-                                    "§4" + hackType.getCheck().getName()
-                                            + "§8: §c" + AlgebraUtils.integerRound(probability * 100.0) + "/100"
-                                            + remainingDataPrompt
-                            );
-                        } else if (PlayerEvidence.surpassedProbability(
-                                probability,
-                                PlayerEvidence.preventionProbability
-                        )) {
-                            probability = PlayerEvidence.probabilityToCertainty(probability);
-                            lore.add(
-                                    "§6" + hackType.getCheck().getName()
-                                            + "§8: §e" + AlgebraUtils.integerRound(probability * 100.0) + "/100"
-                                            + remainingDataPrompt
-                            );
-                        } else {
-                            probability = PlayerEvidence.probabilityToCertainty(probability);
-                            int showProbability = AlgebraUtils.integerRound(probability * 100.0);
-
-                            if (showProbability > 0) {
-                                lore.add(
-                                        "§2" + hackType.getCheck().getName() + "§8: §a" + showProbability + "/100"
-                                                + remainingDataPrompt
-                                );
-                            } else {
-                                lore.add(
-                                        "§2" + hackType.getCheck().getName() + "§8: §a1/100"
-                                                + remainingDataPrompt
-                                );
-                            }
-                        }
-                    }
-                }
+            for (Map.Entry<HackType, List<String>> entry : evidenceDetails) {
+                lore.add(
+                        "§4" + entry.getKey().getCheck().getName()
+                                + "§8: §c" + entry.getValue().size() + " detections"
+                );
             }
         }
 

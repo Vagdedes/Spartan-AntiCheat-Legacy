@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.abstraction.check.implementation.world.impossibleactions;
 
+import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
-import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class ScaffoldAnalysis extends ProbabilityDetection {
+public class ScaffoldAnalysis extends CheckDetection {
 
     private final Map<Integer, Buffer.IndividualSimpleBuffer> buffers;
     private Block oldBlock;

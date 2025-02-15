@@ -1,8 +1,8 @@
 package com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.simulation;
 
 import com.vagdedes.spartan.abstraction.check.Check;
+import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
-import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
 import com.vagdedes.spartan.abstraction.data.EncirclementData;
 import com.vagdedes.spartan.abstraction.protocol.ExtendedPotionEffect;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
@@ -12,7 +12,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 import org.bukkit.potion.PotionEffectType;
 
-public class IMSimulationVehicle extends ProbabilityDetection {
+public class IMSimulationVehicle extends CheckDetection {
 
     private double vl = 0, oldY = 0, oldSpeed, oldAccel;
     private int ground = 0, air = 0, ticks = 0, postFly = 0, postSpeed = 0;

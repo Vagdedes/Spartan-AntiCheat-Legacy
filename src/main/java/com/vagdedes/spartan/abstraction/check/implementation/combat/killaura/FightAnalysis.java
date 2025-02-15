@@ -1,10 +1,9 @@
 package com.vagdedes.spartan.abstraction.check.implementation.combat.killaura;
 
+import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
-import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
 import com.vagdedes.spartan.abstraction.event.EntityAttackPlayerEvent;
 import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
-import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
 import com.vagdedes.spartan.utils.java.OverflowMap;
 import com.vagdedes.spartan.utils.math.statistics.StatisticsMath;
 import org.bukkit.entity.EntityType;
@@ -15,7 +14,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class FightAnalysis extends ProbabilityDetection {
+public class FightAnalysis extends CheckDetection {
 
     private static final Map<UUID, Map<Integer, int[]>> data = new OverflowMap<>(
             new ConcurrentHashMap<>(2),
@@ -85,7 +84,7 @@ public class FightAnalysis extends ProbabilityDetection {
                 count++;
             }
         }
-        if (count < PlayerEvidence.factorRequirement) {
+        if (count < 10) {
             return -1.0;
         }
         sum /= count;

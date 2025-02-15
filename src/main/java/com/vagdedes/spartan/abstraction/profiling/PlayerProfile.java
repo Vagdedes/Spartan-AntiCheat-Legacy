@@ -5,7 +5,6 @@ import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.functionality.server.PluginBase;
-import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
 import com.vagdedes.spartan.utils.minecraft.inventory.InventoryUtils;
 import lombok.Getter;
 import lombok.Setter;
@@ -113,27 +112,9 @@ public class PlayerProfile {
     private void registerRunners(PlayerProtocol protocol) {
         for (Enums.HackType hackType : Enums.HackType.values()) {
             try {
-                CheckRunner
-                        oldRunner = this.runners[hackType.ordinal()],
-                        runner = (CheckRunner) hackType.executor
-                                .getConstructor(hackType.getClass(), PlayerProtocol.class)
-                                .newInstance(hackType, protocol);
-                this.runners[hackType.ordinal()] = runner;
-
-                if (oldRunner != null) {
-                    for (CheckDetection detection : oldRunner.getDetections()) {
-                        for (Check.DataType dataType : Check.DataType.values()) {
-                            CheckDetection newDetection = runner.getDetection(detection.name);
-
-                            if (newDetection != null) {
-                                newDetection.setProbability(
-                                        dataType,
-                                        detection.getProbability(dataType)
-                                );
-                            }
-                        }
-                    }
-                }
+                this.runners[hackType.ordinal()] = (CheckRunner) hackType.executor
+                        .getConstructor(hackType.getClass(), PlayerProtocol.class)
+                        .newInstance(hackType, protocol);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -162,36 +143,34 @@ public class PlayerProfile {
 
     // Separator
 
-    public Collection<Enums.HackType> getEvidenceList(double threshold) {
-        List<Enums.HackType> set = new ArrayList<>();
+    public Collection<Enums.HackType> getEvidenceList() {
+        List<Enums.HackType> evidence = new ArrayList<>();
 
-        for (CheckRunner executor : this.getRunners()) {
-            double probability = executor.getExtremeProbability(
-                    this.lastDataType,
-                    this.lastDetectionType
-            );
-
-            if (PlayerEvidence.surpassedProbability(probability, threshold)) {
-                set.add(executor.hackType);
+        for (CheckRunner runner : this.getRunners()) {
+            for (CheckDetection detection : runner.getDetections()) {
+                if (detection.getLevel(this.lastDataType) >= detection.getNotificationLevel(this.lastDataType)) {
+                    evidence.add(runner.hackType);
+                    break;
+                }
             }
         }
-        return set;
+        return evidence;
     }
 
-    public Set<Map.Entry<Enums.HackType, Double>> getEvidenceEntries(double threshold) {
-        Map<Enums.HackType, Double> set = new HashMap<>();
+    public Set<Map.Entry<Enums.HackType, List<String>>> getEvidenceEntries() {
+        Map<Enums.HackType, List<String>> evidence = new LinkedHashMap<>();
 
-        for (CheckRunner executor : this.getRunners()) {
-            double probability = executor.getExtremeProbability(
-                    this.lastDataType,
-                    this.lastDetectionType
-            );
-
-            if (PlayerEvidence.surpassedProbability(probability, threshold)) {
-                set.put(executor.hackType, probability);
+        for (CheckRunner runner : this.getRunners()) {
+            for (CheckDetection detection : runner.getDetections()) {
+                if (detection.getLevel(this.lastDataType) >= detection.getNotificationLevel(this.lastDataType)) {
+                    evidence.computeIfAbsent(
+                            runner.hackType,
+                            k -> new ArrayList<>()
+                    ).add(detection.name);
+                }
             }
         }
-        return set.entrySet();
+        return new HashSet<>();
     }
 
 }

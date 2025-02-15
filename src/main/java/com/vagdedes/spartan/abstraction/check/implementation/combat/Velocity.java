@@ -3,7 +3,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.combat;
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
-import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
+import com.vagdedes.spartan.abstraction.check.definition.ImplementedDetection;
 import com.vagdedes.spartan.abstraction.event.PlayerTransactionEvent;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
@@ -24,8 +24,8 @@ public class Velocity extends CheckRunner {
 
     public Velocity(Enums.HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);
-        this.vertical = new ImplementedProbabilityDetection(this, null, Check.DetectionType.PACKETS, "vertical", true);
-        this.horizontal = new ImplementedProbabilityDetection(this, null, Check.DetectionType.PACKETS, "horizontal", true);
+        this.vertical = new ImplementedDetection(this, null, Check.DetectionType.PACKETS, "vertical", true);
+        this.horizontal = new ImplementedDetection(this, null, Check.DetectionType.PACKETS, "horizontal", true);
     }
 
     private final double[] jumpReset = new double[]{0.248136, 0.3332};

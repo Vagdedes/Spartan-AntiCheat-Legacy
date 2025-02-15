@@ -2,7 +2,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.world;
 
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
-import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
+import com.vagdedes.spartan.abstraction.check.definition.ImplementedDetection;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.manual.abilities.ItemsAdder;
@@ -25,8 +25,8 @@ public class GhostHand extends CheckRunner {
 
     public GhostHand(HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);
-        this.breaking = new ImplementedProbabilityDetection(this, null, null, "breaking", true);
-        this.interact = new ImplementedProbabilityDetection(this, null, null, "interact", true);
+        this.breaking = new ImplementedDetection(this, null, null, "breaking", true);
+        this.interact = new ImplementedDetection(this, null, null, "interact", true);
     }
 
     @Override

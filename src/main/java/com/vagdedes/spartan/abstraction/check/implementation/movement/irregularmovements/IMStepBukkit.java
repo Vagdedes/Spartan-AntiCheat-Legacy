@@ -3,8 +3,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.irregular
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
-import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
-import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
+import com.vagdedes.spartan.abstraction.check.definition.ImplementedDetection;
 import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.PluginBase;
@@ -21,7 +20,7 @@ import org.bukkit.entity.Horse;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class IMStepBukkit extends ProbabilityDetection {
+public class IMStepBukkit extends CheckDetection {
 
     private static final double bedrockPlayerStepExtra = 1.0;
     private static final Map<Integer, Boolean> stepCombination = new LinkedHashMap<>();
@@ -60,13 +59,13 @@ public class IMStepBukkit extends ProbabilityDetection {
 
     IMStepBukkit(CheckRunner executor) {
         super(executor, null, Check.DetectionType.BUKKIT, null, true);
-        this.step_high = new ImplementedProbabilityDetection(this, "step_high", true);
-        this.step_combination = new ImplementedProbabilityDetection(this, "step_combination", true);
-        this.step_entity = new ImplementedProbabilityDetection(this, "step_entity", true);
-        this.step_abstract_up = new ImplementedProbabilityDetection(this, "step_abstract_up", true);
-        this.step_high_first_fall = new ImplementedProbabilityDetection(this, "step_high_first_fall", true);
-        this.step_landing = new ImplementedProbabilityDetection(this, "step_landing", true);
-        this.step_abstract_down = new ImplementedProbabilityDetection(this, "step_abstract_down", true);
+        this.step_high = new ImplementedDetection(this, "step_high", true);
+        this.step_combination = new ImplementedDetection(this, "step_combination", true);
+        this.step_entity = new ImplementedDetection(this, "step_entity", true);
+        this.step_abstract_up = new ImplementedDetection(this, "step_abstract_up", true);
+        this.step_high_first_fall = new ImplementedDetection(this, "step_high_first_fall", true);
+        this.step_landing = new ImplementedDetection(this, "step_landing", true);
+        this.step_abstract_down = new ImplementedDetection(this, "step_abstract_down", true);
     }
 
     void run(boolean knownBox, boolean knownOldBox,

@@ -30,7 +30,7 @@ public class Messages extends ConfigurationBuilder {
         addOption("player_violation_reset_message", "&8[&2" + prefix + "&8]&a Violations successfully reset for player&8: &2{player}");
         addOption("player_stored_data_delete_message", "&8[&2" + prefix + "&8]&a Stored data successfully deleted for player&8: &2{player}");
         addOption("detection_notification", "&8[&2" + prefix + "&8] "
-                + "&e{player} &7>> &c{detection:real}§8[§4{detection:percentage}§8] &7(§f{info}§7)");
+                + "&e{player} &7>> &c{detection:real}§8[§4{detection:level}§8] &7(§f{info}§7)");
 
         // Checks
         addOption("check_stored_data_delete_message", "&8[&2" + prefix + "&8]&a Stored data successfully deleted for check&8: &2{check}");
@@ -54,8 +54,6 @@ public class Messages extends ConfigurationBuilder {
         addOption("notifications_modified", "&8[&2" + prefix + "&8] &eYou modified notifications.");
         addOption("notifications_disable", "&8[&2" + prefix + "&8] &cYou disabled notifications.");
         addOption("awareness_notification", "&8[&2" + prefix + " Notification&8]&a {info}");
-        addOption("suspicion_notification", "&8[&2" + prefix + "&8] &6{size} player(s) &emay be using hack modules&8: &6{players}" +
-                "\n&eRun '/spartan menu' to view such future interactions.");
 
         // Waves
         addOption("wave_start_message", "&8[&2" + prefix + "&8]&c The wave is starting.");

@@ -1,8 +1,8 @@
 package com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.simulation;
 
 import com.vagdedes.spartan.abstraction.check.Check;
+import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
-import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
 import com.vagdedes.spartan.abstraction.event.CPlayerVelocityEvent;
 import com.vagdedes.spartan.abstraction.protocol.ExtendedPotionEffect;
 import com.vagdedes.spartan.abstraction.protocol.PlayerMovement;
@@ -18,7 +18,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.potion.PotionEffectType;
 
-public class IMSimulationGravity extends ProbabilityDetection {
+public class IMSimulationGravity extends CheckDetection {
 
     private int air = 0, ground = 0;
     private int airVehicle = 0;

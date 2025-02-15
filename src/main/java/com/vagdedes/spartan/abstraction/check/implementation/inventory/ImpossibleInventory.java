@@ -4,7 +4,7 @@ import com.comphenix.protocol.PacketType;
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
-import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
+import com.vagdedes.spartan.abstraction.check.definition.ImplementedDetection;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
@@ -44,10 +44,10 @@ public class ImpossibleInventory extends CheckRunner {
 
     public ImpossibleInventory(Enums.HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);
-        this.autoTotemDetection = new ImplementedProbabilityDetection(this, null, null, "auto_totem", true);
-        this.closedInventoryDetection = new ImplementedProbabilityDetection(this, null, null, "closed_inventory", true);
-        this.portalInventoryDetection = new ImplementedProbabilityDetection(this, null, null, "portal_inventory", true);
-        this.cursorUsageDetection = new ImplementedProbabilityDetection(this, null, null, "cursor_usage", true);
+        this.autoTotemDetection = new ImplementedDetection(this, null, null, "auto_totem", true);
+        this.closedInventoryDetection = new ImplementedDetection(this, null, null, "closed_inventory", true);
+        this.portalInventoryDetection = new ImplementedDetection(this, null, null, "portal_inventory", true);
+        this.cursorUsageDetection = new ImplementedDetection(this, null, null, "cursor_usage", true);
     }
 
     @Override

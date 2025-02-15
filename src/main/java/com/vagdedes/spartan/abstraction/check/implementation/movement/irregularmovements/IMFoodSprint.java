@@ -1,11 +1,11 @@
 package com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements;
 
+import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
-import com.vagdedes.spartan.abstraction.check.HardcodedDetection;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import org.bukkit.GameMode;
 
-public class IMFoodSprint extends HardcodedDetection {
+public class IMFoodSprint extends CheckDetection {
 
     private final Buffer.IndividualBuffer buffer;
 
@@ -26,7 +26,6 @@ public class IMFoodSprint extends HardcodedDetection {
                         && (gameMode == GameMode.SURVIVAL
                         || gameMode == GameMode.ADVENTURE)) {
                     double ratio = buffer.count(1, 10) / 10.0;
-                    this.setHackingRatio(ratio);
 
                     if (ratio >= 0.4) {
                         cancel(
@@ -38,8 +37,6 @@ public class IMFoodSprint extends HardcodedDetection {
                                 true
                         );
                     }
-                } else {
-                    this.setHackingRatio(0.0);
                 }
             }
         });

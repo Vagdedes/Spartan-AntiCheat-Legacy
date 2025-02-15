@@ -110,10 +110,11 @@ public class SpartanEdition {
                 color = false;
             }
         }
-        return Register.pluginName + (currentVersion && alternativeVersion ? " One" : "") + ": §a"
-                + (currentVersion ? "§a" : "§c") + currentType
-                + "§8/"
-                + (alternativeVersion ? "§a" : "§c") + alternativeType
+        return Register.pluginName
+                + (currentVersion && alternativeVersion
+                ? " One"
+                : ": §a" + (currentVersion ? "§a" : "§c") + currentType
+                + "§8/" + (alternativeVersion ? "§a" : "§c") + alternativeType)
                 + (lastColor != null ? "§" + lastColor : "");
     }
 

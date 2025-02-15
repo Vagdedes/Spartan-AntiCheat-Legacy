@@ -14,7 +14,6 @@ import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.PluginBase;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
-import com.vagdedes.spartan.utils.math.statistics.StatisticsMath;
 import com.vagdedes.spartan.utils.minecraft.inventory.MaterialUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Material;
@@ -31,6 +30,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class ResearchEngine {
 
     private static boolean firstLoad = false;
+    public static final Map<Integer, Double> averageViolationTime = new ConcurrentHashMap<>();
     public static Map<Enums.HackType, Collection<Check.DataType>> violationFired = new ConcurrentHashMap<>();
     private static long schedulerTicks = 0L;
     private static final Map<String, PlayerProfile> playerProfiles = new ConcurrentHashMap<>();
@@ -119,10 +119,9 @@ public class ResearchEngine {
 
                 if (!playerProfiles.isEmpty()) {
                     for (PlayerProfile playerProfile : playerProfiles.values()) {
-                        for (CheckDetection detectionExecutor : playerProfile.getRunner(hackType).getDetections()) {
+                        for (CheckDetection detection : playerProfile.getRunner(hackType).getDetections()) {
                             for (Check.DataType dataType : Check.DataType.values()) {
-                                detectionExecutor.clearProbability(dataType);
-                                detectionExecutor.clearData(dataType);
+                                detection.clearData(dataType);
                             }
                         }
                         playerProfile.getContinuity().clear();
@@ -503,18 +502,6 @@ public class ResearchEngine {
         if ((force || !violationFired.isEmpty()) && !playerProfiles.isEmpty()) {
             Collection<PlayerProfile> profiles = playerProfiles.values();
 
-            if (force) {
-                for (PlayerProfile profile : profiles) {
-                    for (CheckRunner executor : profile.getRunners()) {
-                        for (CheckDetection detectionExecutor : executor.getDetections()) {
-                            for (Check.DataType dataType : Check.DataType.values()) {
-                                detectionExecutor.clearProbability(dataType);
-                            }
-                        }
-                    }
-                }
-            }
-
             for (Enums.HackType hackType : (force
                     ? Arrays.asList(Enums.HackType.values())
                     : violationFired.keySet())) {
@@ -525,72 +512,68 @@ public class ResearchEngine {
                         : (dataTypes == null || dataTypes.isEmpty()
                         ? Arrays.asList(Check.DataType.values()) :
                         dataTypes))) {
-                    Map<String, Map<CheckDetection, List<Double>>> wave = new LinkedHashMap<>();
+                    Map<String, Map<CheckDetection, List<Long>>> statistics = new LinkedHashMap<>();
 
                     if (hackType.getCheck().isEnabled(dataType, null)) {
                         for (PlayerProfile profile : profiles) {
                             for (CheckDetection detectionExecutor : profile.getRunner(hackType).getDetections()) {
-                                List<Double> dataSamples = detectionExecutor.getDataSamples(profile, dataType);
-                                double allData = detectionExecutor.getAllData(profile, dataType);
+                                List<Long> timeDifferences = detectionExecutor.getTimeDifferences(profile, dataType);
 
-                                if (allData != -1.0) {
-                                    dataSamples.add(allData);
-                                    wave.computeIfAbsent(
+                                if (!timeDifferences.isEmpty()) {
+                                    statistics.computeIfAbsent(
                                             detectionExecutor.name,
                                             k -> new LinkedHashMap<>()
                                     ).put(
                                             detectionExecutor,
-                                            dataSamples
+                                            timeDifferences
                                     );
                                 }
                             }
                         }
 
-                        if (wave.isEmpty()) {
+                        if (statistics.isEmpty()) {
                             for (PlayerProfile profile : profiles) {
                                 for (CheckDetection detection : profile.getRunner(hackType).getDetections()) {
-                                    detection.setProbability(dataType, PlayerEvidence.nullProbability);
+                                    detection.clearData(dataType);
+                                    averageViolationTime.remove(
+                                            (detection.generalHashCode() * PluginBase.hashCodeMultiplier)
+                                                    + dataType.hashCode()
+                                    );
                                 }
                             }
                         } else {
-                            for (Map<CheckDetection, List<Double>> map : wave.values()) {
-                                Collection<List<Double>> allValues = map.values();
-                                double divisor = 0;
+                            for (Map.Entry<String, Map<CheckDetection, List<Long>>> entry : statistics.entrySet()) {
+                                Map<CheckDetection, List<Long>> map = entry.getValue();
+                                CheckDetection detection = map.keySet().iterator().next();
+                                double unique = map.size(),
+                                        mean = 0.0,
+                                        total = 0.0;
 
-                                for (List<Double> values : allValues) {
-                                    divisor += values.size();
+                                for (List<Long> list : map.values()) {
+                                    for (long time : list) {
+                                        mean += time;
+                                    }
+                                    total += list.size();
                                 }
-                                if (divisor < PlayerEvidence.factorRequirement) {
-                                    for (CheckDetection detection : map.keySet()) {
-                                        detection.setProbability(dataType, PlayerEvidence.nullProbability);
-                                    }
+
+                                if (total > 0) {
+                                    mean /= total;
+                                    averageViolationTime.put(
+                                            (detection.generalHashCode() * PluginBase.hashCodeMultiplier)
+                                                    + dataType.hashCode(),
+                                            Math.max(mean - (1.0 / unique) * mean, TPS.tickTime)
+                                    );
                                 } else {
-                                    double sum = 0,
-                                            variance = 0;
+                                    for (PlayerProfile profile : profiles) {
+                                        CheckDetection find = profile.getRunner(hackType).getDetection(detection.name);
 
-                                    for (List<Double> values : allValues) {
-                                        for (double value : values) {
-                                            sum += value;
+                                        if (find != null) {
+                                            find.clearData(dataType);
+                                            averageViolationTime.remove(
+                                                    (detection.generalHashCode() * PluginBase.hashCodeMultiplier)
+                                                            + dataType.hashCode()
+                                            );
                                         }
-                                    }
-                                    double mean = sum / divisor;
-
-                                    for (List<Double> values : allValues) {
-                                        for (double value : values) {
-                                            double difference = value - mean;
-                                            variance += difference * difference;
-                                        }
-                                    }
-                                    double deviation = Math.sqrt(variance / divisor);
-
-                                    for (Map.Entry<CheckDetection, List<Double>> entry : map.entrySet()) {
-                                        List<Double> collection = entry.getValue();
-                                        entry.getKey().setProbability(
-                                                dataType,
-                                                StatisticsMath.getCumulativeProbability(
-                                                        (collection.get(collection.size() - 1) - mean) / deviation
-                                                )
-                                        );
                                     }
                                 }
                             }
@@ -598,7 +581,11 @@ public class ResearchEngine {
                     } else {
                         for (PlayerProfile profile : profiles) {
                             for (CheckDetection detection : profile.getRunner(hackType).getDetections()) {
-                                detection.clearProbability(dataType);
+                                detection.clearData(dataType);
+                                averageViolationTime.remove(
+                                        (detection.generalHashCode() * PluginBase.hashCodeMultiplier)
+                                                + dataType.hashCode()
+                                );
                             }
                         }
                     }
@@ -613,6 +600,14 @@ public class ResearchEngine {
                 hackType,
                 k -> new CopyOnWriteArrayList<>()
         ).add(dataType);
+    }
+
+    public static double getAverageViolationTime(CheckDetection detection, Check.DataType dataType) {
+        return averageViolationTime.getOrDefault(
+                (detection.generalHashCode() * PluginBase.hashCodeMultiplier)
+                        + dataType.hashCode(),
+                (double) detection.defaultAverageTime
+        );
     }
 
 }

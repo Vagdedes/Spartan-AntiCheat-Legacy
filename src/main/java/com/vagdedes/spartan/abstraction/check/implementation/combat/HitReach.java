@@ -2,7 +2,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.combat;
 
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
-import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
+import com.vagdedes.spartan.abstraction.check.definition.ImplementedDetection;
 import com.vagdedes.spartan.abstraction.event.PlayerAttackEvent;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
@@ -46,9 +46,9 @@ public class HitReach extends CheckRunner {
 
     public HitReach(HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);
-        hitboxRaytrace = new ImplementedProbabilityDetection(this, null, null, "hitbox_raytrace", true);
-        simple = new ImplementedProbabilityDetection(this, null, null, "simple", true);
-        throughblocks = new ImplementedProbabilityDetection(this, null, null, "throughblocks", true);
+        hitboxRaytrace = new ImplementedDetection(this, null, null, "hitbox_raytrace", true);
+        simple = new ImplementedDetection(this, null, null, "simple", true);
+        throughblocks = new ImplementedDetection(this, null, null, "throughblocks", true);
     }
 
     @Override

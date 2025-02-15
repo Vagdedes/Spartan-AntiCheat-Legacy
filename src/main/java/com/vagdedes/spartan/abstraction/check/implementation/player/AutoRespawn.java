@@ -3,7 +3,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.player;
 import com.comphenix.protocol.PacketType;
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
-import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
+import com.vagdedes.spartan.abstraction.check.definition.ImplementedDetection;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.PluginBase;
@@ -22,7 +22,7 @@ public class AutoRespawn extends CheckRunner {
 
     public AutoRespawn(HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);
-        this.detection = new ImplementedProbabilityDetection(this, null, null, null, true);
+        this.detection = new ImplementedDetection(this, null, null, null, true);
     }
 
     @Override

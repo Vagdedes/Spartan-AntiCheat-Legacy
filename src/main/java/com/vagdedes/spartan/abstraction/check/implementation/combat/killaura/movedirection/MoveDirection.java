@@ -2,8 +2,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.combat.killaura.mo
 
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
-import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
-import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
+import com.vagdedes.spartan.abstraction.check.definition.ImplementedDetection;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.utils.math.RayUtils;
@@ -18,7 +17,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import static java.lang.Math.PI;
 
-public class MoveDirection extends ProbabilityDetection {
+public class MoveDirection extends CheckDetection {
 
     private final CheckDetection layer1, layer2;
     private AttackHandle attackHandle;
@@ -31,8 +30,8 @@ public class MoveDirection extends ProbabilityDetection {
 
     public MoveDirection(CheckRunner executor) {
         super(executor, null, null, null, true);
-        this.layer1 = new ImplementedProbabilityDetection(this, "move_direction_1", true);
-        this.layer2 = new ImplementedProbabilityDetection(this, "move_direction_2", true);
+        this.layer1 = new ImplementedDetection(this, "move_direction_1", true);
+        this.layer2 = new ImplementedDetection(this, "move_direction_2", true);
         this.aimAnalysis = new CopyOnWriteArrayList<>();
         this.attackHandle = new AttackHandle(null, System.currentTimeMillis());
 

@@ -3,7 +3,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.world.impossibleac
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
-import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
+import com.vagdedes.spartan.abstraction.check.definition.ImplementedDetection;
 import com.vagdedes.spartan.abstraction.event.CBlockPlaceEvent;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
@@ -35,10 +35,10 @@ public class ImpossibleActions extends CheckRunner {
 
     public ImpossibleActions(Enums.HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);
-        this.scaffoldDirection = new ImplementedProbabilityDetection(this, null, null, "scaffold_direction", true);
-        this.scaffoldUp = new ImplementedProbabilityDetection(this, Check.DataType.JAVA, null, "scaffold_up", true);
-        this.scaffoldYaw = new ImplementedProbabilityDetection(this, Check.DataType.JAVA, null, "scaffold_yaw", true);
-        this.actions = new ImplementedProbabilityDetection(this, null, null, "actions", true);
+        this.scaffoldDirection = new ImplementedDetection(this, null, null, "scaffold_direction", true);
+        this.scaffoldUp = new ImplementedDetection(this, Check.DataType.JAVA, null, "scaffold_up", true);
+        this.scaffoldYaw = new ImplementedDetection(this, Check.DataType.JAVA, null, "scaffold_yaw", true);
+        this.actions = new ImplementedDetection(this, null, null, "actions", true);
         this.tower = new Tower(this);
         this.scaffoldAnalysis = new ScaffoldAnalysis(this);
     }

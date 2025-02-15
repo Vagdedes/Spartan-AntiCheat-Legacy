@@ -2,7 +2,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.world;
 
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
-import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
+import com.vagdedes.spartan.abstraction.check.definition.ImplementedDetection;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.event.CBlockPlaceEvent;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
@@ -23,9 +23,9 @@ public class FastPlace extends CheckRunner {
 
     public FastPlace(HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);
-        this.fast = new ImplementedProbabilityDetection(this, null, null, "fast", true);
-        this.medium = new ImplementedProbabilityDetection(this, null, null, "medium", true);
-        this.slow = new ImplementedProbabilityDetection(this, null, null, "slow", true);
+        this.fast = new ImplementedDetection(this, null, null, "fast", true);
+        this.medium = new ImplementedDetection(this, null, null, "medium", true);
+        this.slow = new ImplementedDetection(this, null, null, "slow", true);
         this.fastBuffer = new Buffer.IndividualBuffer();
         this.mediumBuffer = new Buffer.IndividualBuffer();
         this.slowBuffer = new Buffer.IndividualBuffer();
@@ -64,7 +64,7 @@ public class FastPlace extends CheckRunner {
                         });
                         if (timePassed <= 100L) {
                             this.medium.call(() -> {
-                                if (mediumBuffer.count(1, ticks) >= 8) {
+                                if (mediumBuffer.count(1, ticks) >= 7) {
                                     this.medium.cancel(
                                             "medium"
                                                     + ", ms: " + timePassed
@@ -78,7 +78,7 @@ public class FastPlace extends CheckRunner {
                                 if (timePassed <= 50L
                                         && !this.protocol.bukkitExtra.isBedrockPlayer()
                                         && !Compatibility.CompatibilityType.VEIN_MINER.isFunctional()
-                                        && fastBuffer.count(1, ticks) >= 5) {
+                                        && fastBuffer.count(1, ticks) >= 4) {
                                     this.fast.cancel(
                                             "fast"
                                                     + ", ms: " + timePassed

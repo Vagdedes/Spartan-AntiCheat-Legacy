@@ -1,6 +1,8 @@
 package me.vagdedes.spartan.api;
 
 import com.vagdedes.spartan.Register;
+import com.vagdedes.spartan.abstraction.check.CheckDetection;
+import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.functionality.connection.cloud.IDs;
 import com.vagdedes.spartan.functionality.moderation.AwarenessNotifications;
@@ -9,7 +11,7 @@ import com.vagdedes.spartan.functionality.moderation.Wave;
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.PluginBase;
-import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
+import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.Enums.HackType;
 import me.vagdedes.spartan.system.Enums.Permission;
@@ -17,6 +19,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
+import java.util.Collection;
 import java.util.UUID;
 
 public class BackgroundAPI {
@@ -113,32 +116,53 @@ public class BackgroundAPI {
         return HackType.getCheck().isSilent(null, null);
     }
 
-    @Deprecated
     static int getVL(Player p, HackType hackType) {
-        AwarenessNotifications.forcefullySend("The API method 'getVL' has been removed.");
-        return 0;
+        return AlgebraUtils.integerRound(getDecimalVL(p, hackType));
     }
 
     static double getCertainty(Player p, HackType hackType) {
         PlayerProtocol protocol = PluginBase.getProtocol(p);
-        return PlayerEvidence.probabilityToCertainty(
-                protocol.profile().getRunner(hackType).getExtremeProbability(
-                        protocol.bukkitExtra.dataType,
-                        protocol.bukkitExtra.detectionType
-                )
+        Collection<CheckDetection> detections = protocol.profile().getRunner(hackType).getDetections();
+        double avg = 0.0, punishment = 0.0;
+
+        for (CheckDetection detection : detections) {
+            avg += detection.getLevel(protocol.bukkitExtra.dataType);
+            punishment += detection.getPunishmentLevel(protocol.bukkitExtra.dataType);
+        }
+        return AlgebraUtils.integerRound(
+                (avg / detections.size()) / (punishment / detections.size())
         );
     }
 
-    @Deprecated
-    static double getDecimalVL(Player p, HackType HackType) {
-        AwarenessNotifications.forcefullySend("The API method 'getDecimalVL' has been removed.");
-        return 0.0;
+    static double getDecimalVL(Player p, HackType hackType) {
+        PlayerProtocol protocol = PluginBase.getProtocol(p);
+        Collection<CheckDetection> detections = protocol.profile().getRunner(hackType).getDetections();
+        double avg = 0.0;
+
+        for (CheckDetection detection : detections) {
+            avg += detection.getLevel(protocol.bukkitExtra.dataType);
+        }
+        return avg / detections.size();
     }
 
-    @Deprecated
     static int getVL(Player p) {
-        AwarenessNotifications.forcefullySend("The API method 'getVL' has been removed.");
-        return 0;
+        return AlgebraUtils.integerRound(getDecimalVL(p));
+    }
+
+    static double getDecimalVL(Player p) {
+        PlayerProtocol protocol = PluginBase.getProtocol(p);
+        double avg = 0.0,
+                detectionsTotal = 0.0;
+
+        for (CheckRunner runner : protocol.profile().getRunners()) {
+            Collection<CheckDetection> detections = runner.getDetections();
+
+            for (CheckDetection detection : detections) {
+                avg += detection.getLevel(protocol.bukkitExtra.dataType);
+            }
+            detectionsTotal += detections.size();
+        }
+        return avg / detectionsTotal;
     }
 
     @Deprecated
@@ -248,14 +272,28 @@ public class BackgroundAPI {
         }
     }
 
-    @Deprecated
     static void resetVL() {
-        AwarenessNotifications.forcefullySend("The API method 'resetVL' has been removed.");
+        Collection<PlayerProtocol> protocols = PluginBase.getProtocols();
+
+        if (!protocols.isEmpty()) {
+            for (PlayerProtocol protocol : protocols) {
+                for (CheckRunner runner : protocol.profile().getRunners()) {
+                    for (CheckDetection detection : runner.getDetections()) {
+                        detection.clearData(protocol.bukkitExtra.dataType);
+                    }
+                }
+            }
+        }
     }
 
-    @Deprecated
     static void resetVL(Player p) {
-        AwarenessNotifications.forcefullySend("The API method 'resetVL' has been removed.");
+        PlayerProtocol protocol = PluginBase.getProtocol(p);
+
+        for (CheckRunner runner : protocol.profile().getRunners()) {
+            for (CheckDetection detection : runner.getDetections()) {
+                detection.clearData(protocol.bukkitExtra.dataType);
+            }
+        }
     }
 
     static boolean isBypassing(Player p) {

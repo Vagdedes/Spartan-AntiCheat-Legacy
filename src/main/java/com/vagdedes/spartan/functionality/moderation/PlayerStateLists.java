@@ -1,9 +1,8 @@
 package com.vagdedes.spartan.functionality.moderation;
 
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
+import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.functionality.server.PluginBase;
-import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
-import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
 import com.vagdedes.spartan.utils.minecraft.inventory.InventoryUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.inventory.Inventory;
@@ -77,18 +76,17 @@ public class PlayerStateLists {
     }
 
     private static Map<PlayerProfile, Collection<Enums.HackType>> getProfiles() {
-        Collection<PlayerProfile> profiles = ResearchEngine.getPlayerProfiles();
+        Collection<PlayerProtocol> protocols = PluginBase.getProtocols();
 
-        if (!profiles.isEmpty()) {
+        if (!protocols.isEmpty()) {
             Map<PlayerProfile, Collection<Enums.HackType>> map = new LinkedHashMap<>();
 
-            for (PlayerProfile playerProfile : profiles) {
-                Collection<Enums.HackType> evidenceDetails = playerProfile.getEvidenceList(
-                        PlayerEvidence.slightestProbability
-                );
+            for (PlayerProtocol protocol : protocols) {
+                PlayerProfile profile = protocol.profile();
+                Collection<Enums.HackType> evidenceDetails = profile.getEvidenceList();
 
                 if (!evidenceDetails.isEmpty()) {
-                    map.put(playerProfile, evidenceDetails);
+                    map.put(profile, evidenceDetails);
                 }
             }
             return map;
@@ -121,19 +119,10 @@ public class PlayerStateLists {
 
                     if (!evidenceDetails.isEmpty()) {
                         lore.clear();
-                        lore.add("§7Has data for§8:");
+                        lore.add("§7Suspected for§8:");
 
                         for (Enums.HackType hackType : evidenceDetails) {
-                            String description = "§4" + hackType.getCheck().getName();
-
-                            if (!profile.getRunner(hackType).hasSufficientData(
-                                    profile.getLastDataType(),
-                                    profile.getLastDetectionType(),
-                                    PlayerEvidence.dataRatio
-                            )) {
-                                description += " §8(§7Data incomplete§8)";
-                            }
-                            lore.add(description);
+                            lore.add("§4" + hackType.getCheck().getName());
                         }
                         fill(inventory, profile, lore, freeSlots[slotPosition]);
                         slotPosition++;

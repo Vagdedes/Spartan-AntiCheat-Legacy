@@ -3,15 +3,14 @@ package com.vagdedes.spartan.abstraction.check.implementation.combat.fastclicks;
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
-import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
-import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
+import com.vagdedes.spartan.abstraction.check.definition.ImplementedDetection;
 import com.vagdedes.spartan.abstraction.event.PlayerTickEvent;
 import com.vagdedes.spartan.utils.math.statistics.StatisticsMath;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class FastClicksDetections extends ProbabilityDetection {
+public class FastClicksDetections extends CheckDetection {
 
     private long lastTickTime = System.currentTimeMillis();
     private final List<Integer> buffer = new CopyOnWriteArrayList<>();
@@ -32,11 +31,11 @@ public class FastClicksDetections extends ProbabilityDetection {
 
     FastClicksDetections(CheckRunner executor) {
         super(executor, null, Check.DetectionType.PACKETS, null, true);
-        this.floorTempo = new ImplementedProbabilityDetection(this, "floor_tempo", true);
-        this.deviation = new ImplementedProbabilityDetection(this, "deviation", true);
-        this.skewness = new ImplementedProbabilityDetection(this, "skewness", true);
-        this.kurtosis = new ImplementedProbabilityDetection(this, "kurtosis", true);
-        this.variance = new ImplementedProbabilityDetection(this, "variance", true);
+        this.floorTempo = new ImplementedDetection(this, "floor_tempo", true);
+        this.deviation = new ImplementedDetection(this, "deviation", true);
+        this.skewness = new ImplementedDetection(this, "skewness", true);
+        this.kurtosis = new ImplementedDetection(this, "kurtosis", true);
+        this.variance = new ImplementedDetection(this, "variance", true);
     }
 
     void run(long delay) {

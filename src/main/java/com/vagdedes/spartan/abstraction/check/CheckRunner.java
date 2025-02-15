@@ -12,7 +12,6 @@ import com.vagdedes.spartan.functionality.moderation.DetectionNotifications;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.PluginBase;
 import com.vagdedes.spartan.functionality.server.TPS;
-import com.vagdedes.spartan.functionality.tracking.PlayerEvidence;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import me.vagdedes.spartan.system.Enums;
@@ -40,72 +39,6 @@ public abstract class CheckRunner extends CheckProcess {
         this.silentCauses = Collections.synchronizedList(new ArrayList<>(1));
         this.supportsDataType = new boolean[Check.DataType.values().length];
         this.supportsDetectionType = new boolean[Check.DetectionType.values().length];
-    }
-
-    // Probability
-
-    public final boolean hasSufficientData(
-            Check.DataType dataType,
-            Check.DetectionType detectionType,
-            double ratio
-    ) {
-        if (this.detections.isEmpty()) {
-            return false;
-        } else if (ratio > 0.0) {
-            int count = 0,
-                    total = 0;
-
-            for (CheckDetection detectionExecutor : new TreeMap<>(this.detections).values()) {
-                if (detectionExecutor instanceof ProbabilityDetection
-                        && detectionExecutor.supportsDataType(dataType)
-                        && detectionExecutor.supportsDetectionType(detectionType)) {
-                    total++;
-
-                    if (detectionExecutor.hasSufficientData(dataType)) {
-                        count++;
-
-                        if (count / (double) total >= ratio) {
-                            return true;
-                        }
-                    }
-                }
-            }
-            return total == 0;
-        } else {
-            boolean found = false;
-
-            for (CheckDetection detectionExecutor : this.getDetections()) {
-                if (detectionExecutor instanceof ProbabilityDetection
-                        && detectionExecutor.supportsDataType(dataType)
-                        && detectionExecutor.supportsDetectionType(detectionType)) {
-                    found = true;
-
-                    if (detectionExecutor.hasSufficientData(dataType)) {
-                        return true;
-                    }
-                }
-            }
-            return !found;
-        }
-    }
-
-    public final double getExtremeProbability(Check.DataType dataType, Check.DetectionType detectionType) {
-        double num = PlayerEvidence.emptyProbability;
-
-        if (this.hackType.getCheck().isEnabled(dataType, null)) {
-            for (CheckDetection detectionExecutor : this.getDetections()) {
-                if (detectionExecutor.supportsDataType(dataType)
-                        && detectionExecutor.supportsDetectionType(detectionType)
-                        && detectionExecutor.hasSufficientData(dataType)) {
-                    if (PlayerEvidence.POSITIVE) {
-                        num = Math.max(num, detectionExecutor.getProbability(dataType));
-                    } else {
-                        num = Math.min(num, detectionExecutor.getProbability(dataType));
-                    }
-                }
-            }
-        }
-        return num;
     }
 
     // Detections

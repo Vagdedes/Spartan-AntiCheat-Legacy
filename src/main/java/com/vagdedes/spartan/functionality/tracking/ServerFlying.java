@@ -1,6 +1,6 @@
 package com.vagdedes.spartan.functionality.tracking;
 
-import com.vagdedes.spartan.abstraction.check.HardcodedDetection;
+import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.IrregularMovements;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
@@ -12,7 +12,7 @@ import me.vagdedes.spartan.system.Enums;
 public class ServerFlying {
 
     static void run(PlayerProtocol p) {
-        HardcodedDetection detection = ((IrregularMovements) p.profile().getRunner(Enums.HackType.IrregularMovements)).limitServerFlying;
+        CheckDetection detection = ((IrregularMovements) p.profile().getRunner(Enums.HackType.IrregularMovements)).limitServerFlying;
 
         detection.call(() -> {
             if (detection.isEnabled()
@@ -34,10 +34,7 @@ public class ServerFlying {
                         p.getLocation(),
                         p.bukkitExtra.movement.getSchedulerFromLocation()
                 ) >= limit) {
-                    detection.setHackingRatio(1.0);
                     p.teleport(p.getFromLocation());
-                } else {
-                    detection.setHackingRatio(0.0);
                 }
             }
         });

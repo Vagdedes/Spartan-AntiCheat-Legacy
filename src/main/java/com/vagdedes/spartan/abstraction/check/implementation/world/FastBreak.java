@@ -2,7 +2,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.world;
 
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
-import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
+import com.vagdedes.spartan.abstraction.check.definition.ImplementedDetection;
 import com.vagdedes.spartan.abstraction.data.Buffer;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.compatibility.Compatibility;
@@ -45,9 +45,9 @@ public class FastBreak extends CheckRunner {
 
     public FastBreak(HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);
-        this.delay = new ImplementedProbabilityDetection(this, null, null, "delay", true);
-        this.breaksPerSecond = new ImplementedProbabilityDetection(this, null, null, "breaks_per_second", null);
-        this.indirectSurroundingsPerSecond = new ImplementedProbabilityDetection(this, null, null, "indirect_surroundings_per_second", null);
+        this.delay = new ImplementedDetection(this, null, null, "delay", true);
+        this.breaksPerSecond = new ImplementedDetection(this, null, null, "breaks_per_second", null);
+        this.indirectSurroundingsPerSecond = new ImplementedDetection(this, null, null, "indirect_surroundings_per_second", null);
         this.interactTime = new ConcurrentHashMap<>(2);
         this.breaksPerSecondBuffer = new Buffer.IndividualBuffer();
         this.individualSurroundingsPerSecondBuffer = new Buffer.IndividualBuffer();

@@ -14,10 +14,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class DetectionNotifications {
 
-    static {
-        SuspicionNotifications.run();
-    }
-
     public static final int defaultFrequency = Integer.MIN_VALUE;
 
     private static final Map<UUID, Integer> notifications = new ConcurrentHashMap<>();

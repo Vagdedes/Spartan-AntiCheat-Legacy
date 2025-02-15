@@ -2,8 +2,7 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.irregular
 
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
-import com.vagdedes.spartan.abstraction.check.ProbabilityDetection;
-import com.vagdedes.spartan.abstraction.check.definition.ImplementedProbabilityDetection;
+import com.vagdedes.spartan.abstraction.check.definition.ImplementedDetection;
 import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.TPS;
@@ -18,7 +17,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class IrregularMovementsJump extends ProbabilityDetection {
+public class IrregularMovementsJump extends CheckDetection {
 
     private static final Map<Integer, Set<Double>>
             heights = new LinkedHashMap<>(),
@@ -55,8 +54,8 @@ public class IrregularMovementsJump extends ProbabilityDetection {
 
     IrregularMovementsJump(CheckRunner executor) {
         super(executor, null, null, null, true);
-        this.jump_ticks = new ImplementedProbabilityDetection(this, "jump_ticks", true);
-        this.jump_height = new ImplementedProbabilityDetection(this, "jump_height", true);
+        this.jump_ticks = new ImplementedDetection(this, "jump_ticks", true);
+        this.jump_height = new ImplementedDetection(this, "jump_height", true);
     }
 
     void run(double vertical, double box) {
