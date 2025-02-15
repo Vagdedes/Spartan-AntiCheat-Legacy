@@ -1,1 +1,2 @@
 [#] Fixed a few simulation speed console errors
+[#] Made the packet-world handler partly async to avoid blocking threads

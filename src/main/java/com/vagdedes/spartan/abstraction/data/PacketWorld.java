@@ -10,8 +10,8 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 
 public class PacketWorld {
@@ -23,7 +23,7 @@ public class PacketWorld {
 
     public PacketWorld(Player player) {
         this.player = player;
-        this.query = Collections.synchronizedList(new ArrayList<>());
+        this.query = new CopyOnWriteArrayList<>();
         this.lagTick = 0;
     }
 
@@ -41,21 +41,17 @@ public class PacketWorld {
     }
 
     public List<ServerBlockChange> getLocalWorld() {
-        synchronized (this.query) {
-            return new ArrayList<>(this.query);
-        }
+        return new ArrayList<>(this.query);
     }
 
     public Material getBlock(Location location) {
-        synchronized (this.query) {
-            for (ServerBlockChange change : this.query) {
-                Location lL = change.position.toLocation(this.player.getWorld());
+        for (ServerBlockChange change : this.query) {
+            Location lL = change.position.toLocation(this.player.getWorld());
 
-                if (Math.abs(lL.getX() - location.getX()) <= 1.3 &&
-                        Math.abs(lL.getY() - location.getY()) <= 1.3 &&
-                        Math.abs(lL.getZ() - location.getZ()) <= 1.3) {
-                    return change.getData();
-                }
+            if (Math.abs(lL.getX() - location.getX()) <= 1.3 &&
+                    Math.abs(lL.getY() - location.getY()) <= 1.3 &&
+                    Math.abs(lL.getZ() - location.getZ()) <= 1.3) {
+                return change.getData();
             }
         }
 
@@ -72,16 +68,13 @@ public class PacketWorld {
             blockChange.setData(b.getType());
         }
         long hash = blockChange.hashCode();
-        ServerBlockChange toDelete = null;
+
         synchronized (this.query) {
             for (ServerBlockChange c : this.query) {
                 if (c.generateHash() == hash) {
-                    toDelete = c;
+                    this.query.remove(c); // to delete
                     break;
                 }
-            }
-            if (toDelete != null) {
-                this.query.remove(toDelete);
             }
             this.query.add(blockChange);
             this.transactionLock = true;
