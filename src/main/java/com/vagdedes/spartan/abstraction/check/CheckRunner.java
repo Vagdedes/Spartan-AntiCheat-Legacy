@@ -8,6 +8,7 @@ import com.vagdedes.spartan.compatibility.manual.enchants.CustomEnchantsPlus;
 import com.vagdedes.spartan.compatibility.manual.enchants.EcoEnchants;
 import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
+import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
 import com.vagdedes.spartan.functionality.moderation.DetectionNotifications;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.PluginBase;
@@ -141,6 +142,7 @@ public abstract class CheckRunner extends CheckProcess {
                 && !this.protocol.npc
                 && this.supportsDataType[this.protocol.bukkitExtra.dataType.ordinal()]
                 && this.supportsDetectionType[this.protocol.bukkitExtra.detectionType.ordinal()]
+                && SpartanEdition.hasDetectionsPurchased(this.protocol.bukkitExtra.dataType)
                 && (System.currentTimeMillis() - this.creation) > TPS.maximum * TPS.tickTime
                 && (!cancelled || hackType.getCheck().handleCancelledEvents)
                 && (!v1_8 || this.protocol.bukkit().getGameMode() != GameMode.SPECTATOR)

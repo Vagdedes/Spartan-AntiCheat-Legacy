@@ -47,7 +47,8 @@ public class SpartanEdition {
             firstLoad = true,
             notifyCache = false,
             currentVersion = true,
-            alternativeVersion = true;
+            alternativeVersion = true,
+            oneVersion = true;
 
     // Verification
 
@@ -57,6 +58,10 @@ public class SpartanEdition {
             currentVersion = !IDs.hasToken();
         }
         PluginBase.connectionThread.executeIfUnknownThreadElseHere(() -> {
+            if (!oneVersion
+                    && CloudConnections.ownsProduct("26")) {
+                oneVersion = true;
+            }
             if (!currentVersion
                     && CloudConnections.ownsProduct(
                     getProductID(currentType)
@@ -64,11 +69,15 @@ public class SpartanEdition {
                 currentVersion = true;
             }
             if (!alternativeVersion
-                    && (!currentVersion || CloudConnections.ownsProduct("26"))
                     && CloudConnections.ownsProduct(
                     getProductID(alternativeType)
             )) {
                 alternativeVersion = true;
+            }
+            if (currentVersion
+                    && alternativeVersion
+                    && !oneVersion) {
+                alternativeVersion = false;
             }
             hasAccount = !IDs.hasToken() || CloudConnections.hasAccount();
         });

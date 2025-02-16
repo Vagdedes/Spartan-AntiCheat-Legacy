@@ -2,3 +2,4 @@
 [#] Made the packet-world handler partly async to avoid blocking threads
 [#] Removed suspicion notifications as they were barely being used
 [#] Introduced a violation system and removed much of the wave statistics
+[#] Fixed a rare config utils console error

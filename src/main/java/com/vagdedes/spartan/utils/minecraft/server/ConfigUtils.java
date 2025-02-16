@@ -7,7 +7,6 @@ import com.vagdedes.spartan.functionality.moderation.CrossServerNotifications;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.PluginBase;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
-import lombok.SneakyThrows;
 import me.vagdedes.spartan.api.API;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.Bukkit;
@@ -97,11 +96,15 @@ public class ConfigUtils {
         return ChatColor.translateAlternateColorCodes('&', replaceWithSyntax(message, hackType));
     }
 
-    @SneakyThrows
     public static void add(File file, String path, Object value) {
         YamlConfiguration filea = YamlConfiguration.loadConfiguration(file);
 
-        if (!file.exists()) file.createNewFile();
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (Exception ignored) {
+            }
+        }
         if (!filea.contains(path)) {
             set(file, path, value);
         }
