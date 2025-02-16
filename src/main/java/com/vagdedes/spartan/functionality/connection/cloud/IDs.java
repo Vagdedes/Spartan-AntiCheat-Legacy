@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.functionality.connection.cloud;
 
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
+import lombok.Setter;
 import me.vagdedes.spartan.api.API;
 
 import java.util.Objects;
@@ -17,6 +18,7 @@ public class IDs {
     public static final boolean
             hasUserIDByDefault = !user.startsWith("%%__");
 
+    @Setter
     private static int platform = 0;
 
     // Setters
@@ -24,10 +26,6 @@ public class IDs {
     static void set(int user, int nonce) {
         IDs.user = Integer.toString(user);
         IDs.file = Integer.toString(nonce);
-    }
-
-    public static void setPlatform(int id) {
-        platform = id;
     }
 
     // IDs

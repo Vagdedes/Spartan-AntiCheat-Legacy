@@ -47,8 +47,8 @@ public class SpartanEdition {
             firstLoad = true,
             notifyCache = false,
             currentVersion = true,
-            alternativeVersion = true,
-            oneVersion = true;
+            alternativeVersion = false,
+            oneVersion = false;
 
     // Verification
 
@@ -63,21 +63,18 @@ public class SpartanEdition {
                 oneVersion = true;
             }
             if (!currentVersion
+                    && (!alternativeVersion || oneVersion)
                     && CloudConnections.ownsProduct(
                     getProductID(currentType)
             )) {
                 currentVersion = true;
             }
             if (!alternativeVersion
+                    && (!currentVersion || oneVersion)
                     && CloudConnections.ownsProduct(
                     getProductID(alternativeType)
             )) {
                 alternativeVersion = true;
-            }
-            if (currentVersion
-                    && alternativeVersion
-                    && !oneVersion) {
-                alternativeVersion = false;
             }
             hasAccount = !IDs.hasToken() || CloudConnections.hasAccount();
         });

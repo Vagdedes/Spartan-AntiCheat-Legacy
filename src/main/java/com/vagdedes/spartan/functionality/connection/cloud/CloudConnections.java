@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.functionality.connection.cloud;
 
 import com.vagdedes.spartan.Register;
+import com.vagdedes.spartan.functionality.moderation.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.moderation.CrossServerNotifications;
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.PluginBase;
@@ -10,6 +11,7 @@ import com.vagdedes.spartan.utils.math.AlgebraUtils;
 
 import java.io.File;
 import java.net.URLEncoder;
+import java.util.Arrays;
 import java.util.UUID;
 
 public class CloudConnections {
