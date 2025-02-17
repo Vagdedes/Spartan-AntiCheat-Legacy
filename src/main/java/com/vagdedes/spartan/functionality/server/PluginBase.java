@@ -2,7 +2,6 @@ package com.vagdedes.spartan.functionality.server;
 
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.inventory.InventoryMenu;
-import com.vagdedes.spartan.abstraction.inventory.implementation.MainMenu;
 import com.vagdedes.spartan.abstraction.inventory.implementation.ManageChecks;
 import com.vagdedes.spartan.abstraction.inventory.implementation.PlayerInfo;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
@@ -30,11 +29,9 @@ public class PluginBase {
             dataThread = new GeneralThread.ThreadPool(1L);
 
     public static final ManageChecks manageChecks = new ManageChecks();
-    public static final MainMenu mainMenu = new MainMenu();
     public static final PlayerInfo playerInfo = new PlayerInfo();
     public static final InventoryMenu[] menus = new InventoryMenu[]{
             manageChecks,
-            mainMenu,
             playerInfo
     };
 

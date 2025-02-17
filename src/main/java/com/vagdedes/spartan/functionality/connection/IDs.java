@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.functionality.connection.cloud;
+package com.vagdedes.spartan.functionality.connection;
 
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import lombok.Setter;

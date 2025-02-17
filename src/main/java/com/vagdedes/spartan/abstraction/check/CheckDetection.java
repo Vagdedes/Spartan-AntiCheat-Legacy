@@ -2,7 +2,7 @@ package com.vagdedes.spartan.abstraction.check;
 
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
-import com.vagdedes.spartan.functionality.connection.cloud.CloudConnections;
+import com.vagdedes.spartan.functionality.connection.CloudConnections;
 import com.vagdedes.spartan.functionality.moderation.DetectionNotifications;
 import com.vagdedes.spartan.functionality.moderation.clickable.ClickableMessage;
 import com.vagdedes.spartan.functionality.server.*;

@@ -1,7 +1,6 @@
 package com.vagdedes.spartan.abstraction.profiling;
 
 import com.vagdedes.spartan.abstraction.check.Check;
-import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.functionality.server.PluginBase;
@@ -11,8 +10,6 @@ import lombok.Setter;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
-
-import java.util.*;
 
 public class PlayerProfile {
 
@@ -139,38 +136,6 @@ public class PlayerProfile {
 
     public MiningHistory getMiningHistory(MiningHistory.MiningOre ore) {
         return miningHistory[ore.ordinal()];
-    }
-
-    // Separator
-
-    public Collection<Enums.HackType> getEvidenceList() {
-        List<Enums.HackType> evidence = new ArrayList<>();
-
-        for (CheckRunner runner : this.getRunners()) {
-            for (CheckDetection detection : runner.getDetections()) {
-                if (detection.getLevel(this.lastDataType) >= detection.getNotificationLevel(this.lastDataType)) {
-                    evidence.add(runner.hackType);
-                    break;
-                }
-            }
-        }
-        return evidence;
-    }
-
-    public Set<Map.Entry<Enums.HackType, List<String>>> getEvidenceEntries() {
-        Map<Enums.HackType, List<String>> evidence = new LinkedHashMap<>();
-
-        for (CheckRunner runner : this.getRunners()) {
-            for (CheckDetection detection : runner.getDetections()) {
-                if (detection.getLevel(this.lastDataType) >= detection.getNotificationLevel(this.lastDataType)) {
-                    evidence.computeIfAbsent(
-                            runner.hackType,
-                            k -> new ArrayList<>()
-                    ).add(detection.name);
-                }
-            }
-        }
-        return new HashSet<>();
     }
 
 }

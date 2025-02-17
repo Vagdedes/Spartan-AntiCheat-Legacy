@@ -2,7 +2,6 @@ package com.vagdedes.spartan.compatibility;
 
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.configuration.ConfigurationBuilder;
-import com.vagdedes.spartan.abstraction.inventory.implementation.MainMenu;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.compatibility.manual.abilities.*;
 import com.vagdedes.spartan.compatibility.manual.abilities.crackshot.CrackShot;
@@ -362,7 +361,6 @@ public class Compatibility {
                 null
         );
         CompatibilityType.ITEMS_ADDER.setFunctional();
-        MainMenu.refresh();
     }
 
     private static boolean getBoolean(String path, boolean create) {

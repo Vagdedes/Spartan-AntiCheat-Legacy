@@ -3,3 +3,4 @@
 [#] Removed suspicion notifications as they were barely being used
 [#] Introduced a violation system and removed much of the wave statistics
 [#] Fixed a rare config utils console error
+[#] Removed historical statistics so also removed the Main menu

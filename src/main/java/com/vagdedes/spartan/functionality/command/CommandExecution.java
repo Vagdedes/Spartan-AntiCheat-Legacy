@@ -3,8 +3,8 @@ package com.vagdedes.spartan.functionality.command;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
-import com.vagdedes.spartan.functionality.connection.DiscordMemberCount;
-import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
+import com.vagdedes.spartan.functionality.connection.DiscordServer;
+import com.vagdedes.spartan.functionality.connection.SpartanEdition;
 import com.vagdedes.spartan.functionality.moderation.DetectionNotifications;
 import com.vagdedes.spartan.functionality.moderation.Wave;
 import com.vagdedes.spartan.functionality.moderation.clickable.ClickableMessage;
@@ -98,14 +98,6 @@ public class CommandExecution implements CommandExecutor {
                                     "§cPanic Mode §7(Click)",
                                     "Click this command to toggle silent mode and disable punishments for all checks.",
                                     "/" + Register.command + " panic"
-                            );
-                        }
-                        if (info || manage) {
-                            ClickableMessage.sendCommand(
-                                    sender,
-                                    "§cInventory Menu §7(Click)",
-                                    "Click this command to open the plugin's inventory menu.",
-                                    "/" + Register.command + " menu"
                             );
                         }
                         if (Permissions.has(protocol.bukkit(), Permission.RELOAD)) {
@@ -312,21 +304,15 @@ public class CommandExecution implements CommandExecutor {
 
             if (args.length == 0) {
                 if (isPlayer) {
-                    if (NPCManager.supported && Permissions.isStaff(protocol.bukkit())) {
-                        if (Config.settings.getBoolean("Important.enable_npc")) {
-                            NPCManager.create(protocol);
-                        } else {
-                            PluginBase.mainMenu.open(protocol, false);
-                        }
-                    } else {
-                        PluginBase.mainMenu.open(protocol, false);
+                    if (NPCManager.supported
+                            && Permissions.isStaff(protocol.bukkit())
+                            && Config.settings.getBoolean("Important.enable_npc")) {
+                        NPCManager.create(protocol);
                     }
                 }
                 completeMessage(sender, "default");
             } else if (args.length == 1) {
-                if (isPlayer && args[0].equalsIgnoreCase("Menu")) {
-                    PluginBase.mainMenu.open(protocol);
-                } else if (isPlayer && args[0].equalsIgnoreCase("Manage-Checks")) {
+                if (isPlayer && args[0].equalsIgnoreCase("Manage-Checks")) {
                     PluginBase.manageChecks.open(protocol);
                 } else if (args[0].equalsIgnoreCase("Panic")) {
                     if (isPlayer && !Permissions.has(protocol.bukkit(), Permission.MANAGE)) {
@@ -334,7 +320,7 @@ public class CommandExecution implements CommandExecutor {
                                 sender,
                                 Config.messages.getColorfulString("no_permission"),
                                 support,
-                                DiscordMemberCount.discordURL
+                                DiscordServer.url
                         );
                         return true;
                     }
@@ -345,14 +331,14 @@ public class CommandExecution implements CommandExecutor {
                                 sender,
                                 Config.messages.getColorfulString("panic_mode_enable"),
                                 support,
-                                DiscordMemberCount.discordURL
+                                DiscordServer.url
                         );
                     } else {
                         ClickableMessage.sendURL(
                                 sender,
                                 Config.messages.getColorfulString("panic_mode_disable"),
                                 support,
-                                DiscordMemberCount.discordURL
+                                DiscordServer.url
                         );
                     }
                 } else if (args[0].equalsIgnoreCase("Moderation")) {
@@ -367,7 +353,7 @@ public class CommandExecution implements CommandExecutor {
                                 sender,
                                 Config.messages.getColorfulString("no_permission"),
                                 support,
-                                DiscordMemberCount.discordURL
+                                DiscordServer.url
                         );
                         return true;
                     }
@@ -379,7 +365,7 @@ public class CommandExecution implements CommandExecutor {
                                 sender,
                                 Config.messages.getColorfulString("no_permission"),
                                 support,
-                                DiscordMemberCount.discordURL
+                                DiscordServer.url
                         );
                         return true;
                     }
@@ -391,7 +377,7 @@ public class CommandExecution implements CommandExecutor {
                                 sender,
                                 Config.messages.getColorfulString("no_permission"),
                                 support,
-                                DiscordMemberCount.discordURL
+                                DiscordServer.url
                         );
                         return true;
                     }
@@ -403,7 +389,7 @@ public class CommandExecution implements CommandExecutor {
                                 sender,
                                 Config.messages.getColorfulString("no_permission"),
                                 support,
-                                DiscordMemberCount.discordURL
+                                DiscordServer.url
                         );
                         return true;
                     }
@@ -423,7 +409,7 @@ public class CommandExecution implements CommandExecutor {
                                 sender,
                                 Config.messages.getColorfulString("no_permission"),
                                 support,
-                                DiscordMemberCount.discordURL
+                                DiscordServer.url
                         );
                         return true;
                     }
@@ -438,7 +424,7 @@ public class CommandExecution implements CommandExecutor {
                                 sender,
                                 Config.messages.getColorfulString("massive_command_reason"),
                                 support,
-                                DiscordMemberCount.discordURL
+                                DiscordServer.url
                         );
                         return true;
                     }
@@ -450,7 +436,7 @@ public class CommandExecution implements CommandExecutor {
                                         StringUtils.toString(args, " ")
                                 ),
                                 support,
-                                DiscordMemberCount.discordURL
+                                DiscordServer.url
                         );
                         return true;
                     }
@@ -458,7 +444,7 @@ public class CommandExecution implements CommandExecutor {
                             sender,
                             Config.messages.getColorfulString("successful_command"),
                             support,
-                            DiscordMemberCount.discordURL
+                            DiscordServer.url
                     );
                 } else {
                     if (args.length == 2) {
@@ -470,7 +456,7 @@ public class CommandExecution implements CommandExecutor {
                                         sender,
                                         Config.messages.getColorfulString("no_permission"),
                                         support,
-                                        DiscordMemberCount.discordURL
+                                        DiscordServer.url
                                 );
                                 return true;
                             }
@@ -480,7 +466,7 @@ public class CommandExecution implements CommandExecutor {
                                             sender,
                                             Config.messages.getColorfulString("empty_wave_list"),
                                             support,
-                                            DiscordMemberCount.discordURL
+                                            DiscordServer.url
                                     );
                                     return true;
                                 }
@@ -492,7 +478,7 @@ public class CommandExecution implements CommandExecutor {
                                                     StringUtils.toString(args, " ")
                                             ),
                                             support,
-                                            DiscordMemberCount.discordURL
+                                            DiscordServer.url
                                     );
                                 }
                             } else if (command.equalsIgnoreCase("Clear")) {
@@ -501,7 +487,7 @@ public class CommandExecution implements CommandExecutor {
                                         sender,
                                         Config.messages.getColorfulString("wave_clear_message"),
                                         support,
-                                        DiscordMemberCount.discordURL
+                                        DiscordServer.url
                                 );
                             } else if (command.equalsIgnoreCase("List")) {
                                 sender.sendMessage(ChatColor.GRAY + "Wave Queued Players" + ChatColor.DARK_GRAY + ":");
@@ -516,7 +502,7 @@ public class CommandExecution implements CommandExecutor {
                                         sender,
                                         Config.messages.getColorfulString("no_permission"),
                                         support,
-                                        DiscordMemberCount.discordURL
+                                        DiscordServer.url
                                 );
                                 return true;
                             }
@@ -530,7 +516,7 @@ public class CommandExecution implements CommandExecutor {
                                         sender,
                                         Config.messages.getColorfulString("no_permission"),
                                         support,
-                                        DiscordMemberCount.discordURL
+                                        DiscordServer.url
                                 );
                                 return true;
                             }
@@ -567,7 +553,7 @@ public class CommandExecution implements CommandExecutor {
                                         sender,
                                         Config.messages.getColorfulString("non_existing_check"),
                                         support,
-                                        DiscordMemberCount.discordURL
+                                        DiscordServer.url
                                 );
                             }
                         } else if (args[0].equalsIgnoreCase("Toggle-Prevention")) {
@@ -578,7 +564,7 @@ public class CommandExecution implements CommandExecutor {
                                         sender,
                                         Config.messages.getColorfulString("no_permission"),
                                         support,
-                                        DiscordMemberCount.discordURL
+                                        DiscordServer.url
                                 );
                                 return true;
                             }
@@ -615,7 +601,7 @@ public class CommandExecution implements CommandExecutor {
                                         sender,
                                         Config.messages.getColorfulString("non_existing_check"),
                                         support,
-                                        DiscordMemberCount.discordURL
+                                        DiscordServer.url
                                 );
                             }
                         } else if (args[0].equalsIgnoreCase("Toggle-Punishment")) {
@@ -626,7 +612,7 @@ public class CommandExecution implements CommandExecutor {
                                         sender,
                                         Config.messages.getColorfulString("no_permission"),
                                         support,
-                                        DiscordMemberCount.discordURL
+                                        DiscordServer.url
                                 );
                                 return true;
                             }
@@ -663,7 +649,7 @@ public class CommandExecution implements CommandExecutor {
                                         sender,
                                         Config.messages.getColorfulString("non_existing_check"),
                                         support,
-                                        DiscordMemberCount.discordURL
+                                        DiscordServer.url
                                 );
                             }
 
@@ -673,7 +659,7 @@ public class CommandExecution implements CommandExecutor {
                                         sender,
                                         Config.messages.getColorfulString("no_permission"),
                                         support,
-                                        DiscordMemberCount.discordURL
+                                        DiscordServer.url
                                 );
                                 return true;
                             }
@@ -692,7 +678,7 @@ public class CommandExecution implements CommandExecutor {
                                                     StringUtils.toString(args, " ")
                                             ),
                                             support,
-                                            DiscordMemberCount.discordURL
+                                            DiscordServer.url
                                     );
                                 }
                             } else {
@@ -703,7 +689,7 @@ public class CommandExecution implements CommandExecutor {
                                                 StringUtils.toString(args, " ")
                                         ),
                                         support,
-                                        DiscordMemberCount.discordURL
+                                        DiscordServer.url
                                 );
                             }
 
@@ -723,7 +709,7 @@ public class CommandExecution implements CommandExecutor {
                                         sender,
                                         Config.messages.getColorfulString("no_permission"),
                                         support,
-                                        DiscordMemberCount.discordURL
+                                        DiscordServer.url
                                 );
                                 return true;
                             }
@@ -732,7 +718,7 @@ public class CommandExecution implements CommandExecutor {
                                         sender,
                                         Config.messages.getColorfulString("massive_command_reason"),
                                         support,
-                                        DiscordMemberCount.discordURL
+                                        DiscordServer.url
                                 );
                                 return true;
                             }
@@ -743,7 +729,7 @@ public class CommandExecution implements CommandExecutor {
                                         sender,
                                         Config.messages.getColorfulString("player_not_found_message"),
                                         support,
-                                        DiscordMemberCount.discordURL
+                                        DiscordServer.url
                                 );
                                 return true;
                             }
@@ -755,7 +741,7 @@ public class CommandExecution implements CommandExecutor {
                                                 StringUtils.toString(args, " ")
                                         ),
                                         support,
-                                        DiscordMemberCount.discordURL
+                                        DiscordServer.url
                                 );
                             }
 
@@ -765,7 +751,7 @@ public class CommandExecution implements CommandExecutor {
                                         sender,
                                         Config.messages.getColorfulString("no_permission"),
                                         support,
-                                        DiscordMemberCount.discordURL
+                                        DiscordServer.url
                                 );
                                 return true;
                             }
@@ -774,7 +760,7 @@ public class CommandExecution implements CommandExecutor {
                                         sender,
                                         Config.messages.getColorfulString("massive_command_reason"),
                                         support,
-                                        DiscordMemberCount.discordURL
+                                        DiscordServer.url
                                 );
                                 return true;
                             }
@@ -785,7 +771,7 @@ public class CommandExecution implements CommandExecutor {
                                         sender,
                                         Config.messages.getColorfulString("player_not_found_message"),
                                         support,
-                                        DiscordMemberCount.discordURL
+                                        DiscordServer.url
                                 );
                                 return true;
                             }
@@ -797,7 +783,7 @@ public class CommandExecution implements CommandExecutor {
                                                 StringUtils.toString(args, " ")
                                         ),
                                         support,
-                                        DiscordMemberCount.discordURL
+                                        DiscordServer.url
                                 );
                             }
 
@@ -815,7 +801,7 @@ public class CommandExecution implements CommandExecutor {
                                             sender,
                                             Config.messages.getColorfulString("no_permission"),
                                             support,
-                                            DiscordMemberCount.discordURL
+                                            DiscordServer.url
                                     );
                                     return true;
                                 }
@@ -826,7 +812,7 @@ public class CommandExecution implements CommandExecutor {
                                             sender,
                                             Config.messages.getColorfulString("player_not_found_message"),
                                             support,
-                                            DiscordMemberCount.discordURL
+                                            DiscordServer.url
                                     );
                                     return true;
                                 }
@@ -862,7 +848,7 @@ public class CommandExecution implements CommandExecutor {
                                             sender,
                                             Config.messages.getColorfulString("non_existing_check"),
                                             support,
-                                            DiscordMemberCount.discordURL
+                                            DiscordServer.url
                                     );
                                 }
                             } else {
@@ -877,7 +863,7 @@ public class CommandExecution implements CommandExecutor {
                                         sender,
                                         Config.messages.getColorfulString("no_permission"),
                                         support,
-                                        DiscordMemberCount.discordURL
+                                        DiscordServer.url
                                 );
                                 return true;
                             }
@@ -887,7 +873,7 @@ public class CommandExecution implements CommandExecutor {
                                             sender,
                                             Config.messages.getColorfulString("full_wave_list"),
                                             support,
-                                            DiscordMemberCount.discordURL
+                                            DiscordServer.url
                                     );
                                     return true;
                                 }
@@ -902,7 +888,7 @@ public class CommandExecution implements CommandExecutor {
                                             sender,
                                             Config.messages.getColorfulString("massive_command_reason"),
                                             support,
-                                            DiscordMemberCount.discordURL
+                                            DiscordServer.url
                                     );
                                     return true;
                                 }
@@ -940,7 +926,7 @@ public class CommandExecution implements CommandExecutor {
                                             sender,
                                             Config.messages.getColorfulString("no_permission"),
                                             support,
-                                            DiscordMemberCount.discordURL
+                                            DiscordServer.url
                                     );
                                     return true;
                                 }
@@ -951,7 +937,7 @@ public class CommandExecution implements CommandExecutor {
                                             sender,
                                             Config.messages.getColorfulString("player_not_found_message"),
                                             support,
-                                            DiscordMemberCount.discordURL
+                                            DiscordServer.url
                                     );
                                     return true;
                                 }

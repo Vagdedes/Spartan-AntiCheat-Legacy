@@ -2,7 +2,7 @@ package com.vagdedes.spartan.listeners.bukkit.standalone;
 
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
-import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
+import com.vagdedes.spartan.functionality.connection.CloudBase;
 import com.vagdedes.spartan.functionality.moderation.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.Permissions;

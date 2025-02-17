@@ -4,7 +4,7 @@ import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
-import com.vagdedes.spartan.functionality.connection.cloud.IDs;
+import com.vagdedes.spartan.functionality.connection.IDs;
 import com.vagdedes.spartan.functionality.moderation.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.moderation.DetectionNotifications;
 import com.vagdedes.spartan.functionality.moderation.Wave;

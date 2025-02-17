@@ -19,15 +19,6 @@ public class InventoryUtils {
             MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
                     && ReflectionUtils.classExists("org.bukkit.profile.PlayerProfile");
 
-    public static void prepareDescription(List<String> array, String title) {
-        array.clear();
-
-        if (!title.isEmpty()) {
-            array.add("§e" + title);
-            array.add("");
-        }
-    }
-
     public static void add(Inventory inv, String name, List<String> lore, ItemStack item, int slot) {
         ItemMeta am = item.getItemMeta();
         am.setDisplayName(name);

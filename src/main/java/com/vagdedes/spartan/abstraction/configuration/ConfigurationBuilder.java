@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.abstraction.configuration;
 
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
+import com.vagdedes.spartan.functionality.connection.SpartanEdition;
 import com.vagdedes.spartan.utils.minecraft.server.ConfigUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;

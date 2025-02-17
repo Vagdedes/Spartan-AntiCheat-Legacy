@@ -2,7 +2,7 @@ package com.vagdedes.spartan;
 
 import com.vagdedes.spartan.functionality.command.CommandExecution;
 import com.vagdedes.spartan.functionality.command.CommandTab;
-import com.vagdedes.spartan.functionality.connection.cloud.JarVerification;
+import com.vagdedes.spartan.functionality.connection.JarVerification;
 import com.vagdedes.spartan.functionality.moderation.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.MultiVersion;

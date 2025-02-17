@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.functionality.connection.cloud;
+package com.vagdedes.spartan.functionality.connection;
 
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.functionality.moderation.CrossServerNotifications;

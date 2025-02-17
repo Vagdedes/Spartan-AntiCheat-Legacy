@@ -8,7 +8,7 @@ import com.vagdedes.spartan.compatibility.manual.enchants.CustomEnchantsPlus;
 import com.vagdedes.spartan.compatibility.manual.enchants.EcoEnchants;
 import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
-import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
+import com.vagdedes.spartan.functionality.connection.SpartanEdition;
 import com.vagdedes.spartan.functionality.moderation.DetectionNotifications;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.PluginBase;
@@ -148,6 +148,21 @@ public abstract class CheckRunner extends CheckProcess {
                 && (!v1_8 || this.protocol.bukkit().getGameMode() != GameMode.SPECTATOR)
                 && Attributes.getAmount(this.protocol, Attributes.GENERIC_SCALE) == 0.0
                 && !ProtocolLib.isTemporary(this.protocol.bukkit());
+    }
+
+    public final List<String> getEvidence() {
+        if (this.protocol == null) {
+            return new ArrayList<>();
+        }
+        List<String> evidence = new ArrayList<>();
+
+        for (CheckDetection detection : this.getDetections()) {
+            if (detection.getLevel(this.protocol.bukkitExtra.dataType)
+                    >= detection.getNotificationLevel(this.protocol.bukkitExtra.dataType)) {
+                evidence.add(detection.name);
+            }
+        }
+        return evidence;
     }
 
     // Causes

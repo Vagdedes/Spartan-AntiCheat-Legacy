@@ -1,30 +1,39 @@
 package com.vagdedes.spartan.abstraction.inventory.implementation;
 
+import com.vagdedes.filegui.api.FileGUIAPI;
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckCancellation;
 import com.vagdedes.spartan.abstraction.data.Cooldowns;
 import com.vagdedes.spartan.abstraction.inventory.InventoryMenu;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
+import com.vagdedes.spartan.compatibility.Compatibility;
+import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.command.CommandExecution;
-import com.vagdedes.spartan.functionality.connection.DiscordMemberCount;
-import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
+import com.vagdedes.spartan.functionality.connection.DiscordServer;
+import com.vagdedes.spartan.functionality.connection.SpartanEdition;
 import com.vagdedes.spartan.functionality.moderation.clickable.ClickableMessage;
 import com.vagdedes.spartan.functionality.server.Config;
+import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.PluginBase;
 import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
 import com.vagdedes.spartan.utils.java.OverflowMap;
 import com.vagdedes.spartan.utils.java.TimeUtils;
+import com.vagdedes.spartan.utils.math.AlgebraUtils;
+import com.vagdedes.spartan.utils.minecraft.inventory.MaterialUtils;
 import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.Enums.HackType;
 import me.vagdedes.spartan.system.Enums.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class PlayerInfo extends InventoryMenu {
@@ -45,7 +54,6 @@ public class PlayerInfo extends InventoryMenu {
 
     @Override
     public boolean internalOpen(PlayerProtocol protocol, boolean permissionMessage, Object object) {
-        boolean back = !permissionMessage;
         PlayerProtocol target = PluginBase.getAnyCaseProtocol(object.toString());
         boolean isOnline = target != null;
         PlayerProfile profile = isOnline
@@ -58,15 +66,13 @@ public class PlayerInfo extends InventoryMenu {
                     protocol.bukkit(),
                     Config.messages.getColorfulString("player_not_found_message"),
                     CommandExecution.support,
-                    DiscordMemberCount.discordURL
+                    DiscordServer.url
             );
             return false;
         } else {
             setTitle(protocol, menu + (isOnline ? target.bukkit().getName() : profile.name));
             List<String> lore = new ArrayList<>();
             lore.add("");
-
-            Set<Map.Entry<HackType, List<String>>> evidenceDetails = profile.getEvidenceEntries();
 
             if (isOnline) {
                 lore.add("§7Version§8:§c " + target.version.toString());
@@ -89,10 +95,50 @@ public class PlayerInfo extends InventoryMenu {
                     4
             );
             for (Enums.HackCategoryType checkType : Enums.HackCategoryType.values()) {
-                addChecks(slots[checkType.ordinal()], isOnline, target, profile, lore, checkType, evidenceDetails);
+                addChecks(slots[checkType.ordinal()], isOnline, target, profile, lore, checkType);
             }
 
-            add("§c" + (back ? "Back" : "Close"), null, new ItemStack(Material.ARROW), 40);
+            // Separator
+
+            lore.clear();
+            lore.add("");
+            lore.add("§7Packets§8: §a" + (PluginBase.packetsEnabled() ? "Enabled" : "Disabled"));
+            lore.add("§7Detections Available§8: "
+                    + (SpartanEdition.hasDetectionsPurchased(Check.DataType.JAVA) ? "§a" : "§c") + Check.DataType.JAVA
+                    + " §8/ "
+                    + (SpartanEdition.hasDetectionsPurchased(Check.DataType.BEDROCK) ? "§a" : "§c") + Check.DataType.BEDROCK);
+            Runtime runtime = Runtime.getRuntime();
+
+            lore.add("§7Server Version§8: §a" + MultiVersion.serverVersion.toString());
+            long maxMemory = runtime.maxMemory();
+            lore.add("§7Server Memory Usage§8: §a" + AlgebraUtils.cut(((maxMemory - runtime.freeMemory()) / ((double) maxMemory)) * 100.0, 2) + "%");
+            lore.add("");
+            lore.add("§7Click to §amanage checks§7.");
+            add("§aManagement", lore, new ItemStack(MaterialUtils.get("crafting_table")), 39);
+
+            // Separator
+
+            add("§cClose", null, new ItemStack(Material.ARROW), 40);
+
+            // Separator
+
+            List<Compatibility.CompatibilityType> activeCompatibilities = Config.compatibility.getActiveCompatibilities();
+            int activeCompatibilitiesSize = activeCompatibilities.size();
+
+            lore.clear();
+            lore.add("");
+            lore.add("§7Identified§8:§a " + activeCompatibilitiesSize);
+            lore.add("§7Total§8:§a " + Config.compatibility.getTotalCompatibilities().size());
+
+            if (activeCompatibilitiesSize > 0) {
+                lore.add("");
+                lore.add("§7Compatibilities§8:");
+
+                for (Compatibility.CompatibilityType compatibility : activeCompatibilities) {
+                    lore.add("§a" + compatibility.toString());
+                }
+            }
+            add("§aCompatibilities", lore, new ItemStack(MaterialUtils.get("enchanting_table")), 41);
             return true;
         }
     }
@@ -102,14 +148,13 @@ public class PlayerInfo extends InventoryMenu {
                            PlayerProtocol protocol,
                            PlayerProfile profile,
                            List<String> lore,
-                           Enums.HackCategoryType checkType,
-                           Set<Map.Entry<HackType, List<String>>> evidenceDetails) {
+                           Enums.HackCategoryType checkType) {
         lore.clear();
         ItemStack item = new ItemStack(checkType.material);
 
         // Separator
 
-        boolean space = false;
+        boolean added = false;
 
         for (HackType hackType : HackType.values()) {
             if (hackType.category == checkType) {
@@ -121,28 +166,31 @@ public class PlayerInfo extends InventoryMenu {
                 );
 
                 if (state != null) {
-                    if (!space) {
+                    if (!added) {
+                        added = true;
                         lore.add("");
-                        lore.add("§7Important information§8:");
-                        space = true;
                     }
                     lore.add("§7" + hackType.getCheck().getName() + "§8:§f " + state);
+                } else {
+                    List<String> evidence = protocol.profile().getRunner(hackType).getEvidence();
+
+                    if (!evidence.isEmpty()) {
+                        if (!added) {
+                            added = true;
+                            lore.add("");
+                        }
+                        lore.add(
+                                "§4" + hackType.getCheck().getName()
+                                        + "§8: §c" + evidence.size() + " suspicions"
+                        );
+                    }
                 }
             }
         }
 
-        // Separator
-
-        if (!evidenceDetails.isEmpty()) {
+        if (!added) {
             lore.add("");
-            lore.add("§7Suspected for§8:");
-
-            for (Map.Entry<HackType, List<String>> entry : evidenceDetails) {
-                lore.add(
-                        "§4" + entry.getKey().getCheck().getName()
-                                + "§8: §c" + entry.getValue().size() + " detections"
-                );
-            }
+            lore.add("§7No useful information currently available.");
         }
 
         // Separator
@@ -203,7 +251,7 @@ public class PlayerInfo extends InventoryMenu {
                         protocol.bukkit(),
                         Config.messages.getColorfulString("no_permission"),
                         CommandExecution.support,
-                        DiscordMemberCount.discordURL
+                        DiscordServer.url
                 );
             } else {
                 String name = Bukkit.getOfflinePlayer(playerName).getName();
@@ -213,7 +261,7 @@ public class PlayerInfo extends InventoryMenu {
                             protocol.bukkit(),
                             Config.messages.getColorfulString("player_not_found_message"),
                             CommandExecution.support,
-                            DiscordMemberCount.discordURL
+                            DiscordServer.url
                     );
                 } else {
                     ResearchEngine.resetData(name);
@@ -223,8 +271,34 @@ public class PlayerInfo extends InventoryMenu {
             }
         } else if (item.equals("Close")) {
             protocol.bukkit().closeInventory();
-        } else if (item.equals("Back")) {
-            PluginBase.mainMenu.open(protocol);
+        } else if (item.equals("Management")) {
+            if (!Permissions.has(protocol.bukkit(), Permission.MANAGE)) {
+                protocol.bukkit().closeInventory();
+                ClickableMessage.sendURL(
+                        protocol.bukkit(),
+                        Config.messages.getColorfulString("no_permission"),
+                        CommandExecution.support,
+                        DiscordServer.url
+                );
+            } else {
+                PluginBase.manageChecks.open(protocol);
+            }
+        } else if (item.equals("Compatibilities")) {
+            if (Compatibility.CompatibilityType.FILE_GUI.isFunctional()) {
+                Player n = protocol.bukkit();
+
+                if (ProtocolLib.hasPermission(n, "filegui.modify")) {
+                    FileGUIAPI.openMenu(n, Config.compatibility.getFile().getPath(), 1);
+                } else {
+                    protocol.bukkit().closeInventory();
+                    ClickableMessage.sendURL(
+                            protocol.bukkit(),
+                            Config.messages.getColorfulString("no_permission"),
+                            CommandExecution.support,
+                            DiscordServer.url
+                    );
+                }
+            }
         } else {
             protocol.bukkitExtra.sendImportantMessage("§7Click to learn more about the detection states§8: \n§a§n" + documentationURL);
         }

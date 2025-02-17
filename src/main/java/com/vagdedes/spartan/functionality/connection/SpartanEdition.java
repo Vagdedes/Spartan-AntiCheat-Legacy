@@ -1,10 +1,9 @@
-package com.vagdedes.spartan.functionality.connection.cloud;
+package com.vagdedes.spartan.functionality.connection;
 
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
-import com.vagdedes.spartan.functionality.connection.DiscordMemberCount;
 import com.vagdedes.spartan.functionality.moderation.AwarenessNotifications;
 import com.vagdedes.spartan.functionality.server.PluginBase;
 import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
@@ -29,7 +28,7 @@ public class SpartanEdition {
                     : Check.DataType.JAVA;
 
     private static long checkTime = 0L;
-    public static final String patreonURL = "https://www.vagdedes.com/patreon";
+    public static final String patreonURL = "https://www.patreon.com/SpartanAntiCheat";
     private static final int notificationCooldown = 60 * 60;
     private static final String
             type = "{type}",
@@ -38,10 +37,10 @@ public class SpartanEdition {
                     + " You have " + type + " players which cannot be checked by the anti-cheat due to missing " + type + " detections.",
             noVersionNotificationMessage = "\n§cHey, just a heads up!"
                     + " Your owned editions of " + Register.pluginName + " could not be verified."
-                    + " Visit §n" + DiscordMemberCount.discordURL + "§r§c §lfix this§r§c.",
+                    + " Visit §n" + DiscordServer.url + "§r§c §lfix this§r§c.",
             hasAccountNotificationMessage = "\n§cHey, just a heads up!"
                     + " You do not seem to have an account paired with your " + Register.pluginName + " AntiCheat license."
-                    + " Visit §n" + DiscordMemberCount.discordURL + "§r§c §lfix this§r§c.";
+                    + " Visit §n" + DiscordServer.url + "§r§c §lfix this§r§c.";
     private static boolean
             hasAccount = true,
             notifyCache = false,
@@ -209,7 +208,7 @@ public class SpartanEdition {
                     (versionNotificationMessage
                             + (IDs.canAdvertise()
                             ? " Click §n" + product + "§r§c to §lfix this§r§c."
-                            : " Visit §n" + DiscordMemberCount.discordURL + "§r§c to §lfix this§r§c."))
+                            : " Visit §n" + DiscordServer.url + "§r§c to §lfix this§r§c."))
                             .replace(type, dataType.toString())
                             .replace(
                                     product,

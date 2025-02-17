@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.functionality.connection.cloud;
+package com.vagdedes.spartan.functionality.connection;
 
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.functionality.moderation.AwarenessNotifications;

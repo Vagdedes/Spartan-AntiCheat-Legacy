@@ -121,7 +121,7 @@ public class NPCManager implements Listener {
                             e.setCancelled(true);
                             npc.updateHead();
                             PlayerProtocol protocol = PluginBase.getProtocol(e.getPlayer());
-                            PluginBase.mainMenu.open(protocol, Permissions.has(protocol.bukkit()));
+                            PluginBase.playerInfo.open(protocol, protocol.bukkit().getName());
                             break;
                         }
                     }
@@ -147,7 +147,7 @@ public class NPCManager implements Listener {
 
                             if (damager instanceof Player) {
                                 PlayerProtocol protocol = PluginBase.getProtocol((Player) damager);
-                                PluginBase.mainMenu.open(protocol, Permissions.has(protocol.bukkit()));
+                                PluginBase.playerInfo.open(protocol, protocol.bukkit().getName());
                             }
                             break;
                         }

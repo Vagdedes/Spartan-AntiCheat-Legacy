@@ -4,12 +4,11 @@ import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
-import com.vagdedes.spartan.abstraction.inventory.implementation.MainMenu;
 import com.vagdedes.spartan.abstraction.profiling.MiningHistory;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.functionality.concurrent.GeneralThread;
-import com.vagdedes.spartan.functionality.connection.cloud.CloudBase;
+import com.vagdedes.spartan.functionality.connection.CloudBase;
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.PluginBase;
 import com.vagdedes.spartan.functionality.server.TPS;
@@ -47,7 +46,6 @@ public class ResearchEngine {
                     } else {
                         statisticsThread.executeIfFree(() -> {
                             updateCache(false);
-                            MainMenu.refresh();
                         });
                     }
                 } else {
@@ -55,10 +53,6 @@ public class ResearchEngine {
 
                     statisticsThread.executeIfFree(() -> {
                         updateCache(false);
-
-                        if (schedulerTicks % TPS.maximum == 0) {
-                            MainMenu.refresh();
-                        }
                     });
                 }
             }
@@ -156,9 +150,6 @@ public class ResearchEngine {
                         }
                     }
                 }
-
-                // Separator
-                MainMenu.refresh();
             });
         }
     }
@@ -204,7 +195,6 @@ public class ResearchEngine {
             } else {
                 createPlayerProfile(player);
             }
-            MainMenu.refresh();
             PluginBase.playerInfo.refresh(playerName);
         }
     }
@@ -495,7 +485,6 @@ public class ResearchEngine {
             }
         }
         updateCache(true);
-        MainMenu.refresh();
     }
 
     private static void updateCache(boolean force) {

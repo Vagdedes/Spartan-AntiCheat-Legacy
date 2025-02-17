@@ -4,7 +4,7 @@ import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.inventory.InventoryMenu;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.functionality.command.CommandExecution;
-import com.vagdedes.spartan.functionality.connection.DiscordMemberCount;
+import com.vagdedes.spartan.functionality.connection.DiscordServer;
 import com.vagdedes.spartan.functionality.moderation.clickable.ClickableMessage;
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
@@ -50,7 +50,7 @@ public class ManageChecks extends InventoryMenu {
         item = item.startsWith("§") ? item.substring(2) : item;
 
         if (item.equals("Back")) {
-            PluginBase.mainMenu.open(protocol);
+            PluginBase.playerInfo.open(protocol, protocol.bukkit().getName());
         } else if (item.equals("Disable all checks")) {
             Config.disableChecks();
             open(protocol);
@@ -93,7 +93,7 @@ public class ManageChecks extends InventoryMenu {
                                     check.getName()
                             ),
                             CommandExecution.support,
-                            DiscordMemberCount.discordURL
+                            DiscordServer.url
                     );
                 }
             } else if (clickType.isKeyboardClick()) {

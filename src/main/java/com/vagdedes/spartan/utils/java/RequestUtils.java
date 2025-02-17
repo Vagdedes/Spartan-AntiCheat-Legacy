@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.utils.java;
 
-import com.vagdedes.spartan.functionality.connection.cloud.IDs;
-import com.vagdedes.spartan.functionality.connection.cloud.SpartanEdition;
+import com.vagdedes.spartan.functionality.connection.IDs;
+import com.vagdedes.spartan.functionality.connection.SpartanEdition;
 import lombok.experimental.UtilityClass;
 
 import javax.net.ssl.HttpsURLConnection;
