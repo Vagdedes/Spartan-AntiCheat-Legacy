@@ -43,6 +43,10 @@ public class IMSimulationGravity extends CheckDetection {
     public void run() {
         this.call(() -> {
             PlayerProtocol p = this.protocol;
+
+            if (p.bukkitExtra.trackers.has(PlayerTrackers.TrackerType.BUBBLE_WATER)) { // todo remove
+                return;
+            }
             boolean ground = (this.protocol.bukkitExtra.getVehicle() != null)
                     ? this.protocol.bukkitExtra.getVehicle().isOnGround() : this.protocol.isOnGround();
             Location to = p.getLocation();

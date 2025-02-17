@@ -44,17 +44,16 @@ public class SpartanEdition {
                     + " Visit §n" + DiscordMemberCount.discordURL + "§r§c §lfix this§r§c.";
     private static boolean
             hasAccount = true,
-            firstLoad = true,
             notifyCache = false,
-            currentVersion = true,
             alternativeVersion = false,
             oneVersion = false;
+    private static Boolean
+            currentVersion = null;
 
     // Verification
 
     public static void refresh() {
-        if (firstLoad) {
-            firstLoad = false;
+        if (currentVersion == null) {
             currentVersion = !IDs.hasToken();
         }
         PluginBase.connectionThread.executeIfUnknownThreadElseHere(() -> {

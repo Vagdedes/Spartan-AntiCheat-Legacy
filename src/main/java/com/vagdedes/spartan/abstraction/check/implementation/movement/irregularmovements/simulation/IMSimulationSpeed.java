@@ -209,7 +209,9 @@ public class IMSimulationSpeed extends CheckDetection {
                                     flagged = true;
                                 }
                                 if (this.vl > 1 || (this.vl > 0.4 && this.vlCount > 10)) {
-                                    this.cancel("simulation[accel], diff: " + d);
+                                    if (d >= 0.04) { // todo remove
+                                        this.cancel("simulation[accel], diff: " + d);
+                                    }
                                     this.vl -= 0.1;
                                 }
                             }
