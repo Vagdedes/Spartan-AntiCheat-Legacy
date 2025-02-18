@@ -181,7 +181,10 @@ public class PlayerInfo extends InventoryMenu {
                         }
                         lore.add(
                                 "§4" + hackType.getCheck().getName()
-                                        + "§8: §c" + evidence.size() + " suspicions"
+                                        + "§8: §c" + evidence.size()
+                                        + (evidence.size() == 1
+                                        ? " suspicion"
+                                        : " suspicions")
                         );
                     }
                 }
