@@ -15,6 +15,7 @@ import me.vagdedes.spartan.api.API;
 import me.vagdedes.spartan.api.CheckCancelEvent;
 import me.vagdedes.spartan.api.PlayerViolationCommandEvent;
 import me.vagdedes.spartan.api.PlayerViolationEvent;
+import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
@@ -290,7 +291,11 @@ public abstract class CheckDetection extends CheckProcess {
                 this.protocol,
                 Config.messages.getColorfulString("detection_notification")
                         .replace("{info}", information)
-                        .replace("{detection:level}", level + "/" + punishment),
+                        .replace("{detection:level}", (level >= punishment
+                                ? "§4" :
+                                level >= prevention ? "§6"
+                                        : level >= notification ? "§3"
+                                        : "§2") + level + "/" + punishment),
                 hackType
         );
 
@@ -454,11 +459,19 @@ public abstract class CheckDetection extends CheckProcess {
 
     protected Runnable prevention(Location location, boolean groundTeleport, double damage) {
         return () -> {
-            if (location != null) {
-                protocol.teleport(location);
-            }
-            if (groundTeleport) {
-                protocol.bukkitExtra.groundTeleport();
+            if (location != null
+                    || groundTeleport) {
+                this.protocol.profile().getRunner(Enums.HackType.MorePackets).addDisableCause(
+                        "Prevention from checks",
+                        null,
+                        5
+                );
+                if (location != null) {
+                    protocol.teleport(location);
+                }
+                if (groundTeleport) {
+                    protocol.bukkitExtra.groundTeleport();
+                }
             }
             if (damage > 0.0) {
                 protocol.bukkitExtra.damage(damage);
@@ -538,6 +551,10 @@ public abstract class CheckDetection extends CheckProcess {
                                 && (silentCause == null
                                 || silentCause.hasExpired()
                                 || !silentCause.pointerMatches(information));
+
+                if (this.prevention.hasDetails()) {
+                    this.prevent();
+                }
             }
         };
 

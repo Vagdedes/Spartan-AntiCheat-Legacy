@@ -55,13 +55,13 @@ public class IMSimulationVehicle extends CheckDetection {
                 this.postFly++;
                 //this.protocol.bukkit().sendMessage("p: " + postFly);
                 if (this.postFly > 10) {
-                    this.cancel("prediction vehicle gravity " + pr);
+                    this.cancel("prediction vehicle gravity: " + pr, this.protocol.getFromLocation(), 0, true);
                     this.postFly = 9;
                 }
             } else if (!(vehicle instanceof Minecart) && getDeviantity(oldY, prV) < 1e-10) {
                 this.postFly++;
                 if (this.postFly > 7) {
-                    this.cancel("prediction vehicle gravity " + pr);
+                    this.cancel("prediction vehicle gravity: " + pr, this.protocol.getFromLocation(), 0, true);
                     this.postFly = 6;
                 }
             } else if (this.postFly > 0) {
@@ -71,7 +71,7 @@ public class IMSimulationVehicle extends CheckDetection {
                 if (postSpeed < 0) postSpeed = 0;
                 this.postSpeed++;
                 if (this.postSpeed > 8) {
-                    this.cancel("prediction vehicle speed " + diffAccel);
+                    this.cancel("prediction vehicle speed: " + diffAccel, this.protocol.getFromLocation());
                     this.postSpeed = 7;
                 }
             } else if (this.postSpeed > 0) this.postSpeed -= 2;
@@ -107,7 +107,7 @@ public class IMSimulationVehicle extends CheckDetection {
                 if (speed > allowedSpeed) {
                     this.vl += speed / allowedSpeed;
                     if (this.vl > 12.0) {
-                        this.cancel("vehicle limit speed " + speed);
+                        this.cancel("vehicle limit speed: " + speed, this.protocol.getFromLocation());
                         this.vl /= 1.3;
                     }
                 }
@@ -120,7 +120,7 @@ public class IMSimulationVehicle extends CheckDetection {
                 if (y > allowedVertical) {
                     this.vl += Math.abs(y / allowedVertical);
                     if (this.vl > 15.0) {
-                        this.cancel("vehicle limit gravity " + y);
+                        this.cancel("vehicle limit gravity: " + y, this.protocol.getFromLocation());
                         this.vl /= 1.3;
                     }
                 }

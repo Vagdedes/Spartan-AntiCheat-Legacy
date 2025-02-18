@@ -30,7 +30,7 @@ public class Messages extends ConfigurationBuilder {
         addOption("player_violation_reset_message", "&8[&2" + prefix + "&8]&a Violations successfully reset for player&8: &2{player}");
         addOption("player_stored_data_delete_message", "&8[&2" + prefix + "&8]&a Stored data successfully deleted for player&8: &2{player}");
         addOption("detection_notification", "&8[&2" + prefix + "&8] "
-                + "&e{player} &7>> &c{detection:real}§8[§4{detection:level}§8] &7(§f{info}§7)");
+                + "&e{player} &7>> &c{detection:real}§8[{detection:level}§8] &7(§f{info}§7)");
 
         // Checks
         addOption("check_stored_data_delete_message", "&8[&2" + prefix + "&8]&a Stored data successfully deleted for check&8: &2{check}");

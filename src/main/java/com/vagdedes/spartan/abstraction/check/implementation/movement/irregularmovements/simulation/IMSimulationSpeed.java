@@ -209,8 +209,8 @@ public class IMSimulationSpeed extends CheckDetection {
                                     flagged = true;
                                 }
                                 if (this.vl > 1 || (this.vl > 0.4 && this.vlCount > 10)) {
-                                    if (d >= 0.04) { // todo remove
-                                        this.cancel("simulation[accel], diff: " + d);
+                                    if (d >= 0.05) { // todo remove
+                                        this.cancel("simulation[accel], diff: " + d, this.protocol.getFromLocation(), 0, true);
                                     }
                                     this.vl -= 0.1;
                                 }

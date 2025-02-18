@@ -44,19 +44,19 @@ public class IMSimulationElytra extends CheckDetection {
                     //this.protocol.bukkit().sendMessage("d: " + postSpeed);
                     this.postSpeed += (diffAccel == 0) ? 3 : 1;
                     if (this.postSpeed > 12) {
-                        this.cancel("invalid elytra speed " + diffAccel);
+                        this.cancel("invalid elytra speed: " + diffAccel, this.protocol.getFromLocation(), 0, true);
                         this.postSpeed = 8;
                     }
                 } else if (this.postSpeed > 0) this.postSpeed -= 2;
                 if (pr == 0.0 && ec.isAllFalse()) {
                     this.vl += 2.0;
                     if (this.vl >= 5.0) {
-                        this.cancel("invalid elytra gravity " + pr);
+                        this.cancel("invalid elytra gravity: " + pr, this.protocol.getFromLocation(), 0, true);
                         this.vl /= 1.3;
                     }
                 }
                 if (speed > 2.4 || y > 1.7) {
-                    this.cancel("elytra limit");
+                    this.cancel("elytra limit", this.protocol.getFromLocation(), 0, true);
                 }
                 this.vl /= 1.15;
             }

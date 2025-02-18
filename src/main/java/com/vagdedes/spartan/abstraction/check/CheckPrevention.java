@@ -38,6 +38,12 @@ public class CheckPrevention {
         return this.canPrevent && System.currentTimeMillis() <= this.expiration;
     }
 
+    boolean hasDetails() {
+        return this.location != null
+                || this.groundTeleport
+                || this.damage > 0.0;
+    }
+
     void handle(CheckDetection detection) {
         if (PluginBase.isSynchronised()) {
             detection.prevention(

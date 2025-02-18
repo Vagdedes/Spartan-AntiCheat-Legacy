@@ -13,7 +13,6 @@ import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import me.vagdedes.spartan.api.API;
 import me.vagdedes.spartan.system.Enums;
-import org.bukkit.Location;
 import org.bukkit.Material;
 
 import java.sql.*;
@@ -119,12 +118,7 @@ public class SQLFeature extends ConfigurationBuilder {
     @Override
     public void clear() {
         super.clear();
-        enabled = !getHost().isEmpty()
-                && !getUser().isEmpty()
-                && !getPassword().isEmpty()
-                && !getDatabase().isEmpty()
-                && !getTable().isEmpty()
-                && !getDriver().isEmpty();
+        enabled = true;
     }
 
     public void refreshDatabase() {
@@ -304,9 +298,6 @@ public class SQLFeature extends ConfigurationBuilder {
                         "player_uuid VARCHAR(36), " +
                         "player_name VARCHAR(24), " +
                         "player_latency INT(11), " +
-                        "player_x INT(11), " +
-                        "player_y INT(11), " +
-                        "player_z INT(11), " +
 
                         "functionality VARCHAR(32), " +
 
@@ -327,13 +318,12 @@ public class SQLFeature extends ConfigurationBuilder {
             boolean hasPlayer = p != null,
                     hasCheck = hackType != null,
                     hasMaterial = material != null;
-            Location location = hasPlayer ? p.getLocationOrVehicle() : null;
             update(
                     "INSERT INTO " + table
                             + " (creation_date"
                             + ", server_name, plugin_version, server_version, online_players"
                             + ", type, notification, information"
-                            + ", player_uuid, player_name, player_latency, player_x, player_y, player_z"
+                            + ", player_uuid, player_name, player_latency"
                             + ", functionality) "
                             + "VALUES (" + syntaxForColumn(AntiCheatLogs.getDate(AntiCheatLogs.dateFormat, time))
                             + ", " + syntaxForColumn(CrossServerNotifications.getServerName())
@@ -346,9 +336,6 @@ public class SQLFeature extends ConfigurationBuilder {
                             + ", " + (hasPlayer ? syntaxForColumn(p.getUUID()) : "NULL")
                             + ", " + (hasPlayer ? syntaxForColumn(p.bukkit().getName()) : "NULL")
                             + ", " + (hasPlayer ? syntaxForColumn(p.getPing()) : "NULL")
-                            + ", " + (hasPlayer ? syntaxForColumn(location.getBlockX()) : "NULL")
-                            + ", " + (hasPlayer ? syntaxForColumn(location.getBlockY()) : "NULL")
-                            + ", " + (hasPlayer ? syntaxForColumn(location.getBlockZ()) : "NULL")
                             + ", " + (hasMaterial ? syntaxForColumn(material) : hasCheck ? syntaxForColumn(hackType) : "NULL")
                             + ");"
             );
