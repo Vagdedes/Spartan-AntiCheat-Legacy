@@ -11,7 +11,6 @@ import com.vagdedes.spartan.functionality.concurrent.GeneralThread;
 import com.vagdedes.spartan.functionality.connection.CloudBase;
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.PluginBase;
-import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.inventory.MaterialUtils;
 import me.vagdedes.spartan.system.Enums;
@@ -506,17 +505,13 @@ public class ResearchEngine {
                     if (hackType.getCheck().isEnabled(dataType, null)) {
                         for (PlayerProfile profile : profiles) {
                             for (CheckDetection detectionExecutor : profile.getRunner(hackType).getDetections()) {
-                                List<Long> timeDifferences = detectionExecutor.getTimeDifferences(profile, dataType);
-
-                                if (!timeDifferences.isEmpty()) {
-                                    statistics.computeIfAbsent(
-                                            detectionExecutor.name,
-                                            k -> new LinkedHashMap<>()
-                                    ).put(
-                                            detectionExecutor,
-                                            timeDifferences
-                                    );
-                                }
+                                statistics.computeIfAbsent(
+                                        detectionExecutor.name,
+                                        k -> new LinkedHashMap<>()
+                                ).put(
+                                        detectionExecutor,
+                                        detectionExecutor.getTimeDifferences(profile, dataType)
+                                );
                             }
                         }
 
@@ -534,9 +529,36 @@ public class ResearchEngine {
                             for (Map.Entry<String, Map<CheckDetection, List<Long>>> entry : statistics.entrySet()) {
                                 Map<CheckDetection, List<Long>> map = entry.getValue();
                                 CheckDetection detection = map.keySet().iterator().next();
-                                double unique = map.size(),
-                                        mean = 0.0,
+                                double mean = 0.0,
+                                        realizedMean = 0.0,
+                                        realizedTotal = 0.0,
                                         total = 0.0;
+
+                                for (List<Long> list : map.values()) {
+                                    if (!list.isEmpty()) {
+                                        for (long time : list) {
+                                            realizedMean += time;
+                                        }
+                                        realizedTotal += list.size();
+                                    }
+                                }
+                                
+                                if (realizedTotal > 0) {
+                                    realizedMean /= realizedTotal;
+                                    for (List<Long> list : map.values()) {
+                                        if (list.isEmpty()) {
+                                            mean += realizedMean;
+                                            total++;
+                                        } else {
+                                            for (long time : list) {
+                                                mean += time;
+                                            }
+                                            total += list.size();
+                                        }
+                                    }
+                                } else {
+                                    realizedMean = detection.defaultAverageTime;
+                                }
 
                                 for (List<Long> list : map.values()) {
                                     for (long time : list) {
@@ -550,20 +572,14 @@ public class ResearchEngine {
                                     averageViolationTime.put(
                                             (detection.generalHashCode() * PluginBase.hashCodeMultiplier)
                                                     + dataType.hashCode(),
-                                            Math.max(mean - (1.0 / unique) * mean, TPS.tickTime)
+                                            mean
                                     );
                                 } else {
-                                    for (PlayerProfile profile : profiles) {
-                                        CheckDetection find = profile.getRunner(hackType).getDetection(detection.name);
-
-                                        if (find != null) {
-                                            find.clearData(dataType);
-                                            averageViolationTime.remove(
-                                                    (detection.generalHashCode() * PluginBase.hashCodeMultiplier)
-                                                            + dataType.hashCode()
-                                            );
-                                        }
-                                    }
+                                    averageViolationTime.put(
+                                            (detection.generalHashCode() * PluginBase.hashCodeMultiplier)
+                                                    + dataType.hashCode(),
+                                            realizedMean
+                                    );
                                 }
                             }
                         }
