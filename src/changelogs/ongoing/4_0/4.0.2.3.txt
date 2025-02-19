@@ -5,3 +5,4 @@
 [#] Fixed a rare config utils console error
 [#] Removed historical statistics so also removed the Main menu
 [#] Removed coordinates from the SQL database structure
+[#] Fixed FastClicks false positives when entities were not around

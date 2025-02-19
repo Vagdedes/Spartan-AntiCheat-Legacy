@@ -6,6 +6,7 @@ import com.vagdedes.spartan.abstraction.event.PlayerTickEvent;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
+import com.vagdedes.spartan.utils.minecraft.entity.CombatUtils;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -38,6 +39,15 @@ public class FastClicks extends CheckRunner {
                 ((PlayerInteractEvent) object).setCancelled(true);
             }
         }
+    }
+
+    @Override
+    protected boolean canRun() {
+        return !this.protocol.bukkitExtra.getNearbyEntities(
+                CombatUtils.maxHitDistance,
+                CombatUtils.maxHitDistance,
+                CombatUtils.maxHitDistance
+        ).isEmpty();
     }
 
 }

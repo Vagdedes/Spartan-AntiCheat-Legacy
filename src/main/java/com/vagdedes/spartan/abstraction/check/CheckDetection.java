@@ -295,7 +295,7 @@ public abstract class CheckDetection extends CheckProcess {
                                 ? "§4" :
                                 level >= prevention ? "§6"
                                         : level >= notification ? "§3"
-                                        : "§2") + level + "/" + punishment),
+                                        : "§2") + AlgebraUtils.integerFloor(level / (double) punishment * 100.0) + "/100"),
                 hackType
         );
 

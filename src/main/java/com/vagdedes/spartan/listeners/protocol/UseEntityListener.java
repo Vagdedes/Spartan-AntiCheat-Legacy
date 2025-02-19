@@ -42,7 +42,6 @@ public class UseEntityListener extends PacketAdapter {
                     }
                 }
                 if (t instanceof Vehicle) {
-                    protocol.bukkitExtra.trackers.add(PlayerTrackers.TrackerType.VEHICLE, "exit_tp", 1);
                     protocol.bukkitExtra.trackers.add(PlayerTrackers.TrackerType.VEHICLE, "vh_tp", 1);
                     protocol.profile().executeRunners(
                             false,

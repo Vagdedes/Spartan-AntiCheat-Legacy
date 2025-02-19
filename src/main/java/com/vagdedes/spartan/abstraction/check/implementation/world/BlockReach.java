@@ -29,14 +29,14 @@ public class BlockReach extends CheckRunner {
             breaking,
             interact,
             place,
-            unusual;
+            raytrace;
 
     public BlockReach(HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);
         this.breaking = new ImplementedDetection(this, null, null, "breaking", true);
         this.interact = new ImplementedDetection(this, null, null, "interact", true);
         this.place = new ImplementedDetection(this, null, null, "place", true);
-        this.unusual = new ImplementedDetection(this, null, null, "unusual", true);
+        this.raytrace = new ImplementedDetection(this, null, null, "raytrace", true);
     }
 
     private boolean canDo(Block b) {
@@ -99,7 +99,7 @@ public class BlockReach extends CheckRunner {
             });
         } else if (object instanceof CBlockPlaceEvent) {
             if (this.place.canCall()
-                    || this.unusual.canCall()) {
+                    || this.raytrace.canCall()) {
                 CBlockPlaceEvent event = (CBlockPlaceEvent) object;
 
                 if (BlockUtils.isSolid(event.placedAgainstBlock.getType())) {
@@ -107,7 +107,11 @@ public class BlockReach extends CheckRunner {
                             && !ItemsAdder.is(event.placedBlock)
                             && BlockUtils.isSolid(event.placedBlock.getType())
                             && !BlockUtils.isScaffoldingBlock(event.placedBlock.getType())) {
-                        Location to = this.protocol.getLocationOrVehicle();
+                        Location to = this.protocol.getLocationOrVehicle().clone().add(
+                                0,
+                                this.protocol.bukkit().getEyeHeight(),
+                                0
+                        );
                         double distance = SpartanLocation.distance(to, event.placedBlock.getLocation()),
                                 ab_distance = SpartanLocation.distance(to, event.placedAgainstBlock.getLocation());
 
@@ -116,14 +120,12 @@ public class BlockReach extends CheckRunner {
                                 && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
                                 || event.placedBlock.getType() != Material.BARRIER)
                                 && this.protocol.bukkitExtra.getVehicle() == null
-                                && distance > (ab_distance + GroundUtils.boundingBox + 0.1)) {
-                            this.unusual.call(() -> {
-                                this.unusual.cancel(
-                                        "unusual, distance: " + distance
-                                                + ", block-against-distance: " + ab_distance
-                                                + ", block: " + BlockUtils.blockToString(event.placedBlock)
-                                );
-                            });
+                                && distance > (ab_distance + GroundUtils.boundingBox)) {
+                            this.raytrace.call(() -> this.raytrace.cancel(
+                                    "raytrace, distance: " + distance
+                                            + ", block-against-distance: " + ab_distance
+                                            + ", block: " + BlockUtils.blockToString(event.placedBlock)
+                            ));
                         } else {
                             this.place.call(() -> {
                                 double limit = getLimit();

@@ -38,7 +38,6 @@ public class VehicleEvent implements Listener {
 
     public static void exit(PlayerBukkit player) {
         player.trackers.add(PlayerTrackers.TrackerType.VEHICLE, "exit", 5);
-        player.trackers.add(PlayerTrackers.TrackerType.VEHICLE, "exit_tp", 1);
         player.trackers.add(PlayerTrackers.TrackerType.VEHICLE, "vh_tp", 1);
     }
 
