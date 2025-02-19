@@ -82,7 +82,7 @@ public class SpartanEdition {
 
     public static boolean hasDetectionsPurchased(Check.DataType dataType) {
         return SpartanEdition.currentType == dataType
-                ? currentVersion
+                ? currentVersion != null && currentVersion
                 : alternativeVersion;
     }
 
@@ -96,7 +96,7 @@ public class SpartanEdition {
 
     public static String getProductID() {
         return getProductID(
-                currentVersion
+                currentVersion != null && currentVersion
                         ? currentType
                         : (alternativeVersion ? alternativeType : null)
         );
@@ -115,9 +115,9 @@ public class SpartanEdition {
             }
         }
         return Register.pluginName
-                + (currentVersion && alternativeVersion
+                + (currentVersion != null && currentVersion && alternativeVersion
                 ? " One"
-                : ": §a" + (currentVersion ? "§a" : "§c") + currentType
+                : ": §a" + (currentVersion != null && currentVersion ? "§a" : "§c") + currentType
                 + "§8/" + (alternativeVersion ? "§a" : "§c") + alternativeType)
                 + (lastColor != null ? "§" + lastColor : "");
     }
@@ -126,9 +126,9 @@ public class SpartanEdition {
 
     public static void attemptNotifications(PlayerProtocol protocol) {
         Check.DataType[] missingDetections =
-                !currentVersion && !alternativeVersion
+                !(currentVersion != null && currentVersion) && !alternativeVersion
                         ? new Check.DataType[]{currentType, alternativeType}
-                        : !currentVersion
+                        : !(currentVersion != null && currentVersion)
                         ? new Check.DataType[]{currentType}
                         : !alternativeVersion
                         ? new Check.DataType[]{alternativeType}

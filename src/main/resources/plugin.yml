@@ -1,7 +1,7 @@
 name: Spartan
 authors: [Evangelos Dedes @Vagdedes - Since 2016, pawsashatoy - Since 2024]
 main: com.vagdedes.spartan.Register
-version: 4.0.2.3
+version: 4.0.2.4
 website: https://www.vagdedes.com
 description: The intuitive solution when it comes to anti-cheat protection
 api-version: 1.13

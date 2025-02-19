@@ -13,6 +13,7 @@ import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.listeners.protocol.TeleportListener;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.math.RayUtils;
+import me.vagdedes.spartan.system.Enums;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
@@ -142,6 +143,14 @@ public class MorePackets extends CheckRunner {
         } else if (packetVL > 0) {
             packetVL -= 1;
         }
+    }
+
+    public final void disableTemporarily(String reason) {
+        protocol.profile().getRunner(Enums.HackType.MorePackets).addDisableCause(
+                reason,
+                null,
+                5
+        );
     }
 
     @Override
