@@ -334,7 +334,7 @@ public abstract class CheckDetection extends CheckProcess {
                     location.getBlockX(),
                     location.getBlockY(),
                     location.getBlockZ(),
-                    "Suspected for",
+                    "Detection",
                     notificationMsg
             );
         }
