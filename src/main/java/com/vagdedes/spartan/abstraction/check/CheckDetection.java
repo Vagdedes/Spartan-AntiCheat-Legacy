@@ -34,7 +34,7 @@ public abstract class CheckDetection extends CheckProcess {
             punishmentLevelIdentifier = "Punishment-Level:";
 
     private static final long
-            DEFAULT_AVERAGE_TIME = 1_000L,
+            DEFAULT_AVERAGE_TIME = 500L,
             TIME_TO_PUNISH = 60_000L,
             TIME_TO_PREVENT = TIME_TO_PUNISH / 2L,
             TIME_TO_NOTIFY = TIME_TO_PREVENT / 3L;
