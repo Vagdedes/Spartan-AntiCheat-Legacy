@@ -60,7 +60,7 @@ public class IrregularMovements extends CheckRunner {
         } else if (object instanceof CPlayerRiptideEvent) {
             gravityPackets.trident();
             speedPackets.trident();
-            speedBukkit.trident((int) object);
+            speedBukkit.trident((CPlayerRiptideEvent) object);
         } else if (object instanceof SuperPositionPacketEvent) {
             SuperPositionPacketEvent e = (SuperPositionPacketEvent) object;
             speedPackets.ground(e.packetEvent.getPacket().getBooleans().read(0));

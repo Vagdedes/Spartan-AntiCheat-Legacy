@@ -1,1 +1,2 @@
 [#] Decreased the default average violation to improve false positives
+[#] Fixed a console error related to integer to object casting
