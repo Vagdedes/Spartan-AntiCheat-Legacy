@@ -8,7 +8,6 @@ import com.vagdedes.spartan.functionality.moderation.clickable.ClickableMessage;
 import com.vagdedes.spartan.functionality.server.*;
 import com.vagdedes.spartan.functionality.tracking.AntiCheatLogs;
 import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
-import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.server.ConfigUtils;
 import me.vagdedes.spartan.api.API;
@@ -36,8 +35,8 @@ public abstract class CheckDetection extends CheckProcess {
     private static final long
             DEFAULT_AVERAGE_TIME = 500L,
             TIME_TO_PUNISH = 60_000L,
-            TIME_TO_PREVENT = TIME_TO_PUNISH / 2L,
-            TIME_TO_NOTIFY = TIME_TO_PREVENT / 3L;
+            TIME_TO_PREVENT = AlgebraUtils.integerCeil(TIME_TO_PUNISH * (2.0 / 3.0)),
+            TIME_TO_NOTIFY = AlgebraUtils.integerCeil(TIME_TO_PUNISH * 0.5);
 
     // Separator
 
@@ -326,20 +325,20 @@ public abstract class CheckDetection extends CheckProcess {
                 this.hackType,
                 time
         );
-        if (canNotifyOutOfVerbose) {
-            CloudConnections.executeDiscordWebhook(
-                    "checks",
-                    protocol.getUUID(),
-                    protocol.bukkit().getName(),
-                    location.getBlockX(),
-                    location.getBlockY(),
-                    location.getBlockZ(),
-                    "Detection",
-                    notificationMsg
-            );
-        }
 
         if (enabled) {
+            if (canNotifyOutOfVerbose) {
+                CloudConnections.executeDiscordWebhook(
+                        "checks",
+                        protocol.getUUID(),
+                        protocol.bukkit().getName(),
+                        location.getBlockX(),
+                        location.getBlockY(),
+                        location.getBlockZ(),
+                        "Detection",
+                        notificationMsg
+                );
+            }
             // Local Notifications
             String command = Config.settings.getString("Notifications.message_clickable_command")
                     .replace("{player}", this.protocol.bukkit().getName());
@@ -414,17 +413,6 @@ public abstract class CheckDetection extends CheckProcess {
                         PluginBase.runCommand(modifiedCommand);
                     }
                 }
-                Location location = this.protocol.getLocation();
-                CloudConnections.executeDiscordWebhook(
-                        "punishments",
-                        this.protocol.getUUID(),
-                        this.protocol.bukkit().getName(),
-                        location.getBlockX(),
-                        location.getBlockY(),
-                        location.getBlockZ(),
-                        "Punishment",
-                        StringUtils.toString(commands, "\n")
-                );
             }
         }
     }
