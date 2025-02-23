@@ -35,8 +35,8 @@ public abstract class CheckDetection extends CheckProcess {
     private static final long
             DEFAULT_AVERAGE_TIME = 500L,
             TIME_TO_PUNISH = 60_000L,
-            TIME_TO_PREVENT = AlgebraUtils.integerCeil(TIME_TO_PUNISH * (2.0 / 3.0)),
-            TIME_TO_NOTIFY = AlgebraUtils.integerCeil(TIME_TO_PUNISH * 0.5);
+            TIME_TO_PREVENT = (TIME_TO_PUNISH / 3L) * 2L,
+            TIME_TO_NOTIFY = TIME_TO_PUNISH / 2L;
 
     // Separator
 
