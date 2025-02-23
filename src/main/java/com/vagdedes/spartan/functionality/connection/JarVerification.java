@@ -76,7 +76,7 @@ public class JarVerification {
             }
         } catch (Exception e) {
             if (IDs.canAdvertise()) {
-                e.printStackTrace();
+                AwarenessNotifications.forcefullySend(e.getMessage());
             }
         }
         return b;
