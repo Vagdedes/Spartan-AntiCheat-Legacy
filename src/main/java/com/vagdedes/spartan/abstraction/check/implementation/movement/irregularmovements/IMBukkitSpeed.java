@@ -51,6 +51,18 @@ public class IMBukkitSpeed extends CheckDetection {
             0.3 // 16
     };
 
+    public static final double[] FLY_SPEED = new double[]{
+            0.42, 0.34, 0.25, 0.17, 0.09, 0.01, -0.07, -0.15, -0.22, -0.3,
+            -0.37, -0.44, -0.51, -0.58, -0.64, -0.71, -0.77, -0.84, -0.9,
+            -0.96, -1.02, -1.08, -1.13, -1.24, -1.19, -1.3, -1.35, -1.4,
+            -1.45, -1.5, -1.55, -1.6, -1.64, -1.69, -1.73, -1.78, -1.82,
+            -1.86, -1.9, -1.94, -1.98, -2.02, -2.06, -2.1, -2.13, -2.17,
+            -2.2, -2.24, -2.27, -2.3, -2.34, -2.37, -2.4, -2.43, -2.46,
+            -2.49, -2.52, -2.54, -2.6, -2.57, -2.65, -2.62, -2.68, -2.7,
+            -2.72, -2.75, -2.77, -2.79, -2.82, -2.84, -2.86, -2.88, -2.9,
+            -2.92, -2.94, -2.96, -2.98, -3.0
+    };
+
     private final CheckDetection
             strafeLineSpeeding,
             strafeJumpSpeeding,
@@ -58,9 +70,11 @@ public class IMBukkitSpeed extends CheckDetection {
 
     private int onAir = 0, onGround = 0, velocity = 0;
     private double multiply = 0, multiplyFriction = 0, multiplyVelo = 0, vl = 0, multiplyViolation;
+    private double yaw1move = 0;
     private Object[] violation = null;
     private RayLine tick1move = new RayLine(0, 0);
     private Location f = null;
+    private boolean simulationFlag = false;
 
     public IMBukkitSpeed(CheckRunner executor) {
         super(executor, null, Check.DetectionType.BUKKIT, null, true);
@@ -107,6 +121,7 @@ public class IMBukkitSpeed extends CheckDetection {
         RayLine moveRay = new RayLine(dx, dz);
         if (onAir == 1 || onGround) {
             tick1move = moveRay;
+            yaw1move = radiYaw;
         }
         double rayDiff = RayUtils.calculateRayLines(lookRay, moveRay);
         ExtendedPotionEffect glideEffect = PlayerUtils.slowFall
@@ -301,6 +316,7 @@ public class IMBukkitSpeed extends CheckDetection {
 
     private void startSimulationFlag() {
         this.f = this.protocol.getFromLocation();
+        this.simulationFlag = true;
     }
 
     private static boolean allowedAngle(double angle) {
