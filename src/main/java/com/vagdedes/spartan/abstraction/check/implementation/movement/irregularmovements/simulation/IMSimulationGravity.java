@@ -365,7 +365,8 @@ public class IMSimulationGravity extends CheckDetection {
                                 && getDeviantity(motion) < 0.16) {
                     this.setPredict(motion);
                 }
-                if (this.protocol.predictedSlimeTicks > 0 && getDeviantity(motion) < 2.5) {
+                //protocol.bukkit().sendMessage("t: " + this.protocol.predictedSlimeTicks + " " + getDeviantity(motion));
+                if (this.protocol.predictedSlimeTicks > 0 && getDeviantity(motion) < 2.5 && getDeviantity(motion) > 0.01) {
                     this.setPredict(motion);
                     this.allowMinorGravityChange = true;
                     this.protocol.predictedSlimeTicks--;

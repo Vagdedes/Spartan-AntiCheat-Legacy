@@ -53,7 +53,7 @@ public class MultiBlockListener extends PacketAdapter {
                 if (nmsData.toString().toLowerCase().contains("slime_block")) {
                     //player.sendMessage("p: " + loc.distance(protocol.getLocation()));
                     if (loc.distance(protocol.getLocation()) < 14) {
-                        protocol.predictedSlimeTicks = 5;
+                        protocol.predictedSlimeTicks = 6;
                     }
                 }
             }

@@ -192,7 +192,7 @@ public class IMSimulationSpeed extends CheckDetection {
                                 || this.vhact > 0)) {
                             this.setPredict(dx, dz);
                         }
-                        if (this.protocol.predictedSlimeTicks > 0 && d < 2.75) {
+                        if (this.protocol.predictedSlimeTicks > 0 && d < 2.75 && d > 0.01) {
                             this.setPredict(dx, dz);
                             this.protocol.predictedSlimeTicks--;
                         }
