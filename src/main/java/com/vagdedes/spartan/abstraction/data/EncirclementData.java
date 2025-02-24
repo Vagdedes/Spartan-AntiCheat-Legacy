@@ -121,10 +121,6 @@ public class EncirclementData {
                                             new Location(protocol.getWorld(),
                                                             xF + (double) dx, yF + (double) dy - 1, zF + (double) dz)
                             );
-                            Material materialBig3 = protocol.packetWorld.getBlock(
-                                            new Location(protocol.getWorld(),
-                                                            x + (double) dx, y + (double) dy - 1, z + (double) dz)
-                            );
                             Material materialBigFrom = protocol.packetWorld.getBlock(
                                             new Location(protocol.getWorld(),
                                             xF + (double) dx, yF + (double) dy + 0.5, zF + (double) dz)

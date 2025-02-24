@@ -44,7 +44,7 @@ public class PlayerProtocol {
     public int
             rightClickCounter,
             transactionVl, slime0Tick,
-            flyingTicks;
+            flyingTicks, predictedSlimeTicks;
     public final boolean npc;
     public boolean
             onGround,
@@ -154,6 +154,7 @@ public class PlayerProtocol {
         this.transactionLocal = false;
         this.transactionSentKeep = false;
         this.lagTick = 0;
+        this.predictedSlimeTicks = 0;
         this.componentY = new ComponentY();
         this.componentXZ = new ComponentXZ();
         this.useItemPacket = false;

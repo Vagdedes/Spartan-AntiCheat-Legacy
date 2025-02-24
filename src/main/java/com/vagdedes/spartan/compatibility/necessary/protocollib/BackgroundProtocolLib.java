@@ -41,6 +41,13 @@ public class BackgroundProtocolLib {
         } else {
             p.addPacketListener(new LegacyCombatListener());
         }
+
+        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
+            p.addPacketListener(new MultiBlockListener());
+        } else {
+            p.addPacketListener(new MultiBlockLegacyListener());
+        }
+
         p.addPacketListener(new MovementListener());
         p.addPacketListener(new TeleportListener());
         p.addPacketListener(new VehicleHandle());
