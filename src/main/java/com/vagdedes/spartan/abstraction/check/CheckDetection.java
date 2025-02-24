@@ -379,6 +379,8 @@ public abstract class CheckDetection extends CheckProcess {
             List<String> commands = check.getPunishmentCommands();
 
             if (!commands.isEmpty()) {
+                this.accumulatedTime[this.protocol.bukkitExtra.dataType.ordinal()] = 0L;
+                this.previousTime[this.protocol.bukkitExtra.dataType.ordinal()] = -1L;
                 int index = 0;
                 boolean enabledDeveloperAPI = Config.settings.getBoolean("Important.enable_developer_api");
 
