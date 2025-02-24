@@ -75,14 +75,14 @@ public class MoveDirection extends CheckDetection {
                             )
                     );
                     if (rayTraceAnalysis.size() >= 10) {
-                        analyze(this.protocol.getLocation());
+                        analyze();
                     }
                 }
             }
         });
     }
 
-    private void analyze(Location to) {
+    private void analyze() {
         targetsOnTheRow.clear();
         punish = "";
         punishL2 = "";
@@ -186,7 +186,7 @@ public class MoveDirection extends CheckDetection {
                             + ", gcd: " + gcd + ", aPI: " + aggressivePatternI
                             + ", aPD: " + aggressivePatternD + ", aPI2: " + aggressivePatternI2
                             + ", aPD2: " + aggressivePatternD2,
-                    to
+                    this.protocol.getFromLocation()
             );
             vl -= 10;
         }
@@ -194,7 +194,7 @@ public class MoveDirection extends CheckDetection {
         if (!punishL2.isEmpty() && vlL2 > (priorityData(priorityType()).vlLimit / 2) + 50) {
             this.layer2.cancel(
                     "(layer2) type: " + punishL2 + ", infs: " + infinitives,
-                    to
+                    this.protocol.getFromLocation()
             );
             vlL2 -= 10;
         }

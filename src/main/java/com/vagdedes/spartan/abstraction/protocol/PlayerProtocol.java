@@ -304,7 +304,13 @@ public class PlayerProtocol {
             } else {
                 PluginBase.transferTask(
                         this,
-                        () -> this.bukkit().teleport(location)
+                        () -> {
+                            Player bukkit = this.bukkit();
+
+                            if (bukkit.isOnline()) {
+                                bukkit.teleport(location);
+                            }
+                        }
                 );
             }
             return true;

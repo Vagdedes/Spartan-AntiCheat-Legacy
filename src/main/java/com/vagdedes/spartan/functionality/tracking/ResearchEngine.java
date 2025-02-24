@@ -542,7 +542,7 @@ public class ResearchEngine {
                                         realizedTotal += list.size();
                                     }
                                 }
-                                
+
                                 if (realizedTotal > 0) {
                                     realizedMean /= realizedTotal;
                                     for (List<Long> list : map.values()) {
@@ -572,13 +572,19 @@ public class ResearchEngine {
                                     averageViolationTime.put(
                                             (detection.generalHashCode() * PluginBase.hashCodeMultiplier)
                                                     + dataType.hashCode(),
-                                            mean
+                                            Math.min(
+                                                    detection.getAverageCallFrequency() * CheckDetection.frequencyMultiplier,
+                                                    mean
+                                            )
                                     );
                                 } else {
                                     averageViolationTime.put(
                                             (detection.generalHashCode() * PluginBase.hashCodeMultiplier)
                                                     + dataType.hashCode(),
-                                            realizedMean
+                                            Math.min(
+                                                    detection.getAverageCallFrequency() * CheckDetection.frequencyMultiplier,
+                                                    realizedMean
+                                            )
                                     );
                                 }
                             }
