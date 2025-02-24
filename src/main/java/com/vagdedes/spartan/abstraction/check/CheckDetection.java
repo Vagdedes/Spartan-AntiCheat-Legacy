@@ -32,6 +32,8 @@ public abstract class CheckDetection extends CheckProcess {
             preventionLevelIdentifier = "Prevention-Level:",
             punishmentLevelIdentifier = "Punishment-Level:";
 
+    public static final double frequencyMultiplier = 40.0; // Based on expected average call frequency of movement detections
+
     private static final long
             DEFAULT_AVERAGE_TIME = 500L,
             TIME_TO_PUNISH = 60_000L,
@@ -50,7 +52,7 @@ public abstract class CheckDetection extends CheckProcess {
 
     public final long defaultAverageTime, timeToNotify, timeToPrevent, timeToPunish;
     private final long[] accumulatedTime, previousTime;
-    private long notifications;
+    private long notifications, callFrequency, lastCall;
     private final List<Long>[] data;
 
     public CheckDetection(
@@ -82,6 +84,8 @@ public abstract class CheckDetection extends CheckProcess {
         this.accumulatedTime = new long[Check.DataType.values().length];
         this.previousTime = new long[Check.DataType.values().length];
         this.data = new List[Check.DataType.values().length];
+        this.callFrequency = -1L;
+        this.lastCall = -1L;
 
         for (Check.DataType dataType : Check.DataType.values()) {
             this.data[dataType.ordinal()] = new CopyOnWriteArrayList<>();
@@ -148,8 +152,39 @@ public abstract class CheckDetection extends CheckProcess {
 
     public final void call(Runnable runnable) {
         if (this.canCall()) {
+            if (this.lastCall != -1L) {
+                this.callFrequency = System.currentTimeMillis() - this.lastCall;
+            }
+            this.lastCall = System.currentTimeMillis();
             runnable.run();
         }
+    }
+
+    public final double getAverageCallFrequency() {
+        Collection<PlayerProfile> profiles = ResearchEngine.getPlayerProfiles();
+
+        if (!profiles.isEmpty()) {
+            long sum = 0L;
+            double count = 0.0;
+
+            for (PlayerProfile profile : profiles) {
+                CheckDetection detection = profile.getRunner(this.hackType).getDetection(this.name);
+
+                if (detection != null) {
+                    long frequency = detection.callFrequency;
+
+                    if (frequency != -1L) {
+                        sum += frequency;
+                        count++;
+                    }
+                }
+            }
+
+            if (count > 0.0) {
+                return sum / count;
+            }
+        }
+        return TPS.tickTime;
     }
 
     // Data
@@ -303,10 +338,10 @@ public abstract class CheckDetection extends CheckProcess {
                 + "(" + checkIdentifier + " " + this.hackType + "), "
                 + "(" + javaPlayerIdentifier + " " + (!this.protocol.bukkitExtra.isBedrockPlayer()) + ")" + ", "
                 + "(" + detectionIdentifier + " " + this.name + ")" + ", "
-                + "(" + levelIdentifier + " " + AlgebraUtils.cut(level, 2) + "),"
+                + "(" + levelIdentifier + " " + level + "),"
                 + "(" + notificationLevelIdentifier + " " + notification + "),"
                 + "(" + preventionLevelIdentifier + " " + prevention + "),"
-                + "(" + punishmentLevelIdentifier + " " + AlgebraUtils.cut(punishment, 2) + "),"
+                + "(" + punishmentLevelIdentifier + " " + punishment + "),"
                 + "(Server-Version: " + MultiVersion.serverVersion.toString() + "), "
                 + "(Plugin-Version: " + API.getVersion() + "), "
                 + "(Silent: " + hackType.getCheck().isSilent(this.protocol.bukkitExtra.dataType, this.protocol.getWorld().getName()) + "), "
@@ -379,6 +414,8 @@ public abstract class CheckDetection extends CheckProcess {
             List<String> commands = check.getPunishmentCommands();
 
             if (!commands.isEmpty()) {
+                this.accumulatedTime[this.protocol.bukkitExtra.dataType.ordinal()] = 0L;
+                this.previousTime[this.protocol.bukkitExtra.dataType.ordinal()] = -1L;
                 int index = 0;
                 boolean enabledDeveloperAPI = Config.settings.getBoolean("Important.enable_developer_api");
 
@@ -546,10 +583,8 @@ public abstract class CheckDetection extends CheckProcess {
             }
         };
 
-        if (PluginBase.isSynchronised()) {
+        if (PluginBase.isSynchronised() || !event) {
             runnable.run();
-        } else if (!event) {
-            PluginBase.dataThread.executeIfUnknownThreadElseHere(runnable);
         } else {
             PluginBase.transferTask(this.protocol, runnable);
         }

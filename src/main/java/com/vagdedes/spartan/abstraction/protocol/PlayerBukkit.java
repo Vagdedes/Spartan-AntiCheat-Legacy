@@ -427,13 +427,8 @@ public class PlayerBukkit {
             return;
         }
         World world = this.protocol.getWorld();
-        double startY = Math.min(BlockUtils.getMaxHeight(world), location.getY()),
-                box = startY - Math.floor(startY);
+        double startY = Math.min(BlockUtils.getMaxHeight(world), location.getY());
         int iterations = 0;
-
-        if (!GroundUtils.blockHeightExists(box)) {
-            box = 0.0;
-        }
 
         for (double progressiveY = startY; startY > BlockUtils.getMinHeight(world); progressiveY--) {
             SpartanLocation loopLocation = new SpartanLocation(
