@@ -192,6 +192,9 @@ public class IMSimulationSpeed extends CheckDetection {
                                 || this.vhact > 0)) {
                             this.setPredict(dx, dz);
                         }
+                        if (this.isBlocksOnTop(to) && d < 0.1) {
+                            this.setPredict(dx, dz);
+                        }
                         if (this.protocol.predictedSlimeTicks > 0 && d < 2.75 && d > 0.01) {
                             this.setPredict(dx, dz);
                             this.protocol.predictedSlimeTicks--;
@@ -208,6 +211,7 @@ public class IMSimulationSpeed extends CheckDetection {
                             } else {
                                 this.vlCount += (air == 1) ? 4 : 1;
                                 this.vl += (d * 1.5) + (air == 1 ? 0.5 : (d > 0.04) ? 0.12 : 0.06);
+                                protocol.bukkit().sendMessage("vl: " + vl + " " + d);
                                 if (this.vl > 0.05) {
                                     this.ACCELERATION_MOTION /= 2;
                                     flagged = true;
@@ -369,6 +373,27 @@ public class IMSimulationSpeed extends CheckDetection {
                 }
             }
         }
+        return false;
+    }
+    private boolean isBlocksOnTop(Location location) {
+        double x = location.getX();
+        double y = location.getY() - 0.1;
+        double z = location.getZ();
+
+        for (int dx = -2; dx <= 2; ++dx) {
+            for (double dy = 1.0; dy <= 2.0; dy += 0.5) {
+                for (int dz = -2; dz <= 2; ++dz) {
+                    Material material = this.protocol.packetWorld.getBlock(
+                                    new Location(this.protocol.getWorld(), x + (double) dx * 0.5, y + dy, z + (double) dz * 0.5)
+                    );
+
+                    if (material != null && BlockUtils.isSolid(material)) {
+                        return true;
+                    }
+                }
+            }
+        }
+
         return false;
     }
 
