@@ -1,0 +1,3 @@
+[#] Violations will now reset when the punishment level is reached and commands are executed
+[#] Implemented average detection call frequency to account for in statistics
+[#] Generic slime blocks falses fix
