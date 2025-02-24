@@ -211,7 +211,7 @@ public class IMSimulationSpeed extends CheckDetection {
                             } else {
                                 this.vlCount += (air == 1) ? 4 : 1;
                                 this.vl += (d * 1.5) + (air == 1 ? 0.5 : (d > 0.04) ? 0.12 : 0.06);
-                                protocol.bukkit().sendMessage("vl: " + vl + " " + d);
+                                //protocol.bukkit().sendMessage("vl: " + vl + " " + d);
                                 if (this.vl > 0.05) {
                                     this.ACCELERATION_MOTION /= 2;
                                     flagged = true;
