@@ -206,7 +206,7 @@ public class IMSimulationSpeed extends CheckDetection {
                         pr = Math.sqrt(predictX * predictX + predictZ * predictZ);
                         d = getDeviantity(pr, speed);
 
-                        protocol.bukkit().sendMessage("tp: " + tpTicks);
+                        //protocol.bukkit().sendMessage("tp: " + tpTicks);
                         if (tpTicks > 0 && d > 1e-7 && d < 0.09) {
                             tpTicks--;
                             setPredict(dx, dz);
