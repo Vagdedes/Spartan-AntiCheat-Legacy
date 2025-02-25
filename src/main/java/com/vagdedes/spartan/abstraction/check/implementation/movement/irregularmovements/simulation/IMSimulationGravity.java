@@ -399,7 +399,7 @@ public class IMSimulationGravity extends CheckDetection {
                             this.vl += devTotal;
                             this.vlCount += 1;
                         }
-
+                        //protocol.bukkit().sendMessage("vl: " + vl + " " + devTotal + " (gravity)");
                         if (this.vl > ((this.protocol.bukkitExtra.getVehicle() != null) ? 0.6 : 0.05)) {
                             StringBuilder alertBuilder = new StringBuilder(String.valueOf(RayUtils.scaleVal(devTotal, 6.0)));
                             if (devTotal < 1.0) {

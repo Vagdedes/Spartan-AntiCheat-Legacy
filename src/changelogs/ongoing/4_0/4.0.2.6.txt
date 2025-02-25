@@ -2,3 +2,4 @@
 [#] Implemented average detection call frequency to account for in statistics
 [#] Generic slime blocks falses fix
 [#] Fixed some falses with speed
+[#] Fixed falses with teleport

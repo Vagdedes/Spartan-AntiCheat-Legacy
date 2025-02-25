@@ -25,7 +25,7 @@ public class IMSimulationSpeed extends CheckDetection {
 
     private double vl = 0, vlCount = 0;
 
-    private int ground = 0, air = 0, action = 0, vhact = 0;
+    private int ground = 0, air = 0, action = 0, vhact = 0, tpTicks = 0;
     private boolean velo = false, sprintStatus = true;
     private static final double ACCELERATION_SPRINT = 0.026;
     private static final double ACCELERATION_BASIC = 0.02;
@@ -205,6 +205,13 @@ public class IMSimulationSpeed extends CheckDetection {
                         //protocol.getBukkit().sendMessage("v: " + (this.protocol.spartan.getVehicle() != null));
                         pr = Math.sqrt(predictX * predictX + predictZ * predictZ);
                         d = getDeviantity(pr, speed);
+
+                        protocol.bukkit().sendMessage("tp: " + tpTicks);
+                        if (tpTicks > 0 && d > 1e-7 && d < 0.09) {
+                            tpTicks--;
+                            setPredict(dx, dz);
+                            d = getDeviantity(pr, speed);
+                        }
                         if (!(dx == predictX && dz == predictZ)) {
                             if (ignoreTicks > 0 && d < 2) {
                                 ignoreTicks--;
@@ -311,7 +318,10 @@ public class IMSimulationSpeed extends CheckDetection {
     }
 
     public void teleport() {
-        this.call(() -> this.air = 0);
+        this.call(() -> {
+            this.tpTicks = 1;
+            this.air = 0;
+        });
     }
 
     public void ground(boolean isOnGround) {
