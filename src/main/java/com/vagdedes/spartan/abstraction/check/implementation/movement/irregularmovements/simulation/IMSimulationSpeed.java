@@ -300,7 +300,7 @@ public class IMSimulationSpeed extends CheckDetection {
                                 * velo.getVelocity().getX()
                                 + velo.getVelocity().getZ()
                                 * velo.getVelocity().getZ());
-                if (speed < pr * 2 + allowedDev) {
+                if (speed < pr * 2.5 + allowedDev) {
                     this.predictX = move.x;
                     this.predictZ = move.y;
                     this.ACCELERATION_VELOCITY = (pr + allowedDev) * 1.6;
