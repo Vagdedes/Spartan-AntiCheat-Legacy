@@ -458,17 +458,13 @@ public abstract class CheckDetection extends CheckProcess {
 
     public final boolean prevent() {
         if (this.prevention.complete()) {
-            if (PluginBase.isSynchronised()) {
-                if (Config.settings.getBoolean("Important.enable_developer_api")) {
-                    CheckCancelEvent checkCancelEvent = new CheckCancelEvent(this.protocol.bukkit(), hackType);
-                    Bukkit.getPluginManager().callEvent(checkCancelEvent);
+            if (PluginBase.isSynchronised()
+                    && Config.settings.getBoolean("Important.enable_developer_api")) {
+                CheckCancelEvent checkCancelEvent = new CheckCancelEvent(this.protocol.bukkit(), hackType);
+                Bukkit.getPluginManager().callEvent(checkCancelEvent);
 
-                    if (checkCancelEvent.isCancelled()) {
-                        return false;
-                    } else {
-                        this.prevention.handle(this);
-                        return true;
-                    }
+                if (checkCancelEvent.isCancelled()) {
+                    return false;
                 } else {
                     this.prevention.handle(this);
                     return true;
@@ -568,7 +564,6 @@ public abstract class CheckDetection extends CheckProcess {
 
             // Prevention & Punishment
             if (finalIsEnabled) {
-                this.punish(level, max);
                 this.prevention = newPrevention;
                 this.prevention.canPrevent =
                         level >= prevention
@@ -580,6 +575,7 @@ public abstract class CheckDetection extends CheckProcess {
                 if (this.prevention.hasDetails()) {
                     this.prevent();
                 }
+                this.punish(level, max);
             }
         };
 

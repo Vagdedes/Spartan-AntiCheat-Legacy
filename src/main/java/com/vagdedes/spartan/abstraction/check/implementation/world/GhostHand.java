@@ -40,7 +40,7 @@ public class GhostHand extends CheckRunner {
                         && !ItemsAdder.is(b)) {
                     Location location = this.protocol.getLocationOrVehicle().clone().add(
                             0,
-                            this.protocol.bukkit().getEyeHeight(),
+                            this.protocol.bukkitExtra.getEyeHeight(),
                             0
                     );
                     double bDistance = SpartanLocation.distance(location, b.getLocation());
@@ -79,7 +79,7 @@ public class GhostHand extends CheckRunner {
                             && BlockUtils.isChangeable(b.getType())) {
                         Location location = this.protocol.getLocationOrVehicle().clone().add(
                                 0,
-                                this.protocol.bukkit().getEyeHeight(),
+                                this.protocol.bukkitExtra.getEyeHeight(),
                                 0
                         );
                         double bDistance = SpartanLocation.distance(location, b.getLocation());

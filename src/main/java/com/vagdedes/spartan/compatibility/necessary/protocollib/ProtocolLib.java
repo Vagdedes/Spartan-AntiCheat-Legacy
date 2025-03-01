@@ -11,6 +11,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -120,6 +121,20 @@ public class ProtocolLib {
             }
         } else {
             return entity.getVehicle();
+        }
+    }
+
+    public static double getEyeHeight(Entity entity) {
+        if (entity instanceof Player) {
+            if (ProtocolLib.isTemporary((Player) entity)) {
+                return 0.0;
+            } else {
+                return ((Player) entity).getEyeHeight();
+            }
+        } else if (entity instanceof LivingEntity) {
+            return ((LivingEntity) entity).getEyeHeight();
+        } else {
+            return 0.0;
         }
     }
 

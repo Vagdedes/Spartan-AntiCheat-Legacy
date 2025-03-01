@@ -75,7 +75,7 @@ public class PlayerMovement {
     // Separator
 
     public boolean isLowEyeHeight() {
-        return this.parent.protocol.bukkit().getEyeHeight() < 1.0;
+        return this.parent.protocol.bukkitExtra.getEyeHeight() < 1.0;
     }
 
     public boolean isFlying() {

@@ -92,7 +92,7 @@ public class MovementProcessing {
         } else if (location.getBlock().isLiquid(LAVA)) {
             return true;
         } else {
-            for (double i = 0.0; i < Math.ceil(protocol.bukkit().getEyeHeight()); i++) {
+            for (double i = 0.0; i < Math.ceil(protocol.bukkitExtra.getEyeHeight()); i++) {
                 for (SpartanLocation locationModified : location.getSurroundingLocations(GroundUtils.boundingBox, i, GroundUtils.boundingBox)) {
                     if (locationModified.getBlock().isLiquidOrWaterLogged(false)) {
 
@@ -118,7 +118,7 @@ public class MovementProcessing {
             if (blockY > minY) {
                 SpartanLocation locationModified = location.clone();
                 int max = (blockY - minY),
-                        playerHeight = AlgebraUtils.integerCeil(protocol.bukkit().getEyeHeight());
+                        playerHeight = AlgebraUtils.integerCeil(protocol.bukkitExtra.getEyeHeight());
                 Set<Integer> emptyNonLiquid = new HashSet<>(max),
                         fullNonLiquid = new HashSet<>(max);
 

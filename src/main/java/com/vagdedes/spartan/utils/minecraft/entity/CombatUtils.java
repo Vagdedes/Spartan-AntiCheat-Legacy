@@ -144,7 +144,7 @@ public class CombatUtils {
                         0.0,
                         MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_11)
                                 ? entity.getHeight()
-                                : ((LivingEntity) entity).getEyeHeight()
+                                : ProtocolLib.getEyeHeight(entity)
                 };
         }
     }

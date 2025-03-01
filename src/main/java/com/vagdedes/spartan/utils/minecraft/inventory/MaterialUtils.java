@@ -256,7 +256,7 @@ public class MaterialUtils {
             if (protocol.bukkitExtra.movement.isSwimming()) {
                 water = true;
             } else {
-                SpartanBlock block = new SpartanLocation(protocol.getLocation()).add(0, protocol.bukkit().getEyeHeight(), 0).getBlock();
+                SpartanBlock block = new SpartanLocation(protocol.getLocation()).add(0, protocol.bukkitExtra.getEyeHeight(), 0).getBlock();
                 water = block.isWaterLogged() || block.getType() == MaterialUtils.get("water");
             }
             if (water) {

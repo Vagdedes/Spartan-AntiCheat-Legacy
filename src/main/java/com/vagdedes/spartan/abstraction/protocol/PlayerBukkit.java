@@ -233,7 +233,7 @@ public class PlayerBukkit {
             SpartanLocation location = new SpartanLocation(
                     protocol.getLocation().clone().add(
                             0,
-                            this.protocol.bukkit().getEyeHeight(),
+                            this.getEyeHeight(),
                             0
                     ).add(
                             protocol.getLocation().getDirection().multiply(i)
@@ -483,6 +483,12 @@ public class PlayerBukkit {
     public boolean isDead() {
         return this.protocol.bukkit().isDead()
                 && this.protocol.bukkit().getHealth() <= 0.0;
+    }
+
+    // Separator
+
+    public double getEyeHeight() {
+        return ProtocolLib.getEyeHeight(this.protocol.bukkit());
     }
 
 }

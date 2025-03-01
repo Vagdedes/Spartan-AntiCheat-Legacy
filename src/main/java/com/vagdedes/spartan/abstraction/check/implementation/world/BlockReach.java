@@ -109,7 +109,7 @@ public class BlockReach extends CheckRunner {
                             && !BlockUtils.isScaffoldingBlock(event.placedBlock.getType())) {
                         Location to = this.protocol.getLocationOrVehicle().clone().add(
                                 0,
-                                this.protocol.bukkit().getEyeHeight(),
+                                this.protocol.bukkitExtra.getEyeHeight(),
                                 0
                         );
                         double distance = SpartanLocation.distance(to, event.placedBlock.getLocation()),
