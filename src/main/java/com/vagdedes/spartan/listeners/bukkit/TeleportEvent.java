@@ -26,7 +26,7 @@ public class TeleportEvent implements Listener {
             protocol.profile().executeRunners(null, object);
             protocol.bukkitExtra.trackers.add(PlayerTrackers.TrackerType.TELEPORT, "tp", 1);
             ((MorePackets) protocol.profile().getRunner(Enums.HackType.MorePackets)).disableTemporarily(
-                    "Server teleportation"
+                    "Server teleportation" // todo remove
             );
         }
     }
@@ -43,7 +43,7 @@ public class TeleportEvent implements Listener {
             protocol.bukkitExtra.resetCrucialData();
             protocol.profile().executeRunners(null, object);
             ((MorePackets) protocol.profile().getRunner(Enums.HackType.MorePackets)).disableTemporarily(
-                    "Server respawn"
+                    "Server respawn" // todo remove
             );
         }
     }

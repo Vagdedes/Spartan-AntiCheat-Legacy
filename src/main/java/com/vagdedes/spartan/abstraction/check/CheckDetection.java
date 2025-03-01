@@ -355,7 +355,7 @@ public abstract class CheckDetection extends CheckProcess {
                 this.protocol,
                 enabled ? notificationMsg : null,
                 information,
-                canNotifyOutOfVerbose,
+                enabled && canNotifyOutOfVerbose,
                 null,
                 this.hackType,
                 time
@@ -483,7 +483,7 @@ public abstract class CheckDetection extends CheckProcess {
             if (location != null
                     || groundTeleport) {
                 this.protocol.profile().getRunner(Enums.HackType.MorePackets).addDisableCause(
-                        "Prevention from checks",
+                        "Prevention from checks", // todo remove
                         null,
                         5
                 );
