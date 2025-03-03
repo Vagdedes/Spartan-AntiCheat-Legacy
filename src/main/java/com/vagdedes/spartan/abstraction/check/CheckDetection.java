@@ -5,7 +5,10 @@ import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.functionality.connection.CloudConnections;
 import com.vagdedes.spartan.functionality.moderation.DetectionNotifications;
 import com.vagdedes.spartan.functionality.moderation.clickable.ClickableMessage;
-import com.vagdedes.spartan.functionality.server.*;
+import com.vagdedes.spartan.functionality.server.Config;
+import com.vagdedes.spartan.functionality.server.MultiVersion;
+import com.vagdedes.spartan.functionality.server.PluginBase;
+import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.AntiCheatLogs;
 import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -317,7 +320,6 @@ public abstract class CheckDetection extends CheckProcess {
             int notification,
             int prevention,
             int punishment,
-            boolean enabled,
             long time,
             String information
     ) {
@@ -353,51 +355,49 @@ public abstract class CheckDetection extends CheckProcess {
         boolean canNotifyOutOfVerbose = level >= notification;
         AntiCheatLogs.logInfo(
                 this.protocol,
-                enabled ? notificationMsg : null,
+                notificationMsg,
                 information,
-                enabled && canNotifyOutOfVerbose,
+                canNotifyOutOfVerbose,
                 null,
                 this.hackType,
                 time
         );
 
-        if (enabled) {
-            if (canNotifyOutOfVerbose) {
-                CloudConnections.executeDiscordWebhook(
-                        "checks",
-                        protocol.getUUID(),
-                        protocol.bukkit().getName(),
-                        location.getBlockX(),
-                        location.getBlockY(),
-                        location.getBlockZ(),
-                        "Detection",
-                        notificationMsg
-                );
+        if (canNotifyOutOfVerbose) {
+            CloudConnections.executeDiscordWebhook(
+                    "checks",
+                    protocol.getUUID(),
+                    protocol.bukkit().getName(),
+                    location.getBlockX(),
+                    location.getBlockY(),
+                    location.getBlockZ(),
+                    "Detection",
+                    notificationMsg
+            );
+        }
+        // Local Notifications
+        String command = Config.settings.getString("Notifications.message_clickable_command")
+                .replace("{player}", this.protocol.bukkit().getName());
+
+        if (Config.settings.getBoolean("Notifications.individual_only_notifications")) {
+            if (this.canSendNotification(time, level, notification)) {
+                ClickableMessage.sendCommand(this.protocol.bukkit(), notificationMsg, command, command);
             }
-            // Local Notifications
-            String command = Config.settings.getString("Notifications.message_clickable_command")
-                    .replace("{player}", this.protocol.bukkit().getName());
+        } else {
+            List<PlayerProtocol> protocols = DetectionNotifications.getPlayers();
 
-            if (Config.settings.getBoolean("Notifications.individual_only_notifications")) {
-                if (this.canSendNotification(time, level, notification)) {
-                    ClickableMessage.sendCommand(this.protocol.bukkit(), notificationMsg, command, command);
-                }
-            } else {
-                List<PlayerProtocol> protocols = DetectionNotifications.getPlayers();
+            if (!protocols.isEmpty()) {
+                for (PlayerProtocol staff : protocols) {
+                    CheckDetection detection = staff.profile().getRunner(this.hackType).getDetection(this.name);
 
-                if (!protocols.isEmpty()) {
-                    for (PlayerProtocol staff : protocols) {
-                        CheckDetection detection = staff.profile().getRunner(this.hackType).getDetection(this.name);
-
-                        if (detection != null
-                                && detection.canSendNotification(time, level, notification)) {
-                            ClickableMessage.sendCommand(
-                                    staff.bukkit(),
-                                    notificationMsg,
-                                    command,
-                                    command
-                            );
-                        }
+                    if (detection != null
+                            && detection.canSendNotification(time, level, notification)) {
+                        ClickableMessage.sendCommand(
+                                staff.bukkit(),
+                                notificationMsg,
+                                command,
+                                command
+                        );
                     }
                 }
             }
@@ -508,6 +508,13 @@ public abstract class CheckDetection extends CheckProcess {
                 || !this.executor.canRun()) {
             return;
         }
+        CheckCancellation disableCause = this.executor.getDisableCause();
+
+        if (disableCause != null
+                && !disableCause.hasExpired()
+                && disableCause.pointerMatches(information)) {
+            return;
+        }
         long time = System.currentTimeMillis();
         CheckPrevention newPrevention = new CheckPrevention(
                 location,
@@ -515,21 +522,8 @@ public abstract class CheckDetection extends CheckProcess {
                 groundTeleport,
                 damage
         );
-        boolean isEnabled =
-                hackType.getCheck().isEnabled(this.protocol.bukkitExtra.dataType, this.protocol.getWorld().getName())
-                        && this.isEnabled()
-                        && !Permissions.isBypassing(this.protocol.bukkit(), hackType);
-
-        if (isEnabled) {
-            CheckCancellation disableCause = this.executor.getDisableCause();
-            isEnabled = disableCause == null
-                    || disableCause.hasExpired()
-                    || !disableCause.pointerMatches(information);
-        }
-        boolean event = isEnabled
-                && Config.settings.getBoolean("Important.enable_developer_api");
+        boolean event = Config.settings.getBoolean("Important.enable_developer_api");
         CheckCancellation silentCause = this.executor.getSilentCause();
-        boolean finalIsEnabled = isEnabled;
 
         Runnable runnable = () -> {
             if (event) {
@@ -560,23 +554,21 @@ public abstract class CheckDetection extends CheckProcess {
                     level = Math.min(this.getLevel(this.protocol.bukkitExtra.dataType), max);
 
             // Notification
-            this.notify(level, notification, prevention, max, finalIsEnabled, time, information);
+            this.notify(level, notification, prevention, max, time, information);
 
             // Prevention & Punishment
-            if (finalIsEnabled) {
-                this.prevention = newPrevention;
-                this.prevention.canPrevent =
-                        level >= prevention
-                                && !hackType.getCheck().isSilent(this.protocol.bukkitExtra.dataType, this.protocol.getWorld().getName())
-                                && (silentCause == null
-                                || silentCause.hasExpired()
-                                || !silentCause.pointerMatches(information));
+            this.prevention = newPrevention;
+            this.prevention.canPrevent =
+                    level >= prevention
+                            && !hackType.getCheck().isSilent(this.protocol.bukkitExtra.dataType, this.protocol.getWorld().getName())
+                            && (silentCause == null
+                            || silentCause.hasExpired()
+                            || !silentCause.pointerMatches(information));
 
-                if (this.prevention.hasDetails()) {
-                    this.prevent();
-                }
-                this.punish(level, max);
+            if (this.prevention.hasDetails()) {
+                this.prevent();
             }
+            this.punish(level, max);
         };
 
         if (PluginBase.isSynchronised() || !event) {

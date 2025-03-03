@@ -11,6 +11,7 @@ import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.connection.SpartanEdition;
 import com.vagdedes.spartan.functionality.moderation.DetectionNotifications;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
+import com.vagdedes.spartan.functionality.server.Permissions;
 import com.vagdedes.spartan.functionality.server.PluginBase;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -142,12 +143,14 @@ public abstract class CheckRunner extends CheckProcess {
                 && !this.protocol.npc
                 && this.supportsDataType[this.protocol.bukkitExtra.dataType.ordinal()]
                 && this.supportsDetectionType[this.protocol.bukkitExtra.detectionType.ordinal()]
+                && !hackType.getCheck().isEnabled(this.protocol.bukkitExtra.dataType, this.protocol.getWorld().getName())
                 && SpartanEdition.hasDetectionsPurchased(this.protocol.bukkitExtra.dataType)
                 && (System.currentTimeMillis() - this.creation) > TPS.maximum * TPS.tickTime
                 && (!cancelled || hackType.getCheck().handleCancelledEvents)
                 && (!v1_8 || this.protocol.bukkit().getGameMode() != GameMode.SPECTATOR)
                 && Attributes.getAmount(this.protocol, Attributes.GENERIC_SCALE) == 0.0
-                && !ProtocolLib.isTemporary(this.protocol.bukkit());
+                && !ProtocolLib.isTemporary(this.protocol.bukkit())
+                && !Permissions.isBypassing(this.protocol.bukkit(), hackType);
     }
 
     public final List<String> getEvidence() {
