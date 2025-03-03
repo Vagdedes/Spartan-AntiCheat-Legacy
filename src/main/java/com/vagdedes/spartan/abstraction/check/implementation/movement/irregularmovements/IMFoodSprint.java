@@ -10,7 +10,7 @@ public class IMFoodSprint extends CheckDetection {
     private final Buffer.IndividualBuffer buffer;
 
     IMFoodSprint(CheckRunner executor) {
-        super(executor, null, null, "food_sprint", true);
+        super(executor, null, null, "food_sprint", false);
         this.buffer = new Buffer.IndividualBuffer();
     }
 

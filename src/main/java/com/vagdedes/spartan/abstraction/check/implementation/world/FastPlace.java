@@ -78,7 +78,7 @@ public class FastPlace extends CheckRunner {
                                 if (timePassed <= 50L
                                         && !this.protocol.bukkitExtra.isBedrockPlayer()
                                         && !Compatibility.CompatibilityType.VEIN_MINER.isFunctional()
-                                        && fastBuffer.count(1, ticks) >= 4) {
+                                        && fastBuffer.count(1, ticks) >= 5) {
                                     this.fast.cancel(
                                             "fast"
                                                     + ", ms: " + timePassed
