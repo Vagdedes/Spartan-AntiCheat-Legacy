@@ -1,3 +1,5 @@
 [#] Optimized detection calls
 [#] Made the Fly and Speed detections more stable
 [#] Fixed a bug where violation levels would get negative
+[#] Fixed incorrect detection information in the FastBreak delay detection
+[#] Further limited how much violations can decrease based on statistics

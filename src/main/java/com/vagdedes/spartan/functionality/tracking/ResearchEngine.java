@@ -545,6 +545,7 @@ public class ResearchEngine {
 
                                 if (realizedTotal > 0) {
                                     realizedMean /= realizedTotal;
+
                                     for (List<Long> list : map.values()) {
                                         if (list.isEmpty()) {
                                             mean += realizedMean;
@@ -569,24 +570,20 @@ public class ResearchEngine {
 
                                 if (total > 0) {
                                     mean /= total;
-                                    averageViolationTime.put(
-                                            (detection.generalHashCode() * PluginBase.hashCodeMultiplier)
-                                                    + dataType.hashCode(),
-                                            Math.min(
-                                                    detection.getAverageCallFrequency() * CheckDetection.frequencyMultiplier,
-                                                    mean
-                                            )
-                                    );
                                 } else {
-                                    averageViolationTime.put(
-                                            (detection.generalHashCode() * PluginBase.hashCodeMultiplier)
-                                                    + dataType.hashCode(),
-                                            Math.min(
-                                                    detection.getAverageCallFrequency() * CheckDetection.frequencyMultiplier,
-                                                    realizedMean
-                                            )
-                                    );
+                                    mean = realizedMean;
                                 }
+                                averageViolationTime.put(
+                                        (detection.generalHashCode() * PluginBase.hashCodeMultiplier)
+                                                + dataType.hashCode(),
+                                        Math.min(
+                                                detection.getAverageCallFrequency() * CheckDetection.frequencyMultiplier,
+                                                Math.min(
+                                                        mean,
+                                                        detection.defaultAverageTime * 3
+                                                )
+                                        )
+                                );
                             }
                         }
                     } else {

@@ -19,7 +19,6 @@ import com.vagdedes.spartan.utils.minecraft.inventory.MaterialUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.GameMode;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.block.Action;
@@ -76,11 +75,11 @@ public class FastBreak extends CheckRunner {
                                 limit /= 2;
 
                                 if (limit > (TPS.tickTime * 2L) && time < limit) {
-                                    boolean emptyItem = itemStack == null || itemStack.getType() == Material.AIR;
+                                    boolean emptyItem = itemStack == null;
                                     Collection<PotionEffect> potionEffects = this.protocol.bukkitExtra.getActivePotionEffects();
                                     Set<Map.Entry<Enchantment, Integer>> enchantments = !emptyItem
                                             ? itemStack.getEnchantments().entrySet()
-                                            : new HashSet<>();
+                                            : new HashSet<>(0);
                                     StringBuilder enchantmentsString = new StringBuilder(),
                                             effectsString = new StringBuilder();
 
@@ -105,8 +104,8 @@ public class FastBreak extends CheckRunner {
                                             + ", difference: " + (limit - time)
                                             + ", block: " + BlockUtils.materialToString(block.getType())
                                             + ", item: " + (emptyItem ? "none" : BlockUtils.materialToString(itemStack.getType()))
-                                            + ", enchantments: " + (!enchantments.isEmpty() ? "none" : "[" + enchantmentsString + "]")
-                                            + ", effects: " + (!potionEffects.isEmpty() ? "none" : "[" + effectsString + "]");
+                                            + ", enchantments: " + (enchantments.isEmpty() ? "none" : "[" + enchantmentsString + "]")
+                                            + ", effects: " + (potionEffects.isEmpty() ? "none" : "[" + effectsString + "]");
                                     this.delay.cancel(
                                             prevention,
                                             null,
