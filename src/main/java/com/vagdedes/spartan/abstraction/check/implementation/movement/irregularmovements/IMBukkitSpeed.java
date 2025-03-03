@@ -77,7 +77,17 @@ public class IMBukkitSpeed extends CheckDetection {
     private boolean simulationFlag = false;
 
     public IMBukkitSpeed(CheckRunner executor) {
-        super(executor, null, Check.DetectionType.BUKKIT, null, true);
+        super(
+                executor,
+                null,
+                Check.DetectionType.BUKKIT,
+                null,
+                true,
+                DEFAULT_AVERAGE_TIME,
+                TIME_TO_NOTIFY * 2L,
+                TIME_TO_PREVENT * 2L,
+                TIME_TO_PUNISH * 2L
+        );
         this.strafeLineSpeeding = new ImplementedDetection(this, "speed_strafe_line_speeding", true);
         this.strafeJumpSpeeding = new ImplementedDetection(this, "speed_strafe_jump_speeding", true);
         this.straightLineSpeeding = new ImplementedDetection(this, "speed_straight_line_speeding", true);

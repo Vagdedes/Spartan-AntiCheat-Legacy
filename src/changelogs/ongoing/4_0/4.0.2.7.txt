@@ -1,1 +1,3 @@
 [#] Optimized detection calls
+[#] Made the Fly and Speed detections more stable
+[#] Fixed a bug where violation levels would get negative

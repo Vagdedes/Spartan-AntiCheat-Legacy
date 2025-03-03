@@ -38,7 +38,17 @@ public class IMSimulationGravity extends CheckDetection {
     private double teleportExcept = 0;
 
     public IMSimulationGravity(CheckRunner executor) {
-        super(executor, null, Check.DetectionType.PACKETS, "gravity_packets", true);
+        super(
+                executor,
+                null,
+                Check.DetectionType.PACKETS,
+                "gravity_packets",
+                true,
+                DEFAULT_AVERAGE_TIME,
+                TIME_TO_NOTIFY * 2L,
+                TIME_TO_PREVENT * 2L,
+                TIME_TO_PUNISH * 2L
+        );
     }
 
     public void run() {

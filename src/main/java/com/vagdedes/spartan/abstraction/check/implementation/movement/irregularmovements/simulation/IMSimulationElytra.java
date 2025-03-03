@@ -14,7 +14,17 @@ public class IMSimulationElytra extends CheckDetection {
     private Location from = null;
 
     public IMSimulationElytra(CheckRunner executor) {
-        super(executor, null, Check.DetectionType.PACKETS, "elytra", true);
+        super(
+                executor,
+                null,
+                Check.DetectionType.PACKETS,
+                "elytra",
+                true,
+                DEFAULT_AVERAGE_TIME,
+                TIME_TO_NOTIFY * 2L,
+                TIME_TO_PREVENT * 2L,
+                TIME_TO_PUNISH * 2L
+        );
     }
 
     public void run() {

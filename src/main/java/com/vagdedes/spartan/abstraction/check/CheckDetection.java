@@ -37,7 +37,7 @@ public abstract class CheckDetection extends CheckProcess {
 
     public static final double frequencyMultiplier = 40.0; // Based on expected average call frequency of movement detections
 
-    private static final long
+    protected static final long
             DEFAULT_AVERAGE_TIME = 500L,
             TIME_TO_PUNISH = 60_000L,
             TIME_TO_PREVENT = (TIME_TO_PUNISH / 3L) * 2L,
@@ -155,7 +155,7 @@ public abstract class CheckDetection extends CheckProcess {
 
     public final void call(Runnable runnable) {
         if (this.canCall()) {
-            if (this.lastCall != -1L) {
+            if (this.lastCall > 0L) {
                 this.callFrequency = System.currentTimeMillis() - this.lastCall;
             }
             this.lastCall = System.currentTimeMillis();
@@ -176,7 +176,7 @@ public abstract class CheckDetection extends CheckProcess {
                 if (detection != null) {
                     long frequency = detection.callFrequency;
 
-                    if (frequency != -1L) {
+                    if (frequency > 0L) {
                         sum += frequency;
                         count++;
                     }
@@ -184,7 +184,11 @@ public abstract class CheckDetection extends CheckProcess {
             }
 
             if (count > 0.0) {
-                return sum / count;
+                count = sum / count;
+
+                if (count > 0.0) {
+                    return count;
+                }
             }
         }
         return TPS.tickTime;

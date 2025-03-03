@@ -19,7 +19,17 @@ public class IMSimulationVehicle extends CheckDetection {
     private Location from = null;
 
     public IMSimulationVehicle(CheckRunner executor) {
-        super(executor, null, Check.DetectionType.PACKETS, "vehicle", true);
+        super(
+                executor,
+                null,
+                Check.DetectionType.PACKETS,
+                "vehicle",
+                true,
+                DEFAULT_AVERAGE_TIME,
+                TIME_TO_NOTIFY * 2L,
+                TIME_TO_PREVENT * 2L,
+                TIME_TO_PUNISH * 2L
+        );
     }
 
     public void run() {
