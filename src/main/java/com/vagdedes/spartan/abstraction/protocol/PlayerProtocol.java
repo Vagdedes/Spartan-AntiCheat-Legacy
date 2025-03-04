@@ -293,6 +293,11 @@ public class PlayerProtocol {
     }
 
     public boolean teleport(Location location) {
+        if (location.getX() == SpartanLocation.bukkitDefault.getX()
+                && location.getY() == SpartanLocation.bukkitDefault.getY()
+                && location.getZ() == SpartanLocation.bukkitDefault.getZ()) {
+            return false;
+        }
         boolean sync = PluginBase.isSynchronised();
 
         if (sync) {

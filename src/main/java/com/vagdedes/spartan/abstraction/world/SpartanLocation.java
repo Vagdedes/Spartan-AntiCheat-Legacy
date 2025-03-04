@@ -19,7 +19,12 @@ import java.util.*;
 @Data
 public class SpartanLocation implements Cloneable {
 
-    public static final Location bukkitDefault = new Location(Bukkit.getWorlds().get(0), 0, 0, 0);
+    public static final Location bukkitDefault = new Location(
+            Bukkit.getWorlds().get(0),
+            AlgebraUtils.randomInteger(Integer.MIN_VALUE, Integer.MAX_VALUE),
+            AlgebraUtils.randomInteger(0, 256),
+            AlgebraUtils.randomInteger(Integer.MIN_VALUE, Integer.MAX_VALUE)
+    );
 
     public static int getChunkPos(int pos) {
         return pos >> 4;

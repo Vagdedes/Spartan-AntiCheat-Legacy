@@ -4,7 +4,6 @@ import com.vagdedes.spartan.abstraction.protocol.ExtendedPotionEffect;
 import com.vagdedes.spartan.abstraction.protocol.PlayerBukkit;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.TPS;
-import com.vagdedes.spartan.utils.java.OverflowMap;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.inventory.MaterialUtils;
 import org.bukkit.Bukkit;
@@ -13,7 +12,6 @@ import org.bukkit.World;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static org.bukkit.potion.PotionEffectType.*;
 
@@ -62,10 +60,6 @@ public class PlayerUtils {
             fallDamageAboveBlocks = 3;
 
     private static final Map<Byte, List<Double>> jumpsValues = new LinkedHashMap<>();
-    private static final Map<Integer, Integer> fallTicks = new OverflowMap<>(
-            new ConcurrentHashMap<>(),
-            1_024
-    );
     private static final Map<PotionEffectType, Long> handledPotionEffects = new LinkedHashMap<>();
 
     static {
