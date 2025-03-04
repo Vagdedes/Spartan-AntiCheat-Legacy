@@ -1,10 +1,8 @@
 package com.vagdedes.spartan.listeners.bukkit;
 
-import com.vagdedes.spartan.abstraction.check.implementation.movement.morepackets.MorePackets;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
 import com.vagdedes.spartan.functionality.server.PluginBase;
-import me.vagdedes.spartan.system.Enums;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -25,9 +23,6 @@ public class TeleportEvent implements Listener {
             protocol.bukkitExtra.resetCrucialData();
             protocol.profile().executeRunners(null, object);
             protocol.bukkitExtra.trackers.add(PlayerTrackers.TrackerType.TELEPORT, "tp", 1);
-            ((MorePackets) protocol.profile().getRunner(Enums.HackType.MorePackets)).disableTemporarily(
-                    "Server teleportation" // todo remove
-            );
         }
     }
 
@@ -42,9 +37,6 @@ public class TeleportEvent implements Listener {
         if (protocol.packetsEnabled() == packets) {
             protocol.bukkitExtra.resetCrucialData();
             protocol.profile().executeRunners(null, object);
-            ((MorePackets) protocol.profile().getRunner(Enums.HackType.MorePackets)).disableTemporarily(
-                    "Server respawn" // todo remove
-            );
         }
     }
 

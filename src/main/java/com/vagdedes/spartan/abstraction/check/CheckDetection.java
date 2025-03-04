@@ -487,7 +487,7 @@ public abstract class CheckDetection extends CheckProcess {
             if (location != null
                     || groundTeleport) {
                 this.protocol.profile().getRunner(Enums.HackType.MorePackets).addDisableCause(
-                        "Prevention from checks", // todo remove
+                        "Prevention from checks",
                         null,
                         5
                 );
