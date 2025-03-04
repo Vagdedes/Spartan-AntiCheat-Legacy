@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements;
 
+import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.data.Buffer;
@@ -10,7 +11,7 @@ public class IMFoodSprint extends CheckDetection {
     private final Buffer.IndividualBuffer buffer;
 
     IMFoodSprint(CheckRunner executor) {
-        super(executor, null, null, "food_sprint", false);
+        super(executor, Check.DataType.JAVA, null, "food_sprint", false);
         this.buffer = new Buffer.IndividualBuffer();
     }
 
