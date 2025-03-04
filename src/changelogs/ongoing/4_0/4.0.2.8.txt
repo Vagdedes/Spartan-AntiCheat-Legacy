@@ -1,2 +1,3 @@
 [#] Improved the MorePackets check
 [#] Fixed IrregularMovements food-sprint false positives for bedrock players
+[#] Fully recoded reach/hitbox/throughblocks checks

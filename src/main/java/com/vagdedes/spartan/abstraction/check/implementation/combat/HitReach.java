@@ -1,5 +1,7 @@
 package com.vagdedes.spartan.abstraction.check.implementation.combat;
 
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.utility.MinecraftVersion;
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedDetection;
@@ -11,22 +13,23 @@ import com.vagdedes.spartan.utils.math.ClientMath;
 import com.vagdedes.spartan.utils.math.OptifineMath;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import com.vagdedes.spartan.utils.math.VanillaMath;
+import com.vagdedes.spartan.utils.math.statistics.StatisticsMath;
 import com.vagdedes.spartan.utils.minecraft.entity.AxisAlignedBB;
 import com.vagdedes.spartan.utils.minecraft.entity.CombatUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.MovingObjectPosition;
 import com.vagdedes.spartan.utils.minecraft.vector.Vec3;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
+import com.vagdedes.spartan.utils.minecraft.world.BoundingBoxUtil;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Pose;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -34,6 +37,10 @@ public class HitReach extends CheckRunner {
 
     private final CheckDetection
             hitboxRaytrace, throughblocks, simple;
+
+    private final static boolean allowedVer =
+                    ProtocolLibrary.getProtocolManager().getMinecraftVersion()
+                                    .compareTo(new MinecraftVersion("1.14")) >= 0;
     private final List<Double> rayTraceAnalysis = new CopyOnWriteArrayList<>();
     private int vl = 0;
     private static final boolean[] BOOLEANS = {true, false};
@@ -63,69 +70,77 @@ public class HitReach extends CheckRunner {
                     PlayerProtocol target = PluginBase.getProtocol((Player) event.target);
                     List<Location> h = target.getPositionHistory();
                     Set<AxisAlignedBB> cachedBlocks = new HashSet<>();
-                    { // caching blocks
+                    Set<Material> ignored = new HashSet<>();
+                    int nulls = 0;
+                    Location hardcodedTargetLoc = target.getLocation().clone();
+                    Location hardcodedPlayerLoc = this.protocol.getLocation().clone();
+                    if (getDistance(hardcodedPlayerLoc, hardcodedTargetLoc) > 0.5) {
                         final Location t = target.getLocation();
-                        final double s = 0.5d - 1E-12d;
-                        for (int dx = -2; dx <= 2; ++dx) {
-                            for (int dy = -2; dy <= 2; ++dy) {
-                                for (int dz = -2; dz <= 2; ++dz) {
-                                    final Location l = new Location(protocol.getWorld(),
-                                            t.getX() + (double) dx,
-                                            t.getY() + (double) dy,
-                                            t.getZ() + (double) dz);
-                                    final Material material = protocol.packetWorld.getBlock(l);
-                                    {
-                                        if (BlockUtils.isFullSolid(material)) {
-                                            cachedBlocks.add(new AxisAlignedBB(
-                                                    l.getX() - s, l.getY() - s, l.getZ() - s,
-                                                    l.getX() + s, l.getY() + s, l.getZ() + s
-                                            ));
-                                        }
+                        for (int dx = -3; dx <= 3; ++dx) {
+                            for (int dy = -3; dy <= 3; ++dy) {
+                                for (int dz = -3; dz <= 3; ++dz) {
+                                    final Location l = new Location(
+                                                    target.bukkit().getWorld(),
+                                                    t.getX() + (double) dx,
+                                                    t.getY() + (double) dy,
+                                                    t.getZ() + (double) dz
+                                    );
+                                    final Block block = getBlockAsync(l);
+                                    if (block == null) {
+                                        nulls++;
+                                        continue;
                                     }
+                                    final Location b = block.getLocation().clone().add(0.5, 0.5, 0.5);
+                                    final Material material = block.getType();
+                                    final List<AxisAlignedBB> bb = ProtocolLibrary.getProtocolManager().getMinecraftVersion()
+                                                    .compareTo(new MinecraftVersion("1.13")) >= 0
+                                                    ? BoundingBoxUtil.getBoundingBoxes(block)
+                                                    : BoundingBoxUtil.getBoundingBoxesLegacy(block);
+                                    if (material.isSolid() && bb != null) {
+                                        cachedBlocks.addAll(bb);
+                                    } else ignored.add(material);
                                 }
                             }
                         }
                     }
-                    boolean is1_8 = this.protocol.isUsingVersion(MultiVersion.MCVersion.V1_8);
-                    float hitbox = (is1_8) ? 0.4F : 0.3F;
+                    final boolean is1_8 = this.protocol.isUsingVersion(MultiVersion.MCVersion.V1_8);
+                    final float hitbox = (is1_8) ? 0.4F : 0.3F;
                     AtomicReference<Double> minDistance = new AtomicReference<>(Double.MAX_VALUE);
-                    AtomicReference<Double> minBlockDist = new AtomicReference<>(Double.MAX_VALUE);
+                    Set<Double> minBlockDistanceSet = new HashSet<>();
                     {
                         for (boolean fastMath : BOOLEANS) {
-                            ClientMath clientMath = fastMath ? optifineMath : vanillaMath;
-
-                            Location l = this.protocol.getLocation();
-                            Location lF = this.protocol.getFromLocation();
+                            final ClientMath buildSpeed = fastMath ? optifineMath : vanillaMath;
+                            final Location l = protocol.getLocation();
+                            final Location lf = protocol.getFromLocation();
                             Vec3[] possibleEyeRotation = {
-                                    getVectorForRotation(l.getYaw(), l.getPitch(), clientMath),
-                                    getVectorForRotation(lF.getYaw(), lF.getPitch(), clientMath),
-                                    getVectorForRotation(lF.getYaw(), l.getPitch(), clientMath),
+                                            getVectorForRotation(l.getYaw(), l.getPitch(), buildSpeed),
+                                            getVectorForRotation(lf.getYaw(), lf.getPitch(), buildSpeed),
+                                            getVectorForRotation(lf.getYaw(), lf.getPitch(), buildSpeed),
                             };
 
                             for (boolean sneaking : BOOLEANS) {
                                 for (Vec3 eyeRotation : possibleEyeRotation) {
                                     Vec3 eyePos = new Vec3(
-                                            l.getX(),
-                                            l.getY() + getEyeHeight(sneaking),
-                                            l.getZ()
+                                                    l.getX(),
+                                                    l.getY() + getEyeHeight(sneaking),
+                                                    l.getZ()
                                     );
                                     Vec3 endReachRay = eyePos.addVector(
-                                            eyeRotation.xCoord * 6.0D,
-                                            eyeRotation.yCoord * 6.0D,
-                                            eyeRotation.zCoord * 6.0D
+                                                    eyeRotation.xCoord * 6.0D,
+                                                    eyeRotation.yCoord * 6.0D,
+                                                    eyeRotation.zCoord * 6.0D
                                     );
-                                    List<Location> positions = new ArrayList<>(h);
+                                    List<Location> positions = new LinkedList<>(h);
                                     positions.add(target.getLocation());
-                                    positions.add(target.getFromLocation());
+                                    positions.add(target.getFrom());
+                                    positions.add(target.bukkit().getLocation().clone());
                                     for (Location position : positions) {
-
                                         AxisAlignedBB axisAlignedBB = new AxisAlignedBB(
-                                                position.getX() - hitbox, position.getY() - 0.1f, position.getZ() - hitbox,
-                                                position.getX() + hitbox, position.getY() + 1.9f, position.getZ() + hitbox
+                                                        position.getX() - hitbox, position.getY() - 0.1f, position.getZ() - hitbox,
+                                                        position.getX() + hitbox, position.getY() + 1.9f, position.getZ() + hitbox
                                         );
 
                                         MovingObjectPosition intercept = axisAlignedBB.calculateIntercept(eyePos, endReachRay);
-
                                         if (intercept != null) {
                                             double range = intercept.hitVec.distanceTo(eyePos);
                                             if (range < minDistance.get()) {
@@ -133,51 +148,65 @@ public class HitReach extends CheckRunner {
                                             }
                                         }
                                     }
+                                    double minBlockDist = Double.MAX_VALUE;
                                     for (AxisAlignedBB block : cachedBlocks) {
-                                        MovingObjectPosition intercept = block.calculateIntercept(eyePos, endReachRay);
-                                        if (intercept != null) {
-                                            double range = intercept.hitVec.distanceTo(eyePos);
-                                            if (range < minBlockDist.get()) {
-                                                minBlockDist.set(range);
-                                            } else {
-                                                final double dev = Math.abs(Math.abs(range) - Math.abs(minBlockDist.get()));
-                                                if (dev <= 0.03 + 3e-3) minBlockDist.set(range);
-                                            }
+                                        Vec3 s = new Vec3(
+                                                        l.getX(),
+                                                        l.getY() + getBlockEyeHeight(sneaking),
+                                                        l.getZ()
+                                        );
+                                        Vec3 e = s.addVector(
+                                                        eyeRotation.xCoord * 6.0,
+                                                        eyeRotation.yCoord * 6.0,
+                                                        eyeRotation.zCoord * 6.0
+                                        );
+                                    /*
+                                    profile.getPlayer().getWorld().spawnParticle(
+                                                    Particle.DRIP_LAVA,
+                                                    new Location(profile.getPlayer().getWorld(),
+                                                                    e.xCoord, e.yCoord, e.zCoord), 0);
+                                     */
+                                        MovingObjectPosition intercept = block.calculateIntercept(s, e);
+                                        double v = (intercept != null) ? intercept.hitVec.distanceTo(eyePos) : 0;
+                                        if (v < (minDistance.get()) && v < minBlockDist
+                                                        && intercept != null && v < 6) {
+                                            minBlockDist = v;
                                         }
                                     }
+                                    minBlockDistanceSet.add(minBlockDist);
                                 }
                             }
                         }
+
+                        //profile.getPlayer().sendMessage("i: " + minDistance.get() + " " + (minDistance.get() > 999));
                         boolean flagged = false;
                         if (minDistance.get() > HIT_BOX_VAL) {
                             flagged = true;
                             if (++hitBoxVL > 3D) {
-                                hitboxRaytrace.cancel("Missing HitBox of " + target.bukkit().getName());
+                                this.hitboxRaytrace.cancel("Missing HitBox of " + target.bukkit().getName());
+                                event.setCancelled(true);
                             }
                         } else {
                             hitBoxVL = Math.max(hitBoxVL - 5D, 0);
                         }
-
                         if (minDistance.get() > REACH_DIST && minDistance.get() < HIT_BOX_VAL) {
-                            reachVl++;
                             flagged = true;
-                            if (reachVl > 2.5D) {
-                                hitboxRaytrace.cancel("Reach " + RayUtils.scaleVal(minDistance.get(), 6));
+                            if (reachVl++ > 2.5D) {
+                                hitboxRaytrace.cancel("Distance " + minDistance.get());
+                                event.setCancelled(true);
                             }
                         } else if (minDistance.get() < REACH_DIST && reachVl > 0) {
                             reachVl -= 0.05;
                         }
-                    /*
-                    Checking blocks bound
-                     */
-                        if (!flagged) {
-                            double dev = (minBlockDist.get() + 0.03 + 3e-3) - minDistance.get();
-                            if (dev < -1.3) {
-                                if (blocksVl++ >= 2) {
-                                    throughblocks.cancel("Hitting through block [dev: "
-                                            + RayUtils.scaleVal(Math.abs(dev), 6) + "]");
-                                    blocksVl = 1.5;
-                                }
+                        //profile.getPlayer().sendMessage("d: " + flagged);
+                        { // result?
+                            double dev = (StatisticsMath.getMax(minBlockDistanceSet) + 0.03 + 3e-3) - minDistance.get();
+                            //profile.getPlayer().sendMessage("d: " + dev);
+                            if (dev < -0.669) {
+                                blocksVl++;
+                                throughblocks.cancel("Hitting through block (dev: "
+                                                + RayUtils.scaleVal(Math.abs(dev), 6) + ")");
+                                event.setCancelled(true);
                             } else if (blocksVl > 0) {
                                 blocksVl -= 0.5;
                             }
@@ -208,14 +237,40 @@ public class HitReach extends CheckRunner {
         return new Vec3(f1 * f2, f3, f * f2);
     }
 
-    private static float getEyeHeight(boolean sneaking) {
+    private float getEyeHeight(boolean sneaking) {
         float eyeHeight = 1.62F;
-
         if (sneaking) {
             eyeHeight -= 0.08F;
         }
-
+        if (allowedVer && this.protocol.bukkit().getPose().equals(Pose.SWIMMING)) {
+            eyeHeight -= 1.0f;
+        }
         return eyeHeight;
+    }
+    private float getBlockEyeHeight(boolean sneaking) {
+        float eyeHeight;
+        if (allowedVer && this.protocol.bukkit().getPlayer().getPose().equals(Pose.SWIMMING)) {
+            eyeHeight = 0.4f;
+        } else {
+            eyeHeight = 1.62F;
+            if (sneaking) {
+                eyeHeight -= 0.35F;
+            }
+        }
+        return eyeHeight;
+    }
+    private static Block getBlockAsync(final Location location) {
+        if (location.getWorld().isChunkLoaded(location.getBlockX() >> 4, location.getBlockZ() >> 4)) {
+            return location.getWorld().getBlockAt(location);
+        } else {
+            return null;
+        }
+    }
+    private static double getDistance(Location loc1, Location loc2) {
+        double deltaX = loc1.getX() - loc2.getX();
+        double deltaY = loc1.getY() - loc2.getY();
+        double deltaZ = loc1.getZ() - loc2.getZ();
+        return Math.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
     }
 
     private void analyze(Location to, double bruteForce) {
