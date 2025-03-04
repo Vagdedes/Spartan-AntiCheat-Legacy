@@ -293,36 +293,31 @@ public class PlayerProtocol {
     }
 
     public boolean teleport(Location location) {
-        if (this.getWorld().equals(location.getWorld())) {
-            boolean sync = PluginBase.isSynchronised();
+        boolean sync = PluginBase.isSynchronised();
 
-            if (sync) {
-                this.bukkit().leaveVehicle();
-            }
-            this.bukkitExtra.movement.removeLastLiquidTime();
-            this.bukkitExtra.trackers.removeMany(PlayerTrackers.TrackerFamily.VELOCITY);
-
-            if (MultiVersion.folia) {
-                this.bukkit().teleportAsync(location);
-            } else if (sync) {
-                this.bukkit().teleport(location);
-            } else {
-                PluginBase.transferTask(
-                        this,
-                        () -> {
-                            Player bukkit = this.bukkit();
-
-                            if (bukkit.isOnline()
-                                    && this.getWorld().equals(location.getWorld())) {
-                                bukkit.teleport(location);
-                            }
-                        }
-                );
-            }
-            return true;
-        } else {
-            return false;
+        if (sync) {
+            this.bukkit().leaveVehicle();
         }
+        this.bukkitExtra.movement.removeLastLiquidTime();
+        this.bukkitExtra.trackers.removeMany(PlayerTrackers.TrackerFamily.VELOCITY);
+
+        if (MultiVersion.folia) {
+            this.bukkit().teleportAsync(location);
+        } else if (sync) {
+            this.bukkit().teleport(location);
+        } else {
+            PluginBase.transferTask(
+                    this,
+                    () -> {
+                        Player bukkit = this.bukkit();
+
+                        if (bukkit.isOnline()) {
+                            bukkit.teleport(location);
+                        }
+                    }
+            );
+        }
+        return true;
     }
 
     public int getPing() {
