@@ -3,3 +3,4 @@
 [#] Fixed a bug where violation levels would get negative
 [#] Fixed incorrect detection information in the FastBreak delay detection
 [#] Further limited how much violations can decrease based on statistics
+[#] Fixed InventoryClicks bedrock edition false positives
