@@ -294,7 +294,9 @@ public class PlayerProtocol {
 
     public boolean teleport(Location location) {
         if (this.getWorld().equals(location.getWorld())) {
-            if (PluginBase.isSynchronised()) {
+            boolean sync = PluginBase.isSynchronised();
+
+            if (sync) {
                 this.bukkit().leaveVehicle();
             }
             this.bukkitExtra.movement.removeLastLiquidTime();
@@ -302,13 +304,16 @@ public class PlayerProtocol {
 
             if (MultiVersion.folia) {
                 this.bukkit().teleportAsync(location);
+            } else if (sync) {
+                this.bukkit().teleport(location);
             } else {
                 PluginBase.transferTask(
                         this,
                         () -> {
                             Player bukkit = this.bukkit();
 
-                            if (bukkit.isOnline()) {
+                            if (bukkit.isOnline()
+                                    && this.getWorld().equals(location.getWorld())) {
                                 bukkit.teleport(location);
                             }
                         }

@@ -4,3 +4,4 @@
 [#] Fixed incorrect detection information in the FastBreak delay detection
 [#] Further limited how much violations can decrease based on statistics
 [#] Fixed InventoryClicks bedrock edition false positives
+[#] Improved the way the plugin handlers teleportations
