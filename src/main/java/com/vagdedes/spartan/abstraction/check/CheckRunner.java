@@ -143,7 +143,7 @@ public abstract class CheckRunner extends CheckProcess {
                 && !this.protocol.npc
                 && this.supportsDataType[this.protocol.bukkitExtra.dataType.ordinal()]
                 && this.supportsDetectionType[this.protocol.bukkitExtra.detectionType.ordinal()]
-                && !hackType.getCheck().isEnabled(this.protocol.bukkitExtra.dataType, this.protocol.getWorld().getName())
+                && hackType.getCheck().isEnabled(this.protocol.bukkitExtra.dataType, this.protocol.getWorld().getName())
                 && SpartanEdition.hasDetectionsPurchased(this.protocol.bukkitExtra.dataType)
                 && (System.currentTimeMillis() - this.creation) > TPS.maximum * TPS.tickTime
                 && (!cancelled || hackType.getCheck().handleCancelledEvents)
