@@ -577,11 +577,8 @@ public class ResearchEngine {
                                         (detection.generalHashCode() * PluginBase.hashCodeMultiplier)
                                                 + dataType.hashCode(),
                                         Math.min(
-                                                detection.getAverageCallFrequency() * CheckDetection.frequencyMultiplier,
-                                                Math.min(
-                                                        mean,
-                                                        detection.defaultAverageTime * 3
-                                                )
+                                                mean,
+                                                detection.defaultAverageTime * 3
                                         )
                                 );
                             }
