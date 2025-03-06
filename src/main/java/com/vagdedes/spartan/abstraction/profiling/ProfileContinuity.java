@@ -65,7 +65,7 @@ public class ProfileContinuity {
             Map<Long, Long> data = this.continuity[
                     (protocol == null
                             ? profile.getLastDataType()
-                            : protocol.bukkitExtra.dataType).ordinal()
+                            : protocol.bukkitExtra.getDataType()).ordinal()
                     ];
 
             if (!data.isEmpty()) {
@@ -90,7 +90,7 @@ public class ProfileContinuity {
         return !this.continuity[
                 (protocol == null
                         ? profile.getLastDataType()
-                        : protocol.bukkitExtra.dataType).ordinal()
+                        : protocol.bukkitExtra.getDataType()).ordinal()
                 ].isEmpty();
     }
 
@@ -101,7 +101,7 @@ public class ProfileContinuity {
         Map<Long, Long> data = this.continuity[
                 (protocol == null
                         ? profile.getLastDataType()
-                        : protocol.bukkitExtra.dataType).ordinal()
+                        : protocol.bukkitExtra.getDataType()).ordinal()
                 ];
 
         if (!data.isEmpty()) {

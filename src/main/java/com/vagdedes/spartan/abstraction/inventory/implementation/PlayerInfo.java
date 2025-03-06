@@ -77,7 +77,7 @@ public class PlayerInfo extends InventoryMenu {
             if (isOnline) {
                 lore.add("§7Version§8:§c " + target.version.toString());
                 lore.add("§7Latency§8:§c " + target.getPing() + "ms");
-                lore.add("§7Edition§8:§c " + target.bukkitExtra.dataType);
+                lore.add("§7Edition§8:§c " + target.bukkitExtra.getDataType());
             } else {
                 lore.add("§7Last Known Edition§8:§c " + profile.getLastDataType());
             }

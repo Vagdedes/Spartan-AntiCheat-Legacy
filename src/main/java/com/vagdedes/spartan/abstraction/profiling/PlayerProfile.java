@@ -66,7 +66,7 @@ public class PlayerProfile {
         this.skull = null;
         this.runners = new CheckRunner[Enums.HackType.values().length];
         this.miningHistory = new MiningHistory[MiningHistory.MiningOre.values().length];
-        this.lastDataType = protocol.bukkitExtra.dataType;
+        this.lastDataType = protocol.bukkitExtra.getDataType();
         this.lastDetectionType = protocol.packetsEnabled()
                 ? Check.DetectionType.PACKETS
                 : Check.DetectionType.BUKKIT;
@@ -82,7 +82,7 @@ public class PlayerProfile {
 
     public void update(PlayerProtocol protocol) {
         this.offlinePlayer = protocol.bukkit();
-        this.lastDataType = protocol.bukkitExtra.dataType;
+        this.lastDataType = protocol.bukkitExtra.getDataType();
         this.lastDetectionType = protocol.bukkitExtra.detectionType;
         this.registerRunners(protocol);
     }

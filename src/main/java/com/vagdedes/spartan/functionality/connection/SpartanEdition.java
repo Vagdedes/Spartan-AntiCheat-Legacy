@@ -149,7 +149,7 @@ public class SpartanEdition {
             if ((time - checkTime) >= 60_000L) {
                 checkTime = time;
 
-                if (missingDetections[0] == protocol.bukkitExtra.dataType) {
+                if (missingDetections[0] == protocol.bukkitExtra.getDataType()) {
                     notifyCache = true;
                     attemptVersionNotification(protocol, missingDetections[0]);
                     return;
@@ -163,7 +163,7 @@ public class SpartanEdition {
                     checkedProfiles = new ArrayList<>(size);
 
                     for (PlayerProtocol otherProtocol : players) {
-                        if (missingDetections[0] == otherProtocol.bukkitExtra.dataType) {
+                        if (missingDetections[0] == otherProtocol.bukkitExtra.getDataType()) {
                             notifyCache = true;
                             attemptVersionNotification(otherProtocol, missingDetections[0]);
                             return;

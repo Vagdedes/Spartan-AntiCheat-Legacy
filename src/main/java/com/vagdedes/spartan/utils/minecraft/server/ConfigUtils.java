@@ -54,7 +54,7 @@ public class ConfigUtils {
         Location loc = p.getLocationOrVehicle();
         String worldName = p.getWorld().getName();
         message = replace(message, "{player}", p.bukkit().getName());
-        message = replace(message, "{player:type}", p.bukkitExtra.dataType.toString().toLowerCase());
+        message = replace(message, "{player:type}", p.bukkitExtra.getDataType().toString().toLowerCase());
         message = replace(message, "{uuid}", p.getUUID().toString());
         message = replace(message, "{ping}", String.valueOf(p.getPing()));
         message = replace(message, "{world}", worldName);
@@ -67,8 +67,8 @@ public class ConfigUtils {
         message = replace(message, "{pitch}", String.valueOf(AlgebraUtils.integerRound(loc.getPitch())));
 
         if (hackType != null) {
-            message = replace(message, "{detection:silent}", String.valueOf(hackType.getCheck().isSilent(p.bukkitExtra.dataType, worldName)));
-            message = replace(message, "{detection:punish}", String.valueOf(hackType.getCheck().canPunish(p.bukkitExtra.dataType)));
+            message = replace(message, "{detection:silent}", String.valueOf(hackType.getCheck().isSilent(p.bukkitExtra.getDataType(), worldName)));
+            message = replace(message, "{detection:punish}", String.valueOf(hackType.getCheck().canPunish(p.bukkitExtra.getDataType())));
         }
         return ChatColor.translateAlternateColorCodes('&', replaceWithSyntax(message, hackType));
     }

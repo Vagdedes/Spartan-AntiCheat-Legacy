@@ -16,6 +16,7 @@ import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import com.vagdedes.spartan.utils.minecraft.server.PluginUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import com.vagdedes.spartan.utils.minecraft.world.GroundUtils;
+import lombok.Getter;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.inventory.Inventory;
@@ -30,7 +31,8 @@ public class PlayerBukkit {
 
     final PlayerProtocol protocol;
     private final Map<PotionEffectType, ExtendedPotionEffect> potionEffects;
-    public final Check.DataType dataType;
+    @Getter
+    private Check.DataType dataType;
     public final Check.DetectionType detectionType;
     public final PlayerMovement movement;
     public final PlayerPunishments punishments;
@@ -46,13 +48,17 @@ public class PlayerBukkit {
 
             if (!protocols.isEmpty()) {
                 for (PlayerProtocol protocol : protocols) {
+                    Check.DataType previousDataType = protocol.bukkitExtra.dataType;
+                    protocol.bukkitExtra.dataType = BedrockCompatibility.isPlayer(protocol.bukkit())
+                            ? Check.DataType.BEDROCK
+                            : Check.DataType.JAVA;
+
+                    if (protocol.bukkitExtra.dataType != previousDataType) {
+                        protocol.profile().update(protocol);
+                    }
                     if (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
                         protocol.bukkitExtra.setStoredPotionEffects();
                     }
-                    protocol.profile().executeRunners(false, null);
-                    protocol.bukkitExtra.movement.schedulerFrom = protocol.getLocation();
-                    protocol.bukkitExtra.checkForAFK();
-
                     if (protocol.bukkitExtra.maxNearbyEntitiesCoordinate[0] > 0.0
                             || protocol.bukkitExtra.maxNearbyEntitiesCoordinate[1] > 0.0
                             || protocol.bukkitExtra.maxNearbyEntitiesCoordinate[2] > 0.0) {
@@ -62,6 +68,9 @@ public class PlayerBukkit {
                                 protocol.bukkitExtra.maxNearbyEntitiesCoordinate[2]
                         ).toArray(new Entity[0]);
                     }
+                    protocol.bukkitExtra.checkForAFK();
+                    protocol.profile().executeRunners(false, null);
+                    protocol.bukkitExtra.movement.schedulerFrom = protocol.getLocation();
                 }
             }
         }, 1L, 1L);

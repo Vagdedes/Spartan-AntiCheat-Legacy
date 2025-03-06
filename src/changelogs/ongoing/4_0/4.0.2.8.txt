@@ -4,3 +4,4 @@
 [#] Removed the average frequency calculation from detections
 [#] Fixed an issue where some detections would call even if disabled
 [#] Improved the support for item attributes in the IrregularMovements speed check
+[#] Improved the bedrock client detection for all players
