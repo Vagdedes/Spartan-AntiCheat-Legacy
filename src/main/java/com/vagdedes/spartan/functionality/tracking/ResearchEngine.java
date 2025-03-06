@@ -608,11 +608,12 @@ public class ResearchEngine {
     }
 
     public static double getAverageViolationTime(CheckDetection detection, Check.DataType dataType) {
-        return averageViolationTime.getOrDefault(
+        double average = averageViolationTime.getOrDefault(
                 (detection.generalHashCode() * PluginBase.hashCodeMultiplier)
                         + dataType.hashCode(),
                 (double) detection.defaultAverageTime
         );
+        return average > 0.0 ? average : (double) detection.defaultAverageTime;
     }
 
 }
