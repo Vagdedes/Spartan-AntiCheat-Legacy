@@ -32,7 +32,7 @@ public class AutoRespawn extends CheckRunner {
                 long time = System.currentTimeMillis() - this.memory,
                         limit = 750L;
 
-                if (time <= limit && !this.protocol.bukkitExtra.isDead()) {
+                if (time <= limit && !this.protocol.bukkit().isDead()) {
                     memory = 0L;
                     this.detection.cancel(
                             "default, ms: " + time,

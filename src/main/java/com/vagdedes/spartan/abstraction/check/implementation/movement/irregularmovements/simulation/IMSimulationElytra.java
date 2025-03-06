@@ -19,7 +19,7 @@ public class IMSimulationElytra extends CheckDetection {
                 null,
                 Check.DetectionType.PACKETS,
                 "elytra",
-                true,
+                false,
                 DEFAULT_AVERAGE_TIME,
                 TIME_TO_NOTIFY * 2L,
                 TIME_TO_PREVENT * 2L,
@@ -29,9 +29,6 @@ public class IMSimulationElytra extends CheckDetection {
 
     public void run() {
         this.call(() -> {
-            if (true) { // todo remove
-                return;
-            }
             PlayerProtocol p = this.protocol;
             if (!p.bukkitExtra.movement.isGliding()) {
                 this.ticks = 0;

@@ -22,7 +22,7 @@ public class ServerFlying {
                     && !p.bukkitExtra.movement.isSwimming()
                     && p.bukkitExtra.getVehicle() == null
                     && !p.bukkit().isSleeping()
-                    && !p.bukkitExtra.isDead()
+                    && !p.bukkit().isDead()
                     && !p.bukkitExtra.trackers.has(PlayerTrackers.TrackerFamily.VELOCITY)
                     && !p.bukkitExtra.trackers.has(PlayerTrackers.TrackerFamily.MOTION)
                     && Attributes.getAmount(p, Attributes.GENERIC_FLYING_SPEED) == 0.0) {

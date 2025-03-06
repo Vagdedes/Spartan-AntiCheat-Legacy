@@ -489,13 +489,6 @@ public class PlayerBukkit {
 
     // Separator
 
-    public boolean isDead() {
-        return this.protocol.bukkit().isDead()
-                && this.protocol.bukkit().getHealth() <= 0.0;
-    }
-
-    // Separator
-
     public double getEyeHeight() {
         return ProtocolLib.getEyeHeight(this.protocol.bukkit());
     }

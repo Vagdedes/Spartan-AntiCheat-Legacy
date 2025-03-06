@@ -153,7 +153,7 @@ public class ImpossibleActions extends CheckRunner {
 
                     if (this.protocol.bukkit().isSleeping()) {
                         cases = 1;
-                    } else if (this.protocol.bukkitExtra.isDead()) {
+                    } else if (this.protocol.bukkit().isDead()) {
                         cases = 2;
                     } else if (BlockUtils.hasMaterial(this.protocol.bukkit().getOpenInventory().getCursor())) {
                         cases = 3;
