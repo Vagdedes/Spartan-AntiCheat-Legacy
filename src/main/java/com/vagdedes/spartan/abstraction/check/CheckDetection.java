@@ -3,6 +3,7 @@ package com.vagdedes.spartan.abstraction.check;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.functionality.connection.CloudConnections;
+import com.vagdedes.spartan.functionality.connection.SpartanEdition;
 import com.vagdedes.spartan.functionality.moderation.DetectionNotifications;
 import com.vagdedes.spartan.functionality.moderation.clickable.ClickableMessage;
 import com.vagdedes.spartan.functionality.server.Config;
@@ -145,8 +146,11 @@ public abstract class CheckDetection extends CheckProcess {
 
     public final boolean canCall() {
         return this.protocol != null
+                && this.executor.canCall()
+                && this.isEnabled()
+                && this.supportsDetectionType(this.protocol.bukkitExtra.detectionType)
                 && this.supportsDataType(this.protocol.bukkitExtra.dataType)
-                && this.supportsDetectionType(this.protocol.bukkitExtra.detectionType);
+                && SpartanEdition.hasDetectionsPurchased(this.protocol.bukkitExtra.dataType);
     }
 
     public final void call(Runnable runnable) {
@@ -469,7 +473,7 @@ public abstract class CheckDetection extends CheckProcess {
 
     public final void cancel(String information, Location location,
                              int cancelTicks, boolean groundTeleport, double damage) {
-        if (!this.executor.canFunction()
+        if (!this.executor.canCancel()
                 || !this.executor.canRun()) {
             return;
         }

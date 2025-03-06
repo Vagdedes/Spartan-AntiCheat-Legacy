@@ -76,7 +76,7 @@ public class IMSimulationSpeed extends CheckDetection {
             boolean flagged = false;
             if (p.bukkitExtra.movement.isGliding()) ignoreTicks = 6;
             if (!this.protocol.useItemPacket) this.action = 0;
-            double atr = Attributes.getAmount(this.protocol, Attributes.GENERIC_MOVEMENT_SPEED) * 1.2;
+            double atr = Attributes.getAmount(this.protocol, Attributes.GENERIC_MOVEMENT_SPEED) * 1.3;
             if (to.getX() != from.getX() || to.getY() != from.getY() || to.getZ() != from.getZ()) {
                 {
                     this.ground(isOnGround);

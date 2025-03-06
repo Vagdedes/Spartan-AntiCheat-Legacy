@@ -1,4 +1,6 @@
-[#] Improved the MorePackets check
+[#] Improved the MorePackets check's handling of teleportations
 [#] Fixed IrregularMovements food-sprint false positives for bedrock players
-[#] Fully recoded reach/hitbox/throughblocks checks
+[#] Fully recoded the reach/hitbox/throughblocks detections
 [#] Removed the average frequency calculation from detections
+[#] Fixed an issue where some detections would call even if disabled
+[#] Improved the support for item attributes in the IrregularMovements speed check

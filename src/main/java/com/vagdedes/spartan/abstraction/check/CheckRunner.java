@@ -8,7 +8,6 @@ import com.vagdedes.spartan.compatibility.manual.enchants.CustomEnchantsPlus;
 import com.vagdedes.spartan.compatibility.manual.enchants.EcoEnchants;
 import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
-import com.vagdedes.spartan.functionality.connection.SpartanEdition;
 import com.vagdedes.spartan.functionality.moderation.DetectionNotifications;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.Permissions;
@@ -31,7 +30,6 @@ public abstract class CheckRunner extends CheckProcess {
     private final Collection<CheckCancellation> disableCauses, silentCauses;
     private boolean cancelled;
     private final Map<String, CheckDetection> detections;
-    private final boolean[] supportsDataType, supportsDetectionType;
 
     public CheckRunner(Enums.HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);
@@ -39,8 +37,6 @@ public abstract class CheckRunner extends CheckProcess {
         this.detections = new ConcurrentHashMap<>(2);
         this.disableCauses = Collections.synchronizedList(new ArrayList<>(1));
         this.silentCauses = Collections.synchronizedList(new ArrayList<>(1));
-        this.supportsDataType = new boolean[Check.DataType.values().length];
-        this.supportsDetectionType = new boolean[Check.DetectionType.values().length];
     }
 
     // Detections
@@ -54,42 +50,11 @@ public abstract class CheckRunner extends CheckProcess {
     }
 
     protected final CheckDetection addDetection(String name, CheckDetection detection) {
-        CheckDetection result = this.detections.putIfAbsent(name, detection);
-
-        for (Check.DataType dataType : Check.DataType.values()) {
-            if (detection.supportsDataType(dataType)) {
-                this.supportsDataType[dataType.ordinal()] = true;
-            }
-        }
-        for (Check.DetectionType detectionType : Check.DetectionType.values()) {
-            if (detection.supportsDetectionType(detectionType)) {
-                this.supportsDetectionType[detectionType.ordinal()] = true;
-            }
-        }
-        return result;
+        return this.detections.putIfAbsent(name, detection);
     }
 
     public final void removeDetection(CheckDetection detection) {
         this.detections.remove(detection.name);
-
-        for (Check.DataType dataType : Check.DataType.values()) {
-            this.supportsDataType[dataType.ordinal()] = false;
-        }
-        for (Check.DetectionType detectionType : Check.DetectionType.values()) {
-            this.supportsDetectionType[detectionType.ordinal()] = false;
-        }
-        for (CheckDetection other : this.getDetections()) {
-            for (Check.DataType dataType : Check.DataType.values()) {
-                if (other.supportsDataType(dataType)) {
-                    this.supportsDataType[dataType.ordinal()] = true;
-                }
-            }
-            for (Check.DetectionType detectionType : Check.DetectionType.values()) {
-                if (other.supportsDetectionType(detectionType)) {
-                    this.supportsDetectionType[detectionType.ordinal()] = true;
-                }
-            }
-        }
     }
 
     // Handle
@@ -130,25 +95,18 @@ public abstract class CheckRunner extends CheckProcess {
 
     // Separator
 
-    final boolean supportsDataType(Check.DataType dataType) {
-        return this.supportsDataType[dataType.ordinal()];
-    }
-
-    final boolean supportsDetectionType(Check.DetectionType detectionType) {
-        return this.supportsDetectionType[detectionType.ordinal()];
-    }
-
-    final boolean canFunction() {
+    final boolean canCall() {
         return this.protocol != null
                 && !this.protocol.npc
-                && this.supportsDataType[this.protocol.bukkitExtra.dataType.ordinal()]
-                && this.supportsDetectionType[this.protocol.bukkitExtra.detectionType.ordinal()]
                 && hackType.getCheck().isEnabled(this.protocol.bukkitExtra.dataType, this.protocol.getWorld().getName())
-                && SpartanEdition.hasDetectionsPurchased(this.protocol.bukkitExtra.dataType)
-                && (System.currentTimeMillis() - this.creation) > TPS.maximum * TPS.tickTime
                 && (!cancelled || hackType.getCheck().handleCancelledEvents)
                 && (!v1_8 || this.protocol.bukkit().getGameMode() != GameMode.SPECTATOR)
-                && Attributes.getAmount(this.protocol, Attributes.GENERIC_SCALE) == 0.0
+                && Attributes.getAmount(this.protocol, Attributes.GENERIC_SCALE) == 0.0;
+    }
+
+    final boolean canCancel() {
+        return this.protocol != null
+                && (System.currentTimeMillis() - this.creation) > TPS.maximum * TPS.tickTime
                 && !ProtocolLib.isTemporary(this.protocol.bukkit())
                 && !Permissions.isBypassing(this.protocol.bukkit(), hackType);
     }
