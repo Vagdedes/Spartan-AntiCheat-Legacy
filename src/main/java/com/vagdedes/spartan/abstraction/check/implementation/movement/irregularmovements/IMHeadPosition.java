@@ -1,11 +1,11 @@
-package com.vagdedes.spartan.abstraction.check.implementation.world.exploits;
+package com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements;
 
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 
-public class HeadPosition extends CheckDetection {
+public class IMHeadPosition extends CheckDetection {
 
-    HeadPosition(CheckRunner executor) {
+    IMHeadPosition(CheckRunner executor) {
         super(executor, null, null, "head_position", true);
     }
 

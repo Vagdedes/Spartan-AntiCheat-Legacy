@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.abstraction.check.implementation.world.exploits;
+package com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements;
 
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
@@ -14,13 +14,13 @@ import org.bukkit.event.player.PlayerMoveEvent;
 
 import java.util.List;
 
-public class ExploitsGroundSpoof extends CheckDetection {
+public class IMGroundSpoof extends CheckDetection {
 
     private int vl = 0;
     private int tick0Value = 0;
     private long disabledUntil;
 
-    ExploitsGroundSpoof(CheckRunner executor) {
+    IMGroundSpoof(CheckRunner executor) {
         super(
                 executor,
                 Check.DataType.JAVA,

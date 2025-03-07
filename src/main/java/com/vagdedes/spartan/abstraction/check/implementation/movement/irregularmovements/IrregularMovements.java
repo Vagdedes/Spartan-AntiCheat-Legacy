@@ -10,6 +10,7 @@ import com.vagdedes.spartan.functionality.server.PluginBase;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.listeners.protocol.TeleportListener;
 import me.vagdedes.spartan.system.Enums.HackType;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
@@ -21,6 +22,8 @@ public class IrregularMovements extends CheckRunner {
     private final IrregularMovementsJump jump;
     private final IMFoodSprint foodSprint;
     private final IMBaritone baritone;
+    private final IMHeadPosition headPosition;
+    private final IMGroundSpoof groundSpoof;
 
     public IrregularMovements(HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);
@@ -29,6 +32,8 @@ public class IrregularMovements extends CheckRunner {
         foodSprint = new IMFoodSprint(this);
         baritone = new IMBaritone(this);
         speed = new IMSimulationSpeed(this);
+        headPosition = new IMHeadPosition(this);
+        groundSpoof = new IMGroundSpoof(this);
     }
 
     @Override
@@ -41,15 +46,27 @@ public class IrregularMovements extends CheckRunner {
         } else if (object instanceof SuperPositionPacketEvent) {
             SuperPositionPacketEvent e = (SuperPositionPacketEvent) object;
             speed.ground(e.packetEvent.getPacket().getBooleans().read(0));
+            groundSpoof.run(
+                    new PlayerMoveEvent(
+                            e.protocol.bukkit(),
+                            e.protocol.getLocation(),
+                            e.protocol.getFromLocation()
+                    )
+            );
         } else if (object instanceof PlayerMoveEvent) {
-            PlayerMoveEvent event = (PlayerMoveEvent) object;
             foodSprint.run();
             baritone.run();
             gravity.run();
             speed.run();
+            headPosition.run();
+            groundSpoof.run((PlayerMoveEvent) object);
             double vertical = this.protocol.getLocation().getY() - this.protocol.getFromLocation().getY(),
                     box = this.protocol.getLocation().getY();
             jump.run(vertical, box);
+        } else if (object instanceof BlockBreakEvent) {
+            if (((BlockBreakEvent) object).isCancelled()) {
+                groundSpoof.onBreak();
+            }
         } else if (object instanceof PlayerTickEvent) {
             PlayerTickEvent e = (PlayerTickEvent) object;
             gravity.groundSp(e.onGround);
