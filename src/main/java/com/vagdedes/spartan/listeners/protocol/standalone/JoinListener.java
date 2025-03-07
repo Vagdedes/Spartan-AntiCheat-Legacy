@@ -25,7 +25,7 @@ public class JoinListener extends PacketAdapter {
         Player player = event.getPlayer();
         PlayerProtocol protocol = PluginBase.getProtocol(player);
 
-        if (protocol.bukkitExtra.isBedrockPlayer()) {
+        if (protocol.isBedrockPlayer()) {
             return;
         }
         LegacyLagCompensationListener.newPacket(protocol.bukkitExtra.getEntityId());

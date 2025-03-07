@@ -1,5 +1,6 @@
 package com.vagdedes.spartan.abstraction.protocol;
 
+import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.component.ComponentXZ;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.component.ComponentY;
 import com.vagdedes.spartan.abstraction.check.implementation.movement.morepackets.TimerBalancer;
@@ -10,6 +11,7 @@ import com.vagdedes.spartan.abstraction.event.CPlayerVelocityEvent;
 import com.vagdedes.spartan.abstraction.event.PlayerTickEvent;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
+import com.vagdedes.spartan.compatibility.necessary.BedrockCompatibility;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.PluginBase;
@@ -18,6 +20,7 @@ import com.vagdedes.spartan.utils.minecraft.entity.AxisAlignedBB;
 import com.vagdedes.spartan.utils.minecraft.protocol.ProtocolTools;
 import lombok.AccessLevel;
 import lombok.Data;
+import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import org.bukkit.Location;
@@ -38,8 +41,8 @@ public class PlayerProtocol {
     private Player bukkit;
     private EncirclementData encirclementData;
     public final PlayerBukkit bukkitExtra;
-
-    // Custom
+    public final PlayerPunishments punishments;
+    public final PlayerTrackers trackers;
     private int hashPosBuffer;
     public int
             rightClickCounter,
@@ -79,14 +82,15 @@ public class PlayerProtocol {
     public long tickTime;
     public final MultiVersion.MCVersion version;
     public final TimerBalancer timerBalancer;
-
+    public final Check.DetectionType detectionType;
+    @Getter
+    private Check.DataType dataType;
     private Set<AxisAlignedBB> axisMatrixCache;
     @Setter
     private CheckBoundData checkBoundData;
     public final PacketWorld packetWorld;
     public long placeTime, placeHash;
     public PlayerTickEvent lastTickEvent;
-
     public short transactionId;
     public long
             transactionTime,
@@ -94,7 +98,6 @@ public class PlayerProtocol {
             transactionPing,
             lagTick, oldClickTime;
     public boolean entityHandle;
-
     private ComponentY componentY;
     private ComponentXZ componentXZ;
 
@@ -105,7 +108,13 @@ public class PlayerProtocol {
         this.version = MultiVersion.get(player);
         this.packetWorld = new PacketWorld(player);
         this.npc = player.getAddress() == null;
-
+        this.punishments = new PlayerPunishments(this);
+        this.dataType = BedrockCompatibility.isPlayer(player)
+                ? Check.DataType.BEDROCK
+                : Check.DataType.JAVA;
+        this.detectionType = this.packetsEnabled()
+                ? Check.DetectionType.PACKETS
+                : Check.DetectionType.BUKKIT;
         this.placeTime = time;
         this.placeHash = 0;
         this.onGround = false;
@@ -141,7 +150,6 @@ public class PlayerProtocol {
         this.claimedVeloGravity = new CopyOnWriteArrayList<>();
         this.claimedVeloSpeed = new CopyOnWriteArrayList<>();
         this.entityHandle = false;
-
         this.axisMatrixCache = new HashSet<>();
         this.checkBoundData = null;
         this.pistonTick = false;
@@ -159,9 +167,44 @@ public class PlayerProtocol {
         this.componentXZ = new ComponentXZ();
         this.useItemPacket = false;
         this.useItemPacketReset = false;
+        this.trackers = new PlayerTrackers();
 
         // Always last
         this.profile().update(this);
+    }
+
+    static {
+        PluginBase.runRepeatingTask(() -> {
+            Collection<PlayerProtocol> protocols = PluginBase.getProtocols();
+
+            if (!protocols.isEmpty()) {
+                for (PlayerProtocol protocol : protocols) {
+                    Check.DataType previousDataType = protocol.dataType;
+                    protocol.dataType = BedrockCompatibility.isPlayer(protocol.bukkit())
+                            ? Check.DataType.BEDROCK
+                            : Check.DataType.JAVA;
+
+                    if (protocol.dataType != previousDataType) {
+                        protocol.profile().update(protocol);
+                    }
+                    if (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
+                        protocol.bukkitExtra.setStoredPotionEffects();
+                    }
+                    if (protocol.bukkitExtra.maxNearbyEntitiesCoordinate[0] > 0.0
+                            || protocol.bukkitExtra.maxNearbyEntitiesCoordinate[1] > 0.0
+                            || protocol.bukkitExtra.maxNearbyEntitiesCoordinate[2] > 0.0) {
+                        protocol.bukkitExtra.nearbyEntities = protocol.bukkit().getNearbyEntities(
+                                protocol.bukkitExtra.maxNearbyEntitiesCoordinate[0],
+                                protocol.bukkitExtra.maxNearbyEntitiesCoordinate[1],
+                                protocol.bukkitExtra.maxNearbyEntitiesCoordinate[2]
+                        ).toArray(new Entity[0]);
+                    }
+                    protocol.bukkitExtra.checkForAFK();
+                    protocol.profile().executeRunners(false, null);
+                    protocol.bukkitExtra.movement.schedulerFrom = protocol.getLocation();
+                }
+            }
+        }, 1L, 1L);
     }
 
     public final Player bukkit() {
@@ -304,7 +347,7 @@ public class PlayerProtocol {
             this.bukkit().leaveVehicle();
         }
         this.bukkitExtra.movement.removeLastLiquidTime();
-        this.bukkitExtra.trackers.removeMany(PlayerTrackers.TrackerFamily.VELOCITY);
+        this.trackers.removeMany(PlayerTrackers.TrackerFamily.VELOCITY);
 
         if (MultiVersion.folia) {
             this.bukkit().teleportAsync(location);
@@ -400,7 +443,11 @@ public class PlayerProtocol {
     }
 
     public boolean packetsEnabled() {
-        return this.bukkitExtra.packetsEnabled();
+        return PluginBase.packetsEnabled() && !this.isBedrockPlayer();
+    }
+
+    public boolean isBedrockPlayer() {
+        return this.dataType == Check.DataType.BEDROCK;
     }
 
 }

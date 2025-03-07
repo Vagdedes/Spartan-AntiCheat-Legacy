@@ -1,9 +1,7 @@
 package com.vagdedes.spartan.abstraction.protocol;
 
-import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.Compatibility;
-import com.vagdedes.spartan.compatibility.necessary.BedrockCompatibility;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
@@ -32,79 +30,30 @@ public class PlayerBukkit {
     final PlayerProtocol protocol;
     private final Map<PotionEffectType, ExtendedPotionEffect> potionEffects;
     @Getter
-    private Check.DataType dataType;
-    public final Check.DetectionType detectionType;
     public final PlayerMovement movement;
-    public final PlayerPunishments punishments;
-    public final PlayerTrackers trackers;
     private long lastInteraction;
     private boolean afk;
-    private Entity[] nearbyEntities;
-    private final double[] maxNearbyEntitiesCoordinate;
-
-    static {
-        PluginBase.runRepeatingTask(() -> {
-            Collection<PlayerProtocol> protocols = PluginBase.getProtocols();
-
-            if (!protocols.isEmpty()) {
-                for (PlayerProtocol protocol : protocols) {
-                    Check.DataType previousDataType = protocol.bukkitExtra.dataType;
-                    protocol.bukkitExtra.dataType = BedrockCompatibility.isPlayer(protocol.bukkit())
-                            ? Check.DataType.BEDROCK
-                            : Check.DataType.JAVA;
-
-                    if (protocol.bukkitExtra.dataType != previousDataType) {
-                        protocol.profile().update(protocol);
-                    }
-                    if (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
-                        protocol.bukkitExtra.setStoredPotionEffects();
-                    }
-                    if (protocol.bukkitExtra.maxNearbyEntitiesCoordinate[0] > 0.0
-                            || protocol.bukkitExtra.maxNearbyEntitiesCoordinate[1] > 0.0
-                            || protocol.bukkitExtra.maxNearbyEntitiesCoordinate[2] > 0.0) {
-                        protocol.bukkitExtra.nearbyEntities = protocol.bukkit().getNearbyEntities(
-                                protocol.bukkitExtra.maxNearbyEntitiesCoordinate[0],
-                                protocol.bukkitExtra.maxNearbyEntitiesCoordinate[1],
-                                protocol.bukkitExtra.maxNearbyEntitiesCoordinate[2]
-                        ).toArray(new Entity[0]);
-                    }
-                    protocol.bukkitExtra.checkForAFK();
-                    protocol.profile().executeRunners(false, null);
-                    protocol.bukkitExtra.movement.schedulerFrom = protocol.getLocation();
-                }
-            }
-        }, 1L, 1L);
-    }
+    Entity[] nearbyEntities;
+    final double[] maxNearbyEntitiesCoordinate;
 
     // Object
 
     public PlayerBukkit(PlayerProtocol protocol) {
         this.protocol = protocol;
-        this.dataType = BedrockCompatibility.isPlayer(protocol.bukkit())
-                ? Check.DataType.BEDROCK
-                : Check.DataType.JAVA;
-        this.detectionType = this.packetsEnabled()
-                ? Check.DetectionType.PACKETS
-                : Check.DetectionType.BUKKIT;
-        this.trackers = new PlayerTrackers();
-        this.nearbyEntities = new Entity[0];
-        this.maxNearbyEntitiesCoordinate = new double[3];
-
         this.potionEffects = new ConcurrentHashMap<>(2);
         this.setStoredPotionEffects();
-
         this.movement = new PlayerMovement(this);
-        this.punishments = new PlayerPunishments(this);
-
         this.lastInteraction = System.currentTimeMillis();
         this.afk = false;
+        this.nearbyEntities = new Entity[0];
+        this.maxNearbyEntitiesCoordinate = new double[3];
     }
 
     public void setLastInteraction() {
         this.lastInteraction = System.currentTimeMillis();
     }
 
-    private void checkForAFK() {
+    void checkForAFK() {
         long lastInteraction = System.currentTimeMillis() - this.lastInteraction;
 
         if (lastInteraction >= 20_000L) {
@@ -124,14 +73,6 @@ public class PlayerBukkit {
 
     public boolean isAFK() {
         return this.afk || this.protocol.npc;
-    }
-
-    public boolean isBedrockPlayer() {
-        return this.dataType == Check.DataType.BEDROCK;
-    }
-
-    public boolean packetsEnabled() {
-        return PluginBase.packetsEnabled() && !this.isBedrockPlayer();
     }
 
     @Override
@@ -191,7 +132,7 @@ public class PlayerBukkit {
 
     public void resetCrucialData() {
         for (PlayerTrackers.TrackerType handlerType : PlayerTrackers.TrackerType.values()) {
-            this.trackers.remove(handlerType);
+            this.protocol.trackers.remove(handlerType);
         }
         this.movement.judgeGround();
     }
@@ -199,7 +140,7 @@ public class PlayerBukkit {
     // Separator
 
     public int getMaxChatLength() {
-        return this.isBedrockPlayer() ? 512 :
+        return this.protocol.isBedrockPlayer() ? 512 :
                 MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_11)
                         || this.protocol.isUsingVersionOrGreater(MultiVersion.MCVersion.V1_11)
                         || PluginUtils.exists("viaversion")
@@ -269,7 +210,7 @@ public class PlayerBukkit {
     // Separator
 
     public void handleReceivedDamage() {
-        this.trackers.add(PlayerTrackers.TrackerType.DAMAGE, AlgebraUtils.integerCeil(TPS.maximum));
+        this.protocol.trackers.add(PlayerTrackers.TrackerType.DAMAGE, AlgebraUtils.integerCeil(TPS.maximum));
     }
 
     // Separator
@@ -302,7 +243,7 @@ public class PlayerBukkit {
 
     // Separator
 
-    private void setStoredPotionEffects() {
+    void setStoredPotionEffects() {
         if (!ProtocolLib.isTemporary(this.protocol.bukkit())) {
             PluginBase.transferTask(
                     protocol,
@@ -453,7 +394,7 @@ public class PlayerBukkit {
             } else {
                 loopLocation.setY(Math.floor(progressiveY) + 1.0);
 
-                if (this.packetsEnabled()) {
+                if (this.protocol.packetsEnabled()) {
                     this.protocol.teleport(loopLocation.bukkit());
                 }
                 break;

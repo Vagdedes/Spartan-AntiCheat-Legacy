@@ -1,6 +1,5 @@
 package com.vagdedes.spartan.functionality.tracking;
 
-import com.vagdedes.spartan.abstraction.protocol.PlayerBukkit;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
 import com.vagdedes.spartan.functionality.server.PluginBase;
@@ -34,7 +33,7 @@ public class Piston {
                             diffY = location.getY() - block.getY(),
                             preZ = AlgebraUtils.getSquare(location.getZ(), block.getZ());
 
-                    if (!run(protocol.bukkitExtra, preX, diffY, preZ) // Check if the player is nearby to the piston
+                    if (!run(protocol, preX, diffY, preZ) // Check if the player is nearby to the piston
                             && runBlocks
                             && Math.sqrt(preX + (diffY * diffY) + preZ) <= PlayerUtils.chunk) { // Check if the player is nearby to the piston affected blocks
                         for (Block affected : blocks) {
@@ -42,7 +41,7 @@ public class Piston {
                             diffY = location.getY() - block.getY();
                             preZ = AlgebraUtils.getSquare(location.getZ(), affected.getZ());
 
-                            if (run(protocol.bukkitExtra, preX, diffY, preZ)) { // Check if the player is nearby to the piston affected block
+                            if (run(protocol, preX, diffY, preZ)) { // Check if the player is nearby to the piston affected block
                                 break;
                             }
                         }
@@ -52,10 +51,10 @@ public class Piston {
         }
     }
 
-    private static boolean run(PlayerBukkit player, double preX, double diffY, double preZ) {
+    private static boolean run(PlayerProtocol protocol, double preX, double diffY, double preZ) {
         if (Math.sqrt(preX + preZ) <= horizontalDistance
                 && Math.abs(diffY) <= verticalDistance) {
-            player.trackers.add(PlayerTrackers.TrackerType.PISTON, AlgebraUtils.integerCeil(TPS.maximum));
+            protocol.trackers.add(PlayerTrackers.TrackerType.PISTON, AlgebraUtils.integerCeil(TPS.maximum));
             return true;
         }
         return false;

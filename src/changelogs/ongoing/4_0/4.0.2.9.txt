@@ -1,0 +1,1 @@
+[#] Fixed gravity detection false positives with bubble columns

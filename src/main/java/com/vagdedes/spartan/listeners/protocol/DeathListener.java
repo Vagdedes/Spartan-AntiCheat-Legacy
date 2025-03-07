@@ -28,7 +28,7 @@ public class DeathListener extends PacketAdapter {
     public void onPacketSending(PacketEvent event) {
         PlayerProtocol protocol = PluginBase.getProtocol(event.getPlayer());
 
-        if (protocol.bukkitExtra.isBedrockPlayer()) {
+        if (protocol.isBedrockPlayer()) {
             return;
         }
         PacketContainer packet = event.getPacket();

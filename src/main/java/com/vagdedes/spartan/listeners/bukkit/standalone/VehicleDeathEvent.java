@@ -22,7 +22,7 @@ public class VehicleDeathEvent implements Listener {
         if (passengers.length > 0) {
             for (Entity passenger : passengers) {
                 if (passenger instanceof Player) {
-                    VehicleEvent.exit(PluginBase.getProtocol((Player) passenger, true).bukkitExtra);
+                    VehicleEvent.exit(PluginBase.getProtocol((Player) passenger, true));
                 }
             }
         }

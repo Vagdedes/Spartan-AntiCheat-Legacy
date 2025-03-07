@@ -110,7 +110,7 @@ public class IMBukkitSpeed extends CheckDetection {
     }
 
     void run(PlayerMoveEvent e) {
-        if (this.protocol.bukkitExtra.trackers.has(PlayerTrackers.TrackerType.PISTON)) {
+        if (this.protocol.trackers.has(PlayerTrackers.TrackerType.PISTON)) {
             return;
         }
         Location location = this.protocol.getLocation().clone();
@@ -149,7 +149,7 @@ public class IMBukkitSpeed extends CheckDetection {
                     this.straightLineSpeeding
             };
         }
-        if (velocity == 0 && !this.protocol.bukkitExtra.isBedrockPlayer() && levitationEffect == null
+        if (velocity == 0 && !this.protocol.isBedrockPlayer() && levitationEffect == null
                 && glideEffect == null && !this.protocol.bukkitExtra.movement.isSwimming()) {
             double localSpeedLimit = r((speedLimit / 1.35) + 0.01);
             double localSpeedLimit2 = r((speedLimit / 1.6) + 0.01);

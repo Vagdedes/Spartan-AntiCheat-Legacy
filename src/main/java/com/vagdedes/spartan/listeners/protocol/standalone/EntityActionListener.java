@@ -30,7 +30,7 @@ public class EntityActionListener extends PacketAdapter {
     public void onPacketReceiving(PacketEvent event) {
         PlayerProtocol protocol = PluginBase.getProtocol(event.getPlayer());
 
-        if (protocol.bukkitExtra.isBedrockPlayer()) {
+        if (protocol.isBedrockPlayer()) {
             return;
         }
         CheckThread.run(() -> {

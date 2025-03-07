@@ -733,7 +733,7 @@ public class CommandExecution implements CommandExecutor {
                                 );
                                 return true;
                             }
-                            if (!t.bukkitExtra.punishments.kick(sender, argumentsToString)) {
+                            if (!t.punishments.kick(sender, argumentsToString)) {
                                 ClickableMessage.sendURL(
                                         sender,
                                         Config.messages.getColorfulString("failed_command").replace(
@@ -775,7 +775,7 @@ public class CommandExecution implements CommandExecutor {
                                 );
                                 return true;
                             }
-                            if (!t.bukkitExtra.punishments.warn(sender, argumentsToString)) {
+                            if (!t.punishments.warn(sender, argumentsToString)) {
                                 ClickableMessage.sendURL(
                                         sender,
                                         Config.messages.getColorfulString("failed_command").replace(

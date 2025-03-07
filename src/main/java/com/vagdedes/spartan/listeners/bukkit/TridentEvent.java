@@ -42,12 +42,12 @@ public class TridentEvent implements Listener {
                         int ticks = AlgebraUtils.integerRound(Math.log(level) * TPS.maximum);
 
                         if (level > riptideMaxSafeLevel) {
-                            p.bukkitExtra.trackers.add(
+                            p.trackers.add(
                                     PlayerTrackers.TrackerType.TRIDENT,
                                     AlgebraUtils.integerCeil(ticks * (level / riptideMaxSafeLevel))
                             );
                         } else {
-                            p.bukkitExtra.trackers.add(PlayerTrackers.TrackerType.TRIDENT, ticks);
+                            p.trackers.add(PlayerTrackers.TrackerType.TRIDENT, ticks);
                         }
                         p.profile().executeRunners(false, e);
                         break;

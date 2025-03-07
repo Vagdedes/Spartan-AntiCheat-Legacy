@@ -1,6 +1,6 @@
 package com.vagdedes.spartan.listeners.bukkit;
 
-import com.vagdedes.spartan.abstraction.protocol.PlayerBukkit;
+import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
 import com.vagdedes.spartan.functionality.server.PluginBase;
 import org.bukkit.entity.Entity;
@@ -19,7 +19,7 @@ public class VehicleEvent implements Listener {
             Entity entity = e.getEntered();
 
             if (entity instanceof Player) {
-                PlayerBukkit p = PluginBase.getProtocol((Player) entity, true).bukkitExtra;
+                PlayerProtocol p = PluginBase.getProtocol((Player) entity, true);
                 p.trackers.add(PlayerTrackers.TrackerType.VEHICLE, "enter", 5);
             }
         }
@@ -31,12 +31,12 @@ public class VehicleEvent implements Listener {
             Entity en = e.getExited();
 
             if (en instanceof Player) {
-                exit(PluginBase.getProtocol((Player) en, true).bukkitExtra);
+                exit(PluginBase.getProtocol((Player) en, true));
             }
         }
     }
 
-    public static void exit(PlayerBukkit player) {
+    public static void exit(PlayerProtocol player) {
         player.trackers.add(PlayerTrackers.TrackerType.VEHICLE, "exit", 5);
         player.trackers.add(PlayerTrackers.TrackerType.VEHICLE, "vh_tp", 1);
     }

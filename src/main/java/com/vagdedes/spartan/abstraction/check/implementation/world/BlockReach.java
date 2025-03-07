@@ -115,7 +115,7 @@ public class BlockReach extends CheckRunner {
                         double distance = SpartanLocation.distance(to, event.placedBlock.getLocation()),
                                 ab_distance = SpartanLocation.distance(to, event.placedAgainstBlock.getLocation());
 
-                        if (!this.protocol.bukkitExtra.isBedrockPlayer()
+                        if (!this.protocol.isBedrockPlayer()
                                 && BlockUtils.isFullSolid(event.placedBlock.getType())
                                 && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
                                 || event.placedBlock.getType() != Material.BARRIER)

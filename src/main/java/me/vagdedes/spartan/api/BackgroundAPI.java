@@ -126,8 +126,8 @@ public class BackgroundAPI {
         double avg = 0.0, punishment = 0.0;
 
         for (CheckDetection detection : detections) {
-            avg += detection.getLevel(protocol.bukkitExtra.getDataType());
-            punishment += detection.getPunishmentLevel(protocol.bukkitExtra.getDataType());
+            avg += detection.getLevel(protocol.getDataType());
+            punishment += detection.getPunishmentLevel(protocol.getDataType());
         }
         return AlgebraUtils.integerRound(
                 (avg / detections.size()) / (punishment / detections.size())
@@ -140,7 +140,7 @@ public class BackgroundAPI {
         double avg = 0.0;
 
         for (CheckDetection detection : detections) {
-            avg += detection.getLevel(protocol.bukkitExtra.getDataType());
+            avg += detection.getLevel(protocol.getDataType());
         }
         return avg / detections.size();
     }
@@ -158,7 +158,7 @@ public class BackgroundAPI {
             Collection<CheckDetection> detections = runner.getDetections();
 
             for (CheckDetection detection : detections) {
-                avg += detection.getLevel(protocol.bukkitExtra.getDataType());
+                avg += detection.getLevel(protocol.getDataType());
             }
             detectionsTotal += detections.size();
         }
@@ -279,7 +279,7 @@ public class BackgroundAPI {
             for (PlayerProtocol protocol : protocols) {
                 for (CheckRunner runner : protocol.profile().getRunners()) {
                     for (CheckDetection detection : runner.getDetections()) {
-                        detection.clearData(protocol.bukkitExtra.getDataType());
+                        detection.clearData(protocol.getDataType());
                     }
                 }
             }
@@ -291,7 +291,7 @@ public class BackgroundAPI {
 
         for (CheckRunner runner : protocol.profile().getRunners()) {
             for (CheckDetection detection : runner.getDetections()) {
-                detection.clearData(protocol.bukkitExtra.getDataType());
+                detection.clearData(protocol.getDataType());
             }
         }
     }

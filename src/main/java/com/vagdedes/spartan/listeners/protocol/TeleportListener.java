@@ -31,7 +31,7 @@ public class TeleportListener extends PacketAdapter {
         Player player = event.getPlayer();
         PlayerProtocol protocol = PluginBase.getProtocol(player);
 
-        if (protocol.bukkitExtra.isBedrockPlayer()) {
+        if (protocol.isBedrockPlayer()) {
             return;
         }
         PacketType packetType = event.getPacket().getType();

@@ -63,14 +63,14 @@ public class IrregularMovementsJump extends CheckDetection {
                 && (this.jump_ticks.canCall()
                 || this.jump_height.canCall())
                 && !this.protocol.bukkitExtra.movement.wasGliding()) {
-            if (this.protocol.bukkitExtra.trackers.has(PlayerTrackers.TrackerFamily.VELOCITY)
+            if (this.protocol.trackers.has(PlayerTrackers.TrackerFamily.VELOCITY)
                     ? this.protocol.bukkitExtra.movement.justJumped(vertical)
                     : this.protocol.bukkitExtra.movement.isJumping(vertical)) {
                 int jumpEffect = PlayerUtils.getPotionLevel(this.protocol.bukkitExtra, PotionEffectUtils.JUMP) + 1,
                         jumpTicks = PlayerUtils.getJumpTicks(jumpEffect);
                 boolean contains = heights.get(jumpEffect).contains(AlgebraUtils.cut(box, heightPrecision));
 
-                if (!contains && this.protocol.bukkitExtra.isBedrockPlayer()) {
+                if (!contains && this.protocol.isBedrockPlayer()) {
                     for (double height : heightsBedrock.get(jumpEffect)) {
                         if (Math.abs(height - box) < heightPrecision) {
                             contains = true;

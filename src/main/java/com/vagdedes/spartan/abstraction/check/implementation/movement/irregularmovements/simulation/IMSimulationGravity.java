@@ -54,7 +54,7 @@ public class IMSimulationGravity extends CheckDetection {
         this.call(() -> {
             PlayerProtocol p = this.protocol;
 
-            if (p.bukkitExtra.trackers.has(PlayerTrackers.TrackerType.BUBBLE_WATER)) {
+            if (p.trackers.has(PlayerTrackers.TrackerType.BUBBLE_WATER)) {
                 return;
             }
             boolean ground = (this.protocol.bukkitExtra.getVehicle() != null)
@@ -368,7 +368,7 @@ public class IMSimulationGravity extends CheckDetection {
                     this.setPredict(motion);
                     this.allowLowMinorAccel = false;
                 }
-                if (this.protocol.bukkitExtra.trackers.has(
+                if (this.protocol.trackers.has(
                                 PlayerTrackers.TrackerType.TELEPORT, "tp")
                                 && getDeviantity(motion) < 0.16) {
                     this.setPredict(motion);
@@ -386,7 +386,7 @@ public class IMSimulationGravity extends CheckDetection {
                                 != null && motion < 0 && airVehicle < 10)
                                 ? 0.36 : (this.protocol.bukkitExtra.getVehicle()
                                 != null) ? 0.09 : 0.009)) {
-                    if (this.protocol.bukkitExtra.trackers.has(
+                    if (this.protocol.trackers.has(
                                     PlayerTrackers.TrackerType.VEHICLE, "vh_tp")
                                     && devTotal < 1.9) {
                         this.setPredict(0.0);

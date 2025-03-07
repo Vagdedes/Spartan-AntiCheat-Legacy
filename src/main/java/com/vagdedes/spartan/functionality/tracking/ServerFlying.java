@@ -23,8 +23,8 @@ public class ServerFlying {
                     && p.bukkitExtra.getVehicle() == null
                     && !p.bukkit().isSleeping()
                     && !p.bukkit().isDead()
-                    && !p.bukkitExtra.trackers.has(PlayerTrackers.TrackerFamily.VELOCITY)
-                    && !p.bukkitExtra.trackers.has(PlayerTrackers.TrackerFamily.MOTION)
+                    && !p.trackers.has(PlayerTrackers.TrackerFamily.VELOCITY)
+                    && !p.trackers.has(PlayerTrackers.TrackerFamily.MOTION)
                     && Attributes.getAmount(p, Attributes.GENERIC_FLYING_SPEED) == 0.0) {
                 double limit = (p.bukkit().getFlySpeed() * 10.0) + 1.0,
                         nmsDistance = p.getLocation().distance(p.getFromLocation());

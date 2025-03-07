@@ -77,7 +77,7 @@ public class MovementListener extends PacketAdapter {
         PlayerProtocol p = PluginBase.getProtocol(player);
         PacketContainer packet = event.getPacket();
         // Always loaded if you use this listener
-        if (p.bukkitExtra.isBedrockPlayer()) {
+        if (p.isBedrockPlayer()) {
             return;
         }
         Location l = p.getLocation();
@@ -98,8 +98,7 @@ public class MovementListener extends PacketAdapter {
         double[] v = new double[]{c.getX(), c.getY(), c.getZ(), c.getYaw(), c.getPitch()};
         for (Double check : v) {
             if (check.isNaN() || check.isInfinite() || Math.abs(check) > 3E8) {
-                PluginBase.getProtocol(player)
-                        .bukkitExtra.punishments.kick(Bukkit.getConsoleSender(), "Invalid packet");
+                PluginBase.getProtocol(player).punishments.kick(Bukkit.getConsoleSender(), "Invalid packet");
                 return;
             }
         }
@@ -154,7 +153,7 @@ public class MovementListener extends PacketAdapter {
                             p.setFromLocation(p.getTeleport().clone());
                             p.setTeleport(null);
                         } else {
-                            if (p.bukkitExtra.trackers.has(PlayerTrackers.TrackerType.VEHICLE, "enter")) return;
+                            if (p.trackers.has(PlayerTrackers.TrackerType.VEHICLE, "enter")) return;
                             for (Entity entity : p.bukkitExtra.getNearbyEntities(5))
                                 if (entity instanceof Boat) return;
 

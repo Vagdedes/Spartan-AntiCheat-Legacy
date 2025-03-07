@@ -98,7 +98,7 @@ public abstract class CheckRunner extends CheckProcess {
     final boolean canCall() {
         return this.protocol != null
                 && !this.protocol.npc
-                && hackType.getCheck().isEnabled(this.protocol.bukkitExtra.getDataType(), this.protocol.getWorld().getName())
+                && hackType.getCheck().isEnabled(this.protocol.getDataType(), this.protocol.getWorld().getName())
                 && (!cancelled || hackType.getCheck().handleCancelledEvents)
                 && (!v1_8 || this.protocol.bukkit().getGameMode() != GameMode.SPECTATOR)
                 && Attributes.getAmount(this.protocol, Attributes.GENERIC_SCALE) == 0.0;
@@ -118,8 +118,8 @@ public abstract class CheckRunner extends CheckProcess {
         List<String> evidence = new ArrayList<>();
 
         for (CheckDetection detection : this.getDetections()) {
-            if (detection.getLevel(this.protocol.bukkitExtra.getDataType())
-                    >= detection.getNotificationLevel(this.protocol.bukkitExtra.getDataType())) {
+            if (detection.getLevel(this.protocol.getDataType())
+                    >= detection.getNotificationLevel(this.protocol.getDataType())) {
                 evidence.add(detection.name);
             }
         }

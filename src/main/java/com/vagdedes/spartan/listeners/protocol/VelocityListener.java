@@ -30,7 +30,7 @@ public class VelocityListener extends PacketAdapter {
         Player player = event.getPlayer();
         PlayerProtocol protocol = PluginBase.getProtocol(player);
 
-        if (protocol.bukkitExtra.isBedrockPlayer()) {
+        if (protocol.isBedrockPlayer()) {
             return;
         }
         PacketContainer packet = event.getPacket();

@@ -148,9 +148,9 @@ public abstract class CheckDetection extends CheckProcess {
         return this.protocol != null
                 && this.executor.canCall()
                 && this.isEnabled()
-                && this.supportsDetectionType(this.protocol.bukkitExtra.detectionType)
-                && this.supportsDataType(this.protocol.bukkitExtra.getDataType())
-                && SpartanEdition.hasDetectionsPurchased(this.protocol.bukkitExtra.getDataType());
+                && this.supportsDetectionType(this.protocol.detectionType)
+                && this.supportsDataType(this.protocol.getDataType())
+                && SpartanEdition.hasDetectionsPurchased(this.protocol.getDataType());
     }
 
     public final void call(Runnable runnable) {
@@ -307,7 +307,7 @@ public abstract class CheckDetection extends CheckProcess {
         Location location = this.protocol.getLocation();
         information = "(" + AntiCheatLogs.playerIdentifier + " " + this.protocol.bukkit().getName() + "), "
                 + "(" + checkIdentifier + " " + this.hackType + "), "
-                + "(" + javaPlayerIdentifier + " " + (!this.protocol.bukkitExtra.isBedrockPlayer()) + ")" + ", "
+                + "(" + javaPlayerIdentifier + " " + (!this.protocol.isBedrockPlayer()) + ")" + ", "
                 + "(" + detectionIdentifier + " " + this.name + ")" + ", "
                 + "(" + levelIdentifier + " " + level + "),"
                 + "(" + notificationLevelIdentifier + " " + notification + "),"
@@ -315,8 +315,8 @@ public abstract class CheckDetection extends CheckProcess {
                 + "(" + punishmentLevelIdentifier + " " + punishment + "),"
                 + "(Server-Version: " + MultiVersion.serverVersion.toString() + "), "
                 + "(Plugin-Version: " + API.getVersion() + "), "
-                + "(Silent: " + hackType.getCheck().isSilent(this.protocol.bukkitExtra.getDataType(), this.protocol.getWorld().getName()) + "), "
-                + "(Punish: " + hackType.getCheck().canPunish(this.protocol.bukkitExtra.getDataType()) + "), "
+                + "(Silent: " + hackType.getCheck().isSilent(this.protocol.getDataType(), this.protocol.getWorld().getName()) + "), "
+                + "(Punish: " + hackType.getCheck().canPunish(this.protocol.getDataType()) + "), "
                 + "(Packets: " + this.protocol.packetsEnabled() + "), "
                 + "(Ping: " + this.protocol.getPing() + "ms), "
                 + "(W-XYZ: " + location.getWorld().getName() + " " + location.getBlockX() + " " + location.getBlockY() + " " + location.getBlockZ() + "), "
@@ -379,12 +379,12 @@ public abstract class CheckDetection extends CheckProcess {
         Check check = hackType.getCheck();
 
         if (level >= max
-                && check.canPunish(this.protocol.bukkitExtra.getDataType())) {
+                && check.canPunish(this.protocol.getDataType())) {
             List<String> commands = check.getPunishmentCommands();
 
             if (!commands.isEmpty()) {
-                this.accumulatedTime[this.protocol.bukkitExtra.getDataType().ordinal()] = 0L;
-                this.previousTime[this.protocol.bukkitExtra.getDataType().ordinal()] = -1L;
+                this.accumulatedTime[this.protocol.getDataType().ordinal()] = 0L;
+                this.previousTime[this.protocol.getDataType().ordinal()] = -1L;
                 int index = 0;
                 boolean enabledDeveloperAPI = Config.settings.getBoolean("Important.enable_developer_api");
 
@@ -509,18 +509,18 @@ public abstract class CheckDetection extends CheckProcess {
             }
             // Store, potentially recalculate and check data
             this.storeData(
-                    this.protocol.bukkitExtra.getDataType(),
+                    this.protocol.getDataType(),
                     time
             );
             this.increaseAccumulationTime(
-                    this.protocol.bukkitExtra.getDataType(),
+                    this.protocol.getDataType(),
                     time
             );
-            ResearchEngine.queueToCache(this.hackType, this.protocol.bukkitExtra.getDataType());
-            int max = this.getPunishmentLevel(this.protocol.bukkitExtra.getDataType()),
-                    notification = this.getNotificationLevel(this.protocol.bukkitExtra.getDataType()),
-                    prevention = this.getPreventionLevel(this.protocol.bukkitExtra.getDataType()),
-                    level = Math.min(this.getLevel(this.protocol.bukkitExtra.getDataType()), max);
+            ResearchEngine.queueToCache(this.hackType, this.protocol.getDataType());
+            int max = this.getPunishmentLevel(this.protocol.getDataType()),
+                    notification = this.getNotificationLevel(this.protocol.getDataType()),
+                    prevention = this.getPreventionLevel(this.protocol.getDataType()),
+                    level = Math.min(this.getLevel(this.protocol.getDataType()), max);
 
             // Notification
             this.notify(level, notification, prevention, max, time, information);
@@ -529,7 +529,7 @@ public abstract class CheckDetection extends CheckProcess {
             this.prevention = newPrevention;
             this.prevention.canPrevent =
                     level >= prevention
-                            && !hackType.getCheck().isSilent(this.protocol.bukkitExtra.getDataType(), this.protocol.getWorld().getName())
+                            && !hackType.getCheck().isSilent(this.protocol.getDataType(), this.protocol.getWorld().getName())
                             && (silentCause == null
                             || silentCause.hasExpired()
                             || !silentCause.pointerMatches(information));

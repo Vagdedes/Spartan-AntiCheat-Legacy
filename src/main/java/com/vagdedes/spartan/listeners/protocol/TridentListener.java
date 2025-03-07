@@ -31,7 +31,7 @@ public class TridentListener extends PacketAdapter {
         if (!event.isCancelled()) { // PlayerRiptideEvent does not implement cancellable
             Player player = event.getPlayer();
             PlayerProtocol protocol = PluginBase.getProtocol(player);
-            if (protocol.bukkitExtra.isBedrockPlayer()) {
+            if (protocol.isBedrockPlayer()) {
                 return;
             }
             ItemStack item = player.getInventory().getItemInMainHand();

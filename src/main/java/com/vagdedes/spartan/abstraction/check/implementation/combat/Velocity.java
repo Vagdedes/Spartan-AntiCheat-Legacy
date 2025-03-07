@@ -168,7 +168,7 @@ public class Velocity extends CheckRunner {
     @Override
     protected boolean canRun() {
         return this.protocol.bukkitExtra.getVehicle() == null
-                && !this.protocol.bukkitExtra.trackers.has(PlayerTrackers.TrackerType.BOUNCING_BLOCKS)
+                && !this.protocol.trackers.has(PlayerTrackers.TrackerType.BOUNCING_BLOCKS)
                 && CombatUtils.canCheck(this.protocol)
                 && !this.protocol.bukkitExtra.isOutsideOfTheBorder(-1.0);
     }

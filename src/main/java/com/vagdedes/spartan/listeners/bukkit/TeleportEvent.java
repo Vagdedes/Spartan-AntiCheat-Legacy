@@ -22,7 +22,7 @@ public class TeleportEvent implements Listener {
         if (protocol.packetsEnabled() == packets || object instanceof PlayerTeleportEvent) {
             protocol.bukkitExtra.resetCrucialData();
             protocol.profile().executeRunners(null, object);
-            protocol.bukkitExtra.trackers.add(PlayerTrackers.TrackerType.TELEPORT, "tp", 1);
+            protocol.trackers.add(PlayerTrackers.TrackerType.TELEPORT, "tp", 1);
         }
     }
 

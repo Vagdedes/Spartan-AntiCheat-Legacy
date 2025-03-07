@@ -198,7 +198,7 @@ public class IMSimulationSpeed extends CheckDetection {
                             this.removePistonTick = true;
                         }
                         if (d >= 0.01 && d <= 4.3
-                                && (this.protocol.bukkitExtra.trackers.has(PlayerTrackers.TrackerType.VEHICLE, "vh_tp")
+                                && (this.protocol.trackers.has(PlayerTrackers.TrackerType.VEHICLE, "vh_tp")
                                 || this.vhact > 0)) {
                             this.setPredict(dx, dz);
                         }

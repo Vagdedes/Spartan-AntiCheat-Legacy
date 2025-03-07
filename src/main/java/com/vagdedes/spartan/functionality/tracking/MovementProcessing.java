@@ -54,8 +54,8 @@ public class MovementProcessing {
                 && protocol.bukkitExtra.getVehicle() == null
                 && vertical == 0.0
                 && GroundUtils.collisionHeightExists(box)) {
-            protocol.bukkitExtra.trackers.removeMany(PlayerTrackers.TrackerFamily.MOTION);
-            protocol.bukkitExtra.trackers.removeMany(PlayerTrackers.TrackerFamily.VELOCITY);
+            protocol.trackers.removeMany(PlayerTrackers.TrackerFamily.MOTION);
+            protocol.trackers.removeMany(PlayerTrackers.TrackerFamily.VELOCITY);
             protocol.bukkitExtra.movement.removeLastLiquidTime();
             return true;
         } else {
@@ -68,12 +68,12 @@ public class MovementProcessing {
         if (v1_8 && vertical != 0.0) {
             if (BlockUtils.isSlime(protocol, location, 4)) {
                 int time = (int) (TPS.maximum * 2);
-                protocol.bukkitExtra.trackers.add(PlayerTrackers.TrackerType.BOUNCING_BLOCKS, time);
-                protocol.bukkitExtra.trackers.add(PlayerTrackers.TrackerType.BOUNCING_BLOCKS, "slime", time);
+                protocol.trackers.add(PlayerTrackers.TrackerType.BOUNCING_BLOCKS, time);
+                protocol.trackers.add(PlayerTrackers.TrackerType.BOUNCING_BLOCKS, "slime", time);
             } else if (BlockUtils.isBed(protocol, location, 4)) {
                 int time = (int) (TPS.maximum * 2);
-                protocol.bukkitExtra.trackers.add(PlayerTrackers.TrackerType.BOUNCING_BLOCKS, time);
-                protocol.bukkitExtra.trackers.add(PlayerTrackers.TrackerType.BOUNCING_BLOCKS, "bed", time);
+                protocol.trackers.add(PlayerTrackers.TrackerType.BOUNCING_BLOCKS, time);
+                protocol.trackers.add(PlayerTrackers.TrackerType.BOUNCING_BLOCKS, "bed", time);
             }
         }
     }
@@ -130,12 +130,12 @@ public class MovementProcessing {
                         Material type = block.getType();
 
                         if (type == Material.SOUL_SAND) {
-                            protocol.bukkitExtra.trackers.add(PlayerTrackers.TrackerType.BUBBLE_WATER, AlgebraUtils.integerCeil(TPS.maximum));
-                            protocol.bukkitExtra.trackers.add(PlayerTrackers.TrackerType.BUBBLE_WATER, "soul-sand", AlgebraUtils.integerCeil(TPS.maximum));
+                            protocol.trackers.add(PlayerTrackers.TrackerType.BUBBLE_WATER, AlgebraUtils.integerCeil(TPS.maximum));
+                            protocol.trackers.add(PlayerTrackers.TrackerType.BUBBLE_WATER, "soul-sand", AlgebraUtils.integerCeil(TPS.maximum));
                             return;
                         } else if (type == MAGMA_BLOCK) {
-                            protocol.bukkitExtra.trackers.add(PlayerTrackers.TrackerType.BUBBLE_WATER, AlgebraUtils.integerCeil(TPS.maximum));
-                            protocol.bukkitExtra.trackers.add(PlayerTrackers.TrackerType.BUBBLE_WATER, "magma-block", AlgebraUtils.integerCeil(TPS.maximum));
+                            protocol.trackers.add(PlayerTrackers.TrackerType.BUBBLE_WATER, AlgebraUtils.integerCeil(TPS.maximum));
+                            protocol.trackers.add(PlayerTrackers.TrackerType.BUBBLE_WATER, "magma-block", AlgebraUtils.integerCeil(TPS.maximum));
                             return;
                         } else if (BlockUtils.isSolid(type)) {
                             if (!block.isWaterLogged()) {

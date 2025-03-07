@@ -12,17 +12,17 @@ import java.util.Collection;
 
 public class PlayerPunishments {
 
-    private final PlayerBukkit parent;
+    private final PlayerProtocol parent;
     private long kickCooldown, warnCooldown;
 
-    public PlayerPunishments(PlayerBukkit player) {
-        this.parent = player;
+    public PlayerPunishments(PlayerProtocol protocol) {
+        this.parent = protocol;
     }
 
     public boolean kick(CommandSender punisher, String reason) {
         if (kickCooldown < System.currentTimeMillis()) {
             kickCooldown = System.currentTimeMillis() + 1_000L;
-            Player target = this.parent.protocol.bukkit();
+            Player target = this.parent.bukkit();
             String punisherName = punisher instanceof ConsoleCommandSender
                     ? Config.messages.getColorfulString("console_name")
                     : punisher.getName(),
@@ -48,7 +48,7 @@ public class PlayerPunishments {
             }
 
             PluginBase.transferTask(
-                    this.parent.protocol,
+                    this.parent,
                     () -> target.kickPlayer(kick)
             );
             return true;
@@ -60,7 +60,7 @@ public class PlayerPunishments {
     public boolean warn(CommandSender punisher, String reason) {
         if (warnCooldown < System.currentTimeMillis()) {
             warnCooldown = System.currentTimeMillis() + 1_000L;
-            Player target = this.parent.protocol.bukkit();
+            Player target = this.parent.bukkit();
             String punisherName = punisher instanceof ConsoleCommandSender
                     ? Config.messages.getColorfulString("console_name")
                     : punisher.getName(),

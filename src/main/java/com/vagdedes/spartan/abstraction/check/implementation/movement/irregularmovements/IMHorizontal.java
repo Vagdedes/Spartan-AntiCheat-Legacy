@@ -23,14 +23,14 @@ public class IMHorizontal extends CheckDetection {
         this.call(() -> {
             if (!this.protocol.bukkitExtra.movement.wasGliding()
                     && this.protocol.bukkitExtra.getVehicle() == null
-                    && !this.protocol.bukkitExtra.trackers.has(PlayerTrackers.TrackerType.BUBBLE_WATER, "soul-sand")) {
+                    && !this.protocol.trackers.has(PlayerTrackers.TrackerType.BUBBLE_WATER, "soul-sand")) {
                 int airTicks = this.protocol.bukkitExtra.movement.getTicksOnAir();
 
                 if (airTicks > 0
                         && !BlockUtils.canClimb(new SpartanLocation(this.protocol.getLocation()).getBlock().getType(), false)
                         && !BlockUtils.canClimb(new SpartanLocation(this.protocol.getFromLocation()).getBlock().getType(), false)) {
                     if (knownBox || knownOldBox) {
-                        int limit = PlayerUtils.getJumpTicks(0) * (this.protocol.bukkitExtra.isBedrockPlayer() ? PlayerUtils.getJumpTicks(0) : 1);
+                        int limit = PlayerUtils.getJumpTicks(0) * (this.protocol.isBedrockPlayer() ? PlayerUtils.getJumpTicks(0) : 1);
 
                         if (airTicks > limit
                                 && !this.protocol.isOnGround()) {
