@@ -304,7 +304,7 @@ public abstract class CheckDetection extends CheckProcess {
                 hackType
         );
 
-        Location location = this.protocol.bukkitExtra.getLocation();
+        Location location = this.protocol.getLocation();
         information = "(" + AntiCheatLogs.playerIdentifier + " " + this.protocol.bukkit().getName() + "), "
                 + "(" + checkIdentifier + " " + this.hackType + "), "
                 + "(" + javaPlayerIdentifier + " " + (!this.protocol.isBedrockPlayer()) + ")" + ", "
@@ -315,7 +315,7 @@ public abstract class CheckDetection extends CheckProcess {
                 + "(" + punishmentLevelIdentifier + " " + punishment + "),"
                 + "(Server-Version: " + MultiVersion.serverVersion.toString() + "), "
                 + "(Plugin-Version: " + API.getVersion() + "), "
-                + "(Silent: " + hackType.getCheck().isSilent(this.protocol.getDataType(), this.protocol.bukkitExtra.getWorld().getName()) + "), "
+                + "(Silent: " + hackType.getCheck().isSilent(this.protocol.getDataType(), this.protocol.getWorld().getName()) + "), "
                 + "(Punish: " + hackType.getCheck().canPunish(this.protocol.getDataType()) + "), "
                 + "(Packets: " + this.protocol.packetsEnabled() + "), "
                 + "(Ping: " + this.protocol.getPing() + "ms), "
@@ -460,11 +460,11 @@ public abstract class CheckDetection extends CheckProcess {
                     protocol.teleport(location);
                 }
                 if (groundTeleport) {
-                    protocol.bukkitExtra.groundTeleport();
+                    protocol.groundTeleport();
                 }
             }
             if (damage > 0.0) {
-                protocol.bukkitExtra.damage(damage);
+                protocol.bukkit().damage(damage);
             }
         };
     }
@@ -529,7 +529,7 @@ public abstract class CheckDetection extends CheckProcess {
             this.prevention = newPrevention;
             this.prevention.canPrevent =
                     level >= prevention
-                            && !hackType.getCheck().isSilent(this.protocol.getDataType(), this.protocol.bukkitExtra.getWorld().getName())
+                            && !hackType.getCheck().isSilent(this.protocol.getDataType(), this.protocol.getWorld().getName())
                             && (silentCause == null
                             || silentCause.hasExpired()
                             || !silentCause.pointerMatches(information));

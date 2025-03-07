@@ -39,7 +39,7 @@ public class BlockReach extends CheckRunner {
     }
 
     private boolean canDo(Block b) {
-        return this.protocol.bukkitExtra.getWorld().equals(b.getWorld());
+        return this.protocol.getWorld().equals(b.getWorld());
     }
 
     private double getLimit() {
@@ -108,7 +108,7 @@ public class BlockReach extends CheckRunner {
                             && !BlockUtils.isScaffoldingBlock(event.placedBlock.getType())) {
                         Location to = this.protocol.getLocationOrVehicle().clone().add(
                                 0,
-                                this.protocol.bukkitExtra.getEyeHeight(),
+                                this.protocol.getEyeHeight(),
                                 0
                         );
                         double distance = SpartanLocation.distance(to, event.placedBlock.getLocation()),
@@ -118,7 +118,7 @@ public class BlockReach extends CheckRunner {
                                 && BlockUtils.isFullSolid(event.placedBlock.getType())
                                 && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
                                 || event.placedBlock.getType() != Material.BARRIER)
-                                && this.protocol.bukkitExtra.getVehicle() == null
+                                && this.protocol.getVehicle() == null
                                 && distance > (ab_distance + 0.3)) {
                             this.raytrace.call(() -> this.raytrace.cancel(
                                     "raytrace, distance: " + distance
@@ -150,7 +150,7 @@ public class BlockReach extends CheckRunner {
                 && !Compatibility.CompatibilityType.CRAFT_BOOK.isFunctional()
                 && !PrinterMode.isUsing(this.protocol)
                 && !AureliumSkills.isUsing(this.protocol)
-                && !MineBomb.isUsing(this.protocol.bukkitExtra)
+                && !MineBomb.isUsing(this.protocol)
                 && Attributes.getAmount(this.protocol, Attributes.PLAYER_BLOCK_INTERACTION_RANGE) == 0.0;
     }
 }

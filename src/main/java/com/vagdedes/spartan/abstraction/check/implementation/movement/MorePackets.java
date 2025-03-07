@@ -147,7 +147,7 @@ public class MorePackets extends CheckRunner {
 
     @Override
     protected boolean canRun() {
-        return !this.protocol.bukkitExtra.isAFK()
+        return !this.protocol.isAFK()
                 && this.teleported < System.currentTimeMillis()
                 && MovementProcessing.canCheck(
                 this.protocol,

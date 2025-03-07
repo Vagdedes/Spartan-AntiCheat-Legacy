@@ -49,7 +49,7 @@ public class FastEat extends CheckRunner {
                 }
             }
         } else {
-            ItemStack itemStack = this.protocol.bukkitExtra.getItemInHand();
+            ItemStack itemStack = this.protocol.getItemInHand();
 
             if (itemStack != null) {
                 Material type = itemStack.getType();
@@ -113,7 +113,7 @@ public class FastEat extends CheckRunner {
                     }
                     break;
                 case RIGHT_CLICK_AIR:
-                    if (this.protocol.bukkitExtra.getItemInHand().getType().isEdible()) {
+                    if (this.protocol.getItemInHand().getType().isEdible()) {
                         this.eatTime = System.currentTimeMillis();
                     }
                     break;
@@ -125,8 +125,8 @@ public class FastEat extends CheckRunner {
 
     @Override
     protected boolean canRun() {
-        return this.protocol.bukkitExtra.getWorld().getDifficulty() != Difficulty.PEACEFUL
-                && !this.protocol.bukkitExtra.hasPotionEffect(PotionEffectType.SATURATION, 0)
+        return this.protocol.getWorld().getDifficulty() != Difficulty.PEACEFUL
+                && !this.protocol.hasPotionEffect(PotionEffectType.SATURATION, 0)
                 && Attributes.getAmount(this.protocol, Attributes.GENERIC_MAX_ABSORPTION) == 0.0;
     }
 }

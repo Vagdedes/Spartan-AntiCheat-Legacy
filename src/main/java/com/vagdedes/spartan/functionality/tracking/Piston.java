@@ -25,7 +25,7 @@ public class Piston {
             World world = block.getWorld();
 
             for (PlayerProtocol protocol : protocols) {
-                if (protocol.bukkitExtra.getWorld().equals(world)) {
+                if (protocol.getWorld().equals(world)) {
                     Location location = protocol.getLocationOrVehicle();
                     double preX = AlgebraUtils.getSquare(location.getX(), block.getX()),
                             diffY = location.getY() - block.getY(),

@@ -18,10 +18,9 @@ import java.util.Set;
 
 @Data
 @RequiredArgsConstructor
-public class EnvinromentData {
+public class EnvironmentData {
 
-    private static final Material
-            MAGMA_BLOCK = MaterialUtils.get("magma");
+    private static final Material MAGMA_BLOCK = MaterialUtils.get("magma");
 
     private boolean ice = false;
     private boolean slime = false;
@@ -34,10 +33,10 @@ public class EnvinromentData {
     private boolean climb = false;
     private boolean bubble = false;
 
-    public EnvinromentData(PlayerProtocol protocol) {
-        Location location = (protocol.bukkitExtra.getVehicle() == null) ?
-                protocol.bukkitExtra.getLocation()
-                : protocol.bukkitExtra.getVehicle().getLocation();
+    public EnvironmentData(PlayerProtocol protocol) {
+        Location location = (protocol.getVehicle() == null) ?
+                protocol.getLocation()
+                : protocol.getVehicle().getLocation();
         double x = location.getX();
         double y = location.getY() - 0.1;
         double z = location.getZ();
@@ -47,19 +46,19 @@ public class EnvinromentData {
                 for (int dz = -2; dz <= 2; ++dz) {
                     boolean h = Math.abs(dx) < 2 && Math.abs(dz) < 2;
                     SpartanBlock b = new SpartanLocation(
-                            new Location(protocol.bukkitExtra.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
+                            new Location(protocol.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
                     ).getBlock();
                     Material material = protocol.packetWorld.getBlock(
-                            new Location(protocol.bukkitExtra.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
+                            new Location(protocol.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
                     );
                     Material materialWide = protocol.packetWorld.getBlock(
-                            new Location(protocol.bukkitExtra.getWorld(), x + (double) dx * 0.5, y + (double) (dy * 0.5) - 0.3, z + (double) dz * 0.5)
+                            new Location(protocol.getWorld(), x + (double) dx * 0.5, y + (double) (dy * 0.5) - 0.3, z + (double) dz * 0.5)
                     );
                     Material materialTop = protocol.packetWorld.getBlock(
-                            new Location(protocol.bukkitExtra.getWorld(), x + (double) dx * 0.5, y + (double) (dy * 0.5) + 1.0, z + (double) dz * 0.5)
+                            new Location(protocol.getWorld(), x + (double) dx * 0.5, y + (double) (dy * 0.5) + 1.0, z + (double) dz * 0.5)
                     );
                     Material materialFrom = protocol.packetWorld.getBlock(
-                            new Location(protocol.bukkitExtra.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
+                            new Location(protocol.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
                     );
                     Material m2 = b.getType();
                     if (material == null || materialFrom == null || m2 == null) return;
@@ -106,7 +105,7 @@ public class EnvinromentData {
                     }
                     if (BlockUtils.isLiquidOrWaterLogged(b, true)
                             || BlockUtils.isLiquid(protocol.packetWorld.getBlock(
-                            new Location(protocol.bukkitExtra.getWorld(), x + (double) dx * 0.3, y, z + (double) dz * 0.3)
+                            new Location(protocol.getWorld(), x + (double) dx * 0.3, y, z + (double) dz * 0.3)
                     ))
                             || BlockUtils.isLiquid(material)
                             || BlockUtils.isLiquid(m2)
@@ -114,13 +113,18 @@ public class EnvinromentData {
 
                         this.liquid = true;
 
-                        for (double i = 0.0; i < Math.ceil(protocol.bukkitExtra.getEyeHeight()); i++) {
-                            for (SpartanLocation surrounding : new SpartanLocation(location).getSurroundingLocations(
-                                    0.3,
-                                    i,
-                                    0.3
-                            )) {
-                                calculateBubbleWater(protocol, surrounding);
+                        for (double i = 0.0; i < Math.ceil(protocol.getEyeHeight()); i++) {
+                            boolean broke = false;
+
+                            for (SpartanLocation locationModified : new SpartanLocation(location).getSurroundingLocations(0.3, i, 0.3)) {
+                                if (calculateBubbleWater(protocol, locationModified)) {
+                                    broke = true;
+                                    break;
+                                }
+                            }
+
+                            if (broke) {
+                                break;
                             }
                         }
                     }
@@ -132,15 +136,15 @@ public class EnvinromentData {
                         double yF = protocol.getFromLocation().getY();
                         double zF = protocol.getFromLocation().getZ();
                         Material materialBig = protocol.packetWorld.getBlock(
-                                new Location(protocol.bukkitExtra.getWorld(), x + (double) dx,
+                                new Location(protocol.getWorld(), x + (double) dx,
                                         y + (double) dy, z + (double) dz)
                         );
                         Material materialBig2 = protocol.packetWorld.getBlock(
-                                new Location(protocol.bukkitExtra.getWorld(),
+                                new Location(protocol.getWorld(),
                                         xF + (double) dx, yF + (double) dy - 1, zF + (double) dz)
                         );
                         Material materialBigFrom = protocol.packetWorld.getBlock(
-                                new Location(protocol.bukkitExtra.getWorld(),
+                                new Location(protocol.getWorld(),
                                         xF + (double) dx, yF + (double) dy + 0.5, zF + (double) dz)
                         );
                         if (materialBig == null) return;
@@ -163,14 +167,14 @@ public class EnvinromentData {
         }
     }
 
-    private void calculateBubbleWater(PlayerProtocol protocol, SpartanLocation location) {
+    private boolean calculateBubbleWater(PlayerProtocol protocol, SpartanLocation location) {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
-            int blockY = location.getBlockY(), minY = BlockUtils.getMinHeight(protocol.bukkitExtra.getWorld());
+            int blockY = location.getBlockY(), minY = BlockUtils.getMinHeight(protocol.getWorld());
 
             if (blockY > minY) {
                 SpartanLocation locationModified = location.clone();
                 int max = (blockY - minY),
-                        playerHeight = AlgebraUtils.integerCeil(protocol.bukkitExtra.getEyeHeight());
+                        playerHeight = AlgebraUtils.integerCeil(protocol.getEyeHeight());
                 Set<Integer> emptyNonLiquid = new HashSet<>(max),
                         fullNonLiquid = new HashSet<>(max);
 
@@ -184,34 +188,34 @@ public class EnvinromentData {
                         if (type == Material.SOUL_SAND) {
                             protocol.soulSandWater = System.currentTimeMillis();
                             protocol.lastVelocity = System.currentTimeMillis();
-                            return;
+                            return true;
                         } else if (type == MAGMA_BLOCK) {
                             protocol.magmaCubeWater = System.currentTimeMillis();
                             protocol.lastVelocity = System.currentTimeMillis();
-                            return;
+                            return true;
                         } else if (BlockUtils.isSolid(type)) {
                             if (!block.isWaterLogged()) {
                                 fullNonLiquid.add(i);
 
                                 if (fullNonLiquid.size() == playerHeight) {
-                                    return;
+                                    return false;
                                 }
                             }
                         } else if (!block.isWaterLogged()) {
                             emptyNonLiquid.add(i);
 
                             if (emptyNonLiquid.size() == 8) {
-                                return;
+                                return false;
                             }
                         }
                     }
                 }
             }
         }
+        return false;
     }
 
     public boolean isAllFalse() {
         return !(isIce() || isSemi() || isSlime() || isSlimeHeight() || isLiquid() || isJumpModify() || isBubble());
     }
-
 }

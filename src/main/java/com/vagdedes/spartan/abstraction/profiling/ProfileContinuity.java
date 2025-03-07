@@ -60,7 +60,7 @@ public class ProfileContinuity {
         if (protocol != null
                 && current >= protocol.getActiveCreationTime()
                 && previous >= protocol.getActiveCreationTime()) {
-            return !protocol.bukkitExtra.isAFK();
+            return !protocol.isAFK();
         } else {
             Map<Long, Long> data = this.continuity[
                     (protocol == null
@@ -109,7 +109,7 @@ public class ProfileContinuity {
                 sum += value;
             }
         }
-        return protocol == null || protocol.bukkitExtra.isAFK()
+        return protocol == null || protocol.isAFK()
                 ? sum
                 : protocol.getActiveTimePlayed() + sum;
     }

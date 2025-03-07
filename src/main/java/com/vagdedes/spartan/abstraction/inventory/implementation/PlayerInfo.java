@@ -211,7 +211,7 @@ public class PlayerInfo extends InventoryMenu {
         if (!SpartanEdition.hasDetectionsPurchased(dataType)) {
             return "Detection is missing";
         }
-        String worldName = protocol.bukkitExtra.getWorld().getName();
+        String worldName = protocol.getWorld().getName();
         Check check = hackType.getCheck();
 
         if (!check.isEnabled(dataType, worldName)) { // Do not put player because we calculate it below
@@ -303,7 +303,7 @@ public class PlayerInfo extends InventoryMenu {
                 }
             }
         } else {
-            protocol.bukkitExtra.sendImportantMessage("§7Click to learn more about the detection states§8: \n§a§n" + documentationURL);
+            protocol.sendImportantMessage("§7Click to learn more about the detection states§8: \n§a§n" + documentationURL);
         }
         return true;
     }

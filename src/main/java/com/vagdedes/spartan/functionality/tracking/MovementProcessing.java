@@ -18,9 +18,9 @@ public class MovementProcessing {
                                    boolean flight,
                                    boolean playerAttributes,
                                    boolean environmentalAttributes) {
-        if ((elytra || !protocol.bukkitExtra.isGliding())
-                && (flight || !protocol.bukkitExtra.wasFlying())
-                && (vehicle || protocol.bukkitExtra.getVehicle() == null)
+        if ((elytra || !protocol.isGliding())
+                && (flight || !protocol.wasFlying())
+                && (vehicle || protocol.getVehicle() == null)
 
                 && (playerAttributes
                 || Attributes.getAmount(protocol, Attributes.GENERIC_MOVEMENT_SPEED) == 0.0
@@ -32,7 +32,7 @@ public class MovementProcessing {
                 && Attributes.getAmount(protocol, Attributes.GENERIC_STEP_HEIGHT) == 0.0)) {
             if (Compatibility.CompatibilityType.MYTHIC_MOBS.isFunctional()
                     || Compatibility.CompatibilityType.ITEMS_ADDER.isFunctional()) {
-                List<Entity> entities = protocol.bukkitExtra.getNearbyEntities(
+                List<Entity> entities = protocol.getNearbyEntities(
                         CombatUtils.maxHitDistance,
                         CombatUtils.maxHitDistance,
                         CombatUtils.maxHitDistance

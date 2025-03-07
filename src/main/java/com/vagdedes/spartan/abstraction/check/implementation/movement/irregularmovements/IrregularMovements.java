@@ -48,12 +48,10 @@ public class IrregularMovements extends CheckRunner {
             groundSpoof.run(
                     new PlayerMoveEvent(
                             e.protocol.bukkit(),
-                            e.protocol.bukkitExtra.getLocation(),
+                            e.protocol.getLocation(),
                             e.protocol.getFromLocation()
                     )
             );
-        } else if (object instanceof VehicleExitEvent) {
-            groundSpoof.onVehicleExit();
         } else if (object instanceof PlayerMoveEvent) {
             foodSprint.run();
             baritone.run();
@@ -65,6 +63,8 @@ public class IrregularMovements extends CheckRunner {
             if (((BlockBreakEvent) object).isCancelled()) {
                 groundSpoof.onBreak();
             }
+        } else if (object instanceof VehicleExitEvent) {
+            groundSpoof.onVehicleExit();
         } else if (object instanceof PlayerTickEvent) {
             PlayerTickEvent e = (PlayerTickEvent) object;
             gravity.groundSp(e.onGround);

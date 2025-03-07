@@ -6,7 +6,7 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.abstraction.data.EnvinromentData;
+import com.vagdedes.spartan.abstraction.data.EnvironmentData;
 import com.vagdedes.spartan.abstraction.event.PlayerTickEvent;
 import com.vagdedes.spartan.abstraction.event.SuperPositionPacketEvent;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
@@ -56,7 +56,7 @@ public class MovementListener extends PacketAdapter {
         if (tp == null) {
             return;
         }
-        Location loc = p.bukkitExtra.getLocation().clone();
+        Location loc = p.getLocation().clone();
         Location result = tp.clone();
 
         Set<tpFlags> flags = ProtocolTools.getTeleportFlags(event);
@@ -80,10 +80,10 @@ public class MovementListener extends PacketAdapter {
         if (p.isBedrockPlayer()) {
             return;
         }
-        Location l = p.bukkitExtra.getLocation();
-        p.setFromLocation(l.clone());
+        Location l = p.getLocation();
+        p.setFrom(l.clone());
         boolean onGround = ProtocolTools.onGroundPacketLevel(event);
-        p.bukkitExtra.setOnGround(onGround);
+        p.setOnGround(onGround);
         Location r = ProtocolTools.readLocation(event);
 
         if (r == null) {
@@ -114,7 +114,7 @@ public class MovementListener extends PacketAdapter {
             p.transactionVl += (p.isBlatantDesync() ? 2 : 1);
             if (p.transactionVl > 40) {
                 Bukkit.getScheduler().runTask(Register.plugin,
-                        () -> player.teleport(p.bukkitExtra.getLocation()));
+                        () -> player.teleport(p.getLocation()));
                 AwarenessNotifications.optionallySend(player.getName()
                         + " moves faster than the transaction response ("
                         + tickEvent.getDelay() + "ms > "
@@ -130,7 +130,7 @@ public class MovementListener extends PacketAdapter {
 
         if (!ProtocolLib.getWorld(player).getName().equals(p.fromWorld)) {
             p.fromWorld = ProtocolLib.getWorld(player).getName();
-            p.bukkitExtra.setLocation(ProtocolTools.getLoadLocation(player));
+            p.setLocation(ProtocolTools.getLoadLocation(player));
         }
         if (!legacy) {
             boolean hasPosition = ProtocolTools.hasPosition(packet.getType());
@@ -138,9 +138,9 @@ public class MovementListener extends PacketAdapter {
             if (hasPosition) {
                 p.addRawLocation(r);
             }
-            if (ProtocolTools.isLoadLocation(p.bukkitExtra.getLocation())) {
-                p.bukkitExtra.setLocation(r);
-                p.setFromLocation(r);
+            if (ProtocolTools.isLoadLocation(p.getLocation())) {
+                p.setLocation(r);
+                p.setFrom(r);
             } else {
                 if (hasPosition) {
                     if (p.getTeleport() != null) { // From
@@ -148,12 +148,12 @@ public class MovementListener extends PacketAdapter {
 
                         // Let's check guys with bad internet
                         if (to.getX() == r.getX() && to.getY() == r.getY() && to.getZ() == r.getZ()) {
-                            p.bukkitExtra.setLocation(p.getTeleport().clone());
-                            p.setFromLocation(p.getTeleport().clone());
+                            p.setLocation(p.getTeleport().clone());
+                            p.setFrom(p.getTeleport().clone());
                             p.setTeleport(null);
                         } else {
                             if (p.trackers.has(PlayerTrackers.TrackerType.VEHICLE, "enter")) return;
-                            for (Entity entity : p.bukkitExtra.getNearbyEntities(5))
+                            for (Entity entity : p.getNearbyEntities(5))
                                 if (entity instanceof Boat) return;
 
                             // Force packet stop if your packet are shit
@@ -161,8 +161,8 @@ public class MovementListener extends PacketAdapter {
                             Bukkit.getScheduler().runTask(Register.plugin, () -> {
                                 if (p.getTeleport() != null) {
                                     Location build = p.getTeleport().clone();
-                                    build.setYaw(p.bukkitExtra.getLocation().getYaw());
-                                    build.setPitch(p.bukkitExtra.getLocation().getPitch());
+                                    build.setYaw(p.getLocation().getYaw());
+                                    build.setPitch(p.getLocation().getPitch());
                                     p.bukkit().teleport(build);
                                 }
                             });
@@ -193,10 +193,10 @@ public class MovementListener extends PacketAdapter {
                 PlayerMoveEvent moveEvent = new PlayerMoveEvent(
                                 player,
                                 p.getFromLocation(),
-                                p.bukkitExtra.getLocation()
+                                p.getLocation()
                 );
                 moveEvent.setCancelled(event.isCancelled());
-                p.setEnvironment(new EnvinromentData(p));
+                p.setEnvironment(new EnvironmentData(p));
                 MovementEvent.event(moveEvent, true);
             });
             if (p.flyingTicks > 0) p.flyingTicks--;

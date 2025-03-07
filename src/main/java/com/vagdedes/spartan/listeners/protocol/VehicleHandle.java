@@ -44,7 +44,7 @@ public class VehicleHandle extends PacketAdapter {
         }
         final boolean[] nearbyEntities = {false};
         CheckThread.run(() -> {
-            for (Entity entity : protocol.bukkitExtra.getNearbyEntities(4.5)) {
+            for (Entity entity : protocol.getNearbyEntities(4.5)) {
                 if (entity.getUniqueId() != protocol.getUUID()) {
                     nearbyEntities[0] = true;
                     break;
@@ -65,11 +65,11 @@ public class VehicleHandle extends PacketAdapter {
                 }
             }
             if (event.getPacket().getType().equals(PacketType.Play.Client.STEER_VEHICLE)) {
-                if (protocol.bukkitExtra.getVehicle() != null) {
-                    Entity vehicle = protocol.bukkitExtra.getVehicle();
+                if (protocol.getVehicle() != null) {
+                    Entity vehicle = protocol.getVehicle();
                     Location location = vehicle.getLocation();
-                    protocol.bukkitExtra.setLocation(location);
-                    MovementEvent.event(new PlayerMoveEvent(player, protocol.getFromLocation(), protocol.bukkitExtra.getLocation()), true);
+                    protocol.setLocation(location);
+                    MovementEvent.event(new PlayerMoveEvent(player, protocol.getFromLocation(), protocol.getLocation()), true);
                 }
             }
         });

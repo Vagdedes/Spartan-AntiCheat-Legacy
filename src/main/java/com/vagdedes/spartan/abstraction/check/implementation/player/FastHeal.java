@@ -53,7 +53,7 @@ public class FastHeal extends CheckRunner {
 
                 if (reason != RegainReason.CUSTOM
                         && reason != RegainReason.MAGIC) {
-                    double health = this.protocol.bukkitExtra.getHealth();
+                    double health = this.protocol.getHealth();
                     long timePassed = System.currentTimeMillis() - time;
                     time = System.currentTimeMillis();
 
@@ -80,7 +80,7 @@ public class FastHeal extends CheckRunner {
         } else if (object instanceof FoodLevelChangeEvent) {
             if (((FoodLevelChangeEvent) object).getFoodLevel() > this.protocol.bukkit().getFoodLevel()
                     && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
-                    || this.protocol.bukkitExtra.getItemInHand().getType() != Material.DRIED_KELP)) {
+                    || this.protocol.getItemInHand().getType() != Material.DRIED_KELP)) {
                 this.protocol.profile().getRunner(hackType).addDisableCause(null, null, 10);
             }
         }
@@ -88,7 +88,7 @@ public class FastHeal extends CheckRunner {
 
     @Override
     protected boolean canRun() {
-        if (this.protocol.bukkitExtra.getWorld().getDifficulty() != Difficulty.PEACEFUL
+        if (this.protocol.getWorld().getDifficulty() != Difficulty.PEACEFUL
                 && this.protocol.bukkit().getFireTicks() <= 0
                 && Attributes.getAmount(this.protocol, Attributes.GENERIC_MAX_ABSORPTION) == 0.0) {
             GameMode gameMode = this.protocol.bukkit().getGameMode();

@@ -34,7 +34,7 @@ public class UseEntityListener extends PacketAdapter {
                     : !packet.getEnumEntityUseActions().read(0).getAction().equals(
                     EnumWrappers.EntityUseAction.ATTACK)) {
                 Entity t = null;
-                for (Entity entity : protocol.bukkitExtra.getNearbyEntities(5)) {
+                for (Entity entity : protocol.getNearbyEntities(5)) {
                     if (entity.getEntityId() == entityId) {
                         t = entity;
                         break;

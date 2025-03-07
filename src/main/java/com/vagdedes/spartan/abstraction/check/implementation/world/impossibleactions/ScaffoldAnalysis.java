@@ -41,7 +41,7 @@ public class ScaffoldAnalysis extends CheckDetection {
                 this.oldBlock = currentBlock;
                 return;
             }
-            Location l = p.bukkitExtra.getLocation();
+            Location l = p.getLocation();
             Location lB = new Location(l.getWorld(), (long) l.getX(), (long) l.getY(), (long) l.getZ());
             Location lB8 = new Location(l.getWorld(), (long) l.getX() + 1, (long) l.getY(), (long) l.getZ());
             long placeHash = (long) ((lB.getX() * 31) + lB.getZ());
@@ -69,7 +69,7 @@ public class ScaffoldAnalysis extends CheckDetection {
                             (long) (((bL.getX() - 0.3) * 31) + (bL.getZ() - 0.3))   // -0.3 X, -0.3 Z
                     );
                     for (Long v : hashList) {
-                        if (p.bukkitExtra.isOnGround()) {
+                        if (p.isOnGround()) {
                             if (v == placeHash || SpartanLocation.distance(bL, l) < 1.2) {
                                 checkHash = true;
                                 break;
@@ -89,7 +89,7 @@ public class ScaffoldAnalysis extends CheckDetection {
                 }
                 if (delay < 5
                         || placeHash == this.placeHash
-                        || (long) p.bukkitExtra.getLocation().getY() <= bL.getY()
+                        || (long) p.getLocation().getY() <= bL.getY()
                         || p.bukkit().isFlying() || !checkHash) {
                     p.rightClickCounter = 0;
                     this.placeTime = System.currentTimeMillis();
@@ -97,7 +97,7 @@ public class ScaffoldAnalysis extends CheckDetection {
                 /*
                 p.player.sendMessage("c 1 " + (delay < 5)
                                 + " " + (placeHash == p.placeHash) + " "
-                                + ((long) p.bukkitExtra.getLocation().getY() <= bL.getY())
+                                + ((long) p.getLocation().getY() <= bL.getY())
                                 + " " + p.player.isFlying() + " " + !checkHash);
                  */
                     return;
@@ -111,7 +111,7 @@ public class ScaffoldAnalysis extends CheckDetection {
 
                 if (delay < 280) {
                     buffer.count += 4;
-                } else if (delay < (p.bukkitExtra.isSneaking() ? 345 : 385) && p.rightClickCounter < 3) {
+                } else if (delay < (p.isSneaking() ? 345 : 385) && p.rightClickCounter < 3) {
                     buffer.count += 2;
                 } else {
                     flag = false;

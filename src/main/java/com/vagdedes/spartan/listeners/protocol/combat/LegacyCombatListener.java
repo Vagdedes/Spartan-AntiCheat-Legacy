@@ -64,7 +64,7 @@ public class LegacyCombatListener extends PacketAdapter {
                             EnumWrappers.EntityUseAction.ATTACK)) {
                 if (protocol.isSDesync()) {
                     Bukkit.getScheduler().runTask(Register.plugin,
-                                    () -> protocol.bukkit().teleport(protocol.bukkitExtra.getLocation()));
+                                    () -> protocol.bukkit().teleport(protocol.getLocation()));
                     AwarenessNotifications.optionallySend(protocol.bukkit().getName()
                                     + " attack faster than the transaction response.");
                     event.setCancelled(true);
@@ -102,7 +102,7 @@ public class LegacyCombatListener extends PacketAdapter {
                 if (pendingEntityId == entityId) {
                     Player attacker = plugin.getServer().getPlayer(playerUUID);
                     Entity target = ProtocolLibrary.getProtocolManager().
-                                    getEntityFromID(protocol.bukkitExtra.getWorld(), entityId);
+                                    getEntityFromID(protocol.getWorld(), entityId);
                     if (attacker != null && target != null) {
                         CombatEvent.event(
                                         new EntityDamageByEntityEvent(

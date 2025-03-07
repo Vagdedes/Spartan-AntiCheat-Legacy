@@ -98,7 +98,7 @@ public abstract class CheckRunner extends CheckProcess {
     final boolean canCall() {
         return this.protocol != null
                 && !this.protocol.npc
-                && hackType.getCheck().isEnabled(this.protocol.getDataType(), this.protocol.bukkitExtra.getWorld().getName())
+                && hackType.getCheck().isEnabled(this.protocol.getDataType(), this.protocol.getWorld().getName())
                 && (!cancelled || hackType.getCheck().handleCancelledEvents)
                 && (!v1_8 || this.protocol.bukkit().getGameMode() != GameMode.SPECTATOR)
                 && Attributes.getAmount(this.protocol, Attributes.GENERIC_SCALE) == 0.0;
@@ -229,8 +229,8 @@ public abstract class CheckRunner extends CheckProcess {
             return frequency;
         } else if (detected != null
                 && (detected.equals(this.protocol)
-                || detected.bukkitExtra.getWorld().equals(this.protocol.bukkitExtra.getWorld())
-                && detected.bukkitExtra.getLocation().distance(this.protocol.bukkitExtra.getLocation()) <= PlayerUtils.chunk)) {
+                || detected.getWorld().equals(this.protocol.getWorld())
+                && detected.getLocation().distance(this.protocol.getLocation()) <= PlayerUtils.chunk)) {
             return AlgebraUtils.integerRound(Math.sqrt(TPS.maximum));
         } else {
             return AlgebraUtils.integerRound(TPS.maximum);

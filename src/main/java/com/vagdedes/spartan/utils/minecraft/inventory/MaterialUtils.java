@@ -235,7 +235,7 @@ public class MaterialUtils {
             }
 
             // Separator
-            ExtendedPotionEffect hasteEffect = protocol.bukkitExtra.getPotionEffect(PotionEffectUtils.FAST_DIGGING, 0L);
+            ExtendedPotionEffect hasteEffect = protocol.getPotionEffect(PotionEffectUtils.FAST_DIGGING, 0L);
 
             if (hasteEffect != null
                     && hasteEffect.isActive()) {
@@ -243,7 +243,7 @@ public class MaterialUtils {
             }
 
             // Separator
-            ExtendedPotionEffect miningFatigueEffect = protocol.bukkitExtra.getPotionEffect(PotionEffectUtils.SLOW_DIGGING, 0);
+            ExtendedPotionEffect miningFatigueEffect = protocol.getPotionEffect(PotionEffectUtils.SLOW_DIGGING, 0);
 
             if (miningFatigueEffect != null
                     && miningFatigueEffect.isActive()) {
@@ -253,10 +253,10 @@ public class MaterialUtils {
             // Separator
             boolean water;
 
-            if (protocol.bukkitExtra.isSwimming()) {
+            if (protocol.isSwimming()) {
                 water = true;
             } else {
-                SpartanBlock block = new SpartanLocation(protocol.bukkitExtra.getLocation()).add(0, protocol.bukkitExtra.getEyeHeight(), 0).getBlock();
+                SpartanBlock block = new SpartanLocation(protocol.getLocation()).add(0, protocol.getEyeHeight(), 0).getBlock();
                 water = block.isWaterLogged() || block.getType() == MaterialUtils.get("water");
             }
             if (water) {
@@ -282,7 +282,7 @@ public class MaterialUtils {
                     multiplier /= 5.0;
                 }
             }
-            if (!protocol.bukkitExtra.isOnGround()) {
+            if (!protocol.isOnGround()) {
                 multiplier /= 5.0;
             }
 

@@ -1,6 +1,5 @@
 package com.vagdedes.spartan.utils.minecraft.world;
 
-import com.vagdedes.spartan.abstraction.protocol.PlayerBukkit;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanBlock;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
@@ -1505,7 +1504,7 @@ public class BlockUtils {
     public static boolean isSensitive(PlayerProtocol p, Material m) {
         return isSensitive(
                 m,
-                p == null ? -1 : MaterialUtils.getBlockBreakTime(p, p.bukkitExtra.getItemInHand(), m)
+                p == null ? -1 : MaterialUtils.getBlockBreakTime(p, p.getItemInHand(), m)
         );
     }
 
@@ -1521,7 +1520,7 @@ public class BlockUtils {
         return semi_solid.contains(m);
     }
 
-    public static boolean isInteractiveAndPassable(PlayerBukkit p, Material material) {
+    public static boolean isInteractiveAndPassable(PlayerProtocol p, Material material) {
         return interactive_and_passable.contains(material)
                 || p != null && p.isFrozen();
     }
@@ -1556,7 +1555,7 @@ public class BlockUtils {
 
     public static boolean isSlime(PlayerProtocol p, SpartanLocation loc, int blocks) {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)) {
-            if (p.bukkitExtra.isOnGround()) {
+            if (p.isOnGround()) {
                 return loc.getBlock().getType() == Material.SLIME_BLOCK;
             } else {
                 SpartanLocation loopLocation = loc.clone();
@@ -1564,7 +1563,7 @@ public class BlockUtils {
                 if (!isSolid(loopLocation.getBlock().getType())) {
                     int y = loc.getBlockY();
 
-                    for (int i = y; i > Math.max(getMinHeight(p.bukkitExtra.getWorld()), y - blocks); i--) {
+                    for (int i = y; i > Math.max(getMinHeight(p.getWorld()), y - blocks); i--) {
                         Material m = loopLocation.add(0, -1, 0).getBlock().getType();
 
                         if (m == Material.SLIME_BLOCK) {
@@ -1587,7 +1586,7 @@ public class BlockUtils {
 
     public static boolean isBed(PlayerProtocol p, SpartanLocation loc, int blocks) {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_12)) {
-            if (p.bukkitExtra.isOnGround()) {
+            if (p.isOnGround()) {
                 return areBeds(loc.getBlock().getType());
             } else {
                 SpartanLocation loopLocation = loc.clone();
@@ -1595,7 +1594,7 @@ public class BlockUtils {
                 if (!isSolid(loopLocation.getBlock().getType())) {
                     int y = loc.getBlockY();
 
-                    for (int i = y; i > Math.max(getMinHeight(p.bukkitExtra.getWorld()), y - blocks); i--) {
+                    for (int i = y; i > Math.max(getMinHeight(p.getWorld()), y - blocks); i--) {
                         Material m = loopLocation.add(0, -1, 0).getBlock().getType();
 
                         if (areBeds(m)) {

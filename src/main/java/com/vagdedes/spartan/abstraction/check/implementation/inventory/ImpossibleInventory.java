@@ -66,7 +66,7 @@ public class ImpossibleInventory extends CheckRunner {
             }
         } else if (object instanceof PlayerMoveEvent) {
             this.cursorUsageDetection.call(() -> {
-                if (!this.protocol.bukkitExtra.isSwimming() && this.protocol.bukkitExtra.getVehicle() == null) {
+                if (!this.protocol.isSwimming() && this.protocol.getVehicle() == null) {
                     ItemStack cursor = this.protocol.bukkit().getOpenInventory().getCursor();
 
                     if (BlockUtils.hasMaterial(cursor)) {
@@ -119,8 +119,8 @@ public class ImpossibleInventory extends CheckRunner {
             if (cases != 0
                     && !click.isCreativeAction()
                     && !click.isKeyboardClick()
-                    && !this.protocol.bukkitExtra.isSwimming()
-                    && this.protocol.bukkitExtra.getVehicle() == null
+                    && !this.protocol.isSwimming()
+                    && this.protocol.getVehicle() == null
                     && this.protocol.bukkit().getOpenInventory().countSlots() > PlayerUtils.playerInventorySlots
                     && !BlockPatternUtils.isBlockPattern(
                     belowBlocks,
@@ -135,7 +135,7 @@ public class ImpossibleInventory extends CheckRunner {
     private void runPortalInventory(ItemStack item) {
         this.portalInventoryDetection.call(() -> {
             if (BlockUtils.hasMaterial(item)) {
-                SpartanLocation loc = new SpartanLocation(this.protocol.bukkitExtra.getLocation());
+                SpartanLocation loc = new SpartanLocation(this.protocol.getLocation());
 
                 if (loc.getBlock().getType() == nether_portal
                         || loc.clone().add(0, 1, 0).getBlock().getType() == nether_portal) {
@@ -146,25 +146,25 @@ public class ImpossibleInventory extends CheckRunner {
     }
 
     private int getActionCase() {
-        if (this.protocol.bukkitExtra.isFlying()
+        if (this.protocol.isFlying()
                 || this.protocol.isLowEyeHeight()) {
             return 0;
         } else {
             Check check = hackType.getCheck();
             return check.getBooleanOption("check_sneaking", true)
-                    && this.protocol.bukkitExtra.isSneaking() ? 1
+                    && this.protocol.isSneaking() ? 1
                     : !MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_15)
                     && check.getBooleanOption("check_sprinting", true)
-                    && this.protocol.bukkitExtra.isSprinting() ? 2
+                    && this.protocol.isSprinting() ? 2
                     : check.getBooleanOption("check_sleeping", true)
                     && this.protocol.bukkit().isSleeping() ? 3
                     : check.getBooleanOption("check_dead", true)
                     && this.protocol.bukkit().isDead() ? 5
                     : check.getBooleanOption("check_sprint_jumping", true)
-                    && this.protocol.bukkitExtra.isSprinting()
+                    && this.protocol.isSprinting()
                     && this.protocol.isJumping(this.getVertical()) ? 6
                     : check.getBooleanOption("check_walk_jumping", true)
-                    && !this.protocol.bukkitExtra.isSprinting()
+                    && !this.protocol.isSprinting()
                     && this.protocol.isJumping(this.getVertical()) ? 7
                     : check.getBooleanOption("check_jumping", true)
                     && this.protocol.justJumped(this.getVertical()) ? 8
@@ -173,7 +173,7 @@ public class ImpossibleInventory extends CheckRunner {
     }
 
     private double getVertical() {
-        return this.protocol.bukkitExtra.getLocation().getY() - this.protocol.getFromLocation().getY();
+        return this.protocol.getLocation().getY() - this.protocol.getFromLocation().getY();
     }
 
 }

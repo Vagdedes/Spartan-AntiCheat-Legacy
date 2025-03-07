@@ -225,7 +225,7 @@ public class SpartanEdition {
 
         if (message != null
                 && AwarenessNotifications.canSend(protocol.getUUID(), "alternative-version", notificationCooldown)) {
-            protocol.bukkitExtra.sendImportantMessage(message);
+            protocol.sendImportantMessage(message);
         }
     }
 
@@ -235,7 +235,7 @@ public class SpartanEdition {
 
             if (message != null
                     && AwarenessNotifications.canSend(protocol.getUUID(), "has-account", notificationCooldown)) {
-                protocol.bukkitExtra.sendImportantMessage(message);
+                protocol.sendImportantMessage(message);
             }
         }
     }

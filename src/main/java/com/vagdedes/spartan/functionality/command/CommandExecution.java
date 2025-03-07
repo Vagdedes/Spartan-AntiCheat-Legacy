@@ -419,7 +419,7 @@ public class CommandExecution implements CommandExecutor {
                     }
                     String argumentsToString = argumentsToStringBuilder.substring(0, argumentsToStringBuilder.length() - 1);
 
-                    if (isPlayer ? argumentsToString.length() > protocol.bukkitExtra.getMaxChatLength() : argumentsToString.length() > maxConnectedArgumentLength) {
+                    if (isPlayer ? argumentsToString.length() > protocol.getMaxChatLength() : argumentsToString.length() > maxConnectedArgumentLength) {
                         ClickableMessage.sendURL(
                                 sender,
                                 Config.messages.getColorfulString("massive_command_reason"),
@@ -713,7 +713,7 @@ public class CommandExecution implements CommandExecutor {
                                 );
                                 return true;
                             }
-                            if (isPlayer ? argumentsToString.length() > protocol.bukkitExtra.getMaxChatLength() : argumentsToString.length() > maxConnectedArgumentLength) {
+                            if (isPlayer ? argumentsToString.length() > protocol.getMaxChatLength() : argumentsToString.length() > maxConnectedArgumentLength) {
                                 ClickableMessage.sendURL(
                                         sender,
                                         Config.messages.getColorfulString("massive_command_reason"),
@@ -755,7 +755,7 @@ public class CommandExecution implements CommandExecutor {
                                 );
                                 return true;
                             }
-                            if (isPlayer ? argumentsToString.length() > protocol.bukkitExtra.getMaxChatLength() : argumentsToString.length() > maxConnectedArgumentLength) {
+                            if (isPlayer ? argumentsToString.length() > protocol.getMaxChatLength() : argumentsToString.length() > maxConnectedArgumentLength) {
                                 ClickableMessage.sendURL(
                                         sender,
                                         Config.messages.getColorfulString("massive_command_reason"),
@@ -883,7 +883,7 @@ public class CommandExecution implements CommandExecutor {
                                 }
                                 argumentsToString = argumentsToStringBuilder.substring(0, argumentsToStringBuilder.length() - 1);
 
-                                if (isPlayer ? argumentsToString.length() > protocol.bukkitExtra.getMaxChatLength() : argumentsToString.length() > maxConnectedArgumentLength) {
+                                if (isPlayer ? argumentsToString.length() > protocol.getMaxChatLength() : argumentsToString.length() > maxConnectedArgumentLength) {
                                     ClickableMessage.sendURL(
                                             sender,
                                             Config.messages.getColorfulString("massive_command_reason"),

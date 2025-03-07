@@ -47,17 +47,20 @@ public class IMSimulationSpeed extends CheckDetection {
                 null,
                 Check.DetectionType.PACKETS,
                 "speed",
-                true
+                true,
+                DEFAULT_AVERAGE_TIME,
+                TIME_TO_NOTIFY * 2L,
+                TIME_TO_PREVENT * 2L,
+                TIME_TO_PUNISH * 2L
         );
     }
 
     void run() {
         this.call(() -> {
             PlayerProtocol p = this.protocol;
-            boolean isOnGround = (p.bukkitExtra.getVehicle() != null)
-                    ? p.bukkitExtra.getVehicle().isOnGround()
-                    : p.bukkitExtra.isOnGround();
-            Location to = p.bukkitExtra.getLocation();
+            boolean isOnGround = (p.getVehicle() != null)
+                    ? p.getVehicle().isOnGround() : p.isOnGround();
+            Location to = p.getLocation();
             Location from = this.protocol.getFromLocation();
             double dx = to.getX() - from.getX();
             double dz = to.getZ() - from.getZ();
@@ -70,7 +73,7 @@ public class IMSimulationSpeed extends CheckDetection {
             boolean isOnAngle80 = RayUtils.validRayLines(
                     yawLine, moveLine, 80.0);
             boolean flagged = false;
-            if (p.bukkitExtra.isGliding()) ignoreTicks = 6;
+            if (p.isGliding()) ignoreTicks = 6;
             if (!this.protocol.useItemPacket) this.action = 0;
             double atr = Attributes.getAmount(this.protocol, Attributes.GENERIC_MOVEMENT_SPEED) * 1.3;
             if (to.getX() != from.getX() || to.getY() != from.getY() || to.getZ() != from.getZ()) {
@@ -118,7 +121,7 @@ public class IMSimulationSpeed extends CheckDetection {
                             this.setPredict(dx, dz);
                         else this.setPredict(-Math.sin(Math.toRadians(to.getYaw())) * lim,
                                 Math.cos(Math.toRadians(to.getYaw())) * lim);
-                        if (p.bukkitExtra.isSprinting()
+                        if (p.isSprinting()
                                 && isOnAngle
                                 && this.air == 1) sprintStatus = true;
                         this.ACCELERATION_VELOCITY /= 1.3;
@@ -132,7 +135,7 @@ public class IMSimulationSpeed extends CheckDetection {
                                 ? ACCELERATION_ACTION : (this.action > 1) ?
                                 ACCELERATION_BASIC : ACCELERATION_SPRINT) * this.multiplex();
                         boolean nearbyEntities = false;
-                        for (Entity entity : this.protocol.bukkitExtra.getNearbyEntities(2.4)) {
+                        for (Entity entity : this.protocol.getNearbyEntities(2.4)) {
                             if (entity.getUniqueId() != this.protocol.getUUID()) {
                                 nearbyEntities = true;
                                 break;
@@ -203,7 +206,7 @@ public class IMSimulationSpeed extends CheckDetection {
                             this.setPredict(dx, dz);
                             this.protocol.predictedSlimeTicks--;
                         }
-                        if (this.protocol.bukkitExtra.getVehicle() != null) {
+                        if (this.protocol.getVehicle() != null) {
                             this.setPredict(dx, dz);
                         }
                         //protocol.getBukkit().sendMessage("v: " + (this.protocol.spartan.getVehicle() != null));
@@ -259,8 +262,8 @@ public class IMSimulationSpeed extends CheckDetection {
 
     private double multiplex() {
         double m = 1.0;
-        ExtendedPotionEffect speedEffect = this.protocol.bukkitExtra.getPotionEffect(PotionEffectType.SPEED, 5);
-        Location l = this.protocol.bukkitExtra.getLocation().clone().add(0, -0.5, 0);
+        ExtendedPotionEffect speedEffect = this.protocol.getPotionEffect(PotionEffectType.SPEED, 5);
+        Location l = this.protocol.getLocation().clone().add(0, -0.5, 0);
         Location lF = this.protocol.getFromLocation().clone().add(0, -0.5, 0);
         if (PlayerUtils.soulSpeed && this.protocol.bukkit().getInventory().getBoots() != null) {
             int e = this.protocol.bukkit().getInventory().getBoots().getEnchantmentLevel(Enchantment.SOUL_SPEED);
@@ -271,20 +274,20 @@ public class IMSimulationSpeed extends CheckDetection {
             m += (double) (speedEffect.bukkitEffect.getAmplifier() + 1) * 0.2;
         if (this.isOnIce(l) || this.isOnSlime(l) || this.isOnIce(lF) || this.isOnSlime(lF))
             m *= 1.6;
-        if (this.protocol.bukkitExtra.getNearbyEntities(2).size() > 1)
+        if (this.protocol.getNearbyEntities(2).size() > 1)
             m *= 1.4;
-        if (BlockUtils.areWebs(new SpartanLocation(this.protocol.bukkitExtra.getLocation()).getBlock().getType())) {
+        if (BlockUtils.areWebs(new SpartanLocation(this.protocol.getLocation()).getBlock().getType())) {
             m *= 0.2;
         }
         if (this.isOnWater() || this.isOnWater()) {
             ExtendedPotionEffect dolphinEffect = PlayerUtils.dolphinsGrace
-                    ? this.protocol.bukkitExtra.getPotionEffect(PotionEffectType.DOLPHINS_GRACE, 0)
+                    ? this.protocol.getPotionEffect(PotionEffectType.DOLPHINS_GRACE, 0)
                     : null;
             if (dolphinEffect != null) m *= 6.2;
         }
         if (this.isOnSemi(l)) m *= 1.4;
-        if (this.protocol.bukkitExtra.isGliding()) m *= 18.0;
-        if (this.protocol.bukkitExtra.isFlying() || this.protocol.flyingTicks > 0) m *= 25.0;
+        if (this.protocol.isGliding()) m *= 18.0;
+        if (this.protocol.isFlying() || this.protocol.flyingTicks > 0) m *= 25.0;
         m *= (this.protocol.bukkit().getWalkSpeed() * 5);
         return m;
     }
@@ -371,7 +374,7 @@ public class IMSimulationSpeed extends CheckDetection {
                         double z = location.getZ();
                         Material material = this.protocol.packetWorld.getBlock(
                                 new Location(
-                                        this.protocol.bukkitExtra.getWorld(),
+                                        this.protocol.getWorld(),
                                         x + (double) dx * 0.5,
                                         y + (double) dy * 0.5, z + (double) dz * 0.5));
 
@@ -399,7 +402,7 @@ public class IMSimulationSpeed extends CheckDetection {
             for (double dy = 1.0; dy <= 2.0; dy += 0.5) {
                 for (int dz = -2; dz <= 2; ++dz) {
                     Material material = this.protocol.packetWorld.getBlock(
-                            new Location(this.protocol.bukkitExtra.getWorld(), x + (double) dx * 0.5, y + dy, z + (double) dz * 0.5)
+                            new Location(this.protocol.getWorld(), x + (double) dx * 0.5, y + dy, z + (double) dz * 0.5)
                     );
 
                     if (material != null && BlockUtils.isSolid(material)) {

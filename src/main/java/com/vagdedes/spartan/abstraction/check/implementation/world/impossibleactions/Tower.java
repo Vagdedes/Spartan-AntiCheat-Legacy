@@ -31,7 +31,7 @@ public class Tower extends CheckDetection {
              int playerY,
              int blockY) {
         this.call(() -> {
-            Double deltaXZ = AlgebraUtils.getHorizontalDistance(this.protocol.bukkitExtra.getLocation(), this.protocol.getFromLocation());
+            Double deltaXZ = AlgebraUtils.getHorizontalDistance(this.protocol.getLocation(), this.protocol.getFromLocation());
 
             if (deltaXZ == null) {
                 return;

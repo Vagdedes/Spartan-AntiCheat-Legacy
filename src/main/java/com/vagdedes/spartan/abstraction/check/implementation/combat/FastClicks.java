@@ -175,7 +175,7 @@ public class FastClicks extends CheckRunner {
 
     @Override
     protected boolean canRun() {
-        return !this.protocol.bukkitExtra.getNearbyEntities(
+        return !this.protocol.getNearbyEntities(
                 CombatUtils.maxHitDistance,
                 CombatUtils.maxHitDistance,
                 CombatUtils.maxHitDistance

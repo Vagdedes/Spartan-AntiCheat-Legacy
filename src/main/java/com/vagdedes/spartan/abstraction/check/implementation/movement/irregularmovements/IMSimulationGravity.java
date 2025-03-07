@@ -6,6 +6,7 @@ import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.event.CPlayerVelocityEvent;
 import com.vagdedes.spartan.abstraction.protocol.ExtendedPotionEffect;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
+import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.MultiVersion.MCVersion;
@@ -21,9 +22,10 @@ import org.bukkit.potion.PotionEffectType;
 public class IMSimulationGravity extends CheckDetection {
 
     private int air = 0, ground = 0;
+    private int airVehicle = 0;
     private int top = 0, topReset = 0;
-    private int levitation = 0, glideBlocks = 0, climbBlocks = 0,
-            slowFalling = 0, levitationA = 0, slowFallingA = 0, swimming = 0, vhact = 0;
+    private int levitation = 0, glideBlocks = 0, climbBlocks = 0, vhact = 0,
+            slowFalling = 0, levitationA = 0, slowFallingA = 0, swimming = 0;
     private boolean slime = false, slime0Tick = false,
             trident = false, cringeBlockClimb = false, allowLowJump = false,
             allowMinorGravityChange = false, allowLowMinorAccel = false;
@@ -41,7 +43,11 @@ public class IMSimulationGravity extends CheckDetection {
                 null,
                 Check.DetectionType.PACKETS,
                 "gravity_packets",
-                true
+                true,
+                DEFAULT_AVERAGE_TIME,
+                TIME_TO_NOTIFY * 2L,
+                TIME_TO_PREVENT * 2L,
+                TIME_TO_PUNISH * 2L
         );
     }
 
@@ -50,7 +56,7 @@ public class IMSimulationGravity extends CheckDetection {
                 || p.getTimePassed(p.soulSandWater) <= 1_000L) {
             return true;
         }
-        for (Entity entity : p.bukkitExtra.getNearbyEntities(1)) {
+        for (Entity entity : p.getNearbyEntities(1)) {
             if (entity instanceof Boat) {
                 return true;
             }
@@ -66,16 +72,15 @@ public class IMSimulationGravity extends CheckDetection {
             if (patches(p)) {
                 return;
             }
-            boolean ground = (this.protocol.bukkitExtra.getVehicle() != null)
-                    ? this.protocol.bukkitExtra.getVehicle().isOnGround()
-                    : this.protocol.bukkitExtra.isOnGround();
-            Location to = p.bukkitExtra.getLocation();
+            boolean ground = (this.protocol.getVehicle() != null)
+                    ? this.protocol.getVehicle().isOnGround() : this.protocol.isOnGround();
+            Location to = p.getLocation();
             Location from = this.protocol.getFromLocation();
             double dx = to.getX() - from.getX();
             double dz = to.getZ() - from.getZ();
             double speed = Math.sqrt(dx * dx + dz * dz);
 
-            if (p.bukkitExtra.isGliding()) ignoreTicks = 5;
+            if (p.isGliding()) ignoreTicks = 5;
             //this.protocol.bukkit().sendMessage(protocol().pistonHandle + " " + protocol().pistonTick + " " + protocol().explosionHandle);
             if (to.getX() != from.getX() || to.getY() != from.getY() || to.getZ() != from.getZ()) {
                 double motion = to.getY() - from.getY();
@@ -95,7 +100,7 @@ public class IMSimulationGravity extends CheckDetection {
                 double pr2;
                 if (this.isOnSlime()) this.allowMinorGravityChange = true;
                 if (ground) {
-                    if (this.protocol.bukkitExtra.getLocation().getY() > this.lastGroundY)
+                    if (this.protocol.getLocation().getY() > this.lastGroundY)
                         allowLowJump = true;
                     if (this.ground != 1) {
                         this.setPredict(0.0);
@@ -127,7 +132,7 @@ public class IMSimulationGravity extends CheckDetection {
                         this.setPredict(motion);
                         this.semi--;
                     }
-                    this.lastGroundY = this.protocol.bukkitExtra.getLocation().getY();
+                    this.lastGroundY = this.protocol.getLocation().getY();
                 } else if (this.air == 1) {
                     if (motion > 0.0) {
                         this.setPredict((float) jumpStartMotionY);
@@ -243,7 +248,7 @@ public class IMSimulationGravity extends CheckDetection {
                 ExtendedPotionEffect slowFalling;
                 double pr;
                 if (MultiVersion.isOrGreater(MCVersion.V1_9)) {
-                    slowFalling = this.protocol.bukkitExtra.getPotionEffect(PotionEffectType.LEVITATION, 0L);
+                    slowFalling = this.protocol.getPotionEffect(PotionEffectType.LEVITATION, 0L);
                     if (slowFalling != null || this.levitation > 0) {
                         if (slowFalling != null) {
                             this.levitation = 2;
@@ -264,7 +269,7 @@ public class IMSimulationGravity extends CheckDetection {
                 }
 
                 if (MultiVersion.isOrGreater(MCVersion.V1_13)) {
-                    slowFalling = this.protocol.bukkitExtra.getPotionEffect(PotionEffectType.SLOW_FALLING, 0L);
+                    slowFalling = this.protocol.getPotionEffect(PotionEffectType.SLOW_FALLING, 0L);
                     if (slowFalling != null || this.slowFalling > 0) {
                         if (slowFalling != null) {
                             this.slowFalling = 2;
@@ -283,8 +288,8 @@ public class IMSimulationGravity extends CheckDetection {
                     }
                 }
 
-                if (this.protocol.bukkitExtra.isFlying()
-                        || this.protocol.bukkitExtra.isGliding()
+                if (this.protocol.isFlying()
+                        || this.protocol.isGliding()
                         || this.protocol.flyingTicks > 0) {
                     this.setPredict(motion);
                     this.levitation = 3;
@@ -325,7 +330,7 @@ public class IMSimulationGravity extends CheckDetection {
                 }
 
                 // ignore
-                if (this.protocol.bukkitExtra.getVehicle() != null) {
+                if (this.protocol.getVehicle() != null) {
                     this.setPredict(motion);
                 }
 
@@ -337,7 +342,7 @@ public class IMSimulationGravity extends CheckDetection {
                         && (motion < this.predictY() + 0.04)
                         && speed < 0.1) {
                     double allowedDeviantity = 0.076;
-                    ExtendedPotionEffect jumpEffect = this.protocol.bukkitExtra.getPotionEffect(PotionEffectUtils.JUMP, 1L);
+                    ExtendedPotionEffect jumpEffect = this.protocol.getPotionEffect(PotionEffectUtils.JUMP, 1L);
 
                     if (jumpEffect != null) {
                         allowedDeviantity += 0.04 * (double) (jumpEffect.bukkitEffect.getAmplifier() + 1);
@@ -367,6 +372,11 @@ public class IMSimulationGravity extends CheckDetection {
                     this.setPredict(motion);
                     this.allowLowMinorAccel = false;
                 }
+                if (this.protocol.trackers.has(
+                        PlayerTrackers.TrackerType.TELEPORT, "tp")
+                        && getDeviantity(motion) < 0.16) {
+                    this.setPredict(motion);
+                }
                 //protocol.bukkit().sendMessage("t: " + this.protocol.predictedSlimeTicks + " " + getDeviantity(motion));
                 if (this.protocol.predictedSlimeTicks > 0 && getDeviantity(motion) < 2.5 && getDeviantity(motion) > 0.01) {
                     this.setPredict(motion);
@@ -376,13 +386,13 @@ public class IMSimulationGravity extends CheckDetection {
 
                 double devTotal = this.abs(this.abs(motion) - this.abs(this.predictY()));
                 //this.protocol.bukkit().sendMessage("m: " + motion + " p: " + this.predictY() + " air: " + air);
-                if (devTotal > ((this.protocol.bukkitExtra.getVehicle()
-                        != null && motion < 0)
-                        ? 0.36 : (this.protocol.bukkitExtra.getVehicle()
+                if (devTotal > ((this.protocol.getVehicle()
+                        != null && motion < 0 && airVehicle < 10)
+                        ? 0.36 : (this.protocol.getVehicle()
                         != null) ? 0.09 : 0.009)) {
                     if (devTotal < 1.9 && this.vhact > 0) {
                         this.setPredict(0.0);
-                    } else if (this.protocol.bukkitExtra.getVehicle() == null) {
+                    } else if (this.protocol.getVehicle() == null) {
                         if (allowLowJump && air == 1
                                 && this.predictY() > motion
                                 && getDeviantity(motion) <= 0.03) {
@@ -400,7 +410,7 @@ public class IMSimulationGravity extends CheckDetection {
                             this.vlCount += 1;
                         }
                         //protocol.bukkit().sendMessage("vl: " + vl + " " + devTotal + " (gravity)");
-                        if (this.vl > ((this.protocol.bukkitExtra.getVehicle() != null) ? 0.6 : 0.05)) {
+                        if (this.vl > ((this.protocol.getVehicle() != null) ? 0.6 : 0.05)) {
                             StringBuilder alertBuilder = new StringBuilder(String.valueOf(RayUtils.scaleVal(devTotal, 6.0)));
                             if (devTotal < 1.0) {
                                 alertBuilder.deleteCharAt(0);
@@ -435,6 +445,10 @@ public class IMSimulationGravity extends CheckDetection {
         });
     }
 
+    void vhAct() {
+        this.call(() -> this.vhact = 2);
+    }
+
     private double getDeviantity(double motion) {
         return this.abs(this.abs(motion) - this.abs(this.predictY()));
     }
@@ -467,14 +481,10 @@ public class IMSimulationGravity extends CheckDetection {
         });
     }
 
-    void vhAct() {
-        this.call(() -> this.vhact = 2);
-    }
-
     private void ground(boolean isOnGround) {
         //if (limToUpdate > 1) return;
-        boolean ground = (this.protocol.bukkitExtra.getVehicle() != null)
-                ? this.protocol.bukkitExtra.getVehicle().isOnGround() : isOnGround;
+        boolean ground = (this.protocol.getVehicle() != null)
+                ? this.protocol.getVehicle().isOnGround() : isOnGround;
         this.ground = ground ? this.ground + 1 : 0;
         this.air = ground ? 0 : this.air + 1;
     }
@@ -493,7 +503,7 @@ public class IMSimulationGravity extends CheckDetection {
 
     private double jumpMotion() {
         double jumpPower = 0.42;
-        ExtendedPotionEffect jumpEffect = this.protocol.bukkitExtra.getPotionEffect(PotionEffectUtils.JUMP, 1L);
+        ExtendedPotionEffect jumpEffect = this.protocol.getPotionEffect(PotionEffectUtils.JUMP, 1L);
 
         if (jumpEffect != null) {
             jumpPower += 0.1 * (double) (jumpEffect.bukkitEffect.getAmplifier() + 1);
@@ -559,7 +569,7 @@ public class IMSimulationGravity extends CheckDetection {
             for (double dy = 1.0; dy <= 2.0; dy += 0.5) {
                 for (int dz = -2; dz <= 2; ++dz) {
                     Material material = this.protocol.packetWorld.getBlock(
-                            new Location(this.protocol.bukkitExtra.getWorld(), x + (double) dx * 0.5, y + dy, z + (double) dz * 0.5)
+                            new Location(this.protocol.getWorld(), x + (double) dx * 0.5, y + dy, z + (double) dz * 0.5)
                     );
 
                     if (material != null && BlockUtils.isSolid(material)) {
@@ -582,7 +592,7 @@ public class IMSimulationGravity extends CheckDetection {
                 for (int dz = -1; dz <= 1; dz++) {
                     Material material = this.protocol.packetWorld.getBlock(
                             new Location(
-                                    this.protocol.bukkitExtra.getWorld(),
+                                    this.protocol.getWorld(),
                                     x + dx * 0.3,
                                     y + dy * 0.3,
                                     z + dz * 0.3)
@@ -610,7 +620,7 @@ public class IMSimulationGravity extends CheckDetection {
                 for (int dz = -1; dz <= 1; dz++) {
                     Material material = this.protocol.packetWorld.getBlock(
                             new Location(
-                                    this.protocol.bukkitExtra.getWorld(),
+                                    this.protocol.getWorld(),
                                     x + dx,
                                     y + dy,
                                     z + dz)

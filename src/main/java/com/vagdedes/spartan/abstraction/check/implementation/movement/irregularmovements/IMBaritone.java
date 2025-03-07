@@ -20,7 +20,7 @@ public class IMBaritone extends CheckDetection {
 
     void run() {
         this.call(() -> {
-            Location l = this.protocol.bukkitExtra.getLocation();
+            Location l = this.protocol.getLocation();
             SpartanVector2F v2 = new SpartanVector2F(l.getYaw(), l.getPitch());
             float deltaYaw = (float) RayUtils.scaleVal(Math.abs(v2.x - oldV2.x), 3);
             float deltaPitch = (float) RayUtils.scaleVal(Math.abs(v2.y - oldV2.y), 3);
@@ -30,7 +30,7 @@ public class IMBaritone extends CheckDetection {
             float jiffDeltaYaw = (float) RayUtils.scaleVal(Math.abs(deltaYaw - oldDeltaMap.x), 3);
             float jiffDeltaPitch = (float) RayUtils.scaleVal(Math.abs(deltaPitch - oldDeltaMap.y), 3);
             {
-                if (this.protocol.bukkitExtra.getVehicle() != null) return;
+                if (this.protocol.getVehicle() != null) return;
                 this.yawMoved += (Math.abs(l.getPitch()) > 89) ? 0 : (deltaPitch == 0.0F) ? deltaYaw : -yawMoved;
                 this.yawMoved = (float) RayUtils.scaleVal(yawMoved, 2);
                 if (this.yawMoved > 45 && Math.abs(yawMoved % 360.0 - 1.0) < 1e-9) {

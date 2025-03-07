@@ -39,17 +39,17 @@ public abstract class InventoryMenu {
     protected Inventory setInventory(PlayerProtocol protocol, String title, int size) {
         this.title = title;
         this.size = size;
-        return inventory = protocol.bukkitExtra.createInventory(size, title);
+        return inventory = protocol.createInventory(size, title);
     }
 
     protected Inventory setSize(PlayerProtocol protocol, int size) {
         this.size = size;
-        return inventory = protocol.bukkitExtra.createInventory(size, title);
+        return inventory = protocol.createInventory(size, title);
     }
 
     protected Inventory setTitle(PlayerProtocol protocol, String title) {
         this.title = title;
-        return inventory = protocol.bukkitExtra.createInventory(size, title);
+        return inventory = protocol.createInventory(size, title);
     }
 
     protected void add(String name, List<String> lore, ItemStack item, int slot) {
@@ -86,7 +86,7 @@ public abstract class InventoryMenu {
         }
 
         if (access) {
-            inventory = protocol.bukkitExtra.createInventory(size, title);
+            inventory = protocol.createInventory(size, title);
             if (internalOpen(protocol, permissionMessage, object)) {
                 PluginBase.transferTask(
                         protocol,

@@ -52,8 +52,8 @@ public class MultiBlockListener extends PacketAdapter {
 
                 final Object nmsData = blockData[i];
                 if (nmsData.toString().toLowerCase().contains("slime_block")) {
-                    //player.sendMessage("p: " + loc.distance(protocol.bukkitExtra.getLocation()));
-                    if (loc.distance(protocol.bukkitExtra.getLocation()) < 14) {
+                    //player.sendMessage("p: " + loc.distance(protocol.getLocation()));
+                    if (loc.distance(protocol.getLocation()) < 14) {
                         protocol.predictedSlimeTicks = 6;
                     }
                 }

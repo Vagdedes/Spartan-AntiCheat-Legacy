@@ -220,7 +220,7 @@ public class PlayerUtils {
     // Potion Effects
 
     public static int getPotionLevel(PlayerProtocol protocol, PotionEffectType potionEffectType) {
-        ExtendedPotionEffect potionEffect = protocol.bukkitExtra.getPotionEffect(
+        ExtendedPotionEffect potionEffect = protocol.getPotionEffect(
                 potionEffectType,
                 handledPotionEffects.getOrDefault(potionEffectType, 0L)
         );

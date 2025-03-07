@@ -56,7 +56,7 @@ public class NoSwing extends CheckRunner {
             this.animationTime = System.currentTimeMillis();
         } else if (object instanceof BlockBreakEvent) {
             this.breaking.call(() -> {
-                if (MineBomb.isUsing(this.protocol.bukkitExtra)
+                if (MineBomb.isUsing(this.protocol)
                         || AureliumSkills.isUsing(this.protocol)) {
                     return;
                 }
@@ -71,7 +71,7 @@ public class NoSwing extends CheckRunner {
                         this.breaking.cancel(
                                 "breaking"
                                         + ", block: " + BlockUtils.blockToString(block)
-                                        + ", item: " + BlockUtils.materialToString(this.protocol.bukkitExtra.getItemInHand().getType()));
+                                        + ", item: " + BlockUtils.materialToString(this.protocol.getItemInHand().getType()));
 
                         if (this.breaking.prevent()) {
                             e.setCancelled(true);
@@ -83,7 +83,7 @@ public class NoSwing extends CheckRunner {
             });
         } else if (object instanceof PlayerAttackEvent) {
             this.damage.call(() -> {
-                if (this.protocol.bukkitExtra.getAttackCooldown() != 1.0f) {
+                if (this.protocol.getAttackCooldown() != 1.0f) {
                     return;
                 }
                 LivingEntity entity = ((PlayerAttackEvent) object).target;
@@ -102,7 +102,7 @@ public class NoSwing extends CheckRunner {
                             this.damage.cancel(
                                     "damage"
                                             + ", entity: " + CombatUtils.entityToString(entity)
-                                            + ", item: " + BlockUtils.materialToString(this.protocol.bukkitExtra.getItemInHand().getType())
+                                            + ", item: " + BlockUtils.materialToString(this.protocol.getItemInHand().getType())
                             );
                         }
                     } else {

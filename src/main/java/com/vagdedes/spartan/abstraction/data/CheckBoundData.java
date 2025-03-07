@@ -10,7 +10,7 @@ public class CheckBoundData {
 
     public CheckBoundData(PlayerProtocol player, PlayerProtocol target) {
         this.attacker = player;
-        this.target = target.bukkitExtra.getLocation();
+        this.target = target.getLocation();
         this.failures = 0;
     }
 

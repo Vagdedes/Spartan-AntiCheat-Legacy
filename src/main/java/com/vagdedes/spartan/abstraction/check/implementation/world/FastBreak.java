@@ -67,7 +67,7 @@ public class FastBreak extends CheckRunner {
                         time = System.currentTimeMillis() - time;
 
                         if (time > 0L) { // Make sure the plugin knows when the player started breaking the block
-                            ItemStack itemStack = this.protocol.bukkitExtra.getItemInHand();
+                            ItemStack itemStack = this.protocol.getItemInHand();
                             long originalLimit = MaterialUtils.getBlockBreakTime(this.protocol, itemStack, block.getType()),
                                     limit = originalLimit;
 
@@ -76,7 +76,7 @@ public class FastBreak extends CheckRunner {
 
                                 if (limit > (TPS.tickTime * 2L) && time < limit) {
                                     boolean emptyItem = itemStack == null;
-                                    Collection<PotionEffect> potionEffects = this.protocol.bukkitExtra.getActivePotionEffects();
+                                    Collection<PotionEffect> potionEffects = this.protocol.getActivePotionEffects();
                                     Set<Map.Entry<Enchantment, Integer>> enchantments = !emptyItem
                                             ? itemStack.getEnchantments().entrySet()
                                             : new HashSet<>(0);
@@ -233,9 +233,9 @@ public class FastBreak extends CheckRunner {
 
     @Override
     protected boolean canRun() {
-        return !MineBomb.isUsing(this.protocol.bukkitExtra)
+        return !MineBomb.isUsing(this.protocol)
                 && !Vehicles.has(this.protocol, Vehicles.DRILL)
-                && !SuperPickaxe.isUsing(this.protocol.bukkitExtra)
+                && !SuperPickaxe.isUsing(this.protocol)
                 && !AureliumSkills.isUsing(this.protocol)
                 && !Compatibility.CompatibilityType.CRAFT_BOOK.isFunctional()
                 && Attributes.getAmount(this.protocol, Attributes.PLAYER_BLOCK_BREAK_SPEED) == 0.0;

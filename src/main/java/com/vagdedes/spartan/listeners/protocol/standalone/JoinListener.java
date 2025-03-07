@@ -28,10 +28,10 @@ public class JoinListener extends PacketAdapter {
         if (protocol.isBedrockPlayer()) {
             return;
         }
-        LegacyLagCompensationListener.newPacket(protocol.bukkitExtra.getEntityId());
+        LegacyLagCompensationListener.newPacket(protocol.getEntityId());
         protocol.transactionBoot = true;
         Bukkit.getScheduler().runTaskLater(Register.plugin, () -> {
-            if (protocol.bukkitExtra.getVehicle() != null) {
+            if (protocol.getVehicle() != null) {
                 protocol.entityHandle = true;
             }
         }, 1L);

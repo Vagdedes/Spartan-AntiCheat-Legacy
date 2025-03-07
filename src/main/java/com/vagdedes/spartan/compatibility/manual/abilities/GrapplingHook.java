@@ -39,7 +39,7 @@ public class GrapplingHook implements Listener {
                 PlayerProtocol p = PluginBase.getProtocol((Player) caught),
                         t = PluginBase.getProtocol(e.getPlayer());
 
-                if (!p.equals(t) && isItem(t.bukkitExtra.getItemInHand())) {
+                if (!p.equals(t) && isItem(t.getItemInHand())) {
                     if (PluginUtils.exists(name)) {
                         Config.compatibility.evadeFalsePositives(
                                 p,

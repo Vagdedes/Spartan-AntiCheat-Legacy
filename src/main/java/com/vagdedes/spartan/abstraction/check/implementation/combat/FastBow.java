@@ -33,7 +33,7 @@ public class FastBow extends CheckRunner {
         if (object instanceof EntityShootBowEvent) {
             EntityShootBowEvent event = (EntityShootBowEvent) object;
 
-            if (this.protocol.bukkitExtra.getItemInHand().getType() == Material.BOW) {
+            if (this.protocol.getItemInHand().getType() == Material.BOW) {
                 checkBowShots(event);
                 checkBowForce(event);
             }

@@ -59,17 +59,17 @@ public class MoveDirection extends CheckDetection {
                     double diff = bruteforceRayTrace - 0.4;
                     double predict = RayUtils.castTo360(
                             calculate(
-                                    this.protocol.bukkitExtra.getLocation().toVector(),
+                                    this.protocol.getLocation().toVector(),
                                     new SpartanLocation(targetLoc).toVector()
                             ).x
                     );
-                    double yaw360 = RayUtils.castTo360(this.protocol.bukkitExtra.getLocation().getYaw());
+                    double yaw360 = RayUtils.castTo360(this.protocol.getLocation().getYaw());
                     rayTraceAnalysis.add(bruteforceRayTrace);
                     aimAnalysis.add(
                             new AttackData(
                                     Math.abs(predict - yaw360),
-                                    this.protocol.bukkitExtra.getLocation().getYaw(),
-                                    this.protocol.bukkitExtra.getLocation().getPitch(),
+                                    this.protocol.getLocation().getYaw(),
+                                    this.protocol.getLocation().getPitch(),
                                     System.currentTimeMillis(),
                                     ProtocolLib.getUUID(target)
                             )

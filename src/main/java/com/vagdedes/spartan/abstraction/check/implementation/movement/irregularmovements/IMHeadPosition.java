@@ -12,10 +12,10 @@ public class IMHeadPosition extends CheckDetection {
     void run() {
         this.call(() -> {
             if (this.protocol.isLowEyeHeight()
-                    || this.protocol.bukkitExtra.getVehicle() != null) {
+                    || this.protocol.getVehicle() != null) {
                 return;
             }
-            double pitch = this.protocol.bukkitExtra.getLocation().getPitch();
+            double pitch = this.protocol.getLocation().getPitch();
 
             if (Math.abs(pitch) >= 90.1f) {
                 cancel("head-position, pitch: " + pitch);

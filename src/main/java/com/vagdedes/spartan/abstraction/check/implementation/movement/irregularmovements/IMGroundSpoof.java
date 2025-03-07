@@ -39,15 +39,15 @@ public class IMGroundSpoof extends CheckDetection {
                     && !this.protocol.getEnvironment().isSlime()
                     && !this.protocol.getEnvironment().isSlimeWide()
                     && !this.protocol.getEnvironment().isSlimeHeight()
-                    && this.protocol.bukkitExtra.getVehicle() == null
-                    && !this.protocol.bukkitExtra.isFlying()
+                    && this.protocol.getVehicle() == null
+                    && !this.protocol.isFlying()
                     && !this.protocol.isLowEyeHeight()) { // Covers swimming & gliding
-                boolean onGround = this.protocol.bukkitExtra.isOnGround(),
+                boolean onGround = this.protocol.isOnGround(),
                         onGroundCheck = isOnSolidGround(event.getTo().clone())
                                 || isOnSolidGround(event.getFrom().clone());
 
                 boolean boat = false;
-                List<Entity> nearbyEntities = this.protocol.bukkitExtra.getNearbyEntities(2);
+                List<Entity> nearbyEntities = this.protocol.getNearbyEntities(2);
                 for (Entity vehicle : nearbyEntities) {
                     if (vehicle instanceof Boat) {
                         boat = true;
@@ -103,14 +103,14 @@ public class IMGroundSpoof extends CheckDetection {
                 for (int dz = -1; dz <= 1; dz++) {
                     Material material = this.protocol.packetWorld.getBlock(
                             new Location(
-                                    this.protocol.bukkitExtra.getWorld(),
+                                    this.protocol.getWorld(),
                                     x + (dx * 0.3),
                                     y + (dy * 0.5),
                                     z + (dz * 0.3)
                             )
                     );
                     Material material2 = new SpartanLocation(new Location(
-                            this.protocol.bukkitExtra.getWorld(),
+                            this.protocol.getWorld(),
                             x + (dx * 0.3),
                             y + (dy * 0.5),
                             z + (dz * 0.3))).getBlock().getTypeOrNull();

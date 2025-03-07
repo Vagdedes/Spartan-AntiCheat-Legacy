@@ -47,7 +47,7 @@ public class JarVerification {
 
                 if (!staff.isEmpty()) {
                     for (PlayerProtocol protocol : staff) {
-                        protocol.bukkitExtra.sendImportantMessage(AwarenessNotifications.getNotification(message));
+                        protocol.sendImportantMessage(AwarenessNotifications.getNotification(message));
                     }
                 }
                 AwarenessNotifications.forcefullySend(message);

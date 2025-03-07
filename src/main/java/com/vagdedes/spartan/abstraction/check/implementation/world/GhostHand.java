@@ -40,11 +40,11 @@ public class GhostHand extends CheckRunner {
                         && !ItemsAdder.is(b)) {
                     Location location = this.protocol.getLocationOrVehicle().clone().add(
                             0,
-                            this.protocol.bukkitExtra.getEyeHeight(),
+                            this.protocol.getEyeHeight(),
                             0
                     );
                     double bDistance = SpartanLocation.distance(location, b.getLocation());
-                    SpartanLocation t = this.protocol.bukkitExtra.getTargetBlock(bDistance, PlayerUtils.chunk);
+                    SpartanLocation t = this.protocol.getTargetBlock(bDistance, PlayerUtils.chunk);
 
                     if (t != null) {
                         double tDistance = t.distance(location);
@@ -79,11 +79,11 @@ public class GhostHand extends CheckRunner {
                             && BlockUtils.isChangeable(b.getType())) {
                         Location location = this.protocol.getLocationOrVehicle().clone().add(
                                 0,
-                                this.protocol.bukkitExtra.getEyeHeight(),
+                                this.protocol.getEyeHeight(),
                                 0
                         );
                         double bDistance = SpartanLocation.distance(location, b.getLocation());
-                        SpartanLocation t = this.protocol.bukkitExtra.getTargetBlock(bDistance, PlayerUtils.chunk);
+                        SpartanLocation t = this.protocol.getTargetBlock(bDistance, PlayerUtils.chunk);
 
                         if (t != null) {
                             double tDistance = t.distance(location);
@@ -111,12 +111,12 @@ public class GhostHand extends CheckRunner {
     }
 
     private boolean canDo(Block b) {
-        return b.getWorld() == this.protocol.bukkitExtra.getWorld();
+        return b.getWorld() == this.protocol.getWorld();
     }
 
     @Override
     protected boolean canRun() {
-        if (!this.protocol.bukkitExtra.isFlying()
+        if (!this.protocol.isFlying()
                 && !Vehicles.has(this.protocol, Vehicles.DRILL)
                 && !PrinterMode.isUsing(this.protocol)
                 && Attributes.getAmount(this.protocol, Attributes.PLAYER_BLOCK_INTERACTION_RANGE) == 0.0) {

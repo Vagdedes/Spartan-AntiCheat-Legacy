@@ -2,7 +2,7 @@ package com.vagdedes.spartan.abstraction.protocol;
 
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.data.CheckBoundData;
-import com.vagdedes.spartan.abstraction.data.EnvinromentData;
+import com.vagdedes.spartan.abstraction.data.EnvironmentData;
 import com.vagdedes.spartan.abstraction.data.PacketWorld;
 import com.vagdedes.spartan.abstraction.data.TimerBalancer;
 import com.vagdedes.spartan.abstraction.data.component.ComponentXZ;
@@ -11,29 +11,42 @@ import com.vagdedes.spartan.abstraction.event.CPlayerVelocityEvent;
 import com.vagdedes.spartan.abstraction.event.PlayerTickEvent;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
+import com.vagdedes.spartan.compatibility.Compatibility;
 import com.vagdedes.spartan.compatibility.necessary.BedrockCompatibility;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
+import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.PluginBase;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
+import com.vagdedes.spartan.utils.java.StringUtils;
+import com.vagdedes.spartan.utils.math.AlgebraUtils;
+import com.vagdedes.spartan.utils.math.MathHelper;
 import com.vagdedes.spartan.utils.minecraft.entity.AxisAlignedBB;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PotionEffectUtils;
+import com.vagdedes.spartan.utils.minecraft.protocol.ProtocolTools;
+import com.vagdedes.spartan.utils.minecraft.server.PluginUtils;
+import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import com.vagdedes.spartan.utils.minecraft.world.GroundUtils;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
-import org.bukkit.Location;
+import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Vehicle;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @Data
@@ -43,8 +56,7 @@ public class PlayerProtocol {
     public long activeCreationTime;
     private Player bukkit;
     @Getter
-    private EnvinromentData environment;
-    public final PlayerBukkit bukkitExtra;
+    private EnvironmentData environment;
     public final PlayerPunishments punishments;
     public final PlayerTrackers trackers;
     public int
@@ -57,14 +69,18 @@ public class PlayerProtocol {
     public boolean
             onGround,
             onGroundFrom,
+            sprinting,
+            sneaking,
             pistonTick,
             transactionBoot,
             clickBlocker,
+            transactionLocal,
             transactionSentKeep,
             useItemPacket,
             useItemPacketReset;
     @Setter
     private Location
+            location,
             from,
             teleport;
     public String fromWorld;
@@ -91,20 +107,28 @@ public class PlayerProtocol {
             transactionPing,
             lagTick,
             oldClickTime,
-            soulSandWater = 0L,
-            magmaCubeWater = 0L,
-            lastVelocity = 0L;
+            soulSandWater,
+            magmaCubeWater,
+            lastVelocity;
+    private long
+            lastInteraction,
+            lastFlight,
+            lastGlide;
     public boolean entityHandle;
     private ComponentY componentY;
     private ComponentXZ componentXZ;
-    private Vector clampVector;
     private final Map<Long, SpartanLocation> locations;
     Location schedulerFrom;
+    private Vector clampVector;
+    private final Map<PotionEffectType, ExtendedPotionEffect> potionEffects;
+    private boolean afk;
+    Entity[] nearbyEntities;
+    final double[] maxNearbyEntitiesCoordinate;
 
     public PlayerProtocol(Player player) {
         long time = System.currentTimeMillis();
-        this.activeCreationTime = time;
         this.bukkit = player;
+        this.activeCreationTime = time;
         this.version = MultiVersion.get(player);
         this.packetWorld = new PacketWorld(player);
         this.npc = player.getAddress() == null;
@@ -117,17 +141,19 @@ public class PlayerProtocol {
                 : Check.DetectionType.BUKKIT;
         this.onGround = false;
         this.onGroundFrom = false;
+        this.sprinting = false;
+        this.sneaking = false;
+        this.location = ProtocolTools.getLoadLocation(player);
         this.from = null;
         this.fromWorld = "";
         this.teleport = null;
         this.transactionVl = 0;
-        this.bukkitExtra = new PlayerBukkit(this);
         this.timerBalancer = new TimerBalancer();
         this.flyingTicks = 0;
         this.oldClickTime = System.currentTimeMillis();
         this.clickBlocker = false;
         this.tickTime = time;
-        this.environment = new EnvinromentData();
+        this.environment = new EnvironmentData();
         this.rightClickCounter = 0;
         this.positionHistory = Collections.synchronizedList(new LinkedList<>());
         this.claimedVelocity = null;
@@ -143,6 +169,7 @@ public class PlayerProtocol {
         this.transactionLastTime = System.currentTimeMillis();
         this.transactionPing = 0;
         this.transactionBoot = false;
+        this.transactionLocal = false;
         this.transactionSentKeep = false;
         this.lagTick = 0;
         this.predictedSlimeTicks = 0;
@@ -152,9 +179,15 @@ public class PlayerProtocol {
         this.useItemPacketReset = false;
         this.trackers = new PlayerTrackers();
         this.slime0Tick = 0;
-        this.clampVector = new Vector();
         this.locations = Collections.synchronizedMap(new LinkedHashMap<>());
-        this.schedulerFrom = this.bukkitExtra.location;
+        this.schedulerFrom = this.location;
+        this.clampVector = new Vector();
+        this.potionEffects = new ConcurrentHashMap<>(2);
+        this.setStoredPotionEffects();
+        this.lastInteraction = System.currentTimeMillis();
+        this.afk = false;
+        this.nearbyEntities = new Entity[0];
+        this.maxNearbyEntitiesCoordinate = new double[3];
 
         // Always last
         this.profile().update(this);
@@ -175,26 +208,24 @@ public class PlayerProtocol {
                         protocol.profile().update(protocol);
                     }
                     if (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
-                        protocol.bukkitExtra.setStoredPotionEffects();
+                        protocol.setStoredPotionEffects();
                     }
-                    if (protocol.bukkitExtra.maxNearbyEntitiesCoordinate[0] > 0.0
-                            || protocol.bukkitExtra.maxNearbyEntitiesCoordinate[1] > 0.0
-                            || protocol.bukkitExtra.maxNearbyEntitiesCoordinate[2] > 0.0) {
-                        protocol.bukkitExtra.nearbyEntities = protocol.bukkit().getNearbyEntities(
-                                protocol.bukkitExtra.maxNearbyEntitiesCoordinate[0],
-                                protocol.bukkitExtra.maxNearbyEntitiesCoordinate[1],
-                                protocol.bukkitExtra.maxNearbyEntitiesCoordinate[2]
+                    if (protocol.maxNearbyEntitiesCoordinate[0] > 0.0
+                            || protocol.maxNearbyEntitiesCoordinate[1] > 0.0
+                            || protocol.maxNearbyEntitiesCoordinate[2] > 0.0) {
+                        protocol.nearbyEntities = protocol.bukkit().getNearbyEntities(
+                                protocol.maxNearbyEntitiesCoordinate[0],
+                                protocol.maxNearbyEntitiesCoordinate[1],
+                                protocol.maxNearbyEntitiesCoordinate[2]
                         ).toArray(new Entity[0]);
                     }
-                    protocol.bukkitExtra.checkForAFK();
+                    protocol.checkForAFK();
                     protocol.profile().executeRunners(false, null);
-                    protocol.schedulerFrom = protocol.bukkitExtra.getLocation();
+                    protocol.schedulerFrom = protocol.getLocation();
                 }
             }
         }, 1L, 1L);
     }
-
-    // Separator
 
     public final Player bukkit() {
         return this.bukkit;
@@ -204,27 +235,21 @@ public class PlayerProtocol {
         this.bukkit = player;
     }
 
-    // Separator
-
-    void resetActiveCreationTime() {
+    private void resetActiveCreationTime() {
         this.activeCreationTime = System.currentTimeMillis();
+    }
+
+    public long getTimePassed(long time) {
+        return System.currentTimeMillis() - this.activeCreationTime;
     }
 
     public long getActiveTimePlayed() {
         return System.currentTimeMillis() - this.activeCreationTime;
     }
 
-    // Separator
-
-    public long getTimePassed(long time) {
-        return System.currentTimeMillis() - this.activeCreationTime;
-    }
-
     public boolean isUsingVersion(MultiVersion.MCVersion trialVersion) {
         return version.ordinal() == trialVersion.ordinal();
     }
-
-    // Separator
 
     public boolean isDesync() {
         return this.transactionSentKeep && (System.currentTimeMillis() - this.transactionTime > 55);
@@ -238,22 +263,59 @@ public class PlayerProtocol {
         return this.transactionSentKeep && (System.currentTimeMillis() - this.transactionTime > 400);
     }
 
-    // Separator
-
     public boolean isUsingVersionOrGreater(MultiVersion.MCVersion trialVersion) {
         return version.ordinal() >= trialVersion.ordinal();
     }
 
-    // Separator
+    public boolean isOnGround() {
+        if (packetsEnabled()) {
+            return this.onGround;
+        } else {
+            Entity vehicle = this.getVehicle();
+
+            if (vehicle != null) {
+                return vehicle.isOnGround();
+            } else {
+                return this.bukkit().isOnGround();
+            }
+        }
+    }
+
+    public boolean isOnGroundFrom() {
+        return packetsEnabled()
+                ? this.onGroundFrom
+                : this.isOnGround();
+    }
+
+    public boolean isSprinting() {
+        return packetsEnabled()
+                ? this.sprinting
+                : this.bukkit().isSprinting();
+    }
+
+    public boolean isSneaking() {
+        return packetsEnabled()
+                ? this.sneaking
+                : this.bukkit().isSneaking();
+    }
+
+    public Location getLocation() {
+        Location loc = this.packetsEnabled()
+                ? this.location
+                : ProtocolLib.getLocationOrNull(this.bukkit());
+        return loc != null
+                ? loc
+                : SpartanLocation.bukkitDefault.clone();
+    }
 
     public Location getFromLocation() {
         return this.from != null
                 ? this.from
-                : this.bukkitExtra.getLocation();
+                : this.getLocation();
     }
 
     public Location getVehicleLocation() {
-        Entity vehicle = this.bukkitExtra.getVehicle();
+        Entity vehicle = this.getVehicle();
 
         if (vehicle instanceof LivingEntity || vehicle instanceof Vehicle) {
             return ProtocolLib.getLocationOrNull(vehicle);
@@ -266,13 +328,11 @@ public class PlayerProtocol {
         Location vehicleLocation = getVehicleLocation();
 
         if (vehicleLocation == null) {
-            return this.bukkitExtra.getLocation();
+            return this.getLocation();
         } else {
             return vehicleLocation;
         }
     }
-
-    // Separator
 
     public List<Location> getPositionHistory() {
         synchronized (this.positionHistory) {
@@ -281,13 +341,11 @@ public class PlayerProtocol {
     }
 
     public SpartanLocation getPastTickRotation() {
-        Location l = this.bukkitExtra.getLocation().clone();
+        Location l = this.getLocation().clone();
         l.setYaw(this.from.getYaw());
         l.setPitch(this.from.getPitch());
         return new SpartanLocation(l);
     }
-
-    // Separator
 
     public boolean teleport(Location location) {
         if (location.getX() == SpartanLocation.bukkitDefault.getX()
@@ -297,13 +355,13 @@ public class PlayerProtocol {
         }
         boolean sync = PluginBase.isSynchronised();
 
-        if (sync) {
-            this.bukkit().leaveVehicle();
-        }
-
         if (MultiVersion.folia) {
+            if (sync) {
+                this.bukkit().leaveVehicle();
+            }
             this.bukkit().teleportAsync(location);
         } else if (sync) {
+            this.bukkit().leaveVehicle();
             this.bukkit().teleport(location);
         } else {
             PluginBase.transferTask(
@@ -343,10 +401,9 @@ public class PlayerProtocol {
         return ResearchEngine.getPlayerProfile(this);
     }
 
-    // Separator
-
-    public void setFromLocation(Location location) {
-        this.from = location;
+    public void setOnGround(boolean isOnGround) {
+        this.onGroundFrom = this.onGround;
+        this.onGround = isOnGround;
     }
 
     public void addRawLocation(Location location) {
@@ -361,7 +418,9 @@ public class PlayerProtocol {
         }
     }
 
-    // Separator
+    public World getWorld() {
+        return this.getLocation().getWorld();
+    }
 
     public boolean packetsEnabled() {
         return PluginBase.packetsEnabled() && !this.isBedrockPlayer();
@@ -371,15 +430,39 @@ public class PlayerProtocol {
         return this.dataType == Check.DataType.BEDROCK;
     }
 
-    // Separator
-
-    public boolean isOnGroundFrom() {
-        return packetsEnabled()
-                ? this.onGroundFrom
-                : this.bukkitExtra.isOnGround();
+    public boolean isLowEyeHeight() {
+        return this.getEyeHeight() < 1.0;
     }
 
-    // Separator
+    public boolean isJumping(double d) {
+        return PlayerUtils.isJumping(
+                d,
+                PlayerUtils.getPotionLevel(this, PotionEffectUtils.JUMP) + 1,
+                GroundUtils.maxHeightLengthRatio
+        );
+    }
+
+    public boolean justJumped(double d) {
+        return PlayerUtils.justJumped(
+                d,
+                PlayerUtils.getPotionLevel(this, PotionEffectUtils.JUMP) + 1,
+                GroundUtils.maxHeightLengthRatio
+        );
+    }
+
+    public Location getSchedulerFromLocation() {
+        return schedulerFrom;
+    }
+
+    public List<SpartanLocation> getLocations() {
+        return new ArrayList<>(this.locations.values());
+    }
+
+    public Set<Map.Entry<Long, SpartanLocation>> getLocationEntries() {
+        synchronized (this.locations) {
+            return new HashSet<>(locations.entrySet());
+        }
+    }
 
     public boolean processLastMoveEvent(
             Location originalTo,
@@ -402,7 +485,7 @@ public class PlayerProtocol {
             }
         }
         if (vehicle == null) {
-            Location known = this.bukkitExtra.getLocation();
+            Location known = this.getLocation();
 
             if (known.getX() != originalTo.getX()
                     || known.getY() != originalTo.getY()
@@ -422,7 +505,7 @@ public class PlayerProtocol {
             }
         }
         if (!packets) {
-            this.setFromLocation(from);
+            this.setFrom(from);
         }
         return true;
     }
@@ -431,42 +514,382 @@ public class PlayerProtocol {
         return d < d2 ? d2 : Math.min(d, d3);
     }
 
-    // Separator
-
-    public Location getSchedulerFromLocation() {
-        return schedulerFrom;
+    public void setLastInteraction() {
+        this.lastInteraction = System.currentTimeMillis();
     }
 
-    public List<SpartanLocation> getLocations() {
-        return new ArrayList<>(this.locations.values());
-    }
+    private void checkForAFK() {
+        long lastInteraction = System.currentTimeMillis() - this.lastInteraction;
 
-    public Set<Map.Entry<Long, SpartanLocation>> getLocationEntries() {
-        synchronized (this.locations) {
-            return new HashSet<>(locations.entrySet());
+        if (lastInteraction >= 20_000L) {
+            if (!afk) {
+                this.profile().getContinuity().setActiveTime(
+                        System.currentTimeMillis(),
+                        this.getActiveTimePlayed() - lastInteraction,
+                        true
+                );
+                this.afk = true;
+            }
+        } else if (this.afk) {
+            this.resetActiveCreationTime();
+            this.afk = false;
         }
     }
 
-    // Separator
-
-    public boolean isJumping(double d) {
-        return PlayerUtils.isJumping(
-                d,
-                PlayerUtils.getPotionLevel(this, PotionEffectUtils.JUMP) + 1,
-                GroundUtils.maxHeightLengthRatio
-        );
+    public boolean isAFK() {
+        return this.afk || this.npc;
     }
 
-    public boolean justJumped(double d) {
-        return PlayerUtils.justJumped(
-                d,
-                PlayerUtils.getPotionLevel(this, PotionEffectUtils.JUMP) + 1,
-                GroundUtils.maxHeightLengthRatio
-        );
+    @Override
+    public String toString() {
+        return this.bukkit().getName();
     }
 
-    public boolean isLowEyeHeight() {
-        return this.bukkitExtra.getEyeHeight() < 1.0;
+    public boolean debug(boolean function, boolean broadcast, boolean cutDecimals, Object... message) {
+        if (function) {
+            if (this.bukkit().isWhitelisted()) {
+                String string = "§f" + this.bukkit().getName() + " ";
+
+                if (message == null || message.length == 0) {
+                    string += new Random().nextInt();
+                } else {
+                    int i = 0;
+
+                    if (cutDecimals) {
+                        for (Object object : message) {
+                            if (object instanceof Double) {
+                                message[i] = ((i + 1) % 2 == 0 ? "§c" : "§7")
+                                        + AlgebraUtils.cut((double) object, GroundUtils.maxHeightLength);
+                            } else {
+                                message[i] = ((i + 1) % 2 == 0 ? "§c" : "§7") + object;
+                            }
+                            i++;
+                        }
+                    } else {
+                        for (Object object : message) {
+                            message[i] = ((i + 1) % 2 == 0 ? "§c" : "§7") + object;
+                            i++;
+                        }
+                    }
+                    string += StringUtils.toString(message, " ");
+                }
+                Collection<PlayerProtocol> protocols = PluginBase.getProtocols();
+
+                if (!protocols.isEmpty()) {
+                    if (broadcast) {
+                        Bukkit.broadcastMessage(string);
+                    } else {
+                        for (PlayerProtocol protocol : protocols) {
+                            if (protocol.bukkit().isOp()) {
+                                protocol.bukkit().sendMessage(string);
+                            }
+                        }
+                    }
+                }
+                Bukkit.getConsoleSender().sendMessage(string);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public int getMaxChatLength() {
+        return this.isBedrockPlayer() ? 512 :
+                MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_11)
+                        || this.isUsingVersionOrGreater(MultiVersion.MCVersion.V1_11)
+                        || PluginUtils.exists("viaversion")
+                        || Compatibility.CompatibilityType.PROTOCOL_SUPPORT.isFunctional() ? 256 :
+                        100;
+    }
+
+    public void sendImportantMessage(String message) {
+        this.bukkit().sendMessage("");
+        this.bukkit().sendMessage(message);
+        this.bukkit().sendMessage("");
+    }
+
+    public Inventory createInventory(int size, String title) {
+        return Bukkit.createInventory(this.bukkit(), size, title);
+    }
+
+    public ItemStack getItemInHand() {
+        return this.bukkit().getInventory().getItemInHand();
+    }
+
+    public SpartanLocation getTargetBlock(double distance, double limit) {
+        for (int i = 0; i < AlgebraUtils.integerCeil(Math.min(distance, limit)); i++) {
+            SpartanLocation location = new SpartanLocation(
+                    this.getLocation().clone().add(
+                            0,
+                            this.getEyeHeight(),
+                            0
+                    ).add(
+                            this.getLocation().getDirection().multiply(i)
+                    )
+            );
+
+            if (BlockUtils.isFullSolid(location.getBlock().getType())) {
+                return location.getBlockLocation();
+            }
+        }
+        return null;
+    }
+
+    public boolean isFrozen() {
+        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)) {
+            return this.bukkit().isFrozen();
+        } else {
+            return false;
+        }
+    }
+
+    public float getAttackCooldown() {
+        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)) {
+            return this.bukkit().getAttackCooldown();
+        } else {
+            return 1.0f;
+        }
+    }
+
+    public Entity getVehicle() {
+        return ProtocolLib.getVehicle(this.bukkit());
+    }
+
+    public double getHealth() {
+        return ProtocolLib.isTemporary(this.bukkit())
+                ? 0.0
+                : this.bukkit().getHealth();
+    }
+
+    public int getEntityId() {
+        return ProtocolLib.isTemporary(this.bukkit())
+                ? new Random().nextInt()
+                : this.bukkit().getEntityId();
+    }
+
+    private void setStoredPotionEffects() {
+        if (!ProtocolLib.isTemporary(this.bukkit())) {
+            PluginBase.transferTask(
+                    this,
+                    () -> {
+                        for (PotionEffect effect : this.bukkit().getActivePotionEffects()) {
+                            this.potionEffects.put(effect.getType(), new ExtendedPotionEffect(effect));
+                        }
+                    }
+            );
+        }
+    }
+
+    public Collection<PotionEffect> getActivePotionEffects() {
+        return ProtocolLib.isTemporary(this.bukkit())
+                ? new ArrayList<>(0)
+                : this.bukkit().getActivePotionEffects();
+    }
+
+    public ExtendedPotionEffect getPotionEffect(PotionEffectType type, long lastActive) {
+        this.setStoredPotionEffects();
+        ExtendedPotionEffect potionEffect = this.potionEffects.get(type);
+
+        if (potionEffect != null
+                && potionEffect.timePassed() <= lastActive
+                && potionEffect.bukkitEffect.getType().equals(type)) {
+            return potionEffect;
+        } else {
+            return null;
+        }
+    }
+
+    public boolean hasPotionEffect(PotionEffectType type, long lastActive) {
+        this.setStoredPotionEffects();
+        ExtendedPotionEffect potionEffect = this.potionEffects.get(type);
+        return potionEffect != null
+                && potionEffect.timePassed() <= lastActive
+                && potionEffect.bukkitEffect.getType().equals(type);
+    }
+
+    public List<Entity> getNearbyEntities(double radius) {
+        this.maxNearbyEntitiesCoordinate[0] = Math.max(radius, this.maxNearbyEntitiesCoordinate[0]);
+        this.maxNearbyEntitiesCoordinate[1] = Math.max(radius, this.maxNearbyEntitiesCoordinate[1]);
+        this.maxNearbyEntitiesCoordinate[2] = Math.max(radius, this.maxNearbyEntitiesCoordinate[2]);
+
+        if (PluginBase.isSynchronised()) {
+            List<Entity> list = this.bukkit().getNearbyEntities(radius, radius, radius);
+            this.nearbyEntities = list.toArray(new Entity[0]);
+            return list;
+        } else if (this.nearbyEntities.length == 0) {
+            return new ArrayList<>(0);
+        } else {
+            List<Entity> entities = new ArrayList<>();
+            Location location = this.getLocation();
+            int smallX = MathHelper.floor_double((location.getX() - radius) / PlayerUtils.chunk);
+            int bigX = MathHelper.floor_double((location.getX() + radius) / PlayerUtils.chunk);
+            int smallZ = MathHelper.floor_double((location.getZ() - radius) / PlayerUtils.chunk);
+            int bigZ = MathHelper.floor_double((location.getZ() + radius) / PlayerUtils.chunk);
+            double radiusSquared = radius * radius;
+
+            for (int xx = smallX; xx <= bigX; xx++) {
+                for (int zz = smallZ; zz <= bigZ; zz++) {
+                    for (Entity entity : nearbyEntities) {
+                        Location eLoc = ProtocolLib.getLocationOrNull(entity);
+
+                        if (eLoc != null) {
+                            if (SpartanLocation.distanceSquared(
+                                    eLoc,
+                                    location
+                            ) <= radiusSquared) {
+                                entities.add(entity);
+                            }
+                        }
+                    }
+                }
+            }
+            entities.remove(this.bukkit());
+            return entities;
+        }
+    }
+
+    public List<Entity> getNearbyEntities(double x, double y, double z) {
+        this.maxNearbyEntitiesCoordinate[0] = Math.max(x, this.maxNearbyEntitiesCoordinate[0]);
+        this.maxNearbyEntitiesCoordinate[1] = Math.max(y, this.maxNearbyEntitiesCoordinate[1]);
+        this.maxNearbyEntitiesCoordinate[2] = Math.max(z, this.maxNearbyEntitiesCoordinate[2]);
+
+        if (PluginBase.isSynchronised()) {
+            List<Entity> list = this.bukkit().getNearbyEntities(x, y, z);
+            this.nearbyEntities = list.toArray(new Entity[0]);
+            return list;
+        } else if (this.nearbyEntities.length == 0) {
+            return new ArrayList<>(0);
+        } else {
+            List<Entity> entities = new ArrayList<>();
+            Location location = this.getLocation();
+            int smallX = MathHelper.floor_double((location.getX() - x) / PlayerUtils.chunk);
+            int bigX = MathHelper.floor_double((location.getX() + x) / PlayerUtils.chunk);
+            int smallZ = MathHelper.floor_double((location.getZ() - z) / PlayerUtils.chunk);
+            int bigZ = MathHelper.floor_double((location.getZ() + z) / PlayerUtils.chunk);
+
+            for (int xx = smallX; xx <= bigX; xx++) {
+                for (int zz = smallZ; zz <= bigZ; zz++) {
+                    for (Entity entity : nearbyEntities) {
+                        Location eLoc = ProtocolLib.getLocationOrNull(entity);
+
+                        if (eLoc != null) {
+                            if (Math.abs(eLoc.getX() - location.getX()) <= x
+                                    && Math.abs(eLoc.getY() - location.getY()) <= y
+                                    && Math.abs(eLoc.getZ() - location.getZ()) <= z) {
+                                entities.add(entity);
+                            }
+                        }
+                    }
+                }
+            }
+            entities.remove(this.bukkit());
+            return entities;
+        }
+    }
+
+    // Teleport
+
+    public void groundTeleport() {
+        Location location = this.getLocation();
+        SpartanLocation locationP1 = new SpartanLocation(location.clone().add(0, 1, 0));
+
+        if (BlockUtils.isSolid(locationP1.getBlock().getType())
+                && !(BlockUtils.areWalls(locationP1.getBlock().getType())
+                || BlockUtils.canClimb(locationP1.getBlock().getType(), false))) {
+            return;
+        }
+        World world = this.getWorld();
+        double startY = Math.min(BlockUtils.getMaxHeight(world), location.getY());
+        int iterations = 0;
+
+        for (double progressiveY = startY; startY > BlockUtils.getMinHeight(world); progressiveY--) {
+            SpartanLocation loopLocation = new SpartanLocation(
+                    location.clone().add(0.0, -(startY - progressiveY), 0.0)
+            );
+            Material material = loopLocation.getBlock().getType();
+
+            if (iterations != PlayerUtils.chunk
+                    && (BlockUtils.canClimb(material, false)
+                    || BlockUtils.areWalls(material)
+                    || !BlockUtils.isSolid(material))) {
+                iterations++;
+            } else {
+                loopLocation.setY(Math.floor(progressiveY) + 1.0);
+
+                if (this.packetsEnabled()) {
+                    this.teleport(loopLocation.bukkit());
+                }
+                break;
+            }
+        }
+
+        if (iterations > 0) {
+            this.bukkit().setFallDistance(0.0f);
+
+            if (Config.settings.getBoolean("Detections.fall_damage_on_teleport")
+                    && iterations > PlayerUtils.fallDamageAboveBlocks) { // Damage
+                this.bukkit().damage(Math.max(this.bukkit().getFallDistance(), iterations));
+            }
+        }
+    }
+
+    public boolean isOutsideOfTheBorder(double deviation) {
+        Location loc = this.getLocation();
+        WorldBorder border = this.getWorld().getWorldBorder();
+        double size = (border.getSize() / 2.0) + deviation;
+        Location center = border.getCenter();
+        return Math.abs(loc.getX() - center.getX()) > size
+                || Math.abs(loc.getZ() - center.getZ()) > size;
+    }
+
+    public double getEyeHeight() {
+        return ProtocolLib.getEyeHeight(this.bukkit());
+    }
+
+    public boolean isGliding() {
+        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
+            if (this.bukkit().isGliding()) {
+                this.lastGlide = System.currentTimeMillis();
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    public boolean isSwimming() {
+        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
+            return this.bukkit().isSwimming();
+        } else {
+            return false;
+        }
+    }
+
+    public boolean wasGliding() {
+        return this.isGliding()
+                || System.currentTimeMillis() - this.lastGlide <= TPS.maximum * TPS.tickTime;
+    }
+
+    public boolean isFlying() {
+        Entity vehicle = this.getVehicle();
+        boolean flying;
+
+        if (vehicle != null) {
+            flying = vehicle instanceof Player && ((Player) vehicle).isFlying();
+        } else {
+            flying = this.bukkit().isFlying();
+        }
+        if (flying) {
+            this.lastFlight = System.currentTimeMillis();
+        }
+        return flying;
+    }
+
+    public boolean wasFlying() {
+        return this.isFlying()
+                || System.currentTimeMillis() - this.lastFlight <= TPS.maximum * TPS.tickTime;
     }
 
 }

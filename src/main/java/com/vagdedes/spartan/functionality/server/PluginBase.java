@@ -102,7 +102,7 @@ public class PluginBase {
                 protocol.updateBukkit(player);
             }
             if (updateLastInteraction) {
-                protocol.bukkitExtra.setLastInteraction();
+                protocol.setLastInteraction();
             }
             return protocol;
         }
@@ -136,7 +136,7 @@ public class PluginBase {
 
     public static PlayerProtocol getProtocol(int entityID) {
         for (PlayerProtocol protocol : playerProtocol.values()) {
-            if (protocol.bukkitExtra.getEntityId() == entityID) {
+            if (protocol.getEntityId() == entityID) {
                 return protocol;
             }
         }
@@ -171,7 +171,7 @@ public class PluginBase {
         } else {
             PlayerProtocol protocol = playerProtocol.remove(player.getUniqueId());
 
-            if (protocol != null && !protocol.bukkitExtra.isAFK()) {
+            if (protocol != null && !protocol.isAFK()) {
                 protocol.profile().getContinuity().setActiveTime(
                         System.currentTimeMillis(),
                         protocol.getActiveTimePlayed(),
@@ -239,7 +239,7 @@ public class PluginBase {
     public static void disable() {
         if (!playerProtocol.isEmpty()) {
             for (PlayerProtocol protocol : playerProtocol.values()) {
-                if (protocol != null && !protocol.bukkitExtra.isAFK()) {
+                if (protocol != null && !protocol.isAFK()) {
                     protocol.profile().getContinuity().setActiveTime(
                             System.currentTimeMillis(),
                             protocol.getActiveTimePlayed(),

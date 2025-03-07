@@ -36,12 +36,12 @@ public class TridentListener extends PacketAdapter {
             }
             ItemStack item = player.getInventory().getItemInMainHand();
             if (item.getType().equals(Material.TRIDENT)) {
-                double r = Math.toRadians(protocol.bukkitExtra.getLocation().getYaw());
+                double r = Math.toRadians(protocol.getLocation().getYaw());
                 CheckThread.run(() -> TridentEvent.event(
                         new CPlayerRiptideEvent(
                                 player,
                                 item,
-                                new Vector(-Math.sin(r), protocol.bukkitExtra.getLocation().getPitch() / 90, Math.cos(r))
+                                new Vector(-Math.sin(r), protocol.getLocation().getPitch() / 90, Math.cos(r))
                         ),
                         true
                 ));

@@ -52,13 +52,13 @@ public class ConfigUtils {
 
     public static String replaceWithSyntax(PlayerProtocol p, String message, HackType hackType) {
         Location loc = p.getLocationOrVehicle();
-        String worldName = p.bukkitExtra.getWorld().getName();
+        String worldName = p.getWorld().getName();
         message = replace(message, "{player}", p.bukkit().getName());
         message = replace(message, "{player:type}", p.getDataType().toString().toLowerCase());
         message = replace(message, "{uuid}", p.getUUID().toString());
         message = replace(message, "{ping}", String.valueOf(p.getPing()));
         message = replace(message, "{world}", worldName);
-        message = replace(message, "{health}", String.valueOf(p.bukkitExtra.getHealth()));
+        message = replace(message, "{health}", String.valueOf(p.getHealth()));
         message = replace(message, "{gamemode}", p.bukkit().getGameMode().toString().toLowerCase());
         message = replace(message, "{x}", String.valueOf(loc.getBlockX()));
         message = replace(message, "{y}", String.valueOf(loc.getBlockY()));
