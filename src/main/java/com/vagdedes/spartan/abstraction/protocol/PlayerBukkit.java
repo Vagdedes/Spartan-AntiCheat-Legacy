@@ -14,7 +14,6 @@ import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import com.vagdedes.spartan.utils.minecraft.server.PluginUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import com.vagdedes.spartan.utils.minecraft.world.GroundUtils;
-import lombok.Getter;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.inventory.Inventory;
@@ -29,8 +28,6 @@ public class PlayerBukkit {
 
     final PlayerProtocol protocol;
     private final Map<PotionEffectType, ExtendedPotionEffect> potionEffects;
-    @Getter
-    public final PlayerMovement movement;
     private long lastInteraction;
     private boolean afk;
     Entity[] nearbyEntities;
@@ -42,7 +39,6 @@ public class PlayerBukkit {
         this.protocol = protocol;
         this.potionEffects = new ConcurrentHashMap<>(2);
         this.setStoredPotionEffects();
-        this.movement = new PlayerMovement(this);
         this.lastInteraction = System.currentTimeMillis();
         this.afk = false;
         this.nearbyEntities = new Entity[0];
@@ -134,7 +130,7 @@ public class PlayerBukkit {
         for (PlayerTrackers.TrackerType handlerType : PlayerTrackers.TrackerType.values()) {
             this.protocol.trackers.remove(handlerType);
         }
-        this.movement.judgeGround();
+        this.protocol.movement.judgeGround();
     }
 
     // Separator

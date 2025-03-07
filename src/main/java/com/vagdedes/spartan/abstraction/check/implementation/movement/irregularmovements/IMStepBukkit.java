@@ -70,7 +70,7 @@ public class IMStepBukkit extends CheckDetection {
     void run(boolean knownBox, boolean knownOldBox,
              double box, double oldBox,
              double vertical, boolean teleported) {
-        if (this.protocol.bukkitExtra.movement.wasGliding()) {
+        if (this.protocol.movement.wasGliding()) {
             return;
         }
         Entity vehicle = this.protocol.bukkitExtra.getVehicle();
@@ -144,12 +144,12 @@ public class IMStepBukkit extends CheckDetection {
         } else {
             if (vertical > 0.0) {
                 this.step_abstract_up.call(() -> {
-                    if (!this.protocol.bukkitExtra.movement.isJumping(vertical)
+                    if (!this.protocol.movement.isJumping(vertical)
                             && !BlockUtils.isInteractiveAndPassable(this.protocol.bukkitExtra, new SpartanLocation(this.protocol.getLocation()).getBlock().getType())) {
                         double limit = (this.protocol.isBedrockPlayer() ? bedrockPlayerStepExtra : 0.0)
                                 + (this.protocol.trackers.has(PlayerTrackers.TrackerFamily.VELOCITY) ? 1.0 : 0.0)
                                 + PlayerUtils.getJumpMotion(
-                                PlayerUtils.getPotionLevel(this.protocol.bukkitExtra, PotionEffectUtils.JUMP) + 1,
+                                PlayerUtils.getPotionLevel(this.protocol, PotionEffectUtils.JUMP) + 1,
                                 0
                         );
 

@@ -43,6 +43,7 @@ public class PlayerProtocol {
     public final PlayerBukkit bukkitExtra;
     public final PlayerPunishments punishments;
     public final PlayerTrackers trackers;
+    public final PlayerMovement movement;
     private int hashPosBuffer;
     public int
             rightClickCounter,
@@ -115,6 +116,7 @@ public class PlayerProtocol {
         this.detectionType = this.packetsEnabled()
                 ? Check.DetectionType.PACKETS
                 : Check.DetectionType.BUKKIT;
+        this.movement = new PlayerMovement(this);
         this.placeTime = time;
         this.placeHash = 0;
         this.onGround = false;
@@ -201,7 +203,7 @@ public class PlayerProtocol {
                     }
                     protocol.bukkitExtra.checkForAFK();
                     protocol.profile().executeRunners(false, null);
-                    protocol.bukkitExtra.movement.schedulerFrom = protocol.getLocation();
+                    protocol.movement.schedulerFrom = protocol.getLocation();
                 }
             }
         }, 1L, 1L);
@@ -346,7 +348,7 @@ public class PlayerProtocol {
         if (sync) {
             this.bukkit().leaveVehicle();
         }
-        this.bukkitExtra.movement.removeLastLiquidTime();
+        this.movement.removeLastLiquidTime();
         this.trackers.removeMany(PlayerTrackers.TrackerFamily.VELOCITY);
 
         if (MultiVersion.folia) {
@@ -398,9 +400,9 @@ public class PlayerProtocol {
         this.onGround = isOnGround;
 
         if (this.onGround) {
-            this.bukkitExtra.movement.airTicks = 0;
+            this.movement.airTicks = 0;
         } else {
-            this.bukkitExtra.movement.airTicks++;
+            this.movement.airTicks++;
         }
     }
 

@@ -74,7 +74,7 @@ public class IMSimulationSpeed extends CheckDetection {
             boolean isOnAngle80 = RayUtils.validRayLines(
                     yawLine, moveLine, 80.0);
             boolean flagged = false;
-            if (p.bukkitExtra.movement.isGliding()) ignoreTicks = 6;
+            if (p.movement.isGliding()) ignoreTicks = 6;
             if (!this.protocol.useItemPacket) this.action = 0;
             double atr = Attributes.getAmount(this.protocol, Attributes.GENERIC_MOVEMENT_SPEED) * 1.3;
             if (to.getX() != from.getX() || to.getY() != from.getY() || to.getZ() != from.getZ()) {
@@ -289,8 +289,8 @@ public class IMSimulationSpeed extends CheckDetection {
             if (dolphinEffect != null) m *= 6.2;
         }
         if (this.isOnSemi(l)) m *= 1.4;
-        if (this.protocol.bukkitExtra.movement.isGliding()) m *= 18.0;
-        if (this.protocol.bukkitExtra.movement.isFlying() || this.protocol.flyingTicks > 0) m *= 25.0;
+        if (this.protocol.movement.isGliding()) m *= 18.0;
+        if (this.protocol.movement.isFlying() || this.protocol.flyingTicks > 0) m *= 25.0;
         m *= (this.protocol.bukkit().getWalkSpeed() * 5);
         return m;
     }

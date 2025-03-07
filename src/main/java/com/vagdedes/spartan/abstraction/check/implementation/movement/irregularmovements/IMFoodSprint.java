@@ -18,7 +18,7 @@ public class IMFoodSprint extends CheckDetection {
     void run() {
         this.call(() -> {
             if (this.protocol.isSprinting()
-                    && !this.protocol.bukkitExtra.movement.wasGliding()) {
+                    && !this.protocol.movement.wasGliding()) {
                 GameMode gameMode = this.protocol.bukkit().getGameMode();
                 int food = this.protocol.bukkit().getFoodLevel(),
                         threshold = 6;

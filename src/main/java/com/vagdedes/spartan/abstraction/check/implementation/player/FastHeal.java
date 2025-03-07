@@ -31,7 +31,7 @@ public class FastHeal extends CheckRunner {
     }
 
     private long calculate() {
-        int level = PlayerUtils.getPotionLevel(this.protocol.bukkitExtra, PotionEffectType.REGENERATION);
+        int level = PlayerUtils.getPotionLevel(this.protocol, PotionEffectType.REGENERATION);
         long i = 0L;
 
         if (level > -1) {

@@ -182,8 +182,8 @@ public class CombatUtils {
     }
 
     public static boolean canCheck(PlayerProtocol protocol) {
-        if (!protocol.bukkitExtra.movement.isLowEyeHeight() // Covers swimming & gliding
-                && !protocol.bukkitExtra.movement.wasFlying()
+        if (!protocol.movement.isLowEyeHeight() // Covers swimming & gliding
+                && !protocol.movement.wasFlying()
                 && protocol.bukkitExtra.getVehicle() == null
                 && Attributes.getAmount(protocol, Attributes.GENERIC_ARMOR) == 0.0
                 && Attributes.getAmount(protocol, Attributes.GENERIC_ATTACK_SPEED) == 0.0

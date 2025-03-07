@@ -14,6 +14,7 @@ import org.bukkit.Material;
 @Data
 @RequiredArgsConstructor
 public class EncirclementData {
+
     private boolean ice = false;
     private boolean slime = false;
     private boolean slimeWide = false;
@@ -145,6 +146,7 @@ public class EncirclementData {
             }
         });
     }
+
     public boolean isAllFalse() {
         return !(isIce() || isSemi() || isSlime() || isSlimeHeight() || isWater() || isJumpModify() || isBubble());
     }

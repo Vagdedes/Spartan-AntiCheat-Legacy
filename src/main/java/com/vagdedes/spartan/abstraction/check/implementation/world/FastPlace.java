@@ -97,7 +97,7 @@ public class FastPlace extends CheckRunner {
 
     @Override
     protected boolean canRun() {
-        return !this.protocol.bukkitExtra.movement.isFlying()
+        return !this.protocol.movement.isFlying()
                 && !PrinterMode.isUsing(this.protocol)
                 && !Vehicles.has(this.protocol, new String[]{Vehicles.DRILL, Vehicles.TRACTOR});
     }

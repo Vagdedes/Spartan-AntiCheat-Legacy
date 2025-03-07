@@ -28,7 +28,7 @@ public class BlockPlaceEvent implements Listener {
             Block blockAgainst,
             Object event
     ) {
-        protocol.bukkitExtra.movement.judgeGround();
+        protocol.movement.judgeGround();
 
         if (protocol.getWorld() != block.getWorld()) {
             return false;

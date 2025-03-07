@@ -35,7 +35,7 @@ public class MovementEvent implements Listener {
             Location nto = e.getTo();
 
             if (nto == null) {
-                p.movement.judgeGround();
+                protocol.movement.judgeGround();
                 return;
             }
             Location vehicle = protocol.getVehicleLocation(),
@@ -49,14 +49,14 @@ public class MovementEvent implements Listener {
                     box = toY - to.getBlockY(),
                     ver = toY - nfrom.getY();
 
-            if (!p.movement.processLastMoveEvent(
+            if (!protocol.movement.processLastMoveEvent(
                     nto,
                     vehicle,
                     to,
                     e.getFrom(),
                     packets
             )) {
-                p.movement.judgeGround();
+                protocol.movement.judgeGround();
                 return;
             }
             MovementProcessing.run(protocol, to, ver, box);

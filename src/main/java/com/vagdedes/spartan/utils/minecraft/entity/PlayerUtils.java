@@ -1,7 +1,7 @@
 package com.vagdedes.spartan.utils.minecraft.entity;
 
 import com.vagdedes.spartan.abstraction.protocol.ExtendedPotionEffect;
-import com.vagdedes.spartan.abstraction.protocol.PlayerBukkit;
+import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
@@ -219,8 +219,8 @@ public class PlayerUtils {
 
     // Potion Effects
 
-    public static int getPotionLevel(PlayerBukkit entity, PotionEffectType potionEffectType) {
-        ExtendedPotionEffect potionEffect = entity.getPotionEffect(
+    public static int getPotionLevel(PlayerProtocol protocol, PotionEffectType potionEffectType) {
+        ExtendedPotionEffect potionEffect = protocol.bukkitExtra.getPotionEffect(
                 potionEffectType,
                 handledPotionEffects.getOrDefault(potionEffectType, 0L)
         );

@@ -40,7 +40,7 @@ public class Tower extends CheckDetection {
                     SpartanLocation.getBlockLocation(playerLocation),
                     block.getLocation()
             ) <= 1.0) {
-                int jumpLevel = PlayerUtils.getPotionLevel(this.protocol.bukkitExtra, PotionEffectUtils.JUMP) + 1,
+                int jumpLevel = PlayerUtils.getPotionLevel(this.protocol, PotionEffectUtils.JUMP) + 1,
                         motionTicks = PlayerUtils.getJumpTicks(jumpLevel);
                 double motionSum = PlayerUtils.getJumpMotionSum(jumpLevel),
                         blockHeight = (GroundUtils.minBoundingBox + GroundUtils.maxBoundingBox) / 2.0;

@@ -62,11 +62,11 @@ public class IrregularMovementsJump extends CheckDetection {
         if (this.teleport < System.currentTimeMillis()
                 && (this.jump_ticks.canCall()
                 || this.jump_height.canCall())
-                && !this.protocol.bukkitExtra.movement.wasGliding()) {
+                && !this.protocol.movement.wasGliding()) {
             if (this.protocol.trackers.has(PlayerTrackers.TrackerFamily.VELOCITY)
-                    ? this.protocol.bukkitExtra.movement.justJumped(vertical)
-                    : this.protocol.bukkitExtra.movement.isJumping(vertical)) {
-                int jumpEffect = PlayerUtils.getPotionLevel(this.protocol.bukkitExtra, PotionEffectUtils.JUMP) + 1,
+                    ? this.protocol.movement.justJumped(vertical)
+                    : this.protocol.movement.isJumping(vertical)) {
+                int jumpEffect = PlayerUtils.getPotionLevel(this.protocol, PotionEffectUtils.JUMP) + 1,
                         jumpTicks = PlayerUtils.getJumpTicks(jumpEffect);
                 boolean contains = heights.get(jumpEffect).contains(AlgebraUtils.cut(box, heightPrecision));
 
@@ -81,7 +81,7 @@ public class IrregularMovementsJump extends CheckDetection {
 
                 if (!contains) {
                     this.jump_height.call(() -> {
-                        int airTicks = this.protocol.bukkitExtra.movement.getTicksOnAir();
+                        int airTicks = this.protocol.movement.getTicksOnAir();
 
                         if (airTicks > jumpTicks) {
                             int blocks = AlgebraUtils.integerCeil(PlayerUtils.getJumpMotionSum(jumpEffect));
@@ -119,8 +119,8 @@ public class IrregularMovementsJump extends CheckDetection {
 
                             if (!this.protocol.isOnGround()
                                     && !this.protocol.isOnGroundFrom()
-                                    && !this.protocol.bukkitExtra.movement.isInLiquids()) {
-                                int airTicks = this.protocol.bukkitExtra.movement.getTicksOnAir();
+                                    && !this.protocol.movement.isInLiquids()) {
+                                int airTicks = this.protocol.movement.getTicksOnAir();
 
                                 if (airTicks > limit) {
                                     this.jump_ticks.cancel(

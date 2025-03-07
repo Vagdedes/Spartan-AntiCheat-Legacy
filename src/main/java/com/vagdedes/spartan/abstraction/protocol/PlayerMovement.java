@@ -16,7 +16,7 @@ import java.util.*;
 
 public class PlayerMovement {
 
-    private final PlayerBukkit parent;
+    private final PlayerProtocol parent;
     private final Map<Long, SpartanLocation> locations;
     int airTicks;
     private long
@@ -26,12 +26,11 @@ public class PlayerMovement {
             lastLiquidTicks;
     Location schedulerFrom;
     private Vector clampVector;
-    public double motionY;
 
-    PlayerMovement(PlayerBukkit parent) {
+    PlayerMovement(PlayerProtocol parent) {
         this.parent = parent;
 
-        Location bukkit = ProtocolTools.getLoadLocation(this.parent.protocol.bukkit());
+        Location bukkit = ProtocolTools.getLoadLocation(parent.bukkit());
         SpartanLocation location = new SpartanLocation(bukkit);
         this.locations = Collections.synchronizedMap(new LinkedHashMap<>());
         this.locations.put(System.currentTimeMillis(), location);
@@ -39,7 +38,6 @@ public class PlayerMovement {
         this.schedulerFrom = bukkit;
 
         this.clampVector = new Vector();
-        this.motionY = 0;
     }
 
     // Separator
@@ -47,7 +45,7 @@ public class PlayerMovement {
     public boolean isInLiquids() {
         return this.isSwimming()
                 || System.currentTimeMillis() - this.lastLiquidTicks <= Math.max(
-                this.parent.protocol.getPing(),
+                this.parent.getPing(),
                 5L * TPS.tickTime
         );
     }
@@ -62,7 +60,7 @@ public class PlayerMovement {
         if (artificialSwimming >= System.currentTimeMillis()) {
             return true;
         } else if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
-            return this.parent.protocol.bukkit().isSwimming();
+            return this.parent.bukkit().isSwimming();
         } else {
             return false;
         }
@@ -75,17 +73,17 @@ public class PlayerMovement {
     // Separator
 
     public boolean isLowEyeHeight() {
-        return this.parent.protocol.bukkitExtra.getEyeHeight() < 1.0;
+        return this.parent.bukkitExtra.getEyeHeight() < 1.0;
     }
 
     public boolean isFlying() {
-        Entity vehicle = this.parent.protocol.bukkitExtra.getVehicle();
+        Entity vehicle = this.parent.bukkitExtra.getVehicle();
         boolean flying;
 
         if (vehicle != null) {
             flying = vehicle instanceof Player && ((Player) vehicle).isFlying();
         } else {
-            flying = this.parent.protocol.bukkit().isFlying();
+            flying = this.parent.bukkit().isFlying();
         }
         if (flying) {
             this.lastFlight = System.currentTimeMillis();
@@ -120,7 +118,7 @@ public class PlayerMovement {
 
     public boolean isGliding() {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
-            if (this.parent.protocol.bukkit().isGliding()) {
+            if (this.parent.bukkit().isGliding()) {
                 this.lastGlide = System.currentTimeMillis();
                 return true;
             } else {
@@ -161,7 +159,7 @@ public class PlayerMovement {
     // Separator
 
     public Location refreshLocation(Location location) {
-        Location known = this.parent.protocol.getLocation();
+        Location known = this.parent.getLocation();
 
         if (known.getX() != location.getX()
                 || known.getY() != location.getY()
@@ -192,7 +190,7 @@ public class PlayerMovement {
             boolean packets
     ) {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)
-                || this.parent.protocol.isUsingVersionOrGreater(MultiVersion.MCVersion.V1_17)) {
+                || this.parent.isUsingVersionOrGreater(MultiVersion.MCVersion.V1_17)) {
             double x = clampMin(to.getX(), -3.0E7D, 3.0E7D),
                     y = clampMin(to.getY(), -2.0E7D, 2.0E7D),
                     z = clampMin(to.getZ(), -3.0E7D, 3.0E7D);
@@ -208,7 +206,7 @@ public class PlayerMovement {
             this.refreshLocation(originalTo);
         }
         if (!packets) {
-            this.parent.protocol.setFromLocation(from);
+            this.parent.setFromLocation(from);
         }
         return true;
     }
@@ -220,7 +218,7 @@ public class PlayerMovement {
     // Separator
 
     public void judgeGround() {
-        if (this.parent.protocol.isOnGround()) {
+        if (this.parent.isOnGround()) {
             this.airTicks = 0;
         }
     }

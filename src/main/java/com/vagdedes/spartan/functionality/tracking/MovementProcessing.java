@@ -41,22 +41,18 @@ public class MovementProcessing {
         } else {
             calculateBouncing(protocol, to, vertical);
         }
-
-        // Separator
-
-        ServerFlying.run(protocol);
     }
 
     private static boolean calculateGroundCollision(PlayerProtocol protocol,
                                                     double vertical, double box) {
         if (protocol.isOnGround()
-                && protocol.bukkitExtra.movement.getTicksOnAir() == 0
+                && protocol.movement.getTicksOnAir() == 0
                 && protocol.bukkitExtra.getVehicle() == null
                 && vertical == 0.0
                 && GroundUtils.collisionHeightExists(box)) {
             protocol.trackers.removeMany(PlayerTrackers.TrackerFamily.MOTION);
             protocol.trackers.removeMany(PlayerTrackers.TrackerFamily.VELOCITY);
-            protocol.bukkitExtra.movement.removeLastLiquidTime();
+            protocol.movement.removeLastLiquidTime();
             return true;
         } else {
             return false;
@@ -84,8 +80,8 @@ public class MovementProcessing {
         if (location.getBlock().isLiquidOrWaterLogged(false)) {
 
             if (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
-                    && protocol.bukkitExtra.movement.isLowEyeHeight()) {
-                protocol.bukkitExtra.movement.setArtificialSwimming();
+                    && protocol.movement.isLowEyeHeight()) {
+                protocol.movement.setArtificialSwimming();
             }
             calculateBubbleWater(protocol, location);
             return true;
@@ -97,8 +93,8 @@ public class MovementProcessing {
                     if (locationModified.getBlock().isLiquidOrWaterLogged(false)) {
 
                         if (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
-                                && protocol.bukkitExtra.movement.isLowEyeHeight()) {
-                            protocol.bukkitExtra.movement.setArtificialSwimming();
+                                && protocol.movement.isLowEyeHeight()) {
+                            protocol.movement.setArtificialSwimming();
                         }
                         calculateBubbleWater(protocol, locationModified);
                         return true;
@@ -165,8 +161,8 @@ public class MovementProcessing {
                                    boolean flight,
                                    boolean playerAttributes,
                                    boolean environmentalAttributes) {
-        if ((elytra || !protocol.bukkitExtra.movement.isGliding())
-                && (flight || !protocol.bukkitExtra.movement.wasFlying())
+        if ((elytra || !protocol.movement.isGliding())
+                && (flight || !protocol.movement.wasFlying())
 
                 && (playerAttributes
                 || Attributes.getAmount(protocol, Attributes.GENERIC_MOVEMENT_SPEED) == 0.0

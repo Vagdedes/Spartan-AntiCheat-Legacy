@@ -2,7 +2,6 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.irregular
 
 import com.comphenix.protocol.PacketType;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
-import com.vagdedes.spartan.abstraction.check.definition.ImplementedDetection;
 import com.vagdedes.spartan.abstraction.event.CPlayerRiptideEvent;
 import com.vagdedes.spartan.abstraction.event.PlayerTickEvent;
 import com.vagdedes.spartan.abstraction.event.SuperPositionPacketEvent;
@@ -21,7 +20,6 @@ import org.bukkit.event.vehicle.VehicleEnterEvent;
 public class IrregularMovements extends CheckRunner {
 
     private long teleport;
-    public final ImplementedDetection limitServerFlying;
     private final IMStepBukkit step;
     private final IMSimulationGravity gravity;
     private final IMSimulationSpeed speed;
@@ -31,7 +29,6 @@ public class IrregularMovements extends CheckRunner {
 
     public IrregularMovements(HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);
-        limitServerFlying = new ImplementedDetection(this, null, null, "limit_server_flying", false);
         step = new IMStepBukkit(this);
         gravity = new IMSimulationGravity(this);
         jump = new IrregularMovementsJump(this);

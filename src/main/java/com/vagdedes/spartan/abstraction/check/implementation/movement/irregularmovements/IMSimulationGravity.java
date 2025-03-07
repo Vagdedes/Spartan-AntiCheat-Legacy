@@ -3,7 +3,6 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.irregular
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
-import com.vagdedes.spartan.abstraction.data.EncirclementData;
 import com.vagdedes.spartan.abstraction.event.CPlayerVelocityEvent;
 import com.vagdedes.spartan.abstraction.protocol.ExtendedPotionEffect;
 import com.vagdedes.spartan.abstraction.protocol.PlayerMovement;
@@ -35,6 +34,7 @@ public class IMSimulationGravity extends CheckDetection {
     private double fallDistance = 0.0;
     private double lastGroundY = 0;
     private double teleportExcept = 0;
+    private double motionY = 0;
 
     public IMSimulationGravity(CheckRunner executor) {
         super(
@@ -64,16 +64,8 @@ public class IMSimulationGravity extends CheckDetection {
             double dx = to.getX() - from.getX();
             double dz = to.getZ() - from.getZ();
             double speed = Math.sqrt(dx * dx + dz * dz);
-            if (false) { //debug
-                EncirclementData e = protocol.getEncirclementData();
-                protocol.bukkit().sendMessage("e: " +
-                        e.isSlimeWide() + " " + e.isSlime() + " "
-                        + e.isGlide() + " " + e.isClimb() + " "
-                        + e.isSemi() + " " + e.isIce() + " " + e.isWater()
-                        + " " + e.isJumpModify() + " " + e.isBubble() + " " + isBlocksOnTop(to)
-                );
-            }
-            if (p.bukkitExtra.movement.isGliding()) ignoreTicks = 5;
+
+            if (p.movement.isGliding()) ignoreTicks = 5;
             //this.protocol.bukkit().sendMessage(protocol().pistonHandle + " " + protocol().pistonTick + " " + protocol().explosionHandle);
             if (to.getX() != from.getX() || to.getY() != from.getY() || to.getZ() != from.getZ()) {
                 double motion = to.getY() - from.getY();
@@ -105,8 +97,7 @@ public class IMSimulationGravity extends CheckDetection {
                             this.setPredict(motion);
                         }
                     } else {
-                        playerMovement = this.protocol.bukkitExtra.movement;
-                        pr2 = playerMovement.motionY -= gravity;
+                        pr2 = this.motionY -= gravity;
                         pr2 *= 0.9800000190734863;
                         this.setPredict(0.0);
                         if (motion > pr2 && motion < 0.0) {
@@ -149,11 +140,10 @@ public class IMSimulationGravity extends CheckDetection {
                     }
                 } else {
                     this.cringeBlockClimb = (this.air == 14);
-                    playerMovement = this.protocol.bukkitExtra.movement;
-                    playerMovement.motionY -= gravity;
-                    playerMovement.motionY *= 0.9800000190734863;
-                    if (this.protocol.bukkitExtra.movement.motionY < -3.92) {
-                        this.protocol.bukkitExtra.movement.motionY = -3.92;
+                    this.motionY -= gravity;
+                    this.motionY *= 0.9800000190734863;
+                    if (this.motionY < -3.92) {
+                        this.motionY = -3.92;
                     }
                     this.slime = false;
                 }
@@ -284,8 +274,8 @@ public class IMSimulationGravity extends CheckDetection {
                     }
                 }
 
-                if (this.protocol.bukkitExtra.movement.isFlying()
-                        || this.protocol.bukkitExtra.movement.isGliding()
+                if (this.protocol.movement.isFlying()
+                        || this.protocol.movement.isGliding()
                         || this.protocol.flyingTicks > 0) {
                     this.setPredict(motion);
                     this.levitation = 3;
@@ -510,11 +500,11 @@ public class IMSimulationGravity extends CheckDetection {
     }
 
     private double predictY() {
-        return this.protocol.bukkitExtra.movement.motionY;
+        return this.motionY;
     }
 
     private void setPredict(double v) {
-        this.protocol.bukkitExtra.movement.motionY = v;
+        this.motionY = v;
     }
 
     private boolean isOnWater() {
