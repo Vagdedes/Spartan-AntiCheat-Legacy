@@ -1,6 +1,5 @@
 package com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements;
 
-import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedDetection;
@@ -58,7 +57,7 @@ public class IMStepBukkit extends CheckDetection {
             step_abstract_down;
 
     IMStepBukkit(CheckRunner executor) {
-        super(executor, null, Check.DetectionType.BUKKIT, null, true);
+        super(executor, null, null, null, true);
         this.step_high = new ImplementedDetection(this, "step_high", true);
         this.step_combination = new ImplementedDetection(this, "step_combination", true);
         this.step_entity = new ImplementedDetection(this, "step_entity", true);

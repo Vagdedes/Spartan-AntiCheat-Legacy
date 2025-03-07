@@ -1,12 +1,12 @@
 package com.vagdedes.spartan.abstraction.protocol;
 
 import com.vagdedes.spartan.abstraction.check.Check;
-import com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.component.ComponentXZ;
-import com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.component.ComponentY;
-import com.vagdedes.spartan.abstraction.check.implementation.movement.morepackets.TimerBalancer;
 import com.vagdedes.spartan.abstraction.data.CheckBoundData;
 import com.vagdedes.spartan.abstraction.data.EncirclementData;
 import com.vagdedes.spartan.abstraction.data.PacketWorld;
+import com.vagdedes.spartan.abstraction.data.TimerBalancer;
+import com.vagdedes.spartan.abstraction.data.component.ComponentXZ;
+import com.vagdedes.spartan.abstraction.data.component.ComponentY;
 import com.vagdedes.spartan.abstraction.event.CPlayerVelocityEvent;
 import com.vagdedes.spartan.abstraction.event.PlayerTickEvent;
 import com.vagdedes.spartan.abstraction.profiling.PlayerProfile;

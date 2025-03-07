@@ -11,7 +11,7 @@ public class IMFoodSprint extends CheckDetection {
     private final Buffer.IndividualBuffer buffer;
 
     IMFoodSprint(CheckRunner executor) {
-        super(executor, Check.DataType.JAVA, null, "food_sprint", false);
+        super(executor, Check.DataType.JAVA, null, "food_sprint", true);
         this.buffer = new Buffer.IndividualBuffer();
     }
 

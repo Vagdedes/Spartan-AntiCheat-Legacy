@@ -1,16 +1,25 @@
-package com.vagdedes.spartan.abstraction.check.implementation.combat.fastclicks;
+package com.vagdedes.spartan.abstraction.check.implementation.combat;
 
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedDetection;
+import com.vagdedes.spartan.abstraction.event.PlayerLeftClickEvent;
 import com.vagdedes.spartan.abstraction.event.PlayerTickEvent;
+import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
+import com.vagdedes.spartan.functionality.server.TPS;
+import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.math.statistics.StatisticsMath;
+import com.vagdedes.spartan.utils.minecraft.entity.CombatUtils;
+import me.vagdedes.spartan.system.Enums;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class FastClicksDetections extends CheckDetection {
+public class FastClicks extends CheckRunner {
 
     private long lastTickTime = System.currentTimeMillis();
     private final List<Integer> buffer = new CopyOnWriteArrayList<>();
@@ -20,6 +29,7 @@ public class FastClicksDetections extends CheckDetection {
     }
 
     private final CheckDetection
+            cps,
             floorTempo,
             deviation,
             skewness,
@@ -29,19 +39,44 @@ public class FastClicksDetections extends CheckDetection {
             samples = new CopyOnWriteArrayList<>(),
             samplesMassive = new CopyOnWriteArrayList<>();
 
-    FastClicksDetections(CheckRunner executor) {
-        super(executor, null, Check.DetectionType.PACKETS, null, true);
-        this.floorTempo = new ImplementedDetection(this, "floor_tempo", true);
-        this.deviation = new ImplementedDetection(this, "deviation", true);
-        this.skewness = new ImplementedDetection(this, "skewness", true);
-        this.kurtosis = new ImplementedDetection(this, "kurtosis", true);
-        this.variance = new ImplementedDetection(this, "variance", true);
+    public FastClicks(Enums.HackType hackType, PlayerProtocol protocol) {
+        super(hackType, protocol);
+        this.cps = new ImplementedDetection(this, null, Check.DetectionType.PACKETS, "cps", true);
+        this.floorTempo = new ImplementedDetection(this, null, Check.DetectionType.PACKETS, "floor_tempo", true);
+        this.deviation = new ImplementedDetection(this, null, Check.DetectionType.PACKETS, "deviation", true);
+        this.skewness = new ImplementedDetection(this, null, Check.DetectionType.PACKETS, "skewness", true);
+        this.kurtosis = new ImplementedDetection(this, null, Check.DetectionType.PACKETS, "kurtosis", true);
+        this.variance = new ImplementedDetection(this, null, Check.DetectionType.PACKETS, "variance", true);
     }
 
-    void run(long delay) {
-        this.call(() -> {
+    @Override
+    protected void handleInternal(boolean cancelled, Object object) {
+        if (object instanceof BlockBreakEvent
+                || object instanceof PlayerDropItemEvent) {
+            this.addDisableCause(
+                    null,
+                    null,
+                    AlgebraUtils.integerCeil(TPS.maximum)
+            );
+        } else if (object instanceof PlayerLeftClickEvent) {
+            this.run(((PlayerLeftClickEvent) object).delay);
+        } else if (object instanceof PlayerTickEvent) {
+            this.tick((PlayerTickEvent) object);
+        } else if (object instanceof PlayerInteractEvent) {
+            if (this.prevent()) {
+                ((PlayerInteractEvent) object).setCancelled(true);
+            }
+        }
+    }
+
+    private void run(long delay) {
+        if (this.cps.canCall()
+                || this.floorTempo.canCall()
+                || this.deviation.canCall()
+                || this.skewness.canCall()
+                || this.kurtosis.canCall()
+                || this.variance.canCall()) {
             if (!tickingCorrect()) return;
-            long t = System.currentTimeMillis();
             this.samples.add(delay);
             this.samplesMassive.add(delay);
             if (this.samples.size() >= 20) {
@@ -53,13 +88,15 @@ public class FastClicksDetections extends CheckDetection {
                     );
                     final double variance = StatisticsMath.getVariance(this.samples);
                     final double kurtosis = StatisticsMath.getKurtosis(this.samples);
-                    if (cps > limit) this.cancel("limit ("
+                    if (cps > limit) this.cps.cancel("limit ("
                             + (int) cps + "/" + (int) limit + ")");
                     { // floor
                         final double floor = Math.abs(Math.floor(cps) - cps);
                         if (floor < 0.07) {
                             if (addToBuffer(1, 2) > 3) {
-                                this.floorTempo.cancel("floor tempo (" + floor + ")");
+                                this.floorTempo.call(() ->
+                                        this.floorTempo.cancel("floor tempo (" + floor + ")")
+                                );
                                 addToBuffer(1, -1);
                             }
                         } else {
@@ -69,7 +106,9 @@ public class FastClicksDetections extends CheckDetection {
                     { // kurtosis
                         if (kurtosis < 45000) {
                             if (addToBuffer(4, 3) > 6) {
-                                this.kurtosis.cancel("kurtosis (" + (int) kurtosis + ")");
+                                this.kurtosis.call(() ->
+                                        this.kurtosis.cancel("kurtosis (" + (int) kurtosis + ")")
+                                );
                                 addToBuffer(4, -1);
                             }
                         } else {
@@ -79,7 +118,9 @@ public class FastClicksDetections extends CheckDetection {
                     { // variance
                         if (variance < 1100 && variance > 200 && cps > 7) {
                             if (addToBuffer(5, 3) > 6) {
-                                this.variance.cancel("variance (" + (int) variance + ")");
+                                this.variance.call(() ->
+                                        this.variance.cancel("variance (" + (int) variance + ")")
+                                );
                                 addToBuffer(5, -1);
                             }
                         } else {
@@ -95,7 +136,9 @@ public class FastClicksDetections extends CheckDetection {
                     final double skewness = StatisticsMath.getSkewness(this.samplesMassive);
                     if (standardDev < 50) {
                         if (addToBuffer(2, 2) > 3) {
-                            this.deviation.cancel("low deviation (" + standardDev + ")");
+                            this.deviation.call(() ->
+                                    this.deviation.cancel("low deviation (" + standardDev + ")")
+                            );
                             addToBuffer(2, -1);
                         }
                     } else {
@@ -103,7 +146,9 @@ public class FastClicksDetections extends CheckDetection {
                     }
                     if (skewness < -0.01) {
                         if (addToBuffer(3, 2) > 3) {
-                            this.skewness.cancel("invalid skewness (" + skewness + ")");
+                            this.skewness.call(() ->
+                                    this.skewness.cancel("invalid skewness (" + skewness + ")")
+                            );
                             addToBuffer(3, -1);
                         }
                     } else {
@@ -112,11 +157,11 @@ public class FastClicksDetections extends CheckDetection {
                 }
                 this.samplesMassive.clear();
             }
-        });
+        }
     }
 
-    void tick(PlayerTickEvent event) {
-        this.call(() -> this.lastTickTime = event.time);
+    private void tick(PlayerTickEvent event) {
+        this.lastTickTime = event.time;
     }
 
     private int addToBuffer(int i, int v) {
@@ -126,6 +171,15 @@ public class FastClicksDetections extends CheckDetection {
 
     private boolean tickingCorrect() {
         return (System.currentTimeMillis() - this.lastTickTime) < 70;
+    }
+
+    @Override
+    protected boolean canRun() {
+        return !this.protocol.bukkitExtra.getNearbyEntities(
+                CombatUtils.maxHitDistance,
+                CombatUtils.maxHitDistance,
+                CombatUtils.maxHitDistance
+        ).isEmpty();
     }
 
 }

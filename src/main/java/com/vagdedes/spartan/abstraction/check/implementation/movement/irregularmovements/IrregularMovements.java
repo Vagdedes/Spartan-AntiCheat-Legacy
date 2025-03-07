@@ -3,8 +3,6 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.irregular
 import com.comphenix.protocol.PacketType;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedDetection;
-import com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.simulation.IMSimulationGravity;
-import com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.simulation.IMSimulationSpeed;
 import com.vagdedes.spartan.abstraction.event.CPlayerRiptideEvent;
 import com.vagdedes.spartan.abstraction.event.PlayerTickEvent;
 import com.vagdedes.spartan.abstraction.event.SuperPositionPacketEvent;
@@ -25,8 +23,8 @@ public class IrregularMovements extends CheckRunner {
     private long teleport;
     public final ImplementedDetection limitServerFlying;
     private final IMStepBukkit step;
-    private final IMSimulationGravity gravityPackets;
-    private final IMSimulationSpeed speedPackets;
+    private final IMSimulationGravity gravity;
+    private final IMSimulationSpeed speed;
     private final IrregularMovementsJump jump;
     private final IMFoodSprint foodSprint;
     private final IMBaritone baritone;
@@ -35,11 +33,11 @@ public class IrregularMovements extends CheckRunner {
         super(hackType, protocol);
         limitServerFlying = new ImplementedDetection(this, null, null, "limit_server_flying", false);
         step = new IMStepBukkit(this);
-        gravityPackets = new IMSimulationGravity(this);
+        gravity = new IMSimulationGravity(this);
         jump = new IrregularMovementsJump(this);
         foodSprint = new IMFoodSprint(this);
         baritone = new IMBaritone(this);
-        speedPackets = new IMSimulationSpeed(this);
+        speed = new IMSimulationSpeed(this);
     }
 
     @Override
@@ -47,17 +45,17 @@ public class IrregularMovements extends CheckRunner {
         if (object instanceof PlayerTeleportEvent) {
             this.teleport();
         } else if (object instanceof CPlayerRiptideEvent) {
-            gravityPackets.trident();
-            speedPackets.trident();
+            gravity.trident();
+            speed.trident();
         } else if (object instanceof SuperPositionPacketEvent) {
             SuperPositionPacketEvent e = (SuperPositionPacketEvent) object;
-            speedPackets.ground(e.packetEvent.getPacket().getBooleans().read(0));
+            speed.ground(e.packetEvent.getPacket().getBooleans().read(0));
         } else if (object instanceof PlayerMoveEvent) {
             PlayerMoveEvent event = (PlayerMoveEvent) object;
             foodSprint.run();
             baritone.run();
-            gravityPackets.run();
-            speedPackets.run();
+            gravity.run();
+            speed.run();
             double vertical = this.protocol.getLocation().getY() - this.protocol.getFromLocation().getY(),
                     box = this.protocol.getLocation().getY(),
                     oldBox = this.protocol.getFromLocation().getY();
@@ -75,9 +73,9 @@ public class IrregularMovements extends CheckRunner {
             }
         } else if (object instanceof PlayerTickEvent) {
             PlayerTickEvent e = (PlayerTickEvent) object;
-            gravityPackets.groundSp(e.onGround);
+            gravity.groundSp(e.onGround);
         } else if (object instanceof VehicleEnterEvent) {
-            speedPackets.vhAct();
+            speed.vhAct();
         } else if (PluginBase.packetsEnabled()
                 && object instanceof PacketType) {
             for (PacketType type : TeleportListener.packetTypes) {
@@ -90,8 +88,8 @@ public class IrregularMovements extends CheckRunner {
     }
 
     private void teleport() {
-        gravityPackets.teleport();
-        speedPackets.teleport();
+        gravity.teleport();
+        speed.teleport();
         baritone.teleport();
         jump.teleport();
         teleport = System.currentTimeMillis()

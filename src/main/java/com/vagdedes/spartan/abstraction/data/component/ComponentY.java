@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.component;
+package com.vagdedes.spartan.abstraction.data.component;
 
 public class ComponentY {
 

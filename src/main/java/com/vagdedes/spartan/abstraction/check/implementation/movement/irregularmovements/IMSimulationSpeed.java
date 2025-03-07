@@ -1,4 +1,4 @@
-package com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements.simulation;
+package com.vagdedes.spartan.abstraction.check.implementation.movement.irregularmovements;
 
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
@@ -56,7 +56,7 @@ public class IMSimulationSpeed extends CheckDetection {
         );
     }
 
-    public void run() {
+    void run() {
         this.call(() -> {
             PlayerProtocol p = this.protocol;
             boolean isOnGround = (p.bukkitExtra.getVehicle() != null)
@@ -327,14 +327,14 @@ public class IMSimulationSpeed extends CheckDetection {
         return abs(abs(motion) - abs(velo)) < 0.08;
     }
 
-    public void teleport() {
+    void teleport() {
         this.call(() -> {
             this.tpTicks = 1;
             this.air = 0;
         });
     }
 
-    public void ground(boolean isOnGround) {
+    void ground(boolean isOnGround) {
         this.call(() -> {
             this.air = isOnGround ? 0 : this.air + 1;
             this.action = this.protocol.useItemPacket ? this.action + 1 : 0;
@@ -342,11 +342,11 @@ public class IMSimulationSpeed extends CheckDetection {
         });
     }
 
-    public void trident() {
+    void trident() {
         this.call(() -> this.tridentBoostApply = 10);
     }
 
-    public void vhAct() {
+    void vhAct() {
         this.call(() -> this.vhact = 2);
     }
 
@@ -395,6 +395,7 @@ public class IMSimulationSpeed extends CheckDetection {
         }
         return false;
     }
+
     private boolean isBlocksOnTop(Location location) {
         double x = location.getX();
         double y = location.getY() - 0.1;
@@ -404,7 +405,7 @@ public class IMSimulationSpeed extends CheckDetection {
             for (double dy = 1.0; dy <= 2.0; dy += 0.5) {
                 for (int dz = -2; dz <= 2; ++dz) {
                     Material material = this.protocol.packetWorld.getBlock(
-                                    new Location(this.protocol.getWorld(), x + (double) dx * 0.5, y + dy, z + (double) dz * 0.5)
+                            new Location(this.protocol.getWorld(), x + (double) dx * 0.5, y + dy, z + (double) dz * 0.5)
                     );
 
                     if (material != null && BlockUtils.isSolid(material)) {

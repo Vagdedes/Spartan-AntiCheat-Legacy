@@ -1,5 +1,8 @@
-package com.vagdedes.spartan.abstraction.check.implementation.movement.morepackets;
+package com.vagdedes.spartan.abstraction.data;
 
+import lombok.Getter;
+
+@Getter
 public class TimerBalancer {
 
     private long balancer, result;
@@ -12,7 +15,7 @@ public class TimerBalancer {
         latency = 0;
     }
 
-    void pushDelay(long delay) {
+    public void pushDelay(long delay) {
         forced = ((delay > 15 && delay < 48) ? forced + 1 : 0);
         latency = ((delay > 40 && delay < 48) ? latency + 10 : latency / 2);
         if (delay > 50) {
@@ -35,24 +38,8 @@ public class TimerBalancer {
         }
     }
 
-    final int getForced() {
-        return this.forced;
-    }
-
-    final int getLatency() {
-        return this.latency;
-    }
-
-    final long getBalancer() {
-        return this.balancer;
-    }
-
-    final boolean isNegativeTimer() {
+    public boolean isNegativeTimer() {
         return this.negative > 15;
-    }
-
-    final long getResult() {
-        return this.result;
     }
 
     public void addBalance(long balance) {
