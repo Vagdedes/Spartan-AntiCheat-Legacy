@@ -1,3 +1,5 @@
 [#] Fixed gravity detection false positives with bubble columns
 [#] Remove the unstable elytra detection, it was never a good idea
 [#] Did a general maintenance on almost all checks
+[#] Fixed IrregularMovements gravity false positives caused by boats
+[#] Fixed IrregularMovements gravity false positives caused by bushes

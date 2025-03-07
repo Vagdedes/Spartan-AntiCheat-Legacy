@@ -3,9 +3,7 @@ package com.vagdedes.spartan.utils.minecraft.protocol;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
-import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
-import com.vagdedes.spartan.functionality.server.PluginBase;
 import com.vagdedes.spartan.listeners.protocol.MovementListener;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -29,19 +27,19 @@ public class ProtocolTools {
             return null;
         }
     }
+
     public static boolean isFlying(PacketEvent event, Location to, Location from) {
         PacketType p = event.getPacket().getType();
-        PlayerProtocol protocol = PluginBase.getProtocol(event.getPlayer());
         if (p.equals(PacketType.Play.Client.POSITION) && to.toVector().equals(from.toVector()))
             return true;
         else return
-        (
-        p.equals(
-        PacketType.Play.Client.FLYING)
-        ||
-        p.equals(
-        PacketType.Play.Client.GROUND)
-        );
+                (
+                        p.equals(
+                                PacketType.Play.Client.FLYING)
+                                ||
+                                p.equals(
+                                        PacketType.Play.Client.GROUND)
+                );
     }
 
     public static boolean onGroundPacketLevel(PacketEvent event) {
@@ -60,11 +58,6 @@ public class ProtocolTools {
         return flags;
     }
 
-    public static boolean invalidTeleport(Location location) {
-        return location == null
-                || location.getX() == 8.5D
-                || location.getZ() == 8.5D;
-    }
     public static boolean isLoadLocation(Location location) {
         return (location.getX() == 1 && location.getY() == 1 && location.getZ() == 1);
     }
@@ -75,10 +68,11 @@ public class ProtocolTools {
 
     public static boolean hasPosition(PacketType type) {
         return (type.equals(PacketType.Play.Client.POSITION)
-                        || type.equals(PacketType.Play.Client.POSITION_LOOK));
+                || type.equals(PacketType.Play.Client.POSITION_LOOK));
     }
+
     public static boolean hasRotation(PacketType type) {
         return (type.equals(PacketType.Play.Client.LOOK)
-                        || type.equals(PacketType.Play.Client.POSITION_LOOK));
+                || type.equals(PacketType.Play.Client.POSITION_LOOK));
     }
 }

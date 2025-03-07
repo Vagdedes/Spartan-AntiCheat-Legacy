@@ -20,7 +20,6 @@ public class GroundUtils {
             v1_15 = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_15);
 
     public static final double
-            boundingBox = 0.3 + 0.005,
             maxBoundingBox = 0.9375,
             minBoundingBox = 0.015625,
             maxPlayerStep = 0.5625,

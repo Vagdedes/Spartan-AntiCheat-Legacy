@@ -7,7 +7,6 @@ import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.minecraft.inventory.MaterialUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
-import com.vagdedes.spartan.utils.minecraft.world.GroundUtils;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Location;
@@ -114,7 +113,16 @@ public class EnvinromentData {
                             || BlockUtils.isWaterLogged(b)) {
 
                         this.liquid = true;
-                        calculateBubbleWater(protocol, locationModified);
+
+                        for (double i = 0.0; i < Math.ceil(protocol.bukkitExtra.getEyeHeight()); i++) {
+                            for (SpartanLocation surrounding : new SpartanLocation(location).getSurroundingLocations(
+                                    0.3,
+                                    i,
+                                    0.3
+                            )) {
+                                calculateBubbleWater(protocol, surrounding);
+                            }
+                        }
                     }
                     if (BlockUtils.areIceBlocks(material)) {
                         this.ice = true;
@@ -167,7 +175,7 @@ public class EnvinromentData {
                         fullNonLiquid = new HashSet<>(max);
 
                 for (int i = 0; i <= max; i++) {
-                    Collection<SpartanLocation> locations = locationModified.clone().add(0, -i, 0).getSurroundingLocations(GroundUtils.boundingBox, 0, GroundUtils.boundingBox);
+                    Collection<SpartanLocation> locations = locationModified.clone().add(0, -i, 0).getSurroundingLocations(0.3, 0, 0.3);
 
                     for (SpartanLocation loc : locations) {
                         SpartanBlock block = loc.getBlock();
@@ -205,4 +213,5 @@ public class EnvinromentData {
     public boolean isAllFalse() {
         return !(isIce() || isSemi() || isSlime() || isSlimeHeight() || isLiquid() || isJumpModify() || isBubble());
     }
+
 }

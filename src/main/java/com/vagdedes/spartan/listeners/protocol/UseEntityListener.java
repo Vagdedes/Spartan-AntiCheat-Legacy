@@ -8,7 +8,6 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
-import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
 import com.vagdedes.spartan.functionality.concurrent.CheckThread;
 import com.vagdedes.spartan.functionality.server.PluginBase;
 import org.bukkit.entity.Entity;
@@ -42,7 +41,6 @@ public class UseEntityListener extends PacketAdapter {
                     }
                 }
                 if (t instanceof Vehicle) {
-                    protocol.trackers.add(PlayerTrackers.TrackerType.VEHICLE, "vh_tp", 1);
                     protocol.profile().executeRunners(
                             false,
                             new VehicleEnterEvent(null, player)

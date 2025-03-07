@@ -15,7 +15,6 @@ import com.vagdedes.spartan.compatibility.manual.building.TreeFeller;
 import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
-import com.vagdedes.spartan.utils.minecraft.world.GroundUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -120,7 +119,7 @@ public class BlockReach extends CheckRunner {
                                 && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
                                 || event.placedBlock.getType() != Material.BARRIER)
                                 && this.protocol.bukkitExtra.getVehicle() == null
-                                && distance > (ab_distance + GroundUtils.boundingBox)) {
+                                && distance > (ab_distance + 0.3)) {
                             this.raytrace.call(() -> this.raytrace.cancel(
                                     "raytrace, distance: " + distance
                                             + ", block-against-distance: " + ab_distance

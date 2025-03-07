@@ -70,6 +70,7 @@ public class IrregularMovements extends CheckRunner {
             gravity.groundSp(e.onGround);
         } else if (object instanceof VehicleEnterEvent) {
             speed.vhAct();
+            gravity.vhAct();
         } else if (PluginBase.packetsEnabled()
                 && object instanceof PacketType) {
             for (PacketType type : TeleportListener.packetTypes) {

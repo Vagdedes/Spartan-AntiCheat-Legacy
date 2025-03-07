@@ -6,7 +6,6 @@ import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.event.CPlayerVelocityEvent;
 import com.vagdedes.spartan.abstraction.protocol.ExtendedPotionEffect;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
-import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.MultiVersion.MCVersion;
@@ -15,15 +14,16 @@ import com.vagdedes.spartan.utils.minecraft.entity.PotionEffectUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Boat;
+import org.bukkit.entity.Entity;
 import org.bukkit.potion.PotionEffectType;
 
 public class IMSimulationGravity extends CheckDetection {
 
     private int air = 0, ground = 0;
-    private int airVehicle = 0;
     private int top = 0, topReset = 0;
     private int levitation = 0, glideBlocks = 0, climbBlocks = 0,
-            slowFalling = 0, levitationA = 0, slowFallingA = 0, swimming = 0;
+            slowFalling = 0, levitationA = 0, slowFallingA = 0, swimming = 0, vhact = 0;
     private boolean slime = false, slime0Tick = false,
             trident = false, cringeBlockClimb = false, allowLowJump = false,
             allowMinorGravityChange = false, allowLowMinorAccel = false;
@@ -41,20 +41,29 @@ public class IMSimulationGravity extends CheckDetection {
                 null,
                 Check.DetectionType.PACKETS,
                 "gravity_packets",
-                true,
-                DEFAULT_AVERAGE_TIME,
-                TIME_TO_NOTIFY * 2L,
-                TIME_TO_PREVENT * 2L,
-                TIME_TO_PUNISH * 2L
+                true
         );
+    }
+
+    private boolean patches(PlayerProtocol p) {
+        if (p.getTimePassed(p.magmaCubeWater) <= 1_000L
+                || p.getTimePassed(p.soulSandWater) <= 1_000L) {
+            return true;
+        }
+        for (Entity entity : p.bukkitExtra.getNearbyEntities(1)) {
+            if (entity instanceof Boat) {
+                return true;
+            }
+        }
+        // todo bushes
+        return false;
     }
 
     void run() {
         this.call(() -> {
             PlayerProtocol p = this.protocol;
 
-            if (p.getTimePassed(p.magmaCubeWater) <= 1_000L
-                    || p.getTimePassed(p.soulSandWater) <= 1_000L) {
+            if (patches(p)) {
                 return;
             }
             boolean ground = (this.protocol.bukkitExtra.getVehicle() != null)
@@ -368,12 +377,10 @@ public class IMSimulationGravity extends CheckDetection {
                 double devTotal = this.abs(this.abs(motion) - this.abs(this.predictY()));
                 //this.protocol.bukkit().sendMessage("m: " + motion + " p: " + this.predictY() + " air: " + air);
                 if (devTotal > ((this.protocol.bukkitExtra.getVehicle()
-                        != null && motion < 0 && airVehicle < 10)
+                        != null && motion < 0)
                         ? 0.36 : (this.protocol.bukkitExtra.getVehicle()
                         != null) ? 0.09 : 0.009)) {
-                    if (this.protocol.trackers.has(
-                            PlayerTrackers.TrackerType.VEHICLE, "vh_tp")
-                            && devTotal < 1.9) {
+                    if (devTotal < 1.9 && this.vhact > 0) {
                         this.setPredict(0.0);
                     } else if (this.protocol.bukkitExtra.getVehicle() == null) {
                         if (allowLowJump && air == 1
@@ -424,6 +431,7 @@ public class IMSimulationGravity extends CheckDetection {
                 }
             }
             slime0Tick = (this.isOnSlimeWide() || this.isOnSlimeWide());
+            if (this.vhact > 0) this.vhact--;
         });
     }
 
@@ -457,6 +465,10 @@ public class IMSimulationGravity extends CheckDetection {
             this.vl /= 1.5;
             this.setPredict(0.0);
         });
+    }
+
+    void vhAct() {
+        this.call(() -> this.vhact = 2);
     }
 
     private void ground(boolean isOnGround) {
