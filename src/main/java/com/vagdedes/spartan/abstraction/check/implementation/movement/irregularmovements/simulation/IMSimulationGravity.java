@@ -23,7 +23,6 @@ public class IMSimulationGravity extends CheckDetection {
 
     private int air = 0, ground = 0;
     private int airVehicle = 0;
-    private int limToUpdate = 0;
     private int top = 0, topReset = 0;
     private int levitation = 0, glideBlocks = 0, climbBlocks = 0,
                     slowFalling = 0, levitationA = 0, slowFallingA = 0, swimming = 0;
@@ -54,6 +53,10 @@ public class IMSimulationGravity extends CheckDetection {
     public void run() {
         this.call(() -> {
             PlayerProtocol p = this.protocol;
+
+            if (p.bukkitExtra.trackers.has(PlayerTrackers.TrackerType.BUBBLE_WATER)) {
+                return;
+            }
             boolean ground = (this.protocol.bukkitExtra.getVehicle() != null)
                             ? this.protocol.bukkitExtra.getVehicle().isOnGround() : this.protocol.isOnGround();
             Location to = p.getLocation();
@@ -75,7 +78,6 @@ public class IMSimulationGravity extends CheckDetection {
             if (to.getX() != from.getX() || to.getY() != from.getY() || to.getZ() != from.getZ()) {
                 double motion = to.getY() - from.getY();
                 double gravity = 0.08;
-                this.limToUpdate = 0;
                 double jumpStartMotionY =
                                 (atJumpModifyBlock()
                                                 && this.jumpMotion() * 1.5 > motion)
@@ -473,7 +475,6 @@ public class IMSimulationGravity extends CheckDetection {
     }
 
     private void ground(boolean isOnGround) {
-        this.limToUpdate++;
         //if (limToUpdate > 1) return;
         boolean ground = (this.protocol.bukkitExtra.getVehicle() != null)
                         ? this.protocol.bukkitExtra.getVehicle().isOnGround() : isOnGround;
