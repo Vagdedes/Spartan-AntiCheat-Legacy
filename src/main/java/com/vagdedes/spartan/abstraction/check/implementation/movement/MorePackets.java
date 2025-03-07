@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.abstraction.check.implementation.movement;
 
 import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.events.PacketEvent;
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
@@ -114,9 +115,11 @@ public class MorePackets extends CheckRunner {
         } else if (object instanceof PlayerTeleportEvent) {
             this.teleport();
         } else if (PluginBase.packetsEnabled()
-                && object instanceof PacketType) {
+                && object instanceof PacketEvent) {
+            PacketType eventType = ((PacketEvent) object).getPacketType();
+
             for (PacketType type : TeleportListener.packetTypes) {
-                if (type.equals(object)) {
+                if (type.equals(eventType)) {
                     this.teleport();
                     break;
                 }

@@ -22,7 +22,11 @@ public class MoveLength extends CheckDetection {
     private long hit, hitBy;
 
     MoveLength(CheckRunner executor) {
-        super(executor, Check.DataType.JAVA, Check.DetectionType.PACKETS, "move_length", true);
+        super(executor, Check.DataType.JAVA, Check.DetectionType.PACKETS, "move_length", true,
+                DEFAULT_AVERAGE_TIME * 2L,
+                TIME_TO_NOTIFY,
+                TIME_TO_PREVENT,
+                TIME_TO_PUNISH);
         previousPitch = 0.0f;
         previousPitchDifference = 0.0f;
         this.buffer = new Buffer.IndividualBuffer();

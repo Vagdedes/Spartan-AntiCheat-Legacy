@@ -10,7 +10,6 @@ import com.vagdedes.spartan.abstraction.data.EnvironmentData;
 import com.vagdedes.spartan.abstraction.event.PlayerTickEvent;
 import com.vagdedes.spartan.abstraction.event.SuperPositionPacketEvent;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
-import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.concurrent.CheckThread;
 import com.vagdedes.spartan.functionality.moderation.AwarenessNotifications;
@@ -152,7 +151,7 @@ public class MovementListener extends PacketAdapter {
                             p.setFrom(p.getTeleport().clone());
                             p.setTeleport(null);
                         } else {
-                            if (p.trackers.has(PlayerTrackers.TrackerType.VEHICLE, "enter")) return;
+                            if (false) return; // todo vehicle enter
                             for (Entity entity : p.getNearbyEntities(5))
                                 if (entity instanceof Boat) return;
 

@@ -18,13 +18,11 @@ public class KillAura extends CheckRunner {
     private final Irregular irregular;
     private final HitTime hitTime;
     private final MoveDirection moveDirection;
-    private final FightAnalysis analysis;
     private final MoveLength moveLength;
 
     public KillAura(Enums.HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);
         irregular = new Irregular(this);
-        analysis = new FightAnalysis(this);
         hitTime = new HitTime(this);
         moveDirection = new MoveDirection(this);
         moveLength = new MoveLength(this);
@@ -54,12 +52,9 @@ public class KillAura extends CheckRunner {
                 irregular.run();
                 moveDirection.run(target);
                 hitTime.run();
-                analysis.runDealDamage(event);
                 moveLength.runHit();
             }
         } else if (object instanceof EntityAttackPlayerEvent) {
-            EntityAttackPlayerEvent event = (EntityAttackPlayerEvent) object;
-            analysis.runReceiveDamage(event);
             moveLength.runHitBy();
         }
     }

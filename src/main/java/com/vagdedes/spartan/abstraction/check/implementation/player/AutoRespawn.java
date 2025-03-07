@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.abstraction.check.implementation.player;
 
 import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.events.PacketEvent;
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedDetection;
@@ -44,9 +45,11 @@ public class AutoRespawn extends CheckRunner {
         } else if (object instanceof PlayerDeathEvent) {
             this.death();
         } else if (PluginBase.packetsEnabled()
-                && object instanceof PacketType) {
+                && object instanceof PacketEvent) {
+            PacketType eventType = ((PacketEvent) object).getPacketType();
+
             for (PacketType type : DeathListener.packetTypes) {
-                if (type.equals(object)) {
+                if (type.equals(eventType)) {
                     this.death();
                     break;
                 }

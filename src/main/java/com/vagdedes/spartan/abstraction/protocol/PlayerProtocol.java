@@ -58,7 +58,6 @@ public class PlayerProtocol {
     @Getter
     private EnvironmentData environment;
     public final PlayerPunishments punishments;
-    public final PlayerTrackers trackers;
     public int
             slime0Tick,
             rightClickCounter,
@@ -74,15 +73,16 @@ public class PlayerProtocol {
             pistonTick,
             transactionBoot,
             clickBlocker,
-            transactionLocal,
             transactionSentKeep,
             useItemPacket,
             useItemPacketReset;
     @Setter
+    @Getter
     private Location
             location,
             from,
-            teleport;
+            teleport,
+            schedulerFrom;
     public String fromWorld;
     private final List<Location> positionHistory;
     public CPlayerVelocityEvent claimedVelocity;
@@ -118,7 +118,6 @@ public class PlayerProtocol {
     private ComponentY componentY;
     private ComponentXZ componentXZ;
     private final Map<Long, SpartanLocation> locations;
-    Location schedulerFrom;
     private Vector clampVector;
     private final Map<PotionEffectType, ExtendedPotionEffect> potionEffects;
     private boolean afk;
@@ -169,7 +168,6 @@ public class PlayerProtocol {
         this.transactionLastTime = System.currentTimeMillis();
         this.transactionPing = 0;
         this.transactionBoot = false;
-        this.transactionLocal = false;
         this.transactionSentKeep = false;
         this.lagTick = 0;
         this.predictedSlimeTicks = 0;
@@ -177,7 +175,6 @@ public class PlayerProtocol {
         this.componentXZ = new ComponentXZ();
         this.useItemPacket = false;
         this.useItemPacketReset = false;
-        this.trackers = new PlayerTrackers();
         this.slime0Tick = 0;
         this.locations = Collections.synchronizedMap(new LinkedHashMap<>());
         this.schedulerFrom = this.location;
@@ -448,10 +445,6 @@ public class PlayerProtocol {
                 PlayerUtils.getPotionLevel(this, PotionEffectUtils.JUMP) + 1,
                 GroundUtils.maxHeightLengthRatio
         );
-    }
-
-    public Location getSchedulerFromLocation() {
-        return schedulerFrom;
     }
 
     public List<SpartanLocation> getLocations() {

@@ -8,7 +8,11 @@ import com.vagdedes.spartan.listeners.protocol.standalone.LegacyLagCompensationL
 public class HitTime extends CheckDetection {
 
     HitTime(CheckRunner executor) {
-        super(executor, null, Check.DetectionType.PACKETS, "hit_time", true);
+        super(executor, null, Check.DetectionType.PACKETS, "hit_time", true,
+                DEFAULT_AVERAGE_TIME * 2L,
+                TIME_TO_NOTIFY,
+                TIME_TO_PREVENT,
+                TIME_TO_PUNISH);
     }
 
     private int

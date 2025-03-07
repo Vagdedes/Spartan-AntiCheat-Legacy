@@ -1,6 +1,7 @@
 package com.vagdedes.spartan.abstraction.check.implementation.inventory;
 
 import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.events.PacketEvent;
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
@@ -84,9 +85,11 @@ public class ImpossibleInventory extends CheckRunner {
                 }
             });
         } else if (PluginBase.packetsEnabled()
-                && object instanceof PacketType) {
+                && object instanceof PacketEvent) {
+            PacketType eventType = ((PacketEvent) object).getPacketType();
+
             for (PacketType type : DeathListener.packetTypes) {
-                if (type.equals(object)) {
+                if (type.equals(eventType)) {
                     this.death();
                     break;
                 }

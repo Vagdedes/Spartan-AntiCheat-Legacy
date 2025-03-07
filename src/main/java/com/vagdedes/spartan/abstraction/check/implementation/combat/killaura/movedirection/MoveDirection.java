@@ -24,14 +24,22 @@ public class MoveDirection extends CheckDetection {
     private final List<AttackData> aimAnalysis;
     private float vl, vlL2;
     private String punish, punishL2;
-    private double lastSwitchYaw, lastSwitchPitch;
+    private double lastSwitchYaw;
     private final List<UUID> targetsOnTheRow;
     private final List<Double> rayTraceAnalysis;
 
     public MoveDirection(CheckRunner executor) {
         super(executor, null, null, null, true);
-        this.layer1 = new ImplementedDetection(this, "move_direction_1", true);
-        this.layer2 = new ImplementedDetection(this, "move_direction_2", true);
+        this.layer1 = new ImplementedDetection(this, "move_direction_1", true,
+                DEFAULT_AVERAGE_TIME * 2L,
+                TIME_TO_NOTIFY,
+                TIME_TO_PREVENT,
+                TIME_TO_PUNISH);
+        this.layer2 = new ImplementedDetection(this, "move_direction_2", true,
+                DEFAULT_AVERAGE_TIME * 2L,
+                TIME_TO_NOTIFY,
+                TIME_TO_PREVENT,
+                TIME_TO_PUNISH);
         this.aimAnalysis = new CopyOnWriteArrayList<>();
         this.attackHandle = new AttackHandle(null, System.currentTimeMillis());
 
@@ -155,7 +163,6 @@ public class MoveDirection extends CheckDetection {
             oldYawChange = yawChange;
             oldPitchChange = pitchChange;
             lastSwitchYaw = switchYaw;
-            lastSwitchPitch = switchPitch;
         }
         // player.sendMessage("huge: " + hugeMoveAmount + ", low: " + lowMoveAmount);
         double result = globalValue / rayTraceAnalysis.size();
