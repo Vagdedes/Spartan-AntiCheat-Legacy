@@ -18,7 +18,11 @@ public class Criticals extends CheckRunner {
 
     public Criticals(HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);
-        this.detection = new ImplementedDetection(this, null, null, null, true);
+        this.detection = new ImplementedDetection(this, null, null, null, true,
+                CheckDetection.DEFAULT_AVERAGE_TIME * 2L,
+                CheckDetection.TIME_TO_NOTIFY,
+                CheckDetection.TIME_TO_PREVENT,
+                CheckDetection.TIME_TO_PUNISH);
     }
 
     @Override

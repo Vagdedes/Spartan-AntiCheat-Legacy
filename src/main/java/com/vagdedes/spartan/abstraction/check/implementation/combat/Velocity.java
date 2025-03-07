@@ -23,8 +23,16 @@ public class Velocity extends CheckRunner {
 
     public Velocity(Enums.HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);
-        this.vertical = new ImplementedDetection(this, null, Check.DetectionType.PACKETS, "vertical", true);
-        this.horizontal = new ImplementedDetection(this, null, Check.DetectionType.PACKETS, "horizontal", true);
+        this.vertical = new ImplementedDetection(this, null, Check.DetectionType.PACKETS, "vertical", true,
+                CheckDetection.DEFAULT_AVERAGE_TIME * 2L,
+                CheckDetection.TIME_TO_NOTIFY,
+                CheckDetection.TIME_TO_PREVENT,
+                CheckDetection.TIME_TO_PUNISH);
+        this.horizontal = new ImplementedDetection(this, null, Check.DetectionType.PACKETS, "horizontal", true,
+                CheckDetection.DEFAULT_AVERAGE_TIME * 2L,
+                CheckDetection.TIME_TO_NOTIFY,
+                CheckDetection.TIME_TO_PREVENT,
+                CheckDetection.TIME_TO_PUNISH);
     }
 
     private final double[] jumpReset = new double[]{0.248136, 0.3332};

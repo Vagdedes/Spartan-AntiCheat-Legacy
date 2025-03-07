@@ -55,9 +55,21 @@ public class HitReach extends CheckRunner {
 
     public HitReach(HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);
-        hitboxRaytrace = new ImplementedDetection(this, null, null, "hitbox_raytrace", true);
-        simple = new ImplementedDetection(this, null, null, "simple", true);
-        throughblocks = new ImplementedDetection(this, null, null, "throughblocks", true);
+        hitboxRaytrace = new ImplementedDetection(this, null, null, "hitbox_raytrace", true,
+                CheckDetection.DEFAULT_AVERAGE_TIME * 2L,
+                CheckDetection.TIME_TO_NOTIFY,
+                CheckDetection.TIME_TO_PREVENT,
+                CheckDetection.TIME_TO_PUNISH);
+        simple = new ImplementedDetection(this, null, null, "simple", true,
+                CheckDetection.DEFAULT_AVERAGE_TIME * 2L,
+                CheckDetection.TIME_TO_NOTIFY,
+                CheckDetection.TIME_TO_PREVENT,
+                CheckDetection.TIME_TO_PUNISH);
+        throughblocks = new ImplementedDetection(this, null, null, "throughblocks", true,
+                CheckDetection.DEFAULT_AVERAGE_TIME * 2L,
+                CheckDetection.TIME_TO_NOTIFY,
+                CheckDetection.TIME_TO_PREVENT,
+                CheckDetection.TIME_TO_PUNISH);
     }
 
     @Override

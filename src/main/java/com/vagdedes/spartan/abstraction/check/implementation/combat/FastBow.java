@@ -22,8 +22,16 @@ public class FastBow extends CheckRunner {
 
     public FastBow(HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);
-        this.bowForceDetection = new ImplementedDetection(this, null, null, "bow_force", true);
-        this.bowShotsDetection = new ImplementedDetection(this, null, null, "bow_shots", true);
+        this.bowForceDetection = new ImplementedDetection(this, null, null, "bow_force", true,
+                CheckDetection.DEFAULT_AVERAGE_TIME * 2L,
+                CheckDetection.TIME_TO_NOTIFY,
+                CheckDetection.TIME_TO_PREVENT,
+                CheckDetection.TIME_TO_PUNISH);
+        this.bowShotsDetection = new ImplementedDetection(this, null, null, "bow_shots", true,
+                CheckDetection.DEFAULT_AVERAGE_TIME * 2L,
+                CheckDetection.TIME_TO_NOTIFY,
+                CheckDetection.TIME_TO_PREVENT,
+                CheckDetection.TIME_TO_PUNISH);
         this.bowForce = new Buffer.IndividualBuffer();
         this.bowShots = new Buffer.IndividualBuffer();
     }
