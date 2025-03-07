@@ -253,7 +253,7 @@ public class MaterialUtils {
             // Separator
             boolean water;
 
-            if (protocol.movement.isSwimming()) {
+            if (protocol.bukkitExtra.isSwimming()) {
                 water = true;
             } else {
                 SpartanBlock block = new SpartanLocation(protocol.getLocation()).add(0, protocol.bukkitExtra.getEyeHeight(), 0).getBlock();
@@ -282,7 +282,7 @@ public class MaterialUtils {
                     multiplier /= 5.0;
                 }
             }
-            if (!protocol.isOnGround()) {
+            if (!protocol.bukkitExtra.isOnGround()) {
                 multiplier /= 5.0;
             }
 

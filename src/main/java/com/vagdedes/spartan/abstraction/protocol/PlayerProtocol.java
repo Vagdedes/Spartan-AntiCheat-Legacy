@@ -2,7 +2,7 @@ package com.vagdedes.spartan.abstraction.protocol;
 
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.data.CheckBoundData;
-import com.vagdedes.spartan.abstraction.data.EncirclementData;
+import com.vagdedes.spartan.abstraction.data.EnvinromentData;
 import com.vagdedes.spartan.abstraction.data.PacketWorld;
 import com.vagdedes.spartan.abstraction.data.TimerBalancer;
 import com.vagdedes.spartan.abstraction.data.component.ComponentXZ;
@@ -15,9 +15,13 @@ import com.vagdedes.spartan.compatibility.necessary.BedrockCompatibility;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.PluginBase;
+import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
 import com.vagdedes.spartan.utils.minecraft.entity.AxisAlignedBB;
+import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
+import com.vagdedes.spartan.utils.minecraft.entity.PotionEffectUtils;
 import com.vagdedes.spartan.utils.minecraft.protocol.ProtocolTools;
+import com.vagdedes.spartan.utils.minecraft.world.GroundUtils;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
@@ -29,6 +33,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Vehicle;
+import org.bukkit.util.Vector;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -40,12 +45,10 @@ public class PlayerProtocol {
     public long activeCreationTime;
     private Player bukkit;
     @Getter
-    private EncirclementData encirclementData;
+    private EnvinromentData environment;
     public final PlayerBukkit bukkitExtra;
     public final PlayerPunishments punishments;
     public final PlayerTrackers trackers;
-    public final PlayerMovement movement;
-    private int hashPosBuffer;
     public int
             slime0Tick,
             rightClickCounter,
@@ -56,8 +59,6 @@ public class PlayerProtocol {
     public boolean
             onGround,
             onGroundFrom,
-            sprinting,
-            sneaking,
             pistonTick,
             transactionBoot,
             clickBlocker,
@@ -94,12 +95,15 @@ public class PlayerProtocol {
             transactionPing,
             lagTick,
             oldClickTime,
-            soulSandWater,
-            magmaCubeWater,
-            lastVelocity;
+            soulSandWater = 0L,
+            magmaCubeWater = 0L,
+            lastVelocity = 0L;
     public boolean entityHandle;
     private ComponentY componentY;
     private ComponentXZ componentXZ;
+    private Vector clampVector;
+    private final Map<Long, SpartanLocation> locations;
+    Location schedulerFrom;
 
     public PlayerProtocol(Player player) {
         long time = System.currentTimeMillis();
@@ -115,11 +119,8 @@ public class PlayerProtocol {
         this.detectionType = this.packetsEnabled()
                 ? Check.DetectionType.PACKETS
                 : Check.DetectionType.BUKKIT;
-        this.movement = new PlayerMovement(this);
         this.onGround = false;
         this.onGroundFrom = false;
-        this.sprinting = false;
-        this.sneaking = false;
         this.location = ProtocolTools.getLoadLocation(player);
         this.from = null;
         this.fromWorld = "";
@@ -131,10 +132,9 @@ public class PlayerProtocol {
         this.oldClickTime = System.currentTimeMillis();
         this.clickBlocker = false;
         this.tickTime = time;
-        this.encirclementData = new EncirclementData();
+        this.environment = new EnvinromentData();
         this.rightClickCounter = 0;
         this.positionHistory = Collections.synchronizedList(new LinkedList<>());
-        this.hashPosBuffer = 0;
         this.claimedVelocity = null;
         this.claimedVeloGravity = new CopyOnWriteArrayList<>();
         this.claimedVeloSpeed = new CopyOnWriteArrayList<>();
@@ -158,6 +158,9 @@ public class PlayerProtocol {
         this.useItemPacketReset = false;
         this.trackers = new PlayerTrackers();
         this.slime0Tick = 0;
+        this.clampVector = new Vector();
+        this.locations = Collections.synchronizedMap(new LinkedHashMap<>());
+        this.schedulerFrom = this.location;
 
         // Always last
         this.profile().update(this);
@@ -191,11 +194,13 @@ public class PlayerProtocol {
                     }
                     protocol.bukkitExtra.checkForAFK();
                     protocol.profile().executeRunners(false, null);
-                    protocol.movement.schedulerFrom = protocol.getLocation();
+                    protocol.schedulerFrom = protocol.getLocation();
                 }
             }
         }, 1L, 1L);
     }
+
+    // Separator
 
     public final Player bukkit() {
         return this.bukkit;
@@ -205,21 +210,27 @@ public class PlayerProtocol {
         this.bukkit = player;
     }
 
+    // Separator
+
     void resetActiveCreationTime() {
         this.activeCreationTime = System.currentTimeMillis();
-    }
-
-    public long getTimePassed(long time) {
-        return System.currentTimeMillis() - this.activeCreationTime;
     }
 
     public long getActiveTimePlayed() {
         return System.currentTimeMillis() - this.activeCreationTime;
     }
 
+    // Separator
+
+    public long getTimePassed(long time) {
+        return System.currentTimeMillis() - this.activeCreationTime;
+    }
+
     public boolean isUsingVersion(MultiVersion.MCVersion trialVersion) {
         return version.ordinal() == trialVersion.ordinal();
     }
+
+    // Separator
 
     public boolean isDesync() {
         return this.transactionSentKeep && (System.currentTimeMillis() - this.transactionTime > 55);
@@ -233,41 +244,13 @@ public class PlayerProtocol {
         return this.transactionSentKeep && (System.currentTimeMillis() - this.transactionTime > 400);
     }
 
+    // Separator
+
     public boolean isUsingVersionOrGreater(MultiVersion.MCVersion trialVersion) {
         return version.ordinal() >= trialVersion.ordinal();
     }
 
-    public void pushHashPosition(Location location) {
-        this.hashPosBuffer = Objects.hashCode((location.getX() + location.getY() + location.getZ()));
-    }
-
-    public boolean isSameWithHash(Location location) {
-        return this.hashPosBuffer == Objects.hashCode((location.getX() + location.getY() + location.getZ()));
-    }
-
-    public boolean isOnGround() {
-        return packetsEnabled()
-                ? this.onGround
-                : this.bukkitExtra.isOnGround();
-    }
-
-    public boolean isOnGroundFrom() {
-        return packetsEnabled()
-                ? this.onGroundFrom
-                : this.bukkitExtra.isOnGround();
-    }
-
-    public boolean isSprinting() {
-        return packetsEnabled()
-                ? this.sprinting
-                : this.bukkit().isSprinting();
-    }
-
-    public boolean isSneaking() {
-        return packetsEnabled()
-                ? this.sneaking
-                : this.bukkit().isSneaking();
-    }
+    // Separator
 
     public Location getLocation() {
         Location loc = this.packetsEnabled()
@@ -304,6 +287,8 @@ public class PlayerProtocol {
         }
     }
 
+    // Separator
+
     public List<Location> getPositionHistory() {
         synchronized (this.positionHistory) {
             return new ArrayList<>(this.positionHistory);
@@ -317,6 +302,8 @@ public class PlayerProtocol {
         return new SpartanLocation(l);
     }
 
+    // Separator
+
     public boolean teleport(Location location) {
         if (location.getX() == SpartanLocation.bukkitDefault.getX()
                 && location.getY() == SpartanLocation.bukkitDefault.getY()
@@ -328,8 +315,6 @@ public class PlayerProtocol {
         if (sync) {
             this.bukkit().leaveVehicle();
         }
-        this.movement.removeLastLiquidTime();
-        this.trackers.removeMany(PlayerTrackers.TrackerFamily.VELOCITY);
 
         if (MultiVersion.folia) {
             this.bukkit().teleportAsync(location);
@@ -375,17 +360,6 @@ public class PlayerProtocol {
 
     // Separator
 
-    public void setOnGround(boolean isOnGround) {
-        this.onGroundFrom = this.onGround;
-        this.onGround = isOnGround;
-
-        if (this.onGround) {
-            this.movement.airTicks = 0;
-        } else {
-            this.movement.airTicks++;
-        }
-    }
-
     public void setFromLocation(Location location) {
         this.from = location;
     }
@@ -406,12 +380,112 @@ public class PlayerProtocol {
         return this.getLocation().getWorld();
     }
 
+    // Separator
+
     public boolean packetsEnabled() {
         return PluginBase.packetsEnabled() && !this.isBedrockPlayer();
     }
 
     public boolean isBedrockPlayer() {
         return this.dataType == Check.DataType.BEDROCK;
+    }
+
+    // Separator
+
+    public boolean isOnGroundFrom() {
+        return packetsEnabled()
+                ? this.onGroundFrom
+                : this.bukkitExtra.isOnGround();
+    }
+
+    // Separator
+
+    public boolean processLastMoveEvent(
+            Location originalTo,
+            Location vehicle,
+            SpartanLocation to,
+            Location from,
+            boolean packets
+    ) {
+        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)
+                || this.isUsingVersionOrGreater(MultiVersion.MCVersion.V1_17)) {
+            double x = clampMin(to.getX(), -3.0E7D, 3.0E7D),
+                    y = clampMin(to.getY(), -2.0E7D, 2.0E7D),
+                    z = clampMin(to.getZ(), -3.0E7D, 3.0E7D);
+            org.bukkit.util.Vector vector = new Vector(x, y, z);
+            double d = this.clampVector.distanceSquared(vector);
+            this.clampVector = vector;
+
+            if (d < 4e-8) {
+                return false;
+            }
+        }
+        if (vehicle == null) {
+            Location known = this.getLocation();
+
+            if (known.getX() != originalTo.getX()
+                    || known.getY() != originalTo.getY()
+                    || known.getZ() != originalTo.getZ()
+                    || known.getYaw() != originalTo.getYaw()
+                    || known.getPitch() != originalTo.getPitch()) {
+                SpartanLocation spartanLocation = new SpartanLocation(originalTo);
+
+                synchronized (this.locations) {
+                    if (this.locations.size() == TPS.maximum) {
+                        Iterator<Long> iterator = this.locations.keySet().iterator();
+                        iterator.next();
+                        iterator.remove();
+                    }
+                    this.locations.put(System.currentTimeMillis(), spartanLocation);
+                }
+            }
+        }
+        if (!packets) {
+            this.setFromLocation(from);
+        }
+        return true;
+    }
+
+    private double clampMin(double d, double d2, double d3) {
+        return d < d2 ? d2 : Math.min(d, d3);
+    }
+
+    // Separator
+
+    public Location getSchedulerFromLocation() {
+        return schedulerFrom;
+    }
+
+    public List<SpartanLocation> getLocations() {
+        return new ArrayList<>(this.locations.values());
+    }
+
+    public Set<Map.Entry<Long, SpartanLocation>> getLocationEntries() {
+        synchronized (this.locations) {
+            return new HashSet<>(locations.entrySet());
+        }
+    }
+
+    // Separator
+
+    public boolean isJumping(double d) {
+        return PlayerUtils.isJumping(
+                d,
+                PlayerUtils.getPotionLevel(this, PotionEffectUtils.JUMP) + 1,
+                GroundUtils.maxHeightLengthRatio
+        );
+    }
+
+    public boolean justJumped(double d) {
+        return PlayerUtils.justJumped(
+                d,
+                PlayerUtils.getPotionLevel(this, PotionEffectUtils.JUMP) + 1,
+                GroundUtils.maxHeightLengthRatio
+        );
+    }
+
+    public boolean isLowEyeHeight() {
+        return this.bukkitExtra.getEyeHeight() < 1.0;
     }
 
 }

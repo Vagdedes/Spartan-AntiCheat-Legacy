@@ -84,7 +84,7 @@ public class Velocity extends CheckRunner {
                             double zDiff = z - velocity.getZ();
                             double total = abs(xDiff) + abs(zDiff);
                             double multi = 1.0;
-                            if ((!this.protocol.isOnGround() && !this.protocol.isOnGroundFrom())) {
+                            if ((!this.protocol.bukkitExtra.isOnGround() && !this.protocol.isOnGroundFrom())) {
                                 // time for horizontal flag 1
                                 if (total > 0.05 * multi) {
                                     this.flag("velocity manipulation [xz] (air deviation: " + total + ")", 14, horizontal);
@@ -167,9 +167,9 @@ public class Velocity extends CheckRunner {
     @Override
     protected boolean canRun() {
         return this.protocol.bukkitExtra.getVehicle() == null
-                && !this.protocol.getEncirclementData().isSlime()
-                && !this.protocol.getEncirclementData().isSlimeWide()
-                && !this.protocol.getEncirclementData().isSlimeHeight()
+                && !this.protocol.getEnvironment().isSlime()
+                && !this.protocol.getEnvironment().isSlimeWide()
+                && !this.protocol.getEnvironment().isSlimeHeight()
                 && CombatUtils.canCheck(this.protocol)
                 && !this.protocol.bukkitExtra.isOutsideOfTheBorder(-1.0);
     }

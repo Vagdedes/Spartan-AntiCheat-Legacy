@@ -116,7 +116,7 @@ public class GhostHand extends CheckRunner {
 
     @Override
     protected boolean canRun() {
-        if (!this.protocol.movement.isFlying()
+        if (!this.protocol.bukkitExtra.isFlying()
                 && !Vehicles.has(this.protocol, Vehicles.DRILL)
                 && !PrinterMode.isUsing(this.protocol)
                 && Attributes.getAmount(this.protocol, Attributes.PLAYER_BLOCK_INTERACTION_RANGE) == 0.0) {

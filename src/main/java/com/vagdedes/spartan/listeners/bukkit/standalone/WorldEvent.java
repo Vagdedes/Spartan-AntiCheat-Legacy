@@ -21,7 +21,6 @@ public class WorldEvent implements Listener {
         PlayerProtocol protocol = PluginBase.getProtocol(e.getPlayer(), true);
         Block nb = e.getBlock();
         boolean cancelled = e.isCancelled();
-        protocol.movement.judgeGround();
         protocol.profile().executeRunners(e.isCancelled(), e);
         MiningHistory.log(protocol, nb, cancelled);
     }

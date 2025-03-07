@@ -14,8 +14,6 @@ public class PlayerTrackers {
     }
 
     public enum TrackerType {
-        TELEPORT(TrackerFamily.VELOCITY),
-
         VEHICLE(TrackerFamily.VELOCITY); // MOTION
 
         public final TrackerFamily family;

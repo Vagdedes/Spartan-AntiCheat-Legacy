@@ -60,7 +60,8 @@ public class IMSimulationSpeed extends CheckDetection {
         this.call(() -> {
             PlayerProtocol p = this.protocol;
             boolean isOnGround = (p.bukkitExtra.getVehicle() != null)
-                    ? p.bukkitExtra.getVehicle().isOnGround() : p.isOnGround();
+                    ? p.bukkitExtra.getVehicle().isOnGround()
+                    : p.bukkitExtra.isOnGround();
             Location to = p.getLocation();
             Location from = this.protocol.getFromLocation();
             double dx = to.getX() - from.getX();
@@ -74,7 +75,7 @@ public class IMSimulationSpeed extends CheckDetection {
             boolean isOnAngle80 = RayUtils.validRayLines(
                     yawLine, moveLine, 80.0);
             boolean flagged = false;
-            if (p.movement.isGliding()) ignoreTicks = 6;
+            if (p.bukkitExtra.isGliding()) ignoreTicks = 6;
             if (!this.protocol.useItemPacket) this.action = 0;
             double atr = Attributes.getAmount(this.protocol, Attributes.GENERIC_MOVEMENT_SPEED) * 1.3;
             if (to.getX() != from.getX() || to.getY() != from.getY() || to.getZ() != from.getZ()) {
@@ -122,7 +123,7 @@ public class IMSimulationSpeed extends CheckDetection {
                             this.setPredict(dx, dz);
                         else this.setPredict(-Math.sin(Math.toRadians(to.getYaw())) * lim,
                                 Math.cos(Math.toRadians(to.getYaw())) * lim);
-                        if (p.isSprinting()
+                        if (p.bukkitExtra.isSprinting()
                                 && isOnAngle
                                 && this.air == 1) sprintStatus = true;
                         this.ACCELERATION_VELOCITY /= 1.3;
@@ -289,8 +290,8 @@ public class IMSimulationSpeed extends CheckDetection {
             if (dolphinEffect != null) m *= 6.2;
         }
         if (this.isOnSemi(l)) m *= 1.4;
-        if (this.protocol.movement.isGliding()) m *= 18.0;
-        if (this.protocol.movement.isFlying() || this.protocol.flyingTicks > 0) m *= 25.0;
+        if (this.protocol.bukkitExtra.isGliding()) m *= 18.0;
+        if (this.protocol.bukkitExtra.isFlying() || this.protocol.flyingTicks > 0) m *= 25.0;
         m *= (this.protocol.bukkit().getWalkSpeed() * 5);
         return m;
     }
@@ -360,11 +361,11 @@ public class IMSimulationSpeed extends CheckDetection {
     }
 
     private boolean isOnWater() {
-        return this.protocol.getEncirclementData().isWater();
+        return this.protocol.getEnvironment().isLiquid();
     }
 
     private boolean isOnIce(Location location) {
-        return this.protocol.getEncirclementData().isIce();
+        return this.protocol.getEnvironment().isIce();
     }
 
     private boolean isPointWall(Location... l) {
@@ -420,16 +421,16 @@ public class IMSimulationSpeed extends CheckDetection {
 
 
     private boolean isOnSemi(Location location) {
-        return this.protocol.getEncirclementData().isSemi();
+        return this.protocol.getEnvironment().isSemi();
     }
 
 
     private boolean isOnSlime(Location location) {
-        return this.protocol.getEncirclementData().isSlime();
+        return this.protocol.getEnvironment().isSlime();
     }
 
     private boolean isOnSlimeWide(Location location) {
-        return this.protocol.getEncirclementData().isSlimeWide();
+        return this.protocol.getEnvironment().isSlimeWide();
     }
 
 }

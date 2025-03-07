@@ -40,13 +40,13 @@ public class EntityActionListener extends PacketAdapter {
 
                 if (typeString != null) {
                     if (type == AbilitiesEnum.PRESS_SHIFT_KEY) {
-                        protocol.sneaking = true;
+                        protocol.bukkitExtra.sneaking = true;
                     } else if (type == AbilitiesEnum.RELEASE_SHIFT_KEY) {
-                        protocol.sneaking = false;
+                        protocol.bukkitExtra.sneaking = false;
                     } else if (type == AbilitiesEnum.START_SPRINTING) {
-                        protocol.sprinting = true;
+                        protocol.bukkitExtra.sprinting = true;
                     } else if (type == AbilitiesEnum.STOP_SPRINTING) {
-                        protocol.sprinting = false;
+                        protocol.bukkitExtra.sprinting = false;
                     }
                 }
             }

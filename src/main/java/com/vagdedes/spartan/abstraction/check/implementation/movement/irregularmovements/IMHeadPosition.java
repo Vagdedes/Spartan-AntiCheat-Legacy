@@ -11,7 +11,7 @@ public class IMHeadPosition extends CheckDetection {
 
     void run() {
         this.call(() -> {
-            if (this.protocol.movement.isLowEyeHeight()
+            if (this.protocol.isLowEyeHeight()
                     || this.protocol.bukkitExtra.getVehicle() != null) {
                 return;
             }

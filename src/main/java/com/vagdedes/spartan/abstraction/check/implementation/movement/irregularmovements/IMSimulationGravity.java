@@ -5,7 +5,6 @@ import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.event.CPlayerVelocityEvent;
 import com.vagdedes.spartan.abstraction.protocol.ExtendedPotionEffect;
-import com.vagdedes.spartan.abstraction.protocol.PlayerMovement;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
@@ -59,14 +58,15 @@ public class IMSimulationGravity extends CheckDetection {
                 return;
             }
             boolean ground = (this.protocol.bukkitExtra.getVehicle() != null)
-                    ? this.protocol.bukkitExtra.getVehicle().isOnGround() : this.protocol.isOnGround();
+                    ? this.protocol.bukkitExtra.getVehicle().isOnGround()
+                    : this.protocol.bukkitExtra.isOnGround();
             Location to = p.getLocation();
             Location from = this.protocol.getFromLocation();
             double dx = to.getX() - from.getX();
             double dz = to.getZ() - from.getZ();
             double speed = Math.sqrt(dx * dx + dz * dz);
 
-            if (p.movement.isGliding()) ignoreTicks = 5;
+            if (p.bukkitExtra.isGliding()) ignoreTicks = 5;
             //this.protocol.bukkit().sendMessage(protocol().pistonHandle + " " + protocol().pistonTick + " " + protocol().explosionHandle);
             if (to.getX() != from.getX() || to.getY() != from.getY() || to.getZ() != from.getZ()) {
                 double motion = to.getY() - from.getY();
@@ -84,7 +84,6 @@ public class IMSimulationGravity extends CheckDetection {
                  */
                 boolean isOnWater = this.isOnWater();
                 double pr2;
-                PlayerMovement playerMovement;
                 if (this.isOnSlime()) this.allowMinorGravityChange = true;
                 if (ground) {
                     if (this.protocol.getLocation().getY() > this.lastGroundY)
@@ -275,8 +274,8 @@ public class IMSimulationGravity extends CheckDetection {
                     }
                 }
 
-                if (this.protocol.movement.isFlying()
-                        || this.protocol.movement.isGliding()
+                if (this.protocol.bukkitExtra.isFlying()
+                        || this.protocol.bukkitExtra.isGliding()
                         || this.protocol.flyingTicks > 0) {
                     this.setPredict(motion);
                     this.levitation = 3;
@@ -358,11 +357,6 @@ public class IMSimulationGravity extends CheckDetection {
                 if (this.allowLowMinorAccel && this.predictY() > motion && getDeviantity(motion) <= 0.1) {
                     this.setPredict(motion);
                     this.allowLowMinorAccel = false;
-                }
-                if (this.protocol.trackers.has(
-                        PlayerTrackers.TrackerType.TELEPORT, "tp")
-                        && getDeviantity(motion) < 0.16) {
-                    this.setPredict(motion);
                 }
                 //protocol.bukkit().sendMessage("t: " + this.protocol.predictedSlimeTicks + " " + getDeviantity(motion));
                 if (this.protocol.predictedSlimeTicks > 0 && getDeviantity(motion) < 2.5 && getDeviantity(motion) > 0.01) {
@@ -509,39 +503,39 @@ public class IMSimulationGravity extends CheckDetection {
     }
 
     private boolean isOnWater() {
-        return this.protocol.getEncirclementData().isWater();
+        return this.protocol.getEnvironment().isLiquid();
     }
 
     private boolean isOnWaterBubble() {
-        return this.protocol.getEncirclementData().isBubble();
+        return this.protocol.getEnvironment().isBubble();
     }
 
     private boolean isOnSemi() {
-        return this.protocol.getEncirclementData().isSemi();
+        return this.protocol.getEnvironment().isSemi();
     }
 
     private boolean isNearGlideBlocks() {
-        return this.protocol.getEncirclementData().isSemi();
+        return this.protocol.getEnvironment().isSemi();
     }
 
     private boolean atJumpModifyBlock() {
-        return this.protocol.getEncirclementData().isJumpModify();
+        return this.protocol.getEnvironment().isJumpModify();
     }
 
     private boolean isNearClimbBlocks() {
-        return this.protocol.getEncirclementData().isClimb();
+        return this.protocol.getEnvironment().isClimb();
     }
 
     private boolean isOnSlime() {
-        return this.protocol.getEncirclementData().isSlime();
+        return this.protocol.getEnvironment().isSlime();
     }
 
     private boolean isOnSlimeWide() {
-        return this.protocol.getEncirclementData().isSlimeWide();
+        return this.protocol.getEnvironment().isSlimeWide();
     }
 
     private boolean isOnSlimeHeight() {
-        return this.protocol.getEncirclementData().isSlimeHeight();
+        return this.protocol.getEnvironment().isSlimeHeight();
     }
 
     private boolean isBlocksOnTop(Location location) {

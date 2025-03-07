@@ -6,6 +6,7 @@ import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.server.Config;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.PluginBase;
+import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.math.MathHelper;
@@ -15,6 +16,7 @@ import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import com.vagdedes.spartan.utils.minecraft.world.GroundUtils;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -27,10 +29,17 @@ public class PlayerBukkit {
 
     final PlayerProtocol protocol;
     private final Map<PotionEffectType, ExtendedPotionEffect> potionEffects;
-    private long lastInteraction;
+    private long
+            lastInteraction = 0L,
+            lastFlight = 0L,
+            lastGlide = 0L;
     private boolean afk;
     Entity[] nearbyEntities;
     final double[] maxNearbyEntitiesCoordinate;
+    public boolean
+            onGround = false,
+            sprinting = false,
+            sneaking = false;
 
     // Object
 
@@ -125,15 +134,6 @@ public class PlayerBukkit {
 
     // Separator
 
-    public void resetCrucialData() {
-        for (PlayerTrackers.TrackerType handlerType : PlayerTrackers.TrackerType.values()) {
-            this.protocol.trackers.remove(handlerType);
-        }
-        this.protocol.movement.judgeGround();
-    }
-
-    // Separator
-
     public int getMaxChatLength() {
         return this.protocol.isBedrockPlayer() ? 512 :
                 MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_11)
@@ -161,14 +161,23 @@ public class PlayerBukkit {
         return this.protocol.bukkit().getInventory().getItemInHand();
     }
 
-    boolean isOnGround() {
-        Entity vehicle = this.protocol.bukkitExtra.getVehicle();
-
-        if (vehicle != null) {
-            return vehicle.isOnGround();
+    public boolean isOnGround() {
+        if (this.protocol.packetsEnabled()) {
+            return this.protocol.onGround;
         } else {
-            return this.protocol.bukkit().isOnGround();
+            Entity vehicle = this.protocol.bukkitExtra.getVehicle();
+
+            if (vehicle != null) {
+                return vehicle.isOnGround();
+            } else {
+                return this.protocol.bukkit().isOnGround();
+            }
         }
+    }
+
+    public void setOnGround(boolean isOnGround) {
+        this.protocol.onGroundFrom = this.onGround;
+        this.onGround = isOnGround;
     }
 
     // Separator
@@ -421,6 +430,72 @@ public class PlayerBukkit {
 
     public double getEyeHeight() {
         return ProtocolLib.getEyeHeight(this.protocol.bukkit());
+    }
+
+    // Separator
+
+    public boolean isFlying() {
+        Entity vehicle = this.getVehicle();
+        boolean flying;
+
+        if (vehicle != null) {
+            flying = vehicle instanceof Player && ((Player) vehicle).isFlying();
+        } else {
+            flying = this.protocol.bukkit().isFlying();
+        }
+        if (flying) {
+            this.lastFlight = System.currentTimeMillis();
+        }
+        return flying;
+    }
+
+    public boolean wasFlying() {
+        return this.isFlying()
+                || System.currentTimeMillis() - this.lastFlight <= TPS.maximum * TPS.tickTime;
+    }
+
+    // Separator
+
+    public boolean isGliding() {
+        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
+            if (this.protocol.bukkit().isGliding()) {
+                this.lastGlide = System.currentTimeMillis();
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    public boolean wasGliding() {
+        return this.isGliding()
+                || System.currentTimeMillis() - this.lastGlide <= TPS.maximum * TPS.tickTime;
+    }
+
+    // Separator
+
+    public boolean isSprinting() {
+        return this.protocol.packetsEnabled()
+                ? this.sprinting
+                : this.protocol.bukkit().isSprinting();
+    }
+
+    public boolean isSneaking() {
+        return this.protocol.packetsEnabled()
+                ? this.sneaking
+                : this.protocol.bukkit().isSneaking();
+    }
+
+    // Separator
+
+    public boolean isSwimming() {
+        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
+            return this.protocol.bukkit().isSwimming();
+        } else {
+            return false;
+        }
     }
 
 }

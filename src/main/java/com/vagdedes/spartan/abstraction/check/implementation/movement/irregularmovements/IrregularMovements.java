@@ -14,12 +14,12 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
+import org.bukkit.event.vehicle.VehicleExitEvent;
 
 public class IrregularMovements extends CheckRunner {
 
     private final IMSimulationGravity gravity;
     private final IMSimulationSpeed speed;
-    private final IrregularMovementsJump jump;
     private final IMFoodSprint foodSprint;
     private final IMBaritone baritone;
     private final IMHeadPosition headPosition;
@@ -28,7 +28,6 @@ public class IrregularMovements extends CheckRunner {
     public IrregularMovements(HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);
         gravity = new IMSimulationGravity(this);
-        jump = new IrregularMovementsJump(this);
         foodSprint = new IMFoodSprint(this);
         baritone = new IMBaritone(this);
         speed = new IMSimulationSpeed(this);
@@ -53,6 +52,8 @@ public class IrregularMovements extends CheckRunner {
                             e.protocol.getFromLocation()
                     )
             );
+        } else if (object instanceof VehicleExitEvent) {
+            groundSpoof.onVehicleExit();
         } else if (object instanceof PlayerMoveEvent) {
             foodSprint.run();
             baritone.run();
@@ -60,9 +61,6 @@ public class IrregularMovements extends CheckRunner {
             speed.run();
             headPosition.run();
             groundSpoof.run((PlayerMoveEvent) object);
-            double vertical = this.protocol.getLocation().getY() - this.protocol.getFromLocation().getY(),
-                    box = this.protocol.getLocation().getY();
-            jump.run(vertical, box);
         } else if (object instanceof BlockBreakEvent) {
             if (((BlockBreakEvent) object).isCancelled()) {
                 groundSpoof.onBreak();
@@ -87,7 +85,6 @@ public class IrregularMovements extends CheckRunner {
         gravity.teleport();
         speed.teleport();
         baritone.teleport();
-        jump.teleport();
     }
 
     @Override

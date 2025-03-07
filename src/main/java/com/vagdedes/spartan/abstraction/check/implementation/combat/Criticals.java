@@ -38,7 +38,8 @@ public class Criticals extends CheckRunner {
 
                 if ((verticalMaxAccuracy < 0.079 || Math.abs(verticalMaxAccuracy) == 0.0625)
                         && verticalMaxAccuracy > 0
-                        && this.protocol.movement.getTicksOnAir() == 1
+                        && !this.protocol.bukkitExtra.isOnGround()
+                        && this.protocol.isOnGroundFrom()
                         && !new SpartanLocation(this.protocol.getLocation()).getBlock().getType().isBlock()
                         && !RayUtils.onSolidBlock(this.protocol, this.protocol.getLocation().clone().add(0, 2, 0))) {
                     this.detection.cancel("packet");
@@ -50,7 +51,7 @@ public class Criticals extends CheckRunner {
     @Override
     protected boolean canRun() {
         return CombatUtils.canCheck(this.protocol)
-                && !this.protocol.movement.isInLiquids()
+                && !this.protocol.getEnvironment().isLiquid()
                 && !this.protocol.bukkitExtra.hasPotionEffect(PotionEffectType.BLINDNESS, 0);
     }
 }

@@ -95,7 +95,7 @@ public class ImpossibleActions extends CheckRunner {
                                             ));
                                         } else {
                                             this.scaffoldYaw.call(() -> {
-                                                List<SpartanLocation> fromLocations = this.protocol.movement.getLocations();
+                                                List<SpartanLocation> fromLocations = this.protocol.getLocations();
                                                 int requiredComparisons = 5, requiredSize = requiredComparisons + 1;
 
                                                 if (fromLocations.size() >= requiredSize) { // 6-1 comparisons = 5

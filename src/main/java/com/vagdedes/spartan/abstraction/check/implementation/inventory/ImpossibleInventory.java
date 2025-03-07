@@ -66,7 +66,7 @@ public class ImpossibleInventory extends CheckRunner {
             }
         } else if (object instanceof PlayerMoveEvent) {
             this.cursorUsageDetection.call(() -> {
-                if (!this.protocol.movement.isSwimming() && this.protocol.bukkitExtra.getVehicle() == null) {
+                if (!this.protocol.bukkitExtra.isSwimming() && this.protocol.bukkitExtra.getVehicle() == null) {
                     ItemStack cursor = this.protocol.bukkit().getOpenInventory().getCursor();
 
                     if (BlockUtils.hasMaterial(cursor)) {
@@ -119,7 +119,7 @@ public class ImpossibleInventory extends CheckRunner {
             if (cases != 0
                     && !click.isCreativeAction()
                     && !click.isKeyboardClick()
-                    && !this.protocol.movement.isSwimming()
+                    && !this.protocol.bukkitExtra.isSwimming()
                     && this.protocol.bukkitExtra.getVehicle() == null
                     && this.protocol.bukkit().getOpenInventory().countSlots() > PlayerUtils.playerInventorySlots
                     && !BlockPatternUtils.isBlockPattern(
@@ -146,28 +146,28 @@ public class ImpossibleInventory extends CheckRunner {
     }
 
     private int getActionCase() {
-        if (this.protocol.movement.isFlying()
-                || this.protocol.movement.isLowEyeHeight()) {
+        if (this.protocol.bukkitExtra.isFlying()
+                || this.protocol.isLowEyeHeight()) {
             return 0;
         } else {
             Check check = hackType.getCheck();
             return check.getBooleanOption("check_sneaking", true)
-                    && this.protocol.isSneaking() ? 1
+                    && this.protocol.bukkitExtra.isSneaking() ? 1
                     : !MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_15)
                     && check.getBooleanOption("check_sprinting", true)
-                    && this.protocol.isSprinting() ? 2
+                    && this.protocol.bukkitExtra.isSprinting() ? 2
                     : check.getBooleanOption("check_sleeping", true)
                     && this.protocol.bukkit().isSleeping() ? 3
                     : check.getBooleanOption("check_dead", true)
                     && this.protocol.bukkit().isDead() ? 5
                     : check.getBooleanOption("check_sprint_jumping", true)
-                    && this.protocol.isSprinting()
-                    && this.protocol.movement.isJumping(this.getVertical()) ? 6
+                    && this.protocol.bukkitExtra.isSprinting()
+                    && this.protocol.isJumping(this.getVertical()) ? 6
                     : check.getBooleanOption("check_walk_jumping", true)
-                    && !this.protocol.isSprinting()
-                    && this.protocol.movement.isJumping(this.getVertical()) ? 7
+                    && !this.protocol.bukkitExtra.isSprinting()
+                    && this.protocol.isJumping(this.getVertical()) ? 7
                     : check.getBooleanOption("check_jumping", true)
-                    && this.protocol.movement.justJumped(this.getVertical()) ? 8
+                    && this.protocol.justJumped(this.getVertical()) ? 8
                     : 0;
         }
     }

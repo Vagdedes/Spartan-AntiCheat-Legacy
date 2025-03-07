@@ -6,7 +6,7 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.vagdedes.spartan.Register;
-import com.vagdedes.spartan.abstraction.data.EncirclementData;
+import com.vagdedes.spartan.abstraction.data.EnvinromentData;
 import com.vagdedes.spartan.abstraction.event.PlayerTickEvent;
 import com.vagdedes.spartan.abstraction.event.SuperPositionPacketEvent;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
@@ -83,7 +83,7 @@ public class MovementListener extends PacketAdapter {
         Location l = p.getLocation();
         p.setFromLocation(l.clone());
         boolean onGround = ProtocolTools.onGroundPacketLevel(event);
-        p.setOnGround(onGround);
+        p.bukkitExtra.setOnGround(onGround);
         Location r = ProtocolTools.readLocation(event);
 
         if (r == null) {
@@ -137,7 +137,6 @@ public class MovementListener extends PacketAdapter {
             boolean hasRotation = ProtocolTools.hasRotation(packet.getType());
             if (hasPosition) {
                 p.addRawLocation(r);
-                p.pushHashPosition(r);
             }
             if (ProtocolTools.isLoadLocation(p.getLocation())) {
                 p.setLocation(r);
@@ -197,7 +196,7 @@ public class MovementListener extends PacketAdapter {
                                 p.getLocation()
                 );
                 moveEvent.setCancelled(event.isCancelled());
-                p.setEncirclementData(new EncirclementData(p));
+                p.setEnvironment(new EnvinromentData(p));
                 MovementEvent.event(moveEvent, true);
             });
             if (p.flyingTicks > 0) p.flyingTicks--;

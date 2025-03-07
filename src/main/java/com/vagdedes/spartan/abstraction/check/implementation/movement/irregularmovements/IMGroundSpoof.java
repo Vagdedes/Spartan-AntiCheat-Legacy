@@ -3,7 +3,6 @@ package com.vagdedes.spartan.abstraction.check.implementation.movement.irregular
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.check.CheckDetection;
 import com.vagdedes.spartan.abstraction.check.CheckRunner;
-import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import org.bukkit.Location;
@@ -37,14 +36,13 @@ public class IMGroundSpoof extends CheckDetection {
     void run(PlayerMoveEvent event) {
         this.call(() -> {
             if (disabledUntil <= System.currentTimeMillis()
-                    && !this.protocol.getEncirclementData().isSlime()
-                    && !this.protocol.getEncirclementData().isSlimeWide()
-                    && !this.protocol.getEncirclementData().isSlimeHeight()
-                    && !this.protocol.trackers.has(PlayerTrackers.TrackerType.VEHICLE, "exit")
+                    && !this.protocol.getEnvironment().isSlime()
+                    && !this.protocol.getEnvironment().isSlimeWide()
+                    && !this.protocol.getEnvironment().isSlimeHeight()
                     && this.protocol.bukkitExtra.getVehicle() == null
-                    && !this.protocol.movement.isFlying()
-                    && !this.protocol.movement.isLowEyeHeight()) { // Covers swimming & gliding
-                boolean onGround = this.protocol.isOnGround(),
+                    && !this.protocol.bukkitExtra.isFlying()
+                    && !this.protocol.isLowEyeHeight()) { // Covers swimming & gliding
+                boolean onGround = this.protocol.bukkitExtra.isOnGround(),
                         onGroundCheck = isOnSolidGround(event.getTo().clone())
                                 || isOnSolidGround(event.getFrom().clone());
 
@@ -132,6 +130,10 @@ public class IMGroundSpoof extends CheckDetection {
     }
 
     void onBreak() {
+        this.call(() -> this.disabledUntil = System.currentTimeMillis() + 1_000L);
+    }
+
+    void onVehicleExit() {
         this.call(() -> this.disabledUntil = System.currentTimeMillis() + 1_000L);
     }
 

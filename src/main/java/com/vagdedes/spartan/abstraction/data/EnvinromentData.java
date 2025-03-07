@@ -4,28 +4,38 @@ import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanBlock;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
+import com.vagdedes.spartan.utils.math.AlgebraUtils;
+import com.vagdedes.spartan.utils.minecraft.inventory.MaterialUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
+import com.vagdedes.spartan.utils.minecraft.world.GroundUtils;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
 @Data
 @RequiredArgsConstructor
-public class EncirclementData {
+public class EnvinromentData {
+
+    private static final Material
+            MAGMA_BLOCK = MaterialUtils.get("magma");
 
     private boolean ice = false;
     private boolean slime = false;
     private boolean slimeWide = false;
     private boolean slimeHeight = false;
-    private boolean water = false;
+    private boolean liquid = false;
     private boolean semi = false;
     private boolean glide = false;
     private boolean jumpModify = false;
     private boolean climb = false;
     private boolean bubble = false;
 
-    public EncirclementData(PlayerProtocol protocol) {
+    public EnvinromentData(PlayerProtocol protocol) {
         Location location = (protocol.bukkitExtra.getVehicle() == null) ?
                 protocol.getLocation()
                 : protocol.bukkitExtra.getVehicle().getLocation();
@@ -103,7 +113,8 @@ public class EncirclementData {
                             || BlockUtils.isLiquid(m2)
                             || BlockUtils.isWaterLogged(b)) {
 
-                        this.water = true;
+                        this.liquid = true;
+                        calculateBubbleWater(protocol, locationModified);
                     }
                     if (BlockUtils.areIceBlocks(material)) {
                         this.ice = true;
@@ -144,7 +155,54 @@ public class EncirclementData {
         }
     }
 
+    private void calculateBubbleWater(PlayerProtocol protocol, SpartanLocation location) {
+        if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
+            int blockY = location.getBlockY(), minY = BlockUtils.getMinHeight(protocol.getWorld());
+
+            if (blockY > minY) {
+                SpartanLocation locationModified = location.clone();
+                int max = (blockY - minY),
+                        playerHeight = AlgebraUtils.integerCeil(protocol.bukkitExtra.getEyeHeight());
+                Set<Integer> emptyNonLiquid = new HashSet<>(max),
+                        fullNonLiquid = new HashSet<>(max);
+
+                for (int i = 0; i <= max; i++) {
+                    Collection<SpartanLocation> locations = locationModified.clone().add(0, -i, 0).getSurroundingLocations(GroundUtils.boundingBox, 0, GroundUtils.boundingBox);
+
+                    for (SpartanLocation loc : locations) {
+                        SpartanBlock block = loc.getBlock();
+                        Material type = block.getType();
+
+                        if (type == Material.SOUL_SAND) {
+                            protocol.soulSandWater = System.currentTimeMillis();
+                            protocol.lastVelocity = System.currentTimeMillis();
+                            return;
+                        } else if (type == MAGMA_BLOCK) {
+                            protocol.magmaCubeWater = System.currentTimeMillis();
+                            protocol.lastVelocity = System.currentTimeMillis();
+                            return;
+                        } else if (BlockUtils.isSolid(type)) {
+                            if (!block.isWaterLogged()) {
+                                fullNonLiquid.add(i);
+
+                                if (fullNonLiquid.size() == playerHeight) {
+                                    return;
+                                }
+                            }
+                        } else if (!block.isWaterLogged()) {
+                            emptyNonLiquid.add(i);
+
+                            if (emptyNonLiquid.size() == 8) {
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     public boolean isAllFalse() {
-        return !(isIce() || isSemi() || isSlime() || isSlimeHeight() || isWater() || isJumpModify() || isBubble());
+        return !(isIce() || isSemi() || isSlime() || isSlimeHeight() || isLiquid() || isJumpModify() || isBubble());
     }
 }

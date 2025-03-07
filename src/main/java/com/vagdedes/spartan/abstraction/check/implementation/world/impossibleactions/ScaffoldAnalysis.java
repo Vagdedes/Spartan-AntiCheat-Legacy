@@ -69,7 +69,7 @@ public class ScaffoldAnalysis extends CheckDetection {
                             (long) (((bL.getX() - 0.3) * 31) + (bL.getZ() - 0.3))   // -0.3 X, -0.3 Z
                     );
                     for (Long v : hashList) {
-                        if (p.isOnGround()) {
+                        if (p.bukkitExtra.isOnGround()) {
                             if (v == placeHash || SpartanLocation.distance(bL, l) < 1.2) {
                                 checkHash = true;
                                 break;
@@ -111,7 +111,7 @@ public class ScaffoldAnalysis extends CheckDetection {
 
                 if (delay < 280) {
                     buffer.count += 4;
-                } else if (delay < (p.isSneaking() ? 345 : 385) && p.rightClickCounter < 3) {
+                } else if (delay < (p.bukkitExtra.isSneaking() ? 345 : 385) && p.rightClickCounter < 3) {
                     buffer.count += 2;
                 } else {
                     flag = false;
