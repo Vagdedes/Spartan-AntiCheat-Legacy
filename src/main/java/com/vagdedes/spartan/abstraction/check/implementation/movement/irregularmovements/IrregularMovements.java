@@ -18,7 +18,6 @@ import com.vagdedes.spartan.utils.minecraft.world.GroundUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
-import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
 
 public class IrregularMovements extends CheckRunner {
@@ -27,10 +26,8 @@ public class IrregularMovements extends CheckRunner {
     public final ImplementedDetection limitServerFlying;
     private final IMStepBukkit step;
     private final IMSimulationGravity gravityPackets;
-    private final IMBukkitSpeed speedBukkit;
     private final IMSimulationSpeed speedPackets;
     private final IrregularMovementsJump jump;
-    private final IMHorizontal horizontal;
     private final IMFoodSprint foodSprint;
     private final IMBaritone baritone;
 
@@ -40,10 +37,8 @@ public class IrregularMovements extends CheckRunner {
         step = new IMStepBukkit(this);
         gravityPackets = new IMSimulationGravity(this);
         jump = new IrregularMovementsJump(this);
-        horizontal = new IMHorizontal(this);
         foodSprint = new IMFoodSprint(this);
         baritone = new IMBaritone(this);
-        speedBukkit = new IMBukkitSpeed(this);
         speedPackets = new IMSimulationSpeed(this);
     }
 
@@ -54,13 +49,11 @@ public class IrregularMovements extends CheckRunner {
         } else if (object instanceof CPlayerRiptideEvent) {
             gravityPackets.trident();
             speedPackets.trident();
-            speedBukkit.trident((CPlayerRiptideEvent) object);
         } else if (object instanceof SuperPositionPacketEvent) {
             SuperPositionPacketEvent e = (SuperPositionPacketEvent) object;
             speedPackets.ground(e.packetEvent.getPacket().getBooleans().read(0));
         } else if (object instanceof PlayerMoveEvent) {
             PlayerMoveEvent event = (PlayerMoveEvent) object;
-            speedBukkit.run(event);
             foodSprint.run();
             baritone.run();
             gravityPackets.run();
@@ -73,17 +66,13 @@ public class IrregularMovements extends CheckRunner {
                     teleported = teleport >= System.currentTimeMillis();
 
             if (knownBox || knownOldBox) {
-                if (vertical == 0.0) {
-                    this.horizontal.run(knownBox, knownOldBox, box, oldBox, vertical);
-                } else {
+                if (vertical != 0.0) {
                     step.run(knownBox, knownOldBox, box, oldBox, vertical, teleported);
                 }
             }
             if (!teleported) {
                 jump.run(vertical, box);
             }
-        } else if (object instanceof PlayerVelocityEvent) {
-            speedBukkit.velocity((PlayerVelocityEvent) object);
         } else if (object instanceof PlayerTickEvent) {
             PlayerTickEvent e = (PlayerTickEvent) object;
             gravityPackets.groundSp(e.onGround);
