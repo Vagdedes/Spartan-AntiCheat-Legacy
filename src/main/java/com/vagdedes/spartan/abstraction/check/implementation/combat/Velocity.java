@@ -44,8 +44,8 @@ public class Velocity extends CheckRunner {
             PlayerVelocityEvent event = (PlayerVelocityEvent) object;
             transactionLock = true;
             Location[] locationsToCheck = {
-                    this.protocol.getLocation().clone().add(event.getVelocity()),
-                    this.protocol.getLocation().clone().add(event.getVelocity()).add(0, 1, 0)
+                    this.protocol.bukkitExtra.getLocation().clone().add(event.getVelocity()),
+                    this.protocol.bukkitExtra.getLocation().clone().add(event.getVelocity()).add(0, 1, 0)
             };
             boolean allClear = true;
             for (Location loc : locationsToCheck) {
@@ -148,7 +148,7 @@ public class Velocity extends CheckRunner {
             for (int dy = -1; dy <= 1; ++dy) {
                 for (int dz = -1; dz <= 1; ++dz) {
                     Material material = new SpartanLocation(
-                            new Location(this.protocol.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.3, z + (double) dz * 0.3)
+                            new Location(this.protocol.bukkitExtra.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.3, z + (double) dz * 0.3)
                     ).getBlock().getTypeOrNull();
 
                     if (material != null &&

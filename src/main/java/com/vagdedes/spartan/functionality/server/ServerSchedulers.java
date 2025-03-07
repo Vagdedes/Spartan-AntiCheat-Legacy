@@ -32,7 +32,7 @@ class ServerSchedulers {
         } else {
             if (protocol != null) {
                 if (Register.isPluginEnabled()) {
-                    Location location = protocol.getLocation();
+                    Location location = protocol.bukkitExtra.getLocation();
                     Bukkit.getRegionScheduler()
                             .execute(Register.plugin,
                                     location.getWorld(),
@@ -76,7 +76,7 @@ class ServerSchedulers {
             } else {
                 if (repetition == -1L) {
                     if (protocol != null) {
-                        Location location = protocol.getLocation();
+                        Location location = protocol.bukkitExtra.getLocation();
                         return Bukkit.getRegionScheduler()
                                 .runDelayed(Register.plugin,
                                         location.getWorld(),
@@ -89,7 +89,7 @@ class ServerSchedulers {
                     }
                 } else {
                     if (protocol != null) {
-                        Location location = protocol.getLocation();
+                        Location location = protocol.bukkitExtra.getLocation();
                         return Bukkit.getRegionScheduler()
                                 .runAtFixedRate(Register.plugin,
                                         location.getWorld(),

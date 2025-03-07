@@ -30,7 +30,7 @@ public class Irregular extends CheckDetection {
             if (this.protocol.bukkit().isDead()) {
                 if (!PluginUtils.contains("respawn")
                         && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_15)
-                        || !(this.protocol.getWorld().getGameRuleValue(GameRule.DO_IMMEDIATE_RESPAWN) == true))) {
+                        || !(this.protocol.bukkitExtra.getWorld().getGameRuleValue(GameRule.DO_IMMEDIATE_RESPAWN) == true))) {
                     cancel("irregular, scenario: death");
                 }
             } else if (this.protocol.bukkit().isSleeping()) {

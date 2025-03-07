@@ -6,7 +6,6 @@ import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.event.CPlayerVelocityEvent;
 import com.vagdedes.spartan.abstraction.protocol.ExtendedPotionEffect;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
-import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
 import com.vagdedes.spartan.utils.math.MathHelper;
@@ -62,7 +61,7 @@ public class IMSimulationSpeed extends CheckDetection {
             boolean isOnGround = (p.bukkitExtra.getVehicle() != null)
                     ? p.bukkitExtra.getVehicle().isOnGround()
                     : p.bukkitExtra.isOnGround();
-            Location to = p.getLocation();
+            Location to = p.bukkitExtra.getLocation();
             Location from = this.protocol.getFromLocation();
             double dx = to.getX() - from.getX();
             double dz = to.getZ() - from.getZ();
@@ -198,9 +197,7 @@ public class IMSimulationSpeed extends CheckDetection {
                             this.setPredict(dx, dz);
                             this.removePistonTick = true;
                         }
-                        if (d >= 0.01 && d <= 4.3
-                                && (this.protocol.trackers.has(PlayerTrackers.TrackerType.VEHICLE, "vh_tp")
-                                || this.vhact > 0)) {
+                        if (d >= 0.01 && d <= 4.3 && this.vhact > 0) {
                             this.setPredict(dx, dz);
                         }
                         if (this.isBlocksOnTop(to) && d < 0.1) {
@@ -267,7 +264,7 @@ public class IMSimulationSpeed extends CheckDetection {
     private double multiplex() {
         double m = 1.0;
         ExtendedPotionEffect speedEffect = this.protocol.bukkitExtra.getPotionEffect(PotionEffectType.SPEED, 5);
-        Location l = this.protocol.getLocation().clone().add(0, -0.5, 0);
+        Location l = this.protocol.bukkitExtra.getLocation().clone().add(0, -0.5, 0);
         Location lF = this.protocol.getFromLocation().clone().add(0, -0.5, 0);
         if (PlayerUtils.soulSpeed && this.protocol.bukkit().getInventory().getBoots() != null) {
             int e = this.protocol.bukkit().getInventory().getBoots().getEnchantmentLevel(Enchantment.SOUL_SPEED);
@@ -280,7 +277,7 @@ public class IMSimulationSpeed extends CheckDetection {
             m *= 1.6;
         if (this.protocol.bukkitExtra.getNearbyEntities(2).size() > 1)
             m *= 1.4;
-        if (BlockUtils.areWebs(new SpartanLocation(this.protocol.getLocation()).getBlock().getType())) {
+        if (BlockUtils.areWebs(new SpartanLocation(this.protocol.bukkitExtra.getLocation()).getBlock().getType())) {
             m *= 0.2;
         }
         if (this.isOnWater() || this.isOnWater()) {
@@ -378,7 +375,7 @@ public class IMSimulationSpeed extends CheckDetection {
                         double z = location.getZ();
                         Material material = this.protocol.packetWorld.getBlock(
                                 new Location(
-                                        this.protocol.getWorld(),
+                                        this.protocol.bukkitExtra.getWorld(),
                                         x + (double) dx * 0.5,
                                         y + (double) dy * 0.5, z + (double) dz * 0.5));
 
@@ -406,7 +403,7 @@ public class IMSimulationSpeed extends CheckDetection {
             for (double dy = 1.0; dy <= 2.0; dy += 0.5) {
                 for (int dz = -2; dz <= 2; ++dz) {
                     Material material = this.protocol.packetWorld.getBlock(
-                            new Location(this.protocol.getWorld(), x + (double) dx * 0.5, y + dy, z + (double) dz * 0.5)
+                            new Location(this.protocol.bukkitExtra.getWorld(), x + (double) dx * 0.5, y + dy, z + (double) dz * 0.5)
                     );
 
                     if (material != null && BlockUtils.isSolid(material)) {

@@ -111,7 +111,7 @@ public class GhostHand extends CheckRunner {
     }
 
     private boolean canDo(Block b) {
-        return b.getWorld() == this.protocol.getWorld();
+        return b.getWorld() == this.protocol.bukkitExtra.getWorld();
     }
 
     @Override

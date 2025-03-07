@@ -28,7 +28,7 @@ public class BlockPlaceEvent implements Listener {
             Block blockAgainst,
             Object event
     ) {
-        if (protocol.getWorld() != block.getWorld()) {
+        if (protocol.bukkitExtra.getWorld() != block.getWorld()) {
             return false;
         }
         protocol.profile().executeRunners(null, event);

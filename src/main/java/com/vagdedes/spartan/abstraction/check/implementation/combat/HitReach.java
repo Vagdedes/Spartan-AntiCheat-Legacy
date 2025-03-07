@@ -74,10 +74,10 @@ public class HitReach extends CheckRunner {
                     Set<AxisAlignedBB> cachedBlocks = new HashSet<>();
                     Set<Material> ignored = new HashSet<>();
                     int nulls = 0;
-                    Location hardcodedTargetLoc = target.getLocation().clone();
-                    Location hardcodedPlayerLoc = this.protocol.getLocation().clone();
+                    Location hardcodedTargetLoc = target.bukkitExtra.getLocation().clone();
+                    Location hardcodedPlayerLoc = this.protocol.bukkitExtra.getLocation().clone();
                     if (getDistance(hardcodedPlayerLoc, hardcodedTargetLoc) > 0.5) {
-                        final Location t = target.getLocation();
+                        final Location t = target.bukkitExtra.getLocation();
                         for (int dx = -3; dx <= 3; ++dx) {
                             for (int dy = -3; dy <= 3; ++dy) {
                                 for (int dz = -3; dz <= 3; ++dz) {
@@ -112,7 +112,7 @@ public class HitReach extends CheckRunner {
                     {
                         for (boolean fastMath : BOOLEANS) {
                             final ClientMath buildSpeed = fastMath ? optifineMath : vanillaMath;
-                            final Location l = protocol.getLocation();
+                            final Location l = protocol.bukkitExtra.getLocation();
                             final Location lf = protocol.getFromLocation();
                             Vec3[] possibleEyeRotation = {
                                             getVectorForRotation(l.getYaw(), l.getPitch(), buildSpeed),
@@ -133,7 +133,7 @@ public class HitReach extends CheckRunner {
                                                     eyeRotation.zCoord * 6.0D
                                     );
                                     List<Location> positions = new LinkedList<>(h);
-                                    positions.add(target.getLocation());
+                                    positions.add(target.bukkitExtra.getLocation());
                                     positions.add(target.getFrom());
                                     positions.add(target.bukkit().getLocation().clone());
                                     for (Location position : positions) {
@@ -223,7 +223,7 @@ public class HitReach extends CheckRunner {
                             diff = bruteforceRayTrace - 0.4;
                     rayTraceAnalysis.add(bruteforceRayTrace);
                     if (rayTraceAnalysis.size() >= 10) {
-                        analyze(this.protocol.getLocation(), bruteforceRayTrace);
+                        analyze(this.protocol.bukkitExtra.getLocation(), bruteforceRayTrace);
                     }
                 }
             }

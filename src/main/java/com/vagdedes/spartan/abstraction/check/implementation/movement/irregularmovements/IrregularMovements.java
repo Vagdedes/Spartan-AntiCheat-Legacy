@@ -48,7 +48,7 @@ public class IrregularMovements extends CheckRunner {
             groundSpoof.run(
                     new PlayerMoveEvent(
                             e.protocol.bukkit(),
-                            e.protocol.getLocation(),
+                            e.protocol.bukkitExtra.getLocation(),
                             e.protocol.getFromLocation()
                     )
             );

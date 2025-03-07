@@ -33,7 +33,7 @@ public class MoveLength extends CheckDetection {
         this.call(() -> {
             if (this.hit - System.currentTimeMillis() <= 2_000L
                     && this.hitBy - System.currentTimeMillis() <= 1_000L) {
-                float pitch = this.protocol.getLocation().getPitch(),
+                float pitch = this.protocol.bukkitExtra.getLocation().getPitch(),
                         pitchDifference = Math.abs(pitch - previousPitch);
 
                 if (pitchDifference > 0.0

@@ -11,9 +11,11 @@ import com.vagdedes.spartan.utils.java.StringUtils;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.math.MathHelper;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
+import com.vagdedes.spartan.utils.minecraft.protocol.ProtocolTools;
 import com.vagdedes.spartan.utils.minecraft.server.PluginUtils;
 import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import com.vagdedes.spartan.utils.minecraft.world.GroundUtils;
+import lombok.Setter;
 import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -40,6 +42,8 @@ public class PlayerBukkit {
             onGround = false,
             sprinting = false,
             sneaking = false;
+    @Setter
+    Location location;
 
     // Object
 
@@ -51,6 +55,7 @@ public class PlayerBukkit {
         this.afk = false;
         this.nearbyEntities = new Entity[0];
         this.maxNearbyEntitiesCoordinate = new double[3];
+        this.location = ProtocolTools.getLoadLocation(protocol.bukkit());
     }
 
     public void setLastInteraction() {
@@ -161,6 +166,23 @@ public class PlayerBukkit {
         return this.protocol.bukkit().getInventory().getItemInHand();
     }
 
+    // Separator
+
+    public Location getLocation() {
+        Location loc = this.protocol.packetsEnabled()
+                ? this.location
+                : ProtocolLib.getLocationOrNull(this.protocol.bukkit());
+        return loc != null
+                ? loc
+                : SpartanLocation.bukkitDefault.clone();
+    }
+
+    public World getWorld() {
+        return this.getLocation().getWorld();
+    }
+
+    // Separator
+
     public boolean isOnGround() {
         if (this.protocol.packetsEnabled()) {
             return this.protocol.onGround;
@@ -185,12 +207,12 @@ public class PlayerBukkit {
     public SpartanLocation getTargetBlock(double distance, double limit) {
         for (int i = 0; i < AlgebraUtils.integerCeil(Math.min(distance, limit)); i++) {
             SpartanLocation location = new SpartanLocation(
-                    protocol.getLocation().clone().add(
+                    protocol.bukkitExtra.getLocation().clone().add(
                             0,
                             this.getEyeHeight(),
                             0
                     ).add(
-                            protocol.getLocation().getDirection().multiply(i)
+                            protocol.bukkitExtra.getLocation().getDirection().multiply(i)
                     )
             );
 
@@ -227,11 +249,15 @@ public class PlayerBukkit {
         return ProtocolLib.getVehicle(this.protocol.bukkit());
     }
 
+    // Separator
+
     public double getHealth() {
         return ProtocolLib.isTemporary(this.protocol.bukkit())
                 ? 0.0
                 : this.protocol.bukkit().getHealth();
     }
+
+    // Separator
 
     public int getEntityId() {
         return ProtocolLib.isTemporary(this.protocol.bukkit())
@@ -296,7 +322,7 @@ public class PlayerBukkit {
             return new ArrayList<>(0);
         } else {
             List<Entity> entities = new ArrayList<>();
-            Location location = protocol.getLocation();
+            Location location = protocol.bukkitExtra.getLocation();
             int smallX = MathHelper.floor_double((location.getX() - radius) / PlayerUtils.chunk);
             int bigX = MathHelper.floor_double((location.getX() + radius) / PlayerUtils.chunk);
             int smallZ = MathHelper.floor_double((location.getZ() - radius) / PlayerUtils.chunk);
@@ -337,7 +363,7 @@ public class PlayerBukkit {
             return new ArrayList<>(0);
         } else {
             List<Entity> entities = new ArrayList<>();
-            Location location = protocol.getLocation();
+            Location location = protocol.bukkitExtra.getLocation();
             int smallX = MathHelper.floor_double((location.getX() - x) / PlayerUtils.chunk);
             int bigX = MathHelper.floor_double((location.getX() + x) / PlayerUtils.chunk);
             int smallZ = MathHelper.floor_double((location.getZ() - z) / PlayerUtils.chunk);
@@ -366,7 +392,7 @@ public class PlayerBukkit {
     // Teleport
 
     public void groundTeleport() {
-        Location location = this.protocol.getLocation();
+        Location location = this.protocol.bukkitExtra.getLocation();
         SpartanLocation locationP1 = new SpartanLocation(location.clone().add(0, 1, 0));
 
         if (BlockUtils.isSolid(locationP1.getBlock().getType())
@@ -374,7 +400,7 @@ public class PlayerBukkit {
                 || BlockUtils.canClimb(locationP1.getBlock().getType(), false))) {
             return;
         }
-        World world = this.protocol.getWorld();
+        World world = this.protocol.bukkitExtra.getWorld();
         double startY = Math.min(BlockUtils.getMaxHeight(world), location.getY());
         int iterations = 0;
 
@@ -418,8 +444,8 @@ public class PlayerBukkit {
     // Separator
 
     public boolean isOutsideOfTheBorder(double deviation) {
-        Location loc = protocol.getLocation();
-        WorldBorder border = this.protocol.getWorld().getWorldBorder();
+        Location loc = protocol.bukkitExtra.getLocation();
+        WorldBorder border = this.protocol.bukkitExtra.getWorld().getWorldBorder();
         double size = (border.getSize() / 2.0) + deviation;
         Location center = border.getCenter();
         return Math.abs(loc.getX() - center.getX()) > size

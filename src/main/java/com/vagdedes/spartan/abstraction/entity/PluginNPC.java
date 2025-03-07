@@ -150,7 +150,7 @@ public class PluginNPC {
                     closest = protocol;
                 }
             }
-            Vector playerVec = closest.getLocation().toVector();
+            Vector playerVec = closest.bukkitExtra.getLocation().toVector();
             Vector sheepVec = armorStand.getLocation().toVector();
             Vector toLookAtVec = playerVec.subtract(sheepVec);
             armorStand.teleport(armorStand.getLocation().setDirection(toLookAtVec));

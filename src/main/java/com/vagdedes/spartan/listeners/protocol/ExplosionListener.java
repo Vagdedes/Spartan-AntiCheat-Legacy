@@ -31,7 +31,7 @@ public class ExplosionListener extends PacketAdapter {
             PlayerProtocol protocol = PluginBase.getProtocol(player);
             Location l = new Location(player.getWorld(), d.get(0), d.get(1), d.get(2));
 
-            if (SpartanLocation.distanceSquared(l, protocol.getLocation()) < 10) {
+            if (SpartanLocation.distanceSquared(l, protocol.bukkitExtra.getLocation()) < 10) {
                 protocol.getComponentY().explosionTick = true;
                 protocol.getComponentXZ().explosionTick = true;
             }

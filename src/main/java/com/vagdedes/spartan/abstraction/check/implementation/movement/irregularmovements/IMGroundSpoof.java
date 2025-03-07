@@ -103,14 +103,14 @@ public class IMGroundSpoof extends CheckDetection {
                 for (int dz = -1; dz <= 1; dz++) {
                     Material material = this.protocol.packetWorld.getBlock(
                             new Location(
-                                    this.protocol.getWorld(),
+                                    this.protocol.bukkitExtra.getWorld(),
                                     x + (dx * 0.3),
                                     y + (dy * 0.5),
                                     z + (dz * 0.3)
                             )
                     );
                     Material material2 = new SpartanLocation(new Location(
-                            this.protocol.getWorld(),
+                            this.protocol.bukkitExtra.getWorld(),
                             x + (dx * 0.3),
                             y + (dy * 0.5),
                             z + (dz * 0.3))).getBlock().getTypeOrNull();

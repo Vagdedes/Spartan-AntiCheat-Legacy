@@ -20,7 +20,6 @@ import com.vagdedes.spartan.functionality.tracking.ResearchEngine;
 import com.vagdedes.spartan.utils.minecraft.entity.AxisAlignedBB;
 import com.vagdedes.spartan.utils.minecraft.entity.PlayerUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PotionEffectUtils;
-import com.vagdedes.spartan.utils.minecraft.protocol.ProtocolTools;
 import com.vagdedes.spartan.utils.minecraft.world.GroundUtils;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -28,7 +27,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -62,13 +60,11 @@ public class PlayerProtocol {
             pistonTick,
             transactionBoot,
             clickBlocker,
-            transactionLocal,
             transactionSentKeep,
             useItemPacket,
             useItemPacketReset;
     @Setter
     private Location
-            location,
             from,
             teleport;
     public String fromWorld;
@@ -121,7 +117,6 @@ public class PlayerProtocol {
                 : Check.DetectionType.BUKKIT;
         this.onGround = false;
         this.onGroundFrom = false;
-        this.location = ProtocolTools.getLoadLocation(player);
         this.from = null;
         this.fromWorld = "";
         this.teleport = null;
@@ -148,7 +143,6 @@ public class PlayerProtocol {
         this.transactionLastTime = System.currentTimeMillis();
         this.transactionPing = 0;
         this.transactionBoot = false;
-        this.transactionLocal = false;
         this.transactionSentKeep = false;
         this.lagTick = 0;
         this.predictedSlimeTicks = 0;
@@ -160,7 +154,7 @@ public class PlayerProtocol {
         this.slime0Tick = 0;
         this.clampVector = new Vector();
         this.locations = Collections.synchronizedMap(new LinkedHashMap<>());
-        this.schedulerFrom = this.location;
+        this.schedulerFrom = this.bukkitExtra.location;
 
         // Always last
         this.profile().update(this);
@@ -194,7 +188,7 @@ public class PlayerProtocol {
                     }
                     protocol.bukkitExtra.checkForAFK();
                     protocol.profile().executeRunners(false, null);
-                    protocol.schedulerFrom = protocol.getLocation();
+                    protocol.schedulerFrom = protocol.bukkitExtra.getLocation();
                 }
             }
         }, 1L, 1L);
@@ -252,19 +246,10 @@ public class PlayerProtocol {
 
     // Separator
 
-    public Location getLocation() {
-        Location loc = this.packetsEnabled()
-                ? this.location
-                : ProtocolLib.getLocationOrNull(this.bukkit());
-        return loc != null
-                ? loc
-                : SpartanLocation.bukkitDefault.clone();
-    }
-
     public Location getFromLocation() {
         return this.from != null
                 ? this.from
-                : this.getLocation();
+                : this.bukkitExtra.getLocation();
     }
 
     public Location getVehicleLocation() {
@@ -281,7 +266,7 @@ public class PlayerProtocol {
         Location vehicleLocation = getVehicleLocation();
 
         if (vehicleLocation == null) {
-            return this.getLocation();
+            return this.bukkitExtra.getLocation();
         } else {
             return vehicleLocation;
         }
@@ -296,7 +281,7 @@ public class PlayerProtocol {
     }
 
     public SpartanLocation getPastTickRotation() {
-        Location l = this.getLocation().clone();
+        Location l = this.bukkitExtra.getLocation().clone();
         l.setYaw(this.from.getYaw());
         l.setPitch(this.from.getPitch());
         return new SpartanLocation(l);
@@ -376,10 +361,6 @@ public class PlayerProtocol {
         }
     }
 
-    public World getWorld() {
-        return this.getLocation().getWorld();
-    }
-
     // Separator
 
     public boolean packetsEnabled() {
@@ -421,7 +402,7 @@ public class PlayerProtocol {
             }
         }
         if (vehicle == null) {
-            Location known = this.getLocation();
+            Location known = this.bukkitExtra.getLocation();
 
             if (known.getX() != originalTo.getX()
                     || known.getY() != originalTo.getY()

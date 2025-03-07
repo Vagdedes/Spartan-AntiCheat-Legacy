@@ -62,7 +62,7 @@ public class BlockPlaceListener extends PacketAdapter {
                     }
 
                     Location l = new Location(
-                            protocol.getWorld(),
+                            protocol.bukkitExtra.getWorld(),
                             blockPosition.toVector().getBlockX(),
                             blockPosition.toVector().getBlockY(),
                             blockPosition.toVector().getBlockZ()
@@ -81,7 +81,7 @@ public class BlockPlaceListener extends PacketAdapter {
                             ? (isMainHand ? player.getInventory().getItemInMainHand()
                             : player.getInventory().getItemInOffHand()) : player.getItemInHand();
                     if (itemInHand.getType().isBlock()) {
-                        if (!isInPlayer(protocol.getLocation(), block.getLocation())) {
+                        if (!isInPlayer(protocol.bukkitExtra.getLocation(), block.getLocation())) {
                             Block blockAgainst = player.getLocation().getBlock();
                             Material material = itemInHand.getType();
                             protocol.packetWorld.worldChange(new ServerBlockChange(blockPosition, material));

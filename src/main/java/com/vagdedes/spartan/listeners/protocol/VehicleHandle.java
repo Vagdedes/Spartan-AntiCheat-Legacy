@@ -68,8 +68,8 @@ public class VehicleHandle extends PacketAdapter {
                 if (protocol.bukkitExtra.getVehicle() != null) {
                     Entity vehicle = protocol.bukkitExtra.getVehicle();
                     Location location = vehicle.getLocation();
-                    protocol.setLocation(location);
-                    MovementEvent.event(new PlayerMoveEvent(player, protocol.getFromLocation(), protocol.getLocation()), true);
+                    protocol.bukkitExtra.setLocation(location);
+                    MovementEvent.event(new PlayerMoveEvent(player, protocol.getFromLocation(), protocol.bukkitExtra.getLocation()), true);
                 }
             }
         });

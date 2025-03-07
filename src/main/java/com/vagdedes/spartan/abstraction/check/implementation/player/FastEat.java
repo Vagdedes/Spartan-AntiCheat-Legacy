@@ -125,7 +125,7 @@ public class FastEat extends CheckRunner {
 
     @Override
     protected boolean canRun() {
-        return this.protocol.getWorld().getDifficulty() != Difficulty.PEACEFUL
+        return this.protocol.bukkitExtra.getWorld().getDifficulty() != Difficulty.PEACEFUL
                 && !this.protocol.bukkitExtra.hasPotionEffect(PotionEffectType.SATURATION, 0)
                 && Attributes.getAmount(this.protocol, Attributes.GENERIC_MAX_ABSORPTION) == 0.0;
     }

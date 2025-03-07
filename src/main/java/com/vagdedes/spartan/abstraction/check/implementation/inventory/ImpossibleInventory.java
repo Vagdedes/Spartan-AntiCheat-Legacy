@@ -135,7 +135,7 @@ public class ImpossibleInventory extends CheckRunner {
     private void runPortalInventory(ItemStack item) {
         this.portalInventoryDetection.call(() -> {
             if (BlockUtils.hasMaterial(item)) {
-                SpartanLocation loc = new SpartanLocation(this.protocol.getLocation());
+                SpartanLocation loc = new SpartanLocation(this.protocol.bukkitExtra.getLocation());
 
                 if (loc.getBlock().getType() == nether_portal
                         || loc.clone().add(0, 1, 0).getBlock().getType() == nether_portal) {
@@ -173,7 +173,7 @@ public class ImpossibleInventory extends CheckRunner {
     }
 
     private double getVertical() {
-        return this.protocol.getLocation().getY() - this.protocol.getFromLocation().getY();
+        return this.protocol.bukkitExtra.getLocation().getY() - this.protocol.getFromLocation().getY();
     }
 
 }

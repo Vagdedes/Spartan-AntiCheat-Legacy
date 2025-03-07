@@ -60,7 +60,7 @@ public class IMSimulationGravity extends CheckDetection {
             boolean ground = (this.protocol.bukkitExtra.getVehicle() != null)
                     ? this.protocol.bukkitExtra.getVehicle().isOnGround()
                     : this.protocol.bukkitExtra.isOnGround();
-            Location to = p.getLocation();
+            Location to = p.bukkitExtra.getLocation();
             Location from = this.protocol.getFromLocation();
             double dx = to.getX() - from.getX();
             double dz = to.getZ() - from.getZ();
@@ -86,7 +86,7 @@ public class IMSimulationGravity extends CheckDetection {
                 double pr2;
                 if (this.isOnSlime()) this.allowMinorGravityChange = true;
                 if (ground) {
-                    if (this.protocol.getLocation().getY() > this.lastGroundY)
+                    if (this.protocol.bukkitExtra.getLocation().getY() > this.lastGroundY)
                         allowLowJump = true;
                     if (this.ground != 1) {
                         this.setPredict(0.0);
@@ -118,7 +118,7 @@ public class IMSimulationGravity extends CheckDetection {
                         this.setPredict(motion);
                         this.semi--;
                     }
-                    this.lastGroundY = this.protocol.getLocation().getY();
+                    this.lastGroundY = this.protocol.bukkitExtra.getLocation().getY();
                 } else if (this.air == 1) {
                     if (motion > 0.0) {
                         this.setPredict((float) jumpStartMotionY);
@@ -547,7 +547,7 @@ public class IMSimulationGravity extends CheckDetection {
             for (double dy = 1.0; dy <= 2.0; dy += 0.5) {
                 for (int dz = -2; dz <= 2; ++dz) {
                     Material material = this.protocol.packetWorld.getBlock(
-                            new Location(this.protocol.getWorld(), x + (double) dx * 0.5, y + dy, z + (double) dz * 0.5)
+                            new Location(this.protocol.bukkitExtra.getWorld(), x + (double) dx * 0.5, y + dy, z + (double) dz * 0.5)
                     );
 
                     if (material != null && BlockUtils.isSolid(material)) {
@@ -570,7 +570,7 @@ public class IMSimulationGravity extends CheckDetection {
                 for (int dz = -1; dz <= 1; dz++) {
                     Material material = this.protocol.packetWorld.getBlock(
                             new Location(
-                                    this.protocol.getWorld(),
+                                    this.protocol.bukkitExtra.getWorld(),
                                     x + dx * 0.3,
                                     y + dy * 0.3,
                                     z + dz * 0.3)
@@ -598,7 +598,7 @@ public class IMSimulationGravity extends CheckDetection {
                 for (int dz = -1; dz <= 1; dz++) {
                     Material material = this.protocol.packetWorld.getBlock(
                             new Location(
-                                    this.protocol.getWorld(),
+                                    this.protocol.bukkitExtra.getWorld(),
                                     x + dx,
                                     y + dy,
                                     z + dz)

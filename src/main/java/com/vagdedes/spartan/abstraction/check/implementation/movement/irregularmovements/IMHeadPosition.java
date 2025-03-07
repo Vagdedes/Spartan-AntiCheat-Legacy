@@ -15,7 +15,7 @@ public class IMHeadPosition extends CheckDetection {
                     || this.protocol.bukkitExtra.getVehicle() != null) {
                 return;
             }
-            double pitch = this.protocol.getLocation().getPitch();
+            double pitch = this.protocol.bukkitExtra.getLocation().getPitch();
 
             if (Math.abs(pitch) >= 90.1f) {
                 cancel("head-position, pitch: " + pitch);

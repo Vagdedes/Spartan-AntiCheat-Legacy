@@ -41,7 +41,7 @@ public class ScaffoldAnalysis extends CheckDetection {
                 this.oldBlock = currentBlock;
                 return;
             }
-            Location l = p.getLocation();
+            Location l = p.bukkitExtra.getLocation();
             Location lB = new Location(l.getWorld(), (long) l.getX(), (long) l.getY(), (long) l.getZ());
             Location lB8 = new Location(l.getWorld(), (long) l.getX() + 1, (long) l.getY(), (long) l.getZ());
             long placeHash = (long) ((lB.getX() * 31) + lB.getZ());
@@ -89,7 +89,7 @@ public class ScaffoldAnalysis extends CheckDetection {
                 }
                 if (delay < 5
                         || placeHash == this.placeHash
-                        || (long) p.getLocation().getY() <= bL.getY()
+                        || (long) p.bukkitExtra.getLocation().getY() <= bL.getY()
                         || p.bukkit().isFlying() || !checkHash) {
                     p.rightClickCounter = 0;
                     this.placeTime = System.currentTimeMillis();
@@ -97,7 +97,7 @@ public class ScaffoldAnalysis extends CheckDetection {
                 /*
                 p.player.sendMessage("c 1 " + (delay < 5)
                                 + " " + (placeHash == p.placeHash) + " "
-                                + ((long) p.getLocation().getY() <= bL.getY())
+                                + ((long) p.bukkitExtra.getLocation().getY() <= bL.getY())
                                 + " " + p.player.isFlying() + " " + !checkHash);
                  */
                     return;

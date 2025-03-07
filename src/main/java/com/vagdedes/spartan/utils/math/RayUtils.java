@@ -87,7 +87,7 @@ public class RayUtils {
 
     @SafeVarargs
     public static boolean onBlock(PlayerProtocol protocol, Location location, Set<Material>... sets) {
-        World world = protocol.getWorld();
+        World world = protocol.bukkitExtra.getWorld();
         Vector playerLocation = location.toVector(),
                 min = playerLocation.clone().add(new Vector(-0.3, -0.5, -0.3)),
                 max = playerLocation.clone().add(new Vector(0.3, 0.1, 0.3));
@@ -109,7 +109,7 @@ public class RayUtils {
     }
 
     public static boolean onBlock(PlayerProtocol protocol, Location location, Set<Material> set) {
-        World world = protocol.getWorld();
+        World world = protocol.bukkitExtra.getWorld();
         Vector playerLocation = location.toVector(),
                 min = playerLocation.clone().add(new Vector(-0.3, -0.5, -0.3)),
                 max = playerLocation.clone().add(new Vector(0.3, 0.1, 0.3));
@@ -129,7 +129,7 @@ public class RayUtils {
     }
 
     public static boolean onBlock(PlayerProtocol protocol, Location location, Material material) {
-        World world = protocol.getWorld();
+        World world = protocol.bukkitExtra.getWorld();
         Vector playerLocation = location.toVector(),
                 min = playerLocation.clone().add(new Vector(-0.3, -0.5, -0.3)),
                 max = playerLocation.clone().add(new Vector(0.3, 0.1, 0.3));
@@ -149,7 +149,7 @@ public class RayUtils {
     }
 
     public static boolean onSolidBlock(PlayerProtocol protocol, Location location) {
-        World world = protocol.getWorld();
+        World world = protocol.bukkitExtra.getWorld();
         Vector playerLocation = location.toVector(),
                 min = playerLocation.clone().add(new Vector(-0.3, -0.5, -0.3)),
                 max = playerLocation.clone().add(new Vector(0.3, 0.1, 0.3));
@@ -169,7 +169,7 @@ public class RayUtils {
     }
 
     public static boolean isSolidBlock(PlayerProtocol protocol, Location location) {
-        World world = protocol.getWorld();
+        World world = protocol.bukkitExtra.getWorld();
         Vector playerLocation = location.toVector(),
                 min = playerLocation.clone().add(new Vector(-0.3, -0.3, -0.3)),
                 max = playerLocation.clone().add(new Vector(0.3, 0.3, 0.3));
@@ -189,7 +189,7 @@ public class RayUtils {
     }
 
     public static boolean inBlock(PlayerProtocol protocol, Location location) {
-        World world = protocol.getWorld();
+        World world = protocol.bukkitExtra.getWorld();
         Vector playerLocation = location.toVector(),
                 min = playerLocation.clone().add(new Vector(-0.3, 0.0, -0.3)),
                 max = playerLocation.clone().add(new Vector(0.3, 0.5, 0.3));
@@ -214,14 +214,14 @@ public class RayUtils {
         if (entityLoc == null) {
             return null;
         }
-        Vector direction = entityLoc.toVector().subtract(PluginBase.getProtocol(player1).getLocation().toVector());
+        Vector direction = entityLoc.toVector().subtract(PluginBase.getProtocol(player1).bukkitExtra.getLocation().toVector());
         float yaw = (float) Math.toDegrees(Math.atan2(direction.getX(), direction.getZ())),
                 pitch = (float) Math.toDegrees(Math.asin(-direction.getY()));
         return new float[]{castTo360(yaw), pitch};
     }
 
     public static boolean inHitbox(PlayerProtocol protocol, Entity target, float size) {
-        Location location = protocol.getLocation();
+        Location location = protocol.bukkitExtra.getLocation();
         boolean intersection = false;
         boolean intersection2 = false;
         boolean exempt;
@@ -261,7 +261,7 @@ public class RayUtils {
     }
 
     public static boolean inHitbox(PlayerProtocol protocol, Location locationIn, Entity target, float size, float dist) {
-        Location location = protocol.getLocation();
+        Location location = protocol.bukkitExtra.getLocation();
         boolean intersection = false;
         boolean exempt;
         double targetX = locationIn.getX();
@@ -296,7 +296,7 @@ public class RayUtils {
     }
 
     public static boolean inHitbox(PlayerProtocol protocol, Location locationIn, float size) {
-        Location location = protocol.getLocation();
+        Location location = protocol.bukkitExtra.getLocation();
         boolean intersection = false;
         double targetX = locationIn.getX();
         double targetY = locationIn.getY();
@@ -313,7 +313,7 @@ public class RayUtils {
     }
 
     public static boolean inHitbox(PlayerProtocol protocol, Location locationIn, float size, double dist) {
-        Location location = protocol.getLocation();
+        Location location = protocol.bukkitExtra.getLocation();
         boolean intersection = false;
         double targetX = locationIn.getX();
         double targetY = locationIn.getY();
@@ -353,7 +353,7 @@ public class RayUtils {
     }
 
     private static MovingObjectPosition rayCast(final float yaw, final float pitch, final boolean sneak, final AxisAlignedBB bb, PlayerProtocol protocol) {
-        Location position = protocol.getLocation();
+        Location position = protocol.bukkitExtra.getLocation();
         double lastX = position.getX(),
                 lastY = position.getY(),
                 lastZ = position.getZ();
@@ -364,7 +364,7 @@ public class RayUtils {
     }
 
     private static MovingObjectPosition rayCast(final float yaw, final float pitch, final boolean sneak, final AxisAlignedBB bb, PlayerProtocol protocol, double dist) {
-        Location position = protocol.getLocation();
+        Location position = protocol.bukkitExtra.getLocation();
         double lastX = position.getX(),
                 lastY = position.getY(),
                 lastZ = position.getZ();
@@ -514,7 +514,7 @@ public class RayUtils {
 
         boolean intersection = false;
         // boundingBox = boundingBox.expand(0.04, 0.03, 0.04);
-        intersection = isIntersection(protocol, protocol.getLocation(), intersection, boundingBox, dist);
+        intersection = isIntersection(protocol, protocol.bukkitExtra.getLocation(), intersection, boundingBox, dist);
         return intersection;
     }
 
@@ -523,7 +523,7 @@ public class RayUtils {
         boolean intersection = false;
         boolean intersection2 = false;
         // boundingBox = boundingBox.expand(0.04, 0.03, 0.04);
-        intersection = isIntersection(protocol, protocol.getLocation(), intersection, boundingBox, dist);
+        intersection = isIntersection(protocol, protocol.bukkitExtra.getLocation(), intersection, boundingBox, dist);
         intersection2 = isIntersection(protocol, protocol.getFromLocation(), intersection, boundingBox, dist);
         return intersection || intersection2;
     }

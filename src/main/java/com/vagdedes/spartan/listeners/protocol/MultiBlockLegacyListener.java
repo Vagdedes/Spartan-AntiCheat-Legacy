@@ -40,7 +40,7 @@ public class MultiBlockLegacyListener extends PacketAdapter {
                 for (MultiBlockChangeInfo info : m) {
                     Material material = info.getData().getType();
                     if (material.toString().equals("SLIME_BLOCK")) {
-                        if (info.getLocation(world).distance(protocol.getLocation()) < 6) {
+                        if (info.getLocation(world).distance(protocol.bukkitExtra.getLocation()) < 6) {
                             protocol.predictedSlimeTicks = 6;
                         }
                     }

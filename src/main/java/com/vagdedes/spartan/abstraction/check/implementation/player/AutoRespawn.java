@@ -62,6 +62,6 @@ public class AutoRespawn extends CheckRunner {
     protected boolean canRun() {
         return !PluginUtils.contains("respawn")
                 && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_15)
-                || !(this.protocol.getWorld().getGameRuleValue(GameRule.DO_IMMEDIATE_RESPAWN) == true));
+                || !(this.protocol.bukkitExtra.getWorld().getGameRuleValue(GameRule.DO_IMMEDIATE_RESPAWN) == true));
     }
 }

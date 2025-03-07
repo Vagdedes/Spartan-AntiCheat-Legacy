@@ -37,7 +37,7 @@ public class EnvinromentData {
 
     public EnvinromentData(PlayerProtocol protocol) {
         Location location = (protocol.bukkitExtra.getVehicle() == null) ?
-                protocol.getLocation()
+                protocol.bukkitExtra.getLocation()
                 : protocol.bukkitExtra.getVehicle().getLocation();
         double x = location.getX();
         double y = location.getY() - 0.1;
@@ -48,19 +48,19 @@ public class EnvinromentData {
                 for (int dz = -2; dz <= 2; ++dz) {
                     boolean h = Math.abs(dx) < 2 && Math.abs(dz) < 2;
                     SpartanBlock b = new SpartanLocation(
-                            new Location(protocol.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
+                            new Location(protocol.bukkitExtra.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
                     ).getBlock();
                     Material material = protocol.packetWorld.getBlock(
-                            new Location(protocol.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
+                            new Location(protocol.bukkitExtra.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
                     );
                     Material materialWide = protocol.packetWorld.getBlock(
-                            new Location(protocol.getWorld(), x + (double) dx * 0.5, y + (double) (dy * 0.5) - 0.3, z + (double) dz * 0.5)
+                            new Location(protocol.bukkitExtra.getWorld(), x + (double) dx * 0.5, y + (double) (dy * 0.5) - 0.3, z + (double) dz * 0.5)
                     );
                     Material materialTop = protocol.packetWorld.getBlock(
-                            new Location(protocol.getWorld(), x + (double) dx * 0.5, y + (double) (dy * 0.5) + 1.0, z + (double) dz * 0.5)
+                            new Location(protocol.bukkitExtra.getWorld(), x + (double) dx * 0.5, y + (double) (dy * 0.5) + 1.0, z + (double) dz * 0.5)
                     );
                     Material materialFrom = protocol.packetWorld.getBlock(
-                            new Location(protocol.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
+                            new Location(protocol.bukkitExtra.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
                     );
                     Material m2 = b.getType();
                     if (material == null || materialFrom == null || m2 == null) return;
@@ -107,7 +107,7 @@ public class EnvinromentData {
                     }
                     if (BlockUtils.isLiquidOrWaterLogged(b, true)
                             || BlockUtils.isLiquid(protocol.packetWorld.getBlock(
-                            new Location(protocol.getWorld(), x + (double) dx * 0.3, y, z + (double) dz * 0.3)
+                            new Location(protocol.bukkitExtra.getWorld(), x + (double) dx * 0.3, y, z + (double) dz * 0.3)
                     ))
                             || BlockUtils.isLiquid(material)
                             || BlockUtils.isLiquid(m2)
@@ -124,15 +124,15 @@ public class EnvinromentData {
                         double yF = protocol.getFromLocation().getY();
                         double zF = protocol.getFromLocation().getZ();
                         Material materialBig = protocol.packetWorld.getBlock(
-                                new Location(protocol.getWorld(), x + (double) dx,
+                                new Location(protocol.bukkitExtra.getWorld(), x + (double) dx,
                                         y + (double) dy, z + (double) dz)
                         );
                         Material materialBig2 = protocol.packetWorld.getBlock(
-                                new Location(protocol.getWorld(),
+                                new Location(protocol.bukkitExtra.getWorld(),
                                         xF + (double) dx, yF + (double) dy - 1, zF + (double) dz)
                         );
                         Material materialBigFrom = protocol.packetWorld.getBlock(
-                                new Location(protocol.getWorld(),
+                                new Location(protocol.bukkitExtra.getWorld(),
                                         xF + (double) dx, yF + (double) dy + 0.5, zF + (double) dz)
                         );
                         if (materialBig == null) return;
@@ -157,7 +157,7 @@ public class EnvinromentData {
 
     private void calculateBubbleWater(PlayerProtocol protocol, SpartanLocation location) {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
-            int blockY = location.getBlockY(), minY = BlockUtils.getMinHeight(protocol.getWorld());
+            int blockY = location.getBlockY(), minY = BlockUtils.getMinHeight(protocol.bukkitExtra.getWorld());
 
             if (blockY > minY) {
                 SpartanLocation locationModified = location.clone();
