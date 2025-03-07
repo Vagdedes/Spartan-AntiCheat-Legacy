@@ -93,7 +93,10 @@ public class PlayerProtocol {
             transactionLastTime,
             transactionPing,
             lagTick,
-            oldClickTime;
+            oldClickTime,
+            soulSandWater,
+            magmaCubeWater,
+            lastVelocity;
     public boolean entityHandle;
     private ComponentY componentY;
     private ComponentXZ componentXZ;
@@ -204,6 +207,10 @@ public class PlayerProtocol {
 
     void resetActiveCreationTime() {
         this.activeCreationTime = System.currentTimeMillis();
+    }
+
+    public long getTimePassed(long time) {
+        return System.currentTimeMillis() - this.activeCreationTime;
     }
 
     public long getActiveTimePlayed() {

@@ -54,7 +54,8 @@ public class IMSimulationGravity extends CheckDetection {
         this.call(() -> {
             PlayerProtocol p = this.protocol;
 
-            if (p.trackers.has(PlayerTrackers.TrackerType.BUBBLE_WATER)) {
+            if (p.getTimePassed(p.magmaCubeWater) <= 1_000L
+                    || p.getTimePassed(p.soulSandWater) <= 1_000L) {
                 return;
             }
             boolean ground = (this.protocol.bukkitExtra.getVehicle() != null)

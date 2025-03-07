@@ -5,7 +5,7 @@ version: 4.0.2.9
 website: https://www.vagdedes.com
 description: The intuitive solution when it comes to anti-cheat protection
 api-version: 1.13
-softdepend: [mcMMO, ProtocolSupport, VeinMiner, AcidRain, AcidIsland, EcoEnchants, CustomEnchantsPlus,
+softdepend: [mcMMO, ProtocolSupport, VeinMiner, EcoEnchants, CustomEnchantsPlus,
              aSkyBlock, AdvancedAbilities, CrackShot, CrackShotPlus, CraftBook, GrapplingHook, ProtocolLib,
              MagicSpells, MineBomb, MineTinker, MythicMobs, PrinterMode, ProjectKorra, RealDualWield,
              SuperPickaxe, TreeFeller, Vehicles, WildTools, floodgate-bukkit, FileGUI]

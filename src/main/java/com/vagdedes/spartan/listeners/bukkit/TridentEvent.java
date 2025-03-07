@@ -2,10 +2,7 @@ package com.vagdedes.spartan.listeners.bukkit;
 
 import com.vagdedes.spartan.abstraction.event.CPlayerRiptideEvent;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
-import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
 import com.vagdedes.spartan.functionality.server.PluginBase;
-import com.vagdedes.spartan.functionality.server.TPS;
-import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.EventHandler;
@@ -39,17 +36,7 @@ public class TridentEvent implements Listener {
                     int level = item.getEnchantmentLevel(Enchantment.RIPTIDE);
 
                     if (level > 0) {
-                        int ticks = AlgebraUtils.integerRound(Math.log(level) * TPS.maximum);
-
-                        if (level > riptideMaxSafeLevel) {
-                            p.trackers.add(
-                                    PlayerTrackers.TrackerType.TRIDENT,
-                                    AlgebraUtils.integerCeil(ticks * (level / riptideMaxSafeLevel))
-                            );
-                        } else {
-                            p.trackers.add(PlayerTrackers.TrackerType.TRIDENT, ticks);
-                        }
-                        p.profile().executeRunners(false, e);
+                        p.lastVelocity = System.currentTimeMillis();
                         break;
                     }
                 }

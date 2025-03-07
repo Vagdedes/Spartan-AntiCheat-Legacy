@@ -63,7 +63,6 @@ public class Register extends JavaPlugin {
         enable(new VehicleEvent());
         enable(new VelocityEvent());
         enable(new WorldEvent());
-        enable(new DamageEvent());
 
         //enable(new GhostBlockTest());
 

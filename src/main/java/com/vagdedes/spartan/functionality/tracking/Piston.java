@@ -54,7 +54,7 @@ public class Piston {
     private static boolean run(PlayerProtocol protocol, double preX, double diffY, double preZ) {
         if (Math.sqrt(preX + preZ) <= horizontalDistance
                 && Math.abs(diffY) <= verticalDistance) {
-            protocol.trackers.add(PlayerTrackers.TrackerType.PISTON, AlgebraUtils.integerCeil(TPS.maximum));
+            protocol.lastVelocity = System.currentTimeMillis();
             return true;
         }
         return false;

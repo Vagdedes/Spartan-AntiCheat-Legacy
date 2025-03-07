@@ -10,15 +10,13 @@ import java.util.concurrent.ConcurrentHashMap;
 public class PlayerTrackers {
 
     public enum TrackerFamily {
-        VELOCITY, MOTION
+        VELOCITY
     }
 
     public enum TrackerType {
-        BOUNCING_BLOCKS(TrackerFamily.VELOCITY), PISTON(TrackerFamily.VELOCITY),
-        BUBBLE_WATER(TrackerFamily.VELOCITY), TRIDENT(TrackerFamily.VELOCITY),
-        DAMAGE(TrackerFamily.VELOCITY), TELEPORT(TrackerFamily.VELOCITY),
+        TELEPORT(TrackerFamily.VELOCITY),
 
-        VEHICLE(TrackerFamily.MOTION);
+        VEHICLE(TrackerFamily.VELOCITY); // MOTION
 
         public final TrackerFamily family;
 

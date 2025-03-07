@@ -205,12 +205,6 @@ public class PlayerBukkit {
 
     // Separator
 
-    public void handleReceivedDamage() {
-        this.protocol.trackers.add(PlayerTrackers.TrackerType.DAMAGE, AlgebraUtils.integerCeil(TPS.maximum));
-    }
-
-    // Separator
-
     public float getAttackCooldown() {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)) {
             return this.protocol.bukkit().getAttackCooldown();

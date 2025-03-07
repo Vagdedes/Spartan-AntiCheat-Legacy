@@ -34,44 +34,7 @@ public class MovementProcessing {
     public static void run(PlayerProtocol protocol,
                            SpartanLocation to,
                            double vertical, double box) {
-        if (!calculateLiquid(protocol, to)) {
-            if (!calculateGroundCollision(protocol, vertical, box)) {
-                calculateBouncing(protocol, to, vertical);
-            }
-        } else {
-            calculateBouncing(protocol, to, vertical);
-        }
-    }
-
-    private static boolean calculateGroundCollision(PlayerProtocol protocol,
-                                                    double vertical, double box) {
-        if (protocol.isOnGround()
-                && protocol.movement.getTicksOnAir() == 0
-                && protocol.bukkitExtra.getVehicle() == null
-                && vertical == 0.0
-                && GroundUtils.collisionHeightExists(box)) {
-            protocol.trackers.removeMany(PlayerTrackers.TrackerFamily.MOTION);
-            protocol.trackers.removeMany(PlayerTrackers.TrackerFamily.VELOCITY);
-            protocol.movement.removeLastLiquidTime();
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    private static void calculateBouncing(PlayerProtocol protocol, SpartanLocation location,
-                                          double vertical) {
-        if (v1_8 && vertical != 0.0) {
-            if (BlockUtils.isSlime(protocol, location, 4)) {
-                int time = (int) (TPS.maximum * 2);
-                protocol.trackers.add(PlayerTrackers.TrackerType.BOUNCING_BLOCKS, time);
-                protocol.trackers.add(PlayerTrackers.TrackerType.BOUNCING_BLOCKS, "slime", time);
-            } else if (BlockUtils.isBed(protocol, location, 4)) {
-                int time = (int) (TPS.maximum * 2);
-                protocol.trackers.add(PlayerTrackers.TrackerType.BOUNCING_BLOCKS, time);
-                protocol.trackers.add(PlayerTrackers.TrackerType.BOUNCING_BLOCKS, "bed", time);
-            }
-        }
+        calculateLiquid(protocol, to);
     }
 
     // Separator
@@ -126,12 +89,12 @@ public class MovementProcessing {
                         Material type = block.getType();
 
                         if (type == Material.SOUL_SAND) {
-                            protocol.trackers.add(PlayerTrackers.TrackerType.BUBBLE_WATER, AlgebraUtils.integerCeil(TPS.maximum));
-                            protocol.trackers.add(PlayerTrackers.TrackerType.BUBBLE_WATER, "soul-sand", AlgebraUtils.integerCeil(TPS.maximum));
+                            protocol.soulSandWater = System.currentTimeMillis();
+                            protocol.lastVelocity = System.currentTimeMillis();
                             return;
                         } else if (type == MAGMA_BLOCK) {
-                            protocol.trackers.add(PlayerTrackers.TrackerType.BUBBLE_WATER, AlgebraUtils.integerCeil(TPS.maximum));
-                            protocol.trackers.add(PlayerTrackers.TrackerType.BUBBLE_WATER, "magma-block", AlgebraUtils.integerCeil(TPS.maximum));
+                            protocol.magmaCubeWater = System.currentTimeMillis();
+                            protocol.lastVelocity = System.currentTimeMillis();
                             return;
                         } else if (BlockUtils.isSolid(type)) {
                             if (!block.isWaterLogged()) {
@@ -157,12 +120,14 @@ public class MovementProcessing {
     // Separator
 
     public static boolean canCheck(PlayerProtocol protocol,
+                                   boolean vehicle,
                                    boolean elytra,
                                    boolean flight,
                                    boolean playerAttributes,
                                    boolean environmentalAttributes) {
         if ((elytra || !protocol.movement.isGliding())
                 && (flight || !protocol.movement.wasFlying())
+                && (vehicle || protocol.bukkitExtra.getVehicle() == null)
 
                 && (playerAttributes
                 || Attributes.getAmount(protocol, Attributes.GENERIC_MOVEMENT_SPEED) == 0.0

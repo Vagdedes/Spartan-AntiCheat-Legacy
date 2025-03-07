@@ -10,7 +10,6 @@ import com.vagdedes.spartan.compatibility.manual.building.*;
 import com.vagdedes.spartan.compatibility.manual.damage.RealDualWield;
 import com.vagdedes.spartan.compatibility.manual.entity.CraftBook;
 import com.vagdedes.spartan.compatibility.manual.entity.Vehicles;
-import com.vagdedes.spartan.compatibility.manual.world.AcidRain;
 import com.vagdedes.spartan.compatibility.necessary.Floodgate;
 import com.vagdedes.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import com.vagdedes.spartan.functionality.moderation.AwarenessNotifications;
@@ -18,6 +17,8 @@ import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.utils.java.ReflectionUtils;
 import com.vagdedes.spartan.utils.minecraft.server.ConfigUtils;
 import com.vagdedes.spartan.utils.minecraft.server.PluginUtils;
+import lombok.Getter;
+import lombok.Setter;
 import me.vagdedes.spartan.system.Enums;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -50,9 +51,10 @@ public class Compatibility {
         CUSTOM_ENCHANTS_PLUS("CustomEncahntsPlus"), ECO_ENCHANTS("EcoEnchants"),
         ITEMS_ADDER("ItemsAdder"), RAMPEN_DRILLS("RampenDrills"),
         OLD_COMBAT_MECHANICS("OldCombatMechanics"), CUSTOM_KNOCKBACK("CustomKnockback"),
-        PROJECT_KORRA("ProjectKorra"), ACID_RAIN("AcidRain"),
-        FILE_GUI("FileGUI"), FLOODGATE("Floodgate");
+        PROJECT_KORRA("ProjectKorra"), FILE_GUI("FileGUI"), FLOODGATE("Floodgate");
 
+        @Setter
+        @Getter
         private boolean enabled, forced, functional, elseRunnable;
         private final String name;
 
@@ -105,14 +107,6 @@ public class Compatibility {
             }
         }
 
-        public boolean isEnabled() {
-            return enabled;
-        }
-
-        public boolean isForced() {
-            return forced;
-        }
-
         public boolean isFunctional() {
             return enabled && functional;
         }
@@ -121,10 +115,6 @@ public class Compatibility {
 
         public void setFunctional() {
             setFunctional(new String[]{this.toString()}, null, null, null);
-        }
-
-        public void setFunctional(boolean bool) {
-            this.functional = bool;
         }
 
         public void setFunctional(Runnable runnable, Runnable elseRunnable) {
@@ -248,16 +238,6 @@ public class Compatibility {
         );
         CompatibilityType.MAGIC_SPELLS.setFunctional(
                 () -> Register.enable(new MagicSpells()),
-                null
-        );
-        CompatibilityType.ACID_RAIN.setFunctional(
-                new String[]{
-                        CompatibilityType.ACID_RAIN.toString(),
-                        "acidisland",
-                        "askyblock"
-                },
-                null,
-                () -> Register.enable(new AcidRain()),
                 null
         );
         CompatibilityType.ADVANCED_ABILITIES.setFunctional(

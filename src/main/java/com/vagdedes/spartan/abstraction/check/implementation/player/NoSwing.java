@@ -84,8 +84,7 @@ public class NoSwing extends CheckRunner {
             });
         } else if (object instanceof PlayerAttackEvent) {
             this.damage.call(() -> {
-                if (this.protocol.bukkitExtra.getAttackCooldown() != 1.0f
-                        || this.protocol.trackers.has(PlayerTrackers.TrackerType.TRIDENT)) {
+                if (this.protocol.bukkitExtra.getAttackCooldown() != 1.0f) {
                     return;
                 }
                 LivingEntity entity = ((PlayerAttackEvent) object).target;

@@ -7,11 +7,8 @@ import com.vagdedes.spartan.abstraction.event.PlayerTickEvent;
 import com.vagdedes.spartan.abstraction.event.SuperPositionPacketEvent;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.functionality.server.PluginBase;
-import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.functionality.tracking.MovementProcessing;
 import com.vagdedes.spartan.listeners.protocol.TeleportListener;
-import com.vagdedes.spartan.utils.math.AlgebraUtils;
-import com.vagdedes.spartan.utils.minecraft.world.GroundUtils;
 import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -19,8 +16,6 @@ import org.bukkit.event.vehicle.VehicleEnterEvent;
 
 public class IrregularMovements extends CheckRunner {
 
-    private long teleport;
-    private final IMStepBukkit step;
     private final IMSimulationGravity gravity;
     private final IMSimulationSpeed speed;
     private final IrregularMovementsJump jump;
@@ -29,7 +24,6 @@ public class IrregularMovements extends CheckRunner {
 
     public IrregularMovements(HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);
-        step = new IMStepBukkit(this);
         gravity = new IMSimulationGravity(this);
         jump = new IrregularMovementsJump(this);
         foodSprint = new IMFoodSprint(this);
@@ -54,20 +48,8 @@ public class IrregularMovements extends CheckRunner {
             gravity.run();
             speed.run();
             double vertical = this.protocol.getLocation().getY() - this.protocol.getFromLocation().getY(),
-                    box = this.protocol.getLocation().getY(),
-                    oldBox = this.protocol.getFromLocation().getY();
-            boolean knownBox = GroundUtils.blockHeightExists(box),
-                    knownOldBox = GroundUtils.blockHeightExists(oldBox),
-                    teleported = teleport >= System.currentTimeMillis();
-
-            if (knownBox || knownOldBox) {
-                if (vertical != 0.0) {
-                    step.run(knownBox, knownOldBox, box, oldBox, vertical, teleported);
-                }
-            }
-            if (!teleported) {
-                jump.run(vertical, box);
-            }
+                    box = this.protocol.getLocation().getY();
+            jump.run(vertical, box);
         } else if (object instanceof PlayerTickEvent) {
             PlayerTickEvent e = (PlayerTickEvent) object;
             gravity.groundSp(e.onGround);
@@ -89,15 +71,14 @@ public class IrregularMovements extends CheckRunner {
         speed.teleport();
         baritone.teleport();
         jump.teleport();
-        teleport = System.currentTimeMillis()
-                + (AlgebraUtils.integerCeil(TPS.maximum / 2.0) * TPS.tickTime);
     }
 
     @Override
     protected boolean canRun() {
         return MovementProcessing.canCheck(
                 this.protocol,
-                true,
+                false,
+                false,
                 false,
                 true,
                 false

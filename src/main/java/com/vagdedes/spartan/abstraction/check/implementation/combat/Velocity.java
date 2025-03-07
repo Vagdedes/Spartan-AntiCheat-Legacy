@@ -6,7 +6,6 @@ import com.vagdedes.spartan.abstraction.check.CheckRunner;
 import com.vagdedes.spartan.abstraction.check.definition.ImplementedDetection;
 import com.vagdedes.spartan.abstraction.event.PlayerTransactionEvent;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
-import com.vagdedes.spartan.abstraction.protocol.PlayerTrackers;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.CombatUtils;
@@ -168,7 +167,9 @@ public class Velocity extends CheckRunner {
     @Override
     protected boolean canRun() {
         return this.protocol.bukkitExtra.getVehicle() == null
-                && !this.protocol.trackers.has(PlayerTrackers.TrackerType.BOUNCING_BLOCKS)
+                && !this.protocol.getEncirclementData().isSlime()
+                && !this.protocol.getEncirclementData().isSlimeWide()
+                && !this.protocol.getEncirclementData().isSlimeHeight()
                 && CombatUtils.canCheck(this.protocol)
                 && !this.protocol.bukkitExtra.isOutsideOfTheBorder(-1.0);
     }
