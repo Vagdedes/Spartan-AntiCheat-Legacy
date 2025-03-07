@@ -22,10 +22,15 @@ public class ScaffoldAnalysis extends CheckDetection {
 
     private final Map<Integer, Buffer.IndividualSimpleBuffer> buffers;
     private Block oldBlock;
+    private long
+            placeTime,
+            placeHash;
 
     ScaffoldAnalysis(CheckRunner executor) {
         super(executor, null, null, "scaffold_analysis", true);
         this.buffers = new OverflowMap<>(new ConcurrentHashMap<>(2), 124);
+        this.placeTime = System.currentTimeMillis();
+        this.placeHash = 0;
     }
 
     void run(Block currentBlock) {
@@ -48,7 +53,7 @@ public class ScaffoldAnalysis extends CheckDetection {
                     bL.clone().add(0, -1, 0)
             ).getBlock().getTypeOrNull();
             {
-                long delay = System.currentTimeMillis() - p.placeTime;
+                long delay = System.currentTimeMillis() - this.placeTime;
                 boolean checkHash = false;
                 boolean flag = true;
                 {
@@ -83,11 +88,11 @@ public class ScaffoldAnalysis extends CheckDetection {
                     }
                 }
                 if (delay < 5
-                        || placeHash == p.placeHash
+                        || placeHash == this.placeHash
                         || (long) p.getLocation().getY() <= bL.getY()
                         || p.bukkit().isFlying() || !checkHash) {
                     p.rightClickCounter = 0;
-                    p.placeTime = System.currentTimeMillis();
+                    this.placeTime = System.currentTimeMillis();
                     this.oldBlock = currentBlock;
                 /*
                 p.player.sendMessage("c 1 " + (delay < 5)
@@ -124,8 +129,8 @@ public class ScaffoldAnalysis extends CheckDetection {
             }
 
             this.oldBlock = currentBlock;
-            p.placeHash = placeHash;
-            p.placeTime = System.currentTimeMillis();
+            this.placeHash = placeHash;
+            this.placeTime = System.currentTimeMillis();
             p.rightClickCounter = 0;
         });
     }

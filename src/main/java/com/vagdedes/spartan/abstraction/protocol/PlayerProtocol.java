@@ -39,6 +39,7 @@ public class PlayerProtocol {
 
     public long activeCreationTime;
     private Player bukkit;
+    @Getter
     private EncirclementData encirclementData;
     public final PlayerBukkit bukkitExtra;
     public final PlayerPunishments punishments;
@@ -46,36 +47,31 @@ public class PlayerProtocol {
     public final PlayerMovement movement;
     private int hashPosBuffer;
     public int
+            slime0Tick,
             rightClickCounter,
-            transactionVl, slime0Tick,
-            flyingTicks, predictedSlimeTicks;
+            transactionVl,
+            flyingTicks,
+            predictedSlimeTicks;
     public final boolean npc;
     public boolean
             onGround,
             onGroundFrom,
-            mutateTeleport,
             sprinting,
             sneaking,
-            vehicleStatus,
-            simulationFlag,
-            teleported,
             pistonTick,
             transactionBoot,
             clickBlocker,
             transactionLocal,
             transactionSentKeep,
-            useItemPacket, useItemPacketReset;
+            useItemPacket,
+            useItemPacketReset;
     @Setter
-    private Location location, from, teleport;
+    private Location
+            location,
+            from,
+            teleport;
     public String fromWorld;
-    public Location simulationStartPoint;
-    public byte
-            simulationDelayPerTP,
-            keepEntity;
-    private final List<Location>
-            positionHistory,
-            positionHistoryLong,
-            positionHistoryShort;
+    private final List<Location> positionHistory;
     public CPlayerVelocityEvent claimedVelocity;
     public final List<CPlayerVelocityEvent>
             claimedVeloGravity,
@@ -90,14 +86,14 @@ public class PlayerProtocol {
     @Setter
     private CheckBoundData checkBoundData;
     public final PacketWorld packetWorld;
-    public long placeTime, placeHash;
     public PlayerTickEvent lastTickEvent;
     public short transactionId;
     public long
             transactionTime,
             transactionLastTime,
             transactionPing,
-            lagTick, oldClickTime;
+            lagTick,
+            oldClickTime;
     public boolean entityHandle;
     private ComponentY componentY;
     private ComponentXZ componentXZ;
@@ -117,37 +113,25 @@ public class PlayerProtocol {
                 ? Check.DetectionType.PACKETS
                 : Check.DetectionType.BUKKIT;
         this.movement = new PlayerMovement(this);
-        this.placeTime = time;
-        this.placeHash = 0;
         this.onGround = false;
         this.onGroundFrom = false;
         this.sprinting = false;
         this.sneaking = false;
-        this.mutateTeleport = false;
         this.location = ProtocolTools.getLoadLocation(player);
         this.from = null;
         this.fromWorld = "";
         this.teleport = null;
-        this.simulationFlag = false;
         this.transactionVl = 0;
         this.bukkitExtra = new PlayerBukkit(this);
         this.timerBalancer = new TimerBalancer();
-        this.simulationStartPoint = null;
-        this.simulationDelayPerTP = 1;
-        this.teleported = false;
-        this.vehicleStatus = true;
-        this.keepEntity = 0;
         this.flyingTicks = 0;
         this.oldClickTime = System.currentTimeMillis();
         this.clickBlocker = false;
         this.tickTime = time;
         this.encirclementData = new EncirclementData();
         this.rightClickCounter = 0;
-        this.positionHistoryShort = Collections.synchronizedList(new LinkedList<>());
         this.positionHistory = Collections.synchronizedList(new LinkedList<>());
-        this.positionHistoryLong = Collections.synchronizedList(new LinkedList<>());
         this.hashPosBuffer = 0;
-        this.slime0Tick = 0;
         this.claimedVelocity = null;
         this.claimedVeloGravity = new CopyOnWriteArrayList<>();
         this.claimedVeloSpeed = new CopyOnWriteArrayList<>();
@@ -170,6 +154,7 @@ public class PlayerProtocol {
         this.useItemPacket = false;
         this.useItemPacketReset = false;
         this.trackers = new PlayerTrackers();
+        this.slime0Tick = 0;
 
         // Always last
         this.profile().update(this);
@@ -318,18 +303,6 @@ public class PlayerProtocol {
         }
     }
 
-    public List<Location> getPositionHistoryLong() {
-        synchronized (this.positionHistoryLong) {
-            return new ArrayList<>(this.positionHistoryLong);
-        }
-    }
-
-    public List<Location> getPositionHistoryShort() {
-        synchronized (this.positionHistoryShort) {
-            return new ArrayList<>(this.positionHistoryShort);
-        }
-    }
-
     public SpartanLocation getPastTickRotation() {
         Location l = this.getLocation().clone();
         l.setYaw(this.from.getYaw());
@@ -416,24 +389,6 @@ public class PlayerProtocol {
 
             if (this.positionHistory.size() > 20) {
                 Iterator<Location> iterator = this.positionHistory.iterator();
-                iterator.next();
-                iterator.remove();
-            }
-        }
-        synchronized (this.positionHistoryShort) {
-            this.positionHistoryShort.add(location.clone());
-
-            if (this.positionHistoryShort.size() > 5) {
-                Iterator<Location> iterator = this.positionHistoryShort.iterator();
-                iterator.next();
-                iterator.remove();
-            }
-        }
-        synchronized (this.positionHistoryLong) {
-            this.positionHistoryLong.add(location.clone());
-
-            if (this.positionHistoryLong.size() > 50) {
-                Iterator<Location> iterator = this.positionHistoryLong.iterator();
                 iterator.next();
                 iterator.remove();
             }

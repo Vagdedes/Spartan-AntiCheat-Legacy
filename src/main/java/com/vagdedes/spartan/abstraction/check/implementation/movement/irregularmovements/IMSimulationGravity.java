@@ -527,7 +527,6 @@ public class IMSimulationGravity extends CheckDetection {
         return this.protocol.getEncirclementData().isJumpModify();
     }
 
-
     private boolean isNearClimbBlocks() {
         return this.protocol.getEncirclementData().isClimb();
     }
