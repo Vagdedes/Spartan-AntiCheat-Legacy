@@ -6,3 +6,4 @@
 [#] Fixed IrregularMovements gravity false positives caused by vehicles
 [#] Fixed IrregularMovements gravity false positives caused by elytras
 [#] Made all combat checks faster at detecting hacks by default
+[#] Added a minimum difference option in the IrregularMovements speed check

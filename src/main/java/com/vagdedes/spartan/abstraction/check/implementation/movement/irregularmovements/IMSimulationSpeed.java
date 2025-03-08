@@ -8,7 +8,6 @@ import com.vagdedes.spartan.abstraction.protocol.ExtendedPotionEffect;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
-import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.math.MathHelper;
 import com.vagdedes.spartan.utils.math.RayLine;
 import com.vagdedes.spartan.utils.math.RayUtils;
@@ -18,7 +17,6 @@ import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Boat;
 import org.bukkit.entity.Entity;
 import org.bukkit.potion.PotionEffectType;
 
@@ -252,7 +250,14 @@ public class IMSimulationSpeed extends CheckDetection {
                                 flagged = true;
                             }
                             if (this.vl > 1 || (this.vl > 0.4 && this.vlCount > 10)) {
-                                if (d >= 1e-10) {
+                                double difference = Math.max(
+                                        this.hackType.getCheck().getDecimalOption(
+                                                "minimum_speed_difference",
+                                                1e-10
+                                        ),
+                                        1e-10);
+
+                                if (d >= difference) {
                                     this.cancel("simulation[accel], diff: " + d, this.protocol.getFromLocation(), 0, true);
                                 }
                                 this.vl -= 0.1;
