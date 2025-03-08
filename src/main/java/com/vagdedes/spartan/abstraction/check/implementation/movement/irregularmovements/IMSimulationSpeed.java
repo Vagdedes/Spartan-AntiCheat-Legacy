@@ -8,6 +8,7 @@ import com.vagdedes.spartan.abstraction.protocol.ExtendedPotionEffect;
 import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.compatibility.manual.vanilla.Attributes;
+import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.math.MathHelper;
 import com.vagdedes.spartan.utils.math.RayLine;
 import com.vagdedes.spartan.utils.math.RayUtils;
@@ -17,6 +18,7 @@ import com.vagdedes.spartan.utils.minecraft.world.BlockUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Boat;
 import org.bukkit.entity.Entity;
 import org.bukkit.potion.PotionEffectType;
 
@@ -50,12 +52,18 @@ public class IMSimulationSpeed extends CheckDetection {
         );
     }
 
+    private boolean patches(PlayerProtocol p) {
+        if (p.wasGliding() || p.getVehicle() != null) {
+            return true;
+        }
+        return false;
+    }
+
     void run() {
         this.call(() -> {
             PlayerProtocol p = this.protocol;
 
-            if (p.wasGliding()
-                    || p.getVehicle() != null) {
+            if (patches(p)) {
                 return;
             }
             boolean isOnGround = (p.getVehicle() != null)
