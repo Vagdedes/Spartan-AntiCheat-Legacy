@@ -41,6 +41,7 @@ public class IMGroundSpoof extends CheckDetection {
                     && !this.protocol.getEnvironment().isSlimeHeight()
                     && this.protocol.getVehicle() == null
                     && !this.protocol.isFlying()
+                    && !this.protocol.isGliding()
                     && !this.protocol.isLowEyeHeight()) { // Covers swimming & gliding
                 boolean onGround = this.protocol.isOnGround(),
                         onGroundCheck = isOnSolidGround(event.getTo().clone())

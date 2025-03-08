@@ -12,7 +12,8 @@ public class IMHeadPosition extends CheckDetection {
     void run() {
         this.call(() -> {
             if (this.protocol.isLowEyeHeight()
-                    || this.protocol.getVehicle() != null) {
+                    || this.protocol.getVehicle() != null
+                    || this.protocol.wasGliding()) {
                 return;
             }
             double pitch = this.protocol.getLocation().getPitch();

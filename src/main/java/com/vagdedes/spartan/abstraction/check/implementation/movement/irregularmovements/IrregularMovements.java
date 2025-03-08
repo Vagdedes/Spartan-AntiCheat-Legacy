@@ -96,6 +96,7 @@ public class IrregularMovements extends CheckRunner {
         speed.teleport();
         baritone.teleport();
         elytra.teleport();
+        vehicle.teleport();
     }
 
     @Override

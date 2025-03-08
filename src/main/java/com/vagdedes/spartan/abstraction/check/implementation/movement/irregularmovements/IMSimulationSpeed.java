@@ -39,7 +39,6 @@ public class IMSimulationSpeed extends CheckDetection {
     private double lastSpeed = 0;
     private int nearSlimeStatus = 0, slimeBoostApply = 0, tridentBoostApply = 0;
     private boolean removePistonTick = false;
-    private int ignoreTicks = 0;
 
     public IMSimulationSpeed(CheckRunner executor) {
         super(
@@ -54,6 +53,11 @@ public class IMSimulationSpeed extends CheckDetection {
     void run() {
         this.call(() -> {
             PlayerProtocol p = this.protocol;
+
+            if (p.wasGliding()
+                    || p.getVehicle() != null) {
+                return;
+            }
             boolean isOnGround = (p.getVehicle() != null)
                     ? p.getVehicle().isOnGround() : p.isOnGround();
             Location to = p.getLocation();
@@ -69,7 +73,6 @@ public class IMSimulationSpeed extends CheckDetection {
             boolean isOnAngle80 = RayUtils.validRayLines(
                     yawLine, moveLine, 80.0);
             boolean flagged = false;
-            if (p.isGliding()) ignoreTicks = 6;
             if (!this.protocol.useItemPacket) this.action = 0;
             double atr = Attributes.getAmount(this.protocol, Attributes.GENERIC_MOVEMENT_SPEED) * 1.3;
             if (to.getX() != from.getX() || to.getY() != from.getY() || to.getZ() != from.getZ()) {
@@ -216,22 +219,18 @@ public class IMSimulationSpeed extends CheckDetection {
                             d = getDeviantity(pr, speed);
                         }
                         if (!(dx == predictX && dz == predictZ)) {
-                            if (ignoreTicks > 0 && d < 2) {
-                                ignoreTicks--;
-                            } else {
-                                this.vlCount += (air == 1) ? 4 : 1;
-                                this.vl += (d * 1.5) + (air == 1 ? 0.5 : (d > 0.04) ? 0.12 : 0.06);
-                                //protocol.bukkit().sendMessage("vl: " + vl + " " + d);
-                                if (this.vl > 0.05) {
-                                    this.ACCELERATION_MOTION /= 2;
-                                    flagged = true;
+                            this.vlCount += (air == 1) ? 4 : 1;
+                            this.vl += (d * 1.5) + (air == 1 ? 0.5 : (d > 0.04) ? 0.12 : 0.06);
+                            //protocol.bukkit().sendMessage("vl: " + vl + " " + d);
+                            if (this.vl > 0.05) {
+                                this.ACCELERATION_MOTION /= 2;
+                                flagged = true;
+                            }
+                            if (this.vl > 1 || (this.vl > 0.4 && this.vlCount > 10)) {
+                                if (d >= 1e-10) {
+                                    this.cancel("simulation[accel], diff: " + d, this.protocol.getFromLocation(), 0, true);
                                 }
-                                if (this.vl > 1 || (this.vl > 0.4 && this.vlCount > 10)) {
-                                    if (d >= 1e-10) {
-                                        this.cancel("simulation[accel], diff: " + d, this.protocol.getFromLocation(), 0, true);
-                                    }
-                                    this.vl -= 0.1;
-                                }
+                                this.vl -= 0.1;
                             }
                         }
                         //this.protocol.bukkit().sendMessage("vl: " + this.vl + " " + this.vlCount);
