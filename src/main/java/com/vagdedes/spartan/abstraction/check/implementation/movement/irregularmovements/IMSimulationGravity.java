@@ -9,6 +9,7 @@ import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.MultiVersion.MCVersion;
+import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PotionEffectUtils;
@@ -30,7 +31,7 @@ public class IMSimulationGravity extends CheckDetection {
             allowMinorGravityChange = false, allowLowMinorAccel = false;
     private int slimePunch = 0, slimeTicks = 0, pistonTicks = 0, sub = 0;
     private double vl = 0.0, vlCount = 0.0;
-    private int semi = 0, ignoreTicks = 0;
+    private int semi = 0;
     private double fallDistance = 0.0;
     private double lastGroundY = 0;
     private double teleportExcept = 0;
@@ -47,6 +48,9 @@ public class IMSimulationGravity extends CheckDetection {
     }
 
     private boolean patches(PlayerProtocol p) {
+        if (p.wasGliding() || p.getVehicle() != null) {
+            return true;
+        }
         if (p.getTimePassed(p.magmaCubeWater) <= 1_000L
                 || p.getTimePassed(p.soulSandWater) <= 1_000L) { // Bubble columns
             return true;
@@ -81,7 +85,6 @@ public class IMSimulationGravity extends CheckDetection {
             double dz = to.getZ() - from.getZ();
             double speed = Math.sqrt(dx * dx + dz * dz);
 
-            if (p.isGliding()) ignoreTicks = 5;
             //this.protocol.bukkit().sendMessage(protocol().pistonHandle + " " + protocol().pistonTick + " " + protocol().explosionHandle);
             if (to.getX() != from.getX() || to.getY() != from.getY() || to.getZ() != from.getZ()) {
                 double motion = to.getY() - from.getY();
@@ -399,12 +402,9 @@ public class IMSimulationGravity extends CheckDetection {
                             return;
                         }
 
-                        if (ignoreTicks > 0 && getDeviantity(motion) < 1.5) {
-                            ignoreTicks--;
-                        } else {
-                            this.vl += devTotal;
-                            this.vlCount += 1;
-                        }
+                        this.vl += devTotal;
+                        this.vlCount += 1;
+
                         //protocol.bukkit().sendMessage("vl: " + vl + " " + devTotal + " (gravity)");
                         if (this.vl > ((this.protocol.getVehicle() != null) ? 0.6 : 0.05)) {
                             StringBuilder alertBuilder = new StringBuilder(String.valueOf(RayUtils.scaleVal(devTotal, 6.0)));

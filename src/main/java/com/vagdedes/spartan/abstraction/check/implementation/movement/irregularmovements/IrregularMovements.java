@@ -25,6 +25,8 @@ public class IrregularMovements extends CheckRunner {
     private final IMBaritone baritone;
     private final IMHeadPosition headPosition;
     private final IMGroundSpoof groundSpoof;
+    private final IMSimulationElytra elytra;
+    private final IMSimulationVehicle vehicle;
 
     public IrregularMovements(HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);
@@ -34,6 +36,8 @@ public class IrregularMovements extends CheckRunner {
         speed = new IMSimulationSpeed(this);
         headPosition = new IMHeadPosition(this);
         groundSpoof = new IMGroundSpoof(this);
+        elytra = new IMSimulationElytra(this);
+        vehicle = new IMSimulationVehicle(this);
     }
 
     @Override
@@ -59,6 +63,8 @@ public class IrregularMovements extends CheckRunner {
             gravity.run();
             speed.run();
             headPosition.run();
+            elytra.run();
+            vehicle.run();
             groundSpoof.run((PlayerMoveEvent) object);
         } else if (object instanceof BlockBreakEvent) {
             if (((BlockBreakEvent) object).isCancelled()) {
@@ -89,14 +95,15 @@ public class IrregularMovements extends CheckRunner {
         gravity.teleport();
         speed.teleport();
         baritone.teleport();
+        elytra.teleport();
     }
 
     @Override
     protected boolean canRun() {
         return MovementProcessing.canCheck(
                 this.protocol,
-                false,
-                false,
+                true,
+                true,
                 false,
                 true,
                 false
