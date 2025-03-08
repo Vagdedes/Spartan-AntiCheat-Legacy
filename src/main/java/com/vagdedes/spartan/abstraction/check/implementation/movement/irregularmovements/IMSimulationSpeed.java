@@ -53,10 +53,7 @@ public class IMSimulationSpeed extends CheckDetection {
     }
 
     private boolean patches(PlayerProtocol p) {
-        if (p.wasGliding() || p.getVehicle() != null) {
-            return true;
-        }
-        return false;
+        return p.wasGliding() || p.getVehicle() != null;
     }
 
     void run() {
@@ -64,6 +61,26 @@ public class IMSimulationSpeed extends CheckDetection {
             PlayerProtocol p = this.protocol;
 
             if (patches(p)) {
+                this.ground = 0;
+                this.air = 0;
+                this.action = 0;
+                this.vl = 0;
+                this.vlCount = 0;
+                this.velo = false;
+                this.sprintStatus = true;
+                this.ACCELERATION_MOTION = 0.0;
+                this.ACCELERATION_VELOCITY = 0.0;
+                this.predictX = 0;
+                this.predictZ = 0;
+                this.lastDx = 0;
+                this.lastDz = 0;
+                this.lastSpeed = 0;
+                this.nearSlimeStatus = 0;
+                this.slimeBoostApply = 0;
+                this.tridentBoostApply = 0;
+                this.removePistonTick = false;
+                this.vhact = 0;
+                this.tpTicks = 0;
                 return;
             }
             boolean isOnGround = (p.getVehicle() != null)

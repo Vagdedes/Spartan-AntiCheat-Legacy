@@ -9,6 +9,7 @@ import com.vagdedes.spartan.abstraction.protocol.PlayerProtocol;
 import com.vagdedes.spartan.abstraction.world.SpartanLocation;
 import com.vagdedes.spartan.functionality.server.MultiVersion;
 import com.vagdedes.spartan.functionality.server.MultiVersion.MCVersion;
+import com.vagdedes.spartan.functionality.server.TPS;
 import com.vagdedes.spartan.utils.math.AlgebraUtils;
 import com.vagdedes.spartan.utils.math.RayUtils;
 import com.vagdedes.spartan.utils.minecraft.entity.PotionEffectUtils;
@@ -24,7 +25,8 @@ public class IMSimulationGravity extends CheckDetection {
     private int air = 0, ground = 0;
     private int top = 0, topReset = 0;
     private int levitation = 0, glideBlocks = 0, climbBlocks = 0, vhact = 0,
-            slowFalling = 0, levitationA = 0, slowFallingA = 0, swimming = 0;
+            slowFalling = 0, levitationA = 0, slowFallingA = 0, swimming = 0,
+            boatTicks = 0;
     private boolean slime = false, slime0Tick = false,
             trident = false, cringeBlockClimb = false, allowLowJump = false,
             allowMinorGravityChange = false, allowLowMinorAccel = false;
@@ -47,17 +49,22 @@ public class IMSimulationGravity extends CheckDetection {
     }
 
     private boolean patches(PlayerProtocol p) {
+        for (Entity entity : p.getNearbyEntities(2.0)) { // Boats
+            if (entity instanceof Boat) {
+                this.boatTicks = AlgebraUtils.integerCeil(TPS.maximum);
+                return true;
+            }
+        }
+        if (this.boatTicks > 0) {
+            this.boatTicks--;
+            return true;
+        }
         if (p.wasGliding() || p.getVehicle() != null) {
             return true;
         }
         if (p.getTimePassed(p.magmaCubeWater) <= 1_000L
                 || p.getTimePassed(p.soulSandWater) <= 1_000L) { // Bubble columns
             return true;
-        }
-        for (Entity entity : p.getNearbyEntities(2.0)) { // Boats
-            if (entity instanceof Boat) {
-                return true;
-            }
         }
         for (int i = 0; i < AlgebraUtils.integerCeil(p.getEyeHeight()); i++) {
             if (BlockUtils.areInteractiveBushes(
@@ -74,6 +81,29 @@ public class IMSimulationGravity extends CheckDetection {
             PlayerProtocol p = this.protocol;
 
             if (patches(p)) {
+                this.air = 0;
+                this.ground = 0;
+                this.vl = 0.0;
+                this.vlCount = 0.0;
+                this.setPredict(0.0);
+                this.levitation = 0;
+                this.levitationA = 0;
+                this.slime = false;
+                this.slime0Tick = false;
+                this.trident = false;
+                this.cringeBlockClimb = false;
+                this.allowLowJump = false;
+                this.allowMinorGravityChange = false;
+                this.allowLowMinorAccel = false;
+                this.slimePunch = 0;
+                this.slimeTicks = 0;
+                this.pistonTicks = 0;
+                this.sub = 0;
+                this.semi = 0;
+                this.fallDistance = 0.0;
+                this.lastGroundY = 0;
+                this.teleportExcept = 0;
+                this.motionY = 0;
                 return;
             }
             boolean ground = (this.protocol.getVehicle() != null)

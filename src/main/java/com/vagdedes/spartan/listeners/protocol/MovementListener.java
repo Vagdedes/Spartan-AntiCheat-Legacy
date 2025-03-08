@@ -47,13 +47,13 @@ public class MovementListener extends PacketAdapter {
         Player player = event.getPlayer();
         PlayerProtocol p = PluginBase.getProtocol(player);
         Location tp = ProtocolTools.readLocation(event);
-        if (!event.getPacket().getFloat().getValues().isEmpty()) {
-            tp.setYaw(event.getPacket().getFloat().read(0));
-            tp.setPitch(event.getPacket().getFloat().read(1));
-        }
 
         if (tp == null) {
             return;
+        }
+        if (!event.getPacket().getFloat().getValues().isEmpty()) {
+            tp.setYaw(event.getPacket().getFloat().read(0));
+            tp.setPitch(event.getPacket().getFloat().read(1));
         }
         Location loc = p.getLocation().clone();
         Location result = tp.clone();
@@ -90,6 +90,10 @@ public class MovementListener extends PacketAdapter {
         }
 
         Location c = ProtocolTools.readLocation(event);
+
+        if (c == null) {
+            return;
+        }
         if (ProtocolTools.hasRotation(event.getPacket().getType())) {
             c.setYaw(event.getPacket().getFloat().read(0));
             c.setPitch(event.getPacket().getFloat().read(1));

@@ -27,8 +27,8 @@ public class IMBaritone extends CheckDetection {
             SpartanVector2F deltaMap = new SpartanVector2F(deltaYaw, deltaPitch);
 
             // for future
-            float jiffDeltaYaw = (float) RayUtils.scaleVal(Math.abs(deltaYaw - oldDeltaMap.x), 3);
-            float jiffDeltaPitch = (float) RayUtils.scaleVal(Math.abs(deltaPitch - oldDeltaMap.y), 3);
+            //float jiffDeltaYaw = (float) RayUtils.scaleVal(Math.abs(deltaYaw - oldDeltaMap.x), 3);
+            //float jiffDeltaPitch = (float) RayUtils.scaleVal(Math.abs(deltaPitch - oldDeltaMap.y), 3);
             {
                 if (this.protocol.getVehicle() != null) return;
                 this.yawMoved += (Math.abs(l.getPitch()) > 89) ? 0 : (deltaPitch == 0.0F) ? deltaYaw : -yawMoved;

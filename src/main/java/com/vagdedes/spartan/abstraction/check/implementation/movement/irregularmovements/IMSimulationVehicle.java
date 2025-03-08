@@ -14,7 +14,7 @@ import org.bukkit.potion.PotionEffectType;
 
 public class IMSimulationVehicle extends CheckDetection {
 
-    private double vl = 0, oldY = 0, oldSpeed, oldAccel;
+    private double vl = 0, oldY = 0, oldSpeed = 0, oldAccel = 0;
     private int ground = 0, air = 0, ticks = 0, postFly = 0, postSpeed = 0;
     private Location from = null;
 
@@ -39,6 +39,15 @@ public class IMSimulationVehicle extends CheckDetection {
 
             if (vehicleEntity == null) {
                 this.ticks = 0;
+                this.vl = 0;
+                this.postFly = 0;
+                this.postSpeed = 0;
+                this.air = 0;
+                this.ground = 0;
+                this.from = null;
+                this.oldY = 0;
+                this.oldSpeed = 0;
+                this.oldAccel = 0;
                 return;
             }
             if (!(vehicleEntity instanceof Vehicle)) {
