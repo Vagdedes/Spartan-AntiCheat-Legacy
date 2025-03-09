@@ -1,1 +1,2 @@
 [#] Removed the advanced.yml file as it was never truly used
+[#] Fixed cobweb false positives in the IrregularMovements gravity detection

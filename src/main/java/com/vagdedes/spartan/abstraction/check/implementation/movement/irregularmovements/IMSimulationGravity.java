@@ -67,9 +67,10 @@ public class IMSimulationGravity extends CheckDetection {
             return true;
         }
         for (int i = 0; i < AlgebraUtils.integerCeil(p.getEyeHeight()); i++) {
-            if (BlockUtils.areInteractiveBushes(
-                    new SpartanLocation(p.getLocation().clone().add(0, i, 0)).getBlock().getType()
-            )) {
+            Material m = new SpartanLocation(p.getLocation().clone().add(0, i, 0)).getBlock().getType();
+
+            if (BlockUtils.areInteractiveBushes(m)
+                    || BlockUtils.areWebs(m)) {
                 return true;
             }
         }
