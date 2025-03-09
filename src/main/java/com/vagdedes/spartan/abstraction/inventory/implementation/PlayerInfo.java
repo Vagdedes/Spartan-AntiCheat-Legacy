@@ -41,9 +41,7 @@ public class PlayerInfo extends InventoryMenu {
     private static final Cooldowns cooldowns = new Cooldowns(
             new OverflowMap<>(new ConcurrentHashMap<>(), 512)
     );
-    private static final String
-            menu = ("Player Info: "),
-            documentationURL = "https://github.com/Vagdedes/Spartan-AntiCheat/blob/main/src/documentation/player_info_menu.md";
+    private static final String menu = ("Player Info: ");
     private static final int[] slots = new int[]{
             20, 21, 22, 23, 24
     };
@@ -302,8 +300,6 @@ public class PlayerInfo extends InventoryMenu {
                     );
                 }
             }
-        } else {
-            protocol.sendImportantMessage("§7Click to learn more about the detection states§8: \n§a§n" + documentationURL);
         }
         return true;
     }
