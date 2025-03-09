@@ -3,7 +3,6 @@ package com.vagdedes.spartan.functionality.server;
 import com.vagdedes.spartan.Register;
 import com.vagdedes.spartan.abstraction.check.Check;
 import com.vagdedes.spartan.abstraction.configuration.ConfigurationBuilder;
-import com.vagdedes.spartan.abstraction.configuration.implementation.Advanced;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Messages;
 import com.vagdedes.spartan.abstraction.configuration.implementation.SQLFeature;
 import com.vagdedes.spartan.abstraction.configuration.implementation.Settings;
@@ -19,14 +18,12 @@ import org.bukkit.command.CommandSender;
 
 public class Config {
 
-    public static final Advanced advanced = new Advanced();
     public static final Settings settings = new Settings();
     public static final SQLFeature sql = new SQLFeature();
     public static final Messages messages = new Messages();
     public static final Compatibility compatibility = new Compatibility();
 
     public static final ConfigurationBuilder[] configurations = {
-            advanced,
             settings,
             sql,
             messages

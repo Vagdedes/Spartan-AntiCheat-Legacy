@@ -1,0 +1,1 @@
+[#] Removed the advanced.yml file as it was never truly used
