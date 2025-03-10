@@ -700,6 +700,12 @@ public class PlayerProtocol {
                 && potionEffect.bukkitEffect.getType().equals(type);
     }
 
+    public GameMode getGameMode() {
+        return ProtocolLib.isTemporary(this.bukkit())
+                ? GameMode.SURVIVAL
+                : this.bukkit.getGameMode();
+    }
+
     public List<Entity> getNearbyEntities(double radius) {
         this.maxNearbyEntitiesCoordinate[0] = Math.max(radius, this.maxNearbyEntitiesCoordinate[0]);
         this.maxNearbyEntitiesCoordinate[1] = Math.max(radius, this.maxNearbyEntitiesCoordinate[1]);

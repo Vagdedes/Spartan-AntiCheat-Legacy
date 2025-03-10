@@ -189,7 +189,7 @@ public class CombatUtils {
                 && Attributes.getAmount(protocol, Attributes.GENERIC_ATTACK_SPEED) == 0.0
                 && Attributes.getAmount(protocol, Attributes.GENERIC_KNOCKBACK_RESISTANCE) == 0.0
                 && Attributes.getAmount(protocol, Attributes.PLAYER_ENTITY_INTERACTION_RANGE) == 0.0) {
-            GameMode gameMode = protocol.bukkit().getGameMode();
+            GameMode gameMode = protocol.getGameMode();
             return gameMode == GameMode.SURVIVAL
                     || gameMode == GameMode.ADVENTURE
                     || gameMode == GameMode.CREATIVE;

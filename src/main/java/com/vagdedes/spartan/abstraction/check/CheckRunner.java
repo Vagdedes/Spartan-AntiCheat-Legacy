@@ -100,7 +100,7 @@ public abstract class CheckRunner extends CheckProcess {
                 && !this.protocol.npc
                 && hackType.getCheck().isEnabled(this.protocol.getDataType(), this.protocol.getWorld().getName())
                 && (!cancelled || hackType.getCheck().handleCancelledEvents)
-                && (!v1_8 || this.protocol.bukkit().getGameMode() != GameMode.SPECTATOR)
+                && (!v1_8 || this.protocol.getGameMode() != GameMode.SPECTATOR)
                 && Attributes.getAmount(this.protocol, Attributes.GENERIC_SCALE) == 0.0;
     }
 

@@ -55,7 +55,7 @@ public class UseItemStatusHandle extends PacketAdapter {
                 if (itemStack.getType().toString().contains("SHIELD") ||
                         (itemStack.getType().isEdible() && (player.getFoodLevel() != 20
                                 || itemStack.getType().toString().contains("GOLDEN_APPLE"))
-                                && !player.getGameMode().equals(GameMode.CREATIVE))) {
+                                && !protocol.getGameMode().equals(GameMode.CREATIVE))) {
                     //player.sendMessage("use");
                     protocol.useItemPacket = true;
                     protocol.useItemPacketReset =

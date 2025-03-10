@@ -22,7 +22,7 @@ public class MiningHistory {
             oreIdentifier = "Ore: ";
 
     public static void log(PlayerProtocol protocol, Block block, boolean cancelled) {
-        if (protocol.bukkit().getGameMode() == GameMode.SURVIVAL
+        if (protocol.getGameMode() == GameMode.SURVIVAL
                 && PlayerUtils.isPickaxeItem(protocol.getItemInHand().getType())) {
             MiningHistory.MiningOre ore = MiningHistory.getMiningOre(block.getType());
 

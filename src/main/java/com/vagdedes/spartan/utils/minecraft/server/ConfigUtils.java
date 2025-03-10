@@ -59,7 +59,7 @@ public class ConfigUtils {
         message = replace(message, "{ping}", String.valueOf(p.getPing()));
         message = replace(message, "{world}", worldName);
         message = replace(message, "{health}", String.valueOf(p.getHealth()));
-        message = replace(message, "{gamemode}", p.bukkit().getGameMode().toString().toLowerCase());
+        message = replace(message, "{gamemode}", p.getGameMode().toString().toLowerCase());
         message = replace(message, "{x}", String.valueOf(loc.getBlockX()));
         message = replace(message, "{y}", String.valueOf(loc.getBlockY()));
         message = replace(message, "{z}", String.valueOf(loc.getBlockZ()));

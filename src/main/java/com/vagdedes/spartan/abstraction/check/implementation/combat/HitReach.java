@@ -80,7 +80,7 @@ public class HitReach extends CheckRunner {
             if (event.target.getVehicle() != null || this.protocol.getVehicle() != null) return;
             if (this.protocol.packetsEnabled()) {
                 if (CombatUtils.canCheck(this.protocol, PluginBase.getProtocol((Player) event.target).bukkit())
-                        && !this.protocol.bukkit().getGameMode().equals(GameMode.CREATIVE)) {
+                        && !this.protocol.getGameMode().equals(GameMode.CREATIVE)) {
                     PlayerProtocol target = PluginBase.getProtocol((Player) event.target);
                     List<Location> h = target.getPositionHistory();
                     Set<AxisAlignedBB> cachedBlocks = new HashSet<>();
@@ -230,7 +230,7 @@ public class HitReach extends CheckRunner {
             } else {
                 LivingEntity target = event.target;
                 if (CombatUtils.canCheck(this.protocol, target)
-                        && !this.protocol.bukkit().getGameMode().equals(GameMode.CREATIVE)) {
+                        && !this.protocol.getGameMode().equals(GameMode.CREATIVE)) {
                     double bruteforceRayTrace = RayUtils.bruteforceRayTrace(this.protocol, target),
                             diff = bruteforceRayTrace - 0.4;
                     rayTraceAnalysis.add(bruteforceRayTrace);
