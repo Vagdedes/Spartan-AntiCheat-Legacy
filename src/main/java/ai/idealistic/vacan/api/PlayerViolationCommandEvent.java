@@ -32,11 +32,6 @@ public class PlayerViolationCommandEvent extends Event implements Cancellable {
         return h;
     }
 
-    @Deprecated
-    public HackType[] getHackTypes() {
-        return null;
-    }
-
     public String getCommand() {
         return c;
     }

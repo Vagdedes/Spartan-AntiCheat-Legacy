@@ -1,7 +1,6 @@
 package ai.idealistic.vacan.api;
 
 import ai.idealistic.vacan.abstraction.Enums.HackType;
-import ai.idealistic.vacan.functionality.moderation.AwarenessNotifications;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.entity.Player;
@@ -35,28 +34,6 @@ public class PlayerViolationEvent extends Event implements Cancellable {
 
     public String getMessage() {
         return m;
-    }
-
-    @Deprecated
-    public int getViolation() {
-        return 0;
-    }
-
-    @Deprecated
-    public double getViolationIncrease() {
-        return 0;
-    }
-
-    @Deprecated
-    public boolean isFalsePositive() {
-        AwarenessNotifications.forcefullySend("The Event API method 'isFalsePositive' has been removed.");
-        return false;
-    }
-
-    @Deprecated
-    public String getCategory() {
-        AwarenessNotifications.forcefullySend("The Event API method 'getCategory' has been removed.");
-        return null;
     }
 
     private static final HandlerList handlers = new HandlerList();
