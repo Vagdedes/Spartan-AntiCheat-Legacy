@@ -1,20 +1,26 @@
-package me.vagdedes.spartan.api;
+package ai.idealistic.vacan.api;
 
-import me.vagdedes.spartan.system.Enums.HackType;
+import ai.idealistic.vacan.abstraction.Enums.HackType;
+import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-public class CheckCancelEvent extends Event implements Cancellable {
+public class PlayerViolationCommandEvent extends Event implements Cancellable {
 
     private final Player p;
     private final HackType h;
+    private final String c;
+    @Setter
+    @Getter
     private boolean cancelled;
 
-    public CheckCancelEvent(Player player, HackType HackType) {
+    public PlayerViolationCommandEvent(Player player, HackType HackType, String command) {
         p = player;
         h = HackType;
+        c = command;
         cancelled = false;
     }
 
@@ -26,12 +32,13 @@ public class CheckCancelEvent extends Event implements Cancellable {
         return h;
     }
 
-    public boolean isCancelled() {
-        return cancelled;
+    @Deprecated
+    public HackType[] getHackTypes() {
+        return null;
     }
 
-    public void setCancelled(boolean b) {
-        this.cancelled = b;
+    public String getCommand() {
+        return c;
     }
 
     private static final HandlerList handlers = new HandlerList();

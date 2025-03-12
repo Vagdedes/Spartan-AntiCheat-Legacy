@@ -1,5 +1,6 @@
 package ai.idealistic.vacan.functionality.moderation;
 
+import ai.idealistic.vacan.abstraction.Enums;
 import ai.idealistic.vacan.abstraction.check.CheckDetection;
 import ai.idealistic.vacan.abstraction.configuration.implementation.Settings;
 import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
@@ -9,7 +10,6 @@ import ai.idealistic.vacan.functionality.tracking.ResearchEngine;
 import ai.idealistic.vacan.utils.java.OverflowMap;
 import lombok.Cleanup;
 import lombok.SneakyThrows;
-import me.vagdedes.spartan.system.Enums;
 
 import java.sql.ResultSet;
 import java.util.List;

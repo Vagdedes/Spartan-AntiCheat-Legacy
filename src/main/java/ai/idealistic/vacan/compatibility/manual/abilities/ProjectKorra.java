@@ -1,5 +1,6 @@
 package ai.idealistic.vacan.compatibility.manual.abilities;
 
+import ai.idealistic.vacan.abstraction.Enums;
 import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.vacan.compatibility.Compatibility;
 import ai.idealistic.vacan.functionality.server.Config;
@@ -7,7 +8,6 @@ import ai.idealistic.vacan.functionality.server.PluginBase;
 import com.projectkorra.projectkorra.event.AbilityDamageEntityEvent;
 import com.projectkorra.projectkorra.event.AbilityProgressEvent;
 import com.projectkorra.projectkorra.event.AbilityStartEvent;
-import me.vagdedes.spartan.system.Enums;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

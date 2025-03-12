@@ -1,10 +1,10 @@
 package ai.idealistic.vacan.compatibility.manual.building;
 
+import ai.idealistic.vacan.abstraction.Enums;
 import ai.idealistic.vacan.compatibility.Compatibility;
 import ai.idealistic.vacan.functionality.server.Config;
 import ai.idealistic.vacan.functionality.server.PluginBase;
 import me.rampen88.drills.events.DrillBreakEvent;
-import me.vagdedes.spartan.system.Enums;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;

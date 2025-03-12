@@ -1,13 +1,13 @@
 package ai.idealistic.vacan.abstraction.profiling;
 
+import ai.idealistic.vacan.abstraction.Enums;
 import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
+import ai.idealistic.vacan.api.PlayerFoundOreEvent;
 import ai.idealistic.vacan.functionality.server.Config;
 import ai.idealistic.vacan.functionality.server.MultiVersion;
 import ai.idealistic.vacan.functionality.tracking.AntiCheatLogs;
 import ai.idealistic.vacan.utils.minecraft.entity.PlayerUtils;
 import ai.idealistic.vacan.utils.minecraft.world.BlockUtils;
-import me.vagdedes.spartan.api.PlayerFoundOreEvent;
-import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;

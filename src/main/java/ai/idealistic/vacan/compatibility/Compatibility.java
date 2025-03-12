@@ -1,6 +1,7 @@
 package ai.idealistic.vacan.compatibility;
 
 import ai.idealistic.vacan.Register;
+import ai.idealistic.vacan.abstraction.Enums;
 import ai.idealistic.vacan.abstraction.configuration.ConfigurationBuilder;
 import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.vacan.compatibility.manual.abilities.*;
@@ -19,7 +20,6 @@ import ai.idealistic.vacan.utils.minecraft.server.ConfigUtils;
 import ai.idealistic.vacan.utils.minecraft.server.PluginUtils;
 import lombok.Getter;
 import lombok.Setter;
-import me.vagdedes.spartan.system.Enums;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;

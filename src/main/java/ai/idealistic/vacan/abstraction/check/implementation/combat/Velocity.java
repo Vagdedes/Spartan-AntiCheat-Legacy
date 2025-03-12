@@ -1,5 +1,6 @@
 package ai.idealistic.vacan.abstraction.check.implementation.combat;
 
+import ai.idealistic.vacan.abstraction.Enums;
 import ai.idealistic.vacan.abstraction.check.Check;
 import ai.idealistic.vacan.abstraction.check.CheckDetection;
 import ai.idealistic.vacan.abstraction.check.CheckRunner;
@@ -10,7 +11,6 @@ import ai.idealistic.vacan.abstraction.world.ServerLocation;
 import ai.idealistic.vacan.utils.math.RayUtils;
 import ai.idealistic.vacan.utils.minecraft.entity.CombatUtils;
 import ai.idealistic.vacan.utils.minecraft.world.BlockUtils;
-import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.event.player.PlayerMoveEvent;

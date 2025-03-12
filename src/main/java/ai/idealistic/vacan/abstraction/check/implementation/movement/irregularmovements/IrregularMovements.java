@@ -1,5 +1,6 @@
 package ai.idealistic.vacan.abstraction.check.implementation.movement.irregularmovements;
 
+import ai.idealistic.vacan.abstraction.Enums.HackType;
 import ai.idealistic.vacan.abstraction.check.CheckRunner;
 import ai.idealistic.vacan.abstraction.event.CPlayerRiptideEvent;
 import ai.idealistic.vacan.abstraction.event.PlayerTickEvent;
@@ -10,7 +11,6 @@ import ai.idealistic.vacan.functionality.tracking.MovementProcessing;
 import ai.idealistic.vacan.listeners.protocol.TeleportListener;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketEvent;
-import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;

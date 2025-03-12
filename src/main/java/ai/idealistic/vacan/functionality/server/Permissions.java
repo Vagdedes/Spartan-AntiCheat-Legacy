@@ -1,9 +1,9 @@
 package ai.idealistic.vacan.functionality.server;
 
 import ai.idealistic.vacan.Register;
+import ai.idealistic.vacan.abstraction.Enums;
 import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.vacan.compatibility.necessary.protocollib.ProtocolLib;
-import me.vagdedes.spartan.system.Enums;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;

@@ -1,5 +1,6 @@
 package ai.idealistic.vacan.abstraction.check.implementation.combat.killaura;
 
+import ai.idealistic.vacan.abstraction.Enums;
 import ai.idealistic.vacan.abstraction.check.CheckRunner;
 import ai.idealistic.vacan.abstraction.check.implementation.combat.killaura.movedirection.MoveDirection;
 import ai.idealistic.vacan.abstraction.event.EntityAttackPlayerEvent;
@@ -8,7 +9,6 @@ import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.vacan.compatibility.necessary.protocollib.ProtocolLib;
 import ai.idealistic.vacan.functionality.server.MultiVersion;
 import ai.idealistic.vacan.utils.minecraft.entity.CombatUtils;
-import me.vagdedes.spartan.system.Enums;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;

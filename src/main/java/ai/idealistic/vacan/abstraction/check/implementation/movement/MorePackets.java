@@ -1,5 +1,6 @@
 package ai.idealistic.vacan.abstraction.check.implementation.movement;
 
+import ai.idealistic.vacan.abstraction.Enums.HackType;
 import ai.idealistic.vacan.abstraction.check.Check;
 import ai.idealistic.vacan.abstraction.check.CheckDetection;
 import ai.idealistic.vacan.abstraction.check.CheckRunner;
@@ -15,7 +16,6 @@ import ai.idealistic.vacan.utils.math.AlgebraUtils;
 import ai.idealistic.vacan.utils.math.RayUtils;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketEvent;
-import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
 public class MorePackets extends CheckRunner {

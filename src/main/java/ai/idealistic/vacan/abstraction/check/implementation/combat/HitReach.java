@@ -1,5 +1,6 @@
 package ai.idealistic.vacan.abstraction.check.implementation.combat;
 
+import ai.idealistic.vacan.abstraction.Enums.HackType;
 import ai.idealistic.vacan.abstraction.check.CheckDetection;
 import ai.idealistic.vacan.abstraction.check.CheckRunner;
 import ai.idealistic.vacan.abstraction.check.definition.ImplementedDetection;
@@ -19,7 +20,6 @@ import ai.idealistic.vacan.utils.minecraft.vector.Vec3;
 import ai.idealistic.vacan.utils.minecraft.world.BoundingBoxUtil;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.utility.MinecraftVersion;
-import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;

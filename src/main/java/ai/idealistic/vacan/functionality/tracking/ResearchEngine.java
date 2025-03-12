@@ -1,6 +1,7 @@
 package ai.idealistic.vacan.functionality.tracking;
 
 import ai.idealistic.vacan.Register;
+import ai.idealistic.vacan.abstraction.Enums;
 import ai.idealistic.vacan.abstraction.check.Check;
 import ai.idealistic.vacan.abstraction.check.CheckDetection;
 import ai.idealistic.vacan.abstraction.check.CheckRunner;
@@ -13,7 +14,6 @@ import ai.idealistic.vacan.functionality.server.Config;
 import ai.idealistic.vacan.functionality.server.PluginBase;
 import ai.idealistic.vacan.utils.math.AlgebraUtils;
 import ai.idealistic.vacan.utils.minecraft.inventory.MaterialUtils;
-import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.configuration.file.YamlConfiguration;

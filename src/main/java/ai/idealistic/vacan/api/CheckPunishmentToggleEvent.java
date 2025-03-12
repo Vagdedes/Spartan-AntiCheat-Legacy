@@ -1,17 +1,21 @@
-package me.vagdedes.spartan.api;
+package ai.idealistic.vacan.api;
 
-import me.vagdedes.spartan.system.Enums;
+import ai.idealistic.vacan.abstraction.Enums;
+import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-public class CheckToggleEvent extends Event implements Cancellable {
+public class CheckPunishmentToggleEvent extends Event implements Cancellable {
 
     private final Enums.HackType ht;
     private final Enums.ToggleAction ta;
+    @Setter
+    @Getter
     private boolean cancelled;
 
-    public CheckToggleEvent(Enums.HackType hackType, Enums.ToggleAction toggleAction) {
+    public CheckPunishmentToggleEvent(Enums.HackType hackType, Enums.ToggleAction toggleAction) {
         ht = hackType;
         ta = toggleAction;
         cancelled = false;
@@ -23,14 +27,6 @@ public class CheckToggleEvent extends Event implements Cancellable {
 
     public Enums.ToggleAction getToggleAction() {
         return ta;
-    }
-
-    public boolean isCancelled() {
-        return cancelled;
-    }
-
-    public void setCancelled(boolean b) {
-        this.cancelled = b;
     }
 
     private static final HandlerList handlers = new HandlerList();

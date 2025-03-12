@@ -1,5 +1,6 @@
 package ai.idealistic.vacan.abstraction.check.implementation.combat;
 
+import ai.idealistic.vacan.abstraction.Enums;
 import ai.idealistic.vacan.abstraction.check.Check;
 import ai.idealistic.vacan.abstraction.check.CheckDetection;
 import ai.idealistic.vacan.abstraction.check.CheckRunner;
@@ -11,7 +12,6 @@ import ai.idealistic.vacan.functionality.server.TPS;
 import ai.idealistic.vacan.utils.math.AlgebraUtils;
 import ai.idealistic.vacan.utils.math.statistics.StatisticsMath;
 import ai.idealistic.vacan.utils.minecraft.entity.CombatUtils;
-import me.vagdedes.spartan.system.Enums;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;

@@ -1,9 +1,9 @@
 package ai.idealistic.vacan.functionality.command;
 
+import ai.idealistic.vacan.abstraction.Enums;
 import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.vacan.functionality.server.Permissions;
 import ai.idealistic.vacan.functionality.server.PluginBase;
-import me.vagdedes.spartan.system.Enums;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;

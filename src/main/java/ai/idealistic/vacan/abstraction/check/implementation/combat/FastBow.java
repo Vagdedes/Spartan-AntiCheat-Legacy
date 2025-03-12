@@ -1,11 +1,11 @@
 package ai.idealistic.vacan.abstraction.check.implementation.combat;
 
+import ai.idealistic.vacan.abstraction.Enums.HackType;
 import ai.idealistic.vacan.abstraction.check.CheckDetection;
 import ai.idealistic.vacan.abstraction.check.CheckRunner;
 import ai.idealistic.vacan.abstraction.check.definition.ImplementedDetection;
 import ai.idealistic.vacan.abstraction.data.Buffer;
 import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
-import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.Material;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityShootBowEvent;

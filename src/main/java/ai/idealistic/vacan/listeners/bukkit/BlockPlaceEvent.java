@@ -1,10 +1,10 @@
 package ai.idealistic.vacan.listeners.bukkit;
 
+import ai.idealistic.vacan.abstraction.Enums;
 import ai.idealistic.vacan.abstraction.event.CBlockPlaceEvent;
 import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.vacan.compatibility.manual.abilities.ItemsAdder;
 import ai.idealistic.vacan.functionality.server.PluginBase;
-import me.vagdedes.spartan.system.Enums;
 import org.bukkit.block.Block;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;

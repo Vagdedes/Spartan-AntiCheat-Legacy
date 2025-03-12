@@ -1,7 +1,7 @@
 package ai.idealistic.vacan.abstraction.check;
 
+import ai.idealistic.vacan.abstraction.Enums;
 import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
-import me.vagdedes.spartan.system.Enums;
 
 public abstract class CheckProcess {
 

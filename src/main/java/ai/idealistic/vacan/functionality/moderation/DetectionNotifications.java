@@ -1,10 +1,10 @@
 package ai.idealistic.vacan.functionality.moderation;
 
+import ai.idealistic.vacan.abstraction.Enums;
 import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.vacan.functionality.server.Config;
 import ai.idealistic.vacan.functionality.server.Permissions;
 import ai.idealistic.vacan.functionality.server.PluginBase;
-import me.vagdedes.spartan.system.Enums;
 
 import java.util.ArrayList;
 import java.util.List;

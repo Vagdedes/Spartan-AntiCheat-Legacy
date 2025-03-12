@@ -1,6 +1,9 @@
-package me.vagdedes.spartan.api;
+package ai.idealistic.vacan.api;
 
 import ai.idealistic.vacan.Register;
+import ai.idealistic.vacan.abstraction.Enums;
+import ai.idealistic.vacan.abstraction.Enums.HackType;
+import ai.idealistic.vacan.abstraction.Enums.Permission;
 import ai.idealistic.vacan.abstraction.check.CheckDetection;
 import ai.idealistic.vacan.abstraction.check.CheckRunner;
 import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
@@ -12,9 +15,6 @@ import ai.idealistic.vacan.functionality.server.Config;
 import ai.idealistic.vacan.functionality.server.Permissions;
 import ai.idealistic.vacan.functionality.server.PluginBase;
 import ai.idealistic.vacan.utils.math.AlgebraUtils;
-import me.vagdedes.spartan.system.Enums;
-import me.vagdedes.spartan.system.Enums.HackType;
-import me.vagdedes.spartan.system.Enums.Permission;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

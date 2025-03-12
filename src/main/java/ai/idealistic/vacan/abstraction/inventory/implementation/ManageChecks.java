@@ -1,5 +1,8 @@
 package ai.idealistic.vacan.abstraction.inventory.implementation;
 
+import ai.idealistic.vacan.abstraction.Enums;
+import ai.idealistic.vacan.abstraction.Enums.HackType;
+import ai.idealistic.vacan.abstraction.Enums.Permission;
 import ai.idealistic.vacan.abstraction.check.Check;
 import ai.idealistic.vacan.abstraction.inventory.InventoryMenu;
 import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
@@ -13,9 +16,6 @@ import ai.idealistic.vacan.functionality.server.PluginBase;
 import ai.idealistic.vacan.functionality.tracking.ResearchEngine;
 import ai.idealistic.vacan.utils.minecraft.inventory.EnchantmentUtils;
 import ai.idealistic.vacan.utils.minecraft.inventory.MaterialUtils;
-import me.vagdedes.spartan.system.Enums;
-import me.vagdedes.spartan.system.Enums.HackType;
-import me.vagdedes.spartan.system.Enums.Permission;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;

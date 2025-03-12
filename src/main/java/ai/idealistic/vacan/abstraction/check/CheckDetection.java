@@ -1,7 +1,12 @@
 package ai.idealistic.vacan.abstraction.check;
 
+import ai.idealistic.vacan.abstraction.Enums;
 import ai.idealistic.vacan.abstraction.profiling.PlayerProfile;
 import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
+import ai.idealistic.vacan.api.API;
+import ai.idealistic.vacan.api.CheckCancelEvent;
+import ai.idealistic.vacan.api.PlayerViolationCommandEvent;
+import ai.idealistic.vacan.api.PlayerViolationEvent;
 import ai.idealistic.vacan.functionality.connection.CloudConnections;
 import ai.idealistic.vacan.functionality.connection.PluginEdition;
 import ai.idealistic.vacan.functionality.moderation.DetectionNotifications;
@@ -14,11 +19,6 @@ import ai.idealistic.vacan.functionality.tracking.AntiCheatLogs;
 import ai.idealistic.vacan.functionality.tracking.ResearchEngine;
 import ai.idealistic.vacan.utils.math.AlgebraUtils;
 import ai.idealistic.vacan.utils.minecraft.server.ConfigUtils;
-import me.vagdedes.spartan.api.API;
-import me.vagdedes.spartan.api.CheckCancelEvent;
-import me.vagdedes.spartan.api.PlayerViolationCommandEvent;
-import me.vagdedes.spartan.api.PlayerViolationEvent;
-import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 

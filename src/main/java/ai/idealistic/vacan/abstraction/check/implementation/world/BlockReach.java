@@ -1,5 +1,6 @@
 package ai.idealistic.vacan.abstraction.check.implementation.world;
 
+import ai.idealistic.vacan.abstraction.Enums.HackType;
 import ai.idealistic.vacan.abstraction.check.CheckDetection;
 import ai.idealistic.vacan.abstraction.check.CheckRunner;
 import ai.idealistic.vacan.abstraction.check.definition.ImplementedDetection;
@@ -15,7 +16,6 @@ import ai.idealistic.vacan.compatibility.manual.building.TreeFeller;
 import ai.idealistic.vacan.compatibility.manual.vanilla.Attributes;
 import ai.idealistic.vacan.functionality.server.MultiVersion;
 import ai.idealistic.vacan.utils.minecraft.world.BlockUtils;
-import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;

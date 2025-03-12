@@ -1,16 +1,16 @@
 package ai.idealistic.vacan.abstraction.check;
 
 import ai.idealistic.vacan.Register;
+import ai.idealistic.vacan.abstraction.Enums;
+import ai.idealistic.vacan.api.CheckPunishmentToggleEvent;
+import ai.idealistic.vacan.api.CheckSilentToggleEvent;
+import ai.idealistic.vacan.api.CheckToggleEvent;
 import ai.idealistic.vacan.functionality.moderation.AwarenessNotifications;
 import ai.idealistic.vacan.functionality.server.Config;
 import ai.idealistic.vacan.functionality.tracking.ResearchEngine;
 import ai.idealistic.vacan.utils.math.AlgebraUtils;
 import ai.idealistic.vacan.utils.minecraft.server.ConfigUtils;
 import lombok.Getter;
-import me.vagdedes.spartan.api.CheckPunishmentToggleEvent;
-import me.vagdedes.spartan.api.CheckSilentToggleEvent;
-import me.vagdedes.spartan.api.CheckToggleEvent;
-import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;

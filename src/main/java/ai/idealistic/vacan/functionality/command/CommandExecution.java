@@ -1,6 +1,8 @@
 package ai.idealistic.vacan.functionality.command;
 
 import ai.idealistic.vacan.Register;
+import ai.idealistic.vacan.abstraction.Enums;
+import ai.idealistic.vacan.abstraction.Enums.Permission;
 import ai.idealistic.vacan.abstraction.check.Check;
 import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.vacan.functionality.connection.DiscordServer;
@@ -17,8 +19,6 @@ import ai.idealistic.vacan.utils.java.StringUtils;
 import ai.idealistic.vacan.utils.math.AlgebraUtils;
 import ai.idealistic.vacan.utils.minecraft.server.ConfigUtils;
 import ai.idealistic.vacan.utils.minecraft.server.ProxyUtils;
-import me.vagdedes.spartan.system.Enums;
-import me.vagdedes.spartan.system.Enums.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;

@@ -1,4 +1,4 @@
-package me.vagdedes.spartan.system;
+package ai.idealistic.vacan.abstraction;
 
 import ai.idealistic.vacan.Register;
 import ai.idealistic.vacan.abstraction.check.Check;

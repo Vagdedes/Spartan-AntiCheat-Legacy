@@ -1,5 +1,6 @@
 package ai.idealistic.vacan.compatibility.manual.abilities.crackshot;
 
+import ai.idealistic.vacan.abstraction.Enums;
 import ai.idealistic.vacan.abstraction.data.Buffer;
 import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.vacan.compatibility.Compatibility;
@@ -10,7 +11,6 @@ import com.shampaggon.crackshot.events.WeaponDamageEntityEvent;
 import com.shampaggon.crackshot.events.WeaponPreShootEvent;
 import com.shampaggon.crackshot.events.WeaponScopeEvent;
 import com.shampaggon.crackshot.events.WeaponShootEvent;
-import me.vagdedes.spartan.system.Enums;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

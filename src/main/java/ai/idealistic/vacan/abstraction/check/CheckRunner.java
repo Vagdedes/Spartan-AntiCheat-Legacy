@@ -1,5 +1,6 @@
 package ai.idealistic.vacan.abstraction.check;
 
+import ai.idealistic.vacan.abstraction.Enums;
 import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.vacan.compatibility.Compatibility;
 import ai.idealistic.vacan.compatibility.manual.abilities.ItemsAdder;
@@ -15,7 +16,6 @@ import ai.idealistic.vacan.functionality.server.PluginBase;
 import ai.idealistic.vacan.functionality.server.TPS;
 import ai.idealistic.vacan.utils.math.AlgebraUtils;
 import ai.idealistic.vacan.utils.minecraft.entity.PlayerUtils;
-import me.vagdedes.spartan.system.Enums;
 import org.bukkit.GameMode;
 import org.bukkit.event.Cancellable;
 

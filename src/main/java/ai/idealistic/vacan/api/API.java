@@ -1,7 +1,7 @@
-package me.vagdedes.spartan.api;
+package ai.idealistic.vacan.api;
 
-import me.vagdedes.spartan.system.Enums.HackType;
-import me.vagdedes.spartan.system.Enums.Permission;
+import ai.idealistic.vacan.abstraction.Enums.HackType;
+import ai.idealistic.vacan.abstraction.Enums.Permission;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

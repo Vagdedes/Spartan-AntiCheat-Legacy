@@ -1,11 +1,11 @@
 package ai.idealistic.vacan.listeners.bukkit;
 
+import ai.idealistic.vacan.abstraction.Enums;
 import ai.idealistic.vacan.abstraction.event.EntityAttackPlayerEvent;
 import ai.idealistic.vacan.abstraction.event.PlayerAttackEvent;
 import ai.idealistic.vacan.abstraction.event.PlayerUseEvent;
 import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.vacan.functionality.server.PluginBase;
-import me.vagdedes.spartan.system.Enums;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;

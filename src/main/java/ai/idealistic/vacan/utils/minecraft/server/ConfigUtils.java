@@ -1,14 +1,14 @@
 package ai.idealistic.vacan.utils.minecraft.server;
 
 import ai.idealistic.vacan.Register;
+import ai.idealistic.vacan.abstraction.Enums.HackType;
 import ai.idealistic.vacan.abstraction.check.Check;
 import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
+import ai.idealistic.vacan.api.API;
 import ai.idealistic.vacan.functionality.moderation.CrossServerNotifications;
 import ai.idealistic.vacan.functionality.server.MultiVersion;
 import ai.idealistic.vacan.functionality.server.PluginBase;
 import ai.idealistic.vacan.utils.math.AlgebraUtils;
-import me.vagdedes.spartan.api.API;
-import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;

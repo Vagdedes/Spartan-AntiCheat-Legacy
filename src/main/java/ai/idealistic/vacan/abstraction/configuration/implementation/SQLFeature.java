@@ -1,8 +1,10 @@
 package ai.idealistic.vacan.abstraction.configuration.implementation;
 
 import ai.idealistic.vacan.Register;
+import ai.idealistic.vacan.abstraction.Enums;
 import ai.idealistic.vacan.abstraction.configuration.ConfigurationBuilder;
 import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
+import ai.idealistic.vacan.api.API;
 import ai.idealistic.vacan.functionality.concurrent.GeneralThread;
 import ai.idealistic.vacan.functionality.moderation.AwarenessNotifications;
 import ai.idealistic.vacan.functionality.moderation.CrossServerNotifications;
@@ -12,8 +14,6 @@ import ai.idealistic.vacan.functionality.server.TPS;
 import ai.idealistic.vacan.functionality.tracking.AntiCheatLogs;
 import ai.idealistic.vacan.utils.java.StringUtils;
 import ai.idealistic.vacan.utils.math.AlgebraUtils;
-import me.vagdedes.spartan.api.API;
-import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Material;
 
 import java.sql.*;

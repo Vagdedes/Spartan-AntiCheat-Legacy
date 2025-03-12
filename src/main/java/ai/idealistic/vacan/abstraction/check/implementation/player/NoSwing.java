@@ -1,5 +1,6 @@
 package ai.idealistic.vacan.abstraction.check.implementation.player;
 
+import ai.idealistic.vacan.abstraction.Enums;
 import ai.idealistic.vacan.abstraction.check.CheckDetection;
 import ai.idealistic.vacan.abstraction.check.CheckRunner;
 import ai.idealistic.vacan.abstraction.check.definition.ImplementedDetection;
@@ -14,7 +15,6 @@ import ai.idealistic.vacan.compatibility.manual.entity.Vehicles;
 import ai.idealistic.vacan.functionality.server.TPS;
 import ai.idealistic.vacan.utils.minecraft.entity.CombatUtils;
 import ai.idealistic.vacan.utils.minecraft.world.BlockUtils;
-import me.vagdedes.spartan.system.Enums;
 import org.bukkit.block.Block;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.block.Action;

@@ -1,5 +1,6 @@
 package ai.idealistic.vacan.abstraction.check.implementation.world;
 
+import ai.idealistic.vacan.abstraction.Enums.HackType;
 import ai.idealistic.vacan.abstraction.check.CheckDetection;
 import ai.idealistic.vacan.abstraction.check.CheckRunner;
 import ai.idealistic.vacan.abstraction.check.definition.ImplementedDetection;
@@ -17,7 +18,6 @@ import ai.idealistic.vacan.functionality.server.TPS;
 import ai.idealistic.vacan.utils.math.AlgebraUtils;
 import ai.idealistic.vacan.utils.minecraft.inventory.MaterialUtils;
 import ai.idealistic.vacan.utils.minecraft.world.BlockUtils;
-import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.GameMode;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;

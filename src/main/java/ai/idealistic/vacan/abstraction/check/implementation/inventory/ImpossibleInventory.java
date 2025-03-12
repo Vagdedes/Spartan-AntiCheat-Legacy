@@ -1,5 +1,6 @@
 package ai.idealistic.vacan.abstraction.check.implementation.inventory;
 
+import ai.idealistic.vacan.abstraction.Enums;
 import ai.idealistic.vacan.abstraction.check.Check;
 import ai.idealistic.vacan.abstraction.check.CheckDetection;
 import ai.idealistic.vacan.abstraction.check.CheckRunner;
@@ -16,7 +17,6 @@ import ai.idealistic.vacan.utils.minecraft.world.BlockPatternUtils;
 import ai.idealistic.vacan.utils.minecraft.world.BlockUtils;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketEvent;
-import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Material;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.ClickType;

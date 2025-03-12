@@ -1,5 +1,8 @@
 package ai.idealistic.vacan.abstraction.inventory.implementation;
 
+import ai.idealistic.vacan.abstraction.Enums;
+import ai.idealistic.vacan.abstraction.Enums.HackType;
+import ai.idealistic.vacan.abstraction.Enums.Permission;
 import ai.idealistic.vacan.abstraction.check.Check;
 import ai.idealistic.vacan.abstraction.check.CheckCancellation;
 import ai.idealistic.vacan.abstraction.data.Cooldowns;
@@ -22,9 +25,6 @@ import ai.idealistic.vacan.utils.java.TimeUtils;
 import ai.idealistic.vacan.utils.math.AlgebraUtils;
 import ai.idealistic.vacan.utils.minecraft.inventory.MaterialUtils;
 import com.vagdedes.filegui.api.FileGUIAPI;
-import me.vagdedes.spartan.system.Enums;
-import me.vagdedes.spartan.system.Enums.HackType;
-import me.vagdedes.spartan.system.Enums.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

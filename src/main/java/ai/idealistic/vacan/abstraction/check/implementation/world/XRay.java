@@ -1,5 +1,6 @@
 package ai.idealistic.vacan.abstraction.check.implementation.world;
 
+import ai.idealistic.vacan.abstraction.Enums;
 import ai.idealistic.vacan.abstraction.check.CheckDetection;
 import ai.idealistic.vacan.abstraction.check.CheckRunner;
 import ai.idealistic.vacan.abstraction.check.definition.ImplementedDetection;
@@ -9,7 +10,6 @@ import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.vacan.functionality.tracking.ResearchEngine;
 import ai.idealistic.vacan.utils.math.AlgebraUtils;
 import ai.idealistic.vacan.utils.math.statistics.StatisticsMath;
-import me.vagdedes.spartan.system.Enums;
 import org.bukkit.World;
 import org.bukkit.event.block.BlockBreakEvent;
 

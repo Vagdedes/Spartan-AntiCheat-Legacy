@@ -1,7 +1,9 @@
-package me.vagdedes.spartan.api;
+package ai.idealistic.vacan.api;
 
+import ai.idealistic.vacan.abstraction.Enums.HackType;
 import ai.idealistic.vacan.functionality.moderation.AwarenessNotifications;
-import me.vagdedes.spartan.system.Enums.HackType;
+import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
@@ -12,6 +14,8 @@ public class PlayerViolationEvent extends Event implements Cancellable {
     private final Player p;
     private final HackType h;
     private final String m;
+    @Setter
+    @Getter
     private boolean cancelled;
 
     public PlayerViolationEvent(Player player, HackType HackType, String message) {
@@ -53,14 +57,6 @@ public class PlayerViolationEvent extends Event implements Cancellable {
     public String getCategory() {
         AwarenessNotifications.forcefullySend("The Event API method 'getCategory' has been removed.");
         return null;
-    }
-
-    public boolean isCancelled() {
-        return cancelled;
-    }
-
-    public void setCancelled(boolean b) {
-        this.cancelled = b;
     }
 
     private static final HandlerList handlers = new HandlerList();

@@ -1,5 +1,6 @@
 package ai.idealistic.vacan.abstraction.check.implementation.combat;
 
+import ai.idealistic.vacan.abstraction.Enums.HackType;
 import ai.idealistic.vacan.abstraction.check.CheckDetection;
 import ai.idealistic.vacan.abstraction.check.CheckRunner;
 import ai.idealistic.vacan.abstraction.check.definition.ImplementedDetection;
@@ -9,7 +10,6 @@ import ai.idealistic.vacan.abstraction.world.ServerLocation;
 import ai.idealistic.vacan.utils.math.RayUtils;
 import ai.idealistic.vacan.utils.minecraft.entity.CombatUtils;
 import ai.idealistic.vacan.utils.minecraft.world.BlockUtils;
-import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.potion.PotionEffectType;
 
 public class Criticals extends CheckRunner {

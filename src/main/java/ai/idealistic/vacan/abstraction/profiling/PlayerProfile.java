@@ -1,5 +1,6 @@
 package ai.idealistic.vacan.abstraction.profiling;
 
+import ai.idealistic.vacan.abstraction.Enums;
 import ai.idealistic.vacan.abstraction.check.Check;
 import ai.idealistic.vacan.abstraction.check.CheckRunner;
 import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
@@ -7,7 +8,6 @@ import ai.idealistic.vacan.functionality.server.PluginBase;
 import ai.idealistic.vacan.utils.minecraft.inventory.InventoryUtils;
 import lombok.Getter;
 import lombok.Setter;
-import me.vagdedes.spartan.system.Enums;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.inventory.ItemStack;
 

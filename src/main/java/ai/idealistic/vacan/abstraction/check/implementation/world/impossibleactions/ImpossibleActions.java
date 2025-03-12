@@ -1,5 +1,6 @@
 package ai.idealistic.vacan.abstraction.check.implementation.world.impossibleactions;
 
+import ai.idealistic.vacan.abstraction.Enums;
 import ai.idealistic.vacan.abstraction.check.Check;
 import ai.idealistic.vacan.abstraction.check.CheckDetection;
 import ai.idealistic.vacan.abstraction.check.CheckRunner;
@@ -12,7 +13,6 @@ import ai.idealistic.vacan.compatibility.manual.abilities.ItemsAdder;
 import ai.idealistic.vacan.functionality.server.MultiVersion;
 import ai.idealistic.vacan.functionality.server.TPS;
 import ai.idealistic.vacan.utils.minecraft.world.BlockUtils;
-import me.vagdedes.spartan.system.Enums;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;

@@ -1,5 +1,6 @@
 package ai.idealistic.vacan.abstraction.check.implementation.player;
 
+import ai.idealistic.vacan.abstraction.Enums.HackType;
 import ai.idealistic.vacan.abstraction.check.CheckDetection;
 import ai.idealistic.vacan.abstraction.check.CheckRunner;
 import ai.idealistic.vacan.abstraction.check.definition.ImplementedDetection;
@@ -12,7 +13,6 @@ import ai.idealistic.vacan.utils.math.AlgebraUtils;
 import ai.idealistic.vacan.utils.minecraft.server.PluginUtils;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketEvent;
-import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.GameRule;
 import org.bukkit.event.entity.PlayerDeathEvent;
 

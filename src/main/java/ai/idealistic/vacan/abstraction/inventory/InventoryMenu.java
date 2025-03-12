@@ -1,11 +1,11 @@
 package ai.idealistic.vacan.abstraction.inventory;
 
+import ai.idealistic.vacan.abstraction.Enums;
 import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.vacan.functionality.server.Config;
 import ai.idealistic.vacan.functionality.server.Permissions;
 import ai.idealistic.vacan.functionality.server.PluginBase;
 import ai.idealistic.vacan.utils.minecraft.inventory.InventoryUtils;
-import me.vagdedes.spartan.system.Enums;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;

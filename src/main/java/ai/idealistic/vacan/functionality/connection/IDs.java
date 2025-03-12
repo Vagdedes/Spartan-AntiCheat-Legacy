@@ -1,8 +1,8 @@
 package ai.idealistic.vacan.functionality.connection;
 
+import ai.idealistic.vacan.api.API;
 import ai.idealistic.vacan.utils.math.AlgebraUtils;
 import lombok.Setter;
-import me.vagdedes.spartan.api.API;
 
 import java.util.Objects;
 

@@ -1,18 +1,18 @@
 package ai.idealistic.vacan.functionality.server;
 
 import ai.idealistic.vacan.Register;
+import ai.idealistic.vacan.abstraction.Enums;
+import ai.idealistic.vacan.abstraction.Enums.HackType;
 import ai.idealistic.vacan.abstraction.check.Check;
 import ai.idealistic.vacan.abstraction.configuration.ConfigurationBuilder;
 import ai.idealistic.vacan.abstraction.configuration.implementation.Messages;
 import ai.idealistic.vacan.abstraction.configuration.implementation.SQLFeature;
 import ai.idealistic.vacan.abstraction.configuration.implementation.Settings;
+import ai.idealistic.vacan.api.VacanReloadEvent;
 import ai.idealistic.vacan.compatibility.Compatibility;
 import ai.idealistic.vacan.functionality.moderation.AwarenessNotifications;
 import ai.idealistic.vacan.functionality.moderation.Wave;
 import ai.idealistic.vacan.functionality.tracking.ResearchEngine;
-import me.vagdedes.spartan.api.SpartanReloadEvent;
-import me.vagdedes.spartan.system.Enums;
-import me.vagdedes.spartan.system.Enums.HackType;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
@@ -73,7 +73,7 @@ public class Config {
 
     public static void reload(CommandSender sender) {
         if (Config.settings.getBoolean("Important.enable_developer_api")) {
-            SpartanReloadEvent event = new SpartanReloadEvent();
+            VacanReloadEvent event = new VacanReloadEvent();
             Bukkit.getPluginManager().callEvent(event);
 
             if (event.isCancelled()) {
