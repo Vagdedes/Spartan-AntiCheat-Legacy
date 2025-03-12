@@ -41,7 +41,7 @@ public class CommandExecution implements CommandExecutor {
         ClickableMessage.sendCommand(sender, chatColor + command, description, command);
     }
 
-    public static boolean spartanMessage(CommandSender sender,
+    public static boolean defaultMessage(CommandSender sender,
                                          boolean isPlayer,
                                          boolean documentation) {
         if (!isPlayer || Permissions.has((Player) sender)) {
@@ -90,7 +90,7 @@ public class CommandExecution implements CommandExecutor {
 
         switch (list) {
             case "default":
-                if (spartanMessage(sender, isPlayer, !isPlayer)) {
+                if (defaultMessage(sender, isPlayer, !isPlayer)) {
                     if (isPlayer) {
                         if (manage) {
                             ClickableMessage.sendCommand(
@@ -190,7 +190,7 @@ public class CommandExecution implements CommandExecutor {
                 }
                 break;
             case "moderation":
-                if (spartanMessage(sender, isPlayer, true)) {
+                if (defaultMessage(sender, isPlayer, true)) {
                     boolean permission = false;
 
                     if (isPlayer && DetectionNotifications.hasPermission(protocol)) {
@@ -272,7 +272,7 @@ public class CommandExecution implements CommandExecutor {
                 }
                 break;
             case "conditions":
-                if (spartanMessage(sender, isPlayer, true)) {
+                if (defaultMessage(sender, isPlayer, true)) {
                     if (!isPlayer || Permissions.has(protocol.bukkit(), Permission.CONDITION)) {
                         sender.sendMessage(ChatColor.RED + "/" + Register.command + " <player> if <condition> equals <result> do <command>");
                         sender.sendMessage(ChatColor.RED + "/" + Register.command + " <player> if <condition> contains <result> do <command>");
