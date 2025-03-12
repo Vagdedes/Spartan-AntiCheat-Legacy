@@ -1,8 +1,8 @@
 package me.vagdedes.spartan.system;
 
-import com.vagdedes.vacan.Register;
-import com.vagdedes.vacan.abstraction.check.Check;
-import com.vagdedes.vacan.utils.minecraft.inventory.MaterialUtils;
+import ai.idealistic.vacan.Register;
+import ai.idealistic.vacan.abstraction.check.Check;
+import ai.idealistic.vacan.utils.minecraft.inventory.MaterialUtils;
 import org.bukkit.Material;
 
 public class Enums {
@@ -12,7 +12,7 @@ public class Enums {
     public enum HackType {
         XRay(
                 HackCategoryType.WORLD,
-                com.vagdedes.vacan.abstraction.check.implementation.world.XRay.class,
+                ai.idealistic.vacan.abstraction.check.implementation.world.XRay.class,
                 new String[]{
                         "This check will prevent client modules",
                         "that allow a player to see through blocks",
@@ -22,7 +22,7 @@ public class Enums {
         ),
         Exploits(
                 HackCategoryType.WORLD,
-                com.vagdedes.vacan.abstraction.check.implementation.world.exploits.Exploits.class,
+                ai.idealistic.vacan.abstraction.check.implementation.world.exploits.Exploits.class,
                 new String[]{
                         "This check will prevent client",
                         "modules that may potentially hurt",
@@ -31,7 +31,7 @@ public class Enums {
         ),
         NoSwing(
                 HackCategoryType.PLAYER,
-                com.vagdedes.vacan.abstraction.check.implementation.player.NoSwing.class,
+                ai.idealistic.vacan.abstraction.check.implementation.player.NoSwing.class,
                 new String[]{
                         "This check will prevent client modules",
                         "that manipulate packets and prevent",
@@ -40,7 +40,7 @@ public class Enums {
         ),
         IrregularMovements(
                 HackCategoryType.MOVEMENT,
-                com.vagdedes.vacan.abstraction.check.implementation.movement.irregularmovements.IrregularMovements.class,
+                ai.idealistic.vacan.abstraction.check.implementation.movement.irregularmovements.IrregularMovements.class,
                 new String[]{
                         "This check will prevent client modules",
                         "that allow a player to move abnormally,",
@@ -49,7 +49,7 @@ public class Enums {
         ),
         ImpossibleActions(
                 HackCategoryType.WORLD,
-                com.vagdedes.vacan.abstraction.check.implementation.world.impossibleactions.ImpossibleActions.class,
+                ai.idealistic.vacan.abstraction.check.implementation.world.impossibleactions.ImpossibleActions.class,
                 new String[]{
                         "This check will prevent client modules",
                         "that allow a player to execute actions",
@@ -58,7 +58,7 @@ public class Enums {
         ),
         AutoRespawn(
                 HackCategoryType.PLAYER,
-                com.vagdedes.vacan.abstraction.check.implementation.player.AutoRespawn.class,
+                ai.idealistic.vacan.abstraction.check.implementation.player.AutoRespawn.class,
                 new String[]{
                         "This check will prevent client modules",
                         "that allow a player to respawn faster",
@@ -67,7 +67,7 @@ public class Enums {
         ),
         InventoryClicks(
                 HackCategoryType.INVENTORY,
-                com.vagdedes.vacan.abstraction.check.implementation.inventory.InventoryClicks.class,
+                ai.idealistic.vacan.abstraction.check.implementation.inventory.InventoryClicks.class,
                 new String[]{
                         "This check will prevent client modules",
                         "that allow a player to interact with an",
@@ -76,7 +76,7 @@ public class Enums {
         ),
         Criticals(
                 HackCategoryType.COMBAT,
-                com.vagdedes.vacan.abstraction.check.implementation.combat.Criticals.class,
+                ai.idealistic.vacan.abstraction.check.implementation.combat.Criticals.class,
                 new String[]{
                         "This check will prevent client modules",
                         "that allow a player to critical damage",
@@ -85,7 +85,7 @@ public class Enums {
         ),
         GhostHand(
                 HackCategoryType.WORLD,
-                com.vagdedes.vacan.abstraction.check.implementation.world.GhostHand.class,
+                ai.idealistic.vacan.abstraction.check.implementation.world.GhostHand.class,
                 new String[]{
                         "This check will prevent client modules",
                         "that allow a player to interact or break",
@@ -94,7 +94,7 @@ public class Enums {
         ),
         BlockReach(
                 HackCategoryType.WORLD,
-                com.vagdedes.vacan.abstraction.check.implementation.world.BlockReach.class,
+                ai.idealistic.vacan.abstraction.check.implementation.world.BlockReach.class,
                 new String[]{
                         "This check will prevent client modules",
                         "that allow a player to build or break",
@@ -103,7 +103,7 @@ public class Enums {
         ),
         FastBow(
                 HackCategoryType.COMBAT,
-                com.vagdedes.vacan.abstraction.check.implementation.combat.FastBow.class,
+                ai.idealistic.vacan.abstraction.check.implementation.combat.FastBow.class,
                 new String[]{
                         "This check will prevent client modules",
                         "that allow a player to shoot arrows",
@@ -112,7 +112,7 @@ public class Enums {
         ),
         FastClicks(
                 HackCategoryType.COMBAT,
-                com.vagdedes.vacan.abstraction.check.implementation.combat.FastClicks.class,
+                ai.idealistic.vacan.abstraction.check.implementation.combat.FastClicks.class,
                 new String[]{
                         "This check will prevent client modules",
                         "that allow a player to click abnormally fast",
@@ -121,7 +121,7 @@ public class Enums {
         ),
         FastHeal(
                 HackCategoryType.PLAYER,
-                com.vagdedes.vacan.abstraction.check.implementation.player.FastHeal.class,
+                ai.idealistic.vacan.abstraction.check.implementation.player.FastHeal.class,
                 new String[]{
                         "This check will prevent client modules",
                         "that allow a player to heal faster",
@@ -130,7 +130,7 @@ public class Enums {
         ),
         ImpossibleInventory(
                 HackCategoryType.INVENTORY,
-                com.vagdedes.vacan.abstraction.check.implementation.inventory.ImpossibleInventory.class,
+                ai.idealistic.vacan.abstraction.check.implementation.inventory.ImpossibleInventory.class,
                 new String[]{
                         "This check will prevent client modules",
                         "that allow a player to interact with",
@@ -140,7 +140,7 @@ public class Enums {
         ),
         HitReach(
                 HackCategoryType.COMBAT,
-                com.vagdedes.vacan.abstraction.check.implementation.combat.HitReach.class,
+                ai.idealistic.vacan.abstraction.check.implementation.combat.HitReach.class,
                 new String[]{
                         "This check will prevent client modules",
                         "that allow a player to hit entities",
@@ -149,7 +149,7 @@ public class Enums {
         ),
         FastBreak(
                 HackCategoryType.WORLD,
-                com.vagdedes.vacan.abstraction.check.implementation.world.FastBreak.class,
+                ai.idealistic.vacan.abstraction.check.implementation.world.FastBreak.class,
                 new String[]{
                         "This check will prevent client modules",
                         "that allow a player to break one or multiple",
@@ -158,7 +158,7 @@ public class Enums {
         ),
         FastPlace(
                 HackCategoryType.WORLD,
-                com.vagdedes.vacan.abstraction.check.implementation.world.FastPlace.class,
+                ai.idealistic.vacan.abstraction.check.implementation.world.FastPlace.class,
                 new String[]{
                         "This check will prevent client modules",
                         "that allow a player to place blocks",
@@ -167,7 +167,7 @@ public class Enums {
         ),
         MorePackets(
                 HackCategoryType.MOVEMENT,
-                com.vagdedes.vacan.abstraction.check.implementation.movement.MorePackets.class,
+                ai.idealistic.vacan.abstraction.check.implementation.movement.MorePackets.class,
                 new String[]{
                         "This check will prevent client modules",
                         "that allow a player to send abnormally",
@@ -176,7 +176,7 @@ public class Enums {
         ),
         FastEat(
                 HackCategoryType.PLAYER,
-                com.vagdedes.vacan.abstraction.check.implementation.player.FastEat.class,
+                ai.idealistic.vacan.abstraction.check.implementation.player.FastEat.class,
                 new String[]{
                         "This check will prevent client modules",
                         "that allow a player to consume an amount",
@@ -185,7 +185,7 @@ public class Enums {
         ),
         Velocity(
                 HackCategoryType.COMBAT,
-                com.vagdedes.vacan.abstraction.check.implementation.combat.Velocity.class,
+                ai.idealistic.vacan.abstraction.check.implementation.combat.Velocity.class,
                 new String[]{
                         "This check will prevent client modules",
                         "that allow a player to receive abnormal",
@@ -194,7 +194,7 @@ public class Enums {
         ),
         KillAura(
                 HackCategoryType.COMBAT,
-                com.vagdedes.vacan.abstraction.check.implementation.combat.killaura.KillAura.class,
+                ai.idealistic.vacan.abstraction.check.implementation.combat.killaura.KillAura.class,
                 new String[]{
                         "This check will prevent client modules",
                         "that allow a player to have an 'apparent'",

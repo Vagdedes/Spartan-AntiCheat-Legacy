@@ -1,6 +1,6 @@
 name: Vacan
 authors: [Evangelos Dedes @Vagdedes - Since 2016, pawsashatoy - Since 2024, GRArthas - Since 2025]
-main: com.vagdedes.spartan.Register
+main: ai.idealistic.vacan.Register
 version: 4.0.3.0
 website: https://www.vagdedes.com
 description: The intuitive solution when it comes to anti-cheat protection
