@@ -1,4 +1,4 @@
-name: Spartan
+name: Vacan
 authors: [Evangelos Dedes @Vagdedes - Since 2016, pawsashatoy - Since 2024, GRArthas - Since 2025]
 main: com.vagdedes.spartan.Register
 version: 4.0.3.0
@@ -12,4 +12,4 @@ softdepend: [mcMMO, ProtocolSupport, VeinMiner, EcoEnchants, CustomEnchantsPlus,
 load: POSTWORLD
 folia-supported: true
 commands:
-  spartan:
+  vacan:

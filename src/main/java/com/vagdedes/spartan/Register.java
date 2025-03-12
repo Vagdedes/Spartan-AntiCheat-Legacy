@@ -23,8 +23,8 @@ import java.util.Set;
 public class Register extends JavaPlugin {
 
     public static Plugin plugin = null;
-    public static final String pluginName = "Spartan";
-    public static final String command = "spartan";
+    public static final String pluginName = "Vacan";
+    public static final String command = "vacan";
 
     private static final Set<Class<?>> listeners = new LinkedHashSet<>(2);
 
