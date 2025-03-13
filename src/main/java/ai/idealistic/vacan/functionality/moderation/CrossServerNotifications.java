@@ -1,7 +1,7 @@
 package ai.idealistic.vacan.functionality.moderation;
 
-import ai.idealistic.vacan.abstraction.check.CheckEnums;
 import ai.idealistic.vacan.abstraction.check.CheckDetection;
+import ai.idealistic.vacan.abstraction.check.CheckEnums;
 import ai.idealistic.vacan.abstraction.configuration.implementation.Settings;
 import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.vacan.functionality.server.Config;

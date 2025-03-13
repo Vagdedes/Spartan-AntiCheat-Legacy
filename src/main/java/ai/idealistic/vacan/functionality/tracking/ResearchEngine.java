@@ -1,9 +1,9 @@
 package ai.idealistic.vacan.functionality.tracking;
 
 import ai.idealistic.vacan.Register;
-import ai.idealistic.vacan.abstraction.check.CheckEnums;
 import ai.idealistic.vacan.abstraction.check.Check;
 import ai.idealistic.vacan.abstraction.check.CheckDetection;
+import ai.idealistic.vacan.abstraction.check.CheckEnums;
 import ai.idealistic.vacan.abstraction.check.CheckRunner;
 import ai.idealistic.vacan.abstraction.profiling.MiningHistory;
 import ai.idealistic.vacan.abstraction.profiling.PlayerProfile;

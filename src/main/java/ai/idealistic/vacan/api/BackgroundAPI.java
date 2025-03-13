@@ -1,10 +1,9 @@
 package ai.idealistic.vacan.api;
 
 import ai.idealistic.vacan.Register;
+import ai.idealistic.vacan.abstraction.check.CheckDetection;
 import ai.idealistic.vacan.abstraction.check.CheckEnums;
 import ai.idealistic.vacan.abstraction.check.CheckEnums.HackType;
-import ai.idealistic.vacan.abstraction.check.CheckEnums.Permission;
-import ai.idealistic.vacan.abstraction.check.CheckDetection;
 import ai.idealistic.vacan.abstraction.check.CheckRunner;
 import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.vacan.functionality.connection.IDs;

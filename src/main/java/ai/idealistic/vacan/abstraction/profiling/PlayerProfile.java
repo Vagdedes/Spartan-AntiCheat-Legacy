@@ -1,7 +1,7 @@
 package ai.idealistic.vacan.abstraction.profiling;
 
-import ai.idealistic.vacan.abstraction.check.CheckEnums;
 import ai.idealistic.vacan.abstraction.check.Check;
+import ai.idealistic.vacan.abstraction.check.CheckEnums;
 import ai.idealistic.vacan.abstraction.check.CheckRunner;
 import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.vacan.functionality.server.PluginBase;

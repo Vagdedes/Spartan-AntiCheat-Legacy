@@ -1,8 +1,8 @@
 package ai.idealistic.vacan.utils.minecraft.server;
 
 import ai.idealistic.vacan.Register;
-import ai.idealistic.vacan.abstraction.check.CheckEnums.HackType;
 import ai.idealistic.vacan.abstraction.check.Check;
+import ai.idealistic.vacan.abstraction.check.CheckEnums.HackType;
 import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.vacan.api.VacanAPI;
 import ai.idealistic.vacan.functionality.moderation.CrossServerNotifications;

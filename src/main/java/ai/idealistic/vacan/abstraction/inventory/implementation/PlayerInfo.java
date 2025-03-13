@@ -1,14 +1,14 @@
 package ai.idealistic.vacan.abstraction.inventory.implementation;
 
-import ai.idealistic.vacan.abstraction.check.CheckEnums;
-import ai.idealistic.vacan.abstraction.check.CheckEnums.HackType;
-import ai.idealistic.vacan.abstraction.check.CheckEnums.Permission;
 import ai.idealistic.vacan.abstraction.check.Check;
 import ai.idealistic.vacan.abstraction.check.CheckCancellation;
+import ai.idealistic.vacan.abstraction.check.CheckEnums;
+import ai.idealistic.vacan.abstraction.check.CheckEnums.HackType;
 import ai.idealistic.vacan.abstraction.data.Cooldowns;
 import ai.idealistic.vacan.abstraction.inventory.InventoryMenu;
 import ai.idealistic.vacan.abstraction.profiling.PlayerProfile;
 import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
+import ai.idealistic.vacan.api.Permission;
 import ai.idealistic.vacan.compatibility.Compatibility;
 import ai.idealistic.vacan.compatibility.necessary.protocollib.ProtocolLib;
 import ai.idealistic.vacan.functionality.command.CommandExecution;

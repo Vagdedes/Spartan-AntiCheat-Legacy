@@ -2,10 +2,10 @@ package ai.idealistic.vacan.abstraction.check;
 
 import ai.idealistic.vacan.abstraction.profiling.PlayerProfile;
 import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
-import ai.idealistic.vacan.api.VacanAPI;
 import ai.idealistic.vacan.api.CheckCancelEvent;
 import ai.idealistic.vacan.api.PlayerViolationCommandEvent;
 import ai.idealistic.vacan.api.PlayerViolationEvent;
+import ai.idealistic.vacan.api.VacanAPI;
 import ai.idealistic.vacan.functionality.connection.CloudConnections;
 import ai.idealistic.vacan.functionality.connection.PluginEdition;
 import ai.idealistic.vacan.functionality.moderation.DetectionNotifications;

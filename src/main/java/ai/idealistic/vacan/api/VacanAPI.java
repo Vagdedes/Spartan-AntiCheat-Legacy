@@ -1,7 +1,6 @@
 package ai.idealistic.vacan.api;
 
 import ai.idealistic.vacan.abstraction.check.CheckEnums.HackType;
-import ai.idealistic.vacan.abstraction.check.CheckEnums.Permission;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

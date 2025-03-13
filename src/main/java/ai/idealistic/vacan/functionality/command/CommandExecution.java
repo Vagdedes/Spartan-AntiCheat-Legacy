@@ -1,10 +1,10 @@
 package ai.idealistic.vacan.functionality.command;
 
 import ai.idealistic.vacan.Register;
-import ai.idealistic.vacan.abstraction.check.CheckEnums;
-import ai.idealistic.vacan.abstraction.check.CheckEnums.Permission;
 import ai.idealistic.vacan.abstraction.check.Check;
+import ai.idealistic.vacan.abstraction.check.CheckEnums;
 import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
+import ai.idealistic.vacan.api.Permission;
 import ai.idealistic.vacan.functionality.connection.DiscordServer;
 import ai.idealistic.vacan.functionality.connection.PluginEdition;
 import ai.idealistic.vacan.functionality.moderation.DetectionNotifications;
@@ -85,8 +85,8 @@ public class CommandExecution implements CommandExecutor {
         PlayerProtocol protocol = isPlayer ? PluginBase.getProtocol((Player) sender) : null;
         isPlayer &= protocol != null;
 
-        boolean info = !isPlayer || Permissions.has(protocol.bukkit(), CheckEnums.Permission.INFO),
-                manage = !isPlayer || Permissions.has(protocol.bukkit(), CheckEnums.Permission.MANAGE);
+        boolean info = !isPlayer || Permissions.has(protocol.bukkit(), Permission.INFO),
+                manage = !isPlayer || Permissions.has(protocol.bukkit(), Permission.MANAGE);
 
         switch (list) {
             case "default":

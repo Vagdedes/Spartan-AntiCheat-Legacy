@@ -1,7 +1,6 @@
 package me.vagdedes.spartan.api;
 
 import ai.idealistic.vacan.abstraction.check.CheckEnums;
-import ai.idealistic.vacan.api.ToggleAction;
 import lombok.Getter;
 import lombok.Setter;
 import me.vagdedes.spartan.api.system.Enums;

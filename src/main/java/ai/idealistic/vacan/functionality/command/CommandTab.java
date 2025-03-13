@@ -1,7 +1,7 @@
 package ai.idealistic.vacan.functionality.command;
 
-import ai.idealistic.vacan.abstraction.check.CheckEnums;
 import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
+import ai.idealistic.vacan.api.Permission;
 import ai.idealistic.vacan.functionality.server.Permissions;
 import ai.idealistic.vacan.functionality.server.PluginBase;
 import org.bukkit.command.Command;
@@ -13,33 +13,33 @@ import java.util.*;
 
 public class CommandTab implements TabCompleter {
 
-    private static final Map<String, CheckEnums.Permission[]> commands = new LinkedHashMap<>(18); // Attention
+    private static final Map<String, Permission[]> commands = new LinkedHashMap<>(18); // Attention
 
     static {
-        commands.put("menu", new CheckEnums.Permission[]{CheckEnums.Permission.INFO, CheckEnums.Permission.MANAGE});
-        commands.put("panic", new CheckEnums.Permission[]{CheckEnums.Permission.MANAGE});
-        commands.put("toggle", new CheckEnums.Permission[]{CheckEnums.Permission.MANAGE});
-        commands.put("rl", new CheckEnums.Permission[]{CheckEnums.Permission.RELOAD});
-        commands.put("reload", new CheckEnums.Permission[]{CheckEnums.Permission.RELOAD});
-        commands.put("notifications", new CheckEnums.Permission[]{CheckEnums.Permission.NOTIFICATIONS});
-        commands.put("verbose", new CheckEnums.Permission[]{CheckEnums.Permission.NOTIFICATIONS});
-        commands.put("info", new CheckEnums.Permission[]{CheckEnums.Permission.INFO});
-        commands.put("kick", new CheckEnums.Permission[]{CheckEnums.Permission.KICK});
-        commands.put("warn", new CheckEnums.Permission[]{CheckEnums.Permission.WARN});
-        commands.put("bypass", new CheckEnums.Permission[]{CheckEnums.Permission.USE_BYPASS});
-        commands.put("conditions", new CheckEnums.Permission[]{CheckEnums.Permission.CONDITION});
-        commands.put("moderation", new CheckEnums.Permission[]{
-                CheckEnums.Permission.KICK,
-                CheckEnums.Permission.WARN,
-                CheckEnums.Permission.USE_BYPASS,
-                CheckEnums.Permission.WAVE
+        commands.put("menu", new Permission[]{Permission.INFO, Permission.MANAGE});
+        commands.put("panic", new Permission[]{Permission.MANAGE});
+        commands.put("toggle", new Permission[]{Permission.MANAGE});
+        commands.put("rl", new Permission[]{Permission.RELOAD});
+        commands.put("reload", new Permission[]{Permission.RELOAD});
+        commands.put("notifications", new Permission[]{Permission.NOTIFICATIONS});
+        commands.put("verbose", new Permission[]{Permission.NOTIFICATIONS});
+        commands.put("info", new Permission[]{Permission.INFO});
+        commands.put("kick", new Permission[]{Permission.KICK});
+        commands.put("warn", new Permission[]{Permission.WARN});
+        commands.put("bypass", new Permission[]{Permission.USE_BYPASS});
+        commands.put("conditions", new Permission[]{Permission.CONDITION});
+        commands.put("moderation", new Permission[]{
+                Permission.KICK,
+                Permission.WARN,
+                Permission.USE_BYPASS,
+                Permission.WAVE
         });
-        commands.put("proxy-command", new CheckEnums.Permission[]{});
-        commands.put("wave add", new CheckEnums.Permission[]{CheckEnums.Permission.WAVE});
-        commands.put("wave remove", new CheckEnums.Permission[]{CheckEnums.Permission.WAVE});
-        commands.put("wave clear", new CheckEnums.Permission[]{CheckEnums.Permission.WAVE});
-        commands.put("wave run", new CheckEnums.Permission[]{CheckEnums.Permission.WAVE});
-        commands.put("wave list", new CheckEnums.Permission[]{CheckEnums.Permission.WAVE});
+        commands.put("proxy-command", new Permission[]{});
+        commands.put("wave add", new Permission[]{Permission.WAVE});
+        commands.put("wave remove", new Permission[]{Permission.WAVE});
+        commands.put("wave clear", new Permission[]{Permission.WAVE});
+        commands.put("wave run", new Permission[]{Permission.WAVE});
+        commands.put("wave list", new Permission[]{Permission.WAVE});
     }
 
     @Override
@@ -52,7 +52,7 @@ public class CommandTab implements TabCompleter {
             Player p = isPlayer ? (Player) sender : null;
             String argAbstract = args[0].toLowerCase();
 
-            for (Map.Entry<String, CheckEnums.Permission[]> entry : commands.entrySet()) {
+            for (Map.Entry<String, Permission[]> entry : commands.entrySet()) {
                 boolean add;
 
                 if (!isPlayer) {
@@ -61,14 +61,14 @@ public class CommandTab implements TabCompleter {
                     add = false;
 
                     if (entry.getValue().length > 0) {
-                        for (CheckEnums.Permission permission : entry.getValue()) {
+                        for (Permission permission : entry.getValue()) {
                             if (Permissions.has(p, permission)) {
                                 add = true;
                                 break;
                             }
                         }
                     } else {
-                        add = Permissions.has(p, CheckEnums.Permission.ADMIN);
+                        add = Permissions.has(p, Permission.ADMIN);
                     }
                 }
 

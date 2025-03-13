@@ -1,11 +1,11 @@
 package ai.idealistic.vacan.abstraction.inventory.implementation;
 
+import ai.idealistic.vacan.abstraction.check.Check;
 import ai.idealistic.vacan.abstraction.check.CheckEnums;
 import ai.idealistic.vacan.abstraction.check.CheckEnums.HackType;
-import ai.idealistic.vacan.abstraction.check.CheckEnums.Permission;
-import ai.idealistic.vacan.abstraction.check.Check;
 import ai.idealistic.vacan.abstraction.inventory.InventoryMenu;
 import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
+import ai.idealistic.vacan.api.Permission;
 import ai.idealistic.vacan.functionality.command.CommandExecution;
 import ai.idealistic.vacan.functionality.connection.DiscordServer;
 import ai.idealistic.vacan.functionality.moderation.clickable.ClickableMessage;

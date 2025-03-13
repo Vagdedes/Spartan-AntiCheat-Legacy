@@ -41,25 +41,25 @@ public class Enums {
 
     // API Use
     public enum Permission {
-        CONDITION(CheckEnums.Permission.CONDITION),
-        WAVE(CheckEnums.Permission.WAVE),
-        RECONNECT(CheckEnums.Permission.RECONNECT),
-        ADMIN(CheckEnums.Permission.ADMIN),
-        RELOAD(CheckEnums.Permission.RELOAD),
-        KICK(CheckEnums.Permission.KICK),
-        BYPASS(CheckEnums.Permission.BYPASS),
-        MANAGE(CheckEnums.Permission.MANAGE),
-        INFO(CheckEnums.Permission.INFO),
-        CHAT_PROTECTION(CheckEnums.Permission.CHAT_PROTECTION),
-        WARN(CheckEnums.Permission.WARN),
-        USE_BYPASS(CheckEnums.Permission.USE_BYPASS),
-        NOTIFICATIONS(CheckEnums.Permission.NOTIFICATIONS),
-        BEDROCK(CheckEnums.Permission.BEDROCK);
+        CONDITION(ai.idealistic.vacan.api.Permission.CONDITION),
+        WAVE(ai.idealistic.vacan.api.Permission.WAVE),
+        RECONNECT(ai.idealistic.vacan.api.Permission.RECONNECT),
+        ADMIN(ai.idealistic.vacan.api.Permission.ADMIN),
+        RELOAD(ai.idealistic.vacan.api.Permission.RELOAD),
+        KICK(ai.idealistic.vacan.api.Permission.KICK),
+        BYPASS(ai.idealistic.vacan.api.Permission.BYPASS),
+        MANAGE(ai.idealistic.vacan.api.Permission.MANAGE),
+        INFO(ai.idealistic.vacan.api.Permission.INFO),
+        CHAT_PROTECTION(ai.idealistic.vacan.api.Permission.CHAT_PROTECTION),
+        WARN(ai.idealistic.vacan.api.Permission.WARN),
+        USE_BYPASS(ai.idealistic.vacan.api.Permission.USE_BYPASS),
+        NOTIFICATIONS(ai.idealistic.vacan.api.Permission.NOTIFICATIONS),
+        BEDROCK(ai.idealistic.vacan.api.Permission.BEDROCK);
 
         @Getter
-        private final CheckEnums.Permission permission;
+        private final ai.idealistic.vacan.api.Permission permission;
 
-        Permission(CheckEnums.Permission permission) {
+        Permission(ai.idealistic.vacan.api.Permission permission) {
             this.permission = permission;
         }
     }

@@ -1,9 +1,9 @@
 package ai.idealistic.vacan.functionality.server;
 
 import ai.idealistic.vacan.Register;
+import ai.idealistic.vacan.abstraction.check.Check;
 import ai.idealistic.vacan.abstraction.check.CheckEnums;
 import ai.idealistic.vacan.abstraction.check.CheckEnums.HackType;
-import ai.idealistic.vacan.abstraction.check.Check;
 import ai.idealistic.vacan.abstraction.configuration.ConfigurationBuilder;
 import ai.idealistic.vacan.abstraction.configuration.implementation.Messages;
 import ai.idealistic.vacan.abstraction.configuration.implementation.SQLFeature;
