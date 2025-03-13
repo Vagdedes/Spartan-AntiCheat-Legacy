@@ -1,6 +1,6 @@
 package ai.idealistic.vacan.listeners.bukkit;
 
-import ai.idealistic.vacan.abstraction.Enums;
+import ai.idealistic.vacan.abstraction.check.CheckEnums;
 import ai.idealistic.vacan.abstraction.event.CBlockPlaceEvent;
 import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.vacan.compatibility.manual.abilities.ItemsAdder;
@@ -45,9 +45,9 @@ public class BlockPlaceEvent implements Listener {
                     )
             );
         }
-        return protocol.profile().getRunner(Enums.HackType.FastPlace).prevent()
-                || protocol.profile().getRunner(Enums.HackType.BlockReach).prevent()
-                || protocol.profile().getRunner(Enums.HackType.ImpossibleActions).prevent();
+        return protocol.profile().getRunner(CheckEnums.HackType.FastPlace).prevent()
+                || protocol.profile().getRunner(CheckEnums.HackType.BlockReach).prevent()
+                || protocol.profile().getRunner(CheckEnums.HackType.ImpossibleActions).prevent();
     }
 
 }

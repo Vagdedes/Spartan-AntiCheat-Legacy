@@ -1,6 +1,6 @@
 package ai.idealistic.vacan.abstraction.check.implementation.world.impossibleactions;
 
-import ai.idealistic.vacan.abstraction.Enums;
+import ai.idealistic.vacan.abstraction.check.CheckEnums;
 import ai.idealistic.vacan.abstraction.check.Check;
 import ai.idealistic.vacan.abstraction.check.CheckDetection;
 import ai.idealistic.vacan.abstraction.check.CheckRunner;
@@ -33,7 +33,7 @@ public class ImpossibleActions extends CheckRunner {
     private final Tower tower;
     private final ScaffoldAnalysis scaffoldAnalysis;
 
-    public ImpossibleActions(Enums.HackType hackType, PlayerProtocol protocol) {
+    public ImpossibleActions(CheckEnums.HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);
         this.scaffoldDirection = new ImplementedDetection(this, null, null, "scaffold_direction", true);
         this.scaffoldUp = new ImplementedDetection(this, Check.DataType.JAVA, null, "scaffold_up", true);

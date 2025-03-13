@@ -1,11 +1,11 @@
-package ai.idealistic.vacan.abstraction;
+package ai.idealistic.vacan.abstraction.check;
 
 import ai.idealistic.vacan.Register;
-import ai.idealistic.vacan.abstraction.check.Check;
 import ai.idealistic.vacan.utils.minecraft.inventory.MaterialUtils;
+import lombok.Getter;
 import org.bukkit.Material;
 
-public class Enums {
+public class CheckEnums {
 
     // API Use
     // Should have used capital letters but won't change them now so to not break the dozen APIs who use these enums
@@ -202,6 +202,7 @@ public class Enums {
                 }
         );
 
+        @Getter
         private Check check;
         public final HackCategoryType category;
         public final Class<?> executor;
@@ -212,10 +213,6 @@ public class Enums {
             this.executor = executor;
             this.description = description;
             this.check = new Check(this);
-        }
-
-        public Check getCheck() {
-            return check;
         }
 
         public void resetCheck() {
@@ -240,11 +237,6 @@ public class Enums {
         public String getKey() {
             return key;
         }
-    }
-
-    // API Use
-    public enum ToggleAction {
-        ENABLE, DISABLE
     }
 
     public enum HackCategoryType {

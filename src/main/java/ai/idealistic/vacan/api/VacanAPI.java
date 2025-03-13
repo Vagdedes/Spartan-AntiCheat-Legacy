@@ -1,15 +1,14 @@
 package ai.idealistic.vacan.api;
 
-import ai.idealistic.vacan.abstraction.Enums.HackType;
-import ai.idealistic.vacan.abstraction.Enums.Permission;
+import ai.idealistic.vacan.abstraction.check.CheckEnums.HackType;
+import ai.idealistic.vacan.abstraction.check.CheckEnums.Permission;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
-// Props to the 16-year-old me for thinking of this creative class name
-public class API {
+public class VacanAPI {
 
     public static String licenseID() {
         return BackgroundAPI.licenseID();
