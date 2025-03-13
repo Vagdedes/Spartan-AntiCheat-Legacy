@@ -18,11 +18,11 @@ import org.bukkit.event.entity.EntityDamageEvent;
 public class CombatEvent implements Listener {
 
     private static final CheckEnums.HackType[] handledChecks = new CheckEnums.HackType[]{
-            CheckEnums.HackType.KillAura,
-            CheckEnums.HackType.HitReach,
-            CheckEnums.HackType.NoSwing,
-            CheckEnums.HackType.Criticals,
-            CheckEnums.HackType.FastClicks
+            CheckEnums.HackType.KILL_AURA,
+            CheckEnums.HackType.HIT_REACH,
+            CheckEnums.HackType.NO_SWING,
+            CheckEnums.HackType.CRITICALS,
+            CheckEnums.HackType.FAST_CLICKS
     };
 
     @EventHandler(priority = EventPriority.HIGHEST)

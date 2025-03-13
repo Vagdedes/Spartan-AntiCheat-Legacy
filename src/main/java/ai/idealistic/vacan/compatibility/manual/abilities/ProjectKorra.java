@@ -58,7 +58,7 @@ public class ProjectKorra implements Listener {
         Config.compatibility.evadeFalsePositives(
                 protocol,
                 compatibilityType,
-                CheckEnums.HackType.NoSwing,
+                CheckEnums.HackType.NO_SWING,
                 ticks
         );
     }

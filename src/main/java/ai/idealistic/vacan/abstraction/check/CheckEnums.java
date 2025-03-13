@@ -7,10 +7,8 @@ import org.bukkit.Material;
 
 public class CheckEnums {
 
-    // API Use
-    // Should have used capital letters but won't change them now so to not break the dozen APIs who use these enums
     public enum HackType {
-        XRay(
+        X_RAY(
                 HackCategoryType.WORLD,
                 ai.idealistic.vacan.abstraction.check.implementation.world.XRay.class,
                 new String[]{
@@ -20,7 +18,7 @@ public class CheckEnums {
                         "gold, and even emerald. (Logs must be enabled)"
                 }
         ),
-        Exploits(
+        EXPLOITS(
                 HackCategoryType.WORLD,
                 ai.idealistic.vacan.abstraction.check.implementation.world.exploits.Exploits.class,
                 new String[]{
@@ -29,7 +27,7 @@ public class CheckEnums {
                         "a server's functional performance."
                 }
         ),
-        NoSwing(
+        NO_SWING(
                 HackCategoryType.PLAYER,
                 ai.idealistic.vacan.abstraction.check.implementation.player.NoSwing.class,
                 new String[]{
@@ -38,7 +36,7 @@ public class CheckEnums {
                         "interaction animations from being shown."
                 }
         ),
-        IrregularMovements(
+        IRREGULAR_MOVEMENTS(
                 HackCategoryType.MOVEMENT,
                 ai.idealistic.vacan.abstraction.check.implementation.movement.irregularmovements.IrregularMovements.class,
                 new String[]{
@@ -47,7 +45,7 @@ public class CheckEnums {
                         "such as stepping blocks or climbing walls."
                 }
         ),
-        ImpossibleActions(
+        IMPOSSIBLE_ACTIONS(
                 HackCategoryType.WORLD,
                 ai.idealistic.vacan.abstraction.check.implementation.world.impossibleactions.ImpossibleActions.class,
                 new String[]{
@@ -56,7 +54,7 @@ public class CheckEnums {
                         "in abnormal cases, such as when sleeping."
                 }
         ),
-        AutoRespawn(
+        AUTO_RESPAWN(
                 HackCategoryType.PLAYER,
                 ai.idealistic.vacan.abstraction.check.implementation.player.AutoRespawn.class,
                 new String[]{
@@ -65,7 +63,7 @@ public class CheckEnums {
                         "than what is physically expected."
                 }
         ),
-        InventoryClicks(
+        INVENTORY_CLICKS(
                 HackCategoryType.INVENTORY,
                 ai.idealistic.vacan.abstraction.check.implementation.inventory.InventoryClicks.class,
                 new String[]{
@@ -74,7 +72,7 @@ public class CheckEnums {
                         "amount of items, in abnormally fast rates."
                 }
         ),
-        Criticals(
+        CRITICALS(
                 HackCategoryType.COMBAT,
                 ai.idealistic.vacan.abstraction.check.implementation.combat.Criticals.class,
                 new String[]{
@@ -83,7 +81,7 @@ public class CheckEnums {
                         "an entity without properly moving."
                 }
         ),
-        GhostHand(
+        GHOST_HAND(
                 HackCategoryType.WORLD,
                 ai.idealistic.vacan.abstraction.check.implementation.world.GhostHand.class,
                 new String[]{
@@ -92,7 +90,7 @@ public class CheckEnums {
                         "blocks through walls of blocks."
                 }
         ),
-        BlockReach(
+        BLOCK_REACH(
                 HackCategoryType.WORLD,
                 ai.idealistic.vacan.abstraction.check.implementation.world.BlockReach.class,
                 new String[]{
@@ -101,7 +99,7 @@ public class CheckEnums {
                         "blocks within an abnormally long distance."
                 }
         ),
-        FastBow(
+        FAST_BOW(
                 HackCategoryType.COMBAT,
                 ai.idealistic.vacan.abstraction.check.implementation.combat.FastBow.class,
                 new String[]{
@@ -110,7 +108,7 @@ public class CheckEnums {
                         "in abnormally fast rates."
                 }
         ),
-        FastClicks(
+        FAST_CLICKS(
                 HackCategoryType.COMBAT,
                 ai.idealistic.vacan.abstraction.check.implementation.combat.FastClicks.class,
                 new String[]{
@@ -119,7 +117,7 @@ public class CheckEnums {
                         "or have an irregular clicking consistency."
                 }
         ),
-        FastHeal(
+        FAST_HEAL(
                 HackCategoryType.PLAYER,
                 ai.idealistic.vacan.abstraction.check.implementation.player.FastHeal.class,
                 new String[]{
@@ -128,7 +126,7 @@ public class CheckEnums {
                         "than what is physically allowed."
                 }
         ),
-        ImpossibleInventory(
+        IMPOSSIBLE_INVENTORY(
                 HackCategoryType.INVENTORY,
                 ai.idealistic.vacan.abstraction.check.implementation.inventory.ImpossibleInventory.class,
                 new String[]{
@@ -138,7 +136,7 @@ public class CheckEnums {
                         "as when sprinting or walking."
                 }
         ),
-        HitReach(
+        HIT_REACH(
                 HackCategoryType.COMBAT,
                 ai.idealistic.vacan.abstraction.check.implementation.combat.HitReach.class,
                 new String[]{
@@ -147,7 +145,7 @@ public class CheckEnums {
                         "from an abnormally long distance"
                 }
         ),
-        FastBreak(
+        FAST_BREAK(
                 HackCategoryType.WORLD,
                 ai.idealistic.vacan.abstraction.check.implementation.world.FastBreak.class,
                 new String[]{
@@ -156,7 +154,7 @@ public class CheckEnums {
                         "blocks irregularly fast."
                 }
         ),
-        FastPlace(
+        FAST_PLACE(
                 HackCategoryType.WORLD,
                 ai.idealistic.vacan.abstraction.check.implementation.world.FastPlace.class,
                 new String[]{
@@ -165,7 +163,7 @@ public class CheckEnums {
                         "in abnormally fast rates."
                 }
         ),
-        MorePackets(
+        MORE_PACKETS(
                 HackCategoryType.MOVEMENT,
                 ai.idealistic.vacan.abstraction.check.implementation.movement.MorePackets.class,
                 new String[]{
@@ -174,7 +172,7 @@ public class CheckEnums {
                         "high amounts of movement packets."
                 }
         ),
-        FastEat(
+        FAST_EAT(
                 HackCategoryType.PLAYER,
                 ai.idealistic.vacan.abstraction.check.implementation.player.FastEat.class,
                 new String[]{
@@ -183,7 +181,7 @@ public class CheckEnums {
                         "of food in an abnormal amount of time."
                 }
         ),
-        Velocity(
+        VELOCITY(
                 HackCategoryType.COMBAT,
                 ai.idealistic.vacan.abstraction.check.implementation.combat.Velocity.class,
                 new String[]{
@@ -192,7 +190,7 @@ public class CheckEnums {
                         "amounts of knockback, or none at all."
                 }
         ),
-        KillAura(
+        KILL_AURA(
                 HackCategoryType.COMBAT,
                 ai.idealistic.vacan.abstraction.check.implementation.combat.killaura.KillAura.class,
                 new String[]{
@@ -220,6 +218,11 @@ public class CheckEnums {
                 this.check = new Check(this);
             }
         }
+
+        @Override
+        public String toString() {
+            return super.toString().toLowerCase().replace("_", "-");
+        }
     }
 
     // API Use
@@ -246,34 +249,15 @@ public class CheckEnums {
         WORLD(Material.DIAMOND_PICKAXE),
         INVENTORY(MaterialUtils.get("crafting_table"));
 
-        private final String string;
         public final Material material;
 
         HackCategoryType(Material material) {
             this.material = material;
-
-            switch (this.ordinal()) {
-                case 0:
-                    string = "Combat";
-                    break;
-                case 1:
-                    string = "Movement";
-                    break;
-                case 2:
-                    string = "Player";
-                    break;
-                case 3:
-                    string = "World";
-                    break;
-                default:
-                    string = "Inventory";
-                    break;
-            }
         }
 
         @Override
         public String toString() {
-            return string;
+            return super.toString().toLowerCase().replace("_", "-");
         }
 
     }

@@ -45,9 +45,9 @@ public class BlockPlaceEvent implements Listener {
                     )
             );
         }
-        return protocol.profile().getRunner(CheckEnums.HackType.FastPlace).prevent()
-                || protocol.profile().getRunner(CheckEnums.HackType.BlockReach).prevent()
-                || protocol.profile().getRunner(CheckEnums.HackType.ImpossibleActions).prevent();
+        return protocol.profile().getRunner(CheckEnums.HackType.FAST_PLACE).prevent()
+                || protocol.profile().getRunner(CheckEnums.HackType.BLOCK_REACH).prevent()
+                || protocol.profile().getRunner(CheckEnums.HackType.IMPOSSIBLE_ACTIONS).prevent();
     }
 
 }

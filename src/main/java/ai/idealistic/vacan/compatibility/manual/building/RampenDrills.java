@@ -20,9 +20,9 @@ public class RampenDrills implements Listener {
                     PluginBase.getProtocol(e.getPlayer()),
                     compatibilityType,
                     new CheckEnums.HackType[]{
-                            CheckEnums.HackType.FastBreak,
-                            CheckEnums.HackType.NoSwing,
-                            CheckEnums.HackType.GhostHand,
+                            CheckEnums.HackType.FAST_BREAK,
+                            CheckEnums.HackType.NO_SWING,
+                            CheckEnums.HackType.GHOST_HAND,
                     },
                     5
             );

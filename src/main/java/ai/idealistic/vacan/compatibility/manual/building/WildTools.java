@@ -20,9 +20,9 @@ public class WildTools implements Listener {
                     PluginBase.getProtocol(e.getPlayer()),
                     compatibilityType,
                     new CheckEnums.HackType[]{
-                            CheckEnums.HackType.FastBreak,
-                            CheckEnums.HackType.BlockReach,
-                            CheckEnums.HackType.GhostHand,
+                            CheckEnums.HackType.FAST_BREAK,
+                            CheckEnums.HackType.BLOCK_REACH,
+                            CheckEnums.HackType.GHOST_HAND,
                     },
                     40
             );

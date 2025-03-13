@@ -1,36 +1,34 @@
 package me.vagdedes.spartan.api.system;
 
 import ai.idealistic.vacan.abstraction.check.CheckEnums;
-import ai.idealistic.vacan.utils.minecraft.inventory.MaterialUtils;
 import lombok.Getter;
-import org.bukkit.Material;
 
 public class Enums {
 
     // API Use
     // Should have used capital letters but won't change them now so to not break the dozen APIs who use these enums
     public enum HackType {
-        XRay(CheckEnums.HackType.XRay),
-        Exploits(CheckEnums.HackType.Exploits),
-        NoSwing(CheckEnums.HackType.NoSwing),
-        IrregularMovements(CheckEnums.HackType.IrregularMovements),
-        ImpossibleActions(CheckEnums.HackType.ImpossibleActions),
-        AutoRespawn(CheckEnums.HackType.AutoRespawn),
-        InventoryClicks(CheckEnums.HackType.InventoryClicks),
-        Criticals(CheckEnums.HackType.Criticals),
-        GhostHand(CheckEnums.HackType.GhostHand),
-        BlockReach(CheckEnums.HackType.BlockReach),
-        FastBow(CheckEnums.HackType.FastBow),
-        FastClicks(CheckEnums.HackType.FastClicks),
-        FastHeal(CheckEnums.HackType.FastHeal),
-        ImpossibleInventory(CheckEnums.HackType.ImpossibleInventory),
-        HitReach(CheckEnums.HackType.HitReach),
-        FastBreak(CheckEnums.HackType.FastBreak),
-        FastPlace(CheckEnums.HackType.FastPlace),
-        MorePackets(CheckEnums.HackType.MorePackets),
-        FastEat(CheckEnums.HackType.FastEat),
-        Velocity(CheckEnums.HackType.Velocity),
-        KillAura(CheckEnums.HackType.KillAura),
+        XRay(CheckEnums.HackType.X_RAY),
+        Exploits(CheckEnums.HackType.EXPLOITS),
+        NoSwing(CheckEnums.HackType.NO_SWING),
+        IrregularMovements(CheckEnums.HackType.IRREGULAR_MOVEMENTS),
+        ImpossibleActions(CheckEnums.HackType.IMPOSSIBLE_ACTIONS),
+        AutoRespawn(CheckEnums.HackType.AUTO_RESPAWN),
+        InventoryClicks(CheckEnums.HackType.INVENTORY_CLICKS),
+        Criticals(CheckEnums.HackType.CRITICALS),
+        GhostHand(CheckEnums.HackType.GHOST_HAND),
+        BlockReach(CheckEnums.HackType.BLOCK_REACH),
+        FastBow(CheckEnums.HackType.FAST_BOW),
+        FastClicks(CheckEnums.HackType.FAST_CLICKS),
+        FastHeal(CheckEnums.HackType.FAST_HEAL),
+        ImpossibleInventory(CheckEnums.HackType.IMPOSSIBLE_INVENTORY),
+        HitReach(CheckEnums.HackType.HIT_REACH),
+        FastBreak(CheckEnums.HackType.FAST_BREAK),
+        FastPlace(CheckEnums.HackType.FAST_PLACE),
+        MorePackets(CheckEnums.HackType.MORE_PACKETS),
+        FastEat(CheckEnums.HackType.FAST_EAT),
+        Velocity(CheckEnums.HackType.VELOCITY),
+        KillAura(CheckEnums.HackType.KILL_AURA),
         ;
 
         @Getter

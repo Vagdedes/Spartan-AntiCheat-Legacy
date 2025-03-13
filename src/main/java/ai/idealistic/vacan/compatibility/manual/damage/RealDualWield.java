@@ -20,9 +20,9 @@ public class RealDualWield implements Listener {
                     PluginBase.getProtocol(e.getPlayer()),
                     compatibilityType,
                     new CheckEnums.HackType[]{
-                            CheckEnums.HackType.KillAura,
-                            CheckEnums.HackType.HitReach,
-                            CheckEnums.HackType.Criticals,
+                            CheckEnums.HackType.KILL_AURA,
+                            CheckEnums.HackType.HIT_REACH,
+                            CheckEnums.HackType.CRITICALS,
                     },
                     5
             );

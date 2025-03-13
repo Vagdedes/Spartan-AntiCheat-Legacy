@@ -20,10 +20,10 @@ public class MineTinker implements Listener {
                     PluginBase.getProtocol(e.getPlayer()),
                     compatibilityType,
                     new CheckEnums.HackType[]{
-                            CheckEnums.HackType.KillAura,
-                            CheckEnums.HackType.FastClicks,
-                            CheckEnums.HackType.HitReach,
-                            CheckEnums.HackType.FastPlace
+                            CheckEnums.HackType.KILL_AURA,
+                            CheckEnums.HackType.FAST_CLICKS,
+                            CheckEnums.HackType.HIT_REACH,
+                            CheckEnums.HackType.FAST_PLACE
                     },
                     40
             );

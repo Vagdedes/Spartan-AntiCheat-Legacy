@@ -23,10 +23,10 @@ public class VeinMiner implements Listener {
                     PluginBase.getProtocol(e.getPlayer()),
                     Compatibility.CompatibilityType.VEIN_MINER,
                     new CheckEnums.HackType[]{
-                            CheckEnums.HackType.NoSwing,
-                            CheckEnums.HackType.FastBreak,
-                            CheckEnums.HackType.GhostHand,
-                            CheckEnums.HackType.BlockReach
+                            CheckEnums.HackType.NO_SWING,
+                            CheckEnums.HackType.FAST_BREAK,
+                            CheckEnums.HackType.GHOST_HAND,
+                            CheckEnums.HackType.BLOCK_REACH
                     },
                     30
             );
