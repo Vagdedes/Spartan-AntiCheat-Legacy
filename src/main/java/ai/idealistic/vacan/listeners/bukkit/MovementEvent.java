@@ -1,5 +1,6 @@
 package ai.idealistic.vacan.listeners.bukkit;
 
+import ai.idealistic.vacan.abstraction.data.TimerBalancer;
 import ai.idealistic.vacan.abstraction.event.PlayerTickEvent;
 import ai.idealistic.vacan.abstraction.event.PlayerTransactionEvent;
 import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
@@ -49,6 +50,9 @@ public class MovementEvent implements Listener {
         PlayerProtocol protocol = tickEvent.protocol;
         protocol.lastTickEvent = tickEvent;
         protocol.packetWorld.tick(tickEvent);
+        long delay = tickEvent.getDelay();
+        TimerBalancer timerBalancer = protocol.timerBalancer;
+        timerBalancer.pushDelay(delay);
         protocol.profile().executeRunners(false, tickEvent);
     }
 

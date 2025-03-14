@@ -450,11 +450,6 @@ public abstract class CheckDetection extends CheckProcess {
         return () -> {
             if (location != null
                     || groundTeleport) {
-                this.protocol.profile().getRunner(CheckEnums.HackType.MORE_PACKETS).addDisableCause(
-                        "Prevention from checks",
-                        null,
-                        5
-                );
                 if (location != null) {
                     protocol.teleport(location);
                 }

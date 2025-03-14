@@ -12,13 +12,14 @@ import ai.idealistic.vacan.functionality.server.PluginBase;
 import ai.idealistic.vacan.functionality.server.TPS;
 import ai.idealistic.vacan.functionality.tracking.MovementProcessing;
 import ai.idealistic.vacan.listeners.protocol.TeleportListener;
-import ai.idealistic.vacan.utils.math.AlgebraUtils;
 import ai.idealistic.vacan.utils.math.RayUtils;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
 public class MorePackets extends CheckRunner {
+
+    private static final double minTimer = 1.085;
 
     private int packetVL;
     private final ImplementedDetection
@@ -71,8 +72,18 @@ public class MorePackets extends CheckRunner {
                 PlayerTickEvent event = (PlayerTickEvent) object;
                 long delay = event.getDelay();
                 TimerBalancer timerBalancer = event.protocol.timerBalancer;
-                timerBalancer.pushDelay(delay);
                 double multiply = RayUtils.scaleVal((double) TPS.tickTime / delay, 2);
+                protocol.debug(
+                        true,
+                        false,
+                        true,
+                        delay,
+                        multiply,
+                        timerBalancer.getResult(),
+                        timerBalancer.getForced(),
+                        timerBalancer.getLatency(),
+                        timerBalancer.isNegativeTimer()
+                );
 
                 if (timerBalancer.isNegativeTimer() && delay > 50) {
                     this.negative.call(() -> {
@@ -85,7 +96,7 @@ public class MorePackets extends CheckRunner {
                     });
                 } else if (delay < 50 && timerBalancer.getResult() > 100) {
                     this.positive_balance.call(() -> {
-                        if (multiply >= 1.1) {
+                        if (multiply >= minTimer) {
                             punish(
                                     this.positive_balance,
                                     "positive(balance), multiply: " + multiply
@@ -94,7 +105,7 @@ public class MorePackets extends CheckRunner {
                     });
                 } else if (delay < 50 && timerBalancer.getForced() > 8) {
                     this.positive_net.call(() -> {
-                        if (multiply >= 1.1) {
+                        if (multiply >= minTimer) {
                             punish(
                                     this.positive_net,
                                     "positive(NET), multiply: " + multiply
@@ -103,7 +114,7 @@ public class MorePackets extends CheckRunner {
                     });
                 } else if (delay < 50 && timerBalancer.getLatency() > 40) {
                     this.positive_latency.call(() -> {
-                        if (multiply >= 1.1) {
+                        if (multiply >= minTimer) {
                             punish(
                                     this.positive_latency,
                                     "positive(latency), multiply: " + multiply
@@ -128,8 +139,14 @@ public class MorePackets extends CheckRunner {
     }
 
     private void teleport() {
-        this.teleported = System.currentTimeMillis()
-                + (AlgebraUtils.integerCeil(TPS.maximum) * TPS.tickTime * 4L);
+        this.teleported = System.currentTimeMillis() + (TPS.tickTime * 4L);
+        this.packetVL = 0;
+        protocol.debug(
+                true,
+                false,
+                false,
+                "teleported"
+        );
     }
 
     private void punish(CheckDetection executor, String info) {
@@ -150,6 +167,32 @@ public class MorePackets extends CheckRunner {
 
     @Override
     protected boolean canRun() {
+        if (!(!this.protocol.isAFK()
+                && this.teleported < System.currentTimeMillis()
+                && MovementProcessing.canCheck(
+                this.protocol,
+                true,
+                true,
+                true,
+                true,
+                true
+        ))) {
+            protocol.debug(
+                    true,
+                    false,
+                    false,
+                    !this.protocol.isAFK(),
+                    this.teleported < System.currentTimeMillis(),
+                    MovementProcessing.canCheck(
+                            this.protocol,
+                            true,
+                            true,
+                            true,
+                            true,
+                            true
+                    )
+            );
+        }
         return !this.protocol.isAFK()
                 && this.teleported < System.currentTimeMillis()
                 && MovementProcessing.canCheck(
