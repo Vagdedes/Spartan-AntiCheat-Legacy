@@ -10,14 +10,15 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockPlaceEvent;
 
-public class BlockPlaceEvent implements Listener {
+public class PlaceEvent implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public static void event(org.bukkit.event.block.BlockPlaceEvent e) {
+    public static void event(BlockPlaceEvent e) {
         PlayerProtocol protocol = PluginBase.getProtocol(e.getPlayer(), true);
 
-        if (event(protocol, e.getBlock(), e.getBlockAgainst(), e)) {
+        if (event(protocol, e.getBlock(), e.getBlockAgainst(), e, false)) {
             e.setCancelled(true);
         }
     }
@@ -26,24 +27,27 @@ public class BlockPlaceEvent implements Listener {
             PlayerProtocol protocol,
             Block block,
             Block blockAgainst,
-            Object event
+            Object event,
+            boolean packets
     ) {
-        if (protocol.getWorld() != block.getWorld()) {
-            return false;
-        }
-        protocol.profile().executeRunners(null, event);
+        if (protocol.packetsEnabled() == packets) {
+            if (protocol.getWorld() != block.getWorld()) {
+                return false;
+            }
+            protocol.profile().executeRunners(null, event);
 
-        // Detections
-        if (!ItemsAdder.is(block)) {
-            protocol.profile().executeRunners(
-                    event,
-                    new CBlockPlaceEvent(
-                            protocol.bukkit(),
-                            block,
-                            blockAgainst,
-                            event instanceof Cancellable && ((Cancellable) event).isCancelled()
-                    )
-            );
+            // Detections
+            if (!ItemsAdder.is(block)) {
+                protocol.profile().executeRunners(
+                        event,
+                        new CBlockPlaceEvent(
+                                protocol.bukkit(),
+                                block,
+                                blockAgainst,
+                                event instanceof Cancellable && ((Cancellable) event).isCancelled()
+                        )
+                );
+            }
         }
         return protocol.profile().getRunner(CheckEnums.HackType.FAST_PLACE).prevent()
                 || protocol.profile().getRunner(CheckEnums.HackType.BLOCK_REACH).prevent()

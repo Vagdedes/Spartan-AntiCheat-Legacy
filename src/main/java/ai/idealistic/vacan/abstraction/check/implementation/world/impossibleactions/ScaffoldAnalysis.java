@@ -6,7 +6,6 @@ import ai.idealistic.vacan.abstraction.data.Buffer;
 import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.vacan.abstraction.world.ServerLocation;
 import ai.idealistic.vacan.functionality.server.MultiVersion;
-import ai.idealistic.vacan.utils.java.OverflowMap;
 import ai.idealistic.vacan.utils.minecraft.world.BlockUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -15,22 +14,20 @@ import org.bukkit.util.Vector;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class ScaffoldAnalysis extends CheckDetection {
 
-    private final Map<Integer, Buffer.IndividualSimpleBuffer> buffers;
     private Block oldBlock;
     private long
             placeTime,
             placeHash;
+    private final Buffer.IndividualSimpleBuffer buffer;
 
     ScaffoldAnalysis(CheckRunner executor) {
         super(executor, null, null, "scaffold_analysis", true);
-        this.buffers = new OverflowMap<>(new ConcurrentHashMap<>(2), 124);
         this.placeTime = System.currentTimeMillis();
         this.placeHash = 0;
+        this.buffer = new Buffer.IndividualSimpleBuffer();
     }
 
     void run(Block currentBlock) {
@@ -43,10 +40,7 @@ public class ScaffoldAnalysis extends CheckDetection {
             }
             Location l = p.getLocation();
             Location lB = new Location(l.getWorld(), (long) l.getX(), (long) l.getY(), (long) l.getZ());
-            Location lB8 = new Location(l.getWorld(), (long) l.getX() + 1, (long) l.getY(), (long) l.getZ());
             long placeHash = (long) ((lB.getX() * 31) + lB.getZ());
-            Buffer.IndividualSimpleBuffer buffer = buffers.computeIfAbsent(
-                    101, k -> new Buffer.IndividualSimpleBuffer());
             Location bL = currentBlock.getLocation();
             Block oldB = this.oldBlock;
             Material downBType = new ServerLocation(
@@ -94,12 +88,6 @@ public class ScaffoldAnalysis extends CheckDetection {
                     p.rightClickCounter = 0;
                     this.placeTime = System.currentTimeMillis();
                     this.oldBlock = currentBlock;
-                /*
-                p.player.sendMessage("c 1 " + (delay < 5)
-                                + " " + (placeHash == p.placeHash) + " "
-                                + ((long) p.getLocation().getY() <= bL.getY())
-                                + " " + p.player.isFlying() + " " + !checkHash);
-                 */
                     return;
                 } else if (bL.getY() != oldB.getLocation().getY()
                         || !BlockUtils.areAir(downBType)) {

@@ -1,0 +1,1 @@
+[#] Fixed double calls in all block place based detections
