@@ -73,17 +73,6 @@ public class MorePackets extends CheckRunner {
                 long delay = event.getDelay();
                 TimerBalancer timerBalancer = event.protocol.timerBalancer;
                 double multiply = RayUtils.scaleVal((double) TPS.tickTime / delay, 2);
-                protocol.debug(
-                        true,
-                        false,
-                        true,
-                        delay,
-                        multiply,
-                        timerBalancer.getResult(),
-                        timerBalancer.getForced(),
-                        timerBalancer.getLatency(),
-                        timerBalancer.isNegativeTimer()
-                );
 
                 if (timerBalancer.isNegativeTimer() && delay > 50) {
                     this.negative.call(() -> {
@@ -141,12 +130,6 @@ public class MorePackets extends CheckRunner {
     private void teleport() {
         this.teleported = System.currentTimeMillis() + (TPS.tickTime * 4L);
         this.packetVL = 0;
-        protocol.debug(
-                true,
-                false,
-                false,
-                "teleported"
-        );
     }
 
     private void punish(CheckDetection executor, String info) {
@@ -167,32 +150,6 @@ public class MorePackets extends CheckRunner {
 
     @Override
     protected boolean canRun() {
-        if (!(!this.protocol.isAFK()
-                && this.teleported < System.currentTimeMillis()
-                && MovementProcessing.canCheck(
-                this.protocol,
-                true,
-                true,
-                true,
-                true,
-                true
-        ))) {
-            protocol.debug(
-                    true,
-                    false,
-                    false,
-                    !this.protocol.isAFK(),
-                    this.teleported < System.currentTimeMillis(),
-                    MovementProcessing.canCheck(
-                            this.protocol,
-                            true,
-                            true,
-                            true,
-                            true,
-                            true
-                    )
-            );
-        }
         return !this.protocol.isAFK()
                 && this.teleported < System.currentTimeMillis()
                 && MovementProcessing.canCheck(

@@ -1,5 +1,6 @@
 package ai.idealistic.vacan.abstraction.data;
 
+import ai.idealistic.vacan.abstraction.event.PlayerTickEvent;
 import lombok.Getter;
 
 @Getter
@@ -15,7 +16,8 @@ public class TimerBalancer {
         latency = 0;
     }
 
-    public void pushDelay(long delay) {
+    public void pushDelay(PlayerTickEvent event) {
+        long delay = event.getDelay();
         forced = ((delay > 15 && delay < 48) ? forced + 1 : 0);
         latency = ((delay > 40 && delay < 48) ? latency + 10 : latency / 2);
         if (delay > 50) {
@@ -31,6 +33,16 @@ public class TimerBalancer {
                 balancer = 0;
             }
             negative = 0;
+            event.protocol.debug(
+                    true,
+                    false,
+                    true,
+                    delay,
+                    balancer,
+                    result,
+                    negative
+            );
+
         } else if (result >= 0) {
             result /= 2L;
             balancer /= 2L;
