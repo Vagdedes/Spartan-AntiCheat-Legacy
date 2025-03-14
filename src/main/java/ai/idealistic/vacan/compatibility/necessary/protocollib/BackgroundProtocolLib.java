@@ -4,7 +4,6 @@ import ai.idealistic.vacan.functionality.server.MultiVersion;
 import ai.idealistic.vacan.listeners.protocol.*;
 import ai.idealistic.vacan.listeners.protocol.combat.CombatListener;
 import ai.idealistic.vacan.listeners.protocol.combat.LegacyCombatListener;
-import ai.idealistic.vacan.listeners.protocol.standalone.BlockPlaceBalancerListener;
 import ai.idealistic.vacan.listeners.protocol.standalone.EntityActionListener;
 import ai.idealistic.vacan.listeners.protocol.standalone.JoinListener;
 import ai.idealistic.vacan.utils.minecraft.entity.PlayerUtils;
@@ -52,7 +51,7 @@ public class BackgroundProtocolLib {
         p.addPacketListener(new TeleportListener());
         p.addPacketListener(new VehicleHandle());
         p.addPacketListener(new DeathListener());
-        p.addPacketListener(new BlockPlaceBalancerListener());
+        //p.addPacketListener(new BlockPlaceBalancerListener());
         p.addPacketListener(new BlockPlaceListener());
         p.addPacketListener(new ClicksListener());
         p.addPacketListener(new PacketPistonHandle());
