@@ -219,15 +219,17 @@ public abstract class CheckDetection extends CheckProcess {
     // Accumulation
 
     private void increaseAccumulationTime(Check.DataType dataType, long time) {
-        double average = ResearchEngine.getAverageViolationTime(this, dataType);
+        double average = ResearchEngine.getAverageViolationTime(this, dataType),
+                tpsLost = (TPS.maximum - Bukkit.getTPS()[0]),
+                ratioFromMax = (TPS.maximum - tpsLost * 2) / TPS.maximum;
         long previousTime = this.previousTime[dataType.ordinal()],
                 add;
 
         if (previousTime == -1L) {
-            add = AlgebraUtils.integerRound(average);
+            add = AlgebraUtils.integerRound(average * ratioFromMax);
         } else {
             double multiplier = Math.min(average / (double) (time - previousTime), 1.0);
-            add = AlgebraUtils.integerRound(average * multiplier);
+            add = AlgebraUtils.integerRound(average * ratioFromMax * multiplier);
         }
         this.previousTime[dataType.ordinal()] = time;
 
