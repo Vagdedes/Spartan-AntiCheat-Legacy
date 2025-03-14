@@ -20,11 +20,13 @@ public class TimerBalancer {
         long delay = event.getDelay();
         forced = ((delay > 15 && delay < 48) ? forced + 1 : 0);
         latency = ((delay > 40 && delay < 48) ? latency + 10 : latency / 2);
+
         if (delay > 50) {
             balancer += delay - 50;
             if (delay > 53) negative++;
         } else if (delay < 50) {
             final long deviance = 50 - delay;
+
             if (balancer - deviance >= 0) {
                 balancer -= deviance;
             } else {
@@ -42,7 +44,6 @@ public class TimerBalancer {
                     result,
                     negative
             );
-
         } else if (result >= 0) {
             result /= 2L;
             balancer /= 2L;
@@ -57,4 +58,5 @@ public class TimerBalancer {
     public void addBalance(long balance) {
         this.balancer += balance;
     }
+
 }
