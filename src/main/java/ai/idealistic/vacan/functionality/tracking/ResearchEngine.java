@@ -43,16 +43,12 @@ public class ResearchEngine {
                     if (Config.sql.isEnabled()) {
                         refresh(Register.isPluginEnabled());
                     } else {
-                        statisticsThread.executeIfFree(() -> {
-                            updateCache(false);
-                        });
+                        statisticsThread.executeIfFree(() -> updateCache(false));
                     }
                 } else {
                     schedulerTicks -= 1;
 
-                    statisticsThread.executeIfFree(() -> {
-                        updateCache(false);
-                    });
+                    statisticsThread.executeIfFree(() -> updateCache(false));
                 }
             }
         }, 1L, 1L);
@@ -479,7 +475,7 @@ public class ResearchEngine {
         for (PlayerProfile profile : playerProfiles.values()) {
             for (CheckRunner runner : profile.getRunners()) {
                 for (CheckDetection detection : runner.getDetections()) {
-                    detection.sortData();
+                    detection.sortData(profile);
                 }
             }
         }
@@ -510,7 +506,7 @@ public class ResearchEngine {
                                         k -> new LinkedHashMap<>()
                                 ).put(
                                         detectionExecutor,
-                                        detectionExecutor.getTimeDifferences(profile, dataType)
+                                        detectionExecutor.getTimeDifferences(dataType)
                                 );
                             }
                         }

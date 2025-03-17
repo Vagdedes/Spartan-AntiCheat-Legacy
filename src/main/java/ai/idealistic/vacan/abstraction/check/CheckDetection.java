@@ -168,7 +168,7 @@ public abstract class CheckDetection extends CheckProcess {
 
     public final void storeData(Check.DataType dataType, long time) {
         Collection<Long> data = this.data[dataType.ordinal()];
-        int size = data.size() - 2_048;
+        int size = data.size() - 1_000;
 
         if (size > 0) {
             Iterator<Long> iterator = data.iterator();
@@ -182,38 +182,50 @@ public abstract class CheckDetection extends CheckProcess {
         data.add(time);
     }
 
-    public final void sortData() {
+    public final void sortData(PlayerProfile profile) {
         for (Check.DataType dataType : Check.DataType.values()) {
             List<Long> data = this.data[dataType.ordinal()];
 
-            if (data != null) {
+            if (!data.isEmpty()) {
                 Collections.sort(data);
+                Iterator<Long> iterator = data.iterator();
+
+                if (iterator.hasNext()) {
+                    List<Long> differences = new ArrayList<>(data.size() - 1);
+                    long previous = iterator.next();
+
+                    while (iterator.hasNext()) {
+                        long current = iterator.next();
+
+                        if (current >= 0L) { // Check for negative
+                            if (previous >= 0L) { // Check for negative
+                                if (profile.getContinuity().wasOnline(current, previous)) {
+                                    differences.add(current - previous);
+                                }
+                                previous = current;
+                            }
+                        } else {
+                            differences.add(Math.abs(current));
+                        }
+                    }
+                    this.data[dataType.ordinal()] = differences;
+                }
             }
         }
     }
 
-    public List<Long> getTimeDifferences(PlayerProfile profile, Check.DataType dataType) {
+    public List<Long> getTimeDifferences(Check.DataType dataType) {
         List<Long> data = this.data[dataType.ordinal()];
 
-        if (data != null) {
-            Iterator<Long> iterator = data.iterator();
-
-            if (iterator.hasNext()) {
-                List<Long> differences = new ArrayList<>(data.size() - 1);
-                long previous = iterator.next();
-
-                while (iterator.hasNext()) {
-                    long current = iterator.next();
-
-                    if (profile.getContinuity().wasOnline(current, previous)) {
-                        differences.add(current - previous);
-                    }
-                    previous = current;
+        if (!data.isEmpty()) {
+            for (Long time : data) {
+                if (time < 0L) {
+                    data.remove(time); // Remove negative
+                    data.add(Math.abs(time)); // Recover negative as positive
                 }
-                return differences;
             }
         }
-        return this.data[dataType.ordinal()];
+        return data;
     }
 
     // Accumulation
@@ -228,7 +240,9 @@ public abstract class CheckDetection extends CheckProcess {
         if (previousTime == -1L) {
             add = AlgebraUtils.integerRound(average * ratioFromMax);
         } else {
-            double multiplier = Math.min(average / (double) (time - previousTime), 1.0);
+            long difference = time - previousTime;
+            this.data[dataType.ordinal()].add(-difference); // Add negative purposely for multi-threading
+            double multiplier = Math.min(average / (double) difference, 1.0);
             add = AlgebraUtils.integerRound(average * ratioFromMax * multiplier);
         }
         this.previousTime[dataType.ordinal()] = time;
@@ -504,10 +518,6 @@ public abstract class CheckDetection extends CheckProcess {
                 }
             }
             // Store, potentially recalculate and check data
-            this.storeData(
-                    this.protocol.getDataType(),
-                    time
-            );
             this.increaseAccumulationTime(
                     this.protocol.getDataType(),
                     time

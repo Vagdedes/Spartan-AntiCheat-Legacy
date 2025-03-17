@@ -132,7 +132,7 @@ public class MiningHistory {
     }
 
     public double getMinesToTimeRatio(World.Environment environment) {
-        int mines = count[environment.ordinal()];
+        int mines = this.count[environment.ordinal()];
 
         if (mines > 0) {
             long onlineTime = this.profile.getContinuity().getOnlineTime();
