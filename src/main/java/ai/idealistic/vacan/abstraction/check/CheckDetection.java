@@ -133,22 +133,14 @@ public abstract class CheckDetection extends CheckProcess {
                 || this.hackType.getCheck().getBooleanOption("check_" + this.name, this.def);
     }
 
-    public final boolean supportsDataType(Check.DataType dataType) {
-        return this.forcedDataType == null
-                || this.forcedDataType == dataType;
-    }
-
-    public final boolean supportsDetectionType(Check.DetectionType detectionType) {
-        return this.detectionType == null
-                || this.detectionType == detectionType;
-    }
-
     public final boolean canCall() {
         return this.protocol != null
                 && this.executor.canCall()
                 && this.isEnabled()
-                && this.supportsDetectionType(this.protocol.detectionType)
-                && this.supportsDataType(this.protocol.getDataType())
+                && (this.forcedDataType == null
+                || this.forcedDataType == this.protocol.getDataType())
+                && (this.detectionType == null
+                || this.detectionType == this.protocol.detectionType)
                 && PluginEdition.hasDetectionsPurchased(this.protocol.getDataType());
     }
 

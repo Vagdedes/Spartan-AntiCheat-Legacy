@@ -157,14 +157,6 @@ public class PluginBase {
         }
     }
 
-    public static boolean isOnline(UUID uuid) {
-        return playerProtocol.containsKey(uuid);
-    }
-
-    public static boolean isOnline(PlayerProtocol protocol) {
-        return playerProtocol.containsValue(protocol);
-    }
-
     public static PlayerProtocol deleteProtocol(Player player) {
         if (ProtocolLib.isTemporary(player)) {
             return null;
@@ -177,7 +169,6 @@ public class PluginBase {
                         protocol.getActiveTimePlayed(),
                         true
                 );
-                new PlayerProtocol(player); // Call to update profile object with emptier object
             }
             return protocol;
         }

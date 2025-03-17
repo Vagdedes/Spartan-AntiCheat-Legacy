@@ -53,11 +53,10 @@ public class PlayerProfile {
 
         if (protocol != null) {
             this.offlinePlayer = protocol.bukkit();
-            this.registerRunners(protocol);
         } else {
             this.offlinePlayer = null;
-            this.registerRunners(null);
         }
+        this.registerRunners(protocol);
     }
 
     public PlayerProfile(PlayerProtocol protocol) {
@@ -89,11 +88,6 @@ public class PlayerProfile {
 
     PlayerProtocol protocol() {
         return this.runners[0].protocol;
-    }
-
-    public boolean isOnline() {
-        PlayerProtocol protocol = this.protocol();
-        return protocol != null && PluginBase.isOnline(protocol);
     }
 
     public CheckRunner getRunner(CheckEnums.HackType hackType) {
