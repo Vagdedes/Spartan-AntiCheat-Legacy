@@ -98,7 +98,7 @@ public abstract class CheckDetection extends CheckProcess {
                     "Detection '" + this.name + "' already exists for enum '" + executor.hackType.toString() + "'."
             );
         } else {
-            this.hackType.addDetection(this.name);
+            this.hackType.addDetection(this.name, defaultAverageTime);
         }
     }
 

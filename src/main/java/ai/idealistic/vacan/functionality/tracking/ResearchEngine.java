@@ -389,18 +389,34 @@ public class ResearchEngine {
                                         Check.DataType dataType = findDataType(data);
                                         PlayerProfile profile = getPlayerProfile(player);
                                         profile.setLastDataType(dataType);
-                                        CheckDetection detectionExecutor = profile.getRunner(
+                                        CheckRunner runner = profile.getRunner(
                                                 hackType
-                                        ).getDetection(
-                                                detection
                                         );
 
-                                        if (detectionExecutor != null) {
+                                        if (runner != null) {
+                                            CheckDetection detectionExecutor = runner.getDetection(
+                                                    detection
+                                            );
+
+                                            if (detectionExecutor != null) {
+                                                SimpleDateFormat sdf = new SimpleDateFormat(AntiCheatLogs.dateFormat);
+
+                                                try {
+                                                    detectionExecutor.storeData(
+                                                            dataType,
+                                                            sdf.parse(fullDate).getTime()
+                                                    );
+                                                } catch (Exception ignored) {
+                                                }
+                                            }
+                                        } else if (hackType.hasDetection(detection)) {
                                             SimpleDateFormat sdf = new SimpleDateFormat(AntiCheatLogs.dateFormat);
 
                                             try {
-                                                detectionExecutor.storeData(
+                                                profile.addTimeDifference(
+                                                        hackType,
                                                         dataType,
+                                                        detection,
                                                         sdf.parse(fullDate).getTime()
                                                 );
                                             } catch (Exception ignored) {
@@ -523,18 +539,32 @@ public class ResearchEngine {
                         : (dataTypes == null || dataTypes.isEmpty()
                         ? Arrays.asList(Check.DataType.values()) :
                         dataTypes))) {
-                    Map<String, Map<CheckDetection, List<Long>>> statistics = new LinkedHashMap<>();
+                    Map<String, Map<Object, List<Long>>> statistics = new LinkedHashMap<>();
 
                     if (hackType.getCheck().isEnabled(dataType, null)) {
                         for (PlayerProfile profile : profiles) {
-                            for (CheckDetection detectionExecutor : profile.getRunner(hackType).getDetections()) {
-                                statistics.computeIfAbsent(
-                                        detectionExecutor.name,
-                                        k -> new LinkedHashMap<>()
-                                ).put(
-                                        detectionExecutor,
-                                        profile.getTimeDifferences(hackType, dataType, detectionExecutor.name)
-                                );
+                            CheckRunner runner = profile.getRunner(hackType);
+
+                            if (runner != null) {
+                                for (CheckDetection detectionExecutor : runner.getDetections()) {
+                                    statistics.computeIfAbsent(
+                                            detectionExecutor.name,
+                                            k -> new LinkedHashMap<>()
+                                    ).put(
+                                            detectionExecutor,
+                                            profile.getTimeDifferences(hackType, dataType, detectionExecutor.name)
+                                    );
+                                }
+                            } else {
+                                for (String detectionExecutor : hackType.getDetections()) {
+                                    statistics.computeIfAbsent(
+                                            detectionExecutor,
+                                            k -> new LinkedHashMap<>()
+                                    ).put(
+                                            detectionExecutor,
+                                            profile.getTimeDifferences(hackType, dataType, detectionExecutor)
+                                    );
+                                }
                             }
                         }
 
@@ -565,9 +595,9 @@ public class ResearchEngine {
                                 }
                             }
                         } else {
-                            for (Map.Entry<String, Map<CheckDetection, List<Long>>> entry : statistics.entrySet()) {
-                                Map<CheckDetection, List<Long>> map = entry.getValue();
-                                CheckDetection detection = map.keySet().iterator().next();
+                            for (Map.Entry<String, Map<Object, List<Long>>> entry : statistics.entrySet()) {
+                                Map<Object, List<Long>> map = entry.getValue();
+                                Object detection = map.keySet().iterator().next();
                                 double mean = 0.0,
                                         realizedMean = 0.0,
                                         realizedTotal = 0.0,
@@ -597,7 +627,11 @@ public class ResearchEngine {
                                         }
                                     }
                                 } else {
-                                    realizedMean = detection.defaultAverageTime;
+                                    if (detection instanceof CheckDetection) {
+                                        realizedMean = ((CheckDetection) detection).defaultAverageTime;
+                                    } else {
+                                        realizedMean = hackType.getDefaultAverageTime(detection.toString());
+                                    }
                                 }
 
                                 for (List<Long> list : map.values()) {
@@ -612,14 +646,26 @@ public class ResearchEngine {
                                 } else {
                                     mean = realizedMean;
                                 }
-                                averageViolationTime.put(
-                                        (detection.generalHashCode() * PluginBase.hashCodeMultiplier)
-                                                + dataType.hashCode(),
-                                        Math.min(
-                                                mean,
-                                                detection.defaultAverageTime * 3
-                                        )
-                                );
+                                if (detection instanceof CheckDetection) {
+                                    CheckDetection real = (CheckDetection) detection;
+                                    averageViolationTime.put(
+                                            (real.generalHashCode() * PluginBase.hashCodeMultiplier)
+                                                    + dataType.hashCode(),
+                                            Math.min(
+                                                    mean,
+                                                    real.defaultAverageTime * 3
+                                            )
+                                    );
+                                } else {
+                                    averageViolationTime.put(
+                                            (CheckDetection.generalHashCode(hackType, detection.toString()) * PluginBase.hashCodeMultiplier)
+                                                    + dataType.hashCode(),
+                                            Math.min(
+                                                    mean,
+                                                    hackType.getDefaultAverageTime(detection.toString()) * 3
+                                            )
+                                    );
+                                }
                             }
                         }
                     } else {

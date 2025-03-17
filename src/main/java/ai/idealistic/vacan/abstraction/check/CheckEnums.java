@@ -4,8 +4,9 @@ import ai.idealistic.vacan.utils.minecraft.inventory.MaterialUtils;
 import lombok.Getter;
 import org.bukkit.Material;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Collection;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class CheckEnums {
 
@@ -207,14 +208,13 @@ public class CheckEnums {
         public final HackCategoryType category;
         public final Class<?> executor;
         public final String[] description;
-        @Getter
-        private final List<String> detections;
+        private final Map<String, Long> detections;
 
         HackType(HackCategoryType category, Class<?> executor, String[] description) {
             this.category = category;
             this.executor = executor;
             this.description = description;
-            this.detections = new CopyOnWriteArrayList<>();
+            this.detections = new ConcurrentHashMap<>();
             this.check = new Check(this);
         }
 
@@ -224,12 +224,24 @@ public class CheckEnums {
             }
         }
 
-        public void addDetection(String detection) {
-            this.detections.add(detection);
+        public void addDetection(String detection, long averageTime) {
+            this.detections.put(detection, averageTime);
         }
 
         public void removeDetection(String detection) {
             this.detections.remove(detection);
+        }
+
+        public long getDefaultAverageTime(String detection) {
+            return this.detections.get(detection);
+        }
+
+        public Collection<String> getDetections() {
+            return this.detections.keySet();
+        }
+
+        public boolean hasDetection(String detection) {
+            return this.detections.containsKey(detection);
         }
 
         @Override

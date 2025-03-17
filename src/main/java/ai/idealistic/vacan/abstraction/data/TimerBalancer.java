@@ -35,15 +35,6 @@ public class TimerBalancer {
                 balancer = 0;
             }
             negative = 0;
-            event.protocol.debug(
-                    true,
-                    false,
-                    true,
-                    delay,
-                    balancer,
-                    result,
-                    negative
-            );
         } else if (result >= 0) {
             result /= 2L;
             balancer /= 2L;
