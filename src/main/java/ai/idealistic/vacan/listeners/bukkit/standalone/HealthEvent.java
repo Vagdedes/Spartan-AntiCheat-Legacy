@@ -18,7 +18,7 @@ public class HealthEvent implements Listener {
 
         if (entity instanceof Player) {
             PlayerProtocol p = PluginBase.getProtocol((Player) entity);
-            p.profile().executeRunners(e.isCancelled(), e);
+            p.executeRunners(e.isCancelled(), e);
         }
     }
 
@@ -28,7 +28,7 @@ public class HealthEvent implements Listener {
 
         if (entity instanceof Player) {
             PlayerProtocol p = PluginBase.getProtocol((Player) entity);
-            p.profile().executeRunners(e.isCancelled(), e);
+            p.executeRunners(e.isCancelled(), e);
         }
     }
 

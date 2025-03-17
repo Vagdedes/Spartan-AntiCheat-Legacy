@@ -36,7 +36,7 @@ public class VelocityEvent implements Listener {
             if (protocol.claimedVeloSpeed.size() > 2) {
                 protocol.claimedVeloSpeed.remove(0);
             }
-            protocol.profile().executeRunners(e.isCancelled(), e);
+            protocol.executeRunners(e.isCancelled(), e);
         }
     }
 

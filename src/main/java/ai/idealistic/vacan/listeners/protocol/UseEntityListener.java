@@ -41,7 +41,7 @@ public class UseEntityListener extends PacketAdapter {
                     }
                 }
                 if (t instanceof Vehicle) {
-                    protocol.profile().executeRunners(
+                    protocol.executeRunners(
                             false,
                             new VehicleEnterEvent(null, player)
                     );

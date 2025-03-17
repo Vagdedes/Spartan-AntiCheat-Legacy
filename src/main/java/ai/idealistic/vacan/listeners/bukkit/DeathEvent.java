@@ -20,7 +20,7 @@ public class DeathEvent implements Listener {
         protocol.timerBalancer.addBalance(50);
 
         if (protocol.packetsEnabled() == packets) {
-            protocol.profile().executeRunners(null, object);
+            protocol.executeRunners(null, object);
         }
     }
 

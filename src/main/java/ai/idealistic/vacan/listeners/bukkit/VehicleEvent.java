@@ -19,7 +19,7 @@ public class VehicleEvent implements Listener {
 
             if (entity instanceof Player) {
                 PlayerProtocol p = PluginBase.getProtocol((Player) entity, true);
-                p.profile().executeRunners(e.isCancelled(), e);
+                p.executeRunners(e.isCancelled(), e);
             }
         }
     }
@@ -31,7 +31,7 @@ public class VehicleEvent implements Listener {
 
             if (en instanceof Player) {
                 PlayerProtocol p = PluginBase.getProtocol((Player) en, true);
-                p.profile().executeRunners(e.isCancelled(), e);
+                p.executeRunners(e.isCancelled(), e);
             }
         }
     }

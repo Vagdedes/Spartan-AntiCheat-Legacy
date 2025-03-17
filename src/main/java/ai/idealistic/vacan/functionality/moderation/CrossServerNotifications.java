@@ -77,7 +77,7 @@ public class CrossServerNotifications {
 
                                     for (PlayerProtocol protocol : protocols) {
                                         CheckDetection
-                                                staffDetection = protocol.profile().getRunner(hackType).getDetection(detection);
+                                                staffDetection = protocol.getRunner(hackType).getDetection(detection);
 
                                         if (staffDetection != null
                                                 && staffDetection.canSendNotification(

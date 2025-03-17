@@ -206,7 +206,7 @@ public class MovementListener extends PacketAdapter {
 
             //player.sendMessage("event: " + moveEvent.getTo().toVector());
         } else {
-            p.profile().executeRunners(
+            p.executeRunners(
                     event.isCancelled(),
                     new SuperPositionPacketEvent(p, event)
             );

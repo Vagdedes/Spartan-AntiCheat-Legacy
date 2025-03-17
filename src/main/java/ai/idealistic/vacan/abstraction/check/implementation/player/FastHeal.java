@@ -81,7 +81,7 @@ public class FastHeal extends CheckRunner {
             if (((FoodLevelChangeEvent) object).getFoodLevel() > this.protocol.bukkit().getFoodLevel()
                     && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
                     || this.protocol.getItemInHand().getType() != Material.DRIED_KELP)) {
-                this.protocol.profile().getRunner(hackType).addDisableCause(null, null, 10);
+                this.protocol.getRunner(hackType).addDisableCause(null, null, 10);
             }
         }
     }

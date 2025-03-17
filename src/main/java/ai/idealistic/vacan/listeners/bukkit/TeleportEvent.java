@@ -21,7 +21,7 @@ public class TeleportEvent implements Listener {
 
         if (protocol.packetsEnabled() == packets
                 || object instanceof PlayerTeleportEvent) {
-            protocol.profile().executeRunners(null, object);
+            protocol.executeRunners(null, object);
         }
     }
 
@@ -34,7 +34,7 @@ public class TeleportEvent implements Listener {
         PlayerProtocol protocol = PluginBase.getProtocol(player, true);
 
         if (protocol.packetsEnabled() == packets) {
-            protocol.profile().executeRunners(null, object);
+            protocol.executeRunners(null, object);
         }
     }
 

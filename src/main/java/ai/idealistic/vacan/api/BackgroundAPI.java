@@ -121,7 +121,7 @@ public class BackgroundAPI {
 
     public static double getCertainty(Player p, HackType hackType) {
         PlayerProtocol protocol = PluginBase.getProtocol(p);
-        Collection<CheckDetection> detections = protocol.profile().getRunner(hackType).getDetections();
+        Collection<CheckDetection> detections = protocol.getRunner(hackType).getDetections();
         double avg = 0.0, punishment = 0.0;
 
         for (CheckDetection detection : detections) {
@@ -135,7 +135,7 @@ public class BackgroundAPI {
 
     public static double getDecimalVL(Player p, HackType hackType) {
         PlayerProtocol protocol = PluginBase.getProtocol(p);
-        Collection<CheckDetection> detections = protocol.profile().getRunner(hackType).getDetections();
+        Collection<CheckDetection> detections = protocol.getRunner(hackType).getDetections();
         double avg = 0.0;
 
         for (CheckDetection detection : detections) {
@@ -153,7 +153,7 @@ public class BackgroundAPI {
         double avg = 0.0,
                 detectionsTotal = 0.0;
 
-        for (CheckRunner runner : protocol.profile().getRunners()) {
+        for (CheckRunner runner : protocol.getRunners()) {
             Collection<CheckDetection> detections = runner.getDetections();
 
             for (CheckDetection detection : detections) {
@@ -217,7 +217,7 @@ public class BackgroundAPI {
     public static void cancelCheck(Player p, HackType hackType, int ticks) {
         if (Config.settings.getBoolean("Important.enable_developer_api")) {
             PlayerProtocol protocol = PluginBase.getProtocol(p);
-            protocol.profile().getRunner(hackType).addDisableCause("Developer-API", null, ticks);
+            protocol.getRunner(hackType).addDisableCause("Developer-API", null, ticks);
         }
     }
 
@@ -226,7 +226,7 @@ public class BackgroundAPI {
             PlayerProtocol protocol = PluginBase.getProtocol(p);
 
             for (HackType hackType : CheckEnums.HackType.values()) {
-                protocol.profile().getRunner(hackType).addDisableCause("Developer-API", string, ticks);
+                protocol.getRunner(hackType).addDisableCause("Developer-API", string, ticks);
             }
         }
     }
@@ -246,28 +246,28 @@ public class BackgroundAPI {
     public static void enableSilentChecking(Player p, HackType hackType) {
         if (Config.settings.getBoolean("Important.enable_developer_api")) {
             PlayerProtocol protocol = PluginBase.getProtocol(p);
-            protocol.profile().getRunner(hackType).addSilentCause("Developer-API", null, 0);
+            protocol.getRunner(hackType).addSilentCause("Developer-API", null, 0);
         }
     }
 
     public static void disableSilentChecking(Player p, HackType hackType) {
         if (Config.settings.getBoolean("Important.enable_developer_api")) {
             PlayerProtocol protocol = PluginBase.getProtocol(p);
-            protocol.profile().getRunner(hackType).removeSilentCause();
+            protocol.getRunner(hackType).removeSilentCause();
         }
     }
 
     public static void startCheck(Player p, HackType hackType) {
         if (Config.settings.getBoolean("Important.enable_developer_api")) {
             PlayerProtocol protocol = PluginBase.getProtocol(p);
-            protocol.profile().getRunner(hackType).removeDisableCause();
+            protocol.getRunner(hackType).removeDisableCause();
         }
     }
 
     public static void stopCheck(Player p, HackType hackType) {
         if (Config.settings.getBoolean("Important.enable_developer_api")) {
             PlayerProtocol protocol = PluginBase.getProtocol(p);
-            protocol.profile().getRunner(hackType).addDisableCause("Developer-API", null, 0);
+            protocol.getRunner(hackType).addDisableCause("Developer-API", null, 0);
         }
     }
 
@@ -276,7 +276,7 @@ public class BackgroundAPI {
 
         if (!protocols.isEmpty()) {
             for (PlayerProtocol protocol : protocols) {
-                for (CheckRunner runner : protocol.profile().getRunners()) {
+                for (CheckRunner runner : protocol.getRunners()) {
                     for (CheckDetection detection : runner.getDetections()) {
                         detection.clearData(protocol.getDataType());
                     }
@@ -288,7 +288,7 @@ public class BackgroundAPI {
     public static void resetVL(Player p) {
         PlayerProtocol protocol = PluginBase.getProtocol(p);
 
-        for (CheckRunner runner : protocol.profile().getRunners()) {
+        for (CheckRunner runner : protocol.getRunners()) {
             for (CheckDetection detection : runner.getDetections()) {
                 detection.clearData(protocol.getDataType());
             }

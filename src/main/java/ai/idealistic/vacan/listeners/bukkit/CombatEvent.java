@@ -50,10 +50,10 @@ public class CombatEvent implements Listener {
                                 (LivingEntity) entity,
                                 cancelled
                         );
-                        protocol.profile().executeRunners(cancelled, event);
+                        protocol.executeRunners(cancelled, event);
 
                         for (CheckEnums.HackType hackType : handledChecks) {
-                            if (protocol.profile().getRunner(hackType).prevent()) {
+                            if (protocol.getRunner(hackType).prevent()) {
                                 e.setCancelled(true);
                             }
                         }
@@ -70,7 +70,7 @@ public class CombatEvent implements Listener {
                 // Detections
                 if (entityAttack && (damagerIsPlayer || damager instanceof LivingEntity)) {
                     boolean cancelled = e.isCancelled();
-                    protocol.profile().executeRunners(
+                    protocol.executeRunners(
                             cancelled,
                             new EntityAttackPlayerEvent(
                                     player,
@@ -85,7 +85,7 @@ public class CombatEvent implements Listener {
 
     public static void use(PlayerUseEvent e) {
         PlayerProtocol protocol = PluginBase.getProtocol(e.player, true);
-        protocol.profile().executeRunners(
+        protocol.executeRunners(
                 false,
                 new PlayerAttackEvent(e.player, e.target, false)
         );

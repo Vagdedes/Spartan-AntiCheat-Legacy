@@ -17,7 +17,7 @@ public class ElytraEvent implements Listener {
 
         if (entity instanceof Player) {
             PlayerProtocol protocol = PluginBase.getProtocol((Player) entity);
-            protocol.profile().executeRunners(e.isCancelled(), e);
+            protocol.executeRunners(e.isCancelled(), e);
         }
     }
 }

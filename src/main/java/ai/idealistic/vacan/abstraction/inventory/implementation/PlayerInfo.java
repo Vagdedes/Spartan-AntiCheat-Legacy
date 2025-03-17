@@ -170,7 +170,7 @@ public class PlayerInfo extends InventoryMenu {
                     }
                     lore.add("§7" + hackType.getCheck().getName() + "§8:§f " + state);
                 } else {
-                    List<String> evidence = protocol.profile().getRunner(hackType).getEvidence();
+                    List<String> evidence = protocol.getRunner(hackType).getEvidence();
 
                     if (!evidence.isEmpty()) {
                         if (!added) {
@@ -215,7 +215,7 @@ public class PlayerInfo extends InventoryMenu {
         if (!check.isEnabled(dataType, worldName)) { // Do not put player because we calculate it below
             return "Check is disabled";
         }
-        CheckCancellation disabledCause = protocol.profile().getRunner(hackType).getDisableCause();
+        CheckCancellation disabledCause = protocol.getRunner(hackType).getDisableCause();
         return Permissions.isBypassing(protocol.bukkit(), hackType)
                 ? "Player has permission bypass"
                 : disabledCause != null

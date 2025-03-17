@@ -41,7 +41,7 @@ public class MovementEvent implements Listener {
             )) {
                 return;
             }
-            protocol.profile().executeRunners(e.isCancelled(), e);
+            protocol.executeRunners(e.isCancelled(), e);
         }
     }
 
@@ -50,12 +50,12 @@ public class MovementEvent implements Listener {
         protocol.lastTickEvent = tickEvent;
         protocol.packetWorld.tick(tickEvent);
         protocol.timerBalancer.pushDelay(tickEvent);
-        protocol.profile().executeRunners(false, tickEvent);
+        protocol.executeRunners(false, tickEvent);
     }
 
     public static void transaction(PlayerTransactionEvent event) {
         PlayerProtocol protocol = event.protocol;
-        protocol.profile().executeRunners(false, event);
+        protocol.executeRunners(false, event);
     }
 
 }

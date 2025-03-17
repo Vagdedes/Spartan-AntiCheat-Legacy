@@ -108,9 +108,23 @@ public class ResearchEngine {
 
                 if (!playerProfiles.isEmpty()) {
                     for (PlayerProfile playerProfile : playerProfiles.values()) {
-                        for (CheckDetection detection : playerProfile.getRunner(hackType).getDetections()) {
-                            for (Check.DataType dataType : Check.DataType.values()) {
-                                detection.clearData(dataType);
+                        CheckRunner runner = playerProfile.getRunner(hackType);
+
+                        if (runner != null) {
+                            for (CheckDetection detection : runner.getDetections()) {
+                                for (Check.DataType dataType : Check.DataType.values()) {
+                                    detection.clearData(dataType);
+                                }
+                            }
+                        } else {
+                            for (String detection : hackType.getDetections()) {
+                                for (Check.DataType dataType : Check.DataType.values()) {
+                                    playerProfile.clearTimeDifferences(
+                                            hackType,
+                                            dataType,
+                                            detection
+                                    );
+                                }
                             }
                         }
                         playerProfile.getContinuity().clear();
@@ -473,9 +487,22 @@ public class ResearchEngine {
             }
         }
         for (PlayerProfile profile : playerProfiles.values()) {
-            for (CheckRunner runner : profile.getRunners()) {
-                for (CheckDetection detection : runner.getDetections()) {
-                    detection.sortData(profile);
+            CheckRunner[] runners = profile.getRunners();
+
+            if (runners.length == 0) {
+                for (CheckEnums.HackType hackType : CheckEnums.HackType.values()) {
+                    for (String detection : hackType.getDetections()) {
+                        profile.sortTimeDifferences(
+                                hackType,
+                                detection
+                        );
+                    }
+                }
+            } else {
+                for (CheckRunner runner : runners) {
+                    for (CheckDetection detection : runner.getDetections()) {
+                        detection.sortData();
+                    }
                 }
             }
         }
@@ -506,7 +533,7 @@ public class ResearchEngine {
                                         k -> new LinkedHashMap<>()
                                 ).put(
                                         detectionExecutor,
-                                        detectionExecutor.getTimeDifferences(dataType)
+                                        profile.getTimeDifferences(hackType, dataType, detectionExecutor.name)
                                 );
                             }
                         }

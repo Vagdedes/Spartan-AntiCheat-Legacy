@@ -20,7 +20,7 @@ public class InventoryEvent implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     private void ItemDrop(PlayerDropItemEvent e) {
         PlayerProtocol p = PluginBase.getProtocol(e.getPlayer(), true);
-        p.profile().executeRunners(e.isCancelled(), e);
+        p.executeRunners(e.isCancelled(), e);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -30,7 +30,7 @@ public class InventoryEvent implements Listener {
         if (BlockUtils.hasMaterial(item)) {
             Player n = (Player) e.getWhoClicked();
             PlayerProtocol p = PluginBase.getProtocol(n, true);
-            p.profile().executeRunners(false, e);
+            p.executeRunners(false, e);
 
             if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
                 ClickType click = e.getClick();

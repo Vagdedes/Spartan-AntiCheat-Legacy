@@ -405,7 +405,7 @@ public class Compatibility {
                                     CheckEnums.HackType[] hackTypes,
                                     int ticks) {
         for (CheckEnums.HackType hackType : hackTypes) {
-            protocol.profile().getRunner(hackType).addDisableCause(compatibilityType.toString(), null, ticks);
+            protocol.getRunner(hackType).addDisableCause(compatibilityType.toString(), null, ticks);
         }
     }
 
@@ -413,7 +413,7 @@ public class Compatibility {
                                     Compatibility.CompatibilityType compatibilityType,
                                     CheckEnums.HackType hackType,
                                     int ticks) {
-        protocol.profile().getRunner(hackType).addDisableCause(compatibilityType.toString(), null, ticks);
+        protocol.getRunner(hackType).addDisableCause(compatibilityType.toString(), null, ticks);
     }
 
     public void evadeFalsePositives(PlayerProtocol protocol,
@@ -423,7 +423,7 @@ public class Compatibility {
         for (CheckEnums.HackType hackType : CheckEnums.HackType.values()) {
             for (CheckEnums.HackCategoryType type : types) {
                 if (hackType.category == type) {
-                    protocol.profile().getRunner(hackType).addDisableCause(compatibilityType.toString(), null, ticks);
+                    protocol.getRunner(hackType).addDisableCause(compatibilityType.toString(), null, ticks);
                     break;
                 }
             }
@@ -436,7 +436,7 @@ public class Compatibility {
                                     int ticks) {
         for (CheckEnums.HackType hackType : CheckEnums.HackType.values()) {
             if (hackType.category == type) {
-                protocol.profile().getRunner(hackType).addDisableCause(compatibilityType.toString(), null, ticks);
+                protocol.getRunner(hackType).addDisableCause(compatibilityType.toString(), null, ticks);
             }
         }
     }

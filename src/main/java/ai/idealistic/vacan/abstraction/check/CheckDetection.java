@@ -1,6 +1,5 @@
 package ai.idealistic.vacan.abstraction.check;
 
-import ai.idealistic.vacan.abstraction.profiling.PlayerProfile;
 import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.vacan.api.CheckCancelEvent;
 import ai.idealistic.vacan.api.PlayerViolationCommandEvent;
@@ -21,8 +20,7 @@ import ai.idealistic.vacan.utils.minecraft.server.ConfigUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
-import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.List;
 
 public abstract class CheckDetection extends CheckProcess {
 
@@ -54,7 +52,6 @@ public abstract class CheckDetection extends CheckProcess {
     public final long defaultAverageTime, timeToNotify, timeToPrevent, timeToPunish;
     private final long[] accumulatedTime, previousTime;
     private long notifications;
-    private final List<Long>[] data;
 
     public CheckDetection(
             CheckRunner executor,
@@ -84,10 +81,8 @@ public abstract class CheckDetection extends CheckProcess {
         this.timeToPunish = timeToPunish;
         this.accumulatedTime = new long[Check.DataType.values().length];
         this.previousTime = new long[Check.DataType.values().length];
-        this.data = new List[Check.DataType.values().length];
 
         for (Check.DataType dataType : Check.DataType.values()) {
-            this.data[dataType.ordinal()] = new CopyOnWriteArrayList<>();
             this.accumulatedTime[dataType.ordinal()] = 0L;
             this.previousTime[dataType.ordinal()] = -1L;
         }
@@ -97,6 +92,8 @@ public abstract class CheckDetection extends CheckProcess {
             throw new IllegalArgumentException(
                     "Detection '" + this.name + "' already exists for enum '" + executor.hackType.toString() + "'."
             );
+        } else {
+            this.hackType.addDetection(this.name);
         }
     }
 
@@ -134,8 +131,7 @@ public abstract class CheckDetection extends CheckProcess {
     }
 
     public final boolean canCall() {
-        return this.protocol != null
-                && this.executor.canCall()
+        return this.executor.canCall()
                 && this.isEnabled()
                 && (this.forcedDataType == null
                 || this.forcedDataType == this.protocol.getDataType())
@@ -153,96 +149,54 @@ public abstract class CheckDetection extends CheckProcess {
     // Data
 
     public final void clearData(Check.DataType dataType) {
-        this.data[dataType.ordinal()].clear();
-        this.accumulatedTime[dataType.ordinal()] = 0L;
-        this.previousTime[dataType.ordinal()] = -1L;
+        this.protocol.profile().clearTimeDifferences(
+                this.hackType,
+                dataType,
+                this.name
+        );
+        this.accumulatedTime[this.protocol.getDataType().ordinal()] = 0L;
+        this.previousTime[this.protocol.getDataType().ordinal()] = -1L;
     }
 
     public final void storeData(Check.DataType dataType, long time) {
-        Collection<Long> data = this.data[dataType.ordinal()];
-        int size = data.size() - 1_000;
-
-        if (size > 0) {
-            Iterator<Long> iterator = data.iterator();
-
-            while (iterator.hasNext() && size > 0) {
-                if (data.remove(iterator.next())) {
-                    size--;
-                }
-            }
-        }
-        data.add(time);
+        this.protocol.profile().addTimeDifference(
+                this.hackType,
+                dataType,
+                this.name,
+                time
+        );
     }
 
-    public final void sortData(PlayerProfile profile) {
-        for (Check.DataType dataType : Check.DataType.values()) {
-            List<Long> data = this.data[dataType.ordinal()];
-
-            if (!data.isEmpty()) {
-                Collections.sort(data);
-                Iterator<Long> iterator = data.iterator();
-
-                if (iterator.hasNext()) {
-                    List<Long> differences = new ArrayList<>(data.size() - 1);
-                    long previous = iterator.next();
-
-                    while (iterator.hasNext()) {
-                        long current = iterator.next();
-
-                        if (current >= 0L) { // Check for negative
-                            if (previous >= 0L) { // Check for negative
-                                if (profile.getContinuity().wasOnline(current, previous)) {
-                                    differences.add(current - previous);
-                                }
-                                previous = current;
-                            }
-                        } else {
-                            differences.add(Math.abs(current));
-                        }
-                    }
-                    this.data[dataType.ordinal()] = differences;
-                }
-            }
-        }
-    }
-
-    public List<Long> getTimeDifferences(Check.DataType dataType) {
-        List<Long> data = this.data[dataType.ordinal()];
-
-        if (!data.isEmpty()) {
-            for (Long time : data) {
-                if (time < 0L) {
-                    data.remove(time); // Remove negative
-                    data.add(Math.abs(time)); // Recover negative as positive
-                }
-            }
-        }
-        return data;
+    public final void sortData() {
+        this.protocol.profile().sortTimeDifferences(
+                this.hackType,
+                this.name
+        );
     }
 
     // Accumulation
 
-    private void increaseAccumulationTime(Check.DataType dataType, long time) {
-        double average = ResearchEngine.getAverageViolationTime(this, dataType),
+    private void increaseAccumulationTime(long time) {
+        double average = ResearchEngine.getAverageViolationTime(this, this.protocol.getDataType()),
                 tpsLost = (TPS.maximum - Bukkit.getTPS()[0]),
                 ratioFromMax = (TPS.maximum - tpsLost * 2) / TPS.maximum;
-        long previousTime = this.previousTime[dataType.ordinal()],
+        long previousTime = this.previousTime[this.protocol.getDataType().ordinal()],
                 add;
 
         if (previousTime == -1L) {
             add = AlgebraUtils.integerRound(average * ratioFromMax);
         } else {
             long difference = time - previousTime;
-            this.data[dataType.ordinal()].add(-difference); // Add negative purposely for multi-threading
+            this.storeData(this.protocol.getDataType(), -difference); // Add negative purposely for multi-threading
             double multiplier = Math.min(average / (double) difference, 1.0);
             add = AlgebraUtils.integerRound(average * ratioFromMax * multiplier);
         }
-        this.previousTime[dataType.ordinal()] = time;
+        this.previousTime[this.protocol.getDataType().ordinal()] = time;
 
-        if (this.accumulatedTime[dataType.ordinal()] <= System.currentTimeMillis()) {
-            this.accumulatedTime[dataType.ordinal()] = System.currentTimeMillis() + add;
+        if (this.accumulatedTime[this.protocol.getDataType().ordinal()] <= System.currentTimeMillis()) {
+            this.accumulatedTime[this.protocol.getDataType().ordinal()] = System.currentTimeMillis() + add;
         } else {
-            this.accumulatedTime[dataType.ordinal()] += add;
+            this.accumulatedTime[this.protocol.getDataType().ordinal()] += add;
         }
     }
 
@@ -364,7 +318,7 @@ public abstract class CheckDetection extends CheckProcess {
 
             if (!protocols.isEmpty()) {
                 for (PlayerProtocol staff : protocols) {
-                    CheckDetection detection = staff.profile().getRunner(this.hackType).getDetection(this.name);
+                    CheckDetection detection = staff.getRunner(this.hackType).getDetection(this.name);
 
                     if (detection != null
                             && detection.canSendNotification(time, level, notification)) {
@@ -511,7 +465,6 @@ public abstract class CheckDetection extends CheckProcess {
             }
             // Store, potentially recalculate and check data
             this.increaseAccumulationTime(
-                    this.protocol.getDataType(),
                     time
             );
             ResearchEngine.queueToCache(this.hackType, this.protocol.getDataType());

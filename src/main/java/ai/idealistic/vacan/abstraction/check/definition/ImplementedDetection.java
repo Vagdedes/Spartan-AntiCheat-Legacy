@@ -65,6 +65,7 @@ public class ImplementedDetection extends CheckDetection {
 
         if (!detection.hasName) {
             detection.executor.removeDetection(detection);
+            detection.executor.hackType.removeDetection(detection.name);
         }
     }
 
@@ -91,6 +92,7 @@ public class ImplementedDetection extends CheckDetection {
 
         if (!detection.hasName) {
             detection.executor.removeDetection(detection);
+            detection.executor.hackType.removeDetection(detection.name);
         }
     }
 

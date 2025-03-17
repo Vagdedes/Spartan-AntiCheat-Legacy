@@ -37,7 +37,7 @@ public class ClicksListener extends PacketAdapter {
                     protocol.clickBlocker = false;
                 }
                 if (!protocol.clickBlocker) {
-                    protocol.profile().executeRunners(
+                    protocol.executeRunners(
                             false,
                             new PlayerLeftClickEvent(
                                     player,

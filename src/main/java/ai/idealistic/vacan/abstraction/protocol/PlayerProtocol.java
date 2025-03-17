@@ -1,6 +1,8 @@
 package ai.idealistic.vacan.abstraction.protocol;
 
 import ai.idealistic.vacan.abstraction.check.Check;
+import ai.idealistic.vacan.abstraction.check.CheckEnums;
+import ai.idealistic.vacan.abstraction.check.CheckRunner;
 import ai.idealistic.vacan.abstraction.data.CheckBoundData;
 import ai.idealistic.vacan.abstraction.data.EnvironmentData;
 import ai.idealistic.vacan.abstraction.data.PacketWorld;
@@ -123,6 +125,8 @@ public class PlayerProtocol {
     private boolean afk;
     Entity[] nearbyEntities;
     final double[] maxNearbyEntitiesCoordinate;
+    @Getter
+    private final CheckRunner[] runners;
 
     public PlayerProtocol(Player player) {
         long time = System.currentTimeMillis();
@@ -185,6 +189,17 @@ public class PlayerProtocol {
         this.afk = false;
         this.nearbyEntities = new Entity[0];
         this.maxNearbyEntitiesCoordinate = new double[3];
+        this.runners = new CheckRunner[CheckEnums.HackType.values().length];
+
+        for (CheckEnums.HackType hackType : CheckEnums.HackType.values()) {
+            try {
+                this.runners[hackType.ordinal()] = (CheckRunner) hackType.executor
+                        .getConstructor(hackType.getClass(), PlayerProtocol.class)
+                        .newInstance(hackType, this);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
 
         // Always last
         this.profile().update(this);
@@ -217,7 +232,7 @@ public class PlayerProtocol {
                         ).toArray(new Entity[0]);
                     }
                     protocol.checkForAFK();
-                    protocol.profile().executeRunners(false, null);
+                    protocol.executeRunners(false, null);
                     protocol.schedulerFrom = protocol.getLocation();
                 }
             }
@@ -232,12 +247,22 @@ public class PlayerProtocol {
         this.bukkit = player;
     }
 
+    public CheckRunner getRunner(CheckEnums.HackType hackType) {
+        return this.runners[hackType.ordinal()];
+    }
+
+    public void executeRunners(Object cancelled, Object object) {
+        for (CheckRunner runner : this.getRunners()) {
+            runner.handle(cancelled, object);
+        }
+    }
+
     private void resetActiveCreationTime() {
         this.activeCreationTime = System.currentTimeMillis();
     }
 
     public long getTimePassed(long time) {
-        return System.currentTimeMillis() - this.activeCreationTime;
+        return System.currentTimeMillis() - time;
     }
 
     public long getActiveTimePlayed() {

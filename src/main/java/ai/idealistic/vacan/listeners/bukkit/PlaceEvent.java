@@ -34,11 +34,11 @@ public class PlaceEvent implements Listener {
             if (protocol.getWorld() != block.getWorld()) {
                 return false;
             }
-            protocol.profile().executeRunners(null, event);
+            protocol.executeRunners(null, event);
 
             // Detections
             if (!ItemsAdder.is(block)) {
-                protocol.profile().executeRunners(
+                protocol.executeRunners(
                         event,
                         new CBlockPlaceEvent(
                                 protocol.bukkit(),
@@ -49,9 +49,9 @@ public class PlaceEvent implements Listener {
                 );
             }
         }
-        return protocol.profile().getRunner(CheckEnums.HackType.FAST_PLACE).prevent()
-                || protocol.profile().getRunner(CheckEnums.HackType.BLOCK_REACH).prevent()
-                || protocol.profile().getRunner(CheckEnums.HackType.IMPOSSIBLE_ACTIONS).prevent();
+        return protocol.getRunner(CheckEnums.HackType.FAST_PLACE).prevent()
+                || protocol.getRunner(CheckEnums.HackType.BLOCK_REACH).prevent()
+                || protocol.getRunner(CheckEnums.HackType.IMPOSSIBLE_ACTIONS).prevent();
     }
 
 }

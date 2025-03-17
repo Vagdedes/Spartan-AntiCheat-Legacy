@@ -4,6 +4,9 @@ import ai.idealistic.vacan.utils.minecraft.inventory.MaterialUtils;
 import lombok.Getter;
 import org.bukkit.Material;
 
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 public class CheckEnums {
 
     public enum HackType {
@@ -204,11 +207,14 @@ public class CheckEnums {
         public final HackCategoryType category;
         public final Class<?> executor;
         public final String[] description;
+        @Getter
+        private final List<String> detections;
 
         HackType(HackCategoryType category, Class<?> executor, String[] description) {
             this.category = category;
             this.executor = executor;
             this.description = description;
+            this.detections = new CopyOnWriteArrayList<>();
             this.check = new Check(this);
         }
 
@@ -216,6 +222,14 @@ public class CheckEnums {
             if (this.check != null) {
                 this.check = new Check(this);
             }
+        }
+
+        public void addDetection(String detection) {
+            this.detections.add(detection);
+        }
+
+        public void removeDetection(String detection) {
+            this.detections.remove(detection);
         }
 
         @Override

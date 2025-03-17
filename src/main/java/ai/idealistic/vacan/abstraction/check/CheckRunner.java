@@ -59,27 +59,25 @@ public abstract class CheckRunner extends CheckProcess {
     // Handle
 
     public final void handle(Object cancelled, Object object) {
-        if (this.protocol != null) {
-            boolean result;
+        boolean result;
 
-            if (cancelled == null) {
-                if (object instanceof Cancellable) {
-                    result = ((Cancellable) object).isCancelled();
-                } else {
-                    result = false;
-                }
-            } else if (cancelled instanceof Boolean) {
-                result = (Boolean) cancelled;
+        if (cancelled == null) {
+            if (object instanceof Cancellable) {
+                result = ((Cancellable) object).isCancelled();
             } else {
-                if (cancelled instanceof Cancellable) {
-                    result = ((Cancellable) cancelled).isCancelled();
-                } else {
-                    result = false;
-                }
+                result = false;
             }
-            this.cancelled = result;
-            this.handleInternal(result, object);
+        } else if (cancelled instanceof Boolean) {
+            result = (Boolean) cancelled;
+        } else {
+            if (cancelled instanceof Cancellable) {
+                result = ((Cancellable) cancelled).isCancelled();
+            } else {
+                result = false;
+            }
         }
+        this.cancelled = result;
+        this.handleInternal(result, object);
     }
 
     protected void handleInternal(boolean cancelled, Object object) {
@@ -95,8 +93,7 @@ public abstract class CheckRunner extends CheckProcess {
     // Separator
 
     final boolean canCall() {
-        return this.protocol != null
-                && !this.protocol.npc
+        return !this.protocol.npc
                 && hackType.getCheck().isEnabled(this.protocol.getDataType(), this.protocol.getWorld().getName())
                 && (!cancelled || hackType.getCheck().handleCancelledEvents)
                 && (!v1_8 || this.protocol.getGameMode() != GameMode.SPECTATOR)
@@ -104,8 +101,7 @@ public abstract class CheckRunner extends CheckProcess {
     }
 
     final boolean canCancel() {
-        return this.protocol != null
-                && (System.currentTimeMillis() - this.creation) > TPS.maximum * TPS.tickTime
+        return (System.currentTimeMillis() - this.creation) > TPS.maximum * TPS.tickTime
                 && !ProtocolLib.isTemporary(this.protocol.bukkit())
                 && !Permissions.isBypassing(this.protocol.bukkit(), hackType);
     }
@@ -148,19 +144,15 @@ public abstract class CheckRunner extends CheckProcess {
         CheckCancellation disableCause = this.getLastCause(this.disableCauses);
 
         if (disableCause == null) {
-            if (this.protocol != null) {
-                return MythicMobs.is(this.protocol)
-                        ? new CheckCancellation(Compatibility.CompatibilityType.MYTHIC_MOBS)
-                        : ItemsAdder.is(this.protocol)
-                        ? new CheckCancellation(Compatibility.CompatibilityType.ITEMS_ADDER)
-                        : CustomEnchantsPlus.has(this.protocol)
-                        ? new CheckCancellation(Compatibility.CompatibilityType.CUSTOM_ENCHANTS_PLUS)
-                        : EcoEnchants.has(this.protocol)
-                        ? new CheckCancellation(Compatibility.CompatibilityType.ECO_ENCHANTS)
-                        : null;
-            } else {
-                return null;
-            }
+            return MythicMobs.is(this.protocol)
+                    ? new CheckCancellation(Compatibility.CompatibilityType.MYTHIC_MOBS)
+                    : ItemsAdder.is(this.protocol)
+                    ? new CheckCancellation(Compatibility.CompatibilityType.ITEMS_ADDER)
+                    : CustomEnchantsPlus.has(this.protocol)
+                    ? new CheckCancellation(Compatibility.CompatibilityType.CUSTOM_ENCHANTS_PLUS)
+                    : EcoEnchants.has(this.protocol)
+                    ? new CheckCancellation(Compatibility.CompatibilityType.ECO_ENCHANTS)
+                    : null;
         } else {
             return disableCause;
         }
@@ -175,34 +167,22 @@ public abstract class CheckRunner extends CheckProcess {
             reason = this.hackType.getCheck().getName();
         }
         this.disableCauses.add(new CheckCancellation(reason, pointer, ticks));
-
-        if (this.protocol != null) {
-            PluginBase.playerInfo.refresh(this.protocol.bukkit().getName());
-        }
+        PluginBase.playerInfo.refresh(this.protocol.bukkit().getName());
     }
 
     public final void addSilentCause(String reason, String pointer, int ticks) {
         this.silentCauses.add(new CheckCancellation(reason, pointer, ticks));
-
-        if (this.protocol != null) {
-            PluginBase.playerInfo.refresh(this.protocol.bukkit().getName());
-        }
+        PluginBase.playerInfo.refresh(this.protocol.bukkit().getName());
     }
 
     public final void removeDisableCause() {
         this.disableCauses.clear();
-
-        if (this.protocol != null) {
-            PluginBase.playerInfo.refresh(this.protocol.bukkit().getName());
-        }
+        PluginBase.playerInfo.refresh(this.protocol.bukkit().getName());
     }
 
     public final void removeSilentCause() {
         this.silentCauses.clear();
-
-        if (this.protocol != null) {
-            PluginBase.playerInfo.refresh(this.protocol.bukkit().getName());
-        }
+        PluginBase.playerInfo.refresh(this.protocol.bukkit().getName());
     }
 
     // Prevention
