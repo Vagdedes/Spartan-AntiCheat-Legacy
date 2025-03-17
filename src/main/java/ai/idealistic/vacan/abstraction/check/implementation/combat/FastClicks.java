@@ -43,27 +43,27 @@ public class FastClicks extends CheckRunner {
         super(hackType, protocol);
         this.cps = new ImplementedDetection(this, null, Check.DetectionType.PACKETS, "cps", true);
         this.floorTempo = new ImplementedDetection(this, null, Check.DetectionType.PACKETS, "floor_tempo", true,
-                CheckDetection.DEFAULT_AVERAGE_TIME * 2L,
+                CheckDetection.DEFAULT_AVERAGE_TIME * 4L,
                 CheckDetection.TIME_TO_NOTIFY,
                 CheckDetection.TIME_TO_PREVENT,
                 CheckDetection.TIME_TO_PUNISH);
         this.deviation = new ImplementedDetection(this, null, Check.DetectionType.PACKETS, "deviation", true,
-                CheckDetection.DEFAULT_AVERAGE_TIME * 2L,
+                CheckDetection.DEFAULT_AVERAGE_TIME * 4L,
                 CheckDetection.TIME_TO_NOTIFY,
                 CheckDetection.TIME_TO_PREVENT,
                 CheckDetection.TIME_TO_PUNISH);
         this.skewness = new ImplementedDetection(this, null, Check.DetectionType.PACKETS, "skewness", true,
-                CheckDetection.DEFAULT_AVERAGE_TIME * 2L,
+                CheckDetection.DEFAULT_AVERAGE_TIME * 4L,
                 CheckDetection.TIME_TO_NOTIFY,
                 CheckDetection.TIME_TO_PREVENT,
                 CheckDetection.TIME_TO_PUNISH);
         this.kurtosis = new ImplementedDetection(this, null, Check.DetectionType.PACKETS, "kurtosis", true,
-                CheckDetection.DEFAULT_AVERAGE_TIME * 2L,
+                CheckDetection.DEFAULT_AVERAGE_TIME * 4L,
                 CheckDetection.TIME_TO_NOTIFY,
                 CheckDetection.TIME_TO_PREVENT,
                 CheckDetection.TIME_TO_PUNISH);
         this.variance = new ImplementedDetection(this, null, Check.DetectionType.PACKETS, "variance", true,
-                CheckDetection.DEFAULT_AVERAGE_TIME * 2L,
+                CheckDetection.DEFAULT_AVERAGE_TIME * 4L,
                 CheckDetection.TIME_TO_NOTIFY,
                 CheckDetection.TIME_TO_PREVENT,
                 CheckDetection.TIME_TO_PUNISH);

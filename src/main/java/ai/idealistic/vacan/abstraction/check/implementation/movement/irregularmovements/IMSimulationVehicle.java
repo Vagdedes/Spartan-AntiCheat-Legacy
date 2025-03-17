@@ -24,11 +24,7 @@ public class IMSimulationVehicle extends CheckDetection {
                 null,
                 Check.DetectionType.PACKETS,
                 "vehicle",
-                true,
-                DEFAULT_AVERAGE_TIME,
-                TIME_TO_NOTIFY * 2L,
-                TIME_TO_PREVENT * 2L,
-                TIME_TO_PUNISH * 2L
+                true
         );
     }
 

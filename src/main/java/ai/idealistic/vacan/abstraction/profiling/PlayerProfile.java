@@ -91,13 +91,6 @@ public class PlayerProfile {
         return PluginBase.getAnyCaseProtocol(this.name);
     }
 
-    public CheckRunner[] getRunners() {
-        PlayerProtocol protocol = this.protocol();
-        return protocol == null
-                ? new CheckRunner[]{}
-                : protocol.getRunners();
-    }
-
     public CheckRunner getRunner(CheckEnums.HackType hackType) {
         PlayerProtocol protocol = this.protocol();
         return protocol == null

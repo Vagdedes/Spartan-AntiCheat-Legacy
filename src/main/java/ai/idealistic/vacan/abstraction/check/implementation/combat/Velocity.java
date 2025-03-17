@@ -24,12 +24,12 @@ public class Velocity extends CheckRunner {
     public Velocity(CheckEnums.HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);
         this.vertical = new ImplementedDetection(this, null, Check.DetectionType.PACKETS, "vertical", true,
-                CheckDetection.DEFAULT_AVERAGE_TIME * 2L,
+                CheckDetection.DEFAULT_AVERAGE_TIME * 4L,
                 CheckDetection.TIME_TO_NOTIFY,
                 CheckDetection.TIME_TO_PREVENT,
                 CheckDetection.TIME_TO_PUNISH);
         this.horizontal = new ImplementedDetection(this, null, Check.DetectionType.PACKETS, "horizontal", true,
-                CheckDetection.DEFAULT_AVERAGE_TIME * 2L,
+                CheckDetection.DEFAULT_AVERAGE_TIME * 4L,
                 CheckDetection.TIME_TO_NOTIFY,
                 CheckDetection.TIME_TO_PREVENT,
                 CheckDetection.TIME_TO_PUNISH);

@@ -19,11 +19,7 @@ public class IMSimulationElytra extends CheckDetection {
                 null,
                 Check.DetectionType.PACKETS,
                 "elytra",
-                false,
-                DEFAULT_AVERAGE_TIME,
-                TIME_TO_NOTIFY * 2L,
-                TIME_TO_PREVENT * 2L,
-                TIME_TO_PUNISH * 2L
+                false
         );
     }
 

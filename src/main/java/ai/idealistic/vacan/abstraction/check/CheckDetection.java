@@ -34,7 +34,7 @@ public abstract class CheckDetection extends CheckProcess {
             punishmentLevelIdentifier = "Punishment-Level:";
 
     public static final long
-            DEFAULT_AVERAGE_TIME = 500L,
+            DEFAULT_AVERAGE_TIME = 500L, // Attention, connect to many classes
             TIME_TO_PUNISH = 60_000L,
             TIME_TO_PREVENT = (TIME_TO_PUNISH / 3L) * 2L,
             TIME_TO_NOTIFY = TIME_TO_PUNISH / 2L;
@@ -162,15 +162,6 @@ public abstract class CheckDetection extends CheckProcess {
         this.previousTime[this.protocol.getDataType().ordinal()] = -1L;
     }
 
-    public final void storeData(Check.DataType dataType, long time) {
-        this.protocol.profile().addTimeDifference(
-                this.hackType,
-                dataType,
-                this.name,
-                time
-        );
-    }
-
     public final void sortData() {
         this.protocol.profile().sortTimeDifferences(
                 this.hackType,
@@ -191,7 +182,12 @@ public abstract class CheckDetection extends CheckProcess {
             add = AlgebraUtils.integerRound(average * ratioFromMax);
         } else {
             long difference = time - previousTime;
-            this.storeData(this.protocol.getDataType(), -difference); // Add negative purposely for multi-threading
+            this.protocol.profile().addTimeDifference(
+                    this.hackType,
+                    this.protocol.getDataType(),
+                    this.name,
+                    time
+            ); // Add negative purposely for multi-threading
             double multiplier = Math.min(average / (double) difference, 1.0);
             add = AlgebraUtils.integerRound(average * ratioFromMax * multiplier);
         }
@@ -286,18 +282,17 @@ public abstract class CheckDetection extends CheckProcess {
                 + "(Ping: " + this.protocol.getPing() + "ms), "
                 + "(W-XYZ: " + location.getWorld().getName() + " " + location.getBlockX() + " " + location.getBlockY() + " " + location.getBlockZ() + "), "
                 + "(Data: " + information + ")";
-        boolean canNotifyOutOfVerbose = level >= notification;
         AntiCheatLogs.logInfo(
                 this.protocol,
                 notificationMsg,
                 information,
-                canNotifyOutOfVerbose,
+                level >= prevention,
                 null,
                 this.hackType,
                 time
         );
 
-        if (canNotifyOutOfVerbose) {
+        if (level >= notification) {
             CloudConnections.executeDiscordWebhook(
                     "checks",
                     protocol.getUUID(),

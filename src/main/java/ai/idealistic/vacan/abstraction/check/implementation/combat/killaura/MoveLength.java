@@ -23,7 +23,7 @@ public class MoveLength extends CheckDetection {
 
     MoveLength(CheckRunner executor) {
         super(executor, Check.DataType.JAVA, Check.DetectionType.PACKETS, "move_length", true,
-                DEFAULT_AVERAGE_TIME * 2L,
+                DEFAULT_AVERAGE_TIME * 4L,
                 TIME_TO_NOTIFY,
                 TIME_TO_PREVENT,
                 TIME_TO_PUNISH);

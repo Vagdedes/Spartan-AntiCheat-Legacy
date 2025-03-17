@@ -240,10 +240,6 @@ public class CheckEnums {
             return this.detections.keySet();
         }
 
-        public boolean hasDetection(String detection) {
-            return this.detections.containsKey(detection);
-        }
-
         @Override
         public String toString() {
             return super.toString().toLowerCase().replace("_", "-");

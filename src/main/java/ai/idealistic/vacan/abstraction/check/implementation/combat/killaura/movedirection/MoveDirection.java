@@ -31,12 +31,12 @@ public class MoveDirection extends CheckDetection {
     public MoveDirection(CheckRunner executor) {
         super(executor, null, null, null, true);
         this.layer1 = new ImplementedDetection(this, "move_direction_1", true,
-                DEFAULT_AVERAGE_TIME * 2L,
+                DEFAULT_AVERAGE_TIME * 4L,
                 TIME_TO_NOTIFY,
                 TIME_TO_PREVENT,
                 TIME_TO_PUNISH);
         this.layer2 = new ImplementedDetection(this, "move_direction_2", true,
-                DEFAULT_AVERAGE_TIME * 2L,
+                DEFAULT_AVERAGE_TIME * 4L,
                 TIME_TO_NOTIFY,
                 TIME_TO_PREVENT,
                 TIME_TO_PUNISH);
