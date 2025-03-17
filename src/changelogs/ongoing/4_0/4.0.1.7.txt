@@ -1,0 +1,11 @@
+[+] Added check for hits through the wall
+[#] Removed some more busy task warnings
+[#] Fixed an overflow bug that lead to high probabilities in certain cases
+[#] Fixed a few remaining GhostHand false positives
+[#] Fixed issue with old ProtocolLib
+[#] Fixed another minor falses
+[#] Introduced the command '/spartan verbose' to differentiate between important or not notifications
+[#] Made detection information shorter for almost all checks
+[#] Made detections without options to have more deterministic names
+[#] Improved ProtocolLib packet support by checking if certain packets exist
+[#] Suspicion Notifications and Discord Webhooks will now notify at higher probabilities to reduce spam

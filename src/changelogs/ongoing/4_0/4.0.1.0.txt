@@ -1,0 +1,8 @@
+[#] Fixed certain false positives with the old gravity detection
+[#] Fixed FastBreak false positives
+[-] Removed the settings.yml option 'Punishments.broadcast_on_punishment'
+[#] Improved notifications by reducing their spam and increasing their importance
+[#] Potentially fixed a Folia server error that prevented the plugin from loading
+[#] Disabled the XRay check for custom worlds
+[#] Optimized how detections/statistics run when requested by multiple threads
+[#] Improved suspicion notifications by removing unlikely parts

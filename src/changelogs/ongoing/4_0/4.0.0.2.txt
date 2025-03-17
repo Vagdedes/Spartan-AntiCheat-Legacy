@@ -1,0 +1,2 @@
+[+] Added EntityFly detections to IrregularMovements check
+[#] Fixed critical issues with simulation gravity IrregularMovements detection

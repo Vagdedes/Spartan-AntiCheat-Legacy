@@ -1,0 +1,3 @@
+[#] Fixed a few MorePackets teleport false positives
+[#] Fixed a null pointer console error with the Spartan Edition handler
+[#] Improved upon the existing statistics to make them faster and more accurate

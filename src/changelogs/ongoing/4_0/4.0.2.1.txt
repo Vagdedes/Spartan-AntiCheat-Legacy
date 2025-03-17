@@ -1,0 +1,4 @@
+[#] Fixed a Speed check array console error
+[#] Fixed a few rare XRay false punishments
+[#] Potentially fixed the issue with high probabilities in webhooks
+[#] Fixed teleport false positives related to the IrregularMovements jump detection

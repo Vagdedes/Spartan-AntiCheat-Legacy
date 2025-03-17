@@ -1,0 +1,4 @@
+[#] Decreased the default average violation to improve false positives
+[#] Fixed a console error related to integer to object casting
+[#] Fixed webhooks being sent when a detection or its check was disabled
+[#] Adjusted the notifications and prevention levels for almost all checks

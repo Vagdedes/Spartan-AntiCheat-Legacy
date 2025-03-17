@@ -1,0 +1,5 @@
+[#] Fixed some critical flaws in simulation gravity/accel
+[#] Fixed simulation gravity/accel bypasses
+[#] Fixed NoSlow flaws
+[#] Fixed Jesus bypasses
+[#] Fixed flaws with horse

@@ -1,0 +1,2 @@
+[#] Properly listed a few detections to their respective packets/bukkit category
+[#] Removed the bukkit gravity detection

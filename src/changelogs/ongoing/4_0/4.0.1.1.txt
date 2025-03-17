@@ -1,0 +1,4 @@
+[-] Removed the punishments webhook URL option as it was not used
+[#] Rewrote the line of sight block method because bukkit's method caused crashes
+[#] Fixed an iterator console error caused by copy-on-array-list implementation
+[#] Fixed inventory utils rare console error related to missing material

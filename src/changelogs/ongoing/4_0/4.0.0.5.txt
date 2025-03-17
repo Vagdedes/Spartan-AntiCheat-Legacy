@@ -1,0 +1,5 @@
+[#] Fixed desync NoSlow flaws
+[#] Fixed 1.13< errors
+[#] Fixed false positives when teleporting/spawn
+[#] Fixed false positives with some interactions
+[#] Fixed other minor things
