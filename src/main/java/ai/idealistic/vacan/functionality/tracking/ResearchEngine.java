@@ -540,12 +540,28 @@ public class ResearchEngine {
 
                         if (statistics.isEmpty()) {
                             for (PlayerProfile profile : profiles) {
-                                for (CheckDetection detection : profile.getRunner(hackType).getDetections()) {
-                                    detection.clearData(dataType);
-                                    averageViolationTime.remove(
-                                            (detection.generalHashCode() * PluginBase.hashCodeMultiplier)
-                                                    + dataType.hashCode()
-                                    );
+                                CheckRunner runner = profile.getRunner(hackType);
+
+                                if (runner != null) {
+                                    for (CheckDetection detection : runner.getDetections()) {
+                                        detection.clearData(dataType);
+                                        averageViolationTime.remove(
+                                                (detection.generalHashCode() * PluginBase.hashCodeMultiplier)
+                                                        + dataType.hashCode()
+                                        );
+                                    }
+                                } else {
+                                    for (String detection : hackType.getDetections()) {
+                                        profile.clearTimeDifferences(
+                                                hackType,
+                                                dataType,
+                                                detection
+                                        );
+                                        averageViolationTime.remove(
+                                                (CheckDetection.generalHashCode(hackType, detection) * PluginBase.hashCodeMultiplier)
+                                                        + dataType.hashCode()
+                                        );
+                                    }
                                 }
                             }
                         } else {
@@ -608,12 +624,28 @@ public class ResearchEngine {
                         }
                     } else {
                         for (PlayerProfile profile : profiles) {
-                            for (CheckDetection detection : profile.getRunner(hackType).getDetections()) {
-                                detection.clearData(dataType);
-                                averageViolationTime.remove(
-                                        (detection.generalHashCode() * PluginBase.hashCodeMultiplier)
-                                                + dataType.hashCode()
-                                );
+                            CheckRunner runner = profile.getRunner(hackType);
+
+                            if (runner != null) {
+                                for (CheckDetection detection : profile.getRunner(hackType).getDetections()) {
+                                    detection.clearData(dataType);
+                                    averageViolationTime.remove(
+                                            (detection.generalHashCode() * PluginBase.hashCodeMultiplier)
+                                                    + dataType.hashCode()
+                                    );
+                                }
+                            } else {
+                                for (String detection : hackType.getDetections()) {
+                                    profile.clearTimeDifferences(
+                                            hackType,
+                                            dataType,
+                                            detection
+                                    );
+                                    averageViolationTime.remove(
+                                            (CheckDetection.generalHashCode(hackType, detection) * PluginBase.hashCodeMultiplier)
+                                                    + dataType.hashCode()
+                                    );
+                                }
                             }
                         }
                     }

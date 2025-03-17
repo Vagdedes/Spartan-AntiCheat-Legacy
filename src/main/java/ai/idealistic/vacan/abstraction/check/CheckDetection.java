@@ -39,6 +39,11 @@ public abstract class CheckDetection extends CheckProcess {
             TIME_TO_PREVENT = (TIME_TO_PUNISH / 3L) * 2L,
             TIME_TO_NOTIFY = TIME_TO_PUNISH / 2L;
 
+    public static int generalHashCode(CheckEnums.HackType hackType, String name) {
+        return (hackType.hashCode() * PluginBase.hashCodeMultiplier)
+                + (name == null ? 0 : name.hashCode());
+    }
+
     // Separator
 
     CheckPrevention prevention;
@@ -118,8 +123,7 @@ public abstract class CheckDetection extends CheckProcess {
     }
 
     public final int generalHashCode() {
-        return (this.hackType.hashCode() * PluginBase.hashCodeMultiplier)
-                + (this.name == null ? 0 : this.name.hashCode());
+        return generalHashCode(this.hackType, this.name);
     }
 
     // Check
