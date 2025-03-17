@@ -1,8 +1,0 @@
-Vagdedes's main responsibility is the base of the plugin.
-Pawsashatoy's main responsibility is the checks of the plugin.
-When working on a hot-fix/partial update we "mostly" make small changes that improve stability.
-When working on a full update we "mostly" make big changes that introduce new functionality.
-When code is unfinished we commit it to a non-main branch so progress can be tracked by others.
-We do not introduce setters/getters to abstractions/implementations unless necessary.
-We notify the other developer when we change something of their code, before and after we do.
-When we make an important change to the code we add it to the ongoing relative changelog.

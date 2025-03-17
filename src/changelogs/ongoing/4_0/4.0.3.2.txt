@@ -1,3 +1,0 @@
-[#] Added backwards API support for the packages 'me.vagdedes.spartan.api.*'
-[#] Moved some of the classes of the new API for the first and final time
-[#] Fixed many old compatibilities

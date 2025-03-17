@@ -1,3 +1,0 @@
-[#] Fixed error with bukkit speed detection
-[#] Fixed error with packets vehicle detection
-[#] Introduced data samples to drop the statistics requirement to 1 player

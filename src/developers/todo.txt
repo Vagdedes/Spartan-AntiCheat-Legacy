@@ -1,1 +1,0 @@
-pawsashatoy: rewritten gravity detection in IrregularMovements

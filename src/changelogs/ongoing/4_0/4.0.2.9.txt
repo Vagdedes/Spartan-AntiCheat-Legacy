@@ -1,9 +1,0 @@
-[#] Fixed gravity detection false positives with bubble columns
-[#] Did a general maintenance on almost all checks
-[#] Fixed IrregularMovements gravity false positives caused by boats
-[#] Fixed IrregularMovements gravity false positives caused by bushes
-[#] Fixed IrregularMovements gravity false positives caused by teleports
-[#] Fixed IrregularMovements gravity false positives caused by vehicles
-[#] Fixed IrregularMovements gravity false positives caused by elytras
-[#] Made all combat checks faster at detecting hacks by default
-[#] Added a minimum difference option in the IrregularMovements speed check

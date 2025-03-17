@@ -1,3 +1,0 @@
-[#] Removed the advanced.yml file as it was never truly used
-[#] Fixed cobweb false positives in the IrregularMovements gravity detection
-[#] Fixed a ProtocolLib temporary player error related to accessing player game mode

@@ -1,4 +1,0 @@
-[#] Fixed double calls in all block place based detections
-[#] Fixed a HitReach protocollib console error
-[#] Fixed the MorePackets check from not working in all cases
-[#] Added TPS protection by reducing how fast violations grow

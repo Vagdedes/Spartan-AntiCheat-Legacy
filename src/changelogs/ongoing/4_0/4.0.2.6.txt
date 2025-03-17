@@ -1,7 +1,0 @@
-[#] Violations will now reset when the punishment level is reached and commands are executed
-[#] Implemented average detection call frequency to account for in statistics
-[#] Fixed generic slime blocks false positives
-[#] Fixed some false positives with speed
-[#] Fixed false positives with teleport
-[#] Fixed a temporary player console error related to player eye height
-[#] Fixed an issue where console logs would take place on a disabled detection or check

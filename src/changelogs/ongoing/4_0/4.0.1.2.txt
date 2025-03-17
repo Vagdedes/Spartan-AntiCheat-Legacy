@@ -1,5 +1,0 @@
-[+] New AutoClicker (FastClicks) checks
-[#] Major performance improvements
-[#] Potentially fixed a ProtocolLib world change error
-[#] Other minor code fixes
-[#] Fixed GhostHand check false positives
