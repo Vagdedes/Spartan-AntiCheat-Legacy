@@ -51,7 +51,7 @@ public class Compatibility {
         CUSTOM_ENCHANTS_PLUS("CustomEncahntsPlus"), ECO_ENCHANTS("EcoEnchants"),
         ITEMS_ADDER("ItemsAdder"), RAMPEN_DRILLS("RampenDrills"),
         OLD_COMBAT_MECHANICS("OldCombatMechanics"), CUSTOM_KNOCKBACK("CustomKnockback"),
-        PROJECT_KORRA("ProjectKorra"), FILE_GUI("FileGUI"), FLOODGATE("Floodgate");
+        PROJECT_KORRA("ProjectKorra"), FLOODGATE("Floodgate");
 
         @Setter
         @Getter
@@ -78,7 +78,6 @@ public class Compatibility {
             switch (this) {
                 case PROTOCOL_SUPPORT: // Necessary
                 case FLOODGATE: // Necessary
-                case FILE_GUI: // Local
                     hardcoded = true;
                     contains = false;
                     name = this.toString().toLowerCase();

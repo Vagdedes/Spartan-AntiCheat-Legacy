@@ -8,7 +8,7 @@ api-version: 1.13
 softdepend: [mcMMO, ProtocolSupport, VeinMiner, EcoEnchants, CustomEnchantsPlus,
              aSkyBlock, AdvancedAbilities, CrackShot, CrackShotPlus, CraftBook, GrapplingHook, ProtocolLib,
              MagicSpells, MineBomb, MineTinker, MythicMobs, PrinterMode, ProjectKorra, RealDualWield,
-             SuperPickaxe, TreeFeller, Vehicles, WildTools, floodgate-bukkit, FileGUI]
+             SuperPickaxe, TreeFeller, Vehicles, WildTools, floodgate-bukkit]
 load: POSTWORLD
 folia-supported: true
 commands:

@@ -10,7 +10,6 @@ import ai.idealistic.vacan.abstraction.profiling.PlayerProfile;
 import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.vacan.api.Permission;
 import ai.idealistic.vacan.compatibility.Compatibility;
-import ai.idealistic.vacan.compatibility.necessary.protocollib.ProtocolLib;
 import ai.idealistic.vacan.functionality.command.CommandExecution;
 import ai.idealistic.vacan.functionality.connection.DiscordServer;
 import ai.idealistic.vacan.functionality.connection.PluginEdition;
@@ -24,10 +23,8 @@ import ai.idealistic.vacan.utils.java.OverflowMap;
 import ai.idealistic.vacan.utils.java.TimeUtils;
 import ai.idealistic.vacan.utils.math.AlgebraUtils;
 import ai.idealistic.vacan.utils.minecraft.inventory.MaterialUtils;
-import com.vagdedes.filegui.api.FileGUIAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 
@@ -196,7 +193,7 @@ public class PlayerInfo extends InventoryMenu {
 
         // Separator
 
-        add("§2" + checkType + " Checks", lore, item, slot);
+        add("§2" + checkType + " checks", lore, item, slot);
     }
 
     private String getDetectionNotification(PlayerProtocol protocol,
@@ -283,22 +280,6 @@ public class PlayerInfo extends InventoryMenu {
                 );
             } else {
                 PluginBase.manageChecks.open(protocol);
-            }
-        } else if (item.equals("Compatibilities")) {
-            if (Compatibility.CompatibilityType.FILE_GUI.isFunctional()) {
-                Player n = protocol.bukkit();
-
-                if (ProtocolLib.hasPermission(n, "filegui.modify")) {
-                    FileGUIAPI.openMenu(n, Config.compatibility.getFile().getPath(), 1);
-                } else {
-                    protocol.bukkit().closeInventory();
-                    ClickableMessage.sendURL(
-                            protocol.bukkit(),
-                            Config.messages.getColorfulString("no_permission"),
-                            CommandExecution.support,
-                            DiscordServer.url
-                    );
-                }
             }
         }
         return true;
