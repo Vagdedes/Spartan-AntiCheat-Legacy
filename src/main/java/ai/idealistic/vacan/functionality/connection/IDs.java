@@ -56,7 +56,7 @@ public class IDs {
     }
 
     public static boolean isBuiltByBit() {
-        return platform == 2 || "%%__FILEHASH__%%".length() != 16;
+        return platform == 2 || "%%__BUILTBYBIT__%%".length() != 18;
     }
 
     public static boolean isPolymart() {
