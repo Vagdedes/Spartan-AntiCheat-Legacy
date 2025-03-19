@@ -259,6 +259,12 @@ public class IMSimulationSpeed extends CheckDetection {
                                         ),
                                         1e-10);
 
+                                if (this.getSpeedEffect() != null) {
+                                    difference = Math.max(
+                                            difference,
+                                            0.13 // Inconsistency fix
+                                    );
+                                }
                                 if (d >= difference) {
                                     this.cancel("simulation[accel], diff: " + d, this.protocol.getFromLocation(), 0, true);
                                 }
@@ -287,9 +293,14 @@ public class IMSimulationSpeed extends CheckDetection {
         });
     }
 
+    private ExtendedPotionEffect getSpeedEffect() {
+        return this.protocol.getPotionEffect(PotionEffectType.SPEED, 5);
+    }
+
     private double multiplex() {
         double m = 1.0;
-        ExtendedPotionEffect speedEffect = this.protocol.getPotionEffect(PotionEffectType.SPEED, 5);
+        ExtendedPotionEffect speedEffect = this.getSpeedEffect();
+        boolean hasSpeed = speedEffect != null;
         Location l = this.protocol.getLocation().clone().add(0, -0.5, 0);
         Location lF = this.protocol.getFromLocation().clone().add(0, -0.5, 0);
         if (PlayerUtils.soulSpeed && this.protocol.bukkit().getInventory().getBoots() != null) {
@@ -298,7 +309,7 @@ public class IMSimulationSpeed extends CheckDetection {
             m += v;
         }
         if (speedEffect != null)
-            m += (double) (speedEffect.bukkitEffect.getAmplifier() + 1) * 0.22; // 0.2 is default value
+            m += (double) (speedEffect.bukkitEffect.getAmplifier() + 1) * 0.2;
         if (this.isOnIce(l) || this.isOnSlime(l) || this.isOnIce(lF) || this.isOnSlime(lF))
             m *= 1.6;
         if (this.protocol.getNearbyEntities(2).size() > 1)
