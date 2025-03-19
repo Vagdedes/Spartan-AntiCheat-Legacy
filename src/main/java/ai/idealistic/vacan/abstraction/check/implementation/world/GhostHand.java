@@ -119,7 +119,7 @@ public class GhostHand extends CheckRunner {
         if (!this.protocol.isFlying()
                 && !Vehicles.has(this.protocol, Vehicles.DRILL)
                 && !PrinterMode.isUsing(this.protocol)
-                && Attributes.getAmount(this.protocol, Attributes.PLAYER_BLOCK_INTERACTION_RANGE) == 0.0) {
+                && Attributes.getAmount(this.protocol, Attributes.PLAYER_BLOCK_INTERACTION_RANGE) == Double.MIN_VALUE) {
             GameMode gameMode = this.protocol.getGameMode();
             return gameMode == GameMode.SURVIVAL
                     || gameMode == GameMode.ADVENTURE;

@@ -2,7 +2,6 @@ package ai.idealistic.vacan.abstraction.check.implementation.movement.irregularm
 
 import ai.idealistic.vacan.abstraction.check.CheckEnums.HackType;
 import ai.idealistic.vacan.abstraction.check.CheckRunner;
-import ai.idealistic.vacan.abstraction.event.CBlockPlaceEvent;
 import ai.idealistic.vacan.abstraction.event.CPlayerRiptideEvent;
 import ai.idealistic.vacan.abstraction.event.PlayerTickEvent;
 import ai.idealistic.vacan.abstraction.event.SuperPositionPacketEvent;

@@ -185,10 +185,10 @@ public class CombatUtils {
         if (!protocol.isLowEyeHeight() // Covers swimming & gliding
                 && !protocol.wasFlying()
                 && protocol.getVehicle() == null
-                && Attributes.getAmount(protocol, Attributes.GENERIC_ARMOR) == 0.0
-                && Attributes.getAmount(protocol, Attributes.GENERIC_ATTACK_SPEED) == 0.0
-                && Attributes.getAmount(protocol, Attributes.GENERIC_KNOCKBACK_RESISTANCE) == 0.0
-                && Attributes.getAmount(protocol, Attributes.PLAYER_ENTITY_INTERACTION_RANGE) == 0.0) {
+                && Attributes.getAmount(protocol, Attributes.GENERIC_ARMOR) == Double.MIN_VALUE
+                && Attributes.getAmount(protocol, Attributes.GENERIC_ATTACK_SPEED) == Double.MIN_VALUE
+                && Attributes.getAmount(protocol, Attributes.GENERIC_KNOCKBACK_RESISTANCE) == Double.MIN_VALUE
+                && Attributes.getAmount(protocol, Attributes.PLAYER_ENTITY_INTERACTION_RANGE) == Double.MIN_VALUE) {
             GameMode gameMode = protocol.getGameMode();
             return gameMode == GameMode.SURVIVAL
                     || gameMode == GameMode.ADVENTURE

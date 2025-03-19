@@ -151,6 +151,6 @@ public class BlockReach extends CheckRunner {
                 && !PrinterMode.isUsing(this.protocol)
                 && !AureliumSkills.isUsing(this.protocol)
                 && !MineBomb.isUsing(this.protocol)
-                && Attributes.getAmount(this.protocol, Attributes.PLAYER_BLOCK_INTERACTION_RANGE) == 0.0;
+                && Attributes.getAmount(this.protocol, Attributes.PLAYER_BLOCK_INTERACTION_RANGE) == Double.MIN_VALUE;
     }
 }

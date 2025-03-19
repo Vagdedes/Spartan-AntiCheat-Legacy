@@ -238,7 +238,7 @@ public class FastBreak extends CheckRunner {
                 && !SuperPickaxe.isUsing(this.protocol)
                 && !AureliumSkills.isUsing(this.protocol)
                 && !Compatibility.CompatibilityType.CRAFT_BOOK.isFunctional()
-                && Attributes.getAmount(this.protocol, Attributes.PLAYER_BLOCK_BREAK_SPEED) == 0.0;
+                && Attributes.getAmount(this.protocol, Attributes.PLAYER_BLOCK_BREAK_SPEED) == Double.MIN_VALUE;
     }
 
 }

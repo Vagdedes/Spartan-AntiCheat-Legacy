@@ -97,7 +97,10 @@ public class IMSimulationSpeed extends CheckDetection {
                     yawLine, moveLine, 80.0);
             boolean flagged = false;
             if (!this.protocol.useItemPacket) this.action = 0;
-            double atr = Attributes.getAmount(this.protocol, Attributes.GENERIC_MOVEMENT_SPEED) * 1.3;
+            double atr = Math.max(
+                    Attributes.getAmount(this.protocol, Attributes.GENERIC_MOVEMENT_SPEED),
+                    0.0
+            ) * 1.3;
             if (to.getX() != from.getX() || to.getY() != from.getY() || to.getZ() != from.getZ()) {
                 {
                     this.ground(isOnGround);

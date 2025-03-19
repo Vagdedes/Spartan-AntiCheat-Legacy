@@ -127,6 +127,6 @@ public class FastEat extends CheckRunner {
     protected boolean canRun() {
         return this.protocol.getWorld().getDifficulty() != Difficulty.PEACEFUL
                 && !this.protocol.hasPotionEffect(PotionEffectType.SATURATION, 0)
-                && Attributes.getAmount(this.protocol, Attributes.GENERIC_MAX_ABSORPTION) == 0.0;
+                && Attributes.getAmount(this.protocol, Attributes.GENERIC_MAX_ABSORPTION) == Double.MIN_VALUE;
     }
 }

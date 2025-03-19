@@ -1,3 +1,4 @@
 [#] Optimized the packet world data handler
 [#] Fixed a HitReach console error
 [#] Fixed legacy API event calls not taking place
+[#] Slightly improved the Item Attributes compatibility

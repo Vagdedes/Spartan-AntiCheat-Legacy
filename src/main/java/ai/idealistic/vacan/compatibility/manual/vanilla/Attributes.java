@@ -62,8 +62,7 @@ public class Attributes {
             for (Attribute attribute : Attribute.values()) {
                 if (attribute.name().equals(attributeString)) {
                     PlayerInventory inventory = p.bukkit().getInventory();
-                    int modifiersCount = 0;
-                    double amount = 0.0;
+                    double amount = Double.MIN_VALUE;
 
                     for (ItemStack itemStack : new ItemStack[]{
                             inventory.getHelmet(),
@@ -81,22 +80,17 @@ public class Attributes {
 
                                 if (modifiers != null && !modifiers.isEmpty()) {
                                     for (AttributeModifier modifier : modifiers) {
-                                        modifiersCount++;
                                         amount = Math.max(amount, modifier.getAmount());
                                     }
                                 }
                             }
                         }
                     }
-
-                    if (modifiersCount > 0) {
-                        return amount;
-                    }
-                    break;
+                    return amount;
                 }
             }
         }
-        return 0.0;
+        return Double.MIN_VALUE;
     }
 
 }

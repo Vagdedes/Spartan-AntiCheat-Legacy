@@ -97,7 +97,7 @@ public abstract class CheckRunner extends CheckProcess {
                 && hackType.getCheck().isEnabled(this.protocol.getDataType(), this.protocol.getWorld().getName())
                 && (!cancelled || hackType.getCheck().handleCancelledEvents)
                 && (!v1_8 || this.protocol.getGameMode() != GameMode.SPECTATOR)
-                && Attributes.getAmount(this.protocol, Attributes.GENERIC_SCALE) == 0.0;
+                && Attributes.getAmount(this.protocol, Attributes.GENERIC_SCALE) == Double.MIN_VALUE;
     }
 
     final boolean canCancel() {
