@@ -2,6 +2,7 @@ package ai.idealistic.vacan.api;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -25,7 +26,10 @@ public class PlayerFoundOreEvent extends Event implements Cancellable {
         l = location;
         ma = material;
         cancelled = false;
-        new me.vagdedes.spartan.api.PlayerFoundOreEvent(player, message, location, material);
+        me.vagdedes.spartan.api.PlayerFoundOreEvent event
+                = new me.vagdedes.spartan.api.PlayerFoundOreEvent(player, message, location, material);
+        event.setCancelled(this.isCancelled());
+        Bukkit.getPluginManager().callEvent(event);
     }
 
     public Player getPlayer() {

@@ -3,6 +3,7 @@ package ai.idealistic.vacan.api;
 import ai.idealistic.vacan.abstraction.check.CheckEnums.HackType;
 import lombok.Getter;
 import lombok.Setter;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
@@ -22,7 +23,10 @@ public class PlayerViolationCommandEvent extends Event implements Cancellable {
         h = HackType;
         c = command;
         cancelled = false;
-        new me.vagdedes.spartan.api.PlayerViolationCommandEvent(player, HackType, command);
+        me.vagdedes.spartan.api.PlayerViolationCommandEvent event
+                = new me.vagdedes.spartan.api.PlayerViolationCommandEvent(player, HackType, command);
+        event.setCancelled(this.isCancelled());
+        Bukkit.getPluginManager().callEvent(event);
     }
 
     public Player getPlayer() {

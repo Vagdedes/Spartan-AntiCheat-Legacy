@@ -1,6 +1,7 @@
 package ai.idealistic.vacan.api;
 
 import ai.idealistic.vacan.Register;
+import org.bukkit.Bukkit;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
@@ -12,7 +13,9 @@ public class VacanReloadEvent extends Event implements Cancellable {
 
     public VacanReloadEvent() {
         cancelled = false;
-        new me.vagdedes.spartan.api.SpartanReloadEvent();
+        me.vagdedes.spartan.api.SpartanReloadEvent event = new me.vagdedes.spartan.api.SpartanReloadEvent();
+        event.setCancelled(this.isCancelled());
+        Bukkit.getPluginManager().callEvent(event);
     }
 
     public Plugin getPlugin() {
