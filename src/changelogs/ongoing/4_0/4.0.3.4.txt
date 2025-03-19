@@ -2,3 +2,4 @@
 [#] Fixed a HitReach console error
 [#] Fixed legacy API event calls not taking place
 [#] Slightly improved the Item Attributes compatibility
+[#] Fixed a few IrregularMovement speed-potion-effect speed false positives
