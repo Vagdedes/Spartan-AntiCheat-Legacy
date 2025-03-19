@@ -298,7 +298,7 @@ public class IMSimulationSpeed extends CheckDetection {
             m += v;
         }
         if (speedEffect != null)
-            m += (double) (speedEffect.bukkitEffect.getAmplifier() + 1) * 0.25; // 0.2 is default value
+            m += (double) (speedEffect.bukkitEffect.getAmplifier() + 1) * 0.22; // 0.2 is default value
         if (this.isOnIce(l) || this.isOnSlime(l) || this.isOnIce(lF) || this.isOnSlime(lF))
             m *= 1.6;
         if (this.protocol.getNearbyEntities(2).size() > 1)
