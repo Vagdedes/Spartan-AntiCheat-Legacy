@@ -1,8 +1,7 @@
 package ai.idealistic.vacan.utils.minecraft.protocol;
 
-import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.vacan.compatibility.necessary.protocollib.ProtocolLib;
-import ai.idealistic.vacan.functionality.server.PluginBase;
+import ai.idealistic.vacan.functionality.server.MultiVersion;
 import ai.idealistic.vacan.listeners.protocol.MovementListener;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
@@ -29,19 +28,18 @@ public class ProtocolTools {
             return null;
         }
     }
+
     public static boolean isFlying(PacketEvent event, Location to, Location from) {
         PacketType p = event.getPacket().getType();
-        PlayerProtocol protocol = PluginBase.getProtocol(event.getPlayer());
-        if (p.equals(PacketType.Play.Client.POSITION) && to.toVector().equals(from.toVector()))
+
+        if (p.equals(PacketType.Play.Client.POSITION)
+                && to.toVector().equals(from.toVector())) {
             return true;
-        else return
-        (
-        p.equals(
-        PacketType.Play.Client.FLYING)
-        ||
-        p.equals(
-        PacketType.Play.Client.GROUND)
-        );
+        } else {
+            return p.equals(MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)
+                    ? PacketType.Play.Client.GROUND
+                    : PacketType.Play.Client.FLYING);
+        }
     }
 
     public static boolean onGroundPacketLevel(PacketEvent event) {
@@ -60,11 +58,6 @@ public class ProtocolTools {
         return flags;
     }
 
-    public static boolean invalidTeleport(Location location) {
-        return location == null
-                || location.getX() == 8.5D
-                || location.getZ() == 8.5D;
-    }
     public static boolean isLoadLocation(Location location) {
         return (location.getX() == 1 && location.getY() == 1 && location.getZ() == 1);
     }
@@ -75,10 +68,11 @@ public class ProtocolTools {
 
     public static boolean hasPosition(PacketType type) {
         return (type.equals(PacketType.Play.Client.POSITION)
-                        || type.equals(PacketType.Play.Client.POSITION_LOOK));
+                || type.equals(PacketType.Play.Client.POSITION_LOOK));
     }
+
     public static boolean hasRotation(PacketType type) {
         return (type.equals(PacketType.Play.Client.LOOK)
-                        || type.equals(PacketType.Play.Client.POSITION_LOOK));
+                || type.equals(PacketType.Play.Client.POSITION_LOOK));
     }
 }

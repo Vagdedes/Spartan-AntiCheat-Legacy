@@ -36,7 +36,7 @@ public class MovementListener extends PacketAdapter {
                 PacketType.Play.Client.POSITION,
                 PacketType.Play.Client.POSITION_LOOK,
                 PacketType.Play.Client.LOOK,
-                (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17))
+                MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)
                         ? PacketType.Play.Client.GROUND
                         : PacketType.Play.Client.FLYING
         );
