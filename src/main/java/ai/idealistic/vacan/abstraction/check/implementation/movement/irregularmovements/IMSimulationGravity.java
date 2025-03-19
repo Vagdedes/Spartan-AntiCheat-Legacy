@@ -197,20 +197,20 @@ public class IMSimulationGravity extends CheckDetection {
                 }
                 if (p.getComponentY().pistonTick)
                     this.pistonTicks = 2;
-                if (this.getDeviantity(motion) > 0.01
+                if (this.getDeviance(motion) > 0.01
                         && p.getComponentY().pistonTick
                         && motion <= 0.25) {
                     this.setPredict(motion);
                     p.getComponentY().pistonTick = false;
                 }
                 if (pistonTicks > 0) pistonTicks--;
-                if (this.getDeviantity(motion) > 0.01
+                if (this.getDeviance(motion) > 0.01
                         && p.getComponentY().pistonTick
                         && motion <= 1.0) {
                     this.setPredict(motion);
                     p.getComponentY().pistonTick = false;
                 }
-                boolean slimeEvent = (this.getDeviantity(motion) > 0.001)
+                boolean slimeEvent = (this.getDeviance(motion) > 0.001)
                         && (p.getComponentY().pistonHandle
                         && this.slime0Tick);
                 if (slimeEvent) {
@@ -350,15 +350,15 @@ public class IMSimulationGravity extends CheckDetection {
                     this.glideBlocks = 2;
                 }
 
-                if (this.getDeviantity(motion) > 0.001
+                if (this.getDeviance(motion) > 0.001
                         && this.slimePunch > 0
                         && motion > 0 && motion < 1.52) {
                     this.setPredict(motion);
                     this.allowLowMinorAccel = true;
                     this.slimePunch--;
                 }
-                if (this.getDeviantity(motion) > 0.001 &&
-                        this.teleportExcept > 0 && this.getDeviantity(motion) <= this.teleportExcept) {
+                if (this.getDeviance(motion) > 0.001 &&
+                        this.teleportExcept > 0 && this.getDeviance(motion) <= this.teleportExcept) {
                     this.setPredict(motion);
                     this.teleportExcept = 0;
                 }
@@ -383,7 +383,7 @@ public class IMSimulationGravity extends CheckDetection {
                         if (allowedDeviantity > 0.16) allowedDeviantity = 0.16;
                     }
 
-                    if (this.getDeviantity(motion) < allowedDeviantity)
+                    if (this.getDeviance(motion) < allowedDeviantity)
                         this.setPredict(motion);
                 }
 
@@ -393,21 +393,20 @@ public class IMSimulationGravity extends CheckDetection {
                 and then with in the next tick already from the recoil,
                 let's take into account this nonsense
                  */
-                if (this.protocol.getComponentY().explosionTick && this.getDeviantity(motion) < 1.2) {
+                if (this.protocol.getComponentY().explosionTick && this.getDeviance(motion) < 1.2) {
                     this.setPredict(motion);
                     this.protocol.getComponentY().explosionTick = false;
                 }
                 if (this.allowMinorGravityChange && this.predictY() > motion
-                        && getDeviantity(motion) <= 0.08) {
+                        && getDeviance(motion) <= 0.08) {
                     this.setPredict(motion);
                     this.allowMinorGravityChange = false;
                 }
-                if (this.allowLowMinorAccel && this.predictY() > motion && getDeviantity(motion) <= 0.1) {
+                if (this.allowLowMinorAccel && this.predictY() > motion && getDeviance(motion) <= 0.1) {
                     this.setPredict(motion);
                     this.allowLowMinorAccel = false;
                 }
-                //protocol.bukkit().sendMessage("t: " + this.protocol.predictedSlimeTicks + " " + getDeviantity(motion));
-                if (this.protocol.predictedSlimeTicks > 0 && getDeviantity(motion) < 2.5 && getDeviantity(motion) > 0.01) {
+                if (this.protocol.predictedSlimeTicks > 0 && getDeviance(motion) < 2.5 && getDeviance(motion) > 0.01) {
                     this.setPredict(motion);
                     this.allowMinorGravityChange = true;
                     this.protocol.predictedSlimeTicks--;
@@ -424,7 +423,7 @@ public class IMSimulationGravity extends CheckDetection {
                     } else if (this.protocol.getVehicle() == null) {
                         if (allowLowJump && air == 1
                                 && this.predictY() > motion
-                                && getDeviantity(motion) <= 0.03) {
+                                && getDeviance(motion) <= 0.03) {
                             return;
                         }
                         if (this.isSolidBlock(from.clone().add(0, 0.5, 0))
@@ -475,7 +474,7 @@ public class IMSimulationGravity extends CheckDetection {
         this.call(() -> this.vhact = 2);
     }
 
-    private double getDeviantity(double motion) {
+    private double getDeviance(double motion) {
         return this.abs(this.abs(motion) - this.abs(this.predictY()));
     }
 

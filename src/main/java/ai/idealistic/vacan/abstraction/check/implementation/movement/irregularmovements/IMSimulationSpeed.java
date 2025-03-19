@@ -151,7 +151,7 @@ public class IMSimulationSpeed extends CheckDetection {
                         double pX = this.lastDx * 0.91f;
                         double pZ = this.lastDz * 0.91f;
                         this.setPredict(pX, pZ);
-                        double speedAccel = Math.sqrt(getDeviantity(dx, pX) * getDeviantity(dx, pX) + getDeviantity(dz, pZ) * getDeviantity(dz, pZ));
+                        double speedAccel = Math.sqrt(getDeviance(dx, pX) * getDeviance(dx, pX) + getDeviance(dz, pZ) * getDeviance(dz, pZ));
                         double moveAngle = RayUtils.calculateRayLine(moveLine);
                         double accel = ((this.action > 2)
                                 ? ACCELERATION_ACTION : (this.action > 1) ?
@@ -168,12 +168,12 @@ public class IMSimulationSpeed extends CheckDetection {
                                 Math.cos(moveAngle) * 0.3))
                                 || (nearbyEntities);
                         if (point && speed < lastSpeed * 1.2 + (nearbyEntities ? accel + 0.2 : 0.03)) {
-                            if (getDeviantity(dx, pX) > accel) pX = dx;
-                            if (getDeviantity(dz, pZ) > accel) pZ = dz;
+                            if (getDeviance(dx, pX) > accel) pX = dx;
+                            if (getDeviance(dz, pZ) > accel) pZ = dz;
                         }
                         boolean isCorrect =
-                                getDeviantity(dx, pX) < accel
-                                        && getDeviantity(dz, pZ) < accel;
+                                getDeviance(dx, pX) < accel
+                                        && getDeviance(dz, pZ) < accel;
                         if (isCorrect)
                             this.setPredict(dx, dz);
                         else this.setPredict(
@@ -191,7 +191,7 @@ public class IMSimulationSpeed extends CheckDetection {
                         this.nearSlimeStatus = 4;
                     if (!(dx == predictX && dz == predictZ)) {
                         double pr = Math.sqrt(predictX * predictX + predictZ * predictZ);
-                        double d = getDeviantity(pr, speed);
+                        double d = getDeviance(pr, speed);
                         if (d <= 1.01 && d > 0.1 && this.protocol.getComponentXZ().pistonTick) {
                             this.setPredict(dx, dz);
                             this.removePistonTick = true;
@@ -214,7 +214,7 @@ public class IMSimulationSpeed extends CheckDetection {
                             this.setPredict(dx, dz);
                         }
                         if (this.protocol.getComponentXZ().pistonTick
-                                && getDeviantity(pr, speed) > 0.1 && getDeviantity(pr, speed) <= 1.0) {
+                                && getDeviance(pr, speed) > 0.1 && getDeviance(pr, speed) <= 1.0) {
                             this.setPredict(dx, dz);
                             this.removePistonTick = true;
                         }
@@ -232,13 +232,13 @@ public class IMSimulationSpeed extends CheckDetection {
                             this.setPredict(dx, dz);
                         }
                         pr = Math.sqrt(predictX * predictX + predictZ * predictZ);
-                        d = getDeviantity(pr, speed);
+                        d = getDeviance(pr, speed);
 
                         //protocol.bukkit().sendMessage("tp: " + tpTicks);
                         if (tpTicks > 0 && d > 1e-7 && d < 0.09) {
                             tpTicks--;
                             setPredict(dx, dz);
-                            d = getDeviantity(pr, speed);
+                            d = getDeviance(pr, speed);
                         }
                         if (!(dx == predictX && dz == predictZ)) {
                             this.vlCount += (air == 1) ? 4 : 1;
@@ -316,7 +316,7 @@ public class IMSimulationSpeed extends CheckDetection {
         return m;
     }
 
-    private static double getDeviantity(double a, double b) {
+    private static double getDeviance(double a, double b) {
         return abs(abs(a) - abs(b));
     }
 

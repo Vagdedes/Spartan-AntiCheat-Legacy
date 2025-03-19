@@ -58,8 +58,8 @@ public class IMSimulationVehicle extends CheckDetection {
             double dx = to.getX() - from.getX();
             double dz = to.getZ() - from.getZ();
             double speed = Math.sqrt(dx * dx + dz * dz);
-            double accel = getDeviantity(speed, (oldSpeed * 0.91));
-            double diffAccel = getDeviantity(accel, oldAccel);
+            double accel = getDeviance(speed, (oldSpeed * 0.91));
+            double diffAccel = getDeviance(accel, oldAccel);
             double y = to.getY() - from.getY();
             final EnvironmentData ec = protocol.getEnvironment();
             double prV = (vehicle instanceof Boat) ? 0.04 : 0.08 * 0.98f;
@@ -73,7 +73,7 @@ public class IMSimulationVehicle extends CheckDetection {
                     this.cancel("prediction vehicle gravity: " + pr, this.protocol.getFromLocation(), 0, true);
                     this.postFly = 9;
                 }
-            } else if (!(vehicle instanceof Minecart) && getDeviantity(oldY, prV) < 1e-10) {
+            } else if (!(vehicle instanceof Minecart) && getDeviance(oldY, prV) < 1e-10) {
                 this.postFly++;
                 if (this.postFly > 7) {
                     this.cancel("prediction vehicle gravity: " + pr, this.protocol.getFromLocation(), 0, true);
@@ -175,7 +175,7 @@ public class IMSimulationVehicle extends CheckDetection {
         return m;
     }
 
-    private static double getDeviantity(double a, double b) {
+    private static double getDeviance(double a, double b) {
         return abs(abs(a) - abs(b));
     }
 

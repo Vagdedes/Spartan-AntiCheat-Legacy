@@ -47,8 +47,8 @@ public class IMSimulationElytra extends CheckDetection {
             double dx = to.getX() - from.getX();
             double dz = to.getZ() - from.getZ();
             double speed = Math.sqrt(dx * dx + dz * dz);
-            double accel = getDeviantity(speed, (oldSpeed * 0.91));
-            double diffAccel = getDeviantity(accel, oldAccel);
+            double accel = getDeviance(speed, (oldSpeed * 0.91));
+            double diffAccel = getDeviance(accel, oldAccel);
             double y = to.getY() - from.getY();
             final EnvironmentData ec = protocol.getEnvironment();
             double pr = Math.abs(Math.abs(y) - Math.abs(oldY));
@@ -81,7 +81,7 @@ public class IMSimulationElytra extends CheckDetection {
         });
     }
 
-    private static double getDeviantity(double a, double b) {
+    private static double getDeviance(double a, double b) {
         return abs(abs(a) - abs(b));
     }
 
