@@ -146,13 +146,13 @@ public class MovementListener extends PacketAdapter {
                 p.setFrom(r);
             } else {
                 if (hasPosition) {
-                    if (p.getTeleport() != null) { // From
-                        Location to = p.getTeleport();
+                    Location to = p.getTeleport();
 
+                    if (to != null) { // From
                         // Let's check guys with bad internet
                         if (to.getX() == r.getX() && to.getY() == r.getY() && to.getZ() == r.getZ()) {
-                            p.setLocation(p.getTeleport().clone());
-                            p.setFrom(p.getTeleport().clone());
+                            p.setLocation(to.clone());
+                            p.setFrom(to.clone());
                             p.setTeleport(null);
                         } else {
                             if (false) return; // todo vehicle enter
@@ -162,8 +162,10 @@ public class MovementListener extends PacketAdapter {
                             // Force packet stop if your packet are shit
                             event.setCancelled(true);
                             Bukkit.getScheduler().runTask(Register.plugin, () -> {
-                                if (p.getTeleport() != null) {
-                                    Location build = p.getTeleport().clone();
+                                Location teleport = p.getTeleport();
+
+                                if (teleport != null) {
+                                    Location build = teleport.clone();
                                     build.setYaw(p.getLocation().getYaw());
                                     build.setPitch(p.getLocation().getPitch());
                                     p.bukkit().teleport(build);
@@ -194,9 +196,9 @@ public class MovementListener extends PacketAdapter {
             }
             CheckThread.run(() -> {
                 PlayerMoveEvent moveEvent = new PlayerMoveEvent(
-                                player,
-                                p.getFromLocation(),
-                                p.getLocation()
+                        player,
+                        p.getFromLocation(),
+                        p.getLocation()
                 );
                 moveEvent.setCancelled(event.isCancelled());
                 p.setEnvironment(new EnvironmentData(p));

@@ -80,10 +80,11 @@ public class PlayerProtocol {
             useItemPacketReset;
     @Setter
     @Getter
+    private Location teleport;
+    @Setter
     private Location
             location,
             from,
-            teleport,
             schedulerFrom;
     public String fromWorld;
     private final List<Location> positionHistory;

@@ -83,7 +83,6 @@ public class HitReach extends CheckRunner {
                     List<Location> h = target.getPositionHistory();
                     Set<AxisAlignedBB> cachedBlocks = new HashSet<>();
                     Set<Material> ignored = new HashSet<>();
-                    int nulls = 0;
                     Location hardcodedTargetLoc = target.getLocation().clone();
                     Location hardcodedPlayerLoc = this.protocol.getLocation().clone();
                     if (getDistance(hardcodedPlayerLoc, hardcodedTargetLoc) > 0.5) {
@@ -99,17 +98,15 @@ public class HitReach extends CheckRunner {
                                     );
                                     final Block block = getBlockAsync(l);
                                     if (block == null) {
-                                        nulls++;
                                         continue;
                                     }
-                                    final Location b = block.getLocation().clone().add(0.5, 0.5, 0.5);
                                     final Material material = block.getType();
                                     final List<AxisAlignedBB> bb = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
                                             ? BoundingBoxUtil.getBoundingBoxes(block)
                                             : BoundingBoxUtil.getBoundingBoxesLegacy(block);
                                     if (material.isSolid() && bb != null) {
                                         cachedBlocks.addAll(bb);
-                                    } else ignored.add(material);
+                                    }
                                 }
                             }
                         }
@@ -143,7 +140,7 @@ public class HitReach extends CheckRunner {
                                     );
                                     List<Location> positions = new LinkedList<>(h);
                                     positions.add(target.getLocation());
-                                    positions.add(target.getFrom());
+                                    positions.add(target.getFromLocation());
                                     positions.add(target.bukkit().getLocation().clone());
                                     for (Location position : positions) {
                                         AxisAlignedBB axisAlignedBB = new AxisAlignedBB(

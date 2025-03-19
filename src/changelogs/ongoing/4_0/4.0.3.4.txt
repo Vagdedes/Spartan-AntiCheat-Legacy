@@ -1,1 +1,2 @@
-[#] Optimized the packet world data handler.
+[#] Optimized the packet world data handler
+[#] Fixed a HitReach console error
