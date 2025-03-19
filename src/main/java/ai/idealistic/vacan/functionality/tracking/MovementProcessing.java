@@ -28,8 +28,7 @@ public class MovementProcessing {
 
                 && (environmentalAttributes
                 || Attributes.getAmount(protocol, Attributes.GENERIC_STEP_HEIGHT) == 0.0
-                && Attributes.getAmount(protocol, Attributes.GENERIC_GRAVITY) == 0.0
-                && Attributes.getAmount(protocol, Attributes.GENERIC_STEP_HEIGHT) == 0.0)) {
+                && Attributes.getAmount(protocol, Attributes.GENERIC_GRAVITY) == 0.0)) {
             if (Compatibility.CompatibilityType.MYTHIC_MOBS.isFunctional()
                     || Compatibility.CompatibilityType.ITEMS_ADDER.isFunctional()) {
                 List<Entity> entities = protocol.getNearbyEntities(

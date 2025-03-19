@@ -34,9 +34,7 @@ public class PacketWorld {
         } else if (lagTick > 0) {
             if (!this.transactionLock) this.lagTick--;
         } else {
-            synchronized (this.query) {
-                this.query.removeIf(change -> --change.tick == 0);
-            }
+            this.query.removeIf(change -> --change.tick == 0);
         }
     }
 
@@ -69,17 +67,15 @@ public class PacketWorld {
         }
         long hash = blockChange.hashCode();
 
-        synchronized (this.query) {
-            for (ServerBlockChange c : this.query) {
-                if (c.generateHash() == hash) {
-                    this.query.remove(c); // to delete
-                    break;
-                }
+        for (ServerBlockChange c : this.query) {
+            if (c.generateHash() == hash) {
+                this.query.remove(c); // to delete
+                break;
             }
-            this.query.add(blockChange);
-            this.transactionLock = true;
-            this.lagTick = 3;
         }
+        this.query.add(blockChange);
+        this.transactionLock = true;
+        this.lagTick = 3;
     }
 
 }
