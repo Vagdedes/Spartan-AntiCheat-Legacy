@@ -4,3 +4,4 @@
 [#] Slightly improved the Item Attributes compatibility
 [#] Fixed a few IrregularMovement speed-potion-effect speed false positives
 [#] Fixed a ProtocolLib no-such-method console error
+[#] Potentially fixed a TreeFeller GhostHand check false positive

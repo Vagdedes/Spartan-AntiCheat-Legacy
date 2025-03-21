@@ -8,6 +8,7 @@ import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.vacan.abstraction.world.ServerLocation;
 import ai.idealistic.vacan.compatibility.manual.abilities.ItemsAdder;
 import ai.idealistic.vacan.compatibility.manual.building.PrinterMode;
+import ai.idealistic.vacan.compatibility.manual.building.TreeFeller;
 import ai.idealistic.vacan.compatibility.manual.entity.Vehicles;
 import ai.idealistic.vacan.compatibility.manual.vanilla.Attributes;
 import ai.idealistic.vacan.utils.minecraft.entity.PlayerUtils;
@@ -111,7 +112,8 @@ public class GhostHand extends CheckRunner {
     }
 
     private boolean canDo(Block b) {
-        return b.getWorld() == this.protocol.getWorld();
+        return b.getWorld() == this.protocol.getWorld()
+                && !TreeFeller.canCancel(b);
     }
 
     @Override
