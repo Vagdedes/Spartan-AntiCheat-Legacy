@@ -430,6 +430,17 @@ public class IMSimulationGravity extends CheckDetection {
                                 && to.distance(from) < 0.3) {
                             return;
                         }
+                        if (devTotal < 0.1) { // vagdedes patch
+                            for (PotionEffectType type : new PotionEffectType[]{
+                                    PotionEffectType.LEVITATION,
+                                    PotionEffectType.SLOW_FALLING,
+                                    PotionEffectUtils.JUMP
+                            }) {
+                                if (p.hasPotionEffect(type, 5)) {
+                                    return;
+                                }
+                            }
+                        }
 
                         this.vl += devTotal;
                         this.vlCount += 1;

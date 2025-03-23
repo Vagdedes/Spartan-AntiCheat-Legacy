@@ -20,9 +20,19 @@ import ai.idealistic.vacan.utils.minecraft.server.ConfigUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
+import java.lang.reflect.Method;
 import java.util.List;
 
 public abstract class CheckDetection extends CheckProcess {
+
+    private static Method tpsMethod = null;
+
+    static {
+        try {
+            tpsMethod = Bukkit.class.getMethod("getTPS");
+        } catch (Exception ignored) {
+        }
+    }
 
     public static final String
             javaPlayerIdentifier = "Java:",
@@ -173,7 +183,7 @@ public abstract class CheckDetection extends CheckProcess {
 
     private void increaseAccumulationTime(long time) {
         double average = ResearchEngine.getAverageViolationTime(this, this.protocol.getDataType()),
-                tpsLost = (TPS.maximum - Bukkit.getTPS()[0]),
+                tpsLost = tpsMethod != null ? (TPS.maximum - Bukkit.getTPS()[0]) : 0.0,
                 ratioFromMax = (TPS.maximum - tpsLost * 2) / TPS.maximum;
         long previousTime = this.previousTime[this.protocol.getDataType().ordinal()],
                 add;
