@@ -37,21 +37,35 @@ public class Compatibility {
     private static final Map<String, Boolean> bool = new LinkedHashMap<>();
 
     public enum CompatibilityType {
-        ADVANCED_ABILITIES("AdvancedAbilities"), CRACK_SHOT("CrackShot"),
-        CRACK_SHOT_PLUS("CrackShotPlus"), CRAFT_BOOK("CraftBook"),
-        MAGIC_SPELLS("MagicSpells"), PROTOCOL_LIB("ProtocolLib"),
-        MC_MMO("mcMMO"), PROTOCOL_SUPPORT("ProtocolSupport"),
-        TREE_FELLER("TreeFeller"), VEIN_MINER("VeinMiner"),
-        GRAPPLING_HOOK("GrapplingHook"), RECENT_PVP_MECHANICS("RecentPvPMechanics"),
-        MINE_BOMB("MineBomb"), SUPER_PICKAXE("SuperPickaxe"),
-        REAL_DUAL_WIELD("RealDualWield"), MYTHIC_MOBS("MythicMobs"),
-        ITEM_ATTRIBUTES("ItemAttributes"), PRINTER_MODE("PrinterMode"),
-        VEHICLES("Vehicles"), MINE_TINKER("MineTinker"),
-        WILD_TOOLS("WildTools"), AURELIUM_SKILLS("AureliumSkills"),
-        CUSTOM_ENCHANTS_PLUS("CustomEncahntsPlus"), ECO_ENCHANTS("EcoEnchants"),
-        ITEMS_ADDER("ItemsAdder"), RAMPEN_DRILLS("RampenDrills"),
-        OLD_COMBAT_MECHANICS("OldCombatMechanics"), CUSTOM_KNOCKBACK("CustomKnockback"),
-        PROJECT_KORRA("ProjectKorra"), FLOODGATE("Floodgate");
+        ADVANCED_ABILITIES("AdvancedAbilities"),
+        CRACK_SHOT("CrackShot"),
+        CRACK_SHOT_PLUS("CrackShotPlus"),
+        CRAFT_BOOK("CraftBook"),
+        MAGIC_SPELLS("MagicSpells"),
+        PROTOCOL_LIB("ProtocolLib"),
+        MC_MMO("mcMMO"),
+        PROTOCOL_SUPPORT("ProtocolSupport"),
+        TREE_FELLER("TreeFeller"),
+        VEIN_MINER("VeinMiner"),
+        GRAPPLING_HOOK("GrapplingHook"),
+        MINE_BOMB("MineBomb"),
+        SUPER_PICKAXE("SuperPickaxe"),
+        REAL_DUAL_WIELD("RealDualWield"),
+        MYTHIC_MOBS("MythicMobs"),
+        ITEM_ATTRIBUTES("ItemAttributes"),
+        PRINTER_MODE("PrinterMode"),
+        VEHICLES("Vehicles"),
+        MINE_TINKER("MineTinker"),
+        WILD_TOOLS("WildTools"),
+        AURELIUM_SKILLS("AureliumSkills"),
+        CUSTOM_ENCHANTS_PLUS("CustomEncahntsPlus"),
+        ECO_ENCHANTS("EcoEnchants"),
+        ITEMS_ADDER("ItemsAdder"),
+        RAMPEN_DRILLS("RampenDrills"),
+        OLD_COMBAT_MECHANICS("OldCombatMechanics"),
+        CUSTOM_KNOCKBACK("CustomKnockback"),
+        PROJECT_KORRA("ProjectKorra"),
+        FLOODGATE("Floodgate");
 
         @Setter
         @Getter
@@ -280,12 +294,6 @@ public class Compatibility {
                             CompatibilityType.MYTHIC_MOBS,
                             CompatibilityType.PROJECT_KORRA
                     },
-                    null,
-                    null
-            );
-            CompatibilityType.RECENT_PVP_MECHANICS.setFunctional(
-                    new String[]{""},
-                    null,
                     null,
                     null
             );
