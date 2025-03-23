@@ -172,13 +172,6 @@ public abstract class CheckDetection extends CheckProcess {
         this.previousTime[this.protocol.getDataType().ordinal()] = -1L;
     }
 
-    public final void sortData() {
-        this.protocol.profile().sortTimeDifferences(
-                this.hackType,
-                this.name
-        );
-    }
-
     // Accumulation
 
     private void increaseAccumulationTime(long time) {
@@ -280,6 +273,7 @@ public abstract class CheckDetection extends CheckProcess {
                 + "(" + checkIdentifier + " " + this.hackType + "), "
                 + "(" + javaPlayerIdentifier + " " + (!this.protocol.isBedrockPlayer()) + ")" + ", "
                 + "(" + detectionIdentifier + " " + this.name + ")" + ", "
+                + "(Level-Ratio: " + (level / (double) punishment) + "), "
                 + "(" + levelIdentifier + " " + level + "),"
                 + "(" + notificationLevelIdentifier + " " + notification + "),"
                 + "(" + preventionLevelIdentifier + " " + prevention + "),"
