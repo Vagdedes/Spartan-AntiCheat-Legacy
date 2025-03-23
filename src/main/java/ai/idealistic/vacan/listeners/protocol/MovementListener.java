@@ -186,11 +186,11 @@ public class MovementListener extends PacketAdapter {
             }
             if (p.useItemPacket) {
                 if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
-                    if (!player.getInventory().getItemInMainHand().getType().isEdible()
-                            && !player.getInventory().getItemInOffHand().getType().isEdible())
+                    if (!p.getInventory().getItemInMainHand().getType().isEdible()
+                            && !p.getInventory().getItemInOffHand().getType().isEdible())
                         p.useItemPacket = false;
                 } else {
-                    if (!player.getInventory().getItemInHand().getType().isEdible()) p.useItemPacket = false;
+                    if (!p.getInventory().getItemInHand().getType().isEdible()) p.useItemPacket = false;
                 }
                 if (player.getFoodLevel() == 20 || p.useItemPacketReset) p.useItemPacket = false;
             }

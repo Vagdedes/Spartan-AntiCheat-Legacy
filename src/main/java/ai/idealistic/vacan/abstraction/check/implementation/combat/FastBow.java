@@ -49,7 +49,7 @@ public class FastBow extends CheckRunner {
             PlayerInteractEvent event = (PlayerInteractEvent) object;
 
             if (event.getAction() == Action.RIGHT_CLICK_AIR) {
-                PlayerInventory inventory = this.protocol.bukkit().getInventory();
+                PlayerInventory inventory = this.protocol.getInventory();
 
                 if (inventory.getItemInHand().getType() == Material.BOW
                         && inventory.contains(Material.ARROW)) {

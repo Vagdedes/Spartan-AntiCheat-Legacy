@@ -1,17 +1,17 @@
 package ai.idealistic.vacan.abstraction.event;
 
-import org.bukkit.entity.Player;
+import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 public class CPlayerRiptideEvent {
 
-    public final Player player;
+    public final PlayerProtocol protocol;
     public final ItemStack item;
     public final Vector velocity;
 
-    public CPlayerRiptideEvent(Player player, ItemStack item, Vector velocity) {
-        this.player = player;
+    public CPlayerRiptideEvent(PlayerProtocol protocol, ItemStack item, Vector velocity) {
+        this.protocol = protocol;
         this.item = item;
         this.velocity = velocity;
     }

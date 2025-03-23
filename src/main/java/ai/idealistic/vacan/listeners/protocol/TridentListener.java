@@ -34,12 +34,12 @@ public class TridentListener extends PacketAdapter {
             if (protocol.isBedrockPlayer()) {
                 return;
             }
-            ItemStack item = player.getInventory().getItemInMainHand();
+            ItemStack item = protocol.getInventory().getItemInMainHand();
             if (item.getType().equals(Material.TRIDENT)) {
                 double r = Math.toRadians(protocol.getLocation().getYaw());
                 CheckThread.run(() -> TridentEvent.event(
                         new CPlayerRiptideEvent(
-                                player,
+                                protocol,
                                 item,
                                 new Vector(-Math.sin(r), protocol.getLocation().getPitch() / 90, Math.cos(r))
                         ),

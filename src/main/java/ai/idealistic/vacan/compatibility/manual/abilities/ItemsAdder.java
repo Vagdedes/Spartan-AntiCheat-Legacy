@@ -18,7 +18,7 @@ public class ItemsAdder {
 
     public static boolean is(PlayerProtocol protocol) {
         if (classExists && Compatibility.CompatibilityType.ITEMS_ADDER.isFunctional()) {
-            PlayerInventory inventory = protocol.bukkit().getInventory();
+            PlayerInventory inventory = protocol.getInventory();
 
             for (ItemStack armor : inventory.getArmorContents()) {
                 if (armor != null && is(armor)) {

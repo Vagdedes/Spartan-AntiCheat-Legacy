@@ -303,8 +303,8 @@ public class IMSimulationSpeed extends CheckDetection {
         boolean hasSpeed = speedEffect != null;
         Location l = this.protocol.getLocation().clone().add(0, -0.5, 0);
         Location lF = this.protocol.getFromLocation().clone().add(0, -0.5, 0);
-        if (PlayerUtils.soulSpeed && this.protocol.bukkit().getInventory().getBoots() != null) {
-            int e = this.protocol.bukkit().getInventory().getBoots().getEnchantmentLevel(Enchantment.SOUL_SPEED);
+        if (PlayerUtils.soulSpeed && this.protocol.getInventory().getBoots() != null) {
+            int e = this.protocol.getInventory().getBoots().getEnchantmentLevel(Enchantment.SOUL_SPEED);
             double v = (e + 1) * 0.4;
             m += v;
         }

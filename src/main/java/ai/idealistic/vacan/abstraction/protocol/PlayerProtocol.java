@@ -43,6 +43,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Vehicle;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
@@ -631,8 +632,16 @@ public class PlayerProtocol {
         return Bukkit.createInventory(this.bukkit(), size, title);
     }
 
+    public PlayerInventory getInventory() {
+        return new CPlayerInventory(
+                ProtocolLib.isTemporary(this.bukkit())
+                        ? null
+                        : this.bukkit().getInventory()
+        );
+    }
+
     public ItemStack getItemInHand() {
-        return this.bukkit().getInventory().getItemInHand();
+        return this.getInventory().getItemInHand();
     }
 
     public ServerLocation getTargetBlock(double distance, double limit) {

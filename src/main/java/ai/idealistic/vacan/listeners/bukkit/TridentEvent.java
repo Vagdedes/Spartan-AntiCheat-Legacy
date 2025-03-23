@@ -13,23 +13,22 @@ import org.bukkit.inventory.PlayerInventory;
 
 public class TridentEvent implements Listener {
 
-    private static final double riptideMaxSafeLevel = 3.0;
-
     @EventHandler
     private void Event(PlayerRiptideEvent e) {
+        PlayerProtocol protocol = PluginBase.getProtocol(e.getPlayer());
         event(
                 new CPlayerRiptideEvent(
-                        e.getPlayer(),
+                        protocol,
                         e.getItem(),
                         e.getPlayer().getVelocity()
                 ), false);
     }
 
     public static void event(CPlayerRiptideEvent e, boolean packets) {
-        PlayerProtocol p = PluginBase.getProtocol(e.player, true);
+        PlayerProtocol p = e.protocol;
 
         if (p.packetsEnabled() == packets) {
-            PlayerInventory inventory = e.player.getInventory();
+            PlayerInventory inventory = e.protocol.getInventory();
 
             for (ItemStack item : new ItemStack[]{inventory.getItemInHand(), inventory.getItemInOffHand()}) {
                 if (item.getType() == Material.TRIDENT) {

@@ -78,8 +78,8 @@ public class BlockPlaceListener extends PacketAdapter {
                             || event.getPacket().getHands().read(0) == EnumWrappers.Hand.MAIN_HAND;
 
                     ItemStack itemInHand = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)
-                            ? (isMainHand ? player.getInventory().getItemInMainHand()
-                            : player.getInventory().getItemInOffHand()) : player.getItemInHand();
+                            ? (isMainHand ? protocol.getInventory().getItemInMainHand()
+                            : protocol.getInventory().getItemInOffHand()) : player.getItemInHand();
                     if (itemInHand.getType().isBlock()) {
                         if (!isInPlayer(protocol.getLocation(), block.getLocation())) {
                             Block blockAgainst = player.getLocation().getBlock();

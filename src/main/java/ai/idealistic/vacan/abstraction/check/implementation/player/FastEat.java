@@ -34,7 +34,7 @@ public class FastEat extends CheckRunner {
 
     private long getDelay() {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)) {
-            PlayerInventory inventory = this.protocol.bukkit().getInventory();
+            PlayerInventory inventory = this.protocol.getInventory();
 
             for (ItemStack itemStack : new ItemStack[]{inventory.getItemInHand(), inventory.getItemInOffHand()}) {
                 if (itemStack != null) {

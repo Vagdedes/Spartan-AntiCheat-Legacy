@@ -46,8 +46,8 @@ public class UseItemStatusHandle extends PacketAdapter {
                 boolean isMainHand = !MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)
                         || event.getPacket().getHands().read(0) == EnumWrappers.Hand.MAIN_HAND;
                 ItemStack itemStack = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)
-                        ? (isMainHand ? player.getInventory().getItemInMainHand()
-                        : player.getInventory().getItemInOffHand()) : player.getItemInHand();
+                        ? (isMainHand ? protocol.getInventory().getItemInMainHand()
+                        : protocol.getInventory().getItemInOffHand()) : player.getItemInHand();
                 if (packet.getType().toString().contains("USE_ITEM_ON")) {
                     if (event.getPacket().getStructures().getValues().toString().contains("Serverbound"))
                         return;
