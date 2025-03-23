@@ -231,6 +231,8 @@ public class PlayerProtocol {
                                 protocol.maxNearbyEntitiesCoordinate[2]
                         ).toArray(new Entity[0]);
                     }
+                    protocol.isFlying();
+                    protocol.isGliding();
                     protocol.checkForAFK();
                     protocol.executeRunners(false, null);
                     protocol.schedulerFrom = protocol.getLocation();
