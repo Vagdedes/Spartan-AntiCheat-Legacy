@@ -25,7 +25,6 @@ public class PluginBase {
 
     public static final GeneralThread.ThreadPool
             connectionThread = new GeneralThread.ThreadPool(TPS.tickTime),
-            headThread = new GeneralThread.ThreadPool(TPS.tickTime),
             dataThread = new GeneralThread.ThreadPool(1L);
 
     public static final ManageChecks manageChecks = new ManageChecks();

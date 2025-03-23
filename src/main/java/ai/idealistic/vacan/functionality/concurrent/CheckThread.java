@@ -23,8 +23,10 @@ public class CheckThread {
     private static final char INNER_CLASS_SEPARATOR_CHAR = '$';
     public static int STOP_WATCH_TIME_MILLIS = 750;
     @Getter
-    private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(64,
-            new ThreadFactoryBuilder().setNameFormat(Register.pluginName + " Thread %d").build());
+    private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(
+            32,
+            new ThreadFactoryBuilder().setNameFormat(Register.pluginName + " Thread %d").build()
+    );
     private static final Map<String, Boolean> processedErrors = new OverflowMap<>(
             new ConcurrentHashMap<>(),
             128
@@ -81,10 +83,8 @@ public class CheckThread {
                 if (debug || processedErrors.putIfAbsent(e.getMessage(), true) == null) {
                     log.severe("Error during execution of asynchronous task:");
                     e.printStackTrace();
-                    if (e instanceof InterruptedException) // for debug
-                        throw e;
+                    throw e;
                 }
-
             } finally {
                 if (debug) {
                     long after = System.currentTimeMillis() - start;
@@ -118,8 +118,10 @@ public class CheckThread {
             try {
                 return decoratedCallable.call();
             } catch (Throwable e) {
-                log.severe("Error while accepting to call method: " + CheckThread.toString(originalCallable));
-                e.printStackTrace();
+                if (debug || processedErrors.putIfAbsent(e.getMessage(), true) == null) {
+                    log.severe("Error while accepting to call method: " + CheckThread.toString(originalCallable));
+                    e.printStackTrace();
+                }
                 throw e;
             } finally {
                 if (debug) {
@@ -134,7 +136,7 @@ public class CheckThread {
         }
     }
 
-    public static String toString(Object object) {
+    private static String toString(Object object) {
         if (object == null) {
             return "null";
         }

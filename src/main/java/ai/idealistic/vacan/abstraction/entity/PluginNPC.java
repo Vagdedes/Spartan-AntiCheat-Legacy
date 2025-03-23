@@ -3,8 +3,8 @@ package ai.idealistic.vacan.abstraction.entity;
 import ai.idealistic.vacan.Register;
 import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.vacan.abstraction.world.ServerLocation;
+import ai.idealistic.vacan.functionality.concurrent.CheckThread;
 import ai.idealistic.vacan.functionality.server.MultiVersion;
-import ai.idealistic.vacan.functionality.server.PluginBase;
 import ai.idealistic.vacan.utils.minecraft.entity.PlayerUtils;
 import ai.idealistic.vacan.utils.minecraft.inventory.EnchantmentUtils;
 import ai.idealistic.vacan.utils.minecraft.inventory.InventoryUtils;
@@ -159,7 +159,7 @@ public class PluginNPC {
     }
 
     public void updateHead() {
-        PluginBase.headThread.executeWithPriority(
+        CheckThread.run(
                 () -> armorStand.getEquipment().setHelmet(
                         InventoryUtils.getSkull(offlinePlayer, backupName, true)
                 )

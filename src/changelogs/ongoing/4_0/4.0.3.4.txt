@@ -8,3 +8,4 @@
 [#] Fixed the TPS method not existing in older server versions
 [#] Made the gravity detection more lenient with certain potion effects
 [#] Fixed a ProtocolLib temporary player console error with inventories
+[#] Improved the Vein Miner compatibility
