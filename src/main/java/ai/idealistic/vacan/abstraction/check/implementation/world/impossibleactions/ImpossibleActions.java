@@ -22,6 +22,7 @@ import org.bukkit.util.Vector;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public class ImpossibleActions extends CheckRunner {
 
@@ -95,20 +96,25 @@ public class ImpossibleActions extends CheckRunner {
                                             ));
                                         } else {
                                             this.scaffoldYaw.call(() -> {
-                                                List<ServerLocation> fromLocations = this.protocol.getLocations();
+                                                List<Map.Entry<Long, Location>> fromLocations = this.protocol.getPositionHistoryEntries();
                                                 int requiredComparisons = 5, requiredSize = requiredComparisons + 1;
 
                                                 if (fromLocations.size() >= requiredSize) { // 6-1 comparisons = 5
                                                     fromLocations = fromLocations.subList(fromLocations.size() - requiredSize, fromLocations.size());
-                                                    Iterator<ServerLocation> iterator = fromLocations.iterator();
-                                                    ServerLocation previousLocation = iterator.next();
+                                                    Iterator<Map.Entry<Long, Location>> iterator = fromLocations.iterator();
+
+                                                    if (!iterator.hasNext()) {
+                                                        return;
+                                                    }
+                                                    Map.Entry<Long, Location> previousLocation = iterator.next();
                                                     double yawDeviation = 0.0;
 
                                                     while (iterator.hasNext()) {
-                                                        ServerLocation loopLocation = iterator.next();
+                                                        Map.Entry<Long, Location> loopLocation = iterator.next();
+                                                        long timePassed = System.currentTimeMillis() - loopLocation.getKey();
 
-                                                        if (loopLocation.timePassed() <= requiredComparisons * 2 * TPS.tickTime) {
-                                                            double diff = (previousLocation.getYaw() - loopLocation.getYaw()) % 360.0f;
+                                                        if (timePassed <= requiredComparisons * 2 * TPS.tickTime) {
+                                                            double diff = (previousLocation.getValue().getYaw() - loopLocation.getValue().getYaw()) % 360.0f;
                                                             yawDeviation += diff * diff;
                                                             previousLocation = loopLocation;
                                                         } else {

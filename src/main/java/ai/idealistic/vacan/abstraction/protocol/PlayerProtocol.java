@@ -88,7 +88,7 @@ public class PlayerProtocol {
             from,
             schedulerFrom;
     public String fromWorld;
-    private final List<Location> positionHistory;
+    private final Map<Long, Location> positionHistory;
     public CPlayerVelocityEvent claimedVelocity;
     public final List<CPlayerVelocityEvent>
             claimedVeloGravity,
@@ -121,7 +121,6 @@ public class PlayerProtocol {
     public boolean entityHandle;
     private ComponentY componentY;
     private ComponentXZ componentXZ;
-    private final Map<Long, ServerLocation> locations;
     private Vector clampVector;
     private final Map<PotionEffectType, ExtendedPotionEffect> potionEffects;
     private boolean afk;
@@ -160,7 +159,7 @@ public class PlayerProtocol {
         this.tickTime = time;
         this.environment = new EnvironmentData();
         this.rightClickCounter = 0;
-        this.positionHistory = Collections.synchronizedList(new LinkedList<>());
+        this.positionHistory = Collections.synchronizedMap(new LinkedHashMap<>());
         this.claimedVelocity = null;
         this.claimedVeloGravity = new CopyOnWriteArrayList<>();
         this.claimedVeloSpeed = new CopyOnWriteArrayList<>();
@@ -182,7 +181,6 @@ public class PlayerProtocol {
         this.useItemPacket = false;
         this.useItemPacketReset = false;
         this.slime0Tick = 0;
-        this.locations = Collections.synchronizedMap(new LinkedHashMap<>());
         this.schedulerFrom = this.location;
         this.clampVector = new Vector();
         this.potionEffects = new ConcurrentHashMap<>(2);
@@ -358,9 +356,15 @@ public class PlayerProtocol {
         }
     }
 
+    public List<Map.Entry<Long, Location>> getPositionHistoryEntries() {
+        synchronized (this.positionHistory) {
+            return new ArrayList<>(this.positionHistory.entrySet());
+        }
+    }
+
     public List<Location> getPositionHistory() {
         synchronized (this.positionHistory) {
-            return new ArrayList<>(this.positionHistory);
+            return new ArrayList<>(this.positionHistory.values());
         }
     }
 
@@ -432,13 +436,12 @@ public class PlayerProtocol {
 
     public void addRawLocation(Location location) {
         synchronized (this.positionHistory) {
-            this.positionHistory.add(location.clone());
-
-            if (this.positionHistory.size() > 20) {
-                Iterator<Location> iterator = this.positionHistory.iterator();
+            if (this.positionHistory.size() == 20) {
+                Iterator<Long> iterator = this.positionHistory.keySet().iterator();
                 iterator.next();
                 iterator.remove();
             }
+            this.positionHistory.put(System.currentTimeMillis(), location.clone());
         }
     }
 
@@ -474,16 +477,6 @@ public class PlayerProtocol {
         );
     }
 
-    public List<ServerLocation> getLocations() {
-        return new ArrayList<>(this.locations.values());
-    }
-
-    public Set<Map.Entry<Long, ServerLocation>> getLocationEntries() {
-        synchronized (this.locations) {
-            return new HashSet<>(locations.entrySet());
-        }
-    }
-
     public boolean processLastMoveEvent(
             Location originalTo,
             Location vehicle,
@@ -496,32 +489,12 @@ public class PlayerProtocol {
             double x = clampMin(to.getX(), -3.0E7D, 3.0E7D),
                     y = clampMin(to.getY(), -2.0E7D, 2.0E7D),
                     z = clampMin(to.getZ(), -3.0E7D, 3.0E7D);
-            org.bukkit.util.Vector vector = new Vector(x, y, z);
+            Vector vector = new Vector(x, y, z);
             double d = this.clampVector.distanceSquared(vector);
             this.clampVector = vector;
 
             if (d < 4e-8) {
                 return false;
-            }
-        }
-        if (vehicle == null) {
-            Location known = this.getLocation();
-
-            if (known.getX() != originalTo.getX()
-                    || known.getY() != originalTo.getY()
-                    || known.getZ() != originalTo.getZ()
-                    || known.getYaw() != originalTo.getYaw()
-                    || known.getPitch() != originalTo.getPitch()) {
-                ServerLocation clocation = new ServerLocation(originalTo);
-
-                synchronized (this.locations) {
-                    if (this.locations.size() == TPS.maximum) {
-                        Iterator<Long> iterator = this.locations.keySet().iterator();
-                        iterator.next();
-                        iterator.remove();
-                    }
-                    this.locations.put(System.currentTimeMillis(), clocation);
-                }
             }
         }
         if (!packets) {

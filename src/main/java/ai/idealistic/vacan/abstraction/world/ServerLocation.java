@@ -68,7 +68,6 @@ public class ServerLocation implements Cloneable {
 
     // Object
 
-    private final long time;
     public final World world;
     private double x, y, z;
     private float yaw, pitch;
@@ -84,7 +83,6 @@ public class ServerLocation implements Cloneable {
         this.z = z;
         this.yaw = yaw;
         this.pitch = pitch;
-        this.time = System.currentTimeMillis();
     }
 
     public ServerLocation(World world, double x, double y, double z) {
@@ -103,10 +101,6 @@ public class ServerLocation implements Cloneable {
         } catch (Exception ex) {
             return null;
         }
-    }
-
-    public long timePassed() {
-        return System.currentTimeMillis() - this.time;
     }
 
     public int getBlockX() {
