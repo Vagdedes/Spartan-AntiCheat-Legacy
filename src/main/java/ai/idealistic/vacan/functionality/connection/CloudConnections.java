@@ -39,18 +39,21 @@ public class CloudConnections {
 
     static boolean ownsVacanOne() { // Once
         try {
-            String[] results = RequestUtils.get(StringUtils.decodeBase64(JarVerification.website) + "?" + CloudBase.identification()
-                    + "&action=get"
-                    + "&data=ownsVacanOne"
-                    + "&paypal_email=" + Config.settings.getString("Purchases.paypal_email")
-                    .trim().replace(" ", "")
-                    + "&version=" + Register.plugin.getDescription().getVersion());
+            String[] results = RequestUtils.get(
+                    StringUtils.decodeBase64(JarVerification.website)
+                            + "?" + CloudBase.identification()
+                            + "&action=get"
+                            + "&data=ownsVacanOne"
+                            + "&paypal_email=" + URLEncoder.encode(Config.settings.getString("Purchases.paypal_email"), "UTF-8")
+                            + "&patreon_full_name=" + URLEncoder.encode(Config.settings.getString("Purchases.patreon_full_name"), "UTF-8")
+                            + "&version=" + Register.plugin.getDescription().getVersion()
+            );
 
             if (results.length > 0) {
                 return results[0].equals("true");
             }
         } catch (Exception e) {
-            CloudBase.throwError(e, "ownsProduct:GET");
+            CloudBase.throwError(e, "ownsVacanOne:GET");
         }
         return false;
     }

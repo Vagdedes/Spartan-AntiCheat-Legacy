@@ -48,7 +48,6 @@ public class ReflectionUtils {
                 return field.get(null);  // For static fields, pass 'null'
             }
         } catch (Exception e) {
-            AwarenessNotifications.forcefullySend(e.getMessage());
             return null;
         }
     }
@@ -70,13 +69,11 @@ public class ReflectionUtils {
                 method.setAccessible(true);  // In case the method is private or protected
 
                 // Invoke the method (pass 'null' for static methods or an instance for instance methods)
-                Object result = method.invoke(null, args);  // For static methods, use 'null'
-
+                // For static methods, use 'null'
                 // Return the result (casting to the expected return type)
-                return result;
+                return method.invoke(null, args);
             }
         } catch (Exception e) {
-            AwarenessNotifications.forcefullySend(e.getMessage());
             return null;
         }
     }

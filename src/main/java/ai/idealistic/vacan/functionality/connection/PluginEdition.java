@@ -7,8 +7,10 @@ import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.vacan.functionality.moderation.AwarenessNotifications;
 import ai.idealistic.vacan.functionality.server.PluginBase;
 import ai.idealistic.vacan.functionality.tracking.ResearchEngine;
+import ai.idealistic.vacan.utils.java.ReflectionUtils;
 import org.bukkit.Bukkit;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -34,10 +36,7 @@ public class PluginEdition {
             type = "{type}",
             product = "{product}",
             versionNotificationMessage = "\n§cHey, just a heads up!"
-                    + " You have " + type + " players which cannot be checked by the anti-cheat due to missing " + type + " detections.",
-            noVersionNotificationMessage = "\n§cHey, just a heads up!"
-                    + " Your owned editions of " + Register.pluginName + " could not be verified."
-                    + " Visit §n" + DiscordServer.url + "§r§c §lfix this§r§c.";
+                    + " You have " + type + " players which cannot be checked by the anti-cheat due to missing " + type + " detections.";
     private static boolean
             notifyCache = false,
             currentVersion = true,
@@ -53,6 +52,28 @@ public class PluginEdition {
                 oneVersion = true;
             }
             if (!alternativeVersion) {
+                String pluginsFolder = Register.plugin.getDataFolder().toString().replace(
+                        Register.pluginName,
+                        ""
+                );
+
+                for (File file : new File(pluginsFolder).listFiles()) {
+                    if (file.isFile()
+                            && file.getName().endsWith(".jar")) {
+                        Object object = ReflectionUtils.getFieldFromJar(
+                                file.getAbsolutePath(),
+                                IDs.class.getCanonicalName(),
+                                "user"
+                        );
+
+                        if (object != null
+                                && object.toString().equals(IDs.user)) {
+                            AwarenessNotifications.forcefullySend(
+                                    object.toString()
+                            );
+                        }
+                    }
+                }
                 //alternativeVersion = true;
             }
         });
@@ -61,25 +82,15 @@ public class PluginEdition {
     // Detections
 
     public static boolean hasDetectionsPurchased(Check.DataType dataType) {
-        return PluginEdition.currentType == dataType
-                ? currentVersion
-                : alternativeVersion;
+        return PluginEdition.currentType == dataType || alternativeVersion;
     }
 
     // Product
 
-    private static String getProductID(Check.DataType dataType) {
-        return dataType == null || dataType == Check.DataType.JAVA
+    public static String getProductID() {
+        return currentType == Check.DataType.JAVA
                 ? "1"
                 : "16";
-    }
-
-    public static String getProductID() {
-        return getProductID(
-                currentVersion
-                        ? currentType
-                        : (alternativeVersion ? alternativeType : null)
-        );
     }
 
     public static String getProductName(String context) {
@@ -95,9 +106,9 @@ public class PluginEdition {
             }
         }
         return Register.pluginName
-                + (currentVersion && alternativeVersion
+                + (alternativeVersion
                 ? " One"
-                : ": §a" + (currentVersion ? "§a" : "§c") + currentType
+                : ": §a" + currentType
                 + "§8/" + (alternativeVersion ? "§a" : "§c") + alternativeType)
                 + (lastColor != null ? "§" + lastColor : "");
     }
@@ -105,19 +116,9 @@ public class PluginEdition {
     // Notifications
 
     public static void attemptNotifications(PlayerProtocol protocol) {
-        Check.DataType[] missingDetections =
-                !currentVersion && !alternativeVersion
-                        ? new Check.DataType[]{currentType, alternativeType}
-                        : !currentVersion
-                        ? new Check.DataType[]{currentType}
-                        : !alternativeVersion
-                        ? new Check.DataType[]{alternativeType}
-                        : new Check.DataType[]{};
-
-        if (missingDetections.length == Check.DataType.values().length) {
-            attemptVersionNotification(protocol, null);
-            return;
-        }
+        Check.DataType[] missingDetections = !alternativeVersion
+                ? new Check.DataType[]{alternativeType}
+                : new Check.DataType[]{};
 
         if (missingDetections.length > 0) {
             if (notifyCache) {
@@ -178,29 +179,23 @@ public class PluginEdition {
     }
 
     private static void attemptVersionNotification(PlayerProtocol protocol, Check.DataType dataType) {
-        String message;
-
-        if (dataType == null) {
-            message = AwarenessNotifications.getNotification(noVersionNotificationMessage);
-        } else {
-            message = AwarenessNotifications.getOptionalNotification(
-                    (versionNotificationMessage
-                            + (IDs.canAdvertise()
-                            ? " Click §n" + product + "§r§c to §lfix this§r§c."
-                            : " Visit §n" + DiscordServer.url + "§r§c to §lfix this§r§c."))
-                            .replace(type, dataType.toString())
-                            .replace(
-                                    product,
-                                    IDs.builtByBit
-                                            ? (dataType == Check.DataType.JAVA
-                                            ? "https://builtbybit.com/resources/12832"
-                                            : "https://builtbybit.com/resources/11196")
-                                            : (dataType == Check.DataType.JAVA
-                                            ? "https://polymart.org/resource/3600"
-                                            : "https://polymart.org/resource/350")
-                            )
-            );
-        }
+        String message = AwarenessNotifications.getOptionalNotification(
+                (versionNotificationMessage
+                        + (IDs.canAdvertise()
+                        ? " Click §n" + product + "§r§c to §lfix this§r§c."
+                        : " Visit §n" + DiscordServer.url + "§r§c to §lfix this§r§c."))
+                        .replace(type, dataType.toString())
+                        .replace(
+                                product,
+                                IDs.builtByBit
+                                        ? (dataType == Check.DataType.JAVA
+                                        ? "https://builtbybit.com/resources/12832"
+                                        : "https://builtbybit.com/resources/11196")
+                                        : (dataType == Check.DataType.JAVA
+                                        ? "https://polymart.org/resource/3600"
+                                        : "https://polymart.org/resource/350")
+                        )
+        );
 
         if (message != null
                 && AwarenessNotifications.canSend(protocol.getUUID(), "alternative-version", notificationCooldown)) {
