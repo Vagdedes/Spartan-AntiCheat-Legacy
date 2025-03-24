@@ -8,7 +8,6 @@ import ai.idealistic.vacan.functionality.moderation.AwarenessNotifications;
 import ai.idealistic.vacan.functionality.server.PluginBase;
 import ai.idealistic.vacan.functionality.tracking.ResearchEngine;
 import ai.idealistic.vacan.utils.java.ReflectionUtils;
-import org.bukkit.Bukkit;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -17,17 +16,14 @@ import java.util.List;
 
 public class PluginEdition {
 
+    private static final String[] JavaIDs = {
+            "25638",
+            "11196",
+            "350"
+    };
     private static final Check.DataType
-            currentType = false
-            || IDs.resource.equals("25638")
-            || IDs.resource.equals("11196")
-            || IDs.resource.equals("350")
-            || Bukkit.getMotd().contains("Vacan")
-            ? Check.DataType.JAVA
-            : Check.DataType.BEDROCK,
-            alternativeType = currentType == Check.DataType.JAVA
-                    ? Check.DataType.BEDROCK
-                    : Check.DataType.JAVA;
+            currentType,
+            alternativeType;
 
     private static long checkTime = 0L;
     public static final String patreonURL = "https://www.patreon.com/VacanAntiCheat";
@@ -39,9 +35,23 @@ public class PluginEdition {
                     + " You have " + type + " players which cannot be checked by the anti-cheat due to missing " + type + " detections.";
     private static boolean
             notifyCache = false,
-            currentVersion = true,
             alternativeVersion = false,
             oneVersion = false;
+
+    static {
+        Check.DataType current = Check.DataType.BEDROCK;
+
+        for (String id : JavaIDs) {
+            if (id.equals(IDs.resource)) {
+                current = Check.DataType.JAVA;
+                break;
+            }
+        }
+        currentType = current;
+        alternativeType = currentType == Check.DataType.JAVA
+                ? Check.DataType.BEDROCK
+                : Check.DataType.JAVA;
+    }
 
     // Verification
 
@@ -68,13 +78,36 @@ public class PluginEdition {
 
                         if (object != null
                                 && object.toString().equals(IDs.user)) {
-                            AwarenessNotifications.forcefullySend(
-                                    object.toString()
+                            object = ReflectionUtils.getFieldFromJar(
+                                    file.getAbsolutePath(),
+                                    IDs.class.getCanonicalName(),
+                                    "resource"
                             );
+
+                            if (object != null
+                                    && !object.toString().equals(IDs.resource)) {
+                                if (currentType == Check.DataType.JAVA) {
+                                    boolean java = false;
+
+                                    for (String id : JavaIDs) {
+                                        if (id.equals(object.toString())) {
+                                            java = true;
+                                            break;
+                                        }
+                                    }
+                                    alternativeVersion = !java;
+                                } else {
+                                    for (String id : JavaIDs) {
+                                        if (id.equals(object.toString())) {
+                                            alternativeVersion = true;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
-                //alternativeVersion = true;
             }
         });
     }

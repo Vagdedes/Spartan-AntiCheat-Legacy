@@ -6,15 +6,15 @@ import java.util.Objects;
 
 public class IDs {
 
-    public static final String resource = "%%__RESOURCE__%%";
+    public static final String
+            user = "%%__USER__%%",
+            file = "%%__NONCE__%%",
+            resource = "%%__RESOURCE__%%";
     public static final boolean
             enabled = AlgebraUtils.validInteger(resource),
             builtByBit = "%%__BUILTBYBIT__%%".length() != 18,
             polymart = "%%__POLYMART__%%".length() == 1,
             spigot = !builtByBit && !polymart;
-    public static final String
-            user = "%%__USER__%%",
-            file = "%%__NONCE__%%";
     private static String
             userModified = null,
             fileModified = null;
