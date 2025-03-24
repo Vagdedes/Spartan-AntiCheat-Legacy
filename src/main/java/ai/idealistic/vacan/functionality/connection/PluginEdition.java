@@ -95,13 +95,20 @@ public class PluginEdition {
                                             break;
                                         }
                                     }
-                                    alternativeVersion = !java;
+                                    if (!java) {
+                                        alternativeVersion = true;
+                                        break;
+                                    }
                                 } else {
                                     for (String id : JavaIDs) {
                                         if (id.equals(object.toString())) {
                                             alternativeVersion = true;
                                             break;
                                         }
+                                    }
+
+                                    if (alternativeVersion) {
+                                        break;
                                     }
                                 }
                             }
