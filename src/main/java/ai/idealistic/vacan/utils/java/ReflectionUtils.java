@@ -1,6 +1,5 @@
 package ai.idealistic.vacan.utils.java;
 
-import ai.idealistic.vacan.functionality.moderation.AwarenessNotifications;
 import lombok.experimental.UtilityClass;
 
 import java.io.File;
