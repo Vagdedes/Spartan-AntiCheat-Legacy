@@ -33,6 +33,8 @@ public class Settings extends ConfigurationBuilder {
         addOption("Important.enable_npc", false);
         addOption("Important.enable_watermark", true);
 
+        addOption("Purchases.paypal_email", "");
+
         addOption("Detections.ground_teleport_on_detection", true);
         addOption("Detections.damage_on_detection", false);
 

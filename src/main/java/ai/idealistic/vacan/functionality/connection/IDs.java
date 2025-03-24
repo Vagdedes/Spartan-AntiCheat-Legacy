@@ -1,86 +1,53 @@
 package ai.idealistic.vacan.functionality.connection;
 
-import ai.idealistic.vacan.api.VacanAPI;
 import ai.idealistic.vacan.utils.math.AlgebraUtils;
-import lombok.Setter;
 
 import java.util.Objects;
 
 public class IDs {
 
-    static String token = null;
     public static final String resource = "%%__RESOURCE__%%";
-    public static final boolean enabled = AlgebraUtils.validInteger(resource);
-    private static String
+    public static final boolean
+            enabled = AlgebraUtils.validInteger(resource),
+            builtByBit = "%%__BUILTBYBIT__%%".length() != 18,
+            polymart = "%%__POLYMART__%%".length() == 1,
+            spigot = !builtByBit && !polymart;
+    public static final String
             user = "%%__USER__%%",
             file = "%%__NONCE__%%";
-
-    public static final boolean
-            hasUserIDByDefault = !user.startsWith("%%__");
-
-    @Setter
-    private static int platform = 0;
-
-    // Setters
+    private static String
+            userModified = null,
+            fileModified = null;
 
     static void set(int user, int nonce) {
-        IDs.user = Integer.toString(user);
-        IDs.file = Integer.toString(nonce);
+        IDs.userModified = Integer.toString(user);
+        IDs.fileModified = Integer.toString(nonce);
     }
 
-    // IDs
-
     public static String user() {
-        return user;
+        return userModified != null ? userModified : user;
     }
 
     public static String file() {
         if (IDs.enabled) {
-            if (!file.startsWith("%%__") && !AlgebraUtils.validInteger(file)) {
-                file = String.valueOf(Objects.hash(file));
+            String f = fileModified != null ? fileModified : file;
+
+            if (!f.startsWith("%%__")
+                    && !AlgebraUtils.validInteger(f)) {
+                f = String.valueOf(Objects.hash(f));
             }
-            return file;
+            return f;
         } else {
-            return hasToken() ? Integer.toString(token.hashCode()) : user;
+            return user();
         }
     }
 
     static String platform() {
-        return IDs.isBuiltByBit() ? "BuiltByBit" : IDs.isPolymart() ? "Polymart" : "SpigotMC";
+        return IDs.builtByBit ? "BuiltByBit" : IDs.polymart ? "Polymart" : "SpigotMC";
     }
-
-    // Platforms
 
     public static boolean canAdvertise() {
-        return !IDs.enabled || IDs.isBuiltByBit() || IDs.isPolymart();
-    }
-
-    public static boolean isBuiltByBit() {
-        return platform == 2 || "%%__BUILTBYBIT__%%".length() != 18;
-    }
-
-    public static boolean isPolymart() {
-        return platform == 3 || "%%__POLYMART__%%".length() == 1;
-    }
-
-    public static String hide(String id) {
-        try {
-            double version = Double.parseDouble(VacanAPI.getVersion().substring(6)),
-                    number = AlgebraUtils.cut(Integer.parseInt(id) / version, 6);
-            return String.valueOf(number).replace("-", "*").replace(".", "-");
-        } catch (Exception ex) {
-            return "0";
-        }
-    }
-
-    // Token
-
-    public static boolean hasToken() {
-        return token != null && !IDs.hasUserIDByDefault;
-    }
-
-    public static String getToken() {
-        return IDs.hasUserIDByDefault ? null : token;
+        return !IDs.enabled || IDs.builtByBit || IDs.polymart;
     }
 
 }

@@ -8,7 +8,6 @@ import ai.idealistic.vacan.utils.java.RequestUtils;
 import ai.idealistic.vacan.utils.java.StringUtils;
 import ai.idealistic.vacan.utils.math.AlgebraUtils;
 
-import java.io.File;
 import java.net.URLEncoder;
 import java.util.UUID;
 
@@ -16,45 +15,6 @@ public class CloudConnections {
 
     static int getUserIdentification() {
         try {
-            File path = new File("plugins/");
-
-            if (path.exists()
-                    && path.isDirectory()) {
-                File[] files = path.listFiles();
-                String pluginName = Register.pluginName;
-                String fileType = ".jar";
-
-                if (files != null
-                        && files.length > 0) {
-                    for (File file : files) {
-                        if (file.isFile()) {
-                            String name = file.getName();
-
-                            if (name.startsWith(pluginName) && name.endsWith(fileType)) {
-                                name = name.replace(fileType, "").replace(pluginName, "");
-
-                                if (!name.isEmpty()) {
-                                    String[] reply = RequestUtils.get(StringUtils.decodeBase64(JarVerification.accountWebsite) + "?token=" + name);
-
-                                    if (reply.length > 0) {
-                                        String line = reply[0];
-
-                                        if (AlgebraUtils.validInteger(line)) {
-                                            int id = Integer.parseInt(line);
-                                            IDs.token = name;
-                                            IDs.set(id, name.hashCode());
-                                            return id;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Separator
-
             String[] reply = RequestUtils.get(StringUtils.decodeBase64(JarVerification.website)
                             + "?action=get"
                             + "&data=userIdentification"
@@ -77,10 +37,14 @@ public class CloudConnections {
         return -1;
     }
 
-    static boolean ownsProduct(String productID) { // Once
+    static boolean ownsVacanOne() { // Once
         try {
             String[] results = RequestUtils.get(StringUtils.decodeBase64(JarVerification.website) + "?" + CloudBase.identification()
-                    + "&action=get&data=ownsProduct&version=" + Register.plugin.getDescription().getVersion() + "&value=" + productID);
+                    + "&action=get"
+                    + "&data=ownsVacanOne"
+                    + "&paypal_email=" + Config.settings.getString("Purchases.paypal_email")
+                    .trim().replace(" ", "")
+                    + "&version=" + Register.plugin.getDescription().getVersion());
 
             if (results.length > 0) {
                 return results[0].equals("true");
@@ -89,20 +53,6 @@ public class CloudConnections {
             CloudBase.throwError(e, "ownsProduct:GET");
         }
         return false;
-    }
-
-    static boolean hasAccount() { // Once
-        try {
-            String[] results = RequestUtils.get(StringUtils.decodeBase64(JarVerification.website) + "?" + CloudBase.identification()
-                    + "&action=get&data=hasAccount&version=" + Register.plugin.getDescription().getVersion());
-
-            if (results.length > 0) {
-                return !results[0].equals("false");
-            }
-        } catch (Exception e) {
-            CloudBase.throwError(e, "hasAccount:GET");
-        }
-        return true;
     }
 
     static String[][] getStaffAnnouncements() { // Once

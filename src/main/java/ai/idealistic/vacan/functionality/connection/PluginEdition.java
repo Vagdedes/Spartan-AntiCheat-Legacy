@@ -37,44 +37,24 @@ public class PluginEdition {
                     + " You have " + type + " players which cannot be checked by the anti-cheat due to missing " + type + " detections.",
             noVersionNotificationMessage = "\n§cHey, just a heads up!"
                     + " Your owned editions of " + Register.pluginName + " could not be verified."
-                    + " Visit §n" + DiscordServer.url + "§r§c §lfix this§r§c.",
-            hasAccountNotificationMessage = "\n§cHey, just a heads up!"
-                    + " You do not seem to have an account paired with your " + Register.pluginName + " AntiCheat license."
                     + " Visit §n" + DiscordServer.url + "§r§c §lfix this§r§c.";
     private static boolean
-            hasAccount = true,
             notifyCache = false,
+            currentVersion = true,
             alternativeVersion = false,
             oneVersion = false;
-    private static Boolean
-            currentVersion = null;
 
     // Verification
 
     public static void refresh() {
-        if (currentVersion == null) {
-            currentVersion = !IDs.hasToken();
-        }
         PluginBase.connectionThread.executeIfUnknownThreadElseHere(() -> {
             if (!oneVersion
-                    && CloudConnections.ownsProduct("26")) {
+                    && CloudConnections.ownsVacanOne()) {
                 oneVersion = true;
             }
-            if (!currentVersion
-                    && (!alternativeVersion || oneVersion)
-                    && CloudConnections.ownsProduct(
-                    getProductID(currentType)
-            )) {
-                currentVersion = true;
+            if (!alternativeVersion) {
+                //alternativeVersion = true;
             }
-            if (!alternativeVersion
-                    && (!currentVersion || oneVersion)
-                    && CloudConnections.ownsProduct(
-                    getProductID(alternativeType)
-            )) {
-                alternativeVersion = true;
-            }
-            hasAccount = !IDs.hasToken() || CloudConnections.hasAccount();
         });
     }
 
@@ -82,7 +62,7 @@ public class PluginEdition {
 
     public static boolean hasDetectionsPurchased(Check.DataType dataType) {
         return PluginEdition.currentType == dataType
-                ? currentVersion != null && currentVersion
+                ? currentVersion
                 : alternativeVersion;
     }
 
@@ -96,7 +76,7 @@ public class PluginEdition {
 
     public static String getProductID() {
         return getProductID(
-                currentVersion != null && currentVersion
+                currentVersion
                         ? currentType
                         : (alternativeVersion ? alternativeType : null)
         );
@@ -115,9 +95,9 @@ public class PluginEdition {
             }
         }
         return Register.pluginName
-                + (currentVersion != null && currentVersion && alternativeVersion
+                + (currentVersion && alternativeVersion
                 ? " One"
-                : ": §a" + (currentVersion != null && currentVersion ? "§a" : "§c") + currentType
+                : ": §a" + (currentVersion ? "§a" : "§c") + currentType
                 + "§8/" + (alternativeVersion ? "§a" : "§c") + alternativeType)
                 + (lastColor != null ? "§" + lastColor : "");
     }
@@ -126,9 +106,9 @@ public class PluginEdition {
 
     public static void attemptNotifications(PlayerProtocol protocol) {
         Check.DataType[] missingDetections =
-                !(currentVersion != null && currentVersion) && !alternativeVersion
+                !currentVersion && !alternativeVersion
                         ? new Check.DataType[]{currentType, alternativeType}
-                        : !(currentVersion != null && currentVersion)
+                        : !currentVersion
                         ? new Check.DataType[]{currentType}
                         : !alternativeVersion
                         ? new Check.DataType[]{alternativeType}
@@ -195,7 +175,6 @@ public class PluginEdition {
                 }
             }
         }
-        attemptNoAccountNotification(protocol);
     }
 
     private static void attemptVersionNotification(PlayerProtocol protocol, Check.DataType dataType) {
@@ -212,7 +191,7 @@ public class PluginEdition {
                             .replace(type, dataType.toString())
                             .replace(
                                     product,
-                                    IDs.isBuiltByBit()
+                                    IDs.builtByBit
                                             ? (dataType == Check.DataType.JAVA
                                             ? "https://builtbybit.com/resources/12832"
                                             : "https://builtbybit.com/resources/11196")
@@ -226,17 +205,6 @@ public class PluginEdition {
         if (message != null
                 && AwarenessNotifications.canSend(protocol.getUUID(), "alternative-version", notificationCooldown)) {
             protocol.sendImportantMessage(message);
-        }
-    }
-
-    private static void attemptNoAccountNotification(PlayerProtocol protocol) {
-        if (!hasAccount) {
-            String message = AwarenessNotifications.getOptionalNotification(hasAccountNotificationMessage);
-
-            if (message != null
-                    && AwarenessNotifications.canSend(protocol.getUUID(), "has-account", notificationCooldown)) {
-                protocol.sendImportantMessage(message);
-            }
         }
     }
 

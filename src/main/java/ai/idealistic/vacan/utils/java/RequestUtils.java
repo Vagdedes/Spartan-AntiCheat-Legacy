@@ -1,6 +1,5 @@
 package ai.idealistic.vacan.utils.java;
 
-import ai.idealistic.vacan.functionality.connection.IDs;
 import ai.idealistic.vacan.functionality.connection.PluginEdition;
 import lombok.experimental.UtilityClass;
 
@@ -21,12 +20,10 @@ public class RequestUtils {
         boolean isPost = method.equals("POST");
         String[] split = link.split(" ");
 
-        String token = IDs.getToken();
         URL url = new URL(split[0]);
         HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
         connection.addRequestProperty("User-Agent",
-                (token != null ? token : PluginEdition.getProductID())
-                        + (message != null ? " (" + message + ")" : ""));
+                PluginEdition.getProductID() + (message != null ? " (" + message + ")" : ""));
         connection.setRequestMethod(method);
         connection.setReadTimeout(timeOut);
         connection.setDoOutput(true);

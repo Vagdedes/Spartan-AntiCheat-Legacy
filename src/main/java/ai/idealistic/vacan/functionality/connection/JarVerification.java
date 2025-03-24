@@ -13,9 +13,7 @@ import java.util.List;
 
 public class JarVerification {
 
-    static final String
-            website = "aHR0cHM6Ly93d3cudmFnZGVkZXMuY29tL21pbmVjcmFmdC9jbG91ZC8=",
-            accountWebsite = "aHR0cHM6Ly93d3cuaWRlYWxpc3RpYy5haS9hcGkvdjEvcHJvZHVjdC92ZXJpZnlEb3dubG9hZC8=";
+    static final String website = "aHR0cHM6Ly93d3cudmFnZGVkZXMuY29tL21pbmVjcmFmdC9jbG91ZC8=";
     private static boolean valid = true;
 
     public static void run(Plugin plugin) {
@@ -29,7 +27,7 @@ public class JarVerification {
             });
         }
 
-        if (IDs.enabled || IDs.hasToken()) {
+        if (IDs.enabled) {
             if (isValid(plugin)) {
                 PluginEdition.refresh();
             } else {
@@ -69,9 +67,6 @@ public class JarVerification {
                 if (line.equalsIgnoreCase(String.valueOf(false))) {
                     valid = false;
                     return false;
-                }
-                if (IDs.hasToken()) {
-                    IDs.setPlatform(Integer.parseInt(line));
                 }
             }
         } catch (Exception e) {
