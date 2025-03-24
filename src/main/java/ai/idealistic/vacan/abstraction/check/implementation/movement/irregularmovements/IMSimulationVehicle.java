@@ -49,6 +49,9 @@ public class IMSimulationVehicle extends CheckDetection {
             if (!(vehicleEntity instanceof Vehicle)) {
                 return;
             }
+            if (vehicleEntity instanceof Boat) { // vagdedes patch
+                return;
+            }
             Vehicle vehicle = (Vehicle) vehicleEntity;
             this.ticks++;
             boolean isOnGround = p.getVehicle().isOnGround();

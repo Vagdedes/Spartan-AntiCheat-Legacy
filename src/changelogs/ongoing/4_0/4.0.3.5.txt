@@ -1,0 +1,2 @@
+[#] Fixed a missing potion effect console error
+[#] Fixed a few boat irregular-movements false positives

@@ -12,6 +12,7 @@ import ai.idealistic.vacan.functionality.server.MultiVersion.MCVersion;
 import ai.idealistic.vacan.functionality.server.TPS;
 import ai.idealistic.vacan.utils.math.AlgebraUtils;
 import ai.idealistic.vacan.utils.math.RayUtils;
+import ai.idealistic.vacan.utils.minecraft.entity.PlayerUtils;
 import ai.idealistic.vacan.utils.minecraft.entity.PotionEffectUtils;
 import ai.idealistic.vacan.utils.minecraft.world.BlockUtils;
 import org.bukkit.Location;
@@ -281,7 +282,7 @@ public class IMSimulationGravity extends CheckDetection {
 
                 ExtendedPotionEffect slowFalling;
                 double pr;
-                if (MultiVersion.isOrGreater(MCVersion.V1_9)) {
+                if (PlayerUtils.levitation) {
                     slowFalling = this.protocol.getPotionEffect(PotionEffectType.LEVITATION, 0L);
                     if (slowFalling != null || this.levitation > 0) {
                         if (slowFalling != null) {
@@ -302,7 +303,7 @@ public class IMSimulationGravity extends CheckDetection {
                     }
                 }
 
-                if (MultiVersion.isOrGreater(MCVersion.V1_13)) {
+                if (PlayerUtils.slowFall) {
                     slowFalling = this.protocol.getPotionEffect(PotionEffectType.SLOW_FALLING, 0L);
                     if (slowFalling != null || this.slowFalling > 0) {
                         if (slowFalling != null) {
@@ -432,11 +433,12 @@ public class IMSimulationGravity extends CheckDetection {
                         }
                         if (devTotal < 0.1) { // vagdedes patch
                             for (PotionEffectType type : new PotionEffectType[]{
-                                    PotionEffectType.LEVITATION,
-                                    PotionEffectType.SLOW_FALLING,
+                                    PlayerUtils.levitation ? PotionEffectType.LEVITATION : null,
+                                    PlayerUtils.slowFall ? PotionEffectType.SLOW_FALLING : null,
                                     PotionEffectUtils.JUMP
                             }) {
-                                if (p.hasPotionEffect(type, 5)) {
+                                if (type != null
+                                        && p.hasPotionEffect(type, 5)) {
                                     return;
                                 }
                             }
