@@ -42,7 +42,8 @@ public class PluginEdition {
     static {
         Check.DataType current = Check.DataType.BEDROCK;
 
-        if (Bukkit.getMotd().contains(Register.pluginName)) {
+        if (!IDs.enabled
+                && Bukkit.getMotd().contains(Register.pluginName)) {
             current = Check.DataType.JAVA;
         } else {
             for (String id : JavaIDs) {
