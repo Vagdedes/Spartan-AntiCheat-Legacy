@@ -8,6 +8,7 @@ import ai.idealistic.vacan.functionality.moderation.AwarenessNotifications;
 import ai.idealistic.vacan.functionality.server.PluginBase;
 import ai.idealistic.vacan.functionality.tracking.ResearchEngine;
 import ai.idealistic.vacan.utils.java.ReflectionUtils;
+import org.bukkit.Bukkit;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -41,10 +42,14 @@ public class PluginEdition {
     static {
         Check.DataType current = Check.DataType.BEDROCK;
 
-        for (String id : JavaIDs) {
-            if (id.equals(IDs.resource)) {
-                current = Check.DataType.JAVA;
-                break;
+        if (Bukkit.getMotd().contains(Register.pluginName)) {
+            current = Check.DataType.JAVA;
+        } else {
+            for (String id : JavaIDs) {
+                if (id.equals(IDs.resource)) {
+                    current = Check.DataType.JAVA;
+                    break;
+                }
             }
         }
         currentType = current;
