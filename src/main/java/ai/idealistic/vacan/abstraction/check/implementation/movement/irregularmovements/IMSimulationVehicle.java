@@ -49,9 +49,6 @@ public class IMSimulationVehicle extends CheckDetection {
             if (!(vehicleEntity instanceof Vehicle)) {
                 return;
             }
-            if (vehicleEntity instanceof Boat) { // vagdedes patch
-                return;
-            }
             Vehicle vehicle = (Vehicle) vehicleEntity;
             this.ticks++;
             boolean isOnGround = p.getVehicle().isOnGround();
@@ -85,7 +82,10 @@ public class IMSimulationVehicle extends CheckDetection {
             } else if (this.postFly > 0) {
                 this.postFly -= 2;
             }
-            if (diffAccel < 1e-10 && speed > 0.1 && !(vehicle instanceof Minecart)) {
+            if (diffAccel < 1e-10
+                    && speed > 0.1
+                    && !(vehicle instanceof Minecart)
+                    && !(vehicleEntity instanceof Boat)) { // vagdedes patch
                 if (postSpeed < 0) postSpeed = 0;
                 this.postSpeed++;
                 if (this.postSpeed > 8) {
