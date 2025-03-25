@@ -257,12 +257,13 @@ public class IMSimulationSpeed extends CheckDetection {
                                                 "minimum_speed_difference",
                                                 1e-10
                                         ),
-                                        1e-10);
+                                        1e-10
+                                );
 
                                 if (this.getSpeedEffect() != null) {
                                     difference = Math.max(
                                             difference,
-                                            0.13 // Inconsistency fix
+                                            0.13 // vagdedes patch
                                     );
                                 }
                                 if (d >= difference) {

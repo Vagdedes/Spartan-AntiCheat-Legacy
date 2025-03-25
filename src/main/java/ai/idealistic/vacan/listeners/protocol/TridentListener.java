@@ -35,8 +35,10 @@ public class TridentListener extends PacketAdapter {
                 return;
             }
             ItemStack item = protocol.getInventory().getItemInMainHand();
+
             if (item.getType().equals(Material.TRIDENT)) {
                 double r = Math.toRadians(protocol.getLocation().getYaw());
+
                 CheckThread.run(() -> TridentEvent.event(
                         new CPlayerRiptideEvent(
                                 protocol,

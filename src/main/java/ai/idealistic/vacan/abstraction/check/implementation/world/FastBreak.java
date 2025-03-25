@@ -74,6 +74,12 @@ public class FastBreak extends CheckRunner {
                             if (limit > -1L) { // Make sure the limit can be calculated on this specific server
                                 limit /= 2;
 
+                                // stupid false positive fix
+                                if (block.getY() <= this.protocol.getLocation().getBlockY()
+                                        && Math.abs(block.getX() - this.protocol.getLocation().getBlockX()) <= 1.5
+                                        && Math.abs(block.getZ() - this.protocol.getLocation().getBlockZ()) <= 1.5) {
+                                    limit /= 2;
+                                }
                                 if (limit > (TPS.tickTime * 2L) && time < limit) {
                                     boolean emptyItem = itemStack == null;
                                     Collection<PotionEffect> potionEffects = this.protocol.getActivePotionEffects();

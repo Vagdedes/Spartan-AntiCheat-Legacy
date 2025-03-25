@@ -358,8 +358,9 @@ public class IMSimulationGravity extends CheckDetection {
                     this.allowLowMinorAccel = true;
                     this.slimePunch--;
                 }
-                if (this.getDeviance(motion) > 0.001 &&
-                        this.teleportExcept > 0 && this.getDeviance(motion) <= this.teleportExcept) {
+                if (this.getDeviance(motion) > 0.001
+                        && this.teleportExcept > 0
+                        && this.getDeviance(motion) <= this.teleportExcept) {
                     this.setPredict(motion);
                     this.teleportExcept = 0;
                 }
