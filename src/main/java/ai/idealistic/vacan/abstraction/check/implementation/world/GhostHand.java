@@ -12,6 +12,7 @@ import ai.idealistic.vacan.compatibility.manual.building.TreeFeller;
 import ai.idealistic.vacan.compatibility.manual.entity.Vehicles;
 import ai.idealistic.vacan.compatibility.manual.vanilla.Attributes;
 import ai.idealistic.vacan.utils.minecraft.entity.PlayerUtils;
+import ai.idealistic.vacan.utils.minecraft.inventory.MaterialUtils;
 import ai.idealistic.vacan.utils.minecraft.world.BlockUtils;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -39,6 +40,11 @@ public class GhostHand extends CheckRunner {
 
                 if (canDo(b)
                         && !ItemsAdder.is(b)) {
+                    long breakTime = MaterialUtils.getBlockBreakTime(this.protocol, this.protocol.getItemInHand(), b.getType());
+
+                    if (breakTime <= 500L) {
+                        return;
+                    }
                     Location location = this.protocol.getLocationOrVehicle().clone().add(
                             0,
                             this.protocol.getEyeHeight(),
