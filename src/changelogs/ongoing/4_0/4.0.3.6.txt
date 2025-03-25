@@ -1,1 +1,3 @@
 [#] Fixed a few rare FastBreak false positives
+[#] Further limited the amount of threads running check tasks
+[#] Fixed riptide false positives with the acceleration and gravity detectons

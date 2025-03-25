@@ -28,6 +28,7 @@ public class TridentEvent implements Listener {
         PlayerProtocol p = e.protocol;
 
         if (p.packetsEnabled() == packets) {
+            p.executeRunners(false, e);
             PlayerInventory inventory = e.protocol.getInventory();
 
             for (ItemStack item : new ItemStack[]{inventory.getItemInHand(), inventory.getItemInOffHand()}) {
