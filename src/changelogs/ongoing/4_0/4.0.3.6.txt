@@ -6,3 +6,4 @@
 [#] Added amplitude to certain detections to help deal with toggling hacks on time to avoid punishments
 [#] Improved the FastPlace detection by combining all its detections into one
 [#] Created a new type of list to optimize the plugin's asynchronous processes
+[#} Fixed teleportation false positives with the gravity detection

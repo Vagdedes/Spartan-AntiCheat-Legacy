@@ -37,6 +37,7 @@ public class IMSimulationGravity extends CheckDetection {
     private double fallDistance = 0.0;
     private double lastGroundY = 0;
     private double teleportExcept = 0;
+    private int teleportTicks = 0; // vagdedes patch
     private double motionY = 0;
 
     public IMSimulationGravity(CheckRunner executor) {
@@ -105,6 +106,7 @@ public class IMSimulationGravity extends CheckDetection {
                 this.fallDistance = 0.0;
                 this.lastGroundY = 0;
                 this.teleportExcept = 0;
+                this.teleportTicks = 0;
                 this.motionY = 0;
                 return;
             }
@@ -358,10 +360,16 @@ public class IMSimulationGravity extends CheckDetection {
                     this.allowLowMinorAccel = true;
                     this.slimePunch--;
                 }
+
                 if (this.getDeviance(motion) > 0.001
+                        && this.teleportTicks > 0
                         && this.teleportExcept > 0
                         && this.getDeviance(motion) <= this.teleportExcept) {
                     this.setPredict(motion);
+                }
+                this.teleportTicks--;
+
+                if (this.teleportTicks == 0) {
                     this.teleportExcept = 0;
                 }
 
@@ -519,6 +527,7 @@ public class IMSimulationGravity extends CheckDetection {
             this.air = 0;
             this.ground = 0;
             this.teleportExcept = 0.35;
+            this.teleportTicks = 5;
             this.vl /= 1.5;
             this.setPredict(0.0);
         });
