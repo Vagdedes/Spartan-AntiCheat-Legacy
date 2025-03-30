@@ -122,8 +122,8 @@ public class MovementListener extends PacketAdapter {
                         + " moves faster than the transaction response ("
                         + tickEvent.getDelay() + "ms > "
                         + (System.currentTimeMillis() - p.transactionTime) + "ms).");
-                event.setCancelled(true);
-                return;
+                //event.setCancelled(true);
+                //return;
             }
         } else if (p.transactionVl > 0)
             p.transactionVl -= 2;

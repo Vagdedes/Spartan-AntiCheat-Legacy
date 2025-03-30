@@ -66,8 +66,8 @@ public class CombatListener extends PacketAdapter {
                                     () -> protocol.bukkit().teleport(protocol.getLocation()));
                     AwarenessNotifications.optionallySend(protocol.bukkit().getName()
                                     + " attack faster than the transaction response.");
-                    event.setCancelled(true);
-                    return;
+                    //event.setCancelled(true);
+                    //return;
                 }
                 if (target != null) {
                     CombatEvent.use(

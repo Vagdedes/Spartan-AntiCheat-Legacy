@@ -267,7 +267,13 @@ public class IMSimulationSpeed extends CheckDetection {
                                     );
                                 }
                                 if (d >= difference) {
-                                    this.cancel("simulation[accel], diff: " + d, this.protocol.getFromLocation(), 0, true);
+                                    this.cancel(
+                                            1.0 + d,
+                                            "simulation[accel], diff: " + d,
+                                            this.protocol.getFromLocation(),
+                                            0,
+                                            true
+                                    );
                                 }
                                 this.vl -= 0.1;
                             }

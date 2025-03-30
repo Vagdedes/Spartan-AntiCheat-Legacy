@@ -455,7 +455,11 @@ public class IMSimulationGravity extends CheckDetection {
                                 alertBuilder.deleteCharAt(0);
                             }
                             if (this.vlCount > ((this.air == 1) ? 0 : (this.vl > 0.3) ? 0 : (this.vl > 0.16) ? 1 : 3)) {
-                                this.cancel("simulation[gravity], y: " + alertBuilder + ", ry: " + devTotal, this.protocol.getFromLocation());
+                                this.cancel(
+                                        1.0 + devTotal,
+                                        "simulation[gravity], y: " + alertBuilder + ", ry: " + devTotal,
+                                        this.protocol.getFromLocation()
+                                );
                             }
                             //this.protocol.bukkit().sendMessage("hacks: " + devTotal);
                             /*

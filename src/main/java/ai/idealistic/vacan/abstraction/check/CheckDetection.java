@@ -174,7 +174,7 @@ public abstract class CheckDetection extends CheckProcess {
 
     // Accumulation
 
-    private void increaseAccumulationTime(long time) {
+    private void increaseAccumulationTime(double amplitude, long time) {
         double average = ResearchEngine.getAverageViolationTime(this, this.protocol.getDataType()),
                 tpsLost = tpsMethod != null ? (TPS.maximum - Bukkit.getTPS()[0]) : 0.0,
                 ratioFromMax = (TPS.maximum - tpsLost * 2) / TPS.maximum;
@@ -182,7 +182,7 @@ public abstract class CheckDetection extends CheckProcess {
                 add;
 
         if (previousTime == -1L) {
-            add = AlgebraUtils.integerRound(average * ratioFromMax);
+            add = AlgebraUtils.integerRound(average * ratioFromMax * amplitude);
         } else {
             long difference = time - previousTime;
             this.protocol.profile().addTimeDifference(
@@ -192,7 +192,7 @@ public abstract class CheckDetection extends CheckProcess {
                     time
             ); // Add negative purposely for multi-threading
             double multiplier = Math.min(average / (double) difference, 1.0);
-            add = AlgebraUtils.integerRound(average * ratioFromMax * multiplier);
+            add = AlgebraUtils.integerRound(average * ratioFromMax * amplitude * multiplier);
         }
         this.previousTime[this.protocol.getDataType().ordinal()] = time;
 
@@ -249,6 +249,7 @@ public abstract class CheckDetection extends CheckProcess {
     }
 
     private void notify(
+            double amplitude,
             int level,
             int notification,
             int prevention,
@@ -274,6 +275,7 @@ public abstract class CheckDetection extends CheckProcess {
                 + "(" + javaPlayerIdentifier + " " + (!this.protocol.isBedrockPlayer()) + ")" + ", "
                 + "(" + detectionIdentifier + " " + this.name + ")" + ", "
                 + "(Level-Ratio: " + (level / (double) punishment) + "), "
+                + "(Amplitude: " + AlgebraUtils.cut(amplitude, 2) + "),"
                 + "(" + levelIdentifier + " " + level + "),"
                 + "(" + notificationLevelIdentifier + " " + notification + "),"
                 + "(" + preventionLevelIdentifier + " " + prevention + "),"
@@ -430,8 +432,14 @@ public abstract class CheckDetection extends CheckProcess {
 
     // Cancel
 
-    public final void cancel(String information, Location location,
-                             int cancelTicks, boolean groundTeleport, double damage) {
+    public final void cancel(
+            double amplitude,
+            String information,
+            Location location,
+            int cancelTicks,
+            boolean groundTeleport,
+            double damage
+    ) {
         if (!this.executor.canCancel()
                 || !this.executor.canRun()) {
             return;
@@ -468,6 +476,7 @@ public abstract class CheckDetection extends CheckProcess {
             }
             // Store, potentially recalculate and check data
             this.increaseAccumulationTime(
+                    amplitude,
                     time
             );
             ResearchEngine.queueToCache(this.hackType, this.protocol.getDataType());
@@ -477,7 +486,7 @@ public abstract class CheckDetection extends CheckProcess {
                     level = Math.min(this.getLevel(this.protocol.getDataType()), max);
 
             // Notification
-            this.notify(level, notification, prevention, max, time, information);
+            this.notify(amplitude, level, notification, prevention, max, time, information);
 
             // Prevention & Punishment
             this.prevention = newPrevention;
@@ -501,22 +510,55 @@ public abstract class CheckDetection extends CheckProcess {
         }
     }
 
-    public final void cancel(String information, Location location,
-                             int cancelTicks, boolean groundTeleport) {
-        cancel(information, location, cancelTicks, groundTeleport, 0.0);
+    public final void cancel(
+            double amplitude,
+            String information,
+            Location location,
+            int cancelTicks,
+            boolean groundTeleport
+    ) {
+        cancel(amplitude, information, location, cancelTicks, groundTeleport, 0.0);
     }
 
-    public final void cancel(String information, Location location,
-                             int cancelTicks) {
-        cancel(information, location, cancelTicks, false, 0.0);
+    public final void cancel(
+            String information,
+            Location location,
+            int cancelTicks,
+            boolean groundTeleport
+    ) {
+        cancel(1.0, information, location, cancelTicks, groundTeleport, 0.0);
+    }
+
+    public final void cancel(double amplitude,
+                             String information,
+                             Location location,
+                             int cancelTicks
+    ) {
+        cancel(amplitude, information, location, cancelTicks, false, 0.0);
+    }
+
+    public final void cancel(
+            String information,
+            Location location,
+            int cancelTicks
+    ) {
+        cancel(1.0, information, location, cancelTicks, false, 0.0);
+    }
+
+    public final void cancel(double amplitude, String information, Location location) {
+        cancel(amplitude, information, location, 0, false, 0.0);
     }
 
     public final void cancel(String information, Location location) {
-        cancel(information, location, 0, false, 0.0);
+        cancel(1.0, information, location, 0, false, 0.0);
+    }
+
+    public final void cancel(double amplitude, String information) {
+        cancel(amplitude, information, null, 0, false, 0.0);
     }
 
     public final void cancel(String information) {
-        cancel(information, null, 0, false, 0.0);
+        cancel(1.0, information, null, 0, false, 0.0);
     }
 
 }

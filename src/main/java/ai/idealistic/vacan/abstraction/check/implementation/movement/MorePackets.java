@@ -79,7 +79,8 @@ public class MorePackets extends CheckRunner {
                         if (multiply < 1.0) {
                             punish(
                                     this.negative,
-                                    "negative, multiply: " + multiply
+                                    "negative, multiply: " + multiply,
+                                    1.0 / multiply
                             );
                         }
                     });
@@ -88,7 +89,8 @@ public class MorePackets extends CheckRunner {
                         if (multiply >= minTimer) {
                             punish(
                                     this.positive_balance,
-                                    "positive(balance), multiply: " + multiply
+                                    "positive(balance), multiply: " + multiply,
+                                    multiply
                             );
                         }
                     });
@@ -97,7 +99,8 @@ public class MorePackets extends CheckRunner {
                         if (multiply >= minTimer) {
                             punish(
                                     this.positive_net,
-                                    "positive(NET), multiply: " + multiply
+                                    "positive(NET), multiply: " + multiply,
+                                    multiply
                             );
                         }
                     });
@@ -106,7 +109,8 @@ public class MorePackets extends CheckRunner {
                         if (multiply >= minTimer) {
                             punish(
                                     this.positive_latency,
-                                    "positive(latency), multiply: " + multiply
+                                    "positive(latency), multiply: " + multiply,
+                                    multiply
                             );
                         }
                     });
@@ -132,11 +136,16 @@ public class MorePackets extends CheckRunner {
         this.packetVL = 0;
     }
 
-    private void punish(CheckDetection executor, String info) {
+    private void punish(
+            CheckDetection executor,
+            String info,
+            double amplitude
+    ) {
         packetVL += 70;
 
         if (packetVL > 100) {
             executor.cancel(
+                    amplitude,
                     info,
                     this.protocol.getFromLocation(),
                     0,
@@ -154,7 +163,7 @@ public class MorePackets extends CheckRunner {
                 && this.teleported < System.currentTimeMillis()
                 && MovementProcessing.canCheck(
                 this.protocol,
-                true,
+                false,
                 true,
                 true,
                 true,

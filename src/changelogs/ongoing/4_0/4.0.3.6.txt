@@ -2,3 +2,5 @@
 [#] Further limited the amount of threads running check tasks
 [#] Fixed riptide false positives with the acceleration and gravity detectons
 [#] Fixed a few GhostHand fast breaking false positives
+[#] Made all packet listeners silent
+[#] Added amplitude to certain detections to help deal with toggling hacks on time to avoid punishments
