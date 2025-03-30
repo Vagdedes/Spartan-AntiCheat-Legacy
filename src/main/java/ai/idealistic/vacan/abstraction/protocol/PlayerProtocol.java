@@ -798,14 +798,14 @@ public class PlayerProtocol {
 
     // Teleport
 
-    public void groundTeleport() {
+    public boolean groundTeleport() {
         Location location = this.getLocation();
         ServerLocation locationP1 = new ServerLocation(location.clone().add(0, 1, 0));
 
         if (BlockUtils.isSolid(locationP1.getBlock().getType())
                 && !(BlockUtils.areWalls(locationP1.getBlock().getType())
                 || BlockUtils.canClimb(locationP1.getBlock().getType(), false))) {
-            return;
+            return false;
         }
         World world = this.getWorld();
         double startY = Math.min(BlockUtils.getMaxHeight(world), location.getY());
@@ -840,6 +840,7 @@ public class PlayerProtocol {
                 this.bukkit().damage(Math.max(this.bukkit().getFallDistance(), iterations));
             }
         }
+        return true;
     }
 
     public boolean isOutsideOfTheBorder(double deviation) {

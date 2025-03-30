@@ -25,7 +25,16 @@ import java.util.List;
 
 public abstract class CheckDetection extends CheckProcess {
 
+    private static long lastPrevention = 0L;
     private static Method tpsMethod = null;
+
+    protected static void setLastPrevention() {
+        CheckDetection.lastPrevention = System.currentTimeMillis();
+    }
+
+    protected static long getLastPrevention() {
+        return System.currentTimeMillis() - CheckDetection.lastPrevention;
+    }
 
     static {
         try {
@@ -417,11 +426,13 @@ public abstract class CheckDetection extends CheckProcess {
         return () -> {
             if (location != null
                     || groundTeleport) {
-                if (location != null) {
-                    protocol.teleport(location);
+                if (location != null
+                        && protocol.teleport(location)) {
+                    CheckDetection.setLastPrevention();
                 }
-                if (groundTeleport) {
-                    protocol.groundTeleport();
+                if (groundTeleport
+                        && protocol.groundTeleport()) {
+                    CheckDetection.setLastPrevention();
                 }
             }
             if (damage > 0.0) {

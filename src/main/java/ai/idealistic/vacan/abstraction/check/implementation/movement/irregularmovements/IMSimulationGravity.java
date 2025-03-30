@@ -527,7 +527,7 @@ public class IMSimulationGravity extends CheckDetection {
             this.air = 0;
             this.ground = 0;
             this.teleportExcept = 0.35;
-            this.teleportTicks = 5;
+            this.teleportTicks = getLastPrevention() <= (TPS.tickTime * 2L) ? 1 : 5;
             this.vl /= 1.5;
             this.setPredict(0.0);
         });
