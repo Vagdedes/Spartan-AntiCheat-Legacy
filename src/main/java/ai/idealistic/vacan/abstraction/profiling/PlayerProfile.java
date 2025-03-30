@@ -5,6 +5,7 @@ import ai.idealistic.vacan.abstraction.check.CheckEnums;
 import ai.idealistic.vacan.abstraction.check.CheckRunner;
 import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.vacan.functionality.server.PluginBase;
+import ai.idealistic.vacan.utils.java.ConcurrentList;
 import ai.idealistic.vacan.utils.minecraft.inventory.InventoryUtils;
 import lombok.Getter;
 import lombok.Setter;
@@ -150,7 +151,7 @@ public class PlayerProfile {
     ) {
         List<Long> list = this.data[hackType.ordinal()][dataType.ordinal()].computeIfAbsent(
                 detection,
-                k -> new CopyOnWriteArrayList<>()
+                k -> new ConcurrentList<>()
         );
         list.clear();
         list.addAll(data);
@@ -164,7 +165,7 @@ public class PlayerProfile {
     ) {
         List<Long> list = this.data[hackType.ordinal()][dataType.ordinal()].computeIfAbsent(
                 detection,
-                k -> new CopyOnWriteArrayList<>()
+                k -> new ConcurrentList<>()
         );
         int size = list.size() - 1_024;
 

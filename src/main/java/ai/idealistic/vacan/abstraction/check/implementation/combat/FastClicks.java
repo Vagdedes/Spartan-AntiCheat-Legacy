@@ -9,6 +9,7 @@ import ai.idealistic.vacan.abstraction.event.PlayerLeftClickEvent;
 import ai.idealistic.vacan.abstraction.event.PlayerTickEvent;
 import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.vacan.functionality.server.TPS;
+import ai.idealistic.vacan.utils.java.ConcurrentList;
 import ai.idealistic.vacan.utils.math.AlgebraUtils;
 import ai.idealistic.vacan.utils.math.statistics.StatisticsMath;
 import ai.idealistic.vacan.utils.minecraft.entity.CombatUtils;
@@ -22,7 +23,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class FastClicks extends CheckRunner {
 
     private long lastTickTime = System.currentTimeMillis();
-    private final List<Integer> buffer = new CopyOnWriteArrayList<>();
+    private final List<Integer> buffer = new ConcurrentList<>();
 
     {
         for (int i = 0; i < 7; i++) buffer.add(0);
@@ -36,8 +37,8 @@ public class FastClicks extends CheckRunner {
             kurtosis,
             variance;
     private final List<Long>
-            samples = new CopyOnWriteArrayList<>(),
-            samplesMassive = new CopyOnWriteArrayList<>();
+            samples = new ConcurrentList<>(),
+            samplesMassive = new ConcurrentList<>();
 
     public FastClicks(CheckEnums.HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);

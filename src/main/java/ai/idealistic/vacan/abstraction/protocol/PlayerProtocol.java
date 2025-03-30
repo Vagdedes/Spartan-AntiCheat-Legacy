@@ -21,6 +21,7 @@ import ai.idealistic.vacan.functionality.server.MultiVersion;
 import ai.idealistic.vacan.functionality.server.PluginBase;
 import ai.idealistic.vacan.functionality.server.TPS;
 import ai.idealistic.vacan.functionality.tracking.ResearchEngine;
+import ai.idealistic.vacan.utils.java.ConcurrentList;
 import ai.idealistic.vacan.utils.java.StringUtils;
 import ai.idealistic.vacan.utils.math.AlgebraUtils;
 import ai.idealistic.vacan.utils.math.MathHelper;
@@ -161,8 +162,8 @@ public class PlayerProtocol {
         this.rightClickCounter = 0;
         this.positionHistory = Collections.synchronizedMap(new LinkedHashMap<>());
         this.claimedVelocity = null;
-        this.claimedVeloGravity = new CopyOnWriteArrayList<>();
-        this.claimedVeloSpeed = new CopyOnWriteArrayList<>();
+        this.claimedVeloGravity = new ConcurrentList<>();
+        this.claimedVeloSpeed = new ConcurrentList<>();
         this.entityHandle = false;
         this.axisMatrixCache = new HashSet<>();
         this.checkBoundData = null;

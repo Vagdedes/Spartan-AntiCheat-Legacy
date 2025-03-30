@@ -5,6 +5,7 @@ import ai.idealistic.vacan.abstraction.check.CheckRunner;
 import ai.idealistic.vacan.abstraction.check.definition.ImplementedDetection;
 import ai.idealistic.vacan.abstraction.world.ServerLocation;
 import ai.idealistic.vacan.compatibility.necessary.protocollib.ProtocolLib;
+import ai.idealistic.vacan.utils.java.ConcurrentList;
 import ai.idealistic.vacan.utils.math.RayUtils;
 import ai.idealistic.vacan.utils.minecraft.vector.CVector2F;
 import org.bukkit.Location;
@@ -40,15 +41,15 @@ public class MoveDirection extends CheckDetection {
                 TIME_TO_NOTIFY,
                 TIME_TO_PREVENT,
                 TIME_TO_PUNISH);
-        this.aimAnalysis = new CopyOnWriteArrayList<>();
+        this.aimAnalysis = new ConcurrentList<>();
         this.attackHandle = new AttackHandle(null, System.currentTimeMillis());
 
         this.vl = 0;
         this.vlL2 = 0;
         this.punish = "";
         this.punishL2 = "";
-        this.targetsOnTheRow = new CopyOnWriteArrayList<>();
-        this.rayTraceAnalysis = new CopyOnWriteArrayList<>();
+        this.targetsOnTheRow = new ConcurrentList<>();
+        this.rayTraceAnalysis = new ConcurrentList<>();
     }
 
     public void run() {

@@ -8,6 +8,7 @@ import ai.idealistic.vacan.abstraction.event.PlayerAttackEvent;
 import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.vacan.functionality.server.MultiVersion;
 import ai.idealistic.vacan.functionality.server.PluginBase;
+import ai.idealistic.vacan.utils.java.ConcurrentList;
 import ai.idealistic.vacan.utils.math.ClientMath;
 import ai.idealistic.vacan.utils.math.OptifineMath;
 import ai.idealistic.vacan.utils.math.RayUtils;
@@ -30,7 +31,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class HitReach extends CheckRunner {
@@ -41,7 +41,7 @@ public class HitReach extends CheckRunner {
             simple;
 
     private final static boolean allowedVer = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_14);
-    private final List<Double> rayTraceAnalysis = new CopyOnWriteArrayList<>();
+    private final List<Double> rayTraceAnalysis = new ConcurrentList<>();
     private int vl = 0;
     private static final boolean[] BOOLEANS = {true, false};
     private static final double REACH_DIST = 3.001, HIT_BOX_VAL = 10.0;

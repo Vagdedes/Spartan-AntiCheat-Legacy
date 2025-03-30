@@ -3,6 +3,7 @@ package ai.idealistic.vacan.abstraction.data;
 import ai.idealistic.vacan.abstraction.event.PlayerTickEvent;
 import ai.idealistic.vacan.abstraction.event.ServerBlockChange;
 import ai.idealistic.vacan.listeners.bukkit.standalone.ChunksEvent;
+import ai.idealistic.vacan.utils.java.ConcurrentList;
 import ai.idealistic.vacan.utils.minecraft.world.BlockUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -23,7 +24,7 @@ public class PacketWorld {
 
     public PacketWorld(Player player) {
         this.player = player;
-        this.query = new CopyOnWriteArrayList<>();
+        this.query = new ConcurrentList<>();
         this.lagTick = 0;
     }
 

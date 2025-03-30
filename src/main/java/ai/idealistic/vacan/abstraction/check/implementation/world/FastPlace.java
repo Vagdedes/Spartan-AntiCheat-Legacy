@@ -73,4 +73,5 @@ public class FastPlace extends CheckRunner {
                 && !PrinterMode.isUsing(this.protocol)
                 && !Vehicles.has(this.protocol, new String[]{Vehicles.DRILL, Vehicles.TRACTOR});
     }
+
 }

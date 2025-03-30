@@ -12,6 +12,7 @@ import ai.idealistic.vacan.functionality.concurrent.GeneralThread;
 import ai.idealistic.vacan.functionality.connection.CloudBase;
 import ai.idealistic.vacan.functionality.server.Config;
 import ai.idealistic.vacan.functionality.server.PluginBase;
+import ai.idealistic.vacan.utils.java.ConcurrentList;
 import ai.idealistic.vacan.utils.math.AlgebraUtils;
 import ai.idealistic.vacan.utils.minecraft.inventory.MaterialUtils;
 import org.bukkit.Material;
@@ -621,7 +622,7 @@ public class ResearchEngine {
     public static void queueToCache(CheckEnums.HackType hackType, Check.DataType dataType) {
         violationFired.computeIfAbsent(
                 hackType,
-                k -> new CopyOnWriteArrayList<>()
+                k -> new ConcurrentList<>()
         ).add(dataType);
     }
 
