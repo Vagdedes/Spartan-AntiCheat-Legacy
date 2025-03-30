@@ -9,8 +9,12 @@ public class ConcurrentList<E> implements List<E> {
 
     private final Map<Integer, E> map;
 
+    public ConcurrentList(int size) {
+        this.map = new ConcurrentHashMap<>(size);
+    }
+
     public ConcurrentList() {
-        this.map = new ConcurrentHashMap<>(2);
+        this(2);
     }
 
     @Override

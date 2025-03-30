@@ -14,7 +14,6 @@ import org.bukkit.util.Vector;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import static java.lang.Math.PI;
 

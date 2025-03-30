@@ -18,7 +18,6 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public class FastClicks extends CheckRunner {
 
