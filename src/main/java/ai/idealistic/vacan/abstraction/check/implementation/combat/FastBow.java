@@ -69,7 +69,7 @@ public class FastBow extends CheckRunner {
             if (timePassed > 500L) {
                 return;
             }
-            int buffer = bowForce.count(1, 20),
+            double buffer = bowForce.count(1, 20),
                     threshold = 2;
 
             if (buffer >= threshold) {
@@ -87,8 +87,9 @@ public class FastBow extends CheckRunner {
 
     private void checkBowShots(EntityShootBowEvent event) {
         this.bowShotsDetection.call(() -> {
-            int buffer = bowShots.count(1, 10),
+            double buffer = bowShots.count(1, 10),
                     threshold = 7;
+
             if (buffer >= threshold) {
                 this.bowShotsDetection.cancel(
                         "bow-shots"

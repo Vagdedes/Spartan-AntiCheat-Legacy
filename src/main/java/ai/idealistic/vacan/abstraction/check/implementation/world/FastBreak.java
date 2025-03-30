@@ -134,7 +134,7 @@ public class FastBreak extends CheckRunner {
                 int limit = hackType.getCheck().getNumericalOption("max_breaks_per_second", 40);
 
                 if (limit > 0) {
-                    int buffer = breaksPerSecondBuffer.count(1, 20);
+                    double buffer = breaksPerSecondBuffer.count(1, 20);
 
                     if (buffer >= limit) {
                         this.breaksPerSecond.cancel(
