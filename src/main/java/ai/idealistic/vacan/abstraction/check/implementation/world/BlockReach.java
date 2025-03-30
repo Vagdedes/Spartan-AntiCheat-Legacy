@@ -89,6 +89,7 @@ public class BlockReach extends CheckRunner {
 
                     if (distance >= limit) {
                         this.interact.cancel(
+                                distance / limit,
                                 "interact, distance: " + distance
                                         + ", limit: " + limit
                                         + ", block: " + BlockUtils.blockToString(block)
@@ -121,6 +122,7 @@ public class BlockReach extends CheckRunner {
                                 && this.protocol.getVehicle() == null
                                 && distance > (ab_distance + 0.3)) {
                             this.raytrace.call(() -> this.raytrace.cancel(
+                                    distance / (ab_distance + 0.3),
                                     "raytrace, distance: " + distance
                                             + ", block-against-distance: " + ab_distance
                                             + ", block: " + BlockUtils.blockToString(event.placedBlock)
@@ -131,6 +133,7 @@ public class BlockReach extends CheckRunner {
 
                                 if (distance >= limit) {
                                     this.place.cancel(
+                                            distance / limit,
                                             "place, distance: " + distance
                                                     + ", limit: " + limit
                                                     + ", block: " + BlockUtils.blockToString(event.placedBlock)

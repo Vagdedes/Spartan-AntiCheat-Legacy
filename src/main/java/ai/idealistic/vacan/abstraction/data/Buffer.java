@@ -14,14 +14,13 @@ public class Buffer {
         public int count;
 
         public IndividualSimpleBuffer() {
-
         }
 
     }
 
     public static class IndividualBuffer {
 
-        private int count;
+        private double count;
         private long start;
 
         public IndividualBuffer() {
@@ -32,16 +31,20 @@ public class Buffer {
             return AlgebraUtils.integerCeil((System.currentTimeMillis() - this.start) / (double) TPS.tickTime);
         }
 
-        public int set(int amount) {
+        public long ticksRemaining(int maxTicks) {
+            return Math.max(0, maxTicks - this.ticksPassed());
+        }
+
+        public double set(double amount) {
             return this.count = amount;
         }
 
-        public int increase(int amount) {
+        public double increase(double amount) {
             this.count += amount;
             return this.count;
         }
 
-        public int decrease(int amount) {
+        public double decrease(double amount) {
             if (this.count > amount) {
                 this.count -= amount;
                 return this.count;
@@ -56,7 +59,7 @@ public class Buffer {
             this.start = System.currentTimeMillis();
         }
 
-        public int count(int amount, int maxTicks) {
+        public double count(double amount, int maxTicks) {
             if (this.ticksPassed() > maxTicks) {
                 this.reset();
             }
@@ -69,7 +72,7 @@ public class Buffer {
         this.storage = map;
     }
 
-    public int get(String name) {
+    public double get(String name) {
         IndividualBuffer obj = storage.get(name);
         return obj != null ? obj.count : 0;
     }
@@ -85,14 +88,14 @@ public class Buffer {
         obj.increase(amount);
     }
 
-    public int increase(String name, int amount) {
+    public double increase(String name, int amount) {
         return storage.computeIfAbsent(
                 name,
                 k -> new IndividualBuffer()
         ).increase(amount);
     }
 
-    public int decrease(String name, int amount) {
+    public double decrease(String name, int amount) {
         IndividualBuffer obj = storage.get(name);
         return obj != null ? obj.decrease(amount) : 0;
     }
@@ -108,7 +111,7 @@ public class Buffer {
         }
     }
 
-    public int count(String name, int maxTicks) {
+    public double count(String name, int maxTicks) {
         return storage.computeIfAbsent(
                 name,
                 k -> new IndividualBuffer()
@@ -119,7 +122,7 @@ public class Buffer {
         IndividualBuffer obj = storage.computeIfAbsent(name, k -> new IndividualBuffer());
         double ticksPassed = obj.ticksPassed();
         if (ticksPassed > maxTicks) obj.reset();
-        int count = obj.increase(1);
+        double count = obj.increase(1);
         return count >= minimumTicks ? count / ticksPassed : 0.0;
     }
 

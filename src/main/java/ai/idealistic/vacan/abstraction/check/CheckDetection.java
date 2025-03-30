@@ -460,6 +460,7 @@ public abstract class CheckDetection extends CheckProcess {
         );
         boolean event = Config.settings.getBoolean("Important.enable_developer_api");
         CheckCancellation silentCause = this.executor.getSilentCause();
+        double amplitudeFinal = Math.min(amplitude, 1.0);
 
         Runnable runnable = () -> {
             if (event) {
@@ -476,7 +477,7 @@ public abstract class CheckDetection extends CheckProcess {
             }
             // Store, potentially recalculate and check data
             this.increaseAccumulationTime(
-                    amplitude,
+                    amplitudeFinal,
                     time
             );
             ResearchEngine.queueToCache(this.hackType, this.protocol.getDataType());
@@ -486,7 +487,7 @@ public abstract class CheckDetection extends CheckProcess {
                     level = Math.min(this.getLevel(this.protocol.getDataType()), max);
 
             // Notification
-            this.notify(amplitude, level, notification, prevention, max, time, information);
+            this.notify(amplitudeFinal, level, notification, prevention, max, time, information);
 
             // Prevention & Punishment
             this.prevention = newPrevention;

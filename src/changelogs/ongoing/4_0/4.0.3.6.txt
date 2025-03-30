@@ -4,3 +4,4 @@
 [#] Fixed a few GhostHand fast breaking false positives
 [#] Made all packet listeners silent
 [#] Added amplitude to certain detections to help deal with toggling hacks on time to avoid punishments
+[#] Improved the FastPlace detection by combining all its detections into one

@@ -29,7 +29,8 @@ public class VeinMiner implements Listener {
                             CheckEnums.HackType.NO_SWING,
                             CheckEnums.HackType.FAST_BREAK,
                             CheckEnums.HackType.GHOST_HAND,
-                            CheckEnums.HackType.BLOCK_REACH
+                            CheckEnums.HackType.BLOCK_REACH,
+                            CheckEnums.HackType.FAST_PLACE
                     },
                     AlgebraUtils.integerRound(TPS.maximum)
             );
@@ -46,7 +47,8 @@ public class VeinMiner implements Listener {
                             CheckEnums.HackType.NO_SWING,
                             CheckEnums.HackType.FAST_BREAK,
                             CheckEnums.HackType.GHOST_HAND,
-                            CheckEnums.HackType.BLOCK_REACH
+                            CheckEnums.HackType.BLOCK_REACH,
+                            CheckEnums.HackType.FAST_PLACE
                     },
                     AlgebraUtils.integerRound(TPS.maximum)
             );
