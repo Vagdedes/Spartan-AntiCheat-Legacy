@@ -40,7 +40,7 @@ public class PlayerInfo extends InventoryMenu {
     );
     private static final String menu = ("Player Info: ");
     private static final int[] slots = new int[]{
-            20, 21, 22, 23, 24
+            20, 21, 23, 24
     };
 
     public PlayerInfo() {

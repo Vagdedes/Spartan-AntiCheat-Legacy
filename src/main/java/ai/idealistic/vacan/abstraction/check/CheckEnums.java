@@ -13,59 +13,13 @@ import java.util.concurrent.ConcurrentHashMap;
 public class CheckEnums {
 
     public enum HackType {
-        X_RAY(
-                HackCategoryType.WORLD,
-                ai.idealistic.vacan.abstraction.check.implementation.world.XRay.class,
+        HIT_REACH(
+                HackCategoryType.COMBAT,
+                ai.idealistic.vacan.abstraction.check.implementation.combat.HitReach.class,
                 new String[]{
                         "This check will prevent client modules",
-                        "that allow a player to see through blocks",
-                        "in order to find rare ores, such as diamonds,",
-                        "gold, and even emerald. (Logs must be enabled)"
-                }
-        ),
-        NO_SWING(
-                HackCategoryType.PLAYER,
-                ai.idealistic.vacan.abstraction.check.implementation.misc.NoSwing.class,
-                new String[]{
-                        "This check will prevent client modules",
-                        "that manipulate packets and prevent",
-                        "interaction animations from being shown."
-                }
-        ),
-        IRREGULAR_MOVEMENTS(
-                HackCategoryType.MOVEMENT,
-                ai.idealistic.vacan.abstraction.check.implementation.movement.irregularmovements.IrregularMovements.class,
-                new String[]{
-                        "This check will prevent client modules",
-                        "that allow a player to move abnormally,",
-                        "such as stepping blocks or climbing walls."
-                }
-        ),
-        IMPOSSIBLE_ACTIONS(
-                HackCategoryType.WORLD,
-                ai.idealistic.vacan.abstraction.check.implementation.world.impossibleactions.ImpossibleActions.class,
-                new String[]{
-                        "This check will prevent client modules",
-                        "that allow a player to execute actions",
-                        "in abnormal cases, such as when sleeping."
-                }
-        ),
-        AUTO_RESPAWN(
-                HackCategoryType.PLAYER,
-                ai.idealistic.vacan.abstraction.check.implementation.misc.AutoRespawn.class,
-                new String[]{
-                        "This check will prevent client modules",
-                        "that allow a player to respawn faster",
-                        "than what is physically expected."
-                }
-        ),
-        INVENTORY_CLICKS(
-                HackCategoryType.INVENTORY,
-                InventoryClicks.class,
-                new String[]{
-                        "This check will prevent client modules",
-                        "that allow a player to interact with an",
-                        "amount of items, in abnormally fast rates."
+                        "that allow a player to hit entities",
+                        "from an abnormally long distance"
                 }
         ),
         CRITICALS(
@@ -75,24 +29,6 @@ public class CheckEnums {
                         "This check will prevent client modules",
                         "that allow a player to critical damage",
                         "an entity without properly moving."
-                }
-        ),
-        GHOST_HAND(
-                HackCategoryType.WORLD,
-                ai.idealistic.vacan.abstraction.check.implementation.world.GhostHand.class,
-                new String[]{
-                        "This check will prevent client modules",
-                        "that allow a player to interact or break",
-                        "blocks through walls of blocks."
-                }
-        ),
-        BLOCK_REACH(
-                HackCategoryType.WORLD,
-                ai.idealistic.vacan.abstraction.check.implementation.world.BlockReach.class,
-                new String[]{
-                        "This check will prevent client modules",
-                        "that allow a player to build or break",
-                        "blocks within an abnormally long distance."
                 }
         ),
         FAST_BOW(
@@ -113,32 +49,59 @@ public class CheckEnums {
                         "or have an irregular clicking consistency."
                 }
         ),
-        FAST_HEAL(
-                HackCategoryType.PLAYER,
-                ai.idealistic.vacan.abstraction.check.implementation.misc.FastHeal.class,
-                new String[]{
-                        "This check will prevent client modules",
-                        "that allow a player to heal faster",
-                        "than what is physically allowed."
-                }
-        ),
-        IMPOSSIBLE_INVENTORY(
-                HackCategoryType.INVENTORY,
-                ImpossibleInventory.class,
-                new String[]{
-                        "This check will prevent client modules",
-                        "that allow a player to interact with",
-                        "an inventory in abnormal cases, such",
-                        "as when sprinting or walking."
-                }
-        ),
-        HIT_REACH(
+        VELOCITY(
                 HackCategoryType.COMBAT,
-                ai.idealistic.vacan.abstraction.check.implementation.combat.HitReach.class,
+                ai.idealistic.vacan.abstraction.check.implementation.combat.Velocity.class,
                 new String[]{
                         "This check will prevent client modules",
-                        "that allow a player to hit entities",
-                        "from an abnormally long distance"
+                        "that allow a player to receive abnormal",
+                        "amounts of knockback, or none at all."
+                }
+        ),
+        KILL_AURA(
+                HackCategoryType.COMBAT,
+                ai.idealistic.vacan.abstraction.check.implementation.combat.killaura.KillAura.class,
+                new String[]{
+                        "This check will prevent client modules",
+                        "that allow a player to have an 'apparent'",
+                        "combat advantage against any entity."
+                }
+        ),
+        IRREGULAR_MOVEMENTS(
+                HackCategoryType.MOVEMENT,
+                ai.idealistic.vacan.abstraction.check.implementation.movement.irregularmovements.IrregularMovements.class,
+                new String[]{
+                        "This check will prevent client modules",
+                        "that allow a player to move abnormally,",
+                        "such as stepping blocks or climbing walls."
+                }
+        ),
+        MORE_PACKETS(
+                HackCategoryType.MOVEMENT,
+                ai.idealistic.vacan.abstraction.check.implementation.movement.MorePackets.class,
+                new String[]{
+                        "This check will prevent client modules",
+                        "that allow a player to send abnormally",
+                        "high amounts of movement packets."
+                }
+        ),
+        X_RAY(
+                HackCategoryType.WORLD,
+                ai.idealistic.vacan.abstraction.check.implementation.world.XRay.class,
+                new String[]{
+                        "This check will prevent client modules",
+                        "that allow a player to see through blocks",
+                        "in order to find rare ores, such as diamonds,",
+                        "gold, and even emerald. (Logs must be enabled)"
+                }
+        ),
+        IMPOSSIBLE_ACTIONS(
+                HackCategoryType.WORLD,
+                ai.idealistic.vacan.abstraction.check.implementation.world.impossibleactions.ImpossibleActions.class,
+                new String[]{
+                        "This check will prevent client modules",
+                        "that allow a player to execute actions",
+                        "in abnormal cases, such as when sleeping."
                 }
         ),
         FAST_BREAK(
@@ -159,40 +122,77 @@ public class CheckEnums {
                         "in abnormally fast rates."
                 }
         ),
-        MORE_PACKETS(
-                HackCategoryType.MOVEMENT,
-                ai.idealistic.vacan.abstraction.check.implementation.movement.MorePackets.class,
+        GHOST_HAND(
+                HackCategoryType.WORLD,
+                ai.idealistic.vacan.abstraction.check.implementation.world.GhostHand.class,
                 new String[]{
                         "This check will prevent client modules",
-                        "that allow a player to send abnormally",
-                        "high amounts of movement packets."
+                        "that allow a player to interact or break",
+                        "blocks through walls of blocks."
+                }
+        ),
+        BLOCK_REACH(
+                HackCategoryType.WORLD,
+                ai.idealistic.vacan.abstraction.check.implementation.world.BlockReach.class,
+                new String[]{
+                        "This check will prevent client modules",
+                        "that allow a player to build or break",
+                        "blocks within an abnormally long distance."
+                }
+        ),
+        NO_SWING(
+                HackCategoryType.MISCELLANEOUS,
+                ai.idealistic.vacan.abstraction.check.implementation.misc.NoSwing.class,
+                new String[]{
+                        "This check will prevent client modules",
+                        "that manipulate packets and prevent",
+                        "interaction animations from being shown."
+                }
+        ),
+        AUTO_RESPAWN(
+                HackCategoryType.MISCELLANEOUS,
+                ai.idealistic.vacan.abstraction.check.implementation.misc.AutoRespawn.class,
+                new String[]{
+                        "This check will prevent client modules",
+                        "that allow a player to respawn faster",
+                        "than what is physically expected."
+                }
+        ),
+        INVENTORY_CLICKS(
+                HackCategoryType.MISCELLANEOUS,
+                InventoryClicks.class,
+                new String[]{
+                        "This check will prevent client modules",
+                        "that allow a player to interact with an",
+                        "amount of items, in abnormally fast rates."
+                }
+        ),
+        FAST_HEAL(
+                HackCategoryType.MISCELLANEOUS,
+                ai.idealistic.vacan.abstraction.check.implementation.misc.FastHeal.class,
+                new String[]{
+                        "This check will prevent client modules",
+                        "that allow a player to heal faster",
+                        "than what is physically allowed."
+                }
+        ),
+        IMPOSSIBLE_INVENTORY(
+                HackCategoryType.MISCELLANEOUS,
+                ImpossibleInventory.class,
+                new String[]{
+                        "This check will prevent client modules",
+                        "that allow a player to interact with",
+                        "an inventory in abnormal cases, such",
+                        "as when sprinting or walking."
                 }
         ),
         FAST_EAT(
-                HackCategoryType.PLAYER,
+                HackCategoryType.MISCELLANEOUS,
                 ai.idealistic.vacan.abstraction.check.implementation.misc.FastEat.class,
                 new String[]{
                         "This check will prevent client modules",
                         "that allow a player to consume an amount",
                         "of food in an abnormal amount of time."
-                }
-        ),
-        VELOCITY(
-                HackCategoryType.COMBAT,
-                ai.idealistic.vacan.abstraction.check.implementation.combat.Velocity.class,
-                new String[]{
-                        "This check will prevent client modules",
-                        "that allow a player to receive abnormal",
-                        "amounts of knockback, or none at all."
-                }
-        ),
-        KILL_AURA(
-                HackCategoryType.COMBAT,
-                ai.idealistic.vacan.abstraction.check.implementation.combat.killaura.KillAura.class,
-                new String[]{
-                        "This check will prevent client modules",
-                        "that allow a player to have an 'apparent'",
-                        "combat advantage against any entity."
                 }
         );
 
@@ -242,9 +242,8 @@ public class CheckEnums {
     public enum HackCategoryType {
         COMBAT(Material.IRON_SWORD),
         MOVEMENT(Material.FEATHER),
-        PLAYER(Material.STICK),
         WORLD(Material.DIAMOND_PICKAXE),
-        INVENTORY(MaterialUtils.get("crafting_table"));
+        MISCELLANEOUS(MaterialUtils.get("crafting_table"));
 
         public final Material material;
 
