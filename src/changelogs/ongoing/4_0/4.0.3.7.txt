@@ -1,1 +1,2 @@
 [#] Removed the Exploits check and added its detections in the IrregularMovements check
+[#] Inventory and player check categories now are both the miscellaneous category
