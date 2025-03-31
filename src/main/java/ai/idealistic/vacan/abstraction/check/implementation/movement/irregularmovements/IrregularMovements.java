@@ -9,9 +9,11 @@ import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.vacan.functionality.server.PluginBase;
 import ai.idealistic.vacan.functionality.tracking.MovementProcessing;
 import ai.idealistic.vacan.listeners.protocol.TeleportListener;
+import ai.idealistic.vacan.utils.minecraft.entity.PlayerUtils;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketEvent;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.entity.EntityToggleGlideEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
@@ -27,6 +29,7 @@ public class IrregularMovements extends CheckRunner {
     private final IMGroundSpoof groundSpoof;
     private final IMSimulationElytra elytra;
     private final IMSimulationVehicle vehicle;
+    private final IMMovementSpoof movementSpoof;
 
     public IrregularMovements(HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);
@@ -38,11 +41,14 @@ public class IrregularMovements extends CheckRunner {
         groundSpoof = new IMGroundSpoof(this);
         elytra = new IMSimulationElytra(this);
         vehicle = new IMSimulationVehicle(this);
+        movementSpoof = new IMMovementSpoof(this);
     }
 
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
-        if (object instanceof PlayerTeleportEvent) {
+        if (object == null) {
+            movementSpoof.run();
+        } else if (object instanceof PlayerTeleportEvent) {
             this.teleport();
         } else if (object instanceof CPlayerRiptideEvent) {
             gravity.trident();
@@ -58,17 +64,20 @@ public class IrregularMovements extends CheckRunner {
                     )
             );
         } else if (object instanceof PlayerMoveEvent) {
+            movementSpoof.update();
             foodSprint.run();
             baritone.run();
             gravity.run();
             speed.run();
             headPosition.run();
-            elytra.run();
+            elytra.runSimulation();
             vehicle.run();
             groundSpoof.run((PlayerMoveEvent) object);
         } else if (object instanceof BlockBreakEvent) {
             if (((BlockBreakEvent) object).isCancelled()) {
                 groundSpoof.onBreak();
+            } else {
+                movementSpoof.onBreak();
             }
         } else if (object instanceof VehicleExitEvent) {
             groundSpoof.onVehicleExit();
@@ -78,6 +87,9 @@ public class IrregularMovements extends CheckRunner {
         } else if (object instanceof VehicleEnterEvent) {
             speed.vhAct();
             gravity.vhAct();
+        } else if (PlayerUtils.elytra
+                && object instanceof EntityToggleGlideEvent) {
+            elytra.runExploit();
         } else if (PluginBase.packetsEnabled()
                 && object instanceof PacketEvent) {
             PacketType eventType = ((PacketEvent) object).getPacketType();

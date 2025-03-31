@@ -3,15 +3,20 @@ package ai.idealistic.vacan.abstraction.check.implementation.movement.irregularm
 import ai.idealistic.vacan.abstraction.check.Check;
 import ai.idealistic.vacan.abstraction.check.CheckDetection;
 import ai.idealistic.vacan.abstraction.check.CheckRunner;
+import ai.idealistic.vacan.abstraction.data.Buffer;
 import ai.idealistic.vacan.abstraction.data.EnvironmentData;
 import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 
 public class IMSimulationElytra extends CheckDetection {
 
     private double vl = 0, oldY = 0, oldSpeed = 0, oldAccel = 0;
     private int ground = 0, air = 0, ticks = 0, postSpeed = 0;
     private Location from = null;
+    private final Buffer.IndividualBuffer buffer;
 
     public IMSimulationElytra(CheckRunner executor) {
         super(
@@ -21,9 +26,85 @@ public class IMSimulationElytra extends CheckDetection {
                 "elytra",
                 false
         );
+        this.buffer = new Buffer.IndividualBuffer();
     }
 
-    void run() {
+    void runExploit() {
+        this.call(() -> {
+            if (protocol.getVehicle() == null) {
+                PlayerInventory inventory = protocol.getInventory();
+                ItemStack i = inventory.getChestplate();
+
+                if (i != null) {
+                    if (i.getType() == Material.ELYTRA) {
+                        if (i.getDurability() < 432) {
+                            double buffer = this.buffer.count(1, 20),
+                                    threshold = 15;
+
+                            if (buffer >= threshold) {
+                                cancel(
+                                        "elytra(glide-spam)",
+                                        this.protocol.getFromLocation(),
+                                        0,
+                                        true
+                                );
+
+                                if (this.prevent()) {
+                                    protocol.bukkit().setGliding(false);
+                                }
+                            }
+                        } else {
+                            cancel(
+                                    "elytra(no-durability-glide)",
+                                    this.protocol.getFromLocation(),
+                                    0,
+                                    true
+                            );
+
+                            if (this.prevent()) {
+                                protocol.bukkit().setGliding(false);
+                            }
+                        }
+                    } else {
+                        cancel(
+                                "elytra(no-elytra-glide)",
+                                this.protocol.getFromLocation(),
+                                0,
+                                true
+                        );
+
+                        if (this.prevent()) {
+                            protocol.bukkit().setGliding(false);
+                        }
+                    }
+                } else {
+                    cancel(
+                            "elytra(no-chestplate-item-glide)",
+                            this.protocol.getFromLocation(),
+                            0,
+                            true
+                    );
+
+                    if (this.prevent()) {
+                        protocol.bukkit().setGliding(false);
+                    }
+                }
+            } else {
+                cancel(
+                        "elytra(vehicle-glide)",
+                        this.protocol.getFromLocation(),
+                        0,
+                        true
+                );
+
+                if (this.prevent()) {
+                    protocol.bukkit().setGliding(false);
+                }
+            }
+        });
+    }
+
+    void runSimulation() {
         this.call(() -> {
             PlayerProtocol p = this.protocol;
 

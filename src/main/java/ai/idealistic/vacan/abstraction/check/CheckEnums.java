@@ -1,5 +1,7 @@
 package ai.idealistic.vacan.abstraction.check;
 
+import ai.idealistic.vacan.abstraction.check.implementation.misc.ImpossibleInventory;
+import ai.idealistic.vacan.abstraction.check.implementation.misc.InventoryClicks;
 import ai.idealistic.vacan.utils.minecraft.inventory.MaterialUtils;
 import lombok.Getter;
 import org.bukkit.Material;
@@ -21,18 +23,9 @@ public class CheckEnums {
                         "gold, and even emerald. (Logs must be enabled)"
                 }
         ),
-        EXPLOITS(
-                HackCategoryType.WORLD,
-                ai.idealistic.vacan.abstraction.check.implementation.world.exploits.Exploits.class,
-                new String[]{
-                        "This check will prevent client",
-                        "modules that may potentially hurt",
-                        "a server's functional performance."
-                }
-        ),
         NO_SWING(
                 HackCategoryType.PLAYER,
-                ai.idealistic.vacan.abstraction.check.implementation.player.NoSwing.class,
+                ai.idealistic.vacan.abstraction.check.implementation.misc.NoSwing.class,
                 new String[]{
                         "This check will prevent client modules",
                         "that manipulate packets and prevent",
@@ -59,7 +52,7 @@ public class CheckEnums {
         ),
         AUTO_RESPAWN(
                 HackCategoryType.PLAYER,
-                ai.idealistic.vacan.abstraction.check.implementation.player.AutoRespawn.class,
+                ai.idealistic.vacan.abstraction.check.implementation.misc.AutoRespawn.class,
                 new String[]{
                         "This check will prevent client modules",
                         "that allow a player to respawn faster",
@@ -68,7 +61,7 @@ public class CheckEnums {
         ),
         INVENTORY_CLICKS(
                 HackCategoryType.INVENTORY,
-                ai.idealistic.vacan.abstraction.check.implementation.inventory.InventoryClicks.class,
+                InventoryClicks.class,
                 new String[]{
                         "This check will prevent client modules",
                         "that allow a player to interact with an",
@@ -122,7 +115,7 @@ public class CheckEnums {
         ),
         FAST_HEAL(
                 HackCategoryType.PLAYER,
-                ai.idealistic.vacan.abstraction.check.implementation.player.FastHeal.class,
+                ai.idealistic.vacan.abstraction.check.implementation.misc.FastHeal.class,
                 new String[]{
                         "This check will prevent client modules",
                         "that allow a player to heal faster",
@@ -131,7 +124,7 @@ public class CheckEnums {
         ),
         IMPOSSIBLE_INVENTORY(
                 HackCategoryType.INVENTORY,
-                ai.idealistic.vacan.abstraction.check.implementation.inventory.ImpossibleInventory.class,
+                ImpossibleInventory.class,
                 new String[]{
                         "This check will prevent client modules",
                         "that allow a player to interact with",
@@ -177,7 +170,7 @@ public class CheckEnums {
         ),
         FAST_EAT(
                 HackCategoryType.PLAYER,
-                ai.idealistic.vacan.abstraction.check.implementation.player.FastEat.class,
+                ai.idealistic.vacan.abstraction.check.implementation.misc.FastEat.class,
                 new String[]{
                         "This check will prevent client modules",
                         "that allow a player to consume an amount",

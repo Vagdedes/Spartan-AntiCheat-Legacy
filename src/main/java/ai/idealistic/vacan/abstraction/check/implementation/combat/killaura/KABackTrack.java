@@ -1,4 +1,4 @@
-package ai.idealistic.vacan.abstraction.check.implementation.world.exploits;
+package ai.idealistic.vacan.abstraction.check.implementation.combat.killaura;
 
 import ai.idealistic.vacan.abstraction.check.CheckDetection;
 import ai.idealistic.vacan.abstraction.check.CheckRunner;
@@ -13,9 +13,9 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
-public class ExploitsBackTrack extends CheckDetection {
+public class KABackTrack extends CheckDetection {
 
-    ExploitsBackTrack(CheckRunner executor) {
+    KABackTrack(CheckRunner executor) {
         super(executor, null, null, "back_track", true);
     }
 

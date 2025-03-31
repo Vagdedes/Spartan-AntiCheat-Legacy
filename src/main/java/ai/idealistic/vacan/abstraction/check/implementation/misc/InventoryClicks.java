@@ -1,4 +1,4 @@
-package ai.idealistic.vacan.abstraction.check.implementation.inventory;
+package ai.idealistic.vacan.abstraction.check.implementation.misc;
 
 import ai.idealistic.vacan.abstraction.check.Check;
 import ai.idealistic.vacan.abstraction.check.CheckDetection;

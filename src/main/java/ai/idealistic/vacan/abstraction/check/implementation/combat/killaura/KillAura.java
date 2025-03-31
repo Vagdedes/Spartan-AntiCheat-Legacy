@@ -2,12 +2,11 @@ package ai.idealistic.vacan.abstraction.check.implementation.combat.killaura;
 
 import ai.idealistic.vacan.abstraction.check.CheckEnums;
 import ai.idealistic.vacan.abstraction.check.CheckRunner;
-import ai.idealistic.vacan.abstraction.check.implementation.combat.killaura.movedirection.MoveDirection;
+import ai.idealistic.vacan.abstraction.check.implementation.combat.killaura.movedirection.KAMoveDirection;
 import ai.idealistic.vacan.abstraction.event.EntityAttackPlayerEvent;
 import ai.idealistic.vacan.abstraction.event.PlayerAttackEvent;
 import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.vacan.compatibility.necessary.protocollib.ProtocolLib;
-import ai.idealistic.vacan.functionality.server.MultiVersion;
 import ai.idealistic.vacan.utils.minecraft.entity.CombatUtils;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -15,28 +14,29 @@ import org.bukkit.event.player.PlayerMoveEvent;
 
 public class KillAura extends CheckRunner {
 
-    private final Irregular irregular;
-    private final HitTime hitTime;
-    private final MoveDirection moveDirection;
-    private final MoveLength moveLength;
+    private final KAIrregular irregular;
+    private final KAHitTime hitTime;
+    private final KAMoveDirection moveDirection;
+    private final KAMoveLength moveLength;
+    private final KABackTrack backTrack;
 
     public KillAura(CheckEnums.HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);
-        irregular = new Irregular(this);
-        hitTime = new HitTime(this);
-        moveDirection = new MoveDirection(this);
-        moveLength = new MoveLength(this);
+        irregular = new KAIrregular(this);
+        hitTime = new KAHitTime(this);
+        moveDirection = new KAMoveDirection(this);
+        moveLength = new KAMoveLength(this);
+        backTrack = new KABackTrack(this);
     }
 
     boolean canRunEntity(LivingEntity entity) {
-        if (ProtocolLib.getVehicle(entity) == null
-                && CombatUtils.canCheck(this.protocol, entity)) {
-            boolean isPlayer = entity instanceof Player;
-            return (isPlayer || !MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_10) || entity.hasAI())
-                    && !this.protocol.bukkit().equals(entity)
-                    && hackType.getCheck().getBooleanOption("detection." + (isPlayer ? "players" : "entities"), true);
-        }
-        return false;
+        return ProtocolLib.getVehicle(entity) == null
+                && CombatUtils.canCheck(this.protocol, entity)
+                && !this.protocol.bukkit().equals(entity)
+                && hackType.getCheck().getBooleanOption(
+                "detection." + (entity instanceof Player ? "players" : "entities"),
+                true
+        );
     }
 
     @Override
@@ -53,6 +53,7 @@ public class KillAura extends CheckRunner {
                 moveDirection.run(target);
                 hitTime.run();
                 moveLength.runHit();
+                backTrack.run(event);
             }
         } else if (object instanceof EntityAttackPlayerEvent) {
             moveLength.runHitBy();

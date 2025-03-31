@@ -7,7 +7,7 @@ import ai.idealistic.vacan.abstraction.data.Buffer;
 import ai.idealistic.vacan.functionality.server.TPS;
 import ai.idealistic.vacan.utils.math.AlgebraUtils;
 
-public class MoveLength extends CheckDetection {
+public class KAMoveLength extends CheckDetection {
 
     private static final double
             gcdMultiplier = Math.pow(2, 24), // 16777216
@@ -21,7 +21,7 @@ public class MoveLength extends CheckDetection {
     private final Buffer.IndividualBuffer buffer, safeBuffer;
     private long hit, hitBy;
 
-    MoveLength(CheckRunner executor) {
+    KAMoveLength(CheckRunner executor) {
         super(executor, Check.DataType.JAVA, Check.DetectionType.PACKETS, "move_length", true,
                 DEFAULT_AVERAGE_TIME * 4L,
                 TIME_TO_NOTIFY,

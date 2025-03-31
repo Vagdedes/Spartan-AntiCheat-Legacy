@@ -1,4 +1,4 @@
-package ai.idealistic.vacan.abstraction.check.implementation.player;
+package ai.idealistic.vacan.abstraction.check.implementation.misc;
 
 import ai.idealistic.vacan.abstraction.check.CheckDetection;
 import ai.idealistic.vacan.abstraction.check.CheckEnums;

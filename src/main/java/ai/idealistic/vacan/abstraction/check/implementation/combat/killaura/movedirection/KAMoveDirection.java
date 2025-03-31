@@ -17,7 +17,7 @@ import java.util.UUID;
 
 import static java.lang.Math.PI;
 
-public class MoveDirection extends CheckDetection {
+public class KAMoveDirection extends CheckDetection {
 
     private final CheckDetection layer1, layer2;
     private AttackHandle attackHandle;
@@ -28,7 +28,7 @@ public class MoveDirection extends CheckDetection {
     private final List<UUID> targetsOnTheRow;
     private final List<Double> rayTraceAnalysis;
 
-    public MoveDirection(CheckRunner executor) {
+    public KAMoveDirection(CheckRunner executor) {
         super(executor, null, null, null, true);
         this.layer1 = new ImplementedDetection(this, "move_direction_1", true,
                 DEFAULT_AVERAGE_TIME * 4L,

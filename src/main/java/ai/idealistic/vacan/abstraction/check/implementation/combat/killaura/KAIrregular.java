@@ -9,9 +9,9 @@ import ai.idealistic.vacan.utils.minecraft.world.BlockUtils;
 import org.bukkit.GameRule;
 import org.bukkit.inventory.InventoryView;
 
-public class Irregular extends CheckDetection {
+public class KAIrregular extends CheckDetection {
 
-    Irregular(CheckRunner executor) {
+    KAIrregular(CheckRunner executor) {
         super(
                 executor,
                 null,

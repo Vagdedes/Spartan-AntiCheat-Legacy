@@ -1,4 +1,4 @@
-package ai.idealistic.vacan.abstraction.check.implementation.world.exploits;
+package ai.idealistic.vacan.abstraction.check.implementation.movement.irregularmovements;
 
 import ai.idealistic.vacan.abstraction.check.Check;
 import ai.idealistic.vacan.abstraction.check.CheckDetection;
@@ -14,7 +14,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ExploitsMovement extends CheckDetection {
+public class IMMovementSpoof extends CheckDetection {
 
     private static final boolean v1_9 = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9);
     private static final long outdatedDelayTime = AlgebraUtils.integerCeil(TPS.maximum) * 1_000L;
@@ -25,8 +25,8 @@ public class ExploitsMovement extends CheckDetection {
     private int delayBuffer, delayTimes;
     private final List<Long> average;
 
-    ExploitsMovement(CheckRunner executor) {
-        super(executor, null, Check.DetectionType.BUKKIT, "movement", true);
+    IMMovementSpoof(CheckRunner executor) {
+        super(executor, null, Check.DetectionType.BUKKIT, "movement_spoof", true);
         this.average = Collections.synchronizedList(new LinkedList<>());
         this.delayBuffer = 0;
         this.delayTimes = 0;
@@ -60,7 +60,7 @@ public class ExploitsMovement extends CheckDetection {
                                 && oldSpoofDistance != distance) {
                             oldSpoofDistance = distance;
                             cancel(
-                                    "movement(spoof)"
+                                    "movement-spoof(default)"
                                             + ", distance: " + distance,
                                     this.protocol.getFromLocation(),
                                     0,
@@ -130,7 +130,7 @@ public class ExploitsMovement extends CheckDetection {
                             this.delayBuffer = 0;
                             this.delayTimes++;
                             cancel(
-                                    "movement(delay)"
+                                    "movement-spoof(delay)"
                                             + ", average: " + average
                                             + ", deviation: " + deviation,
                                     this.protocol.getFromLocation(),
