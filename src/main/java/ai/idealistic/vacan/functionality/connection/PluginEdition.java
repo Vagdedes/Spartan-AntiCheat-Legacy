@@ -40,7 +40,7 @@ public class PluginEdition {
             alternativeVersion = false;
     private static final CheckEnums.HackCategoryType[] forSaleChecks = {
             CheckEnums.HackCategoryType.COMBAT,
-            CheckEnums.HackCategoryType.COMBAT,
+            CheckEnums.HackCategoryType.MOVEMENT,
             CheckEnums.HackCategoryType.WORLD
     };
     private static final boolean[][] checks = new boolean[Check.DataType.values().length][forSaleChecks.length];
