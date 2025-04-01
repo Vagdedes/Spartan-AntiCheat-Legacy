@@ -38,6 +38,7 @@ public class PluginEdition {
             notifyCache = false,
             alternativeVersion = false,
             oneVersion = false;
+    private static boolean[] checks = new boolean[Check.DataType.values().length * 3];
 
     static {
         Check.DataType current = Check.DataType.BEDROCK;

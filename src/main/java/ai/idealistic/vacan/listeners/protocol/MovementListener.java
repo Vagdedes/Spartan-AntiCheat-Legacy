@@ -116,12 +116,11 @@ public class MovementListener extends PacketAdapter {
         if (p.isDesync() && tickEvent.getDelay() > 40 && tickEvent.getDelay() < 60) {
             p.transactionVl += (p.isBlatantDesync() ? 2 : 1);
             if (p.transactionVl > 40) {
-                Bukkit.getScheduler().runTask(Register.plugin,
-                        () -> player.teleport(p.getLocation()));
                 AwarenessNotifications.optionallySend(player.getName()
                         + " moves faster than the transaction response ("
                         + tickEvent.getDelay() + "ms > "
                         + (System.currentTimeMillis() - p.transactionTime) + "ms).");
+                //p.teleport(p.getLocation());
                 //event.setCancelled(true);
                 //return;
             }
@@ -168,7 +167,7 @@ public class MovementListener extends PacketAdapter {
                                     Location build = teleport.clone();
                                     build.setYaw(p.getLocation().getYaw());
                                     build.setPitch(p.getLocation().getPitch());
-                                    p.bukkit().teleport(build);
+                                    p.teleport(build);
                                 }
                             });
                             return;

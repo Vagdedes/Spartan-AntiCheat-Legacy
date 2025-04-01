@@ -63,10 +63,9 @@ public class LegacyCombatListener extends PacketAdapter {
                             : packet.getEnumEntityUseActions().read(0).getAction().equals(
                             EnumWrappers.EntityUseAction.ATTACK)) {
                 if (protocol.isSDesync()) {
-                    Bukkit.getScheduler().runTask(Register.plugin,
-                                    () -> protocol.bukkit().teleport(protocol.getLocation()));
                     AwarenessNotifications.optionallySend(protocol.bukkit().getName()
                                     + " attack faster than the transaction response.");
+                    //protocol.teleport(protocol.getLocation());
                     //event.setCancelled(true);
                     //return;
                 }

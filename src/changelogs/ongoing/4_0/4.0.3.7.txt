@@ -1,2 +1,4 @@
 [#] Removed the Exploits check and added its detections in the IrregularMovements check
 [#] Inventory and player check categories now are both the miscellaneous category
+[#] Put all plugin teleporations behind more handled methods
+[#] Added a new checks.yml IrregularMovements option for managing the gravity detection
