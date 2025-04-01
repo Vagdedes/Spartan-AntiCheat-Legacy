@@ -43,9 +43,7 @@ public class PluginEdition {
             CheckEnums.HackCategoryType.COMBAT,
             CheckEnums.HackCategoryType.WORLD
     };
-    private static final boolean[][] checks = new boolean
-            [Check.DataType.values().length]
-            [forSaleChecks.length];
+    private static final boolean[][] checks = new boolean[Check.DataType.values().length][forSaleChecks.length];
 
     static {
         Check.DataType current = Check.DataType.BEDROCK;

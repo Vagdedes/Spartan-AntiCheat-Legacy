@@ -1,6 +1,7 @@
 package ai.idealistic.vacan.functionality.connection;
 
 import ai.idealistic.vacan.Register;
+import ai.idealistic.vacan.abstraction.check.Check;
 import ai.idealistic.vacan.functionality.moderation.CrossServerNotifications;
 import ai.idealistic.vacan.functionality.server.Config;
 import ai.idealistic.vacan.functionality.server.PluginBase;
@@ -50,7 +51,7 @@ public class CloudConnections {
             );
 
             if (results.length > 0) {
-                return results[0].split(CloudBase.separator);
+                return results[0].split(CloudBase.separator, Check.DataType.values().length);
             }
         } catch (Exception e) {
             CloudBase.throwError(e, "ownsVacanOne:GET");

@@ -9,7 +9,6 @@ public class Enums {
     // Should have used capital letters but won't change them now so to not break the dozen APIs who use these enums
     public enum HackType {
         XRay(CheckEnums.HackType.X_RAY),
-        Exploits(CheckEnums.HackType.EXPLOITS),
         NoSwing(CheckEnums.HackType.NO_SWING),
         IrregularMovements(CheckEnums.HackType.IRREGULAR_MOVEMENTS),
         ImpossibleActions(CheckEnums.HackType.IMPOSSIBLE_ACTIONS),
