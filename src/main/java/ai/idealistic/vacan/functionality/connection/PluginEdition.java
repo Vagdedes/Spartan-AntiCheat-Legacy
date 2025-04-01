@@ -153,7 +153,8 @@ public class PluginEdition {
 
     public static boolean hasDetectionsPurchased(Check.DataType dataType, CheckEnums.HackCategoryType category) {
         return hasDetectionsPurchased(dataType)
-                && checks[dataType.ordinal()][category.ordinal()];
+                && (category.ordinal() >= forSaleChecks.length
+                || checks[dataType.ordinal()][category.ordinal()]);
     }
 
     // Product
