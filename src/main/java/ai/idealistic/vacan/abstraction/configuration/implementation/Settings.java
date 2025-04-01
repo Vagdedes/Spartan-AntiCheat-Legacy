@@ -35,6 +35,7 @@ public class Settings extends ConfigurationBuilder {
 
         addOption("Purchases.paypal_email", "");
         addOption("Purchases.patreon_full_name", "");
+        addOption("Purchases.builtbybit_user_url", "");
 
         addOption("Detections.ground_teleport_on_detection", true);
         addOption("Detections.damage_on_detection", false);

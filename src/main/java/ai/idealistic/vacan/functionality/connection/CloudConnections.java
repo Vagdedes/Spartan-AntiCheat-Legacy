@@ -47,6 +47,7 @@ public class CloudConnections {
                             + "&data=ownsCheck" + type
                             + "&paypal_email=" + URLEncoder.encode(Config.settings.getString("Purchases.paypal_email"), "UTF-8")
                             + "&patreon_full_name=" + URLEncoder.encode(Config.settings.getString("Purchases.patreon_full_name"), "UTF-8")
+                            + "&builtbybit_user_url=" + URLEncoder.encode(Config.settings.getString("Purchases.builtbybit_user_url"), "UTF-8")
                             + "&version=" + Register.plugin.getDescription().getVersion()
             );
 
