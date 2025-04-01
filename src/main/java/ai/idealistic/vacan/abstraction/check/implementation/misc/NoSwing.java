@@ -7,6 +7,7 @@ import ai.idealistic.vacan.abstraction.check.definition.ImplementedDetection;
 import ai.idealistic.vacan.abstraction.data.Buffer;
 import ai.idealistic.vacan.abstraction.event.PlayerAttackEvent;
 import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
+import ai.idealistic.vacan.compatibility.Compatibility;
 import ai.idealistic.vacan.compatibility.manual.abilities.AureliumSkills;
 import ai.idealistic.vacan.compatibility.manual.abilities.ItemsAdder;
 import ai.idealistic.vacan.compatibility.manual.building.MineBomb;
@@ -119,7 +120,8 @@ public class NoSwing extends CheckRunner {
 
     @Override
     public boolean canRun() {
-        return !Vehicles.has(this.protocol, Vehicles.DRILL);
+        return !Vehicles.has(this.protocol, Vehicles.DRILL)
+                && !Compatibility.CompatibilityType.ADVANCED_ENCHANTMENTS.isFunctional();
     }
 
 }

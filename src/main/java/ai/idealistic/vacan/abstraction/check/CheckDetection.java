@@ -160,7 +160,7 @@ public abstract class CheckDetection extends CheckProcess {
                 || this.forcedDataType == this.protocol.getDataType())
                 && (this.detectionType == null
                 || this.detectionType == this.protocol.detectionType)
-                && PluginEdition.hasDetectionsPurchased(this.protocol.getDataType());
+                && PluginEdition.hasDetectionsPurchased(this.protocol.getDataType(), this.hackType.category);
     }
 
     public final void call(Runnable runnable) {

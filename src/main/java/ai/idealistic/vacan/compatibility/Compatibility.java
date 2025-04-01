@@ -63,9 +63,9 @@ public class Compatibility {
         ITEMS_ADDER("ItemsAdder"),
         RAMPEN_DRILLS("RampenDrills"),
         OLD_COMBAT_MECHANICS("OldCombatMechanics"),
-        CUSTOM_KNOCKBACK("CustomKnockback"),
         PROJECT_KORRA("ProjectKorra"),
-        FLOODGATE("Floodgate");
+        FLOODGATE("Floodgate"),
+        ADVANCED_ENCHANTMENTS("AdvancedEnchantments");
 
         @Setter
         @Getter
@@ -238,13 +238,6 @@ public class Compatibility {
                 () -> Register.enable(new CrackShotPlus()),
                 null
         );
-        CompatibilityType.CUSTOM_KNOCKBACK.setFunctional(
-                new String[]{
-                        "%knockback"
-                },
-                null,
-                null,
-                null);
         CompatibilityType.REAL_DUAL_WIELD.setFunctional(
                 () -> Register.enable(new RealDualWield()),
                 null
@@ -277,6 +270,14 @@ public class Compatibility {
         CompatibilityType.CUSTOM_ENCHANTS_PLUS.setFunctional();
         CompatibilityType.ECO_ENCHANTS.setFunctional(
                 ReflectionUtils.classExists("com.willfp.ecoenchants.enchants.EcoEnchant")
+        );
+        CompatibilityType.ADVANCED_ENCHANTMENTS.setFunctional(
+                new String[]{
+                        CompatibilityType.ADVANCED_ENCHANTMENTS.toString()
+                },
+                null,
+                null,
+                null
         );
         CompatibilityType.VEHICLES.setFunctional(
                 () -> Register.enable(new Vehicles()),

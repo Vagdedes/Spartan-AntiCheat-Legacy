@@ -2,6 +2,7 @@ package ai.idealistic.vacan.functionality.connection;
 
 import ai.idealistic.vacan.Register;
 import ai.idealistic.vacan.abstraction.check.Check;
+import ai.idealistic.vacan.abstraction.check.CheckEnums;
 import ai.idealistic.vacan.abstraction.profiling.PlayerProfile;
 import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.vacan.functionality.moderation.AwarenessNotifications;
@@ -36,9 +37,15 @@ public class PluginEdition {
                     + " You have " + type + " players which cannot be checked by the anti-cheat due to missing " + type + " detections.";
     private static boolean
             notifyCache = false,
-            alternativeVersion = false,
-            oneVersion = false;
-    private static boolean[] checks = new boolean[Check.DataType.values().length * 3];
+            alternativeVersion = false;
+    private static final CheckEnums.HackCategoryType[] forSaleChecks = {
+            CheckEnums.HackCategoryType.COMBAT,
+            CheckEnums.HackCategoryType.COMBAT,
+            CheckEnums.HackCategoryType.WORLD
+    };
+    private static final boolean[][] checks = new boolean
+            [Check.DataType.values().length]
+            [forSaleChecks.length];
 
     static {
         Check.DataType current = Check.DataType.BEDROCK;
@@ -64,9 +71,23 @@ public class PluginEdition {
 
     public static void refresh() {
         PluginBase.connectionThread.executeIfUnknownThreadElseHere(() -> {
-            if (!oneVersion
-                    && CloudConnections.ownsVacanOne()) {
-                oneVersion = true;
+            for (CheckEnums.HackCategoryType category : forSaleChecks) {
+                if (checks[currentType.ordinal()][category.ordinal()]
+                        && checks[alternativeType.ordinal()][category.ordinal()]) {
+                    continue;
+                }
+                String[] reply = CloudConnections.getOwnedChecks(category.toString());
+
+                if (reply != null) {
+                    for (String potentialDataType : reply) {
+                        for (Check.DataType dataType : Check.DataType.values()) {
+                            if (potentialDataType.equals(dataType.toString())) {
+                                checks[dataType.ordinal()][category.ordinal()] = true;
+                                break;
+                            }
+                        }
+                    }
+                }
             }
             if (!alternativeVersion) {
                 String pluginsFolder = Register.plugin.getDataFolder().toString().replace(
@@ -132,6 +153,11 @@ public class PluginEdition {
         return PluginEdition.currentType == dataType || alternativeVersion;
     }
 
+    public static boolean hasDetectionsPurchased(Check.DataType dataType, CheckEnums.HackCategoryType category) {
+        return hasDetectionsPurchased(dataType)
+                && checks[dataType.ordinal()][category.ordinal()];
+    }
+
     // Product
 
     public static String getProductID() {
@@ -153,10 +179,8 @@ public class PluginEdition {
             }
         }
         return Register.pluginName
-                + (alternativeVersion
-                ? " One"
-                : ": §a" + currentType
-                + "§8/" + (alternativeVersion ? "§a" : "§c") + alternativeType)
+                + ": §a" + currentType
+                + "§8/" + (alternativeVersion ? "§a" : "§c") + alternativeType
                 + (lastColor != null ? "§" + lastColor : "");
     }
 

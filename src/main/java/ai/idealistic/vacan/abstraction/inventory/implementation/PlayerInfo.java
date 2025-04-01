@@ -203,7 +203,7 @@ public class PlayerInfo extends InventoryMenu {
         if (!hasPlayer) {
             return "Player is offline";
         }
-        if (!PluginEdition.hasDetectionsPurchased(dataType)) {
+        if (!PluginEdition.hasDetectionsPurchased(dataType, hackType.category)) {
             return "Detection is missing";
         }
         String worldName = protocol.getWorld().getName();

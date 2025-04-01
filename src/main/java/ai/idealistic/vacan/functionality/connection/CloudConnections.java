@@ -37,28 +37,28 @@ public class CloudConnections {
         return -1;
     }
 
-    static boolean ownsVacanOne() { // Once
+    static String[] getOwnedChecks(String type) {
         try {
             String[] results = RequestUtils.get(
                     StringUtils.decodeBase64(JarVerification.website)
                             + "?" + CloudBase.identification()
                             + "&action=get"
-                            + "&data=ownsVacanOne"
+                            + "&data=ownsCheck" + type
                             + "&paypal_email=" + URLEncoder.encode(Config.settings.getString("Purchases.paypal_email"), "UTF-8")
                             + "&patreon_full_name=" + URLEncoder.encode(Config.settings.getString("Purchases.patreon_full_name"), "UTF-8")
                             + "&version=" + Register.plugin.getDescription().getVersion()
             );
 
             if (results.length > 0) {
-                return results[0].equals("true");
+                return results[0].split(CloudBase.separator);
             }
         } catch (Exception e) {
             CloudBase.throwError(e, "ownsVacanOne:GET");
         }
-        return false;
+        return null;
     }
 
-    static String[][] getStaffAnnouncements() { // Once
+    static String[][] getStaffAnnouncements() {
         try {
             String[] results = RequestUtils.get(StringUtils.decodeBase64(JarVerification.website) + "?" + CloudBase.identification()
                     + "&action=get&data=staffAnnouncements&version=" + Register.plugin.getDescription().getVersion());

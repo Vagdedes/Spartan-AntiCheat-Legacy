@@ -6,6 +6,7 @@ import ai.idealistic.vacan.abstraction.check.CheckRunner;
 import ai.idealistic.vacan.abstraction.check.definition.ImplementedDetection;
 import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.vacan.abstraction.world.ServerLocation;
+import ai.idealistic.vacan.compatibility.Compatibility;
 import ai.idealistic.vacan.compatibility.manual.abilities.ItemsAdder;
 import ai.idealistic.vacan.compatibility.manual.building.PrinterMode;
 import ai.idealistic.vacan.compatibility.manual.building.TreeFeller;
@@ -35,40 +36,42 @@ public class GhostHand extends CheckRunner {
     protected void handleInternal(boolean cancelled, Object object) {
         if (object instanceof BlockBreakEvent) {
             this.breaking.call(() -> {
-                BlockBreakEvent event = (BlockBreakEvent) object;
-                Block b = event.getBlock();
+                if (!Compatibility.CompatibilityType.ADVANCED_ENCHANTMENTS.isFunctional()) {
+                    BlockBreakEvent event = (BlockBreakEvent) object;
+                    Block b = event.getBlock();
 
-                if (canDo(b)
-                        && !ItemsAdder.is(b)) {
-                    long breakTime = MaterialUtils.getBlockBreakTime(this.protocol, this.protocol.getItemInHand(), b.getType());
+                    if (canDo(b)
+                            && !ItemsAdder.is(b)) {
+                        long breakTime = MaterialUtils.getBlockBreakTime(this.protocol, this.protocol.getItemInHand(), b.getType());
 
-                    if (breakTime <= 500L) {
-                        return;
-                    }
-                    Location location = this.protocol.getLocationOrVehicle().clone().add(
-                            0,
-                            this.protocol.getEyeHeight(),
-                            0
-                    );
-                    double bDistance = ServerLocation.distance(location, b.getLocation());
-                    ServerLocation t = this.protocol.getTargetBlock(bDistance, PlayerUtils.chunk);
+                        if (breakTime <= 500L) {
+                            return;
+                        }
+                        Location location = this.protocol.getLocationOrVehicle().clone().add(
+                                0,
+                                this.protocol.getEyeHeight(),
+                                0
+                        );
+                        double bDistance = ServerLocation.distance(location, b.getLocation());
+                        ServerLocation t = this.protocol.getTargetBlock(bDistance, PlayerUtils.chunk);
 
-                    if (t != null) {
-                        double tDistance = t.distance(location);
+                        if (t != null) {
+                            double tDistance = t.distance(location);
 
-                        if (tDistance < bDistance) {
-                            this.breaking.cancel(
-                                    "breaking"
-                                            + ", interacted-block: " + BlockUtils.blockToString(b)
-                                            + ", blocking-block: " + BlockUtils.blockToString(t.getBlock())
-                                            + ", interacted-distance: " + bDistance
-                                            + ", blocking-distance: " + tDistance,
-                                    null,
-                                    1
-                            );
+                            if (tDistance < bDistance) {
+                                this.breaking.cancel(
+                                        "breaking"
+                                                + ", interacted-block: " + BlockUtils.blockToString(b)
+                                                + ", blocking-block: " + BlockUtils.blockToString(t.getBlock())
+                                                + ", interacted-distance: " + bDistance
+                                                + ", blocking-distance: " + tDistance,
+                                        null,
+                                        1
+                                );
 
-                            if (this.breaking.prevent()) {
-                                event.setCancelled(true);
+                                if (this.breaking.prevent()) {
+                                    event.setCancelled(true);
+                                }
                             }
                         }
                     }
