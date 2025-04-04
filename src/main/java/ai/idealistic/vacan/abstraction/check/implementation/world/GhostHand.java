@@ -128,6 +128,7 @@ public class GhostHand extends CheckRunner {
     @Override
     protected boolean canRun() {
         if (!this.protocol.isFlying()
+                && !Compatibility.CompatibilityType.MC_MMO.isFunctional()
                 && !Vehicles.has(this.protocol, Vehicles.DRILL)
                 && !PrinterMode.isUsing(this.protocol)
                 && Attributes.getAmount(this.protocol, Attributes.PLAYER_BLOCK_INTERACTION_RANGE) == Double.MIN_VALUE) {

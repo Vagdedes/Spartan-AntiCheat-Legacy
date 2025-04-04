@@ -204,7 +204,7 @@ public class PlayerInfo extends InventoryMenu {
             return "Player is offline";
         }
         if (!PluginEdition.hasDetectionsPurchased(dataType, hackType.category)) {
-            return "Detection is missing";
+            return "Check is not installed";
         }
         String worldName = protocol.getWorld().getName();
         Check check = hackType.getCheck();
