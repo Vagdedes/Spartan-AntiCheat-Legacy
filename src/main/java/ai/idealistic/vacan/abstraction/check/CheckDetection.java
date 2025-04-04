@@ -7,12 +7,10 @@ import ai.idealistic.vacan.api.PlayerViolationEvent;
 import ai.idealistic.vacan.api.VacanAPI;
 import ai.idealistic.vacan.functionality.connection.CloudConnections;
 import ai.idealistic.vacan.functionality.connection.PluginEdition;
+import ai.idealistic.vacan.functionality.moderation.AwarenessNotifications;
 import ai.idealistic.vacan.functionality.moderation.DetectionNotifications;
 import ai.idealistic.vacan.functionality.moderation.clickable.ClickableMessage;
-import ai.idealistic.vacan.functionality.server.Config;
-import ai.idealistic.vacan.functionality.server.MultiVersion;
-import ai.idealistic.vacan.functionality.server.PluginBase;
-import ai.idealistic.vacan.functionality.server.TPS;
+import ai.idealistic.vacan.functionality.server.*;
 import ai.idealistic.vacan.functionality.tracking.AntiCheatLogs;
 import ai.idealistic.vacan.functionality.tracking.ResearchEngine;
 import ai.idealistic.vacan.utils.math.AlgebraUtils;
@@ -75,7 +73,7 @@ public abstract class CheckDetection extends CheckProcess {
 
     public final long defaultAverageTime, timeToNotify, timeToPrevent, timeToPunish;
     private final long[] accumulatedTime, previousTime;
-    private long notifications;
+    private long notifications, notInstalledNotifications;
 
     public CheckDetection(
             CheckRunner executor,
@@ -159,8 +157,7 @@ public abstract class CheckDetection extends CheckProcess {
                 && (this.forcedDataType == null
                 || this.forcedDataType == this.protocol.getDataType())
                 && (this.detectionType == null
-                || this.detectionType == this.protocol.detectionType)
-                && PluginEdition.hasDetectionsPurchased(this.protocol.getDataType(), this.hackType.category);
+                || this.detectionType == this.protocol.detectionType);
     }
 
     public final void call(Runnable runnable) {
@@ -460,6 +457,16 @@ public abstract class CheckDetection extends CheckProcess {
         if (disableCause != null
                 && !disableCause.hasExpired()
                 && disableCause.pointerMatches(information)) {
+            return;
+        }
+        if (!PluginEdition.hasDetectionsPurchased(this.protocol.getDataType(), this.hackType.category)) {
+            if (this.notInstalledNotifications <= System.currentTimeMillis()
+                    && Permissions.isStaff(this.protocol.bukkit())) {
+                this.notInstalledNotifications = System.currentTimeMillis() + 2_500L;
+                AwarenessNotifications.forcefullySend(
+                        "The '" + this.hackType.category + "' checks are not installed."
+                );
+            }
             return;
         }
         long time = System.currentTimeMillis();

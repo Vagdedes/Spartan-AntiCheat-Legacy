@@ -48,7 +48,7 @@ public class CommandExecution implements CommandExecutor {
             sender.sendMessage("");
             String command = "§2" + Register.pluginName + " AntiCheat";
             String placeholder = "Click to view our Patreon offer/s.";
-            command += "\n§8[ §7Detections Available§8: "
+            command += "\n§8[ §7Checks Available§8: "
                     + (PluginEdition.hasDetectionsPurchased(Check.DataType.JAVA) ? "§a" : "§c") + Check.DataType.JAVA
                     + " §8/ "
                     + (PluginEdition.hasDetectionsPurchased(Check.DataType.BEDROCK) ? "§a" : "§c") + Check.DataType.BEDROCK

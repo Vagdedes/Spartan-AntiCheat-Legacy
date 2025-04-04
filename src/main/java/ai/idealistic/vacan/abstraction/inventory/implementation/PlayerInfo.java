@@ -98,7 +98,7 @@ public class PlayerInfo extends InventoryMenu {
             lore.clear();
             lore.add("");
             lore.add("§7Packets§8: §a" + (PluginBase.packetsEnabled() ? "Enabled" : "Disabled"));
-            lore.add("§7Detections Available§8: "
+            lore.add("§7Checks Available§8: "
                     + (PluginEdition.hasDetectionsPurchased(Check.DataType.JAVA) ? "§a" : "§c") + Check.DataType.JAVA
                     + " §8/ "
                     + (PluginEdition.hasDetectionsPurchased(Check.DataType.BEDROCK) ? "§a" : "§c") + Check.DataType.BEDROCK);

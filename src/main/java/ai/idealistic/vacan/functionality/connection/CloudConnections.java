@@ -2,7 +2,6 @@ package ai.idealistic.vacan.functionality.connection;
 
 import ai.idealistic.vacan.Register;
 import ai.idealistic.vacan.abstraction.check.Check;
-import ai.idealistic.vacan.functionality.moderation.AwarenessNotifications;
 import ai.idealistic.vacan.functionality.moderation.CrossServerNotifications;
 import ai.idealistic.vacan.functionality.server.Config;
 import ai.idealistic.vacan.functionality.server.PluginBase;
@@ -11,7 +10,6 @@ import ai.idealistic.vacan.utils.java.StringUtils;
 import ai.idealistic.vacan.utils.math.AlgebraUtils;
 
 import java.net.URLEncoder;
-import java.util.Arrays;
 import java.util.UUID;
 
 public class CloudConnections {

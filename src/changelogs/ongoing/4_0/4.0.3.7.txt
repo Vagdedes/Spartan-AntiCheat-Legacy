@@ -3,5 +3,6 @@
 [#] Put all plugin teleporations behind more handled methods
 [#] Added a new checks.yml IrregularMovements option for managing the gravity detection
 [#] Added very basic compatibility support for AdvancedEnchantments
-[#] Fixed GhostHand false positives caused by mcMMO abilities.
-[-] Removed an outdated menu command auto completion.
+[#] Fixed GhostHand false positives caused by mcMMO abilities
+[-] Removed an outdated menu command auto completion
+[-] Removed outdated permissions enums
