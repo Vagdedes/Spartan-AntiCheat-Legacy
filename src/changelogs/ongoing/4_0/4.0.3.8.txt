@@ -1,0 +1,1 @@
+[#] Fixed a transaction check console spam AFK issue.

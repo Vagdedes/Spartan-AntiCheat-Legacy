@@ -115,7 +115,8 @@ public class MovementListener extends PacketAdapter {
 
         if (p.isDesync() && tickEvent.getDelay() > 40 && tickEvent.getDelay() < 60) {
             p.transactionVl += (p.isBlatantDesync() ? 2 : 1);
-            if (p.transactionVl > 40) {
+            if (p.transactionVl > 40
+                    && !p.isAFK()) {
                 AwarenessNotifications.optionallySend(player.getName()
                         + " moves faster than the transaction response ("
                         + tickEvent.getDelay() + "ms > "
