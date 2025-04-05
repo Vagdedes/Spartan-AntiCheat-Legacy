@@ -6,6 +6,7 @@ import ai.idealistic.vacan.abstraction.check.CheckEnums;
 import ai.idealistic.vacan.abstraction.profiling.PlayerProfile;
 import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.vacan.functionality.moderation.AwarenessNotifications;
+import ai.idealistic.vacan.functionality.server.Config;
 import ai.idealistic.vacan.functionality.server.PluginBase;
 import ai.idealistic.vacan.functionality.tracking.ResearchEngine;
 import ai.idealistic.vacan.utils.java.ReflectionUtils;
@@ -37,6 +38,7 @@ public class PluginEdition {
                     + " You have " + type + " players which cannot be checked by the anti-cheat due to missing " + type + " detections.";
     private static boolean
             notifyCache = false,
+            oneEdition = false,
             alternativeVersion = false;
     private static final CheckEnums.HackCategoryType[] forSaleChecks = {
             CheckEnums.HackCategoryType.COMBAT,
@@ -69,9 +71,22 @@ public class PluginEdition {
 
     public static void refresh() {
         PluginBase.connectionThread.executeIfUnknownThreadElseHere(() -> {
+            boolean subscriptionBased = CloudConnections.isSubscriptionBased();
+
+            if (!oneEdition) {
+                oneEdition = subscriptionBased || CloudConnections.ownsVacanOne();
+            }
+
             for (CheckEnums.HackCategoryType category : forSaleChecks) {
                 if (checks[currentType.ordinal()][category.ordinal()]
                         && checks[alternativeType.ordinal()][category.ordinal()]) {
+                    continue;
+                }
+                if (!subscriptionBased
+                        && Config.settings.exists("Purchases.opt_out_from_subscriptions")
+                        && Config.settings.getBoolean("Purchases.opt_out_from_subscriptions")) {
+                    checks[currentType.ordinal()][category.ordinal()] = true;
+                    checks[alternativeType.ordinal()][category.ordinal()] = true;
                     continue;
                 }
                 String[] reply = CloudConnections.getOwnedChecks(category.toString());
@@ -87,7 +102,9 @@ public class PluginEdition {
                     }
                 }
             }
-            if (!alternativeVersion) {
+
+            if (!alternativeVersion
+                    && oneEdition) {
                 String pluginsFolder = Register.plugin.getDataFolder().toString().replace(
                         Register.pluginName,
                         ""

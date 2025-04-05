@@ -38,6 +38,56 @@ public class CloudConnections {
         return -1;
     }
 
+    public static boolean isSubscriptionBased() {
+        if (IDs.canAdvertise()) {
+            return true;
+        }
+        try {
+            String[] results = RequestUtils.get(
+                    StringUtils.decodeBase64(JarVerification.website)
+                            + "?" + CloudBase.identification()
+                            + "&action=get"
+                            + "&data=isSubscriptionBased"
+                            + "&paypal_email=" + URLEncoder.encode(Config.settings.getString("Purchases.paypal_email"), "UTF-8")
+                            + "&patreon_full_name=" + URLEncoder.encode(Config.settings.getString("Purchases.patreon_full_name"), "UTF-8")
+                            + "&builtbybit_user_url=" + URLEncoder.encode(Config.settings.getString("Purchases.builtbybit_user_url"), "UTF-8")
+                            + "&version=" + Register.plugin.getDescription().getVersion()
+            );
+
+            if (results.length > 0) {
+                return results[0].equals("true");
+            }
+        } catch (Exception e) {
+            CloudBase.throwError(e, "isSubscriptionBased:GET");
+        }
+        return false;
+    }
+
+    public static boolean ownsVacanOne() {
+        if (IDs.canAdvertise()) {
+            return true;
+        }
+        try {
+            String[] results = RequestUtils.get(
+                    StringUtils.decodeBase64(JarVerification.website)
+                            + "?" + CloudBase.identification()
+                            + "&action=get"
+                            + "&data=ownsVacanOne"
+                            + "&paypal_email=" + URLEncoder.encode(Config.settings.getString("Purchases.paypal_email"), "UTF-8")
+                            + "&patreon_full_name=" + URLEncoder.encode(Config.settings.getString("Purchases.patreon_full_name"), "UTF-8")
+                            + "&builtbybit_user_url=" + URLEncoder.encode(Config.settings.getString("Purchases.builtbybit_user_url"), "UTF-8")
+                            + "&version=" + Register.plugin.getDescription().getVersion()
+            );
+
+            if (results.length > 0) {
+                return results[0].equals("true");
+            }
+        } catch (Exception e) {
+            CloudBase.throwError(e, "ownsVacanOne:GET");
+        }
+        return false;
+    }
+
     static String[] getOwnedChecks(String type) {
         try {
             String[] results = RequestUtils.get(
