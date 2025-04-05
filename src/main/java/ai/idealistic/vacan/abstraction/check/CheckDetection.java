@@ -6,6 +6,8 @@ import ai.idealistic.vacan.api.PlayerViolationCommandEvent;
 import ai.idealistic.vacan.api.PlayerViolationEvent;
 import ai.idealistic.vacan.api.VacanAPI;
 import ai.idealistic.vacan.functionality.connection.CloudConnections;
+import ai.idealistic.vacan.functionality.connection.DiscordServer;
+import ai.idealistic.vacan.functionality.connection.IDs;
 import ai.idealistic.vacan.functionality.connection.PluginEdition;
 import ai.idealistic.vacan.functionality.moderation.AwarenessNotifications;
 import ai.idealistic.vacan.functionality.moderation.DetectionNotifications;
@@ -465,6 +467,9 @@ public abstract class CheckDetection extends CheckProcess {
                 this.notInstalledNotifications = System.currentTimeMillis() + 2_500L;
                 AwarenessNotifications.forcefullySend(
                         "The '" + this.hackType.category + "' checks are not installed."
+                                + (IDs.canAdvertise()
+                                ? " Please install them via " + PluginEdition.patreonURL + "."
+                                : " Join our Discord server via " + DiscordServer.url + " for more information.")
                 );
             }
             return;
