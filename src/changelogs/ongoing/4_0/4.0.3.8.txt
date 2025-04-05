@@ -1,1 +1,2 @@
 [#] Fixed a transaction check console spam AFK issue.
+[#] Added support for stripe.

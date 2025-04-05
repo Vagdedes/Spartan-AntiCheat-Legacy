@@ -35,6 +35,7 @@ public class Settings extends ConfigurationBuilder {
         addOption("Important.enable_watermark", true);
 
         addOption("Purchases.paypal_email", "");
+        addOption("Purchases.stripe_email", "");
         addOption("Purchases.patreon_full_name", "");
         addOption("Purchases.builtbybit_user_url", "");
 

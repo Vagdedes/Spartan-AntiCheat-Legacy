@@ -49,6 +49,7 @@ public class CloudConnections {
                             + "&action=get"
                             + "&data=isSubscriptionBased"
                             + "&paypal_email=" + URLEncoder.encode(Config.settings.getString("Purchases.paypal_email"), "UTF-8")
+                            + "&stripe_email=" + URLEncoder.encode(Config.settings.getString("Purchases.stripe_email"), "UTF-8")
                             + "&patreon_full_name=" + URLEncoder.encode(Config.settings.getString("Purchases.patreon_full_name"), "UTF-8")
                             + "&builtbybit_user_url=" + URLEncoder.encode(Config.settings.getString("Purchases.builtbybit_user_url"), "UTF-8")
                             + "&version=" + Register.plugin.getDescription().getVersion()
@@ -74,6 +75,7 @@ public class CloudConnections {
                             + "&action=get"
                             + "&data=ownsVacanOne"
                             + "&paypal_email=" + URLEncoder.encode(Config.settings.getString("Purchases.paypal_email"), "UTF-8")
+                            + "&stripe_email=" + URLEncoder.encode(Config.settings.getString("Purchases.stripe_email"), "UTF-8")
                             + "&patreon_full_name=" + URLEncoder.encode(Config.settings.getString("Purchases.patreon_full_name"), "UTF-8")
                             + "&builtbybit_user_url=" + URLEncoder.encode(Config.settings.getString("Purchases.builtbybit_user_url"), "UTF-8")
                             + "&version=" + Register.plugin.getDescription().getVersion()
@@ -97,6 +99,7 @@ public class CloudConnections {
                             + "&data=ownsChecks"
                             + "&type=" + type
                             + "&paypal_email=" + URLEncoder.encode(Config.settings.getString("Purchases.paypal_email"), "UTF-8")
+                            + "&stripe_email=" + URLEncoder.encode(Config.settings.getString("Purchases.stripe_email"), "UTF-8")
                             + "&patreon_full_name=" + URLEncoder.encode(Config.settings.getString("Purchases.patreon_full_name"), "UTF-8")
                             + "&builtbybit_user_url=" + URLEncoder.encode(Config.settings.getString("Purchases.builtbybit_user_url"), "UTF-8")
                             + "&version=" + Register.plugin.getDescription().getVersion()
