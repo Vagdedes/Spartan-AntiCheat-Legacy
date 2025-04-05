@@ -113,47 +113,56 @@ public class PluginEdition {
                 for (File file : new File(pluginsFolder).listFiles()) {
                     if (file.isFile()
                             && file.getName().endsWith(".jar")) {
-                        Object object = ReflectionUtils.getFieldFromJar(
-                                file.getAbsolutePath(),
+                        for (String clazz : new String[]{
                                 IDs.class.getCanonicalName(),
-                                "user"
-                        );
-
-                        if (object != null
-                                && object.toString().equals(IDs.user)) {
-                            object = ReflectionUtils.getFieldFromJar(
+                                "ai.idealistic.filegui.system.IDs"
+                        }) {
+                            Object object = ReflectionUtils.getFieldFromJar(
                                     file.getAbsolutePath(),
-                                    IDs.class.getCanonicalName(),
-                                    "resource"
+                                    clazz,
+                                    "user"
                             );
 
                             if (object != null
-                                    && !object.toString().equals(IDs.resource)) {
-                                if (currentType == Check.DataType.JAVA) {
-                                    boolean java = false;
+                                    && object.toString().equals(IDs.user)) {
+                                object = ReflectionUtils.getFieldFromJar(
+                                        file.getAbsolutePath(),
+                                        clazz,
+                                        "resource"
+                                );
 
-                                    for (String id : JavaIDs) {
-                                        if (id.equals(object.toString())) {
-                                            java = true;
-                                            break;
+                                if (object != null
+                                        && !object.toString().equals(IDs.resource)) {
+                                    if (currentType == Check.DataType.JAVA) {
+                                        boolean java = false;
+
+                                        for (String id : JavaIDs) {
+                                            if (id.equals(object.toString())) {
+                                                java = true;
+                                                break;
+                                            }
                                         }
-                                    }
-                                    if (!java) {
-                                        alternativeVersion = true;
-                                        break;
-                                    }
-                                } else {
-                                    for (String id : JavaIDs) {
-                                        if (id.equals(object.toString())) {
+                                        if (!java) {
                                             alternativeVersion = true;
                                             break;
                                         }
-                                    }
+                                    } else {
+                                        for (String id : JavaIDs) {
+                                            if (id.equals(object.toString())) {
+                                                alternativeVersion = true;
+                                                break;
+                                            }
+                                        }
 
-                                    if (alternativeVersion) {
-                                        break;
+                                        if (alternativeVersion) {
+                                            break;
+                                        }
                                     }
                                 }
+                            }
+
+                            if (alternativeVersion) {
+                                break;
                             }
                         }
                     }
