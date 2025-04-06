@@ -12,7 +12,7 @@ public class PluginAddons {
     private static final boolean[] ownedChecks = new boolean[CheckEnums.HackType.values().length];
 
     public static void refresh() {
-        if (IDs.builtByBit || true) {
+        if (IDs.builtByBit) {
             for (CheckEnums.HackType hackType : CheckEnums.HackType.values()) {
                 if (hackType.category == CheckEnums.HackCategoryType.MISCELLANEOUS) {
                     ownedChecks[hackType.ordinal()] = true;
@@ -36,32 +36,24 @@ public class PluginAddons {
                         for (File file : files) {
                             if (file.isFile()
                                     && file.getName().endsWith(".jar")) {
-                                String clazz = Register.mainPackage + ".addon." + hackType.name();
                                 Object object = ReflectionUtils.getFieldFromJar(
                                         file.getAbsolutePath(),
-                                        clazz,
+                                        Register.mainPackage + ".addon." + hackType.name(),
                                         "user"
                                 );
 
                                 if (object != null
                                         && object.toString().equals(IDs.user)) {
-                                    object = ReflectionUtils.getFieldFromJar(
-                                            file.getAbsolutePath(),
-                                            clazz,
-                                            "resource"
-                                    );
-
-                                    if (object != null
-                                            && !object.toString().equals(IDs.resource)) {
-                                        ownedChecks[hackType.ordinal()] = true;
-                                        break;
-                                    }
+                                    ownedChecks[hackType.ordinal()] = true;
+                                    break;
                                 }
                             }
                         }
                     }
                 }
             });
+        } else if (IDs.polymart) {
+            // todo
         } else {
             for (CheckEnums.HackType hackType : CheckEnums.HackType.values()) {
                 ownedChecks[hackType.ordinal()] = true;
