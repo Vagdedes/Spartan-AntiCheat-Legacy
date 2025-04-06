@@ -2,7 +2,6 @@ package ai.idealistic.vacan.abstraction.configuration.implementation;
 
 import ai.idealistic.vacan.abstraction.configuration.ConfigurationBuilder;
 import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
-import ai.idealistic.vacan.functionality.connection.CloudConnections;
 import ai.idealistic.vacan.functionality.moderation.DetectionNotifications;
 import ai.idealistic.vacan.functionality.server.PluginBase;
 
@@ -33,19 +32,6 @@ public class Settings extends ConfigurationBuilder {
         addOption("Important.enable_developer_api", true);
         addOption("Important.enable_npc", false);
         addOption("Important.enable_watermark", true);
-
-        addOption("Purchases.paypal_email", "");
-        addOption("Purchases.stripe_email", "");
-        addOption("Purchases.patreon_full_name", "");
-        addOption("Purchases.builtbybit_user_url", "");
-
-        if (!exists("Purchases.opt_out_from_subscriptions")) {
-            PluginBase.connectionThread.executeIfUnknownThreadElseHere(() -> {
-                if (!CloudConnections.isSubscriptionBased()) {
-                    addOption("Purchases.opt_out_from_subscriptions", false);
-                }
-            });
-        }
 
         addOption("Detections.ground_teleport_on_detection", true);
         addOption("Detections.damage_on_detection", false);
