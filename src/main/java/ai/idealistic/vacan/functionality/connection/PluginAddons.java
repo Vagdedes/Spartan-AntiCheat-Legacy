@@ -4,6 +4,7 @@ import ai.idealistic.vacan.Register;
 import ai.idealistic.vacan.abstraction.check.CheckEnums;
 import ai.idealistic.vacan.functionality.server.PluginBase;
 import ai.idealistic.vacan.utils.java.ReflectionUtils;
+import ai.idealistic.vacan.utils.math.AlgebraUtils;
 
 import java.io.File;
 
@@ -43,7 +44,8 @@ public class PluginAddons {
                                 );
 
                                 if (object != null
-                                        && object.toString().equals(IDs.user)) {
+                                        && (object.toString().equals(IDs.user)
+                                        || !AlgebraUtils.validInteger(object.toString()))) {
                                     ownedChecks[hackType.ordinal()] = true;
                                     break;
                                 }
