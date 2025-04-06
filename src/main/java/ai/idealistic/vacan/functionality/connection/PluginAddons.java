@@ -5,6 +5,7 @@ import ai.idealistic.vacan.abstraction.check.CheckEnums;
 import ai.idealistic.vacan.functionality.server.PluginBase;
 import ai.idealistic.vacan.utils.java.ReflectionUtils;
 import ai.idealistic.vacan.utils.math.AlgebraUtils;
+import org.bukkit.Bukkit;
 
 import java.io.File;
 
@@ -132,7 +133,8 @@ public class PluginAddons {
                     }
                 }
             });
-        } else {
+        } else if (IDs.spigot
+                || Bukkit.getMotd().contains(Register.pluginName)) {
             for (CheckEnums.HackType hackType : CheckEnums.HackType.values()) {
                 ownedChecks[hackType.ordinal()] = true;
             }

@@ -14,7 +14,7 @@ public class IDs {
             enabled = AlgebraUtils.validInteger(resource),
             builtByBit = "%%__BUILTBYBIT__%%".length() != 18,
             polymart = "%%__POLYMART__%%".length() == 1,
-            spigot = !builtByBit && !polymart;
+            spigot = !builtByBit && !polymart && enabled;
     private static String
             userModified = null,
             fileModified = null;
