@@ -1,7 +1,6 @@
 package ai.idealistic.vacan.functionality.connection;
 
 import ai.idealistic.vacan.Register;
-import ai.idealistic.vacan.abstraction.check.Check;
 import ai.idealistic.vacan.abstraction.check.CheckEnums;
 import ai.idealistic.vacan.functionality.server.PluginBase;
 import ai.idealistic.vacan.utils.java.ReflectionUtils;
@@ -10,10 +9,10 @@ import java.io.File;
 
 public class PluginAddons {
 
-    private static final boolean[] ownedChecks = new boolean[Check.DataType.values().length];
+    private static final boolean[] ownedChecks = new boolean[CheckEnums.HackType.values().length];
 
     public static void refresh() {
-        if (IDs.builtByBit) {
+        if (IDs.builtByBit || true) {
             for (CheckEnums.HackType hackType : CheckEnums.HackType.values()) {
                 if (hackType.category == CheckEnums.HackCategoryType.MISCELLANEOUS) {
                     ownedChecks[hackType.ordinal()] = true;

@@ -19,7 +19,6 @@ public class Enums {
         Exploits(CheckEnums.HackType.EXPLOITS),
         GravitySimulation(CheckEnums.HackType.GRAVITY_SIMULATION),
         BlockReach(CheckEnums.HackType.BLOCK_REACH),
-        FastBow(CheckEnums.HackType.FAST_BOW),
         FastClicks(CheckEnums.HackType.FAST_CLICKS),
         FastHeal(CheckEnums.HackType.FAST_HEAL),
         ImpossibleInventory(CheckEnums.HackType.IMPOSSIBLE_INVENTORY),

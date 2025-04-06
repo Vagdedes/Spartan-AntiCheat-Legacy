@@ -24,10 +24,6 @@ public class CheckEnums {
                 HackCategoryType.COMBAT,
                 ai.idealistic.vacan.abstraction.check.implementation.combat.Criticals.class
         ),
-        FAST_BOW(
-                HackCategoryType.COMBAT,
-                ai.idealistic.vacan.abstraction.check.implementation.combat.FastBow.class
-        ),
         FAST_CLICKS(
                 HackCategoryType.COMBAT,
                 ai.idealistic.vacan.abstraction.check.implementation.combat.FastClicks.class

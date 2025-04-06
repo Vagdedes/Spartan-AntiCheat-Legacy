@@ -1,1 +1,8 @@
-[#] Fixed a transaction check console spam AFK issue.
+[#] Fixed a transaction check console spam AFK issue
+[#] The Fast-Bow check is now part of the Fast-Clicks check
+[#] The Ghost-Hand check is now part of the Impossible-Actions check
+[#] The Gravity-Simulation detection from IrregularMovements is now an independent check
+[#] The Speed-Simulation detection from IrregularMovements is now an independent check
+[#] The Ground-Spoof detection from IrregularMovements is now part of the new Exploits check
+[#] The Movement-Spoof detection from IrregularMovements is now part of the new Exploits check
+[#] The Baritone detection from IrregularMovements is now part of the new Exploits check
