@@ -55,7 +55,83 @@ public class PluginAddons {
                 }
             });
         } else if (IDs.polymart) {
-            // todo
+            String combat = "350",
+                    movement = "3600",
+                    world = "984";
+
+            if (IDs.resource.equals(combat)) {
+                for (CheckEnums.HackType hackType : CheckEnums.HackType.values()) {
+                    if (hackType.category == CheckEnums.HackCategoryType.COMBAT
+                            || hackType.category == CheckEnums.HackCategoryType.MISCELLANEOUS) {
+                        ownedChecks[hackType.ordinal()] = true;
+                    }
+                }
+            } else if (IDs.resource.equals(movement)) {
+                for (CheckEnums.HackType hackType : CheckEnums.HackType.values()) {
+                    if (hackType.category == CheckEnums.HackCategoryType.MOVEMENT
+                            || hackType.category == CheckEnums.HackCategoryType.MISCELLANEOUS) {
+                        ownedChecks[hackType.ordinal()] = true;
+                    }
+                }
+            } else if (IDs.resource.equals(world)) {
+                for (CheckEnums.HackType hackType : CheckEnums.HackType.values()) {
+                    if (hackType.category == CheckEnums.HackCategoryType.WORLD
+                            || hackType.category == CheckEnums.HackCategoryType.MISCELLANEOUS) {
+                        ownedChecks[hackType.ordinal()] = true;
+                    }
+                }
+            }
+            PluginBase.dataThread.executeIfUnknownThreadElseHere(() -> {
+                String pluginsFolder = Register.plugin.getDataFolder().toString().replace(
+                        Register.pluginName,
+                        ""
+                );
+
+                for (File file : new File(pluginsFolder).listFiles()) {
+                    if (file.isFile()
+                            && file.getName().endsWith(".jar")) {
+                        String clazz = IDs.class.getCanonicalName();
+                        Object object = ReflectionUtils.getFieldFromJar(
+                                file.getAbsolutePath(),
+                                clazz,
+                                "user"
+                        );
+
+                        if (object != null
+                                && object.toString().equals(IDs.user)) {
+                            object = ReflectionUtils.getFieldFromJar(
+                                    file.getAbsolutePath(),
+                                    clazz,
+                                    "resource"
+                            );
+
+                            if (object != null
+                                    && !object.toString().equals(IDs.resource)) {
+                                if (object.toString().equals(combat)) {
+                                    for (CheckEnums.HackType hackType : CheckEnums.HackType.values()) {
+                                        if (hackType.category == CheckEnums.HackCategoryType.COMBAT) {
+                                            ownedChecks[hackType.ordinal()] = true;
+                                        }
+                                    }
+                                } else if (object.toString().equals(movement)) {
+                                    for (CheckEnums.HackType hackType : CheckEnums.HackType.values()) {
+                                        if (hackType.category == CheckEnums.HackCategoryType.MOVEMENT) {
+                                            ownedChecks[hackType.ordinal()] = true;
+                                        }
+                                    }
+                                } else if (object.toString().equals(world)) {
+                                    for (CheckEnums.HackType hackType : CheckEnums.HackType.values()) {
+                                        if (hackType.category == CheckEnums.HackCategoryType.WORLD) {
+                                            ownedChecks[hackType.ordinal()] = true;
+                                        }
+                                    }
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }
+            });
         } else {
             for (CheckEnums.HackType hackType : CheckEnums.HackType.values()) {
                 ownedChecks[hackType.ordinal()] = true;
