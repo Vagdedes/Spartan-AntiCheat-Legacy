@@ -20,7 +20,13 @@ public class PluginAddons {
                 }
             }
             PluginBase.dataThread.executeIfUnknownThreadElseHere(() -> {
-                File[] files = new File(Register.plugin.getDataFolder() + "/addons").listFiles();
+                File directory = new File(Register.plugin.getDataFolder() + "/addons");
+
+                if (directory.isFile()) {
+                    directory.delete();
+                }
+                directory.mkdirs();
+                File[] files = directory.listFiles();
 
                 if (files != null
                         && files.length > 0) {
@@ -31,7 +37,7 @@ public class PluginAddons {
                         for (File file : files) {
                             if (file.isFile()
                                     && file.getName().endsWith(".jar")) {
-                                String clazz = Register.mainPackage + ".addon." + hackType.name().toLowerCase();
+                                String clazz = Register.mainPackage + ".addon." + hackType.name();
                                 Object object = ReflectionUtils.getFieldFromJar(
                                         file.getAbsolutePath(),
                                         clazz,
