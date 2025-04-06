@@ -22,7 +22,7 @@ public class RampenDrills implements Listener {
                     new CheckEnums.HackType[]{
                             CheckEnums.HackType.FAST_BREAK,
                             CheckEnums.HackType.NO_SWING,
-                            CheckEnums.HackType.GHOST_HAND,
+                            CheckEnums.HackType.IMPOSSIBLE_ACTIONS,
                     },
                     5
             );

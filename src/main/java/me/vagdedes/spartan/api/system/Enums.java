@@ -15,7 +15,9 @@ public class Enums {
         AutoRespawn(CheckEnums.HackType.AUTO_RESPAWN),
         InventoryClicks(CheckEnums.HackType.INVENTORY_CLICKS),
         Criticals(CheckEnums.HackType.CRITICALS),
-        GhostHand(CheckEnums.HackType.GHOST_HAND),
+        SpeedSimulation(CheckEnums.HackType.SPEED_SIMULATION),
+        Exploits(CheckEnums.HackType.EXPLOITS),
+        GravitySimulation(CheckEnums.HackType.GRAVITY_SIMULATION),
         BlockReach(CheckEnums.HackType.BLOCK_REACH),
         FastBow(CheckEnums.HackType.FAST_BOW),
         FastClicks(CheckEnums.HackType.FAST_CLICKS),
@@ -27,8 +29,7 @@ public class Enums {
         MorePackets(CheckEnums.HackType.MORE_PACKETS),
         FastEat(CheckEnums.HackType.FAST_EAT),
         Velocity(CheckEnums.HackType.VELOCITY),
-        KillAura(CheckEnums.HackType.KILL_AURA),
-        ;
+        KillAura(CheckEnums.HackType.KILL_AURA);
 
         @Getter
         private final CheckEnums.HackType hackType;

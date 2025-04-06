@@ -22,7 +22,7 @@ public class WildTools implements Listener {
                     new CheckEnums.HackType[]{
                             CheckEnums.HackType.FAST_BREAK,
                             CheckEnums.HackType.BLOCK_REACH,
-                            CheckEnums.HackType.GHOST_HAND,
+                            CheckEnums.HackType.IMPOSSIBLE_ACTIONS,
                     },
                     40
             );

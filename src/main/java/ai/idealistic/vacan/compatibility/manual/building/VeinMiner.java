@@ -28,7 +28,7 @@ public class VeinMiner implements Listener {
                     new CheckEnums.HackType[]{
                             CheckEnums.HackType.NO_SWING,
                             CheckEnums.HackType.FAST_BREAK,
-                            CheckEnums.HackType.GHOST_HAND,
+                            CheckEnums.HackType.IMPOSSIBLE_ACTIONS,
                             CheckEnums.HackType.BLOCK_REACH,
                             CheckEnums.HackType.FAST_PLACE
                     },
@@ -46,7 +46,7 @@ public class VeinMiner implements Listener {
                     new CheckEnums.HackType[]{
                             CheckEnums.HackType.NO_SWING,
                             CheckEnums.HackType.FAST_BREAK,
-                            CheckEnums.HackType.GHOST_HAND,
+                            CheckEnums.HackType.IMPOSSIBLE_ACTIONS,
                             CheckEnums.HackType.BLOCK_REACH,
                             CheckEnums.HackType.FAST_PLACE
                     },
