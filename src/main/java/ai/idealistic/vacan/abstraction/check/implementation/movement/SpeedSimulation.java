@@ -1,26 +1,39 @@
-package ai.idealistic.vacan.abstraction.check.implementation.movement.irregularmovements;
+package ai.idealistic.vacan.abstraction.check.implementation.movement;
 
-import ai.idealistic.vacan.abstraction.check.Check;
 import ai.idealistic.vacan.abstraction.check.CheckDetection;
+import ai.idealistic.vacan.abstraction.check.CheckEnums.HackType;
 import ai.idealistic.vacan.abstraction.check.CheckRunner;
+import ai.idealistic.vacan.abstraction.check.definition.ImplementedDetection;
+import ai.idealistic.vacan.abstraction.event.CPlayerRiptideEvent;
 import ai.idealistic.vacan.abstraction.event.CPlayerVelocityEvent;
+import ai.idealistic.vacan.abstraction.event.SuperPositionPacketEvent;
 import ai.idealistic.vacan.abstraction.protocol.ExtendedPotionEffect;
 import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.vacan.abstraction.world.ServerLocation;
 import ai.idealistic.vacan.compatibility.manual.vanilla.Attributes;
+import ai.idealistic.vacan.functionality.server.PluginBase;
+import ai.idealistic.vacan.functionality.tracking.MovementProcessing;
+import ai.idealistic.vacan.listeners.protocol.TeleportListener;
 import ai.idealistic.vacan.utils.math.MathHelper;
 import ai.idealistic.vacan.utils.math.RayLine;
 import ai.idealistic.vacan.utils.math.RayUtils;
 import ai.idealistic.vacan.utils.minecraft.entity.PlayerUtils;
 import ai.idealistic.vacan.utils.minecraft.vector.CVector2D;
 import ai.idealistic.vacan.utils.minecraft.world.BlockUtils;
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.events.PacketEvent;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.potion.PotionEffectType;
 
-public class IMSimulationSpeed extends CheckDetection {
+public class SpeedSimulation extends CheckRunner {
+
+    private final CheckDetection detection;
 
     private double vl = 0, vlCount = 0;
 
@@ -40,13 +53,52 @@ public class IMSimulationSpeed extends CheckDetection {
     private int nearSlimeStatus = 0, slimeBoostApply = 0, tridentBoostApply = 0;
     private boolean removePistonTick = false;
 
-    public IMSimulationSpeed(CheckRunner executor) {
-        super(
-                executor,
+    public SpeedSimulation(HackType hackType, PlayerProtocol protocol) {
+        super(hackType, protocol);
+        this.detection = new ImplementedDetection(
+                this,
                 null,
-                Check.DetectionType.PACKETS,
-                "speed",
+                null,
+                "check_speed_simulation",
                 true
+        );
+    }
+
+    @Override
+    protected void handleInternal(boolean cancelled, Object object) {
+        if (object instanceof PlayerTeleportEvent) {
+            this.teleport();
+        } else if (object instanceof SuperPositionPacketEvent) {
+            SuperPositionPacketEvent e = (SuperPositionPacketEvent) object;
+            this.ground(e.packetEvent.getPacket().getBooleans().read(0));
+        } else if (object instanceof CPlayerRiptideEvent) {
+            this.trident();
+        } else if (object instanceof PlayerMoveEvent) {
+            this.run();
+        } else if (object instanceof VehicleEnterEvent) {
+            this.vhAct();
+        } else if (PluginBase.packetsEnabled()
+                && object instanceof PacketEvent) {
+            PacketType eventType = ((PacketEvent) object).getPacketType();
+
+            for (PacketType type : TeleportListener.packetTypes) {
+                if (type.equals(eventType)) {
+                    this.teleport();
+                    break;
+                }
+            }
+        }
+    }
+
+    @Override
+    protected boolean canRun() {
+        return MovementProcessing.canCheck(
+                this.protocol,
+                true,
+                true,
+                false,
+                true,
+                false
         );
     }
 
@@ -54,8 +106,8 @@ public class IMSimulationSpeed extends CheckDetection {
         return p.wasGliding() || p.getVehicle() != null;
     }
 
-    void run() {
-        this.call(() -> {
+    private void run() {
+        this.detection.call(() -> {
             PlayerProtocol p = this.protocol;
 
             if (patches(p)) {
@@ -267,7 +319,7 @@ public class IMSimulationSpeed extends CheckDetection {
                                     );
                                 }
                                 if (d >= difference) {
-                                    this.cancel(
+                                    this.detection.cancel(
                                             1.0 + d,
                                             "simulation[accel], diff: " + d,
                                             this.protocol.getFromLocation(),
@@ -369,27 +421,27 @@ public class IMSimulationSpeed extends CheckDetection {
         return abs(abs(motion) - abs(velo)) < 0.08;
     }
 
-    void teleport() {
-        this.call(() -> {
+    private void teleport() {
+        this.detection.call(() -> {
             this.tpTicks = 1;
             this.air = 0;
         });
     }
 
-    void ground(boolean isOnGround) {
-        this.call(() -> {
+    private void ground(boolean isOnGround) {
+        this.detection.call(() -> {
             this.air = isOnGround ? 0 : this.air + 1;
             this.action = this.protocol.useItemPacket ? this.action + 1 : 0;
             this.ground = isOnGround ? this.ground + 1 : 0;
         });
     }
 
-    void trident() {
-        this.call(() -> this.tridentBoostApply = 10);
+    private void trident() {
+        this.detection.call(() -> this.tridentBoostApply = 10);
     }
 
-    void vhAct() {
-        this.call(() -> this.vhact = 2);
+    private void vhAct() {
+        this.detection.call(() -> this.vhact = 2);
     }
 
     private static double abs(double v) {
@@ -460,11 +512,9 @@ public class IMSimulationSpeed extends CheckDetection {
         return false;
     }
 
-
     private boolean isOnSemi(Location location) {
         return this.protocol.getEnvironment().isSemi();
     }
-
 
     private boolean isOnSlime(Location location) {
         return this.protocol.getEnvironment().isSlime();

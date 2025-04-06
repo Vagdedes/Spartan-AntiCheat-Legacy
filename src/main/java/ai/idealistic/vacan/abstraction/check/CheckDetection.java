@@ -27,11 +27,11 @@ public abstract class CheckDetection extends CheckProcess {
     private static long lastPrevention = 0L;
     private static Method tpsMethod = null;
 
-    protected static void setLastPrevention() {
+    private static void setLastPrevention() {
         CheckDetection.lastPrevention = System.currentTimeMillis();
     }
 
-    protected static long getLastPrevention() {
+    public static long getLastPrevention() {
         return System.currentTimeMillis() - CheckDetection.lastPrevention;
     }
 

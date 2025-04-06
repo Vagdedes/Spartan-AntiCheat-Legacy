@@ -1,27 +1,39 @@
-package ai.idealistic.vacan.abstraction.check.implementation.movement.irregularmovements;
+package ai.idealistic.vacan.abstraction.check.implementation.movement;
 
-import ai.idealistic.vacan.abstraction.check.Check;
 import ai.idealistic.vacan.abstraction.check.CheckDetection;
+import ai.idealistic.vacan.abstraction.check.CheckEnums.HackType;
 import ai.idealistic.vacan.abstraction.check.CheckRunner;
+import ai.idealistic.vacan.abstraction.check.definition.ImplementedDetection;
+import ai.idealistic.vacan.abstraction.event.CPlayerRiptideEvent;
 import ai.idealistic.vacan.abstraction.event.CPlayerVelocityEvent;
+import ai.idealistic.vacan.abstraction.event.PlayerTickEvent;
 import ai.idealistic.vacan.abstraction.protocol.ExtendedPotionEffect;
 import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.vacan.abstraction.world.ServerLocation;
 import ai.idealistic.vacan.functionality.server.MultiVersion;
-import ai.idealistic.vacan.functionality.server.MultiVersion.MCVersion;
+import ai.idealistic.vacan.functionality.server.PluginBase;
 import ai.idealistic.vacan.functionality.server.TPS;
+import ai.idealistic.vacan.functionality.tracking.MovementProcessing;
+import ai.idealistic.vacan.listeners.protocol.TeleportListener;
 import ai.idealistic.vacan.utils.math.AlgebraUtils;
 import ai.idealistic.vacan.utils.math.RayUtils;
 import ai.idealistic.vacan.utils.minecraft.entity.PlayerUtils;
 import ai.idealistic.vacan.utils.minecraft.entity.PotionEffectUtils;
 import ai.idealistic.vacan.utils.minecraft.world.BlockUtils;
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.events.PacketEvent;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Boat;
 import org.bukkit.entity.Entity;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.vehicle.VehicleEnterEvent;
 import org.bukkit.potion.PotionEffectType;
 
-public class IMSimulationGravity extends CheckDetection {
+public class GravitySimulation extends CheckRunner {
+
+    private final CheckDetection detection;
 
     private int air = 0, ground = 0;
     private int top = 0, topReset = 0;
@@ -40,13 +52,52 @@ public class IMSimulationGravity extends CheckDetection {
     private int teleportTicks = 0; // vagdedes patch
     private double motionY = 0;
 
-    public IMSimulationGravity(CheckRunner executor) {
-        super(
-                executor,
+    public GravitySimulation(HackType hackType, PlayerProtocol protocol) {
+        super(hackType, protocol);
+        this.detection = new ImplementedDetection(
+                this,
                 null,
-                Check.DetectionType.PACKETS,
-                "gravity_packets",
+                null,
+                "check_speed_simulation",
                 true
+        );
+    }
+
+    @Override
+    protected void handleInternal(boolean cancelled, Object object) {
+        if (object instanceof PlayerTeleportEvent) {
+            this.teleport();
+        } else if (object instanceof CPlayerRiptideEvent) {
+            this.trident();
+        } else if (object instanceof PlayerMoveEvent) {
+            this.run();
+        } else if (object instanceof PlayerTickEvent) {
+            PlayerTickEvent e = (PlayerTickEvent) object;
+            this.groundSp(e.onGround);
+        } else if (object instanceof VehicleEnterEvent) {
+            this.vhAct();
+        } else if (PluginBase.packetsEnabled()
+                && object instanceof PacketEvent) {
+            PacketType eventType = ((PacketEvent) object).getPacketType();
+
+            for (PacketType type : TeleportListener.packetTypes) {
+                if (type.equals(eventType)) {
+                    this.teleport();
+                    break;
+                }
+            }
+        }
+    }
+
+    @Override
+    protected boolean canRun() {
+        return MovementProcessing.canCheck(
+                this.protocol,
+                true,
+                true,
+                false,
+                true,
+                false
         );
     }
 
@@ -80,7 +131,7 @@ public class IMSimulationGravity extends CheckDetection {
     }
 
     void run() {
-        this.call(() -> {
+        this.detection.call(() -> {
             PlayerProtocol p = this.protocol;
 
             if (patches(p)) {
@@ -256,14 +307,14 @@ public class IMSimulationGravity extends CheckDetection {
                     this.topReset = 0;
                 }
                 boolean onWaterBubble = this.isOnWaterBubble();
-                if (MultiVersion.isOrGreater(MCVersion.V1_13)
+                if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
                         && this.protocol.bukkit().isSwimming()) {
                     this.swimming = 2;
                 } else if (this.swimming > 0) {
                     this.swimming--;
                 }
                 double waterLimClimb = (this.isOnSolidGround(to)) ? 0.4 : 0.2;
-                double waterLim = (MultiVersion.isOrGreater(MCVersion.V1_13))
+                double waterLim = (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13))
                         ? (this.swimming > 0) ? 0.4 : waterLimClimb : waterLimClimb;
                 if (dev1 > 0.01 && isOnWater && motion > -3.92
                         && motion < (onWaterBubble ? 0.8 : waterLim)) {
@@ -381,7 +432,7 @@ public class IMSimulationGravity extends CheckDetection {
                 /*
                 Brainrot 1.18< version cringe fix...
                  */
-                if (!this.protocol.isUsingVersionOrGreater(MCVersion.V1_19)
+                if (!this.protocol.isUsingVersionOrGreater(MultiVersion.MCVersion.V1_19)
                         && (air > 5 && air < 10)
                         && (motion < this.predictY() + 0.04)
                         && speed < 0.1) {
@@ -472,7 +523,7 @@ public class IMSimulationGravity extends CheckDetection {
                                 );
 
                                 if (devTotal > difference) {
-                                    this.cancel(
+                                    this.detection.cancel(
                                             1.0 + devTotal,
                                             "simulation[gravity], y: " + alertBuilder + ", ry: " + devTotal,
                                             this.protocol.getFromLocation()
@@ -507,7 +558,7 @@ public class IMSimulationGravity extends CheckDetection {
     }
 
     void vhAct() {
-        this.call(() -> this.vhact = 2);
+        this.detection.call(() -> this.vhact = 2);
     }
 
     private double getDeviance(double motion) {
@@ -533,11 +584,11 @@ public class IMSimulationGravity extends CheckDetection {
     }
 
     void teleport() {
-        this.call(() -> {
+        this.detection.call(() -> {
             this.air = 0;
             this.ground = 0;
             this.teleportExcept = 0.35;
-            this.teleportTicks = getLastPrevention() <= (TPS.tickTime * 2L) ? 1 : 5;
+            this.teleportTicks = CheckDetection.getLastPrevention() <= (TPS.tickTime * 2L) ? 1 : 5;
             this.vl /= 1.5;
             this.setPredict(0.0);
         });
@@ -552,11 +603,11 @@ public class IMSimulationGravity extends CheckDetection {
     }
 
     void groundSp(boolean isOnGround) {
-        this.call(() -> this.ground(isOnGround));
+        this.detection.call(() -> this.ground(isOnGround));
     }
 
     void trident() {
-        this.call(() -> {
+        this.detection.call(() -> {
             this.trident = true;
             this.levitation = 13;
             this.levitationA = 4;

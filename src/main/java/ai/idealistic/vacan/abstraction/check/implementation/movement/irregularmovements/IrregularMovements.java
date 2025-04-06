@@ -2,9 +2,6 @@ package ai.idealistic.vacan.abstraction.check.implementation.movement.irregularm
 
 import ai.idealistic.vacan.abstraction.check.CheckEnums.HackType;
 import ai.idealistic.vacan.abstraction.check.CheckRunner;
-import ai.idealistic.vacan.abstraction.event.CPlayerRiptideEvent;
-import ai.idealistic.vacan.abstraction.event.PlayerTickEvent;
-import ai.idealistic.vacan.abstraction.event.SuperPositionPacketEvent;
 import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.vacan.functionality.server.PluginBase;
 import ai.idealistic.vacan.functionality.tracking.MovementProcessing;
@@ -12,17 +9,12 @@ import ai.idealistic.vacan.listeners.protocol.TeleportListener;
 import ai.idealistic.vacan.utils.minecraft.entity.PlayerUtils;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketEvent;
-import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityToggleGlideEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
-import org.bukkit.event.vehicle.VehicleEnterEvent;
-import org.bukkit.event.vehicle.VehicleExitEvent;
 
 public class IrregularMovements extends CheckRunner {
 
-    private final IMSimulationGravity gravity;
-    private final IMSimulationSpeed speed;
     private final IMFoodSprint foodSprint;
     private final IMHeadPosition headPosition;
     private final IMSimulationElytra elytra;
@@ -30,9 +22,7 @@ public class IrregularMovements extends CheckRunner {
 
     public IrregularMovements(HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);
-        gravity = new IMSimulationGravity(this);
         foodSprint = new IMFoodSprint(this);
-        speed = new IMSimulationSpeed(this);
         headPosition = new IMHeadPosition(this);
         elytra = new IMSimulationElytra(this);
         vehicle = new IMSimulationVehicle(this);
@@ -42,25 +32,11 @@ public class IrregularMovements extends CheckRunner {
     protected void handleInternal(boolean cancelled, Object object) {
         if (object instanceof PlayerTeleportEvent) {
             this.teleport();
-        } else if (object instanceof CPlayerRiptideEvent) {
-            gravity.trident();
-            speed.trident();
-        } else if (object instanceof SuperPositionPacketEvent) {
-            SuperPositionPacketEvent e = (SuperPositionPacketEvent) object;
-            speed.ground(e.packetEvent.getPacket().getBooleans().read(0));
         } else if (object instanceof PlayerMoveEvent) {
             foodSprint.run();
-            gravity.run();
-            speed.run();
             headPosition.run();
             elytra.runSimulation();
             vehicle.run();
-        } else if (object instanceof PlayerTickEvent) {
-            PlayerTickEvent e = (PlayerTickEvent) object;
-            gravity.groundSp(e.onGround);
-        } else if (object instanceof VehicleEnterEvent) {
-            speed.vhAct();
-            gravity.vhAct();
         } else if (PlayerUtils.elytra
                 && object instanceof EntityToggleGlideEvent) {
             elytra.runExploit();
@@ -78,8 +54,6 @@ public class IrregularMovements extends CheckRunner {
     }
 
     private void teleport() {
-        gravity.teleport();
-        speed.teleport();
         elytra.teleport();
         vehicle.teleport();
     }

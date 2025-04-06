@@ -2,6 +2,8 @@ package ai.idealistic.vacan.abstraction.check;
 
 import ai.idealistic.vacan.abstraction.check.implementation.misc.ImpossibleInventory;
 import ai.idealistic.vacan.abstraction.check.implementation.misc.InventoryClicks;
+import ai.idealistic.vacan.abstraction.check.implementation.movement.GravitySimulation;
+import ai.idealistic.vacan.abstraction.check.implementation.movement.SpeedSimulation;
 import ai.idealistic.vacan.abstraction.check.implementation.movement.exploits.Exploits;
 import ai.idealistic.vacan.utils.minecraft.inventory.MaterialUtils;
 import lombok.Getter;
@@ -44,11 +46,11 @@ public class CheckEnums {
         ),
         GRAVITY_SIMULATION(
                 HackCategoryType.MOVEMENT,
-                ai.idealistic.vacan.abstraction.check.implementation.movement.Gravity.class
+                GravitySimulation.class
         ),
         SPEED_SIMULATION(
                 HackCategoryType.MOVEMENT,
-                ai.idealistic.vacan.abstraction.check.implementation.movement.Speed.class
+                SpeedSimulation.class
         ),
         EXPLOITS(
                 HackCategoryType.MOVEMENT,
