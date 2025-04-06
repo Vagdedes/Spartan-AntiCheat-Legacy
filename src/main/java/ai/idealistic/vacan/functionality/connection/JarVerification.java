@@ -29,12 +29,12 @@ public class JarVerification {
 
         if (IDs.enabled) {
             if (isValid(plugin)) {
-                PluginEdition.refresh();
+                PluginAddons.refresh();
             } else {
                 Bukkit.getPluginManager().disablePlugin(plugin);
             }
         } else {
-            PluginEdition.refresh();
+            PluginAddons.refresh();
 
             if (!isValid(plugin)) {
                 String message = "This version of " + plugin.getName() + " does not have a license."

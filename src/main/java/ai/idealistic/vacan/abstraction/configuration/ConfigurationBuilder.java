@@ -1,7 +1,6 @@
 package ai.idealistic.vacan.abstraction.configuration;
 
 import ai.idealistic.vacan.Register;
-import ai.idealistic.vacan.functionality.connection.PluginEdition;
 import ai.idealistic.vacan.utils.minecraft.server.ConfigUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -124,7 +123,7 @@ public abstract class ConfigurationBuilder {
             return path;
         } else {
             value = ChatColor.translateAlternateColorCodes('&', value);
-            value = value.replace(prefix, PluginEdition.getProductName(value));
+            value = value.replace(prefix, Register.pluginName);
         }
         str.put(path, value);
         return value;

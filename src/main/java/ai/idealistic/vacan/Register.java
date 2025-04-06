@@ -23,6 +23,7 @@ import java.util.Set;
 public class Register extends JavaPlugin {
 
     public static Plugin plugin = null;
+    public static final String mainPackage = "ai.idealistic.vacan";
     public static final String pluginName = "Vacan";
     public static final String command = "vacan";
 

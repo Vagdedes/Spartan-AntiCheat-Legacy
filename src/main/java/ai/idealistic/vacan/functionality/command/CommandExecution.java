@@ -6,7 +6,6 @@ import ai.idealistic.vacan.abstraction.check.CheckEnums;
 import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.vacan.api.Permission;
 import ai.idealistic.vacan.functionality.connection.DiscordServer;
-import ai.idealistic.vacan.functionality.connection.PluginEdition;
 import ai.idealistic.vacan.functionality.moderation.DetectionNotifications;
 import ai.idealistic.vacan.functionality.moderation.Wave;
 import ai.idealistic.vacan.functionality.moderation.clickable.ClickableMessage;
@@ -47,32 +46,11 @@ public class CommandExecution implements CommandExecutor {
         if (!isPlayer || Permissions.has((Player) sender)) {
             sender.sendMessage("");
             String command = "§2" + Register.pluginName + " AntiCheat";
-            String placeholder = "Click to view our Patreon offer/s.";
-            command += "\n§8[ §7Checks Available§8: "
-                    + (PluginEdition.hasDetectionsPurchased(Check.DataType.JAVA) ? "§a" : "§c") + Check.DataType.JAVA
-                    + " §8/ "
-                    + (PluginEdition.hasDetectionsPurchased(Check.DataType.BEDROCK) ? "§a" : "§c") + Check.DataType.BEDROCK
-                    + " §8]";
 
-            ClickableMessage.sendURL(
-                    sender,
-                    command,
-                    placeholder,
-                    PluginEdition.patreonURL
-            );
+            sender.sendMessage(command);
             if (documentation) {
-                ClickableMessage.sendURL(
-                        sender,
-                        "§8§l<> §7Required command argument",
-                        placeholder,
-                        PluginEdition.patreonURL
-                );
-                ClickableMessage.sendURL(
-                        sender,
-                        "§8§l[] §7Optional command argument",
-                        placeholder,
-                        PluginEdition.patreonURL
-                );
+                sender.sendMessage("§8§l<> §7Required command argument");
+                sender.sendMessage("§8§l[] §7Optional command argument");
             }
             return true;
         }

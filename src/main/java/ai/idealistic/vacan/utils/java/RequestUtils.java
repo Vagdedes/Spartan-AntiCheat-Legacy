@@ -1,6 +1,5 @@
 package ai.idealistic.vacan.utils.java;
 
-import ai.idealistic.vacan.functionality.connection.PluginEdition;
 import lombok.experimental.UtilityClass;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -23,7 +22,7 @@ public class RequestUtils {
         URL url = new URL(split[0]);
         HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
         connection.addRequestProperty("User-Agent",
-                PluginEdition.getProductID() + (message != null ? " (" + message + ")" : ""));
+                "1" + (message != null ? " (" + message + ")" : ""));
         connection.setRequestMethod(method);
         connection.setReadTimeout(timeOut);
         connection.setDoOutput(true);

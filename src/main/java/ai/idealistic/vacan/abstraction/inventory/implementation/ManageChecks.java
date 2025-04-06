@@ -8,7 +8,7 @@ import ai.idealistic.vacan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.vacan.api.Permission;
 import ai.idealistic.vacan.functionality.command.CommandExecution;
 import ai.idealistic.vacan.functionality.connection.DiscordServer;
-import ai.idealistic.vacan.functionality.connection.PluginEdition;
+import ai.idealistic.vacan.functionality.connection.PluginAddons;
 import ai.idealistic.vacan.functionality.moderation.clickable.ClickableMessage;
 import ai.idealistic.vacan.functionality.server.Config;
 import ai.idealistic.vacan.functionality.server.MultiVersion;
@@ -115,8 +115,7 @@ public class ManageChecks extends InventoryMenu {
                 silent = check.isSilent(null, null),
                 bypassing = Permissions.isBypassing(protocol.bukkit(), hackType),
                 punish = check.canPunish(null),
-                java = PluginEdition.hasDetectionsPurchased(Check.DataType.JAVA, hackType.category),
-                bedrock = PluginEdition.hasDetectionsPurchased(Check.DataType.BEDROCK, hackType.category);
+                purchased = PluginAddons.ownsCheck(hackType);
         String enabledOption, silentOption, punishOption, colour, secondColour;
         ItemStack item;
 
@@ -153,9 +152,8 @@ public class ManageChecks extends InventoryMenu {
         // Separator
 
         lore.add("");
-        lore.add((java ? "§2" : "§4") + "Java Edition §8/ "
-                + (bedrock ? "§2" : "§4") + "Bedrock Edition");
-        lore.add((enabled ? "§a" : "§c") + "Enabled §8/ "
+        lore.add((purchased ? "§a" : "§c") + "Purchased §8/ "
+                + (enabled ? "§a" : "§c") + "Enabled §8/ "
                 + (silent ? "§a" : "§c") + "Silent §8/ "
                 + (punish ? "§a" : "§c") + "Punishments §8/ "
                 + (bypassing ? "§a" : "§c") + "Bypassing");

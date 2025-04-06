@@ -71,7 +71,7 @@ public class CloudBase {
             connectionRefreshCooldown = ms + refreshTime;
 
             // Separator
-            PluginBase.connectionThread.executeIfUnknownThreadElseHere(PluginEdition::refresh);
+            PluginBase.connectionThread.executeIfUnknownThreadElseHere(PluginAddons::refresh);
 
             // Separator
             PluginBase.connectionThread.executeIfUnknownThreadElseHere(() -> {
@@ -91,10 +91,6 @@ public class CloudBase {
                                     p.bukkit().sendMessage(AwarenessNotifications.getNotification(announcement[1]));
                                 }
                             }
-                        }
-                    } else {
-                        for (PlayerProtocol p : protocols) {
-                            PluginEdition.attemptNotifications(p);
                         }
                     }
                 }

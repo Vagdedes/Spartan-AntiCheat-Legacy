@@ -12,7 +12,7 @@ import ai.idealistic.vacan.api.Permission;
 import ai.idealistic.vacan.compatibility.Compatibility;
 import ai.idealistic.vacan.functionality.command.CommandExecution;
 import ai.idealistic.vacan.functionality.connection.DiscordServer;
-import ai.idealistic.vacan.functionality.connection.PluginEdition;
+import ai.idealistic.vacan.functionality.connection.PluginAddons;
 import ai.idealistic.vacan.functionality.moderation.clickable.ClickableMessage;
 import ai.idealistic.vacan.functionality.server.Config;
 import ai.idealistic.vacan.functionality.server.MultiVersion;
@@ -98,10 +98,6 @@ public class PlayerInfo extends InventoryMenu {
             lore.clear();
             lore.add("");
             lore.add("§7Packets§8: §a" + (PluginBase.packetsEnabled() ? "Enabled" : "Disabled"));
-            lore.add("§7Checks Available§8: "
-                    + (PluginEdition.hasDetectionsPurchased(Check.DataType.JAVA) ? "§a" : "§c") + Check.DataType.JAVA
-                    + " §8/ "
-                    + (PluginEdition.hasDetectionsPurchased(Check.DataType.BEDROCK) ? "§a" : "§c") + Check.DataType.BEDROCK);
             Runtime runtime = Runtime.getRuntime();
 
             lore.add("§7Server Version§8: §a" + MultiVersion.serverVersion.toString());
@@ -203,8 +199,8 @@ public class PlayerInfo extends InventoryMenu {
         if (!hasPlayer) {
             return "Player is offline";
         }
-        if (!PluginEdition.hasDetectionsPurchased(dataType, hackType.category)) {
-            return "Check is not installed";
+        if (!PluginAddons.ownsCheck(hackType)) {
+            return "Check is not purchased";
         }
         String worldName = protocol.getWorld().getName();
         Check check = hackType.getCheck();

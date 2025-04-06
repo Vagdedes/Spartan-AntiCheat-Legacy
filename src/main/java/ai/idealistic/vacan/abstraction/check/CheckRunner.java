@@ -8,6 +8,7 @@ import ai.idealistic.vacan.compatibility.manual.enchants.CustomEnchantsPlus;
 import ai.idealistic.vacan.compatibility.manual.enchants.EcoEnchants;
 import ai.idealistic.vacan.compatibility.manual.vanilla.Attributes;
 import ai.idealistic.vacan.compatibility.necessary.protocollib.ProtocolLib;
+import ai.idealistic.vacan.functionality.connection.PluginAddons;
 import ai.idealistic.vacan.functionality.moderation.DetectionNotifications;
 import ai.idealistic.vacan.functionality.server.MultiVersion;
 import ai.idealistic.vacan.functionality.server.Permissions;
@@ -97,7 +98,8 @@ public abstract class CheckRunner extends CheckProcess {
                 && hackType.getCheck().isEnabled(this.protocol.getDataType(), this.protocol.getWorld().getName())
                 && (!cancelled || hackType.getCheck().handleCancelledEvents)
                 && (!v1_8 || this.protocol.getGameMode() != GameMode.SPECTATOR)
-                && Attributes.getAmount(this.protocol, Attributes.GENERIC_SCALE) == Double.MIN_VALUE;
+                && Attributes.getAmount(this.protocol, Attributes.GENERIC_SCALE) == Double.MIN_VALUE
+                && PluginAddons.ownsCheck(this.hackType);
     }
 
     final boolean canCancel() {
