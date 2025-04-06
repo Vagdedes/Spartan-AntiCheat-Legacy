@@ -17,6 +17,7 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.Vector;
 
@@ -33,6 +34,7 @@ public class ImpossibleActions extends CheckRunner {
             actions;
     private final Tower tower;
     private final ScaffoldAnalysis scaffoldAnalysis;
+    private final GhostHand ghostHand;
 
     public ImpossibleActions(CheckEnums.HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);
@@ -40,6 +42,7 @@ public class ImpossibleActions extends CheckRunner {
         this.scaffoldUp = new ImplementedDetection(this, Check.DataType.JAVA, null, "scaffold_up", true);
         this.scaffoldYaw = new ImplementedDetection(this, Check.DataType.JAVA, null, "scaffold_yaw", true);
         this.actions = new ImplementedDetection(this, null, null, "actions", true);
+        this.ghostHand = new GhostHand(this);
         this.tower = new Tower(this);
         this.scaffoldAnalysis = new ScaffoldAnalysis(this);
     }
@@ -145,9 +148,13 @@ public class ImpossibleActions extends CheckRunner {
                     }
                 }
             }
+        } else if (object instanceof BlockBreakEvent) {
+            this.ghostHand.breaking((BlockBreakEvent) object);
         } else if (object instanceof PlayerInteractEvent) {
+            PlayerInteractEvent event = (PlayerInteractEvent) object;
+            this.ghostHand.interact(event);
+
             this.actions.call(() -> {
-                PlayerInteractEvent event = (PlayerInteractEvent) object;
                 Action action = event.getAction();
 
                 if ((action == Action.LEFT_CLICK_AIR

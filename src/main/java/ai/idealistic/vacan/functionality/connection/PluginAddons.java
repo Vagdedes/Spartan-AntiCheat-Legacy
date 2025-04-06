@@ -14,6 +14,11 @@ public class PluginAddons {
 
     public static void refresh() {
         if (IDs.builtByBit) {
+            for (CheckEnums.HackType hackType : CheckEnums.HackType.values()) {
+                if (hackType.category == CheckEnums.HackCategoryType.MISCELLANEOUS) {
+                    ownedChecks[hackType.ordinal()] = true;
+                }
+            }
             PluginBase.dataThread.executeIfUnknownThreadElseHere(() -> {
                 File[] files = new File(Register.plugin.getDataFolder() + "/addons").listFiles();
 
@@ -58,8 +63,6 @@ public class PluginAddons {
             }
         }
     }
-
-    // Detections
 
     public static boolean ownsCheck(CheckEnums.HackType hackType) {
         return ownedChecks[hackType.ordinal()];

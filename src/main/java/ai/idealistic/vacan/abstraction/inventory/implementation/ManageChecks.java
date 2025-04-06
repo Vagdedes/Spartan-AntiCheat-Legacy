@@ -144,13 +144,6 @@ public class ManageChecks extends InventoryMenu {
         }
 
         List<String> lore = new ArrayList<>(30);
-
-        for (String s : hackType.description) {
-            lore.add("§7" + s);
-        }
-
-        // Separator
-
         lore.add("");
         lore.add((purchased ? "§a" : "§c") + "Purchased §8/ "
                 + (enabled ? "§a" : "§c") + "Enabled §8/ "

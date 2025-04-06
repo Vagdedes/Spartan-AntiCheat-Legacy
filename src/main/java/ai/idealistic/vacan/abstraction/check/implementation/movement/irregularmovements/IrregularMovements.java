@@ -24,31 +24,23 @@ public class IrregularMovements extends CheckRunner {
     private final IMSimulationGravity gravity;
     private final IMSimulationSpeed speed;
     private final IMFoodSprint foodSprint;
-    private final IMBaritone baritone;
     private final IMHeadPosition headPosition;
-    private final IMGroundSpoof groundSpoof;
     private final IMSimulationElytra elytra;
     private final IMSimulationVehicle vehicle;
-    private final IMMovementSpoof movementSpoof;
 
     public IrregularMovements(HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);
         gravity = new IMSimulationGravity(this);
         foodSprint = new IMFoodSprint(this);
-        baritone = new IMBaritone(this);
         speed = new IMSimulationSpeed(this);
         headPosition = new IMHeadPosition(this);
-        groundSpoof = new IMGroundSpoof(this);
         elytra = new IMSimulationElytra(this);
         vehicle = new IMSimulationVehicle(this);
-        movementSpoof = new IMMovementSpoof(this);
     }
 
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
-        if (object == null) {
-            movementSpoof.run();
-        } else if (object instanceof PlayerTeleportEvent) {
+        if (object instanceof PlayerTeleportEvent) {
             this.teleport();
         } else if (object instanceof CPlayerRiptideEvent) {
             gravity.trident();
@@ -56,31 +48,13 @@ public class IrregularMovements extends CheckRunner {
         } else if (object instanceof SuperPositionPacketEvent) {
             SuperPositionPacketEvent e = (SuperPositionPacketEvent) object;
             speed.ground(e.packetEvent.getPacket().getBooleans().read(0));
-            groundSpoof.run(
-                    new PlayerMoveEvent(
-                            e.protocol.bukkit(),
-                            e.protocol.getLocation(),
-                            e.protocol.getFromLocation()
-                    )
-            );
         } else if (object instanceof PlayerMoveEvent) {
-            movementSpoof.update();
             foodSprint.run();
-            baritone.run();
             gravity.run();
             speed.run();
             headPosition.run();
             elytra.runSimulation();
             vehicle.run();
-            groundSpoof.run((PlayerMoveEvent) object);
-        } else if (object instanceof BlockBreakEvent) {
-            if (((BlockBreakEvent) object).isCancelled()) {
-                groundSpoof.onBreak();
-            } else {
-                movementSpoof.onBreak();
-            }
-        } else if (object instanceof VehicleExitEvent) {
-            groundSpoof.onVehicleExit();
         } else if (object instanceof PlayerTickEvent) {
             PlayerTickEvent e = (PlayerTickEvent) object;
             gravity.groundSp(e.onGround);
@@ -106,7 +80,6 @@ public class IrregularMovements extends CheckRunner {
     private void teleport() {
         gravity.teleport();
         speed.teleport();
-        baritone.teleport();
         elytra.teleport();
         vehicle.teleport();
     }
