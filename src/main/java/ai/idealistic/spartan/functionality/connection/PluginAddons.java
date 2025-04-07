@@ -12,8 +12,9 @@ import java.io.File;
 
 public class PluginAddons {
 
-    private static final boolean[] ownedChecks = new boolean[CheckEnums.HackType.values().length];
-    private static final boolean[] ownsEditions = new boolean[Check.DataType.values().length];
+    private static final boolean[]
+            ownedChecks = new boolean[CheckEnums.HackType.values().length],
+            ownsEditions = new boolean[Check.DataType.values().length];
 
     public static void refresh() {
         if (false) { // Addons

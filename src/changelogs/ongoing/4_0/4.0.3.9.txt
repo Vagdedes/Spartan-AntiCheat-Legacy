@@ -1,0 +1,1 @@
+[#] Renamed the plugin from Vacan back to Spartan.
