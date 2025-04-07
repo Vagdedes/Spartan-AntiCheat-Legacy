@@ -145,6 +145,8 @@ public class ManageChecks extends InventoryMenu {
 
         List<String> lore = new ArrayList<>(30);
         lore.add("");
+        lore.add((PluginAddons.ownsEdition(Check.DataType.JAVA) ? "§2" : "§4") + Check.DataType.JAVA + " Edition §8/ "
+                + (PluginAddons.ownsEdition(Check.DataType.BEDROCK) ? "§2" : "§4") + Check.DataType.BEDROCK + " Edition");
         lore.add((purchased ? "§a" : "§c") + "Purchased §8/ "
                 + (enabled ? "§a" : "§c") + "Enabled §8/ "
                 + (silent ? "§a" : "§c") + "Silent §8/ "

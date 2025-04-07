@@ -1,6 +1,7 @@
 package ai.idealistic.vacan.functionality.connection;
 
 import ai.idealistic.vacan.Register;
+import ai.idealistic.vacan.abstraction.check.Check;
 import ai.idealistic.vacan.abstraction.check.CheckEnums;
 import ai.idealistic.vacan.functionality.server.PluginBase;
 import ai.idealistic.vacan.utils.java.ReflectionUtils;
@@ -12,9 +13,13 @@ import java.io.File;
 public class PluginAddons {
 
     private static final boolean[] ownedChecks = new boolean[CheckEnums.HackType.values().length];
+    private static final boolean[] ownsEditions = new boolean[Check.DataType.values().length];
 
     public static void refresh() {
-        if (IDs.builtByBit) {
+        if (false) { // Addons
+            for (Check.DataType dataType : Check.DataType.values()) {
+                ownsEditions[dataType.ordinal()] = true;
+            }
             for (CheckEnums.HackType hackType : CheckEnums.HackType.values()) {
                 if (hackType.category == CheckEnums.HackCategoryType.MISCELLANEOUS) {
                     ownedChecks[hackType.ordinal()] = true;
@@ -55,10 +60,13 @@ public class PluginAddons {
                     }
                 }
             });
-        } else if (IDs.polymart) {
-            String combat = "350",
-                    movement = "3600",
-                    world = "984";
+        } else if (false) { // Multi jars
+            for (Check.DataType dataType : Check.DataType.values()) {
+                ownsEditions[dataType.ordinal()] = true;
+            }
+            String combat = IDs.builtByBit ? "11196" : "350",
+                    movement = IDs.builtByBit ? "12832" : "3600",
+                    world = IDs.builtByBit ? "20142" : "984";
 
             if (IDs.resource.equals(combat)) {
                 for (CheckEnums.HackType hackType : CheckEnums.HackType.values()) {
@@ -133,16 +141,73 @@ public class PluginAddons {
                     }
                 }
             });
-        } else if (IDs.spigot
-                || Bukkit.getMotd().contains(Register.pluginName)) {
+        } else if (IDs.builtByBit
+                || IDs.polymart
+                || IDs.spigot) { // Editions
             for (CheckEnums.HackType hackType : CheckEnums.HackType.values()) {
                 ownedChecks[hackType.ordinal()] = true;
+            }
+            String java = IDs.builtByBit ? "11196" : "350",
+                    bedrock = IDs.builtByBit ? "12832" : "3600";
+
+            if (IDs.resource.equals(java)) {
+                ownsEditions[Check.DataType.JAVA.ordinal()] = true;
+            } else if (IDs.resource.equals(bedrock)) {
+                ownsEditions[Check.DataType.BEDROCK.ordinal()] = true;
+            }
+            PluginBase.dataThread.executeIfUnknownThreadElseHere(() -> {
+                String pluginsFolder = Register.plugin.getDataFolder().toString().replace(
+                        Register.pluginName,
+                        ""
+                );
+
+                for (File file : new File(pluginsFolder).listFiles()) {
+                    if (file.isFile()
+                            && file.getName().endsWith(".jar")) {
+                        String clazz = IDs.class.getCanonicalName();
+                        Object object = ReflectionUtils.getFieldFromJar(
+                                file.getAbsolutePath(),
+                                clazz,
+                                "user"
+                        );
+
+                        if (object != null
+                                && object.toString().equals(IDs.user)) {
+                            object = ReflectionUtils.getFieldFromJar(
+                                    file.getAbsolutePath(),
+                                    clazz,
+                                    "resource"
+                            );
+
+                            if (object != null
+                                    && !object.toString().equals(IDs.resource)) {
+                                if (object.toString().equals(java)) {
+                                    ownsEditions[Check.DataType.JAVA.ordinal()] = true;
+                                } else if (object.toString().equals(bedrock)) {
+                                    ownsEditions[Check.DataType.BEDROCK.ordinal()] = true;
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }
+            });
+        } else if (Bukkit.getMotd().contains(Register.pluginName)) {
+            for (CheckEnums.HackType hackType : CheckEnums.HackType.values()) {
+                ownedChecks[hackType.ordinal()] = true;
+            }
+            for (Check.DataType dataType : Check.DataType.values()) {
+                ownsEditions[dataType.ordinal()] = true;
             }
         }
     }
 
     public static boolean ownsCheck(CheckEnums.HackType hackType) {
         return ownedChecks[hackType.ordinal()];
+    }
+
+    public static boolean ownsEdition(Check.DataType dataType) {
+        return ownsEditions[dataType.ordinal()];
     }
 
 }

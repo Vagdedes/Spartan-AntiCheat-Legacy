@@ -202,6 +202,9 @@ public class PlayerInfo extends InventoryMenu {
         if (!PluginAddons.ownsCheck(hackType)) {
             return "Check is not purchased";
         }
+        if (!PluginAddons.ownsEdition(dataType)) {
+            return dataType + " edition is not purchased";
+        }
         String worldName = protocol.getWorld().getName();
         Check check = hackType.getCheck();
 

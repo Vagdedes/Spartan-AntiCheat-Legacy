@@ -33,11 +33,8 @@ public class Check {
                 case 0:
                     this.string = "Java";
                     break;
-                case 1:
-                    this.string = "Bedrock";
-                    break;
                 default:
-                    this.string = "Universal";
+                    this.string = "Bedrock";
                     break;
             }
         }
