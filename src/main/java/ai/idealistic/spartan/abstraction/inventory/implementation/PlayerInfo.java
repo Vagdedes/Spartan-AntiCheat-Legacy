@@ -38,7 +38,7 @@ public class PlayerInfo extends InventoryMenu {
     private static final Cooldowns cooldowns = new Cooldowns(
             new OverflowMap<>(new ConcurrentHashMap<>(), 512)
     );
-    private static final String menu = ("Player Info: ");
+    private static final String menu = "Player Info: ";
     private static final int[] slots = new int[]{
             20, 21, 23, 24
     };
