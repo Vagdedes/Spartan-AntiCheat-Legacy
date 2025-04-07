@@ -1,6 +1,6 @@
-name: Vacan
-authors: [Evangelos Dedes @Vagdedes - Since 2016, pawsashatoy - Since 2024, GRArthas - Since 2025]
-main: ai.idealistic.vacan.Register
+name: Spartan
+authors: [Evangelos Dedes @Vagdedes - Since 2016, pawsashatoy - Since 2024]
+main: ai.idealistic.spartan.Register
 version: 4.0.3.8
 website: https://www.idealistic.ai
 description: The intuitive solution when it comes to anti-cheat protection
