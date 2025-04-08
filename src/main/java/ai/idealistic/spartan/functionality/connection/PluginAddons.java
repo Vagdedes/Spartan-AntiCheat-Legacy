@@ -193,12 +193,28 @@ public class PluginAddons {
                     }
                 }
             });
-        } else if (Bukkit.getMotd().contains(Register.pluginName)) {
+        } else if (!IDs.enabled) {
             for (CheckEnums.HackType hackType : CheckEnums.HackType.values()) {
                 ownedChecks[hackType.ordinal()] = true;
             }
-            for (Check.DataType dataType : Check.DataType.values()) {
-                ownsEditions[dataType.ordinal()] = true;
+            if (Bukkit.getMotd().contains(Register.pluginName)) {
+                for (Check.DataType dataType : Check.DataType.values()) {
+                    ownsEditions[dataType.ordinal()] = true;
+                }
+            } else if (!ownsEdition(Check.DataType.JAVA)
+                    || !ownsEdition(Check.DataType.BEDROCK)) {
+                String[] editions = CloudConnections.getOwnedEditions();
+
+                if (editions != null) {
+                    for (String edition : editions) {
+                        for (Check.DataType dataType : Check.DataType.values()) {
+                            if (edition.equals(dataType.toString())) {
+                                ownsEditions[dataType.ordinal()] = true;
+                                break;
+                            }
+                        }
+                    }
+                }
             }
         }
     }

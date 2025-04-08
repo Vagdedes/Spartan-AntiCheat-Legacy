@@ -33,6 +33,9 @@ public class Settings extends ConfigurationBuilder {
         addOption("Important.enable_npc", false);
         addOption("Important.enable_watermark", true);
 
+        addOption("Purchases.email_address", "");
+        addOption("Purchases.patreon_full_name", "");
+
         addOption("Detections.ground_teleport_on_detection", true);
         addOption("Detections.damage_on_detection", false);
 
