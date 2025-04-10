@@ -25,11 +25,9 @@ public class CheckPrevention {
     CheckPrevention(Location location, int cancelTicks, boolean groundTeleport, double damage) {
         this.canPrevent = false;
         this.location = PluginAddons.isFreeEdition() ? null : location;
-        this.groundTeleport = !PluginAddons.isFreeEdition()
-                && groundTeleport
+        this.groundTeleport = groundTeleport
                 && Config.settings.getBoolean("Detections.ground_teleport_on_detection");
-        this.damage = !PluginAddons.isFreeEdition()
-                && Config.settings.getBoolean("Detections.damage_on_detection")
+        this.damage = Config.settings.getBoolean("Detections.damage_on_detection")
                 ? damage
                 : 0.0;
         this.expiration = cancelTicks <= 1
@@ -38,7 +36,9 @@ public class CheckPrevention {
     }
 
     boolean complete() {
-        return this.canPrevent && System.currentTimeMillis() <= this.expiration;
+        return !PluginAddons.isFreeEdition()
+                && this.canPrevent
+                && System.currentTimeMillis() <= this.expiration;
     }
 
     boolean hasDetails() {
