@@ -43,7 +43,7 @@ public class IDs {
     }
 
     static String platform() {
-        return IDs.builtByBit ? "BuiltByBit" : IDs.polymart ? "Polymart" : "SpigotMC";
+        return IDs.builtByBit ? "BuiltByBit" : IDs.polymart ? "Polymart" : IDs.spigot ? "SpigotMC" : "Free";
     }
 
     public static boolean canAdvertise() {
