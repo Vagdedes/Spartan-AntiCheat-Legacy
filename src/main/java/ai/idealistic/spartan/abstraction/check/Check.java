@@ -5,6 +5,7 @@ import ai.idealistic.spartan.api.CheckPunishmentToggleEvent;
 import ai.idealistic.spartan.api.CheckSilentToggleEvent;
 import ai.idealistic.spartan.api.CheckToggleEvent;
 import ai.idealistic.spartan.api.ToggleAction;
+import ai.idealistic.spartan.functionality.connection.PluginAddons;
 import ai.idealistic.spartan.functionality.moderation.AwarenessNotifications;
 import ai.idealistic.spartan.functionality.server.Config;
 import ai.idealistic.spartan.functionality.tracking.ResearchEngine;
@@ -114,7 +115,9 @@ public class Check {
 
         String name = getOption("name", this.hackType.toString(), false).toString(),
                 worlds_config = getOption("disabled_worlds", "exampleDisabledWorld1, exampleDisabledWorld2", false).toString(),
-                silents_config = getOption("silent_worlds", "exampleSilentWorld1, exampleSilentWorld2", false).toString();
+                silents_config = PluginAddons.isFreeEdition()
+                        ? null
+                        : getOption("silent_worlds", "exampleSilentWorld1, exampleSilentWorld2", false).toString();
 
         // Separator
         this.enabled = new boolean[DataType.values().length];
@@ -133,15 +136,19 @@ public class Check {
                                     Boolean.parseBoolean(optionValue.toString().toLowerCase());
             this.enabled[dataType.ordinal()] = enabled;
 
-            optionValue = getOption(
-                    "silent." + dataType.toString().toLowerCase(),
-                    false,
-                    false
-            );
-            this.silent[dataType.ordinal()] = optionValue instanceof Boolean ? (boolean) optionValue :
-                    optionValue instanceof Long || optionValue instanceof Integer || optionValue instanceof Short ? ((long) optionValue) > 0L :
-                            optionValue instanceof Double || optionValue instanceof Float ? ((double) optionValue) > 0.0 :
-                                    Boolean.parseBoolean(optionValue.toString().toLowerCase());
+            if (PluginAddons.isFreeEdition()) {
+                this.silent[dataType.ordinal()] = true;
+            } else {
+                optionValue = getOption(
+                        "silent." + dataType.toString().toLowerCase(),
+                        false,
+                        false
+                );
+                this.silent[dataType.ordinal()] = optionValue instanceof Boolean ? (boolean) optionValue :
+                        optionValue instanceof Long || optionValue instanceof Integer || optionValue instanceof Short ? ((long) optionValue) > 0L :
+                                optionValue instanceof Double || optionValue instanceof Float ? ((double) optionValue) > 0.0 :
+                                        Boolean.parseBoolean(optionValue.toString().toLowerCase());
+            }
             optionValue = getOption(
                     "punishments.enabled." + dataType.toString().toLowerCase(),
                     true,
@@ -503,6 +510,9 @@ public class Check {
     // Separator
 
     public boolean isSilent(Check.DataType dataType, String world) {
+        if (PluginAddons.isFreeEdition()) {
+            return true;
+        }
         if (panic
                 || world != null && silentWorlds.contains(world.toLowerCase())) {
             return true;

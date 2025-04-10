@@ -3,21 +3,28 @@ package ai.idealistic.spartan.functionality.connection;
 import ai.idealistic.spartan.Register;
 import ai.idealistic.spartan.abstraction.check.Check;
 import ai.idealistic.spartan.abstraction.check.CheckEnums;
+import ai.idealistic.spartan.functionality.server.Config;
 import ai.idealistic.spartan.functionality.server.PluginBase;
 import ai.idealistic.spartan.utils.java.ReflectionUtils;
 import ai.idealistic.spartan.utils.math.AlgebraUtils;
+import lombok.Getter;
 import org.bukkit.Bukkit;
 
 import java.io.File;
 
 public class PluginAddons {
 
+    public static final String disabledInFreeEdition = "Cannot be modified in free edition";
     private static final boolean[]
             ownedChecks = new boolean[CheckEnums.HackType.values().length],
             ownsEditions = new boolean[Check.DataType.values().length];
+    @Getter
+    private static boolean freeEdition = true;
 
     public static void refresh() {
         if (false) { // Addons
+            disableFreeEdition();
+
             for (Check.DataType dataType : Check.DataType.values()) {
                 ownsEditions[dataType.ordinal()] = true;
             }
@@ -62,6 +69,8 @@ public class PluginAddons {
                 }
             });
         } else if (false) { // Multi jars
+            disableFreeEdition();
+
             for (Check.DataType dataType : Check.DataType.values()) {
                 ownsEditions[dataType.ordinal()] = true;
             }
@@ -144,7 +153,9 @@ public class PluginAddons {
             });
         } else if (IDs.builtByBit
                 || IDs.polymart
-                || IDs.spigot) { // Editions
+                || IDs.spigot) { // Premium Editions
+            disableFreeEdition();
+
             for (CheckEnums.HackType hackType : CheckEnums.HackType.values()) {
                 ownedChecks[hackType.ordinal()] = true;
             }
@@ -193,25 +204,61 @@ public class PluginAddons {
                     }
                 }
             });
-        } else if (!IDs.enabled) {
-            for (CheckEnums.HackType hackType : CheckEnums.HackType.values()) {
-                ownedChecks[hackType.ordinal()] = true;
-            }
-            if (Bukkit.getMotd().contains(Register.pluginName)) {
+        } else if (!IDs.enabled) { // No DRM
+            if (Bukkit.getMotd().contains(Register.pluginName)) { // Test Server
+                freeEdition = false;
+
+                for (CheckEnums.HackType hackType : CheckEnums.HackType.values()) {
+                    ownedChecks[hackType.ordinal()] = true;
+                }
                 for (Check.DataType dataType : Check.DataType.values()) {
                     ownsEditions[dataType.ordinal()] = true;
                 }
-            } else if (!ownsEdition(Check.DataType.JAVA)
-                    || !ownsEdition(Check.DataType.BEDROCK)) {
-                String[] editions = CloudConnections.getOwnedEditions();
+            } else {
+                if (!ownsEdition(Check.DataType.JAVA)
+                        || !ownsEdition(Check.DataType.BEDROCK)) { // Cloud
+                    String[] editions = CloudConnections.getOwnedEditions();
 
-                if (editions != null) {
-                    for (String edition : editions) {
-                        for (Check.DataType dataType : Check.DataType.values()) {
-                            if (edition.equals(dataType.toString())) {
-                                ownsEditions[dataType.ordinal()] = true;
-                                break;
+                    if (editions != null) {
+                        for (String edition : editions) {
+                            for (Check.DataType dataType : Check.DataType.values()) {
+                                if (edition.equals(dataType.toString())) {
+                                    ownsEditions[dataType.ordinal()] = true;
+                                    disableFreeEdition();
+                                    break;
+                                }
                             }
+                        }
+                    }
+                }
+
+                if (!freeEdition) { // Cloud success
+                    for (CheckEnums.HackType hackType : CheckEnums.HackType.values()) {
+                        ownedChecks[hackType.ordinal()] = true;
+                    }
+                } else { // Cloud failure
+                    ownsEditions[Check.DataType.JAVA.ordinal()] = true;
+
+                    for (CheckEnums.HackType hackType : CheckEnums.HackType.values()) {
+                        switch (hackType) {
+                            // Combat
+                            case KILL_AURA:
+                            case HIT_REACH:
+                                // Movement
+                            case SPEED_SIMULATION:
+                            case GRAVITY_SIMULATION:
+                                // World
+                            case BLOCK_REACH:
+                            case IMPOSSIBLE_ACTIONS:
+                                // Misc
+                            case AUTO_RESPAWN:
+                            case FAST_HEAL:
+                            case NO_SWING:
+                                ownedChecks[hackType.ordinal()] = true;
+                                break;
+                            default:
+                                ownedChecks[hackType.ordinal()] = false;
+                                break;
                         }
                     }
                 }
@@ -225,6 +272,11 @@ public class PluginAddons {
 
     public static boolean ownsEdition(Check.DataType dataType) {
         return ownsEditions[dataType.ordinal()];
+    }
+
+    private static void disableFreeEdition() {
+        freeEdition = false;
+        Config.settings.create();
     }
 
 }

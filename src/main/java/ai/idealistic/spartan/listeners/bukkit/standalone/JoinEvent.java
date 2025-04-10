@@ -3,6 +3,7 @@ package ai.idealistic.spartan.listeners.bukkit.standalone;
 import ai.idealistic.spartan.Register;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.spartan.functionality.connection.CloudBase;
+import ai.idealistic.spartan.functionality.connection.PluginAddons;
 import ai.idealistic.spartan.functionality.moderation.AwarenessNotifications;
 import ai.idealistic.spartan.functionality.server.Config;
 import ai.idealistic.spartan.functionality.server.Permissions;
@@ -20,7 +21,8 @@ public class JoinEvent implements Listener {
         Player n = e.getPlayer();
         PlayerProtocol protocol = PluginBase.getProtocol(n);
 
-        if (Config.settings.getBoolean("Important.enable_watermark")
+        if ((PluginAddons.isFreeEdition()
+                || Config.settings.getBoolean("Important.enable_watermark"))
                 && !Permissions.isStaff(n)) {
             n.sendMessage("");
             AwarenessNotifications.forcefullySend(

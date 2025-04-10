@@ -6,6 +6,7 @@ import ai.idealistic.spartan.abstraction.configuration.ConfigurationBuilder;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.spartan.api.VacanAPI;
 import ai.idealistic.spartan.functionality.concurrent.GeneralThread;
+import ai.idealistic.spartan.functionality.connection.PluginAddons;
 import ai.idealistic.spartan.functionality.moderation.AwarenessNotifications;
 import ai.idealistic.spartan.functionality.moderation.CrossServerNotifications;
 import ai.idealistic.spartan.functionality.server.MultiVersion;
@@ -140,18 +141,32 @@ public class SQLFeature extends ConfigurationBuilder {
 
     @Override
     public void create() {
-        addOption("host", "");
-        addOption("user", "");
-        addOption("password", "");
-        addOption("database", "");
-        addOption("table", Register.command + "_logs");
-        addOption("port", "3306");
-        addOption("driver", "mysql");
-        addOption("tls_Version", "");
-        addOption("use_SSL", true);
-        addOption("allow_public_key_retrieval", false);
-        addOption("escape_special_characters", false);
-        sqlThread.executeWithPriority(this::connect);
+        if (PluginAddons.isFreeEdition()) {
+            setOption("host", PluginAddons.disabledInFreeEdition);
+            setOption("user", PluginAddons.disabledInFreeEdition);
+            setOption("password", PluginAddons.disabledInFreeEdition);
+            setOption("database", PluginAddons.disabledInFreeEdition);
+            setOption("table", PluginAddons.disabledInFreeEdition);
+            setOption("port", PluginAddons.disabledInFreeEdition);
+            setOption("driver", PluginAddons.disabledInFreeEdition);
+            setOption("tls_Version", PluginAddons.disabledInFreeEdition);
+            setOption("use_SSL", PluginAddons.disabledInFreeEdition);
+            setOption("allow_public_key_retrieval", PluginAddons.disabledInFreeEdition);
+            setOption("escape_special_characters", PluginAddons.disabledInFreeEdition);
+        } else {
+            addOption("host", "");
+            addOption("user", "");
+            addOption("password", "");
+            addOption("database", "");
+            addOption("table", Register.command + "_logs");
+            addOption("port", "3306");
+            addOption("driver", "mysql");
+            addOption("tls_Version", "");
+            addOption("use_SSL", true);
+            addOption("allow_public_key_retrieval", false);
+            addOption("escape_special_characters", false);
+            sqlThread.executeWithPriority(this::connect);
+        }
     }
 
     // Separator
@@ -229,6 +244,9 @@ public class SQLFeature extends ConfigurationBuilder {
     // Separator
 
     public void update(String command) {
+        if (PluginAddons.isFreeEdition()) {
+            return;
+        }
         sqlThread.execute(() -> {
             connect();
 
@@ -247,6 +265,9 @@ public class SQLFeature extends ConfigurationBuilder {
     }
 
     public ResultSet query(final String command) {
+        if (PluginAddons.isFreeEdition()) {
+            return null;
+        }
         ResultSet[] rs = new ResultSet[1];
         Thread thread = Thread.currentThread();
 
