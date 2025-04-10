@@ -73,7 +73,7 @@ public class CombatListener extends PacketAdapter {
                             new PlayerUseEvent(
                                     event.getPlayer(),
                                     target,
-                                    false
+                                    event.isCancelled()
                             )
                     );
                 }
@@ -101,13 +101,15 @@ public class CombatListener extends PacketAdapter {
                     Entity target = ProtocolLibrary.getProtocolManager().
                             getEntityFromID(protocol.getWorld(), entityId);
                     if (attacker != null && target != null) {
+                        EntityDamageByEntityEvent event1 = new EntityDamageByEntityEvent(
+                                attacker,
+                                target,
+                                EntityDamageByEntityEvent.DamageCause.ENTITY_ATTACK,
+                                0.0D
+                        );
+                        event1.setCancelled(event.isCancelled());
                         CombatEvent.event(
-                                new EntityDamageByEntityEvent(
-                                        attacker,
-                                        target,
-                                        EntityDamageByEntityEvent.DamageCause.ENTITY_ATTACK,
-                                        0.0D
-                                ),
+                                event1,
                                 true
                         );
                     }

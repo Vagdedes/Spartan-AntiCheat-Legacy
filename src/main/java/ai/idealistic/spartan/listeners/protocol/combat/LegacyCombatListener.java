@@ -26,16 +26,16 @@ import java.util.concurrent.ConcurrentHashMap;
 public class LegacyCombatListener extends PacketAdapter {
 
     private final Map<UUID, Integer> pendingAttacks = new OverflowMap<>(
-                    new ConcurrentHashMap<>(),
-                    1_024
+            new ConcurrentHashMap<>(),
+            1_024
     );
 
     public LegacyCombatListener() {
         super(
-                        Register.plugin,
-                        ListenerPriority.HIGHEST,
-                        PacketType.Play.Client.USE_ENTITY,
-                        PacketType.Play.Server.ENTITY_STATUS
+                Register.plugin,
+                ListenerPriority.HIGHEST,
+                PacketType.Play.Client.USE_ENTITY,
+                PacketType.Play.Server.ENTITY_STATUS
         );
     }
 
@@ -59,23 +59,23 @@ public class LegacyCombatListener extends PacketAdapter {
             }
 
             if ((!packet.getEntityUseActions().getValues().isEmpty()) ?
-                            packet.getEntityUseActions().read(0).equals(EnumWrappers.EntityUseAction.ATTACK)
-                            : packet.getEnumEntityUseActions().read(0).getAction().equals(
-                            EnumWrappers.EntityUseAction.ATTACK)) {
+                    packet.getEntityUseActions().read(0).equals(EnumWrappers.EntityUseAction.ATTACK)
+                    : packet.getEnumEntityUseActions().read(0).getAction().equals(
+                    EnumWrappers.EntityUseAction.ATTACK)) {
                 if (protocol.isSDesync()) {
                     AwarenessNotifications.optionallySend(protocol.bukkit().getName()
-                                    + " attack faster than the transaction response.");
+                            + " attack faster than the transaction response.");
                     //protocol.teleport(protocol.getLocation());
                     //event.setCancelled(true);
                     //return;
                 }
                 if (target != null) {
                     CombatEvent.use(
-                                    new PlayerUseEvent(
-                                                    event.getPlayer(),
-                                                    target,
-                                                    false
-                                    )
+                            new PlayerUseEvent(
+                                    event.getPlayer(),
+                                    target,
+                                    event.isCancelled()
+                            )
                     );
                 }
                 pendingAttacks.put(protocol.getUUID(), entityId);
@@ -101,16 +101,18 @@ public class LegacyCombatListener extends PacketAdapter {
                 if (pendingEntityId == entityId) {
                     Player attacker = plugin.getServer().getPlayer(playerUUID);
                     Entity target = ProtocolLibrary.getProtocolManager().
-                                    getEntityFromID(protocol.getWorld(), entityId);
+                            getEntityFromID(protocol.getWorld(), entityId);
                     if (attacker != null && target != null) {
+                        EntityDamageByEntityEvent event1 = new EntityDamageByEntityEvent(
+                                attacker,
+                                target,
+                                EntityDamageByEntityEvent.DamageCause.ENTITY_ATTACK,
+                                0.0D
+                        );
+                        event1.setCancelled(event.isCancelled());
                         CombatEvent.event(
-                                        new EntityDamageByEntityEvent(
-                                                        attacker,
-                                                        target,
-                                                        EntityDamageByEntityEvent.DamageCause.ENTITY_ATTACK,
-                                                        0.0D
-                                        ),
-                                        true
+                                event1,
+                                true
                         );
                     }
                     return true;

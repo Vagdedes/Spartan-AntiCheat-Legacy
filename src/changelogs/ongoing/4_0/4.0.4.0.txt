@@ -1,4 +1,5 @@
 [#] Implemented free edition of the plugin.
 [#] Updated some API classes.
-[#] Improved the functionality of inventory menus.
+[#] Improved the functionality of inventory menus.x
 [#] Potentially fixed a Folia console error.
+[#] Fixed several cancelled event combat false positives.
