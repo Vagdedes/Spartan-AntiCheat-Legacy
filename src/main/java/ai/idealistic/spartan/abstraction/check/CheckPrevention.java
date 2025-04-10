@@ -24,7 +24,7 @@ public class CheckPrevention {
 
     CheckPrevention(Location location, int cancelTicks, boolean groundTeleport, double damage) {
         this.canPrevent = false;
-        this.location = PluginAddons.isFreeEdition() ? null : location;
+        this.location = location;
         this.groundTeleport = groundTeleport
                 && Config.settings.getBoolean("Detections.ground_teleport_on_detection");
         this.damage = Config.settings.getBoolean("Detections.damage_on_detection")
