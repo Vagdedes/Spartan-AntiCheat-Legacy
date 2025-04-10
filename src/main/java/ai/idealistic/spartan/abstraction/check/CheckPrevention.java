@@ -1,6 +1,5 @@
 package ai.idealistic.spartan.abstraction.check;
 
-import ai.idealistic.spartan.functionality.connection.PluginAddons;
 import ai.idealistic.spartan.functionality.server.Config;
 import ai.idealistic.spartan.functionality.server.PluginBase;
 import ai.idealistic.spartan.functionality.server.TPS;
@@ -36,8 +35,7 @@ public class CheckPrevention {
     }
 
     boolean complete() {
-        return !PluginAddons.isFreeEdition()
-                && this.canPrevent
+        return this.canPrevent
                 && System.currentTimeMillis() <= this.expiration;
     }
 

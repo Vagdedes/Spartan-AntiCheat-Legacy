@@ -93,7 +93,7 @@ public abstract class ConfigurationBuilder {
         return value;
     }
 
-    public final String getString(String path) {
+    public String getString(String path) {
         String data = str.get(path);
 
         if (data != null) {
@@ -108,7 +108,7 @@ public abstract class ConfigurationBuilder {
         return value;
     }
 
-    public final String getColorfulString(String path) {
+    public String getColorfulString(String path) {
         String data = str.get(path);
 
         if (data != null) {
@@ -123,7 +123,6 @@ public abstract class ConfigurationBuilder {
             return path;
         } else {
             value = ChatColor.translateAlternateColorCodes('&', value);
-            value = value.replace(prefix, Register.pluginName);
         }
         str.put(path, value);
         return value;

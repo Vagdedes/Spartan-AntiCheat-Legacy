@@ -367,4 +367,15 @@ public class SQLFeature extends ConfigurationBuilder {
     private String syntaxForColumn(Object obj) {
         return "'" + obj.toString() + "'";
     }
+
+    @Override
+    public final String getString(String path) {
+        return super.getString(path);
+    }
+
+    @Override
+    public final String getColorfulString(String path) {
+        return super.getColorfulString(path);
+    }
+
 }

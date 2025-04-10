@@ -6,6 +6,7 @@ import ai.idealistic.spartan.api.PlayerViolationCommandEvent;
 import ai.idealistic.spartan.api.PlayerViolationEvent;
 import ai.idealistic.spartan.api.SpartanAPI;
 import ai.idealistic.spartan.functionality.connection.CloudConnections;
+import ai.idealistic.spartan.functionality.connection.PluginAddons;
 import ai.idealistic.spartan.functionality.moderation.DetectionNotifications;
 import ai.idealistic.spartan.functionality.moderation.clickable.ClickableMessage;
 import ai.idealistic.spartan.functionality.server.Config;
@@ -349,6 +350,9 @@ public abstract class CheckDetection extends CheckProcess {
     // Punishment
 
     private void punish(int level, int max) {
+        if (PluginAddons.isFreeEdition()) {
+            return;
+        }
         Check check = hackType.getCheck();
 
         if (level >= max

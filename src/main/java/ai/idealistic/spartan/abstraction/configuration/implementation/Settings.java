@@ -82,4 +82,14 @@ public class Settings extends ConfigurationBuilder {
         }
     }
 
+    @Override
+    public final String getString(String path) {
+        return super.getString(path);
+    }
+
+    @Override
+    public final String getColorfulString(String path) {
+        return super.getColorfulString(path);
+    }
+
 }

@@ -1,6 +1,8 @@
 package ai.idealistic.spartan.abstraction.configuration.implementation;
 
+import ai.idealistic.spartan.Register;
 import ai.idealistic.spartan.abstraction.configuration.ConfigurationBuilder;
+import ai.idealistic.spartan.functionality.connection.PluginAddons;
 
 public class Messages extends ConfigurationBuilder {
 
@@ -70,4 +72,22 @@ public class Messages extends ConfigurationBuilder {
         addOption("successful_command", "&8[&2" + prefix + "&8]&a Command successful.");
         addOption("massive_command_reason", "&8[&2" + prefix + "&8]&c The length of the reason is too big.");
     }
+
+    @Override
+    public final String getString(String path) {
+        return super.getString(path);
+    }
+
+    @Override
+    public final String getColorfulString(String path) {
+        String string = super.getColorfulString(path);
+
+        if (PluginAddons.isFreeEdition()
+                && !string.contains(prefix)) {
+            string = "§4§l(" + prefix + ")§r " + string;
+        }
+        string = string.replace(prefix, Register.pluginName);
+        return string;
+    }
+
 }
