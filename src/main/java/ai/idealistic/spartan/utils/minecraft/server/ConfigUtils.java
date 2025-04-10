@@ -4,7 +4,7 @@ import ai.idealistic.spartan.Register;
 import ai.idealistic.spartan.abstraction.check.Check;
 import ai.idealistic.spartan.abstraction.check.CheckEnums.HackType;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
-import ai.idealistic.spartan.api.VacanAPI;
+import ai.idealistic.spartan.api.SpartanAPI;
 import ai.idealistic.spartan.functionality.moderation.CrossServerNotifications;
 import ai.idealistic.spartan.functionality.server.MultiVersion;
 import ai.idealistic.spartan.functionality.server.PluginBase;
@@ -32,7 +32,7 @@ public class ConfigUtils {
         message = replace(message, "{online}", String.valueOf(PluginBase.getPlayerCount()));
         message = replace(message, "{motd}", Bukkit.getMotd());
         message = replace(message, "{server:name}", CrossServerNotifications.getServerName());
-        message = replace(message, "{plugin:version}", VacanAPI.getVersion());
+        message = replace(message, "{plugin:version}", SpartanAPI.getVersion());
         message = replace(message, "{server:version}", MultiVersion.serverVersion.toString());
         message = replace(message, "{line}", "\n");
 

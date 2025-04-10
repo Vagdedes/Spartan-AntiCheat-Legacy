@@ -4,7 +4,7 @@ import ai.idealistic.spartan.Register;
 import ai.idealistic.spartan.abstraction.check.CheckEnums;
 import ai.idealistic.spartan.abstraction.configuration.ConfigurationBuilder;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
-import ai.idealistic.spartan.api.VacanAPI;
+import ai.idealistic.spartan.api.SpartanAPI;
 import ai.idealistic.spartan.functionality.concurrent.GeneralThread;
 import ai.idealistic.spartan.functionality.connection.PluginAddons;
 import ai.idealistic.spartan.functionality.moderation.AwarenessNotifications;
@@ -349,7 +349,7 @@ public class SQLFeature extends ConfigurationBuilder {
                             + ", functionality) "
                             + "VALUES (" + syntaxForColumn(AntiCheatLogs.getDate(AntiCheatLogs.dateFormat, time))
                             + ", " + syntaxForColumn(CrossServerNotifications.getServerName())
-                            + ", " + syntaxForColumn(VacanAPI.getVersion())
+                            + ", " + syntaxForColumn(SpartanAPI.getVersion())
                             + ", " + syntaxForColumn(MultiVersion.serverVersion.toString())
                             + ", " + syntaxForColumn(PluginBase.getPlayerCount())
                             + ", " + syntaxForColumn(hasMaterial ? "mining" : hasCheck ? "violation" : "other")

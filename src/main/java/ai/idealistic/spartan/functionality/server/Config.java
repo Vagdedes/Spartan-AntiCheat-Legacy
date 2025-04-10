@@ -8,7 +8,7 @@ import ai.idealistic.spartan.abstraction.configuration.ConfigurationBuilder;
 import ai.idealistic.spartan.abstraction.configuration.implementation.Messages;
 import ai.idealistic.spartan.abstraction.configuration.implementation.SQLFeature;
 import ai.idealistic.spartan.abstraction.configuration.implementation.Settings;
-import ai.idealistic.spartan.api.VacanReloadEvent;
+import ai.idealistic.spartan.api.SpartanReloadEvent;
 import ai.idealistic.spartan.compatibility.Compatibility;
 import ai.idealistic.spartan.functionality.moderation.AwarenessNotifications;
 import ai.idealistic.spartan.functionality.moderation.Wave;
@@ -73,7 +73,7 @@ public class Config {
 
     public static void reload(CommandSender sender) {
         if (Config.settings.getBoolean("Important.enable_developer_api")) {
-            VacanReloadEvent event = new VacanReloadEvent();
+            SpartanReloadEvent event = new SpartanReloadEvent();
             Bukkit.getPluginManager().callEvent(event);
 
             if (event.isCancelled()) {

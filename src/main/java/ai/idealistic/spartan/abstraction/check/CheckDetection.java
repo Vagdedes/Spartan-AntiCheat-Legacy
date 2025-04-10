@@ -4,7 +4,7 @@ import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.spartan.api.CheckCancelEvent;
 import ai.idealistic.spartan.api.PlayerViolationCommandEvent;
 import ai.idealistic.spartan.api.PlayerViolationEvent;
-import ai.idealistic.spartan.api.VacanAPI;
+import ai.idealistic.spartan.api.SpartanAPI;
 import ai.idealistic.spartan.functionality.connection.CloudConnections;
 import ai.idealistic.spartan.functionality.moderation.DetectionNotifications;
 import ai.idealistic.spartan.functionality.moderation.clickable.ClickableMessage;
@@ -288,7 +288,7 @@ public abstract class CheckDetection extends CheckProcess {
                 + "(" + preventionLevelIdentifier + " " + prevention + "),"
                 + "(" + punishmentLevelIdentifier + " " + punishment + "),"
                 + "(Server-Version: " + MultiVersion.serverVersion.toString() + "), "
-                + "(Plugin-Version: " + VacanAPI.getVersion() + "), "
+                + "(Plugin-Version: " + SpartanAPI.getVersion() + "), "
                 + "(Silent: " + hackType.getCheck().isSilent(this.protocol.getDataType(), this.protocol.getWorld().getName()) + "), "
                 + "(Punish: " + hackType.getCheck().canPunish(this.protocol.getDataType()) + "), "
                 + "(Packets: " + this.protocol.packetsEnabled() + "), "

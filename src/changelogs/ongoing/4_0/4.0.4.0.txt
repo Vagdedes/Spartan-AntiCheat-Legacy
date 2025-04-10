@@ -1,1 +1,2 @@
 [#] Implemented free edition of the plugin.
+[#] Updated some API classes.

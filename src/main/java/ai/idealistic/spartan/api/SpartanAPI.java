@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
-public class VacanAPI {
+public class SpartanAPI {
 
     public static String licenseID() {
         return BackgroundAPI.licenseID();
