@@ -86,7 +86,7 @@ public class CombatEvent implements Listener {
     public static void use(PlayerUseEvent e) {
         PlayerProtocol protocol = PluginBase.getProtocol(e.player, true);
         protocol.executeRunners(
-                false,
+                e.isCancelled(),
                 new PlayerAttackEvent(e.player, e.target, e.isCancelled())
         );
     }
