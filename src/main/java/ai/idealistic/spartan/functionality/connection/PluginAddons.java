@@ -14,7 +14,9 @@ import java.io.File;
 
 public class PluginAddons {
 
-    public static final String disabledInFreeEdition = "Cannot be modified in free edition";
+    public static final String
+            patreonURL = "https:/www.patreon.com/SpartanAntiCheat",
+            disabledInFreeEdition = "Cannot be modified in free edition";
     private static final boolean[]
             ownedChecks = new boolean[CheckEnums.HackType.values().length],
             ownsEditions = new boolean[Check.DataType.values().length];

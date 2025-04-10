@@ -15,13 +15,11 @@ import ai.idealistic.spartan.functionality.connection.DiscordServer;
 import ai.idealistic.spartan.functionality.connection.PluginAddons;
 import ai.idealistic.spartan.functionality.moderation.clickable.ClickableMessage;
 import ai.idealistic.spartan.functionality.server.Config;
-import ai.idealistic.spartan.functionality.server.MultiVersion;
 import ai.idealistic.spartan.functionality.server.Permissions;
 import ai.idealistic.spartan.functionality.server.PluginBase;
 import ai.idealistic.spartan.functionality.tracking.ResearchEngine;
 import ai.idealistic.spartan.utils.java.OverflowMap;
 import ai.idealistic.spartan.utils.java.TimeUtils;
-import ai.idealistic.spartan.utils.math.AlgebraUtils;
 import ai.idealistic.spartan.utils.minecraft.inventory.MaterialUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -97,15 +95,8 @@ public class PlayerInfo extends InventoryMenu {
 
             lore.clear();
             lore.add("");
-            lore.add("§7Packets§8: §a" + (PluginBase.packetsEnabled() ? "Enabled" : "Disabled"));
-            Runtime runtime = Runtime.getRuntime();
-
-            lore.add("§7Server Version§8: §a" + MultiVersion.serverVersion.toString());
-            long maxMemory = runtime.maxMemory();
-            lore.add("§7Server Memory Usage§8: §a" + AlgebraUtils.cut(((maxMemory - runtime.freeMemory()) / ((double) maxMemory)) * 100.0, 2) + "%");
-            lore.add("");
-            lore.add("§7Click to §amanage checks§7.");
-            add("§aManagement", lore, new ItemStack(MaterialUtils.get("crafting_table")), 39);
+            lore.add("§7Click to join our Discord community!");
+            add("§aDiscord", lore, new ItemStack(MaterialUtils.get("crafting_table")), 39);
 
             // Separator
 
@@ -182,10 +173,12 @@ public class PlayerInfo extends InventoryMenu {
             }
         }
 
+        lore.add("");
+
         if (!added) {
-            lore.add("");
             lore.add("§7No useful information currently available.");
         }
+        lore.add("§7Click to §amanage checks§7.");
 
         // Separator
 
@@ -268,7 +261,13 @@ public class PlayerInfo extends InventoryMenu {
             }
         } else if (item.equals("Close")) {
             protocol.bukkit().closeInventory();
-        } else if (item.equals("Management")) {
+        } else if (item.equals("Discord")) {
+            protocol.sendImportantMessage("§2§l" + DiscordServer.url);
+            protocol.bukkit().closeInventory();
+        } else if (PluginAddons.isFreeEdition()) {
+            protocol.sendImportantMessage("§2§l" + PluginAddons.patreonURL);
+            protocol.bukkit().closeInventory();
+        } else {
             if (!Permissions.has(protocol.bukkit(), Permission.MANAGE)) {
                 protocol.bukkit().closeInventory();
                 ClickableMessage.sendURL(

@@ -115,9 +115,7 @@ public class Check {
 
         String name = getOption("name", this.hackType.toString(), false).toString(),
                 worlds_config = getOption("disabled_worlds", "exampleDisabledWorld1, exampleDisabledWorld2", false).toString(),
-                silents_config = PluginAddons.isFreeEdition()
-                        ? null
-                        : getOption("silent_worlds", "exampleSilentWorld1, exampleSilentWorld2", false).toString();
+                silents_config = getOption("silent_worlds", "exampleSilentWorld1, exampleSilentWorld2", false).toString();
 
         // Separator
         this.enabled = new boolean[DataType.values().length];
@@ -135,29 +133,29 @@ public class Check {
                             optionValue instanceof Double || optionValue instanceof Float ? ((double) optionValue) > 0.0 :
                                     Boolean.parseBoolean(optionValue.toString().toLowerCase());
             this.enabled[dataType.ordinal()] = enabled;
+            optionValue = getOption(
+                    "silent." + dataType.toString().toLowerCase(),
+                    false,
+                    false
+            );
+            this.silent[dataType.ordinal()] = optionValue instanceof Boolean ? (boolean) optionValue :
+                    optionValue instanceof Long || optionValue instanceof Integer || optionValue instanceof Short ? ((long) optionValue) > 0L :
+                            optionValue instanceof Double || optionValue instanceof Float ? ((double) optionValue) > 0.0 :
+                                    Boolean.parseBoolean(optionValue.toString().toLowerCase());
 
             if (PluginAddons.isFreeEdition()) {
-                this.silent[dataType.ordinal()] = true;
+                this.punish[dataType.ordinal()] = false;
             } else {
                 optionValue = getOption(
-                        "silent." + dataType.toString().toLowerCase(),
-                        false,
+                        "punishments.enabled." + dataType.toString().toLowerCase(),
+                        true,
                         false
                 );
-                this.silent[dataType.ordinal()] = optionValue instanceof Boolean ? (boolean) optionValue :
+                this.punish[dataType.ordinal()] = optionValue instanceof Boolean ? (boolean) optionValue :
                         optionValue instanceof Long || optionValue instanceof Integer || optionValue instanceof Short ? ((long) optionValue) > 0L :
                                 optionValue instanceof Double || optionValue instanceof Float ? ((double) optionValue) > 0.0 :
                                         Boolean.parseBoolean(optionValue.toString().toLowerCase());
             }
-            optionValue = getOption(
-                    "punishments.enabled." + dataType.toString().toLowerCase(),
-                    true,
-                    false
-            );
-            this.punish[dataType.ordinal()] = optionValue instanceof Boolean ? (boolean) optionValue :
-                    optionValue instanceof Long || optionValue instanceof Integer || optionValue instanceof Short ? ((long) optionValue) > 0L :
-                            optionValue instanceof Double || optionValue instanceof Float ? ((double) optionValue) > 0.0 :
-                                    Boolean.parseBoolean(optionValue.toString().toLowerCase());
         }
 
         // Separator
@@ -492,7 +490,8 @@ public class Check {
     // Separator
 
     public boolean canPunish(Check.DataType dataType) {
-        if (panic) {
+        if (panic
+                || PluginAddons.isFreeEdition()) {
             return false;
         }
         if (dataType == null) {
@@ -510,9 +509,6 @@ public class Check {
     // Separator
 
     public boolean isSilent(Check.DataType dataType, String world) {
-        if (PluginAddons.isFreeEdition()) {
-            return true;
-        }
         if (panic
                 || world != null && silentWorlds.contains(world.toLowerCase())) {
             return true;
@@ -569,6 +565,9 @@ public class Check {
     }
 
     public void setPunish(Check.DataType dataType, boolean b) {
+        if (PluginAddons.isFreeEdition()) {
+            return;
+        }
         Check.DataType[] dataTypes;
 
         if (dataType == null) {

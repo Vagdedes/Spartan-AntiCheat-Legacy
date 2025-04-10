@@ -321,7 +321,7 @@ public class SpeedSimulation extends CheckRunner {
                                 if (d >= difference) {
                                     this.detection.cancel(
                                             1.0 + d,
-                                            "simulation[accel], diff: " + d,
+                                            "diff: " + d,
                                             this.protocol.getFromLocation(),
                                             0,
                                             true

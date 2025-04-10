@@ -525,7 +525,7 @@ public class GravitySimulation extends CheckRunner {
                                 if (devTotal > difference) {
                                     this.detection.cancel(
                                             1.0 + devTotal,
-                                            "simulation[gravity], y: " + alertBuilder + ", ry: " + devTotal,
+                                            "y: " + alertBuilder + ", ry: " + devTotal,
                                             this.protocol.getFromLocation()
                                     );
                                 }

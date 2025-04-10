@@ -101,9 +101,16 @@ public class ManageChecks extends InventoryMenu {
                 Check check = Config.getCheckByName(item);
 
                 if (check != null) {
-                    check.setPunish(null, !check.canPunish(null));
+                    if (PluginAddons.isFreeEdition()) {
+                        protocol.sendImportantMessage("§2§l" + PluginAddons.patreonURL);
+                        protocol.bukkit().closeInventory();
+                    } else {
+                        check.setPunish(null, !check.canPunish(null));
+                        open(protocol);
+                    }
+                } else {
+                    open(protocol);
                 }
-                open(protocol);
             }
         }
         return true;

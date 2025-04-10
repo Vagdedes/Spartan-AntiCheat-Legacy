@@ -6,6 +6,7 @@ import ai.idealistic.spartan.abstraction.check.CheckEnums;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.spartan.api.Permission;
 import ai.idealistic.spartan.functionality.connection.DiscordServer;
+import ai.idealistic.spartan.functionality.connection.PluginAddons;
 import ai.idealistic.spartan.functionality.moderation.DetectionNotifications;
 import ai.idealistic.spartan.functionality.moderation.Wave;
 import ai.idealistic.spartan.functionality.moderation.clickable.ClickableMessage;
@@ -48,9 +49,25 @@ public class CommandExecution implements CommandExecutor {
             String command = "§2" + Register.pluginName + " AntiCheat";
 
             sender.sendMessage(command);
+            ClickableMessage.sendURL(
+                    sender,
+                    command,
+                    "Click to learn more!",
+                    PluginAddons.patreonURL
+            );
             if (documentation) {
-                sender.sendMessage("§8§l<> §7Required command argument");
-                sender.sendMessage("§8§l[] §7Optional command argument");
+                ClickableMessage.sendURL(
+                        sender,
+                        "§8§l<> §7Required command argument",
+                        "Click to learn more!",
+                        PluginAddons.patreonURL
+                );
+                ClickableMessage.sendURL(
+                        sender,
+                        "§8§l[] §7Optional command argument",
+                        "Click to learn more!",
+                        PluginAddons.patreonURL
+                );
             }
             return true;
         }
