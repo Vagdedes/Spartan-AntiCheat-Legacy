@@ -40,7 +40,9 @@ public class Register extends JavaPlugin {
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
-        JarVerification.run(this);
+        if (!MultiVersion.folia) {
+            JarVerification.run(this);
+        }
         Config.create();
 
         // Base
