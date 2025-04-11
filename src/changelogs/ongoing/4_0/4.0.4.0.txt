@@ -3,3 +3,4 @@
 [#] Improved the functionality of inventory menus.
 [#] Potentially fixed a Folia console error.
 [#] Fixed several cancelled event combat false positives.
+[#] Added plugin metrics

@@ -3,6 +3,7 @@ package ai.idealistic.spartan;
 import ai.idealistic.spartan.functionality.command.CommandExecution;
 import ai.idealistic.spartan.functionality.command.CommandTab;
 import ai.idealistic.spartan.functionality.connection.JarVerification;
+import ai.idealistic.spartan.functionality.connection.Metrics;
 import ai.idealistic.spartan.functionality.moderation.AwarenessNotifications;
 import ai.idealistic.spartan.functionality.server.Config;
 import ai.idealistic.spartan.functionality.server.MultiVersion;
@@ -31,6 +32,7 @@ public class Register extends JavaPlugin {
 
     public void onEnable() {
         plugin = this;
+        new Metrics(this, 25438);
 
         if (MultiVersion.serverVersion == MultiVersion.MCVersion.OTHER) {
             AwarenessNotifications.forcefullySend(
