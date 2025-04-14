@@ -1,10 +1,16 @@
 package ai.idealistic.spartan.functionality.tracking;
 
 import ai.idealistic.spartan.Register;
+import ai.idealistic.spartan.abstraction.data.Buffer;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.spartan.functionality.connection.PluginAddons;
 import ai.idealistic.spartan.functionality.moderation.AwarenessNotifications;
 import ai.idealistic.spartan.functionality.server.Permissions;
+import ai.idealistic.spartan.utils.java.OverflowMap;
+
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class DetectionCharge {
 
@@ -12,18 +18,28 @@ public class DetectionCharge {
             notify = 1_000L * 60L * 60L, // 1 hour
             add = 1_000L * 5L; // 5 seconds
     private static long charge = System.currentTimeMillis() + (notify * 2L); // 2 hours head start
+    private static final Map<UUID, Buffer.IndividualBuffer> map = new OverflowMap<>(
+            new ConcurrentHashMap<>(),
+            128
+    );
 
     public static boolean charge(PlayerProtocol protocol) {
         if (PluginAddons.isFreeEdition()) {
-            if (charge > System.currentTimeMillis()) {
-                charge += add;
-            } else {
-                charge = System.currentTimeMillis() + add;
+            Buffer.IndividualBuffer buffer = map.computeIfAbsent(
+                    protocol.getUUID(),
+                    uuid -> new Buffer.IndividualBuffer()
+            );
+
+            if (buffer.count(1, 20) <= 10) { // 10 cps
+                if (charge > System.currentTimeMillis()) {
+                    charge += add;
+                } else {
+                    charge = System.currentTimeMillis() + add;
+                }
+                return true;
             }
-            return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
     public static boolean has() {
@@ -31,7 +47,7 @@ public class DetectionCharge {
     }
 
     public static long remaining() {
-        return charge - System.currentTimeMillis();
+        return Math.max(charge - System.currentTimeMillis(), 0L);
     }
 
     public static boolean isLow() {

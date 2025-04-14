@@ -309,7 +309,9 @@ public class CommandExecution implements CommandExecutor {
             } else if (args.length == 1) {
                 if (isPlayer && args[0].equalsIgnoreCase("Manage-Checks")) {
                     PluginBase.manageChecks.open(protocol);
-                } else if (isPlayer && args[0].equalsIgnoreCase("Charge")) {
+                } else if (isPlayer
+                        && PluginAddons.isFreeEdition()
+                        && args[0].equalsIgnoreCase("Charge")) {
                     if (!Permissions.isStaff(protocol.bukkit())) {
                         ClickableMessage.sendURL(
                                 sender,
