@@ -30,7 +30,7 @@ public class PluginChargeMenu extends InventoryMenu {
         }
         List<String> lore = new ArrayList<>(5);
         lore.add("");
-        lore.add("§ahttps://spartan.top §8- §2Spartan AntiCheat");
+        lore.add("§a" + PluginAddons.pluginURL + " §8- §2Spartan AntiCheat");
         lore.add("§3The longest living Minecraft paid anti cheat!");
         lore.add("");
         lore.add("§7Remaining Time§8: §c" + TimeUtils.convertMilliseconds(DetectionCharge.remaining()));

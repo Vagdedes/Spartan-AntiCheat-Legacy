@@ -272,7 +272,7 @@ public class PlayerInfo extends InventoryMenu {
             protocol.sendImportantMessage("§2§l" + DiscordServer.url);
             protocol.bukkit().closeInventory();
         } else if (PluginAddons.isFreeEdition()) {
-            protocol.sendImportantMessage("§2§l" + PluginAddons.patreonURL);
+            protocol.sendImportantMessage("§2§l" + PluginAddons.pluginURL);
             protocol.bukkit().closeInventory();
         } else {
             if (!Permissions.has(protocol.bukkit(), Permission.MANAGE)) {

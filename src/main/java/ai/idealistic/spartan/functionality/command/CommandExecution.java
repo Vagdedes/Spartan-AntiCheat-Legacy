@@ -52,20 +52,20 @@ public class CommandExecution implements CommandExecutor {
                     sender,
                     command,
                     "Click to learn more!",
-                    PluginAddons.patreonURL
+                    PluginAddons.pluginURL
             );
             if (documentation) {
                 ClickableMessage.sendURL(
                         sender,
                         "§8§l<> §7Required command argument",
                         "Click to learn more!",
-                        PluginAddons.patreonURL
+                        PluginAddons.pluginURL
                 );
                 ClickableMessage.sendURL(
                         sender,
                         "§8§l[] §7Optional command argument",
                         "Click to learn more!",
-                        PluginAddons.patreonURL
+                        PluginAddons.pluginURL
                 );
             }
             return true;
