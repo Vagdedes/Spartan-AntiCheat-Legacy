@@ -1,1 +1,2 @@
 [#] Introduced the advanced.yml configuration
+- delete all this and simplify it in a few sentences in the end
