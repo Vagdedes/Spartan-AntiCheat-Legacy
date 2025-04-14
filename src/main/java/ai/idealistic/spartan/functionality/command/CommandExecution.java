@@ -48,7 +48,6 @@ public class CommandExecution implements CommandExecutor {
             sender.sendMessage("");
             String command = "§2" + Register.pluginName + " AntiCheat";
 
-            sender.sendMessage(command);
             ClickableMessage.sendURL(
                     sender,
                     command,
