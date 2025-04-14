@@ -66,9 +66,13 @@ public class Check {
 
     private static boolean panic = false;
     public static final int maxCommands = 10;
-    private static final File file = new File(
+    private static final File
+            file = new File(
             Register.plugin.getDataFolder() + "/checks.yml"
-    );
+    ),
+            advancedFile = new File(
+                    Register.plugin.getDataFolder() + "/checks.yml"
+            );
 
     private static final List<String> defaultPunishments = new ArrayList<>(Check.maxCommands);
 
@@ -374,7 +378,7 @@ public class Check {
         AwarenessNotifications.forcefullySend("Failed to find/create the '" + file.getName() + "' file.");
     }
 
-    public Object getOption(String option, Object def, boolean cache) {
+    private Object getOption(String option, Object def, boolean cache) {
         if (cache) {
             Object cached = options.get(option);
 
@@ -385,6 +389,7 @@ public class Check {
         try {
             String key = this.hackType + "." + option;
             boolean isDefaultNull = def == null;
+            File file = cache ? advancedFile : Check.file;
             YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
 
             if (cache) {

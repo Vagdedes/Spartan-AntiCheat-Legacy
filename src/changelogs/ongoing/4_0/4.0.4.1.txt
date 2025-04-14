@@ -1,2 +1,2 @@
 [#] Introduced the advanced.yml configuration
-[#] Added /spartan charge command to charge the time of the detections
+[#] Added "/spartan charge" command to charge the time of the detections
