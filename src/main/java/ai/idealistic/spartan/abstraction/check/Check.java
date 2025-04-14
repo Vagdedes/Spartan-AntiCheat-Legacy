@@ -5,7 +5,6 @@ import ai.idealistic.spartan.api.CheckPunishmentToggleEvent;
 import ai.idealistic.spartan.api.CheckSilentToggleEvent;
 import ai.idealistic.spartan.api.CheckToggleEvent;
 import ai.idealistic.spartan.api.ToggleAction;
-import ai.idealistic.spartan.functionality.connection.PluginAddons;
 import ai.idealistic.spartan.functionality.moderation.AwarenessNotifications;
 import ai.idealistic.spartan.functionality.server.Config;
 import ai.idealistic.spartan.functionality.tracking.ResearchEngine;
@@ -142,20 +141,15 @@ public class Check {
                     optionValue instanceof Long || optionValue instanceof Integer || optionValue instanceof Short ? ((long) optionValue) > 0L :
                             optionValue instanceof Double || optionValue instanceof Float ? ((double) optionValue) > 0.0 :
                                     Boolean.parseBoolean(optionValue.toString().toLowerCase());
-
-            if (PluginAddons.isFreeEdition()) {
-                this.punish[dataType.ordinal()] = false;
-            } else {
-                optionValue = getOption(
-                        "punishments.enabled." + dataType.toString().toLowerCase(),
-                        true,
-                        false
-                );
-                this.punish[dataType.ordinal()] = optionValue instanceof Boolean ? (boolean) optionValue :
-                        optionValue instanceof Long || optionValue instanceof Integer || optionValue instanceof Short ? ((long) optionValue) > 0L :
-                                optionValue instanceof Double || optionValue instanceof Float ? ((double) optionValue) > 0.0 :
-                                        Boolean.parseBoolean(optionValue.toString().toLowerCase());
-            }
+            optionValue = getOption(
+                    "punishments.enabled." + dataType.toString().toLowerCase(),
+                    true,
+                    false
+            );
+            this.punish[dataType.ordinal()] = optionValue instanceof Boolean ? (boolean) optionValue :
+                    optionValue instanceof Long || optionValue instanceof Integer || optionValue instanceof Short ? ((long) optionValue) > 0L :
+                            optionValue instanceof Double || optionValue instanceof Float ? ((double) optionValue) > 0.0 :
+                                    Boolean.parseBoolean(optionValue.toString().toLowerCase());
         }
 
         // Separator
@@ -490,8 +484,7 @@ public class Check {
     // Separator
 
     public boolean canPunish(Check.DataType dataType) {
-        if (panic
-                || PluginAddons.isFreeEdition()) {
+        if (panic) {
             return false;
         }
         if (dataType == null) {
@@ -565,9 +558,6 @@ public class Check {
     }
 
     public void setPunish(Check.DataType dataType, boolean b) {
-        if (PluginAddons.isFreeEdition()) {
-            return;
-        }
         Check.DataType[] dataTypes;
 
         if (dataType == null) {

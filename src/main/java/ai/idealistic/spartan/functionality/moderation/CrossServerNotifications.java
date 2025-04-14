@@ -4,7 +4,6 @@ import ai.idealistic.spartan.abstraction.check.CheckDetection;
 import ai.idealistic.spartan.abstraction.check.CheckEnums;
 import ai.idealistic.spartan.abstraction.configuration.implementation.Settings;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
-import ai.idealistic.spartan.functionality.connection.PluginAddons;
 import ai.idealistic.spartan.functionality.server.Config;
 import ai.idealistic.spartan.functionality.server.PluginBase;
 import ai.idealistic.spartan.functionality.tracking.ResearchEngine;
@@ -101,9 +100,7 @@ public class CrossServerNotifications {
     }
 
     public static String getServerName() {
-        return PluginAddons.isFreeEdition()
-                ? ""
-                : Config.settings.getString(Settings.crossServerNotificationsName);
+        return Config.settings.getString(Settings.crossServerNotificationsName);
     }
 
 }
