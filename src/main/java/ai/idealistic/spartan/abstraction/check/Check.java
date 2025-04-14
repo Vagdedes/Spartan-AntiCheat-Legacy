@@ -71,7 +71,7 @@ public class Check {
             Register.plugin.getDataFolder() + "/checks.yml"
     ),
             advancedFile = new File(
-                    Register.plugin.getDataFolder() + "/checks.yml"
+                    Register.plugin.getDataFolder() + "/advanced.yml"
             );
 
     private static final List<String> defaultPunishments = new ArrayList<>(Check.maxCommands);
