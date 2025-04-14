@@ -16,6 +16,7 @@ public class CommandTab implements TabCompleter {
     private static final Map<String, Permission[]> commands = new LinkedHashMap<>(18); // Attention
 
     static {
+        commands.put("charge", Permissions.staffPermissions);
         commands.put("panic", new Permission[]{Permission.MANAGE});
         commands.put("toggle", new Permission[]{Permission.MANAGE});
         commands.put("rl", new Permission[]{Permission.RELOAD});

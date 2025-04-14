@@ -4,6 +4,7 @@ import ai.idealistic.spartan.Register;
 import ai.idealistic.spartan.abstraction.inventory.InventoryMenu;
 import ai.idealistic.spartan.abstraction.inventory.implementation.ManageChecks;
 import ai.idealistic.spartan.abstraction.inventory.implementation.PlayerInfo;
+import ai.idealistic.spartan.abstraction.inventory.implementation.PluginChargeMenu;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.spartan.compatibility.Compatibility;
 import ai.idealistic.spartan.compatibility.necessary.protocollib.ProtocolLib;
@@ -29,9 +30,11 @@ public class PluginBase {
 
     public static final ManageChecks manageChecks = new ManageChecks();
     public static final PlayerInfo playerInfo = new PlayerInfo();
+    public static final PluginChargeMenu chargeMenu = new PluginChargeMenu();
     public static final InventoryMenu[] menus = new InventoryMenu[]{
             manageChecks,
-            playerInfo
+            playerInfo,
+            chargeMenu
     };
 
     public static final int
