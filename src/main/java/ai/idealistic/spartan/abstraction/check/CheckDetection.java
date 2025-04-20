@@ -74,7 +74,7 @@ public abstract class CheckDetection extends CheckProcess {
 
     public final long defaultAverageTime, timeToNotify, timeToPrevent, timeToPunish;
     private final long[] accumulatedTime, previousTime;
-    private long notifications, notInstalledNotifications;
+    private long notifications;
 
     public CheckDetection(
             CheckRunner executor,
