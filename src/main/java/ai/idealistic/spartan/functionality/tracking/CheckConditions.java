@@ -11,7 +11,7 @@ import org.bukkit.entity.LivingEntity;
 
 import java.util.List;
 
-public class MovementProcessing {
+public class CheckConditions {
 
     public static boolean canCheckMovement(PlayerProtocol protocol,
                                            boolean vehicle,

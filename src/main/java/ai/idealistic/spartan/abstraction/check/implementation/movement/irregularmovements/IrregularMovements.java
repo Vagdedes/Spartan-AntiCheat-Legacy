@@ -4,7 +4,7 @@ import ai.idealistic.spartan.abstraction.check.CheckEnums.HackType;
 import ai.idealistic.spartan.abstraction.check.CheckRunner;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.spartan.functionality.server.PluginBase;
-import ai.idealistic.spartan.functionality.tracking.MovementProcessing;
+import ai.idealistic.spartan.functionality.tracking.CheckConditions;
 import ai.idealistic.spartan.listeners.protocol.TeleportListener;
 import ai.idealistic.spartan.utils.minecraft.entity.PlayerUtils;
 import com.comphenix.protocol.PacketType;
@@ -60,7 +60,7 @@ public class IrregularMovements extends CheckRunner {
 
     @Override
     protected boolean canRun() {
-        return MovementProcessing.canCheckMovement(
+        return CheckConditions.canCheckMovement(
                 this.protocol,
                 true,
                 true,

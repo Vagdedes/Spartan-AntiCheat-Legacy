@@ -3,7 +3,6 @@ package ai.idealistic.spartan.abstraction.protocol;
 import ai.idealistic.spartan.abstraction.check.Check;
 import ai.idealistic.spartan.abstraction.check.CheckEnums;
 import ai.idealistic.spartan.abstraction.check.CheckRunner;
-import ai.idealistic.spartan.abstraction.data.CheckBoundData;
 import ai.idealistic.spartan.abstraction.data.EnvironmentData;
 import ai.idealistic.spartan.abstraction.data.PacketWorld;
 import ai.idealistic.spartan.abstraction.data.TimerBalancer;
@@ -101,7 +100,6 @@ public class PlayerProtocol {
     private Check.DataType dataType;
     private Set<AxisAlignedBB> axisMatrixCache;
     @Setter
-    private CheckBoundData checkBoundData;
     public final PacketWorld packetWorld;
     public PlayerTickEvent lastTickEvent;
     public short transactionId;
@@ -165,7 +163,6 @@ public class PlayerProtocol {
         this.claimedVeloSpeed = new ConcurrentList<>();
         this.entityHandle = false;
         this.axisMatrixCache = new HashSet<>();
-        this.checkBoundData = null;
         this.pistonTick = false;
         this.lastTickEvent = null;
         this.transactionId = (short) -1939;

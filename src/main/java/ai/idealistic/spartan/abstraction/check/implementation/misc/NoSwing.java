@@ -14,7 +14,7 @@ import ai.idealistic.spartan.compatibility.manual.building.MineBomb;
 import ai.idealistic.spartan.compatibility.manual.building.TreeFeller;
 import ai.idealistic.spartan.compatibility.manual.entity.Vehicles;
 import ai.idealistic.spartan.functionality.server.TPS;
-import ai.idealistic.spartan.functionality.tracking.MovementProcessing;
+import ai.idealistic.spartan.functionality.tracking.CheckConditions;
 import ai.idealistic.spartan.utils.minecraft.world.BlockUtils;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
@@ -90,7 +90,7 @@ public class NoSwing extends CheckRunner {
                 }
                 LivingEntity entity = ((PlayerAttackEvent) object).target;
 
-                if (!MovementProcessing.canCheckCombat(this.protocol, entity)) {
+                if (!CheckConditions.canCheckCombat(this.protocol, entity)) {
                     return;
                 }
                 long time = System.currentTimeMillis();

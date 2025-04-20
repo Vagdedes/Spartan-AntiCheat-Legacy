@@ -12,7 +12,7 @@ import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.spartan.abstraction.world.ServerLocation;
 import ai.idealistic.spartan.compatibility.manual.vanilla.Attributes;
 import ai.idealistic.spartan.functionality.server.PluginBase;
-import ai.idealistic.spartan.functionality.tracking.MovementProcessing;
+import ai.idealistic.spartan.functionality.tracking.CheckConditions;
 import ai.idealistic.spartan.listeners.protocol.TeleportListener;
 import ai.idealistic.spartan.utils.math.MathHelper;
 import ai.idealistic.spartan.utils.math.RayLine;
@@ -92,7 +92,7 @@ public class SpeedSimulation extends CheckRunner {
 
     @Override
     protected boolean canRun() {
-        return MovementProcessing.canCheckMovement(
+        return CheckConditions.canCheckMovement(
                 this.protocol,
                 true,
                 true,

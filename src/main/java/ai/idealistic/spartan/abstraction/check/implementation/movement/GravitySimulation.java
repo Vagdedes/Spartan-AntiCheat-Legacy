@@ -13,7 +13,7 @@ import ai.idealistic.spartan.abstraction.world.ServerLocation;
 import ai.idealistic.spartan.functionality.server.MultiVersion;
 import ai.idealistic.spartan.functionality.server.PluginBase;
 import ai.idealistic.spartan.functionality.server.TPS;
-import ai.idealistic.spartan.functionality.tracking.MovementProcessing;
+import ai.idealistic.spartan.functionality.tracking.CheckConditions;
 import ai.idealistic.spartan.listeners.protocol.TeleportListener;
 import ai.idealistic.spartan.utils.math.AlgebraUtils;
 import ai.idealistic.spartan.utils.math.RayUtils;
@@ -91,7 +91,7 @@ public class GravitySimulation extends CheckRunner {
 
     @Override
     protected boolean canRun() {
-        return MovementProcessing.canCheckMovement(
+        return CheckConditions.canCheckMovement(
                 this.protocol,
                 true,
                 true,

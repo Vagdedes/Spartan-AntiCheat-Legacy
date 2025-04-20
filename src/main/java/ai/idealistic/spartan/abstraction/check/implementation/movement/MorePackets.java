@@ -10,7 +10,7 @@ import ai.idealistic.spartan.abstraction.event.PlayerTickEvent;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.spartan.functionality.server.PluginBase;
 import ai.idealistic.spartan.functionality.server.TPS;
-import ai.idealistic.spartan.functionality.tracking.MovementProcessing;
+import ai.idealistic.spartan.functionality.tracking.CheckConditions;
 import ai.idealistic.spartan.listeners.protocol.TeleportListener;
 import ai.idealistic.spartan.utils.math.RayUtils;
 import com.comphenix.protocol.PacketType;
@@ -161,7 +161,7 @@ public class MorePackets extends CheckRunner {
     protected boolean canRun() {
         return !this.protocol.isAFK()
                 && this.teleported < System.currentTimeMillis()
-                && MovementProcessing.canCheckMovement(
+                && CheckConditions.canCheckMovement(
                 this.protocol,
                 false,
                 true,
