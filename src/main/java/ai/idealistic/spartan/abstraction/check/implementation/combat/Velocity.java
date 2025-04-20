@@ -8,8 +8,8 @@ import ai.idealistic.spartan.abstraction.check.definition.ImplementedDetection;
 import ai.idealistic.spartan.abstraction.event.PlayerTransactionEvent;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.spartan.abstraction.world.ServerLocation;
+import ai.idealistic.spartan.functionality.tracking.MovementProcessing;
 import ai.idealistic.spartan.utils.math.RayUtils;
-import ai.idealistic.spartan.utils.minecraft.entity.CombatUtils;
 import ai.idealistic.spartan.utils.minecraft.world.BlockUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -178,7 +178,7 @@ public class Velocity extends CheckRunner {
                 && !this.protocol.getEnvironment().isSlime()
                 && !this.protocol.getEnvironment().isSlimeWide()
                 && !this.protocol.getEnvironment().isSlimeHeight()
-                && CombatUtils.canCheck(this.protocol)
+                && MovementProcessing.canCheckCombat(this.protocol)
                 && !this.protocol.isOutsideOfTheBorder(-1.0);
     }
 

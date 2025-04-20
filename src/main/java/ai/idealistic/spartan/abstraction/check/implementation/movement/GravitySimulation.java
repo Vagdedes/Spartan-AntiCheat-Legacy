@@ -91,7 +91,7 @@ public class GravitySimulation extends CheckRunner {
 
     @Override
     protected boolean canRun() {
-        return MovementProcessing.canCheck(
+        return MovementProcessing.canCheckMovement(
                 this.protocol,
                 true,
                 true,

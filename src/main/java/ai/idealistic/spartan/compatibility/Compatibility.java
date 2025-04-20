@@ -62,7 +62,6 @@ public class Compatibility {
         ECO_ENCHANTS("EcoEnchants"),
         ITEMS_ADDER("ItemsAdder"),
         RAMPEN_DRILLS("RampenDrills"),
-        OLD_COMBAT_MECHANICS("OldCombatMechanics"),
         PROJECT_KORRA("ProjectKorra"),
         FLOODGATE("Floodgate"),
         ADVANCED_ENCHANTMENTS("AdvancedEnchantments");
@@ -250,7 +249,6 @@ public class Compatibility {
                 () -> Register.enable(new AdvancedAbilities()),
                 null
         );
-        CompatibilityType.OLD_COMBAT_MECHANICS.setFunctional();
         CompatibilityType.VEIN_MINER.setFunctional(
                 VeinMiner::reload,
                 null

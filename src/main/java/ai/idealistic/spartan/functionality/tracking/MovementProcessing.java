@@ -5,19 +5,20 @@ import ai.idealistic.spartan.compatibility.Compatibility;
 import ai.idealistic.spartan.compatibility.manual.abilities.ItemsAdder;
 import ai.idealistic.spartan.compatibility.manual.building.MythicMobs;
 import ai.idealistic.spartan.compatibility.manual.vanilla.Attributes;
-import ai.idealistic.spartan.utils.minecraft.entity.CombatUtils;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 
 import java.util.List;
 
 public class MovementProcessing {
 
-    public static boolean canCheck(PlayerProtocol protocol,
-                                   boolean vehicle,
-                                   boolean elytra,
-                                   boolean flight,
-                                   boolean playerAttributes,
-                                   boolean environmentalAttributes) {
+    public static boolean canCheckMovement(PlayerProtocol protocol,
+                                           boolean vehicle,
+                                           boolean elytra,
+                                           boolean flight,
+                                           boolean playerAttributes,
+                                           boolean environmentalAttributes) {
         if ((elytra || !protocol.isGliding())
                 && (flight || !protocol.wasFlying())
                 && (vehicle || protocol.getVehicle() == null)
@@ -32,9 +33,9 @@ public class MovementProcessing {
             if (Compatibility.CompatibilityType.MYTHIC_MOBS.isFunctional()
                     || Compatibility.CompatibilityType.ITEMS_ADDER.isFunctional()) {
                 List<Entity> entities = protocol.getNearbyEntities(
-                        CombatUtils.maxHitDistance,
-                        CombatUtils.maxHitDistance,
-                        CombatUtils.maxHitDistance
+                        6.0,
+                        6.0,
+                        6.0
                 );
 
                 if (!entities.isEmpty()) {
@@ -48,6 +49,29 @@ public class MovementProcessing {
             return true;
         }
         return false;
+    }
+
+    public static boolean canCheckCombat(PlayerProtocol protocol) {
+        if (!protocol.isLowEyeHeight() // Covers swimming & gliding
+                && !protocol.wasFlying()
+                && protocol.getVehicle() == null
+                && Attributes.getAmount(protocol, Attributes.GENERIC_ARMOR) == Double.MIN_VALUE
+                && Attributes.getAmount(protocol, Attributes.GENERIC_ATTACK_SPEED) == Double.MIN_VALUE
+                && Attributes.getAmount(protocol, Attributes.GENERIC_KNOCKBACK_RESISTANCE) == Double.MIN_VALUE
+                && Attributes.getAmount(protocol, Attributes.PLAYER_ENTITY_INTERACTION_RANGE) == Double.MIN_VALUE) {
+            GameMode gameMode = protocol.getGameMode();
+            return gameMode == GameMode.SURVIVAL
+                    || gameMode == GameMode.ADVENTURE
+                    || gameMode == GameMode.CREATIVE;
+        } else {
+            return false;
+        }
+    }
+
+    public static boolean canCheckCombat(PlayerProtocol protocol, LivingEntity entity) {
+        return !protocol.bukkit().getName().equals(entity.getName())
+                && !MythicMobs.is(entity)
+                && !ItemsAdder.is(entity);
     }
 
 }

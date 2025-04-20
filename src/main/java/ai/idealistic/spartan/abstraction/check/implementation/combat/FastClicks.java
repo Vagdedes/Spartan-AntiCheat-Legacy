@@ -13,7 +13,6 @@ import ai.idealistic.spartan.functionality.server.TPS;
 import ai.idealistic.spartan.utils.java.ConcurrentList;
 import ai.idealistic.spartan.utils.math.AlgebraUtils;
 import ai.idealistic.spartan.utils.math.statistics.StatisticsMath;
-import ai.idealistic.spartan.utils.minecraft.entity.CombatUtils;
 import org.bukkit.Material;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -279,9 +278,9 @@ public class FastClicks extends CheckRunner {
     @Override
     protected boolean canRun() {
         return !this.protocol.getNearbyEntities(
-                CombatUtils.maxHitDistance,
-                CombatUtils.maxHitDistance,
-                CombatUtils.maxHitDistance
+                6.0,
+                6.0,
+                6.0
         ).isEmpty();
     }
 

@@ -8,6 +8,7 @@ import ai.idealistic.spartan.abstraction.event.PlayerAttackEvent;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.spartan.functionality.server.MultiVersion;
 import ai.idealistic.spartan.functionality.server.PluginBase;
+import ai.idealistic.spartan.functionality.tracking.MovementProcessing;
 import ai.idealistic.spartan.utils.java.ConcurrentList;
 import ai.idealistic.spartan.utils.math.ClientMath;
 import ai.idealistic.spartan.utils.math.OptifineMath;
@@ -15,7 +16,6 @@ import ai.idealistic.spartan.utils.math.RayUtils;
 import ai.idealistic.spartan.utils.math.VanillaMath;
 import ai.idealistic.spartan.utils.math.statistics.StatisticsMath;
 import ai.idealistic.spartan.utils.minecraft.entity.AxisAlignedBB;
-import ai.idealistic.spartan.utils.minecraft.entity.CombatUtils;
 import ai.idealistic.spartan.utils.minecraft.entity.MovingObjectPosition;
 import ai.idealistic.spartan.utils.minecraft.vector.Vec3;
 import ai.idealistic.spartan.utils.minecraft.world.BoundingBoxUtil;
@@ -77,7 +77,7 @@ public class HitReach extends CheckRunner {
             if (!(event.target instanceof Player)) return;
             if (event.target.getVehicle() != null || this.protocol.getVehicle() != null) return;
             if (this.protocol.packetsEnabled()) {
-                if (CombatUtils.canCheck(this.protocol, PluginBase.getProtocol((Player) event.target).bukkit())
+                if (MovementProcessing.canCheckCombat(this.protocol, PluginBase.getProtocol((Player) event.target).bukkit())
                         && !this.protocol.getGameMode().equals(GameMode.CREATIVE)) {
                     PlayerProtocol target = PluginBase.getProtocol((Player) event.target);
                     List<Location> h = target.getPositionHistory();
@@ -223,7 +223,7 @@ public class HitReach extends CheckRunner {
                 }
             } else {
                 LivingEntity target = event.target;
-                if (CombatUtils.canCheck(this.protocol, target)
+                if (MovementProcessing.canCheckCombat(this.protocol, target)
                         && !this.protocol.getGameMode().equals(GameMode.CREATIVE)) {
                     double bruteforceRayTrace = RayUtils.bruteforceRayTrace(this.protocol, target),
                             diff = bruteforceRayTrace - 0.4;
@@ -312,6 +312,6 @@ public class HitReach extends CheckRunner {
 
     @Override
     protected boolean canRun() {
-        return CombatUtils.canCheck(this.protocol);
+        return MovementProcessing.canCheckCombat(this.protocol);
     }
 }

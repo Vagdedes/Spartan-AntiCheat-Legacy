@@ -14,9 +14,10 @@ import ai.idealistic.spartan.compatibility.manual.building.MineBomb;
 import ai.idealistic.spartan.compatibility.manual.building.TreeFeller;
 import ai.idealistic.spartan.compatibility.manual.entity.Vehicles;
 import ai.idealistic.spartan.functionality.server.TPS;
-import ai.idealistic.spartan.utils.minecraft.entity.CombatUtils;
+import ai.idealistic.spartan.functionality.tracking.MovementProcessing;
 import ai.idealistic.spartan.utils.minecraft.world.BlockUtils;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -89,7 +90,7 @@ public class NoSwing extends CheckRunner {
                 }
                 LivingEntity entity = ((PlayerAttackEvent) object).target;
 
-                if (!CombatUtils.canCheck(this.protocol, entity)) {
+                if (!MovementProcessing.canCheckCombat(this.protocol, entity)) {
                     return;
                 }
                 long time = System.currentTimeMillis();
@@ -102,7 +103,7 @@ public class NoSwing extends CheckRunner {
                             damageBuffer.reset();
                             this.damage.cancel(
                                     "damage"
-                                            + ", entity: " + CombatUtils.entityToString(entity)
+                                            + ", entity: " + entityToString(entity)
                                             + ", item: " + BlockUtils.materialToString(this.protocol.getItemInHand().getType())
                             );
                         }
@@ -122,6 +123,10 @@ public class NoSwing extends CheckRunner {
     public boolean canRun() {
         return !Vehicles.has(this.protocol, Vehicles.DRILL)
                 && !Compatibility.CompatibilityType.ADVANCED_ENCHANTMENTS.isFunctional();
+    }
+
+    private static String entityToString(Entity e) {
+        return e.getType().toString().toLowerCase().replace("_", "-");
     }
 
 }

@@ -7,7 +7,7 @@ import ai.idealistic.spartan.abstraction.event.EntityAttackPlayerEvent;
 import ai.idealistic.spartan.abstraction.event.PlayerAttackEvent;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.spartan.compatibility.necessary.protocollib.ProtocolLib;
-import ai.idealistic.spartan.utils.minecraft.entity.CombatUtils;
+import ai.idealistic.spartan.functionality.tracking.MovementProcessing;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -31,7 +31,7 @@ public class KillAura extends CheckRunner {
 
     boolean canRunEntity(LivingEntity entity) {
         return ProtocolLib.getVehicle(entity) == null
-                && CombatUtils.canCheck(this.protocol, entity)
+                && MovementProcessing.canCheckCombat(this.protocol, entity)
                 && !this.protocol.bukkit().equals(entity)
                 && hackType.getCheck().getBooleanOption(
                 "detection." + (entity instanceof Player ? "players" : "entities"),
@@ -62,6 +62,6 @@ public class KillAura extends CheckRunner {
 
     @Override
     protected boolean canRun() {
-        return CombatUtils.canCheck(this.protocol);
+        return MovementProcessing.canCheckCombat(this.protocol);
     }
 }

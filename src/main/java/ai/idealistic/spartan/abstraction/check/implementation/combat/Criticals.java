@@ -7,8 +7,8 @@ import ai.idealistic.spartan.abstraction.check.definition.ImplementedDetection;
 import ai.idealistic.spartan.abstraction.event.PlayerAttackEvent;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.spartan.abstraction.world.ServerLocation;
+import ai.idealistic.spartan.functionality.tracking.MovementProcessing;
 import ai.idealistic.spartan.utils.math.RayUtils;
-import ai.idealistic.spartan.utils.minecraft.entity.CombatUtils;
 import ai.idealistic.spartan.utils.minecraft.world.BlockUtils;
 import org.bukkit.potion.PotionEffectType;
 
@@ -54,7 +54,7 @@ public class Criticals extends CheckRunner {
 
     @Override
     protected boolean canRun() {
-        return CombatUtils.canCheck(this.protocol)
+        return MovementProcessing.canCheckCombat(this.protocol)
                 && !this.protocol.getEnvironment().isLiquid()
                 && !this.protocol.hasPotionEffect(PotionEffectType.BLINDNESS, 0);
     }
