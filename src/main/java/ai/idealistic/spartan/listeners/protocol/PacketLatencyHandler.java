@@ -3,6 +3,7 @@ package ai.idealistic.spartan.listeners.protocol;
 import ai.idealistic.spartan.Register;
 import ai.idealistic.spartan.abstraction.event.PlayerTransactionEvent;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
+import ai.idealistic.spartan.functionality.concurrent.CheckThread;
 import ai.idealistic.spartan.functionality.server.MultiVersion;
 import ai.idealistic.spartan.functionality.server.PluginBase;
 import ai.idealistic.spartan.listeners.bukkit.MovementEvent;
@@ -40,6 +41,7 @@ public class PacketLatencyHandler extends PacketAdapter {
         PlayerProtocol protocol = PluginBase.getProtocol(player);
         PacketContainer packet = event.getPacket();
         int id;
+
         if (!packet.getShorts().getFields().isEmpty()) {
             id = packet.getShorts().read(0);
         } else if (!packet.getIntegers().getFields().isEmpty()) {
@@ -50,12 +52,13 @@ public class PacketLatencyHandler extends PacketAdapter {
             return;
         }
         if (id <= -1939 && id >= -1945) {
-            protocol.transactionPing = System.currentTimeMillis() - protocol.transactionTime;
-            protocol.transactionLastTime = System.currentTimeMillis();
-            protocol.transactionSentKeep = false;
-            PlayerTransactionEvent transactionEvent = new PlayerTransactionEvent(protocol);
-            MovementEvent.transaction(transactionEvent);
-            protocol.packetWorld.transactionLock = false;
+            CheckThread.run(() -> {
+                protocol.transactionPing = System.currentTimeMillis() - protocol.transactionTime;
+                protocol.transactionLastTime = System.currentTimeMillis();
+                protocol.transactionSentKeep = false;
+                MovementEvent.transaction(new PlayerTransactionEvent(protocol));
+                protocol.packetWorld.transactionLock = false;
+            });
             Bukkit.getScheduler().runTaskLaterAsynchronously(Register.plugin,
                     () -> sendTransaction(protocol, protocol.transactionId), 10L);
         }
@@ -65,10 +68,14 @@ public class PacketLatencyHandler extends PacketAdapter {
     public void onPacketSending(PacketEvent event) {
         Player player = event.getPlayer();
         PlayerProtocol protocol = PluginBase.getProtocol(player);
-        protocol.transactionSentKeep = true;
-        protocol.transactionTime = System.currentTimeMillis();
+
+        CheckThread.run(() -> {
+            protocol.transactionSentKeep = true;
+            protocol.transactionTime = System.currentTimeMillis();
+        });
     }
 
+    // ATTENTION: One call inside check thread, one call outside the check thread
     public static void startChecking(PlayerProtocol protocol) {
         protocol.transactionId = -1939;
         protocol.transactionBoot = false;
@@ -76,7 +83,6 @@ public class PacketLatencyHandler extends PacketAdapter {
     }
 
     public static void sendTransaction(PlayerProtocol protocol, short id) {
-
         PacketContainer packet = new PacketContainer(
                 MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)
                         ? PacketType.Play.Server.PING :
