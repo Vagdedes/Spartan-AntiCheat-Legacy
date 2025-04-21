@@ -1,0 +1,1 @@
+[#] Made all check tasks to run sequentially for better data handling.
