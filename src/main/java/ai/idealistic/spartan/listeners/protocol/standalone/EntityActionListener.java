@@ -38,16 +38,18 @@ public class EntityActionListener extends PacketAdapter {
                 String typeString = event.getPacket().getModifier().getValues().get(1).toString();
                 AbilitiesEnum type = getEnum(typeString);
 
-                if (typeString != null) {
-                    if (type == AbilitiesEnum.PRESS_SHIFT_KEY) {
-                        protocol.sneaking = true;
-                    } else if (type == AbilitiesEnum.RELEASE_SHIFT_KEY) {
-                        protocol.sneaking = false;
-                    } else if (type == AbilitiesEnum.START_SPRINTING) {
-                        protocol.sprinting = true;
-                    } else if (type == AbilitiesEnum.STOP_SPRINTING) {
-                        protocol.sprinting = false;
-                    }
+                if (type != null) {
+                    CheckThread.run(() -> {
+                        if (type == AbilitiesEnum.PRESS_SHIFT_KEY) {
+                            protocol.sneaking = true;
+                        } else if (type == AbilitiesEnum.RELEASE_SHIFT_KEY) {
+                            protocol.sneaking = false;
+                        } else if (type == AbilitiesEnum.START_SPRINTING) {
+                            protocol.sprinting = true;
+                        } else if (type == AbilitiesEnum.STOP_SPRINTING) {
+                            protocol.sprinting = false;
+                        }
+                    });
                 }
             }
         });

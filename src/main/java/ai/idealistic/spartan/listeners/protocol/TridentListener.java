@@ -11,7 +11,6 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
@@ -29,8 +28,8 @@ public class TridentListener extends PacketAdapter {
     @Override
     public void onPacketReceiving(PacketEvent event) {
         if (!event.isCancelled()) { // PlayerRiptideEvent does not implement cancellable
-            Player player = event.getPlayer();
-            PlayerProtocol protocol = PluginBase.getProtocol(player);
+            PlayerProtocol protocol = PluginBase.getProtocol(event.getPlayer());
+
             if (protocol.isBedrockPlayer()) {
                 return;
             }

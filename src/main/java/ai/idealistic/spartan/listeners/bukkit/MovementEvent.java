@@ -4,6 +4,7 @@ import ai.idealistic.spartan.abstraction.event.PlayerTickEvent;
 import ai.idealistic.spartan.abstraction.event.PlayerTransactionEvent;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.spartan.abstraction.world.ServerLocation;
+import ai.idealistic.spartan.functionality.concurrent.CheckThread;
 import ai.idealistic.spartan.functionality.server.PluginBase;
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
@@ -15,7 +16,7 @@ public class MovementEvent implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void MoveEvent(PlayerMoveEvent e) {
-        event(e, false);
+        CheckThread.run(() -> event(e, false));
     }
 
     public static void event(PlayerMoveEvent e, boolean packets) {

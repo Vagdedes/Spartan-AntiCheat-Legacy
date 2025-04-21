@@ -39,38 +39,33 @@ public class VehicleHandle extends PacketAdapter {
         if (protocol.isBedrockPlayer()) {
             return;
         }
-        if (ProtocolTools.hasPosition(event.getPacket().getType()) && protocol.entityHandle) {
-            protocol.entityHandle = false;
-        }
-        final boolean[] nearbyEntities = {false};
         CheckThread.run(() -> {
+            if (ProtocolTools.hasPosition(event.getPacket().getType()) && protocol.entityHandle) {
+                protocol.entityHandle = false;
+            }
             for (Entity entity : protocol.getNearbyEntities(4.5)) {
                 if (entity.getUniqueId() != protocol.getUUID()) {
-                    nearbyEntities[0] = true;
+                    if (ProtocolTools.hasPosition(event.getPacket().getType()) && protocol.entityHandle) {
+                        protocol.timerBalancer.addBalance(50);
+                        VehicleExitEvent bukkitEvent = new VehicleExitEvent(null, protocol.bukkit());
+                        bukkitEvent.setCancelled(event.isCancelled());
+                        VehicleEvent.exit(bukkitEvent);
+                    } else if (event.getPacket().getType().equals(PacketType.Play.Client.STEER_VEHICLE) && !protocol.entityHandle) {
+                        protocol.timerBalancer.addBalance(50);
+                        VehicleEnterEvent bukkitEvent = new VehicleEnterEvent(null, protocol.bukkit());
+                        bukkitEvent.setCancelled(event.isCancelled());
+                        VehicleEvent.enter(bukkitEvent);
+                        protocol.entityHandle = true;
+                    }
                     break;
                 }
             }
-            if (nearbyEntities[0]) {
-                if (ProtocolTools.hasPosition(event.getPacket().getType()) && protocol.entityHandle) {
-                    protocol.timerBalancer.addBalance(50);
-                    VehicleExitEvent bukkitEvent = new VehicleExitEvent(null, protocol.bukkit());
-                    bukkitEvent.setCancelled(event.isCancelled());
-                    VehicleEvent.exit(bukkitEvent);
-                } else if (event.getPacket().getType().equals(PacketType.Play.Client.STEER_VEHICLE) && !protocol.entityHandle) {
-                    protocol.timerBalancer.addBalance(50);
-                    VehicleEnterEvent bukkitEvent = new VehicleEnterEvent(null, protocol.bukkit());
-                    bukkitEvent.setCancelled(event.isCancelled());
-                    VehicleEvent.enter(bukkitEvent);
-                    protocol.entityHandle = true;
-                }
-            }
-            if (event.getPacket().getType().equals(PacketType.Play.Client.STEER_VEHICLE)) {
-                if (protocol.getVehicle() != null) {
-                    Entity vehicle = protocol.getVehicle();
-                    Location location = vehicle.getLocation();
-                    protocol.setLocation(location);
-                    MovementEvent.event(new PlayerMoveEvent(player, protocol.getFromLocation(), protocol.getLocation()), true);
-                }
+            if (event.getPacket().getType().equals(PacketType.Play.Client.STEER_VEHICLE)
+                    && protocol.getVehicle() != null) {
+                Entity vehicle = protocol.getVehicle();
+                Location location = vehicle.getLocation();
+                protocol.setLocation(location);
+                MovementEvent.event(new PlayerMoveEvent(player, protocol.getFromLocation(), protocol.getLocation()), true);
             }
         });
     }

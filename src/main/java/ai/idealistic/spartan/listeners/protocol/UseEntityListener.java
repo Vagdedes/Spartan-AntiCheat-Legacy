@@ -25,14 +25,18 @@ public class UseEntityListener extends PacketAdapter {
     public void onPacketReceiving(PacketEvent event) {
         Player player = event.getPlayer();
         PlayerProtocol protocol = PluginBase.getProtocol(player);
+
+        if (protocol.isBedrockPlayer()) {
+            return;
+        }
         PacketContainer packet = event.getPacket();
         int entityId = packet.getIntegers().read(0);
 
-        CheckThread.run(() -> {
-            if ((!packet.getEntityUseActions().getValues().isEmpty())
-                    ? !packet.getEntityUseActions().read(0).equals(EnumWrappers.EntityUseAction.ATTACK)
-                    : !packet.getEnumEntityUseActions().read(0).getAction().equals(
-                    EnumWrappers.EntityUseAction.ATTACK)) {
+        if ((!packet.getEntityUseActions().getValues().isEmpty())
+                ? !packet.getEntityUseActions().read(0).equals(EnumWrappers.EntityUseAction.ATTACK)
+                : !packet.getEnumEntityUseActions().read(0).getAction().equals(
+                EnumWrappers.EntityUseAction.ATTACK)) {
+            CheckThread.run(() -> {
                 Entity t = null;
                 for (Entity entity : protocol.getNearbyEntities(5)) {
                     if (entity.getEntityId() == entityId) {
@@ -46,8 +50,8 @@ public class UseEntityListener extends PacketAdapter {
                             new VehicleEnterEvent(null, player)
                     );
                 }
-            }
-        });
+            });
+        }
     }
 
 }

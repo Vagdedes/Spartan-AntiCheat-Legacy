@@ -2,6 +2,7 @@ package ai.idealistic.spartan.listeners.protocol;
 
 import ai.idealistic.spartan.Register;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
+import ai.idealistic.spartan.functionality.concurrent.CheckThread;
 import ai.idealistic.spartan.functionality.server.PluginBase;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.ListenerPriority;
@@ -22,16 +23,23 @@ public class PacketPistonHandle extends PacketAdapter {
 
         if (packet.getStructures().getValues().toString().contains("piston")) {
             PlayerProtocol protocol = PluginBase.getProtocol(event.getPlayer());
-            protocol.getComponentY().pistonHandle = true;
+
+            if (protocol.isBedrockPlayer()) {
+                return;
+            }
             Location blockLocation = packet.getBlockPositionModifier()
                     .read(0)
                     .toLocation(protocol.getWorld());
 
-            if (isPlayerInBox(protocol.getLocation(), blockLocation, 5)) {
-                protocol.getComponentY().pistonTick = true;
-                protocol.getComponentXZ().pistonTick = true;
-                protocol.pistonTick = true;
-            }
+            CheckThread.run(() -> {
+                protocol.getComponentY().pistonHandle = true;
+
+                if (isPlayerInBox(protocol.getLocation(), blockLocation, 5)) {
+                    protocol.getComponentY().pistonTick = true;
+                    protocol.getComponentXZ().pistonTick = true;
+                    protocol.pistonTick = true;
+                }
+            });
         }
     }
 

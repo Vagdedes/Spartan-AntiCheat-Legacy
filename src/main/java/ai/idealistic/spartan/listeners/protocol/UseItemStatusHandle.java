@@ -27,9 +27,13 @@ public class UseItemStatusHandle extends PacketAdapter {
     public void onPacketReceiving(PacketEvent event) {
         Player player = event.getPlayer();
         PlayerProtocol protocol = PluginBase.getProtocol(player);
+
+        if (protocol.isBedrockPlayer()) {
+            return;
+        }
         PacketContainer packet = event.getPacket();
+
         CheckThread.run(() -> {
-            //player.sendMessage("p: " + event.getPacket().getType() + " " + event.getPacket().getStructures().getValues());
             if (packet.getType().equals(PacketType.Play.Client.BLOCK_DIG)) {
                 protocol.useItemPacket = false;
             } else {
@@ -56,7 +60,6 @@ public class UseItemStatusHandle extends PacketAdapter {
                         (itemStack.getType().isEdible() && (player.getFoodLevel() != 20
                                 || itemStack.getType().toString().contains("GOLDEN_APPLE"))
                                 && !protocol.getGameMode().equals(GameMode.CREATIVE))) {
-                    //player.sendMessage("use");
                     protocol.useItemPacket = true;
                     protocol.useItemPacketReset =
                                     !(itemStack.getType().toString().contains("SHIELD") ||

@@ -39,7 +39,12 @@ public class BlockPlaceListener extends PacketAdapter {
     public void onPacketReceiving(PacketEvent event) {
         Player player = event.getPlayer();
         PlayerProtocol protocol = PluginBase.getProtocol(player);
+
+        if (protocol.isBedrockPlayer()) {
+            return;
+        }
         PacketContainer packet = event.getPacket();
+
         CheckThread.run(() -> {
             if (isPlacingBlock(packet)) {
                 if (packet.getBlockPositionModifier().getValues().isEmpty() && packet.getMovingBlockPositions().getValues().isEmpty()) {
@@ -106,7 +111,7 @@ public class BlockPlaceListener extends PacketAdapter {
         });
     }
 
-    public boolean isPlacingBlock(PacketContainer packet) {
+    private boolean isPlacingBlock(PacketContainer packet) {
         BlockPosition blockPosition = new BlockPosition(0, 0, 0);
         if (packet.getHands().getValues().isEmpty()) {
             if (!packet.getMovingBlockPositions().getValues().isEmpty()) {
@@ -124,7 +129,7 @@ public class BlockPlaceListener extends PacketAdapter {
         }
     }
 
-    public boolean isInPlayer(Location player, Location block) {
+    private boolean isInPlayer(Location player, Location block) {
         double playerX = player.getX();
         double playerY = player.getY();
         double playerZ = player.getZ();
@@ -148,7 +153,7 @@ public class BlockPlaceListener extends PacketAdapter {
                 (blockZ >= minZ && blockZ <= maxZ);
     }
 
-    public Vector getDirection(BlockFace face) {
+    private Vector getDirection(BlockFace face) {
         Vector direction = new Vector(face.getModX(), face.getModY(), face.getModZ());
         if (face.getModX() != 0 || face.getModY() != 0 || face.getModZ() != 0) {
             direction.normalize();

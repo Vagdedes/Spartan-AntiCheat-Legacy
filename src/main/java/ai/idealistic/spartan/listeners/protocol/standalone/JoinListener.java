@@ -2,6 +2,8 @@ package ai.idealistic.spartan.listeners.protocol.standalone;
 
 import ai.idealistic.spartan.Register;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
+import ai.idealistic.spartan.functionality.concurrent.CheckThread;
+import ai.idealistic.spartan.functionality.connection.LegacyLagCompensationListener;
 import ai.idealistic.spartan.functionality.server.PluginBase;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.ListenerPriority;
@@ -29,12 +31,16 @@ public class JoinListener extends PacketAdapter {
             return;
         }
         LegacyLagCompensationListener.newPacket(protocol.getEntityId());
-        protocol.transactionBoot = true;
-        Bukkit.getScheduler().runTaskLater(Register.plugin, () -> {
-            if (protocol.getVehicle() != null) {
-                protocol.entityHandle = true;
-            }
-        }, 1L);
+
+        CheckThread.run(() -> {
+            protocol.transactionBoot = true;
+
+            PluginBase.runDelayedTask(protocol, () -> {
+                if (protocol.getVehicle() != null) {
+                    protocol.entityHandle = true;
+                }
+            }, 1L);
+        });
     }
 
 }

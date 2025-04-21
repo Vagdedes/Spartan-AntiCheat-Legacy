@@ -2,6 +2,7 @@ package ai.idealistic.spartan.listeners.protocol;
 
 import ai.idealistic.spartan.Register;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
+import ai.idealistic.spartan.functionality.concurrent.CheckThread;
 import ai.idealistic.spartan.functionality.server.PluginBase;
 import ai.idealistic.spartan.listeners.bukkit.DeathEvent;
 import com.comphenix.protocol.PacketType;
@@ -35,8 +36,10 @@ public class DeathListener extends PacketAdapter {
 
         if (packet.getType().equals(PacketType.Play.Server.UPDATE_HEALTH)
                 && packet.getFloat().read(0) <= 0.0F) {
-            DeathEvent.event(event.getPlayer(), true, event);
-            protocol.useItemPacket = false;
+            CheckThread.run(() -> {
+                DeathEvent.event(event.getPlayer(), true, event);
+                protocol.useItemPacket = false;
+            });
         }
     }
 

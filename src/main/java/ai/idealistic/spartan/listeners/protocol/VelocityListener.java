@@ -37,6 +37,7 @@ public class VelocityListener extends PacketAdapter {
 
         if (!packet.getIntegers().getValues().isEmpty()) {
             int id = packet.getIntegers().getValues().get(0);
+
             if (protocol.getEntityId() == id) {
                 CheckThread.run(() -> {
                     double x = packet.getIntegers().read(1).doubleValue() / 8000.0D,

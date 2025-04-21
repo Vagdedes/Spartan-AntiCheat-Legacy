@@ -3,7 +3,7 @@ package ai.idealistic.spartan.abstraction.check.implementation.combat.killaura;
 import ai.idealistic.spartan.abstraction.check.Check;
 import ai.idealistic.spartan.abstraction.check.CheckDetection;
 import ai.idealistic.spartan.abstraction.check.CheckRunner;
-import ai.idealistic.spartan.listeners.protocol.standalone.LegacyLagCompensationListener;
+import ai.idealistic.spartan.functionality.connection.LegacyLagCompensationListener;
 
 public class KAHitTime extends CheckDetection {
 

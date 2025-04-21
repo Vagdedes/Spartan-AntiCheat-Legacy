@@ -23,8 +23,7 @@ public class CheckThread {
     private static final char INNER_CLASS_SEPARATOR_CHAR = '$';
     public static int STOP_WATCH_TIME_MILLIS = 750;
     @Getter
-    private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(
-            Runtime.getRuntime().availableProcessors(),
+    private static final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
             new ThreadFactoryBuilder().setNameFormat(Register.pluginName + " Thread %d").build()
     );
     private static final Map<String, Boolean> processedErrors = new OverflowMap<>(

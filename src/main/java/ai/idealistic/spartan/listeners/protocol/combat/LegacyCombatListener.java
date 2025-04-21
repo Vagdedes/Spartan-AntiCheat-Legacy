@@ -3,6 +3,7 @@ package ai.idealistic.spartan.listeners.protocol.combat;
 import ai.idealistic.spartan.Register;
 import ai.idealistic.spartan.abstraction.event.PlayerUseEvent;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
+import ai.idealistic.spartan.functionality.concurrent.CheckThread;
 import ai.idealistic.spartan.functionality.moderation.AwarenessNotifications;
 import ai.idealistic.spartan.functionality.server.PluginBase;
 import ai.idealistic.spartan.listeners.bukkit.CombatEvent;
@@ -70,13 +71,14 @@ public class LegacyCombatListener extends PacketAdapter {
                     //return;
                 }
                 if (target != null) {
-                    CombatEvent.use(
+                    Player targetFinal = target;
+                    CheckThread.run(() -> CombatEvent.use(
                             new PlayerUseEvent(
                                     event.getPlayer(),
-                                    target,
+                                    targetFinal,
                                     event.isCancelled()
                             )
-                    );
+                    ));
                 }
                 pendingAttacks.put(protocol.getUUID(), entityId);
             }
@@ -110,10 +112,10 @@ public class LegacyCombatListener extends PacketAdapter {
                                 0.0D
                         );
                         event1.setCancelled(event.isCancelled());
-                        CombatEvent.event(
+                        CheckThread.run(() -> CombatEvent.event(
                                 event1,
                                 true
-                        );
+                        ));
                     }
                     return true;
                 }

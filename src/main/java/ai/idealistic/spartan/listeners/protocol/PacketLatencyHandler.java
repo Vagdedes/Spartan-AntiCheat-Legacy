@@ -21,16 +21,16 @@ public class PacketLatencyHandler extends PacketAdapter {
         super(
                 Register.plugin,
                 ListenerPriority.MONITOR,
-                        (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17))
-                                        ? PacketType.Play.Client.PONG :
-                                        (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_12))
-                                        ? PacketType.Play.Client.TRANSACTION
-                                        : PacketType.Play.Client.KEEP_ALIVE,
-                        (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17))
-                                        ? PacketType.Play.Server.PING :
-                                        (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_12))
-                                        ? PacketType.Play.Server.TRANSACTION
-                                        : PacketType.Play.Server.KEEP_ALIVE
+                (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17))
+                        ? PacketType.Play.Client.PONG :
+                        (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_12))
+                                ? PacketType.Play.Client.TRANSACTION
+                                : PacketType.Play.Client.KEEP_ALIVE,
+                (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17))
+                        ? PacketType.Play.Server.PING :
+                        (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_12))
+                                ? PacketType.Play.Server.TRANSACTION
+                                : PacketType.Play.Server.KEEP_ALIVE
         );
     }
 
@@ -46,7 +46,9 @@ public class PacketLatencyHandler extends PacketAdapter {
             id = packet.getIntegers().read(0);
         } else if (!packet.getLongs().getFields().isEmpty()) {
             id = Math.toIntExact(packet.getLongs().read(0));
-        } else return;
+        } else {
+            return;
+        }
         if (id <= -1939 && id >= -1945) {
             protocol.transactionPing = System.currentTimeMillis() - protocol.transactionTime;
             protocol.transactionLastTime = System.currentTimeMillis();
@@ -55,9 +57,10 @@ public class PacketLatencyHandler extends PacketAdapter {
             MovementEvent.transaction(transactionEvent);
             protocol.packetWorld.transactionLock = false;
             Bukkit.getScheduler().runTaskLaterAsynchronously(Register.plugin,
-                            () -> sendTransaction(protocol, protocol.transactionId), 10L);
+                    () -> sendTransaction(protocol, protocol.transactionId), 10L);
         }
     }
+
     @Override
     public void onPacketSending(PacketEvent event) {
         Player player = event.getPlayer();
@@ -71,14 +74,15 @@ public class PacketLatencyHandler extends PacketAdapter {
         protocol.transactionBoot = false;
         sendTransaction(protocol, protocol.transactionId);
     }
+
     public static void sendTransaction(PlayerProtocol protocol, short id) {
 
         PacketContainer packet = new PacketContainer(
-                        MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)
+                MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)
                         ? PacketType.Play.Server.PING :
                         (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_12))
-                                        ? PacketType.Play.Server.TRANSACTION
-                                        : PacketType.Play.Server.KEEP_ALIVE);
+                                ? PacketType.Play.Server.TRANSACTION
+                                : PacketType.Play.Server.KEEP_ALIVE);
 
         if (!packet.getShorts().getFields().isEmpty()) {
             packet.getShorts().write(0, id);
@@ -90,11 +94,14 @@ public class PacketLatencyHandler extends PacketAdapter {
             packet.getIntegers().write(0, (int) id);
         } else if (!packet.getLongs().getFields().isEmpty()) {
             packet.getLongs().write(0, (long) id);
-        } else return;
-
+        } else {
+            return;
+        }
         ProtocolLibrary.getProtocolManager().sendServerPacket(protocol.bukkit(), packet);
         protocol.transactionId--;
-        if (protocol.transactionId < -1945)
+
+        if (protocol.transactionId < -1945) {
             protocol.transactionId = -1939;
+        }
     }
 }
