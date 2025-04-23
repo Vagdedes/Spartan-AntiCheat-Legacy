@@ -15,6 +15,7 @@ import ai.idealistic.spartan.abstraction.world.ServerLocation;
 import ai.idealistic.spartan.compatibility.Compatibility;
 import ai.idealistic.spartan.compatibility.necessary.BedrockCompatibility;
 import ai.idealistic.spartan.compatibility.necessary.protocollib.ProtocolLib;
+import ai.idealistic.spartan.functionality.concurrent.CheckThread;
 import ai.idealistic.spartan.functionality.server.Config;
 import ai.idealistic.spartan.functionality.server.MultiVersion;
 import ai.idealistic.spartan.functionality.server.PluginBase;
@@ -228,11 +229,13 @@ public class PlayerProtocol {
                                 protocol.maxNearbyEntitiesCoordinate[2]
                         ).toArray(new Entity[0]);
                     }
-                    protocol.isFlying();
-                    protocol.isGliding();
-                    protocol.checkForAFK();
-                    protocol.executeRunners(false, null);
-                    protocol.schedulerFrom = protocol.getLocation();
+                    CheckThread.run(() -> {
+                        protocol.isFlying();
+                        protocol.isGliding();
+                        protocol.checkForAFK();
+                        protocol.executeRunners(false, null);
+                        protocol.schedulerFrom = protocol.getLocation();
+                    });
                 }
             }
         }, 1L, 1L);
