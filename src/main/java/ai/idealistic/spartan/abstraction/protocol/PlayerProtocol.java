@@ -452,7 +452,9 @@ public class PlayerProtocol {
     }
 
     public boolean packetsEnabled() {
-        return PluginBase.packetsEnabled() && !this.isBedrockPlayer();
+        return PluginBase.packetsEnabled()
+                && (Config.settings.getBoolean("Important.bedrock_on_protocollib")
+                || !this.isBedrockPlayer());
     }
 
     public boolean isBedrockPlayer() {

@@ -4,6 +4,7 @@ import ai.idealistic.spartan.Register;
 import ai.idealistic.spartan.abstraction.event.PlayerLeftClickEvent;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.spartan.functionality.concurrent.CheckThread;
+import ai.idealistic.spartan.functionality.server.Config;
 import ai.idealistic.spartan.functionality.server.PluginBase;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.ListenerPriority;
@@ -27,7 +28,8 @@ public class ClicksListener extends PacketAdapter {
         Player player = event.getPlayer();
         PlayerProtocol protocol = PluginBase.getProtocol(player);
 
-        if (protocol.isBedrockPlayer()) {
+        if (!Config.settings.getBoolean("Important.bedrock_on_protocollib")
+                && protocol.isBedrockPlayer()) {
             return;
         }
         synchronized (protocol) {

@@ -4,6 +4,7 @@ import ai.idealistic.spartan.Register;
 import ai.idealistic.spartan.abstraction.event.CPlayerRiptideEvent;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.spartan.functionality.concurrent.CheckThread;
+import ai.idealistic.spartan.functionality.server.Config;
 import ai.idealistic.spartan.functionality.server.PluginBase;
 import ai.idealistic.spartan.listeners.bukkit.TridentEvent;
 import com.comphenix.protocol.PacketType;
@@ -30,7 +31,8 @@ public class TridentListener extends PacketAdapter {
         if (!event.isCancelled()) { // PlayerRiptideEvent does not implement cancellable
             PlayerProtocol protocol = PluginBase.getProtocol(event.getPlayer());
 
-            if (protocol.isBedrockPlayer()) {
+            if (!Config.settings.getBoolean("Important.bedrock_on_protocollib")
+                    && protocol.isBedrockPlayer()) {
                 return;
             }
             ItemStack item = protocol.getInventory().getItemInMainHand();

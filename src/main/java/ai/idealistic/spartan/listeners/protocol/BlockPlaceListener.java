@@ -5,6 +5,7 @@ import ai.idealistic.spartan.abstraction.event.ServerBlockChange;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import ai.idealistic.spartan.functionality.concurrent.CheckThread;
+import ai.idealistic.spartan.functionality.server.Config;
 import ai.idealistic.spartan.functionality.server.MultiVersion;
 import ai.idealistic.spartan.functionality.server.PluginBase;
 import ai.idealistic.spartan.listeners.bukkit.PlaceEvent;
@@ -40,7 +41,8 @@ public class BlockPlaceListener extends PacketAdapter {
         Player player = event.getPlayer();
         PlayerProtocol protocol = PluginBase.getProtocol(player);
 
-        if (protocol.isBedrockPlayer()) {
+        if (!Config.settings.getBoolean("Important.bedrock_on_protocollib")
+                && protocol.isBedrockPlayer()) {
             return;
         }
         PacketContainer packet = event.getPacket();

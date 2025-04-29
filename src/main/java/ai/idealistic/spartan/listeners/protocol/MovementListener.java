@@ -8,6 +8,7 @@ import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import ai.idealistic.spartan.functionality.concurrent.CheckThread;
 import ai.idealistic.spartan.functionality.moderation.AwarenessNotifications;
+import ai.idealistic.spartan.functionality.server.Config;
 import ai.idealistic.spartan.functionality.server.MultiVersion;
 import ai.idealistic.spartan.functionality.server.PluginBase;
 import ai.idealistic.spartan.listeners.bukkit.MovementEvent;
@@ -76,7 +77,9 @@ public class MovementListener extends PacketAdapter {
         PlayerProtocol p = PluginBase.getProtocol(player);
         PacketContainer packet = event.getPacket();
         // Always loaded if you use this listener
-        if (p.isBedrockPlayer()) {
+
+        if (!Config.settings.getBoolean("Important.bedrock_on_protocollib")
+                && p.isBedrockPlayer()) {
             return;
         }
         CheckThread.run(() -> {

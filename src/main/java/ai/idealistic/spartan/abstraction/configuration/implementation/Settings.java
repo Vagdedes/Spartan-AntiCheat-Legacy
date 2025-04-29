@@ -13,8 +13,6 @@ public class Settings extends ConfigurationBuilder {
         super("settings");
     }
 
-    public static final String crossServerNotificationsName = "Important.server_name";
-
     @Override
     public void create() {
         addOption("Logs.log_file", true);
@@ -25,9 +23,10 @@ public class Settings extends ConfigurationBuilder {
         addOption("Notifications.awareness_notifications", true);
         addOption("Notifications.message_clickable_command", "/teleport {player}");
 
-        addOption(crossServerNotificationsName, "");
+        addOption("Important.server_name", "");
         addOption("Important.op_bypass", false);
 
+        addOption("Important.bedrock_on_protocollib", true);
         addOption("Important.bedrock_client_permission", false);
         addOption("Important.bedrock_player_prefix", ".");
         addOption("Important.enable_developer_api", true);

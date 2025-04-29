@@ -100,7 +100,7 @@ public class CrossServerNotifications {
     }
 
     public static String getServerName() {
-        return Config.settings.getString(Settings.crossServerNotificationsName);
+        return Config.settings.getString("Important.server_name");
     }
 
 }

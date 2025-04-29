@@ -5,6 +5,7 @@ import ai.idealistic.spartan.abstraction.event.PlayerUseEvent;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.spartan.functionality.concurrent.CheckThread;
 import ai.idealistic.spartan.functionality.moderation.AwarenessNotifications;
+import ai.idealistic.spartan.functionality.server.Config;
 import ai.idealistic.spartan.functionality.server.PluginBase;
 import ai.idealistic.spartan.listeners.bukkit.CombatEvent;
 import ai.idealistic.spartan.utils.java.OverflowMap;
@@ -45,7 +46,8 @@ public class CombatListener extends PacketAdapter {
         if (event.getPacketType() == PacketType.Play.Client.USE_ENTITY) {
             PlayerProtocol protocol = PluginBase.getProtocol(event.getPlayer());
 
-            if (protocol.isBedrockPlayer()) {
+            if (!Config.settings.getBoolean("Important.bedrock_on_protocollib")
+                    && protocol.isBedrockPlayer()) {
                 return;
             }
             PacketContainer packet = event.getPacket();
@@ -89,7 +91,8 @@ public class CombatListener extends PacketAdapter {
         if (event.getPacketType() == PacketType.Play.Server.DAMAGE_EVENT) {
             PlayerProtocol protocol = PluginBase.getProtocol(event.getPlayer());
 
-            if (protocol.isBedrockPlayer()) {
+            if (!Config.settings.getBoolean("Important.bedrock_on_protocollib")
+                    && protocol.isBedrockPlayer()) {
                 return;
             }
             int entityId = event.getPacket().getIntegers().read(0);

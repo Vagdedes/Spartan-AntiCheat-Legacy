@@ -3,6 +3,7 @@ package ai.idealistic.spartan.listeners.protocol;
 import ai.idealistic.spartan.Register;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.spartan.functionality.concurrent.CheckThread;
+import ai.idealistic.spartan.functionality.server.Config;
 import ai.idealistic.spartan.functionality.server.PluginBase;
 import ai.idealistic.spartan.listeners.bukkit.MovementEvent;
 import ai.idealistic.spartan.listeners.bukkit.VehicleEvent;
@@ -36,7 +37,8 @@ public class VehicleHandle extends PacketAdapter {
         Player player = event.getPlayer();
         PlayerProtocol protocol = PluginBase.getProtocol(player);
 
-        if (protocol.isBedrockPlayer()) {
+        if (!Config.settings.getBoolean("Important.bedrock_on_protocollib")
+                && protocol.isBedrockPlayer()) {
             return;
         }
         CheckThread.run(() -> {
