@@ -122,6 +122,11 @@ public class KAMoveDirection extends CheckDetection {
         double oldYawChange = Math.abs(aimAnalysis.get(0).yaw - oldYawResult);
         double oldPitchChange = Math.abs(aimAnalysis.get(0).pitch - oldPitchResult);
         for (int i = 0; i < aimAnalysis.size(); i++) {
+            Double cache = rayTraceAnalysis.get(i);
+
+            if (cache == null) {
+                continue;
+            }
             if (!targetsOnTheRow.contains(aimAnalysis.get(i).target))
                 targetsOnTheRow.add(aimAnalysis.get(i).target);
             double yawChange = Math.abs(aimAnalysis.get(i).yaw - oldYawResult);
@@ -142,9 +147,9 @@ public class KAMoveDirection extends CheckDetection {
             if (robotized < 2 && yawChange > 2.5
                     && aimAnalysis.get(i).accuracy < 10) robotizedAmount += 1;
 
-            if (rayTraceAnalysis.get(i) < 0.1 && yawChange > 5) basicHeuristic++;
+            if (cache < 0.1 && yawChange > 5) basicHeuristic++;
 
-            if (rayTraceAnalysis.get(i) < 0.03 && yawChange > 1) lowHeuristic++;
+            if (cache < 0.03 && yawChange > 1) lowHeuristic++;
 
 
             if (robotized < 0.99 && yawChange > 3) machineKnownMovement++;
