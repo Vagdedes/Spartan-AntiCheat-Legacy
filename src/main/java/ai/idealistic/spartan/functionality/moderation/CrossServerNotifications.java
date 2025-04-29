@@ -2,7 +2,6 @@ package ai.idealistic.spartan.functionality.moderation;
 
 import ai.idealistic.spartan.abstraction.check.CheckDetection;
 import ai.idealistic.spartan.abstraction.check.CheckEnums;
-import ai.idealistic.spartan.abstraction.configuration.implementation.Settings;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.spartan.functionality.server.Config;
 import ai.idealistic.spartan.functionality.server.PluginBase;
