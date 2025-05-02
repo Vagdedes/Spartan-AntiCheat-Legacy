@@ -10,6 +10,7 @@ import ai.idealistic.spartan.functionality.server.MultiVersion;
 import ai.idealistic.spartan.functionality.server.PluginBase;
 import ai.idealistic.spartan.listeners.bukkit.PlaceEvent;
 import ai.idealistic.spartan.listeners.bukkit.standalone.ChunksEvent;
+import ai.idealistic.spartan.utils.minecraft.world.BlockUtils;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
@@ -90,13 +91,15 @@ public class BlockPlaceListener extends PacketAdapter {
                     if (itemInHand.getType().isBlock()) {
                         if (!isInPlayer(protocol.getLocation(), block.getLocation())) {
                             Block blockAgainst = player.getLocation().getBlock();
-                            Material material = itemInHand.getType();
-                            protocol.packetWorld.worldChange(new ServerBlockChange(blockPosition, material));
-                            protocol.packetWorld.worldChange(new ServerBlockChange(
-                                    new BlockPosition(blockPosition.getX(), blockPosition.getY() + 1, blockPosition.getZ()),
-                                    material
-                            ));
-
+                            Location blockLoc = new Location(world, blockPosition.getX(), blockPosition.getY(), blockPosition.getY());
+                            if (!BlockUtils.isSurroundedByAir(blockLoc) || !BlockUtils.isSurroundedByAir(blockLoc.clone().add(0, 1, 0))) {
+                                Material material = itemInHand.getType();
+                                protocol.packetWorld.worldChange(new ServerBlockChange(blockPosition, material));
+                                protocol.packetWorld.worldChange(new ServerBlockChange(
+                                                new BlockPosition(blockPosition.getX(), blockPosition.getY() + 1, blockPosition.getZ()),
+                                                material
+                                ));
+                            }
                             PlaceEvent.event(protocol, block, blockAgainst, event, true);
                             protocol.rightClickCounter = 0;
                         } else {
