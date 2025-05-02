@@ -1,5 +1,6 @@
 package ai.idealistic.spartan.utils.minecraft.world;
 
+import ai.idealistic.spartan.abstraction.data.PacketWorld;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.spartan.abstraction.world.ServerBlock;
 import ai.idealistic.spartan.abstraction.world.ServerLocation;
@@ -1648,6 +1649,19 @@ public class BlockUtils {
         for (int[] d : DIRS) {
             Block relative = world.getBlockAt(x + d[0], y + d[1], z + d[2]);
             if (relative.getType() != Material.AIR) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static boolean isSurroundedByAir(PacketWorld packetWorld, Location loc) {
+        World world = loc.getWorld();
+        int x = loc.getBlockX();
+        int y = loc.getBlockY();
+        int z = loc.getBlockZ();
+        for (int[] d : DIRS) {
+            if (packetWorld.getBlock(new Location(world, x + d[0], y + d[1], z + d[2])) != Material.AIR) {
                 return false;
             }
         }
