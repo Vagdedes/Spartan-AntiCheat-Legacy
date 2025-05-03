@@ -172,34 +172,39 @@ public class PluginAddons {
                         Register.pluginName,
                         ""
                 );
+                File[] files = new File(pluginsFolder).listFiles();
 
-                for (File file : new File(pluginsFolder).listFiles()) {
-                    if (file.isFile()
-                            && file.getName().endsWith(".jar")) {
-                        String clazz = IDs.class.getCanonicalName();
-                        Object object = ReflectionUtils.getFieldFromJar(
-                                file.getAbsolutePath(),
-                                clazz,
-                                "user"
-                        );
+                if (files != null) {
+                    String clazz = IDs.class.getCanonicalName();
 
-                        if (object != null
-                                && object.toString().equals(IDs.user)) {
-                            object = ReflectionUtils.getFieldFromJar(
-                                    file.getAbsolutePath(),
+                    for (File file : files) {
+                        if (file.isFile()
+                                && file.getName().endsWith(".jar")) {
+                            String path = file.getAbsolutePath();
+                            Object object = ReflectionUtils.getFieldFromJar(
+                                    path,
                                     clazz,
-                                    "resource"
+                                    "user"
                             );
 
                             if (object != null
-                                    && !object.toString().equals(IDs.resource)) {
-                                if (object.toString().equals(java)) {
-                                    ownsEditions[Check.DataType.JAVA.ordinal()] = true;
-                                } else if (object.toString().equals(bedrock)) {
-                                    ownsEditions[Check.DataType.BEDROCK.ordinal()] = true;
+                                    && object.toString().equals(IDs.user)) {
+                                object = ReflectionUtils.getFieldFromJar(
+                                        path,
+                                        clazz,
+                                        "resource"
+                                );
+
+                                if (object != null
+                                        && !object.toString().equals(IDs.resource)) {
+                                    if (object.toString().equals(java)) {
+                                        ownsEditions[Check.DataType.JAVA.ordinal()] = true;
+                                    } else if (object.toString().equals(bedrock)) {
+                                        ownsEditions[Check.DataType.BEDROCK.ordinal()] = true;
+                                    }
                                 }
+                                break;
                             }
-                            break;
                         }
                     }
                 }
