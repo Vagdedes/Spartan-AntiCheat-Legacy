@@ -346,7 +346,10 @@ public class Compatibility {
                 () -> Register.enable(new AureliumSkills()),
                 null
         );
-        CompatibilityType.ITEMS_ADDER.setFunctional();
+        CompatibilityType.ITEMS_ADDER.setFunctional(
+                () -> Register.enable(new ItemsAdder()),
+                null
+        );
     }
 
     private static boolean getBoolean(String path, boolean create) {

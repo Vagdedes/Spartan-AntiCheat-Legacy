@@ -1,2 +1,4 @@
 [#] Fixed cloud feature console errors
 [#] Fixed other editions not being detected
+[#] Improved ghost block handle (fixed some bypasses)
+[#] Improved the ItemsAdder compatibility
