@@ -21,7 +21,7 @@ public class PluginAddons {
     @Getter
     private static boolean freeEdition = true;
 
-    public static void refresh() {
+    public static boolean refresh() {
         if (false) { // Addons
             freeEdition = false;
 
@@ -219,6 +219,7 @@ public class PluginAddons {
                 for (Check.DataType dataType : Check.DataType.values()) {
                     ownsEditions[dataType.ordinal()] = true;
                 }
+                return true;
             } else {
                 String[] editions = CloudConnections.getOwnedEditions();
 
@@ -246,10 +247,13 @@ public class PluginAddons {
                         for (Check.DataType dataType : Check.DataType.values()) {
                             ownsEditions[dataType.ordinal()] = true;
                         }
+                    } else {
+                        return true;
                     }
                 }
             }
         }
+        return false;
     }
 
     public static boolean ownsCheck(CheckEnums.HackType hackType) {
