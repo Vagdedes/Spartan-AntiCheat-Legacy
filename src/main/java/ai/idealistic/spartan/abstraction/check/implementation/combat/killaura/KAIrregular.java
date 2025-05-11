@@ -2,6 +2,7 @@ package ai.idealistic.spartan.abstraction.check.implementation.combat.killaura;
 
 import ai.idealistic.spartan.abstraction.check.CheckDetection;
 import ai.idealistic.spartan.abstraction.check.CheckRunner;
+import ai.idealistic.spartan.abstraction.data.Buffer;
 import ai.idealistic.spartan.functionality.server.MultiVersion;
 import ai.idealistic.spartan.utils.minecraft.entity.PlayerUtils;
 import ai.idealistic.spartan.utils.minecraft.server.PluginUtils;
@@ -10,6 +11,8 @@ import org.bukkit.GameRule;
 import org.bukkit.inventory.InventoryView;
 
 public class KAIrregular extends CheckDetection {
+
+    private final Buffer.IndividualBuffer buffer;
 
     KAIrregular(CheckRunner executor) {
         super(
@@ -23,6 +26,7 @@ public class KAIrregular extends CheckDetection {
                 1L,
                 1L
         );
+        this.buffer = new Buffer.IndividualBuffer();
     }
 
     void run() {
@@ -40,7 +44,8 @@ public class KAIrregular extends CheckDetection {
 
                 if (BlockUtils.hasMaterial(inventoryView.getCursor())) {
                     cancel("irregular, scenario: cursor");
-                } else if (inventoryView.countSlots() > PlayerUtils.playerInventorySlots) {
+                } else if (inventoryView.countSlots() > PlayerUtils.playerInventorySlots
+                        && buffer.count(2, 20) >= 2) {
                     cancel("irregular, scenario: inventory");
                 }
             }

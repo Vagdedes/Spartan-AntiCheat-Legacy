@@ -11,10 +11,12 @@ import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.spartan.functionality.server.PluginBase;
 import ai.idealistic.spartan.functionality.server.TPS;
 import ai.idealistic.spartan.functionality.tracking.CheckConditions;
+import ai.idealistic.spartan.listeners.bukkit.standalone.ChunksEvent;
 import ai.idealistic.spartan.listeners.protocol.TeleportListener;
 import ai.idealistic.spartan.utils.math.RayUtils;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketEvent;
+import org.bukkit.Location;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
 public class MorePackets extends CheckRunner {
@@ -159,16 +161,56 @@ public class MorePackets extends CheckRunner {
 
     @Override
     protected boolean canRun() {
-        return !this.protocol.isAFK()
+        if (!this.protocol.isAFK()
                 && this.teleported < System.currentTimeMillis()
                 && CheckConditions.canCheckMovement(
                 this.protocol,
                 false,
-                true,
+                false,
                 true,
                 true,
                 true
-        );
+        )) {
+            Location location = this.protocol.bukkit().getLocation();
+            return ChunksEvent.isLoaded(
+                    location.getWorld(),
+                    location.getBlockX() >> 4,
+                    location.getBlockZ() >> 4)
+                    && ChunksEvent.isLoaded(
+                    location.getWorld(),
+                    (location.getBlockX() + 1) >> 4,
+                    location.getBlockZ() >> 4)
+                    && ChunksEvent.isLoaded(
+                    location.getWorld(),
+                    location.getBlockX() >> 4,
+                    (location.getBlockZ() + 1) >> 4)
+                    && ChunksEvent.isLoaded(
+                    location.getWorld(),
+                    (location.getBlockX() - 1) >> 4,
+                    location.getBlockZ() >> 4)
+                    && ChunksEvent.isLoaded(
+                    location.getWorld(),
+                    location.getBlockX() >> 4,
+                    (location.getBlockZ() - 1) >> 4)
+                    && ChunksEvent.isLoaded(
+                    location.getWorld(),
+                    (location.getBlockX() + 1) >> 4,
+                    (location.getBlockZ() + 1) >> 4)
+                    && ChunksEvent.isLoaded(
+                    location.getWorld(),
+                    (location.getBlockX() - 1) >> 4,
+                    (location.getBlockZ() - 1) >> 4)
+                    && ChunksEvent.isLoaded(
+                    location.getWorld(),
+                    (location.getBlockX() + 1) >> 4,
+                    (location.getBlockZ() - 1) >> 4)
+                    && ChunksEvent.isLoaded(
+                    location.getWorld(),
+                    (location.getBlockX() - 1) >> 4,
+                    (location.getBlockZ() + 1) >> 4);
+        } else {
+            return false;
+        }
     }
 
 }
