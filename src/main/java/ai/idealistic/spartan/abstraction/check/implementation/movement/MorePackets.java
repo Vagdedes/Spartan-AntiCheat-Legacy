@@ -21,7 +21,7 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 
 public class MorePackets extends CheckRunner {
 
-    private static final double minTimer = 1.085;
+    private static final double minTimer = 1.05;
 
     private int packetVL;
     private final ImplementedDetection
@@ -86,7 +86,7 @@ public class MorePackets extends CheckRunner {
                             );
                         }
                     });
-                } else if (delay < 50 && timerBalancer.getResult() > 100) {
+                } else if (delay < 50 && timerBalancer.getResult() > 45) {
                     this.positive_balance.call(() -> {
                         if (multiply >= minTimer) {
                             punish(

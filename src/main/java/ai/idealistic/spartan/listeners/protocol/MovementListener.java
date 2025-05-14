@@ -110,27 +110,29 @@ public class MovementListener extends PacketAdapter {
                 }
             }
             boolean legacy = ProtocolTools.isFlying(event, l, r);
-            PlayerTickEvent tickEvent = new PlayerTickEvent(p, legacy, onGround).build();
-            MovementEvent.tick(tickEvent);
-            if (tickEvent.getDelay() > 65) {
-                p.lagTick = tickEvent.getDelay();
-            } else if (tickEvent.getDelay() > 10 && p.lagTick != 0)
-                p.lagTick = 0;
+            if (c.toVector().distance(p.getFrom().toVector()) > 1e-5) {
+                PlayerTickEvent tickEvent = new PlayerTickEvent(p, legacy, onGround).build();
+                MovementEvent.tick(tickEvent);
+                if (tickEvent.getDelay() > 65) {
+                    p.lagTick = tickEvent.getDelay();
+                } else if (tickEvent.getDelay() > 10 && p.lagTick != 0)
+                    p.lagTick = 0;
 
-            if (p.isDesync() && tickEvent.getDelay() > 40 && tickEvent.getDelay() < 60) {
-                p.transactionVl += (p.isBlatantDesync() ? 2 : 1);
-                if (p.transactionVl > 40
-                        && !p.isAFK()) {
-                    AwarenessNotifications.optionallySend(player.getName()
-                            + " moves faster than the transaction response ("
-                            + tickEvent.getDelay() + "ms > "
-                            + (System.currentTimeMillis() - p.transactionTime) + "ms).");
-                    //p.teleport(p.getLocation());
-                    //event.setCancelled(true);
-                    //return;
+                if (p.isDesync() && tickEvent.getDelay() > 40 && tickEvent.getDelay() < 60) {
+                    p.transactionVl += (p.isBlatantDesync() ? 2 : 1);
+                    if (p.transactionVl > 40
+                                    && !p.isAFK()) {
+                        AwarenessNotifications.optionallySend(player.getName()
+                                        + " moves faster than the transaction response ("
+                                        + tickEvent.getDelay() + "ms > "
+                                        + (System.currentTimeMillis() - p.transactionTime) + "ms).");
+                        //p.teleport(p.getLocation());
+                        //event.setCancelled(true);
+                        //return;
+                    }
+                } else if (p.transactionVl > 0) {
+                    p.transactionVl -= 2;
                 }
-            } else if (p.transactionVl > 0) {
-                p.transactionVl -= 2;
             }
 
             if (p.transactionBoot) {
