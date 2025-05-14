@@ -3,4 +3,3 @@
 [#] Improved ghost block handle (fixed some bypasses)
 [#] Improved the ItemsAdder compatibility
 [#] Fixed some obfuscation issues
-[#] Generic timer improvements

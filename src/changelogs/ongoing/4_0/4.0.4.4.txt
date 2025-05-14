@@ -2,3 +2,4 @@
 [#] Fixed some MorePackets elytra false positives.
 [#] Fixed some MorePackets chunk loading false positives.
 [#] Fixed some KillAura inventory false positives.
+[#] Generic timer improvements
