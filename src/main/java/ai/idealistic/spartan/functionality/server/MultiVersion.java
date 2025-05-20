@@ -14,11 +14,10 @@ public class MultiVersion {
             "com.destroystokyo.paper.network.NetworkClient"
     );
     public static final MCVersion serverVersion;
-    public static final boolean folia;
+    public static final boolean folia = Bukkit.getVersion().toLowerCase().contains("folia");
 
     static {
         serverVersion = judge();
-        folia = Bukkit.getVersion().toLowerCase().contains("folia");
     }
 
     public enum MCVersion {

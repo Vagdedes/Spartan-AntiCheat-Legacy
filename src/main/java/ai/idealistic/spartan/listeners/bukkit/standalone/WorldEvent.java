@@ -23,10 +23,8 @@ public class WorldEvent implements Listener {
         Block nb = e.getBlock();
         boolean cancelled = e.isCancelled();
 
-        CheckThread.run(() -> {
-            protocol.executeRunners(cancelled, e);
-            MiningHistory.log(protocol, nb, cancelled);
-        });
+        CheckThread.run(() -> protocol.executeRunners(cancelled, e));
+        MiningHistory.log(protocol, nb, cancelled);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

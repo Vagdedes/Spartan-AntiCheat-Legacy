@@ -1,5 +1,7 @@
-[#] Reworked the console anti-piracy notification.
-[#] Fixed some MorePackets elytra false positives.
-[#] Fixed some MorePackets chunk loading false positives.
-[#] Fixed some KillAura inventory false positives.
+[#] Reworked the console anti-piracy notification
+[#] Fixed some MorePackets elytra false positives
+[#] Fixed some MorePackets chunk loading false positives
+[#] Fixed some KillAura inventory false positives
 [#] Generic timer improvements
+[#] Fixed a Folia console error
+[#] Fixed a asynchronous event call issue
