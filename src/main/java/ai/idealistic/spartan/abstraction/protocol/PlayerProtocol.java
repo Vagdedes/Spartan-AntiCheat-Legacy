@@ -223,11 +223,14 @@ public class PlayerProtocol {
                     if (protocol.maxNearbyEntitiesCoordinate[0] > 0.0
                             || protocol.maxNearbyEntitiesCoordinate[1] > 0.0
                             || protocol.maxNearbyEntitiesCoordinate[2] > 0.0) {
-                        protocol.nearbyEntities = protocol.bukkit().getNearbyEntities(
-                                protocol.maxNearbyEntitiesCoordinate[0],
-                                protocol.maxNearbyEntitiesCoordinate[1],
-                                protocol.maxNearbyEntitiesCoordinate[2]
-                        ).toArray(new Entity[0]);
+                        PluginBase.runTask(
+                                protocol,
+                                () -> protocol.nearbyEntities = protocol.bukkit().getNearbyEntities(
+                                        protocol.maxNearbyEntitiesCoordinate[0],
+                                        protocol.maxNearbyEntitiesCoordinate[1],
+                                        protocol.maxNearbyEntitiesCoordinate[2]
+                                ).toArray(new Entity[0])
+                        );
                     }
                     CheckThread.run(() -> {
                         protocol.isFlying();
@@ -723,7 +726,8 @@ public class PlayerProtocol {
         this.maxNearbyEntitiesCoordinate[1] = Math.max(radius, this.maxNearbyEntitiesCoordinate[1]);
         this.maxNearbyEntitiesCoordinate[2] = Math.max(radius, this.maxNearbyEntitiesCoordinate[2]);
 
-        if (PluginBase.isSynchronised()) {
+        if (!MultiVersion.folia
+                && PluginBase.isSynchronised()) {
             List<Entity> list = this.bukkit().getNearbyEntities(radius, radius, radius);
             this.nearbyEntities = list.toArray(new Entity[0]);
             return list;
@@ -764,7 +768,8 @@ public class PlayerProtocol {
         this.maxNearbyEntitiesCoordinate[1] = Math.max(y, this.maxNearbyEntitiesCoordinate[1]);
         this.maxNearbyEntitiesCoordinate[2] = Math.max(z, this.maxNearbyEntitiesCoordinate[2]);
 
-        if (PluginBase.isSynchronised()) {
+        if (!MultiVersion.folia
+                && PluginBase.isSynchronised()) {
             List<Entity> list = this.bukkit().getNearbyEntities(x, y, z);
             this.nearbyEntities = list.toArray(new Entity[0]);
             return list;
