@@ -530,12 +530,6 @@ public class GravitySimulation extends CheckRunner {
                                     );
                                 }
                             }
-                            //this.protocol.bukkit().sendMessage("hacks: " + devTotal);
-                            /*
-                            Bukkit.getScheduler().runTask(Register.plugin, () -> {
-                                this.protocol.bukkit().teleport(from);
-                            });
-                             */
                         }
 
                         this.setPredict(motion);

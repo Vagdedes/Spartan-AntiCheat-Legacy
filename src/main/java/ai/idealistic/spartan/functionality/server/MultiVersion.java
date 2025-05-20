@@ -14,10 +14,11 @@ public class MultiVersion {
             "com.destroystokyo.paper.network.NetworkClient"
     );
     public static final MCVersion serverVersion;
-    public static final boolean folia = Bukkit.getVersion().toLowerCase().contains("folia");
+    public static final boolean folia;
 
     static {
         serverVersion = judge();
+        folia = folia();
     }
 
     public enum MCVersion {
@@ -108,4 +109,13 @@ public class MultiVersion {
         }
         return MCVersion.OTHER;
     }
+
+    private static boolean folia() {
+        try {
+            return Class.forName("io.papermc.paper.threadedregions.RegionizedServer") != null;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
 }

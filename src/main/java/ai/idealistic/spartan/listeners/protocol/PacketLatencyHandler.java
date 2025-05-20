@@ -13,8 +13,9 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+
+import java.util.concurrent.TimeUnit;
 
 public class PacketLatencyHandler extends PacketAdapter {
 
@@ -59,8 +60,11 @@ public class PacketLatencyHandler extends PacketAdapter {
                 MovementEvent.transaction(new PlayerTransactionEvent(protocol));
                 protocol.packetWorld.transactionLock = false;
             });
-            Bukkit.getScheduler().runTaskLaterAsynchronously(Register.plugin,
-                    () -> sendTransaction(protocol, protocol.transactionId), 10L);
+            CheckThread.later(
+                    () -> sendTransaction(protocol, protocol.transactionId),
+                    10L,
+                    TimeUnit.MILLISECONDS
+            );
         }
     }
 

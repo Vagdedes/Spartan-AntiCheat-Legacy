@@ -221,8 +221,7 @@ public class PluginBase {
     // Separator
 
     public static void runCommand(String command) {
-        Bukkit.getScheduler().runTask(
-                Register.plugin,
+        PluginBase.transferTask(
                 () -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command)
         );
     }
