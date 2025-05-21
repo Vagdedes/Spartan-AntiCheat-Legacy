@@ -257,9 +257,14 @@ public class PlayerProtocol {
     }
 
     public void executeRunners(Object cancelled, Object object) {
-        for (CheckRunner runner : this.getRunners()) {
-            runner.handle(cancelled, object);
-        }
+        PluginBase.runTask(
+                this,
+                () -> {
+                    for (CheckRunner runner : this.getRunners()) {
+                        runner.handle(cancelled, object);
+                    }
+                }
+        );
     }
 
     private void resetActiveCreationTime() {

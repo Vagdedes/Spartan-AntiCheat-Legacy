@@ -1,0 +1,1 @@
+[#] Fixed more Folia console errors by moving check executions to Folia threads
