@@ -1,0 +1,1 @@
+[#] Fixed a kick punishment console error.
