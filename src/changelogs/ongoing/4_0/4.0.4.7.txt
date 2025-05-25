@@ -1,1 +1,2 @@
 [#] Fixed a kick punishment console error.
+[#] Fixed yet another Folia console error.

@@ -223,8 +223,7 @@ public class PlayerProtocol {
                     if (protocol.maxNearbyEntitiesCoordinate[0] > 0.0
                             || protocol.maxNearbyEntitiesCoordinate[1] > 0.0
                             || protocol.maxNearbyEntitiesCoordinate[2] > 0.0) {
-                        PluginBase.runTask(
-                                protocol,
+                        PluginBase.transferTask(
                                 () -> protocol.nearbyEntities = protocol.bukkit().getNearbyEntities(
                                         protocol.maxNearbyEntitiesCoordinate[0],
                                         protocol.maxNearbyEntitiesCoordinate[1],
