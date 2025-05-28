@@ -308,10 +308,8 @@ public class CommandExecution implements CommandExecutor {
             } else if (args.length == 1) {
                 if (isPlayer && args[0].equalsIgnoreCase("Manage-Checks")) {
                     PluginBase.manageChecks.open(protocol);
-                } else if (isPlayer
-                        && PluginAddons.isFreeEdition()
-                        && args[0].equalsIgnoreCase("Charge")) {
-                    if (!Permissions.isStaff(protocol.bukkit())) {
+                } else if (args[0].equalsIgnoreCase("Charge")) {
+                    if (isPlayer && !Permissions.isStaff(protocol.bukkit())) {
                         ClickableMessage.sendURL(
                                 sender,
                                 Config.messages.getColorfulString("no_permission"),
@@ -320,7 +318,16 @@ public class CommandExecution implements CommandExecutor {
                         );
                         return true;
                     }
-                    PluginBase.chargeMenu.open(protocol);
+                    if (PluginAddons.isFreeEdition()) {
+                        PluginBase.chargeMenu.open(protocol);
+                    } else {
+                        ClickableMessage.sendURL(
+                                sender,
+                                "You have the permium edition/s of the " + Register.pluginName + " anti-cheat.",
+                                support,
+                                DiscordServer.url
+                        );
+                    }
 
                 } else if (args[0].equalsIgnoreCase("Panic")) {
                     if (isPlayer && !Permissions.has(protocol.bukkit(), Permission.MANAGE)) {

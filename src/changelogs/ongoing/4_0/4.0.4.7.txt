@@ -1,2 +1,3 @@
 [#] Fixed a kick punishment console error.
 [#] Fixed yet another Folia console error.
+[#] Added more messages outcomes to the "/spartan reload" command.
