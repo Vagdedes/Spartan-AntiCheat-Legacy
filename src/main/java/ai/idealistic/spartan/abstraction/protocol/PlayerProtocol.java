@@ -220,9 +220,10 @@ public class PlayerProtocol {
                     if (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
                         protocol.setStoredPotionEffects();
                     }
-                    if (protocol.maxNearbyEntitiesCoordinate[0] > 0.0
+                    if (!MultiVersion.folia
+                            && (protocol.maxNearbyEntitiesCoordinate[0] > 0.0
                             || protocol.maxNearbyEntitiesCoordinate[1] > 0.0
-                            || protocol.maxNearbyEntitiesCoordinate[2] > 0.0) {
+                            || protocol.maxNearbyEntitiesCoordinate[2] > 0.0)) {
                         PluginBase.transferTask(
                                 () -> protocol.nearbyEntities = protocol.bukkit().getNearbyEntities(
                                         protocol.maxNearbyEntitiesCoordinate[0],
@@ -726,12 +727,12 @@ public class PlayerProtocol {
     }
 
     public List<Entity> getNearbyEntities(double radius) {
-        this.maxNearbyEntitiesCoordinate[0] = Math.max(radius, this.maxNearbyEntitiesCoordinate[0]);
-        this.maxNearbyEntitiesCoordinate[1] = Math.max(radius, this.maxNearbyEntitiesCoordinate[1]);
-        this.maxNearbyEntitiesCoordinate[2] = Math.max(radius, this.maxNearbyEntitiesCoordinate[2]);
-
-        if (!MultiVersion.folia
-                && PluginBase.isSynchronised()) {
+        if (MultiVersion.folia) {
+            this.maxNearbyEntitiesCoordinate[0] = Math.max(radius, this.maxNearbyEntitiesCoordinate[0]);
+            this.maxNearbyEntitiesCoordinate[1] = Math.max(radius, this.maxNearbyEntitiesCoordinate[1]);
+            this.maxNearbyEntitiesCoordinate[2] = Math.max(radius, this.maxNearbyEntitiesCoordinate[2]);
+        }
+        if (PluginBase.isSynchronised()) {
             List<Entity> list = this.bukkit().getNearbyEntities(radius, radius, radius);
             this.nearbyEntities = list.toArray(new Entity[0]);
             return list;
@@ -768,12 +769,12 @@ public class PlayerProtocol {
     }
 
     public List<Entity> getNearbyEntities(double x, double y, double z) {
-        this.maxNearbyEntitiesCoordinate[0] = Math.max(x, this.maxNearbyEntitiesCoordinate[0]);
-        this.maxNearbyEntitiesCoordinate[1] = Math.max(y, this.maxNearbyEntitiesCoordinate[1]);
-        this.maxNearbyEntitiesCoordinate[2] = Math.max(z, this.maxNearbyEntitiesCoordinate[2]);
-
-        if (!MultiVersion.folia
-                && PluginBase.isSynchronised()) {
+        if (MultiVersion.folia) {
+            this.maxNearbyEntitiesCoordinate[0] = Math.max(x, this.maxNearbyEntitiesCoordinate[0]);
+            this.maxNearbyEntitiesCoordinate[1] = Math.max(y, this.maxNearbyEntitiesCoordinate[1]);
+            this.maxNearbyEntitiesCoordinate[2] = Math.max(z, this.maxNearbyEntitiesCoordinate[2]);
+        }
+        if (PluginBase.isSynchronised()) {
             List<Entity> list = this.bukkit().getNearbyEntities(x, y, z);
             this.nearbyEntities = list.toArray(new Entity[0]);
             return list;
