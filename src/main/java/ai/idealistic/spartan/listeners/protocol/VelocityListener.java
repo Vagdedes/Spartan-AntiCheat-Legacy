@@ -37,6 +37,9 @@ public class VelocityListener extends PacketAdapter {
         }
         PacketContainer packet = event.getPacket();
 
+        if (!packet.getType().equals(PacketType.Play.Server.ENTITY_VELOCITY)) {
+            return;
+        }
         if (!packet.getIntegers().getValues().isEmpty()) {
             int id = packet.getIntegers().getValues().get(0);
 
