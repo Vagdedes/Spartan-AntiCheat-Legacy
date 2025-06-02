@@ -43,12 +43,12 @@ public class CheckThread {
         return scheduler.submit(new DecoratedCallable<>(callable));
     }
 
-    public static ScheduledFuture<?> later(Runnable runnable, long delay, TimeUnit time) {
-        return scheduler.schedule(new DecoratedRunnable(runnable), delay, time);
+    public static ScheduledFuture<?> later(Runnable runnable, long delay) {
+        return scheduler.schedule(new DecoratedRunnable(runnable), delay, TimeUnit.MILLISECONDS);
     }
 
-    public static ScheduledFuture<?> timer(Runnable runnable, long delay, long period, TimeUnit time) {
-        return scheduler.scheduleAtFixedRate(new DecoratedRunnable(runnable), delay, period, time);
+    public static ScheduledFuture<?> timer(Runnable runnable, long delay, long period) {
+        return scheduler.scheduleAtFixedRate(new DecoratedRunnable(runnable), delay, period, TimeUnit.MILLISECONDS);
     }
 
     public static void cancel(ScheduledFuture<?> timer) {

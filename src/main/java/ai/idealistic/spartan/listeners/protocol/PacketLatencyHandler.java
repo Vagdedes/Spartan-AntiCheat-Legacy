@@ -15,8 +15,6 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import org.bukkit.entity.Player;
 
-import java.util.concurrent.TimeUnit;
-
 public class PacketLatencyHandler extends PacketAdapter {
 
     public PacketLatencyHandler() {
@@ -62,8 +60,7 @@ public class PacketLatencyHandler extends PacketAdapter {
             });
             CheckThread.later(
                     () -> sendTransaction(protocol, protocol.transactionId),
-                    10L,
-                    TimeUnit.MILLISECONDS
+                    10L
             );
         }
     }
