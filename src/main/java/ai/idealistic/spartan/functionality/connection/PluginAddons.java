@@ -154,61 +154,72 @@ public class PluginAddons {
         } else if (IDs.builtByBit
                 || IDs.polymart
                 || IDs.spigot) { // Premium Editions
-            freeEdition = false;
+            if (false) { // Check other jars
+                freeEdition = false;
 
-            for (CheckEnums.HackType hackType : CheckEnums.HackType.values()) {
-                ownedChecks[hackType.ordinal()] = true;
-            }
-            String java = IDs.builtByBit ? "11196" : "350",
-                    bedrock = IDs.builtByBit ? "12832" : "3600";
+                for (CheckEnums.HackType hackType : CheckEnums.HackType.values()) {
+                    ownedChecks[hackType.ordinal()] = true;
+                }
+                String java = IDs.builtByBit ? "11196" : "350",
+                        bedrock = IDs.builtByBit ? "12832" : "3600";
 
-            if (IDs.resource.equals(java)) {
-                ownsEditions[Check.DataType.JAVA.ordinal()] = true;
-            } else if (IDs.resource.equals(bedrock)) {
-                ownsEditions[Check.DataType.BEDROCK.ordinal()] = true;
-            }
-            PluginBase.dataThread.executeIfUnknownThreadElseHere(() -> {
-                String pluginsFolder = Register.plugin.getDataFolder().toString().replace(
-                        Register.pluginName,
-                        ""
-                );
-                File[] files = new File(pluginsFolder).listFiles();
+                if (IDs.resource.equals(java)) {
+                    ownsEditions[Check.DataType.JAVA.ordinal()] = true;
+                } else if (IDs.resource.equals(bedrock)) {
+                    ownsEditions[Check.DataType.BEDROCK.ordinal()] = true;
+                }
+                PluginBase.dataThread.executeIfUnknownThreadElseHere(() -> {
+                    String pluginsFolder = Register.plugin.getDataFolder().toString().replace(
+                            Register.pluginName,
+                            ""
+                    );
+                    File[] files = new File(pluginsFolder).listFiles();
 
-                if (files != null) {
-                    String clazz = IDs.class.getCanonicalName();
+                    if (files != null) {
+                        String clazz = IDs.class.getCanonicalName();
 
-                    for (File file : files) {
-                        if (file.isFile()
-                                && file.getName().endsWith(".jar")) {
-                            String path = file.getAbsolutePath();
-                            Object object = ReflectionUtils.getFieldFromJar(
-                                    path,
-                                    clazz,
-                                    "user"
-                            );
-
-                            if (object != null
-                                    && object.toString().equals(IDs.user)) {
-                                object = ReflectionUtils.getFieldFromJar(
+                        for (File file : files) {
+                            if (file.isFile()
+                                    && file.getName().endsWith(".jar")) {
+                                String path = file.getAbsolutePath();
+                                Object object = ReflectionUtils.getFieldFromJar(
                                         path,
                                         clazz,
-                                        "resource"
+                                        "user"
                                 );
 
                                 if (object != null
-                                        && !object.toString().equals(IDs.resource)) {
-                                    if (object.toString().equals(java)) {
-                                        ownsEditions[Check.DataType.JAVA.ordinal()] = true;
-                                    } else if (object.toString().equals(bedrock)) {
-                                        ownsEditions[Check.DataType.BEDROCK.ordinal()] = true;
+                                        && object.toString().equals(IDs.user)) {
+                                    object = ReflectionUtils.getFieldFromJar(
+                                            path,
+                                            clazz,
+                                            "resource"
+                                    );
+
+                                    if (object != null
+                                            && !object.toString().equals(IDs.resource)) {
+                                        if (object.toString().equals(java)) {
+                                            ownsEditions[Check.DataType.JAVA.ordinal()] = true;
+                                        } else if (object.toString().equals(bedrock)) {
+                                            ownsEditions[Check.DataType.BEDROCK.ordinal()] = true;
+                                        }
                                     }
+                                    break;
                                 }
-                                break;
                             }
                         }
                     }
+                });
+            } else {
+                freeEdition = false;
+
+                for (CheckEnums.HackType hackType : CheckEnums.HackType.values()) {
+                    ownedChecks[hackType.ordinal()] = true;
                 }
-            });
+                for (Check.DataType dataType : Check.DataType.values()) {
+                    ownsEditions[dataType.ordinal()] = true;
+                }
+            }
         } else if (!IDs.enabled) { // No DRM
             for (CheckEnums.HackType hackType : CheckEnums.HackType.values()) {
                 ownedChecks[hackType.ordinal()] = true;
