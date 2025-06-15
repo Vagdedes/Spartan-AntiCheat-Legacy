@@ -32,6 +32,15 @@ public class ManageChecks extends InventoryMenu {
 
     @Override
     public boolean internalOpen(PlayerProtocol protocol, boolean permissionMessage, Object object) {
+        if (!PluginAddons.isSyn()) {
+            ClickableMessage.sendURL(
+                    protocol.bukkit(),
+                    PluginAddons.synMissing,
+                    PluginAddons.synMissing + " (" + PluginAddons.synURL + ")",
+                    PluginAddons.synURL
+            );
+            return false;
+        }
         for (HackType check : CheckEnums.HackType.values()) {
             addCheck(protocol, check);
         }

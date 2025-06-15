@@ -20,6 +20,11 @@ public class PluginAddons {
             ownsEditions = new boolean[Check.DataType.values().length];
     @Getter
     private static boolean freeEdition = true;
+    @Getter
+    private static boolean syn = false;
+    public static final String
+            synURL = "", // todo
+            synMissing = ""; // todo
 
     public static boolean refresh() {
         if (false) { // Addons

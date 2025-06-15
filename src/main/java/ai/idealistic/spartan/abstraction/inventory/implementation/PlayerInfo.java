@@ -35,6 +35,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class PlayerInfo extends InventoryMenu {
 
+    public static final Permission[] permissions = new Permission[]{Permission.MANAGE, Permission.INFO};
+
     private static final Cooldowns cooldowns = new Cooldowns(
             new OverflowMap<>(new ConcurrentHashMap<>(), 512)
     );
@@ -44,7 +46,7 @@ public class PlayerInfo extends InventoryMenu {
     };
 
     public PlayerInfo() {
-        super(menu, 45, new Permission[]{Permission.MANAGE, Permission.INFO});
+        super(menu, 45, permissions);
     }
 
     @Override
