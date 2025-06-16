@@ -33,10 +33,11 @@ public class ManageChecks extends InventoryMenu {
     @Override
     public boolean internalOpen(PlayerProtocol protocol, boolean permissionMessage, Object object) {
         if (!PluginAddons.isSyn()) {
+            String missing = PluginAddons.synMissing.replace(PluginAddons.synMissingPlaceholder, "Manage Checks");
             ClickableMessage.sendURL(
                     protocol.bukkit(),
-                    PluginAddons.synMissing,
-                    PluginAddons.synMissing + " (" + PluginAddons.synURL + ")",
+                    missing,
+                    missing + " (" + PluginAddons.synURL + ")",
                     PluginAddons.synURL
             );
             return false;

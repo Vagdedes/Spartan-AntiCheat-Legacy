@@ -23,8 +23,11 @@ public class PluginAddons {
     @Getter
     private static boolean syn = false;
     public static final String
-            synURL = "", // todo
-            synMissing = ""; // todo
+            synURL = "https://spartan.top/syn",
+            synMissing = "You must purchase Spartan Syn to use {feature}.\n"
+                    + "Visit " + synURL + " for more information.",
+            synMissingPlaceholder = "{feature}",
+            synMissingDefault = synMissing.replace(synMissingPlaceholder, "this feature");
 
     public static boolean refresh() {
         if (false) { // Addons
