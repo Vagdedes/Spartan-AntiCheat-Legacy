@@ -41,17 +41,16 @@ public class PreventionsMenu extends InventoryMenu {
         int startingLine = 1;
 
         for (CheckEnums.HackCategoryType categoryType : CheckEnums.HackCategoryType.values()) {
-            int slot = (startingLine * 9) + 1;
+            int slot = (startingLine * 9) + 2;
 
             for (HackType hackType : CheckEnums.HackType.values()) {
                 if (hackType.category == categoryType) {
                     List<String> list = new ArrayList<>();
-                    list.add("");
                     list.add("§6" + hackType.category.toString());
                     list.add("");
 
                     for (Check.DataType dataType : Check.DataType.values()) {
-                        if (hackType.getCheck().isSilent(dataType, null)) {
+                        if (!hackType.getCheck().isSilent(dataType, null)) {
                             list.add("§aEnabled for the " + dataType.toString() + " edition. §7(Left click to toggle)");
                         } else {
                             list.add("§cDisabled for the " + dataType.toString() + " edition. §7(Right click to toggle)");
@@ -73,7 +72,7 @@ public class PreventionsMenu extends InventoryMenu {
         item = item.startsWith("§") ? item.substring(2) : item;
 
         if (item.equals("Back")) {
-            PluginBase.playerInfo.open(protocol, protocol.bukkit().getName());
+            PluginBase.synMenu.open(protocol, protocol.bukkit().getName());
         } else {
             item = item.split(" ")[0];
 

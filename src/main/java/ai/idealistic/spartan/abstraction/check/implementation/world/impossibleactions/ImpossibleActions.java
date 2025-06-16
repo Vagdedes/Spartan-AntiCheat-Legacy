@@ -11,13 +11,18 @@ import ai.idealistic.spartan.abstraction.world.ServerLocation;
 import ai.idealistic.spartan.compatibility.Compatibility;
 import ai.idealistic.spartan.compatibility.manual.abilities.ItemsAdder;
 import ai.idealistic.spartan.functionality.server.MultiVersion;
+import ai.idealistic.spartan.functionality.server.PluginBase;
 import ai.idealistic.spartan.functionality.server.TPS;
+import ai.idealistic.spartan.listeners.protocol.DeathListener;
 import ai.idealistic.spartan.utils.minecraft.world.BlockUtils;
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.events.PacketEvent;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.Vector;
 
@@ -35,6 +40,7 @@ public class ImpossibleActions extends CheckRunner {
     private final Tower tower;
     private final ScaffoldAnalysis scaffoldAnalysis;
     private final GhostHand ghostHand;
+    private final AutoRespawn autoRespawn;
 
     public ImpossibleActions(CheckEnums.HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);
@@ -42,6 +48,7 @@ public class ImpossibleActions extends CheckRunner {
         this.scaffoldUp = new ImplementedDetection(this, Check.DataType.JAVA, null, "scaffold_up", true);
         this.scaffoldYaw = new ImplementedDetection(this, Check.DataType.JAVA, null, "scaffold_yaw", true);
         this.actions = new ImplementedDetection(this, null, null, "actions", true);
+        this.autoRespawn = new AutoRespawn(this);
         this.ghostHand = new GhostHand(this);
         this.tower = new Tower(this);
         this.scaffoldAnalysis = new ScaffoldAnalysis(this);
@@ -49,7 +56,9 @@ public class ImpossibleActions extends CheckRunner {
 
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
-        if (object instanceof CBlockPlaceEvent) {
+        if (object == null) {
+            this.autoRespawn.run();
+        } else if (object instanceof CBlockPlaceEvent) {
             CBlockPlaceEvent event = (CBlockPlaceEvent) object;
 
             if (!ItemsAdder.is(event.placedBlock)) {
@@ -186,6 +195,18 @@ public class ImpossibleActions extends CheckRunner {
                     }
                 }
             });
+        } else if (object instanceof PlayerDeathEvent) {
+            this.autoRespawn.death();
+        } else if (PluginBase.packetsEnabled()
+                && object instanceof PacketEvent) {
+            PacketType eventType = ((PacketEvent) object).getPacketType();
+
+            for (PacketType type : DeathListener.packetTypes) {
+                if (type.equals(eventType)) {
+                    this.autoRespawn.death();
+                    break;
+                }
+            }
         }
     }
 

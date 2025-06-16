@@ -41,12 +41,11 @@ public class DetailsMenu extends InventoryMenu {
         int startingLine = 1;
 
         for (CheckEnums.HackCategoryType categoryType : CheckEnums.HackCategoryType.values()) {
-            int slot = (startingLine * 9) + 1;
+            int slot = (startingLine * 9) + 2;
 
             for (HackType hackType : HackType.values()) {
                 if (hackType.category == categoryType) {
                     List<String> list = new ArrayList<>();
-                    list.add("");
                     list.add("§6" + hackType.category.toString());
                     list.add("");
 
@@ -73,7 +72,7 @@ public class DetailsMenu extends InventoryMenu {
         item = item.startsWith("§") ? item.substring(2) : item;
 
         if (item.equals("Back")) {
-            PluginBase.playerInfo.open(protocol, protocol.bukkit().getName());
+            PluginBase.synMenu.open(protocol, protocol.bukkit().getName());
         } else {
             item = item.split(" ")[0];
 

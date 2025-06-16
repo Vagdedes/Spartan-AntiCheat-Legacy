@@ -105,7 +105,7 @@ public class CommandExecution implements CommandExecutor {
                         if (info) {
                             ClickableMessage.sendCommand(
                                     sender,
-                                    "§4Player Info §7(Click)",
+                                    "§cPlayer Info §7(Click)",
                                     "Click this command to view useful information yourself.",
                                     "/" + Register.command + " info"
                             );

@@ -96,11 +96,6 @@ public class CheckEnums {
                 ai.idealistic.spartan.abstraction.check.implementation.misc.NoSwing.class,
                 Material.SHEARS
         ),
-        AUTO_RESPAWN(
-                HackCategoryType.MISCELLANEOUS,
-                ai.idealistic.spartan.abstraction.check.implementation.misc.AutoRespawn.class,
-                Material.COMPASS
-        ),
         INVENTORY_CLICKS(
                 HackCategoryType.MISCELLANEOUS,
                 InventoryClicks.class,

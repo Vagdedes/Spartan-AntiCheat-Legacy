@@ -23,21 +23,28 @@ public class SynMenu extends InventoryMenu {
     @Override
     public boolean internalOpen(PlayerProtocol protocol, boolean permissionMessage, Object object) {
         List<String> list = new ArrayList<>();
-        add("§2" + EditionMenu.title, null, new ItemStack(Material.LEVER), 11);
+        list.add("");
+        add("§2" + EditionMenu.title, list, new ItemStack(Material.LEVER), 11);
         list.clear();
-        add("§2" + DetailsMenu.title, null, new ItemStack(Material.PAPER), 12);
+        list.add("");
+        add("§2" + DetailsMenu.title, list, new ItemStack(Material.PAPER), 12);
 
         list.clear();
-        add("§2" + PreventionsMenu.title, null, new ItemStack(MaterialUtils.get("lead")), 14);
+        list.add("");
+        add("§2" + PreventionsMenu.title, list, new ItemStack(MaterialUtils.get("lead")), 14);
         list.clear();
-        add("§2" + PunishmentsMenu.title, null, new ItemStack(Material.IRON_AXE), 15);
+        list.add("");
+        add("§2" + PunishmentsMenu.title, list, new ItemStack(Material.IRON_AXE), 15);
 
         list.clear();
-        add("§2", null, new ItemStack(Material.ARROW), 30);
+        list.add("");
+        add("§2", list, new ItemStack(Material.ARROW), 30);
         list.clear();
-        add("§2", null, new ItemStack(Material.ARROW), 31);
+        list.add("");
+        add("§2", list, new ItemStack(Material.ARROW), 31);
         list.clear();
-        add("§2", null, new ItemStack(Material.ARROW), 32);
+        list.add("");
+        add("§2", list, new ItemStack(Material.ARROW), 32);
         return true;
     }
 
