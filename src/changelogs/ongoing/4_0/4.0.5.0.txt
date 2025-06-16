@@ -1,0 +1,1 @@
+[#] Disabled a method in order for the plugin to work on Folia

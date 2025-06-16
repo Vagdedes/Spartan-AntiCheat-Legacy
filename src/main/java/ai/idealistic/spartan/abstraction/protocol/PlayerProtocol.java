@@ -728,10 +728,12 @@ public class PlayerProtocol {
 
     public List<Entity> getNearbyEntities(double radius) {
         if (MultiVersion.folia) {
-            this.maxNearbyEntitiesCoordinate[0] = Math.max(radius, this.maxNearbyEntitiesCoordinate[0]);
-            this.maxNearbyEntitiesCoordinate[1] = Math.max(radius, this.maxNearbyEntitiesCoordinate[1]);
-            this.maxNearbyEntitiesCoordinate[2] = Math.max(radius, this.maxNearbyEntitiesCoordinate[2]);
+            return new ArrayList<>(0);
         }
+        this.maxNearbyEntitiesCoordinate[0] = Math.max(radius, this.maxNearbyEntitiesCoordinate[0]);
+        this.maxNearbyEntitiesCoordinate[1] = Math.max(radius, this.maxNearbyEntitiesCoordinate[1]);
+        this.maxNearbyEntitiesCoordinate[2] = Math.max(radius, this.maxNearbyEntitiesCoordinate[2]);
+
         if (PluginBase.isSynchronised()) {
             List<Entity> list = this.bukkit().getNearbyEntities(radius, radius, radius);
             this.nearbyEntities = list.toArray(new Entity[0]);
