@@ -29,7 +29,7 @@ public class DetailsMenu extends InventoryMenu {
     public boolean internalOpen(PlayerProtocol protocol, boolean permissionMessage, Object object) {
         if (!PluginAddons.isSyn()) {
             protocol.bukkit().closeInventory();
-            String missing = PluginAddons.synMissing.replace(PluginAddons.synMissingPlaceholder, title);
+            String missing = PluginAddons.synClick.replace(PluginAddons.synMissingPlaceholder, title);
             ClickableMessage.sendURL(
                     protocol.bukkit(),
                     missing,
@@ -51,7 +51,7 @@ public class DetailsMenu extends InventoryMenu {
                     list.add("");
 
                     for (Check.DataType dataType : Check.DataType.values()) {
-                        if (hackType.getCheck().hasDetectionDetails(dataType)) {
+                        if (hackType.getCheck().isDetectionDetails(dataType)) {
                             list.add("§aEnabled for the " + dataType.toString() + " edition. §7(Left click to toggle)");
                         } else {
                             list.add("§cDisabled for the " + dataType.toString() + " edition. §7(Right click to toggle)");
@@ -81,14 +81,14 @@ public class DetailsMenu extends InventoryMenu {
                 Check check = Config.getCheckByName(item);
 
                 if (check != null) {
-                    check.setDetectionDetails(Check.DataType.JAVA, !check.hasDetectionDetails(Check.DataType.JAVA));
+                    check.setDetectionDetails(Check.DataType.JAVA, !check.isDetectionDetails(Check.DataType.JAVA));
                 }
                 open(protocol);
             } else if (clickType == ClickType.RIGHT) {
                 Check check = Config.getCheckByName(item);
 
                 if (check != null) {
-                    check.setDetectionDetails(Check.DataType.BEDROCK, !check.hasDetectionDetails(Check.DataType.BEDROCK));
+                    check.setDetectionDetails(Check.DataType.BEDROCK, !check.isDetectionDetails(Check.DataType.BEDROCK));
                 }
                 open(protocol);
             }

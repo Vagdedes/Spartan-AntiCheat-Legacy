@@ -27,9 +27,10 @@ public class PluginAddons {
             synName = Register.pluginName + " Syn",
             synURL = "https://spartan.top/syn",
             synMissingPlaceholder = "{feature}",
-            synMissing = "You must purchase " + synName + " to use " + synMissingPlaceholder + ".\n"
+            synClick = "§aClick to visit " + synURL + ".",
+            synMissingCustom = "You must purchase " + synName + " to use " + synMissingPlaceholder + ".\n"
                     + "Visit " + synURL + " for more information.",
-            synMissingDefault = synMissing.replace(synMissingPlaceholder, "this feature");
+            synMissingDefault = synMissingCustom.replace(synMissingPlaceholder, "this feature");
 
     public static boolean refresh() {
         if (false) { // Addons
@@ -272,6 +273,7 @@ public class PluginAddons {
             }
             if (Bukkit.getMotd().contains(Register.pluginName)) { // Test Server
                 freeEdition = false;
+                syn = true;
 
                 for (Check.DataType dataType : Check.DataType.values()) {
                     ownsEditions[dataType.ordinal()] = true;

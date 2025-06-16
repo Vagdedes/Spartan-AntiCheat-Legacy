@@ -5,6 +5,7 @@ import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.spartan.api.Permission;
 import ai.idealistic.spartan.functionality.connection.PluginAddons;
 import ai.idealistic.spartan.functionality.server.PluginBase;
+import ai.idealistic.spartan.utils.minecraft.inventory.MaterialUtils;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
@@ -16,24 +17,27 @@ public class SynMenu extends InventoryMenu {
     public static final Permission[] permissions = new Permission[]{Permission.MANAGE, Permission.INFO};
 
     public SynMenu() {
-        super(PluginAddons.synName, 36, permissions);
+        super(PluginAddons.synName, 45, permissions);
     }
 
     @Override
     public boolean internalOpen(PlayerProtocol protocol, boolean permissionMessage, Object object) {
         List<String> list = new ArrayList<>();
-        add("§2" + EditionMenu.title, null, new ItemStack(Material.ARROW), 11);
+        add("§2" + EditionMenu.title, null, new ItemStack(Material.LEVER), 11);
         list.clear();
-        add("§2" + DetailsMenu.title, null, new ItemStack(Material.ARROW), 12);
+        add("§2" + DetailsMenu.title, null, new ItemStack(Material.PAPER), 12);
 
         list.clear();
-        add("§2" + PreventionsMenu.title, null, new ItemStack(Material.ARROW), 14);
+        add("§2" + PreventionsMenu.title, null, new ItemStack(MaterialUtils.get("lead")), 14);
         list.clear();
-        add("§2" + PunishmentsMenu.title, null, new ItemStack(Material.ARROW), 15);
+        add("§2" + PunishmentsMenu.title, null, new ItemStack(Material.IRON_AXE), 15);
 
-        add("§2", null, new ItemStack(Material.ARROW), 21);
-        add("§2", null, new ItemStack(Material.ARROW), 22);
-        add("§2", null, new ItemStack(Material.ARROW), 23);
+        list.clear();
+        add("§2", null, new ItemStack(Material.ARROW), 30);
+        list.clear();
+        add("§2", null, new ItemStack(Material.ARROW), 31);
+        list.clear();
+        add("§2", null, new ItemStack(Material.ARROW), 32);
         return true;
     }
 

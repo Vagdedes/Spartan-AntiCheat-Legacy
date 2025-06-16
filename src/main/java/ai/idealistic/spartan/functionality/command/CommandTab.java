@@ -1,6 +1,7 @@
 package ai.idealistic.spartan.functionality.command;
 
 import ai.idealistic.spartan.abstraction.inventory.implementation.PlayerInfo;
+import ai.idealistic.spartan.abstraction.inventory.implementation.SynMenu;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.spartan.api.Permission;
 import ai.idealistic.spartan.functionality.server.Permissions;
@@ -18,6 +19,7 @@ public class CommandTab implements TabCompleter {
 
     static {
         commands.put("info", PlayerInfo.permissions);
+        commands.put("syn", SynMenu.permissions);
         commands.put("charge", Permissions.staffPermissions);
         commands.put("panic", new Permission[]{Permission.MANAGE});
         commands.put("toggle", new Permission[]{Permission.MANAGE});

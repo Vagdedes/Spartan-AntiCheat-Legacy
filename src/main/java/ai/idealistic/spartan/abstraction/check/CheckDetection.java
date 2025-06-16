@@ -269,7 +269,7 @@ public abstract class CheckDetection extends CheckProcess {
                 Config.messages.getColorfulString("detection_notification")
                         .replace(
                                 "{info}",
-                                this.hackType.getCheck().hasDetectionDetails(this.protocol.getDataType())
+                                this.hackType.getCheck().isDetectionDetails(this.protocol.getDataType())
                                         || this.name == null
                                         ? information
                                         : this.name.toLowerCase().replace("_", "-")
