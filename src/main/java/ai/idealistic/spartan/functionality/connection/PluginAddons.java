@@ -319,4 +319,7 @@ public class PluginAddons {
         return ownsEditions[dataType.ordinal()];
     }
 
+    public static boolean isSyn() {
+        return syn || freeEdition;
+
 }

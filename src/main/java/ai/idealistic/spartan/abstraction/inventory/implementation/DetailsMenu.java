@@ -6,17 +6,10 @@ import ai.idealistic.spartan.abstraction.check.CheckEnums.HackType;
 import ai.idealistic.spartan.abstraction.inventory.InventoryMenu;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.spartan.api.Permission;
-import ai.idealistic.spartan.functionality.command.CommandExecution;
-import ai.idealistic.spartan.functionality.connection.DiscordServer;
 import ai.idealistic.spartan.functionality.connection.PluginAddons;
 import ai.idealistic.spartan.functionality.moderation.clickable.ClickableMessage;
 import ai.idealistic.spartan.functionality.server.Config;
-import ai.idealistic.spartan.functionality.server.MultiVersion;
-import ai.idealistic.spartan.functionality.server.Permissions;
 import ai.idealistic.spartan.functionality.server.PluginBase;
-import ai.idealistic.spartan.functionality.tracking.ResearchEngine;
-import ai.idealistic.spartan.utils.minecraft.inventory.EnchantmentUtils;
-import ai.idealistic.spartan.utils.minecraft.inventory.MaterialUtils;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
@@ -24,11 +17,11 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NotificationsMenu extends InventoryMenu {
+public class DetailsMenu extends InventoryMenu {
 
-    private static final String title = "Check Notifications";
+    private static final String title = "Check Details";
 
-    public NotificationsMenu() {
+    public DetailsMenu() {
         super(title, 54, Permission.MANAGE);
     }
 
@@ -49,10 +42,22 @@ public class NotificationsMenu extends InventoryMenu {
         for (CheckEnums.HackCategoryType categoryType : CheckEnums.HackCategoryType.values()) {
             int slot = (startingLine * 9) + 1;
 
-            for (HackType hackType : CheckEnums.HackType.values()) {
+            for (HackType hackType : HackType.values()) {
                 if (hackType.category == categoryType) {
+                    List<String> list = new ArrayList<>();
+                    list.add("");
+                    list.add("§6" + hackType.category.toString());
+                    list.add("");
+
+                    for (Check.DataType dataType : Check.DataType.values()) {
+                        if (hackType.getCheck().isDetectionDetails(dataType)) {
+                            list.add("§aEnabled for the " + dataType.toString() + " edition. §7(Left click to toggle)");
+                        } else {
+                            list.add("§cDisabled for the " + dataType.toString() + " edition. §7(Right click to toggle)");
+                        }
+                    }
+                    add("§3" + hackType.getCheck().getName(), list, new ItemStack(hackType.material), slot);
                     slot++;
-                    add("§cDisable silent checking for all checks", null, new ItemStack(MaterialUtils.get("lead")), slot);
                 }
             }
             startingLine++;
@@ -75,14 +80,14 @@ public class NotificationsMenu extends InventoryMenu {
                 Check check = Config.getCheckByName(item);
 
                 if (check != null) {
-                    check.setEnabled(null, !check.isEnabled(null, null));
+                    check.setDetectionDetails(Check.DataType.JAVA, !check.isDetectionDetails(Check.DataType.JAVA));
                 }
                 open(protocol);
             } else if (clickType == ClickType.RIGHT) {
                 Check check = Config.getCheckByName(item);
 
                 if (check != null) {
-                    check.setSilent(null, !check.isSilent(null, null));
+                    check.setDetectionDetails(Check.DataType.BEDROCK, !check.isDetectionDetails(Check.DataType.BEDROCK));
                 }
                 open(protocol);
             }

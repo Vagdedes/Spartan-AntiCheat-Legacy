@@ -100,7 +100,7 @@ public class Check {
     private String name;
     private final Map<String, Object> options;
     public final boolean handleCancelledEvents;
-    private final boolean[] enabled, silent, punish;
+    private final boolean[] enabled, silent, punish, detectionDetails;
     private final Set<String>
             disabledWorlds,
             silentWorlds;
@@ -124,6 +124,7 @@ public class Check {
         this.enabled = new boolean[DataType.values().length];
         this.silent = new boolean[DataType.values().length];
         this.punish = new boolean[DataType.values().length];
+        this.detectionDetails = new boolean[DataType.values().length];
 
         for (Check.DataType dataType : DataType.values()) {
             Object optionValue = getOption(
@@ -151,6 +152,16 @@ public class Check {
                     false
             );
             this.punish[dataType.ordinal()] = optionValue instanceof Boolean ? (boolean) optionValue :
+                    optionValue instanceof Long || optionValue instanceof Integer || optionValue instanceof Short ? ((long) optionValue) > 0L :
+                            optionValue instanceof Double || optionValue instanceof Float ? ((double) optionValue) > 0.0 :
+                                    Boolean.parseBoolean(optionValue.toString().toLowerCase());
+
+            optionValue = getOption(
+                    "detection_details." + dataType.toString().toLowerCase(),
+                    false,
+                    false
+            );
+            this.detectionDetails[dataType.ordinal()] = optionValue instanceof Boolean ? (boolean) optionValue :
                     optionValue instanceof Long || optionValue instanceof Integer || optionValue instanceof Short ? ((long) optionValue) > 0L :
                             optionValue instanceof Double || optionValue instanceof Float ? ((double) optionValue) > 0.0 :
                                     Boolean.parseBoolean(optionValue.toString().toLowerCase());
@@ -483,6 +494,36 @@ public class Check {
             }
         } else {
             return def;
+        }
+    }
+
+    // Separator
+
+    public boolean isDetectionDetails(Check.DataType dataType) {
+        if (dataType == null) {
+            for (Check.DataType type : DataType.values()) {
+                if (this.detectionDetails[type.ordinal()]) {
+                    return true;
+                }
+            }
+            return false;
+        } else {
+            return this.detectionDetails[dataType.ordinal()];
+        }
+    }
+
+    public void setDetectionDetails(Check.DataType dataType, boolean b) {
+        Check.DataType[] dataTypes;
+
+        if (dataType == null) {
+            dataTypes = DataType.values();
+        } else {
+            dataTypes = new Check.DataType[]{dataType};
+        }
+        for (Check.DataType type : dataTypes) {
+            this.detectionDetails[type.ordinal()] = b;
+            setOption("detection_details." + type.toString().toLowerCase(), b);
+            options.clear();
         }
     }
 
