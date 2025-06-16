@@ -33,6 +33,7 @@ public class PluginBase {
     public static final EditionMenu editionMenu = new EditionMenu();
     public static final PreventionsMenu preventionsMenu = new PreventionsMenu();
     public static final PunishmentsMenu punishmentsMenu = new PunishmentsMenu();
+    public static final SynMenu synMenu = new SynMenu();
     public static final InventoryMenu[] menus = new InventoryMenu[]{
             manageChecks,
             playerInfo,
@@ -40,7 +41,8 @@ public class PluginBase {
             detailsMenu,
             editionMenu,
             preventionsMenu,
-            punishmentsMenu
+            punishmentsMenu,
+            synMenu
     };
 
     public static final int

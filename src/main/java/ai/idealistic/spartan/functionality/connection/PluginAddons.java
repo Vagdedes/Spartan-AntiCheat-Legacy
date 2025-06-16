@@ -23,9 +23,10 @@ public class PluginAddons {
     @Getter
     private static boolean syn = false;
     public static final String
+            synName = Register.pluginName + " Syn",
             synURL = "https://spartan.top/syn",
             synMissingPlaceholder = "{feature}",
-            synMissing = "You must purchase Spartan Syn to use " + synMissingPlaceholder + ".\n"
+            synMissing = "You must purchase " + synName + " to use " + synMissingPlaceholder + ".\n"
                     + "Visit " + synURL + " for more information.",
             synMissingDefault = synMissing.replace(synMissingPlaceholder, "this feature");
 
@@ -321,5 +322,6 @@ public class PluginAddons {
 
     public static boolean isSyn() {
         return syn || freeEdition;
+    }
 
 }

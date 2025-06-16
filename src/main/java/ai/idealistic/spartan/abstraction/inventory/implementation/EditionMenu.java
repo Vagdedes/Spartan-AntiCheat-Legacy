@@ -19,7 +19,7 @@ import java.util.List;
 
 public class EditionMenu extends InventoryMenu {
 
-    private static final String title = "Check Functionality";
+    public static final String title = "Check Functionality";
 
     public EditionMenu() {
         super(title, 54, Permission.MANAGE);
@@ -28,6 +28,7 @@ public class EditionMenu extends InventoryMenu {
     @Override
     public boolean internalOpen(PlayerProtocol protocol, boolean permissionMessage, Object object) {
         if (!PluginAddons.isSyn()) {
+            protocol.bukkit().closeInventory();
             String missing = PluginAddons.synMissing.replace(PluginAddons.synMissingPlaceholder, title);
             ClickableMessage.sendURL(
                     protocol.bukkit(),

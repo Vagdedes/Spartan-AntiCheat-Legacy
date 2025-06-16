@@ -19,7 +19,7 @@ import java.util.List;
 
 public class PunishmentsMenu extends InventoryMenu {
 
-    private static final String title = "Check Punishments";
+    public static final String title = "Check Punishments";
 
     public PunishmentsMenu() {
         super(title, 54, Permission.MANAGE);
@@ -28,6 +28,7 @@ public class PunishmentsMenu extends InventoryMenu {
     @Override
     public boolean internalOpen(PlayerProtocol protocol, boolean permissionMessage, Object object) {
         if (!PluginAddons.isSyn()) {
+            protocol.bukkit().closeInventory();
             String missing = PluginAddons.synMissing.replace(PluginAddons.synMissingPlaceholder, title);
             ClickableMessage.sendURL(
                     protocol.bukkit(),
@@ -54,6 +55,20 @@ public class PunishmentsMenu extends InventoryMenu {
                             list.add("§aEnabled for the " + dataType.toString() + " edition. §7(Left click to toggle)");
                         } else {
                             list.add("§cDisabled for the " + dataType.toString() + " edition. §7(Right click to toggle)");
+                        }
+                    }
+                    int counter = 0;
+
+                    for (String s : hackType.getCheck().getPunishmentCommands()) {
+                        if (s != null) {
+                            counter++;
+                            String base = "§7" + counter + "§8:§f ";
+
+                            if (s.length() > 40) {
+                                list.add(base + s.substring(0, 40));
+                            } else {
+                                list.add(base + s);
+                            }
                         }
                     }
                     add("§3" + hackType.getCheck().getName(), list, new ItemStack(hackType.material), slot);
