@@ -12,7 +12,7 @@ import org.bukkit.inventory.ItemStack;
 public class SynMenu extends InventoryMenu {
 
     public SynMenu() {
-        super(PluginAddons.synName, 54, Permission.MANAGE);
+        super(PluginAddons.synName, 36, Permission.MANAGE);
     }
 
     @Override
