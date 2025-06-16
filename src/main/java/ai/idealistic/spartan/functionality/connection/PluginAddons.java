@@ -23,6 +23,7 @@ public class PluginAddons {
     @Getter
     private static boolean syn = false;
     public static final String
+            synCommand = Register.command + " syn",
             synName = Register.pluginName + " Syn",
             synURL = "https://spartan.top/syn",
             synMissingPlaceholder = "{feature}",

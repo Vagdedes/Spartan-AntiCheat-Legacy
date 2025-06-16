@@ -267,8 +267,13 @@ public abstract class CheckDetection extends CheckProcess {
         String notificationMsg = ConfigUtils.replaceWithSyntax(
                 this.protocol,
                 Config.messages.getColorfulString("detection_notification")
-                        .replace("{info}", information)
-                        .replace("{detection:level}", (level >= punishment
+                        .replace(
+                                "{info}",
+                                this.hackType.getCheck().hasDetectionDetails(this.protocol.getDataType())
+                                        || this.name == null
+                                        ? information
+                                        : this.name.toLowerCase().replace("_", "-")
+                        ).replace("{detection:level}", (level >= punishment
                                 ? "§4" :
                                 level >= prevention ? "§6"
                                         : level >= notification ? "§3"

@@ -499,7 +499,7 @@ public class Check {
 
     // Separator
 
-    public boolean isDetectionDetails(Check.DataType dataType) {
+    public boolean hasDetectionDetails(Check.DataType dataType) {
         if (dataType == null) {
             for (Check.DataType type : DataType.values()) {
                 if (this.detectionDetails[type.ordinal()]) {

@@ -26,7 +26,6 @@ public class PluginBase {
             connectionThread = new GeneralThread.ThreadPool(TPS.tickTime),
             dataThread = new GeneralThread.ThreadPool(1L);
 
-    public static final ManageChecks manageChecks = new ManageChecks();
     public static final PlayerInfo playerInfo = new PlayerInfo();
     public static final PluginChargeMenu chargeMenu = new PluginChargeMenu();
     public static final DetailsMenu detailsMenu = new DetailsMenu();
@@ -35,7 +34,6 @@ public class PluginBase {
     public static final PunishmentsMenu punishmentsMenu = new PunishmentsMenu();
     public static final SynMenu synMenu = new SynMenu();
     public static final InventoryMenu[] menus = new InventoryMenu[]{
-            manageChecks,
             playerInfo,
             chargeMenu,
             detailsMenu,

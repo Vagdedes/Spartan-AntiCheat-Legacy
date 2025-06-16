@@ -4,23 +4,31 @@ import ai.idealistic.spartan.abstraction.inventory.InventoryMenu;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.spartan.api.Permission;
 import ai.idealistic.spartan.functionality.connection.PluginAddons;
-import ai.idealistic.spartan.functionality.moderation.clickable.ClickableMessage;
 import ai.idealistic.spartan.functionality.server.PluginBase;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SynMenu extends InventoryMenu {
 
+    public static final Permission[] permissions = new Permission[]{Permission.MANAGE, Permission.INFO};
+
     public SynMenu() {
-        super(PluginAddons.synName, 36, Permission.MANAGE);
+        super(PluginAddons.synName, 36, permissions);
     }
 
     @Override
     public boolean internalOpen(PlayerProtocol protocol, boolean permissionMessage, Object object) {
+        List<String> list = new ArrayList<>();
         add("§2" + EditionMenu.title, null, new ItemStack(Material.ARROW), 11);
+        list.clear();
         add("§2" + DetailsMenu.title, null, new ItemStack(Material.ARROW), 12);
 
+        list.clear();
         add("§2" + PreventionsMenu.title, null, new ItemStack(Material.ARROW), 14);
+        list.clear();
         add("§2" + PunishmentsMenu.title, null, new ItemStack(Material.ARROW), 15);
 
         add("§2", null, new ItemStack(Material.ARROW), 21);

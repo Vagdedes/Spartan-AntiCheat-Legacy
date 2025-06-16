@@ -51,7 +51,7 @@ public class DetailsMenu extends InventoryMenu {
                     list.add("");
 
                     for (Check.DataType dataType : Check.DataType.values()) {
-                        if (hackType.getCheck().isDetectionDetails(dataType)) {
+                        if (hackType.getCheck().hasDetectionDetails(dataType)) {
                             list.add("§aEnabled for the " + dataType.toString() + " edition. §7(Left click to toggle)");
                         } else {
                             list.add("§cDisabled for the " + dataType.toString() + " edition. §7(Right click to toggle)");
@@ -81,14 +81,14 @@ public class DetailsMenu extends InventoryMenu {
                 Check check = Config.getCheckByName(item);
 
                 if (check != null) {
-                    check.setDetectionDetails(Check.DataType.JAVA, !check.isDetectionDetails(Check.DataType.JAVA));
+                    check.setDetectionDetails(Check.DataType.JAVA, !check.hasDetectionDetails(Check.DataType.JAVA));
                 }
                 open(protocol);
             } else if (clickType == ClickType.RIGHT) {
                 Check check = Config.getCheckByName(item);
 
                 if (check != null) {
-                    check.setDetectionDetails(Check.DataType.BEDROCK, !check.isDetectionDetails(Check.DataType.BEDROCK));
+                    check.setDetectionDetails(Check.DataType.BEDROCK, !check.hasDetectionDetails(Check.DataType.BEDROCK));
                 }
                 open(protocol);
             }

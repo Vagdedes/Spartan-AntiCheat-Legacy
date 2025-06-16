@@ -115,19 +115,25 @@ public class CommandExecution implements CommandExecutor {
                                     sender,
                                     "§cToggle Checks §7(Click)",
                                     "Click this command to toggle a check and its detections.",
-                                    "/" + Register.command + " manage-checks"
+                                    "/" + PluginAddons.synCommand
+                            );
+                            ClickableMessage.sendCommand(
+                                    sender,
+                                    "§cToggle Details §7(Click)",
+                                    "Click this command to toggle a check's detection details.",
+                                    "/" + PluginAddons.synCommand
                             );
                             ClickableMessage.sendCommand(
                                     sender,
                                     "§cToggle Preventions §7(Click)",
                                     "Click this command to toggle a check's preventions.",
-                                    "/" + Register.command + " manage-checks"
+                                    "/" + PluginAddons.synCommand
                             );
                             ClickableMessage.sendCommand(
                                     sender,
                                     "§cToggle Punishments §7(Click)",
                                     "Click this command to toggle a check's punishments.",
-                                    "/" + Register.command + " manage-checks"
+                                    "/" + PluginAddons.synCommand
                             );
                         }
                         if (Permissions.has(protocol.bukkit(), Permission.USE_BYPASS)) {
@@ -306,8 +312,8 @@ public class CommandExecution implements CommandExecutor {
                 }
                 completeMessage(sender, "default");
             } else if (args.length == 1) {
-                if (isPlayer && args[0].equalsIgnoreCase("Manage-Checks")) {
-                    PluginBase.manageChecks.open(protocol);
+                if (isPlayer && args[0].equalsIgnoreCase("Syn")) {
+                    PluginBase.synMenu.open(protocol);
                 } else if (args[0].equalsIgnoreCase("Charge")) {
                     if (isPlayer && !Permissions.isStaff(protocol.bukkit())) {
                         ClickableMessage.sendURL(
