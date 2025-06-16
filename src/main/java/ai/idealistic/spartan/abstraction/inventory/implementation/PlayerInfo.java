@@ -177,12 +177,10 @@ public class PlayerInfo extends InventoryMenu {
             }
         }
 
-        lore.add("");
-
         if (!added) {
+            lore.add("");
             lore.add("§7No useful information currently available.");
         }
-        lore.add("§7Click to §amanage checks§7.");
 
         // Separator
 
@@ -276,18 +274,6 @@ public class PlayerInfo extends InventoryMenu {
         } else if (PluginAddons.isFreeEdition()) {
             protocol.sendImportantMessage("§2§l" + PluginAddons.pluginURL);
             protocol.bukkit().closeInventory();
-        } else {
-            if (!Permissions.has(protocol.bukkit(), Permission.MANAGE)) {
-                protocol.bukkit().closeInventory();
-                ClickableMessage.sendURL(
-                        protocol.bukkit(),
-                        Config.messages.getColorfulString("no_permission"),
-                        CommandExecution.support,
-                        DiscordServer.url
-                );
-            } else {
-                PluginBase.manageChecks.open(protocol);
-            }
         }
         return true;
     }
