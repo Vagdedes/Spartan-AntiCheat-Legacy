@@ -24,9 +24,9 @@ public class PluginAddons {
     private static boolean syn = false;
     public static final String
             synURL = "https://spartan.top/syn",
-            synMissing = "You must purchase Spartan Syn to use {feature}.\n"
-                    + "Visit " + synURL + " for more information.",
             synMissingPlaceholder = "{feature}",
+            synMissing = "You must purchase Spartan Syn to use " + synMissingPlaceholder + ".\n"
+                    + "Visit " + synURL + " for more information.",
             synMissingDefault = synMissing.replace(synMissingPlaceholder, "this feature");
 
     public static boolean refresh() {
@@ -226,6 +226,42 @@ public class PluginAddons {
                 }
                 for (Check.DataType dataType : Check.DataType.values()) {
                     ownsEditions[dataType.ordinal()] = true;
+                }
+
+                if (!syn) {
+                    PluginBase.dataThread.executeIfUnknownThreadElseHere(() -> {
+                        String pluginsFolder = Register.plugin.getDataFolder().toString().replace(
+                                Register.pluginName,
+                                ""
+                        );
+
+                        for (File file : new File(pluginsFolder).listFiles()) {
+                            if (file.isFile()
+                                    && file.getName().endsWith(".jar")) {
+                                String clazz = IDs.class.getCanonicalName();
+                                Object object = ReflectionUtils.getFieldFromJar(
+                                        file.getAbsolutePath(),
+                                        clazz,
+                                        "user"
+                                );
+
+                                if (object != null
+                                        && object.toString().equals(IDs.user)) {
+                                    object = ReflectionUtils.getFieldFromJar(
+                                            file.getAbsolutePath(),
+                                            clazz,
+                                            "resource"
+                                    );
+
+                                    if (object != null
+                                            && !object.toString().equals(IDs.resource)) {
+                                        syn = true;
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+                    });
                 }
             }
         } else if (!IDs.enabled) { // No DRM
