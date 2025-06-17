@@ -21,7 +21,7 @@ public class StatisticsMenu extends InventoryMenu {
     public static final String title = "Plugin Statistics";
 
     public StatisticsMenu() {
-        super(title, 36, new Permission[]{Permission.MANAGE, Permission.INFO});
+        super(title, 54, new Permission[]{Permission.MANAGE, Permission.INFO});
     }
 
     @Override
@@ -58,11 +58,11 @@ public class StatisticsMenu extends InventoryMenu {
                             list.add("§7" + detection.name + "§8:");
 
                             for (Check.DataType dataType : Check.DataType.values()) {
-                                list.add("§eNotifies at level (§f" + dataType + "§7)§8: §f"
+                                list.add("§3In " + dataType + " notifies at§8: §b"
                                         + detection.getNotificationLevel(dataType));
-                                list.add("§cPrevents at level (§f" + dataType + "§7)§8: §f"
+                                list.add("§6In " + dataType + " prevents at§8: §e"
                                         + detection.getNotificationLevel(dataType));
-                                list.add("§4Punishes at level (§f" + dataType + "§7)§8: §f"
+                                list.add("§4In " + dataType + " punishes at level§8: §c"
                                         + detection.getNotificationLevel(dataType));
                             }
                         }
@@ -73,7 +73,7 @@ public class StatisticsMenu extends InventoryMenu {
             }
             startingLine++;
         }
-        add("§4Back", null, new ItemStack(Material.ARROW), 31);
+        add("§4Back", null, new ItemStack(Material.ARROW), 49);
         return true;
     }
 
