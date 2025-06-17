@@ -11,9 +11,7 @@ import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class DetectionsMenu extends InventoryMenu {
 
@@ -61,10 +59,19 @@ public class DetectionsMenu extends InventoryMenu {
                                 items.put(key, find);
                             }
                         }
+                        key = key
+                                .replace(".", " >> ")
+                                .replace("-", " ")
+                                .replace("_", "-");
+                        List<String> list = new ArrayList<>();
+                        list.add("");
+
                         if ((Boolean) value) {
-                            add("§a" + key, null, new ItemStack(material), -1);
+                            list.add("§aEnabled");
+                            add("§2" + key, list, new ItemStack(material), -1);
                         } else {
-                            add("§c" + key, null, new ItemStack(material), -1);
+                            list.add("§cDisabled");
+                            add("§4" + key, list, new ItemStack(material), -1);
                         }
                         added++;
 
@@ -87,6 +94,9 @@ public class DetectionsMenu extends InventoryMenu {
         if (item.equals("Back")) {
             PluginBase.synMenu.open(protocol, protocol.bukkit().getName());
         } else {
+            item = item.replace(" >> ", ".")
+                    .replace("-", "_")
+                    .replace(" ", "-");
             Config.advanced.setOption(item, !Config.advanced.getBoolean(item));
             open(protocol);
         }
