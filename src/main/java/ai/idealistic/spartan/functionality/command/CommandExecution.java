@@ -135,6 +135,24 @@ public class CommandExecution implements CommandExecutor {
                                     "Click this command to toggle a check's punishments.",
                                     "/" + PluginAddons.synCommand
                             );
+                            ClickableMessage.sendCommand(
+                                    sender,
+                                    "§cToggle Detections §7(Click)",
+                                    "Click this command to toggle a check's specific detections.",
+                                    "/" + PluginAddons.synCommand
+                            );
+                            ClickableMessage.sendCommand(
+                                    sender,
+                                    "§cToggle Settings §7(Click)",
+                                    "Click this command to toggle general settings.",
+                                    "/" + PluginAddons.synCommand
+                            );
+                            ClickableMessage.sendCommand(
+                                    sender,
+                                    "§cView Statistics §7(Click)",
+                                    "Click this command to view the plugin's statistics.",
+                                    "/" + PluginAddons.synCommand
+                            );
                         }
                         if (Permissions.has(protocol.bukkit(), Permission.USE_BYPASS)) {
                             ClickableMessage.sendCommand(

@@ -14,7 +14,7 @@ public class StatisticsMenu extends InventoryMenu {
     public static final String title = "Plugin Statistics";
 
     public StatisticsMenu() {
-        super(title, 54, Permission.MANAGE);
+        super(title, 36, Permission.MANAGE);
     }
 
     @Override
@@ -30,7 +30,7 @@ public class StatisticsMenu extends InventoryMenu {
             );
             return false;
         }
-        add("§4Back", null, new ItemStack(Material.ARROW), 49);
+        add("§4Back", null, new ItemStack(Material.ARROW), 31);
         return true;
     }
 
