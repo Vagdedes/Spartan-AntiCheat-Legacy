@@ -14,7 +14,7 @@ public class StatisticsMenu extends InventoryMenu {
     public static final String title = "Plugin Statistics";
 
     public StatisticsMenu() {
-        super(title, 36, Permission.MANAGE);
+        super(title, 36, new Permission[]{Permission.MANAGE, Permission.INFO});
     }
 
     @Override
