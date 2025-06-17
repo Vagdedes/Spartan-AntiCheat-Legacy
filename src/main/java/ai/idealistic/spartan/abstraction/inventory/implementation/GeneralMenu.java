@@ -37,100 +37,152 @@ public class GeneralMenu extends InventoryMenu {
             return false;
         }
         List<String> list = new ArrayList<>();
+        list.add("");
         ItemStack itemStack = new ItemStack(Material.BOOK);
 
         if (Config.settings.getBoolean("Logs.log_file")) {
             itemStack.addUnsafeEnchantment(EnchantmentUtils.DURABILITY, 1);
+            list.add("§2Enabled");
+        } else {
+            list.add("§4Disabled");
         }
         add("§aLogs >> File", list, itemStack, 11);
         list.clear();
+        list.add("");
         itemStack = new ItemStack(Material.PAPER);
 
         if (Config.settings.getBoolean("Logs.log_console")) {
             itemStack.addUnsafeEnchantment(EnchantmentUtils.DURABILITY, 1);
+            list.add("§2Enabled");
+        } else {
+            list.add("§4Disabled");
         }
         add("§eLogs >> Console", list, itemStack, 12);
         list.clear();
+        list.add("");
         itemStack = new ItemStack(Material.LEVER);
 
         if (Config.settings.getBoolean("Notifications.individual_only_notifications")) {
             itemStack.addUnsafeEnchantment(EnchantmentUtils.DURABILITY, 1);
+            list.add("§2Enabled");
+        } else {
+            list.add("§4Disabled");
         }
         add("§eNotifications >> Individual Only", list, itemStack, 13);
         list.clear();
+        list.add("");
         itemStack = new ItemStack(Material.COMPASS);
 
         if (Config.settings.getBoolean("Notifications.enable_notifications_on_login")) {
             itemStack.addUnsafeEnchantment(EnchantmentUtils.DURABILITY, 1);
+            list.add("§2Enabled");
+        } else {
+            list.add("§4Disabled");
         }
         add("§eNotifications >> Enable On Login", list, itemStack, 14);
         list.clear();
-        itemStack = new ItemStack(Material.END_CRYSTAL);
+        list.add("");
+        itemStack = new ItemStack(Material.ENDER_PEARL);
 
         if (Config.settings.getBoolean("Notifications.awareness_notifications")) {
             itemStack.addUnsafeEnchantment(EnchantmentUtils.DURABILITY, 1);
+            list.add("§2Enabled");
+        } else {
+            list.add("§4Disabled");
         }
         add("§cNotifications >> Awareness", list, itemStack, 15);
 
         //
 
         list.clear();
+        list.add("");
         itemStack = new ItemStack(Material.BEDROCK);
 
         if (Config.settings.getBoolean("Important.op_bypass")) {
             itemStack.addUnsafeEnchantment(EnchantmentUtils.DURABILITY, 1);
+            list.add("§2Enabled");
+        } else {
+            list.add("§4Disabled");
         }
         add("§cImportant >> Op Bypass", list, itemStack, 20);
         list.clear();
+        list.add("");
         itemStack = new ItemStack(Material.ENCHANTING_TABLE);
 
         if (Config.settings.getBoolean("Important.bedrock_on_protocollib")) {
             itemStack.addUnsafeEnchantment(EnchantmentUtils.DURABILITY, 1);
+            list.add("§2Enabled");
+        } else {
+            list.add("§4Disabled");
         }
         add("§cImportant >> Bedrock On ProtocolLib", list, itemStack, 21);
         list.clear();
+        list.add("");
         itemStack = new ItemStack(Material.CRAFTING_TABLE);
 
         if (Config.settings.getBoolean("Important.bedrock_client_permission")) {
             itemStack.addUnsafeEnchantment(EnchantmentUtils.DURABILITY, 1);
+            list.add("§2Enabled");
+        } else {
+            list.add("§4Disabled");
         }
         add("§eImportant >> Bedrock Client Permission", list, itemStack, 22);
         list.clear();
+        list.add("");
         itemStack = new ItemStack(MaterialUtils.get("piston"));
 
         if (Config.settings.getBoolean("Important.enable_developer_api")) {
             itemStack.addUnsafeEnchantment(EnchantmentUtils.DURABILITY, 1);
+            list.add("§2Enabled");
+        } else {
+            list.add("§4Disabled");
         }
         add("§cImportant >> Enable Developer API", list, itemStack, 23);
         list.clear();
+        list.add("");
         itemStack = new ItemStack(Material.NAME_TAG);
 
         if (Config.settings.getBoolean("Important.enable_watermark")) {
             itemStack.addUnsafeEnchantment(EnchantmentUtils.DURABILITY, 1);
+            list.add("§2Enabled");
+        } else {
+            list.add("§4Disabled");
         }
         add("§aImportant >> Enable Watermark", list, itemStack, 24);
 
         //
 
         list.clear();
+        list.add("");
         itemStack = new ItemStack(Material.IRON_HELMET);
 
         if (Config.settings.getBoolean("Important.enable_npc")) {
             itemStack.addUnsafeEnchantment(EnchantmentUtils.DURABILITY, 1);
+            list.add("§2Enabled");
+        } else {
+            list.add("§4Disabled");
         }
         add("§aImportant >> Enable NPC", list, itemStack, 30);
         list.clear();
+        list.add("");
         itemStack = new ItemStack(Material.STONE);
 
         if (Config.settings.getBoolean("Detections.ground_teleport_on_detection")) {
             itemStack.addUnsafeEnchantment(EnchantmentUtils.DURABILITY, 1);
+            list.add("§2Enabled");
+        } else {
+            list.add("§4Disabled");
         }
         add("§cDetections >> Ground Teleport", list, itemStack, 31);
         list.clear();
+        list.add("");
         itemStack = new ItemStack(Material.REDSTONE);
 
         if (Config.settings.getBoolean("Detections.damage_on_detection")) {
             itemStack.addUnsafeEnchantment(EnchantmentUtils.DURABILITY, 1);
+            list.add("§2Enabled");
+        } else {
+            list.add("§4Disabled");
         }
         add("§cDetections >> Damage", list, itemStack, 32);
 
