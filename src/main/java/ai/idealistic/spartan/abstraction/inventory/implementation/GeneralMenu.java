@@ -8,6 +8,7 @@ import ai.idealistic.spartan.functionality.moderation.clickable.ClickableMessage
 import ai.idealistic.spartan.functionality.server.Config;
 import ai.idealistic.spartan.functionality.server.PluginBase;
 import ai.idealistic.spartan.utils.minecraft.inventory.EnchantmentUtils;
+import ai.idealistic.spartan.utils.minecraft.inventory.MaterialUtils;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
@@ -19,7 +20,7 @@ public class GeneralMenu extends InventoryMenu {
     public static final String title = "General Functionality";
 
     public GeneralMenu() {
-        super(title, 45, Permission.MANAGE);
+        super(title, 54, Permission.MANAGE);
     }
 
     @Override
@@ -36,35 +37,35 @@ public class GeneralMenu extends InventoryMenu {
             return false;
         }
         List<String> list = new ArrayList<>();
-        ItemStack itemStack = new ItemStack(Material.ARROW);
+        ItemStack itemStack = new ItemStack(Material.BOOK);
 
         if (Config.settings.getBoolean("Logs.log_file")) {
             itemStack.addUnsafeEnchantment(EnchantmentUtils.DURABILITY, 1);
         }
         add("§aLogs >> File", list, itemStack, 11);
         list.clear();
-        itemStack = new ItemStack(Material.ARROW);
+        itemStack = new ItemStack(Material.PAPER);
 
         if (Config.settings.getBoolean("Logs.log_console")) {
             itemStack.addUnsafeEnchantment(EnchantmentUtils.DURABILITY, 1);
         }
         add("§eLogs >> Console", list, itemStack, 12);
         list.clear();
-        itemStack = new ItemStack(Material.ARROW);
+        itemStack = new ItemStack(Material.LEVER);
 
         if (Config.settings.getBoolean("Notifications.individual_only_notifications")) {
             itemStack.addUnsafeEnchantment(EnchantmentUtils.DURABILITY, 1);
         }
         add("§eNotifications >> Individual Only", list, itemStack, 13);
         list.clear();
-        itemStack = new ItemStack(Material.ARROW);
+        itemStack = new ItemStack(Material.COMPASS);
 
         if (Config.settings.getBoolean("Notifications.enable_notifications_on_login")) {
             itemStack.addUnsafeEnchantment(EnchantmentUtils.DURABILITY, 1);
         }
         add("§eNotifications >> Enable On Login", list, itemStack, 14);
         list.clear();
-        itemStack = new ItemStack(Material.ARROW);
+        itemStack = new ItemStack(Material.END_CRYSTAL);
 
         if (Config.settings.getBoolean("Notifications.awareness_notifications")) {
             itemStack.addUnsafeEnchantment(EnchantmentUtils.DURABILITY, 1);
@@ -74,35 +75,35 @@ public class GeneralMenu extends InventoryMenu {
         //
 
         list.clear();
-        itemStack = new ItemStack(Material.ARROW);
+        itemStack = new ItemStack(Material.BEDROCK);
 
-        if (Config.settings.getString("Important.server_name").isEmpty()) {
+        if (Config.settings.getBoolean("Important.op_bypass")) {
             itemStack.addUnsafeEnchantment(EnchantmentUtils.DURABILITY, 1);
         }
         add("§cImportant >> Op Bypass", list, itemStack, 20);
         list.clear();
-        itemStack = new ItemStack(Material.ARROW);
+        itemStack = new ItemStack(Material.ENCHANTING_TABLE);
 
         if (Config.settings.getBoolean("Important.bedrock_on_protocollib")) {
             itemStack.addUnsafeEnchantment(EnchantmentUtils.DURABILITY, 1);
         }
         add("§cImportant >> Bedrock On ProtocolLib", list, itemStack, 21);
         list.clear();
-        itemStack = new ItemStack(Material.ARROW);
+        itemStack = new ItemStack(Material.CRAFTING_TABLE);
 
         if (Config.settings.getBoolean("Important.bedrock_client_permission")) {
             itemStack.addUnsafeEnchantment(EnchantmentUtils.DURABILITY, 1);
         }
         add("§eImportant >> Bedrock Client Permission", list, itemStack, 22);
         list.clear();
-        itemStack = new ItemStack(Material.ARROW);
+        itemStack = new ItemStack(MaterialUtils.get("piston"));
 
         if (Config.settings.getBoolean("Important.enable_developer_api")) {
             itemStack.addUnsafeEnchantment(EnchantmentUtils.DURABILITY, 1);
         }
         add("§cImportant >> Enable Developer API", list, itemStack, 23);
         list.clear();
-        itemStack = new ItemStack(Material.ARROW);
+        itemStack = new ItemStack(Material.NAME_TAG);
 
         if (Config.settings.getBoolean("Important.enable_watermark")) {
             itemStack.addUnsafeEnchantment(EnchantmentUtils.DURABILITY, 1);
@@ -112,28 +113,28 @@ public class GeneralMenu extends InventoryMenu {
         //
 
         list.clear();
-        itemStack = new ItemStack(Material.ARROW);
+        itemStack = new ItemStack(Material.IRON_HELMET);
 
         if (Config.settings.getBoolean("Important.enable_npc")) {
             itemStack.addUnsafeEnchantment(EnchantmentUtils.DURABILITY, 1);
         }
-        add("§aImportant >> Enable NPC", list, new ItemStack(Material.ARROW), 30);
+        add("§aImportant >> Enable NPC", list, itemStack, 30);
         list.clear();
-        itemStack = new ItemStack(Material.ARROW);
+        itemStack = new ItemStack(Material.STONE);
 
         if (Config.settings.getBoolean("Detections.ground_teleport_on_detection")) {
             itemStack.addUnsafeEnchantment(EnchantmentUtils.DURABILITY, 1);
         }
-        add("§cDetections >> Ground Teleport", list, new ItemStack(Material.ARROW), 31);
+        add("§cDetections >> Ground Teleport", list, itemStack, 31);
         list.clear();
-        itemStack = new ItemStack(Material.ARROW);
+        itemStack = new ItemStack(Material.REDSTONE);
 
         if (Config.settings.getBoolean("Detections.damage_on_detection")) {
             itemStack.addUnsafeEnchantment(EnchantmentUtils.DURABILITY, 1);
         }
-        add("§cDetections >> Damage", list, new ItemStack(Material.ARROW), 32);
+        add("§cDetections >> Damage", list, itemStack, 32);
 
-        add("§4Back", null, new ItemStack(Material.ARROW), 40);
+        add("§4Back", null, new ItemStack(Material.ARROW), 49);
         return true;
     }
 
@@ -144,62 +145,58 @@ public class GeneralMenu extends InventoryMenu {
 
         if (item.equals("Back")) {
             PluginBase.synMenu.open(protocol, protocol.bukkit().getName());
-        } else {
-            item = item.split(" ")[0];
-
-            if (item.equals("Logs >> File")) {
-                Config.settings.setOption("Logs.log_file", !Config.settings.getBoolean("Logs.log_file"));
-                open(protocol);
-            } else if (item.equals("Logs >> Console")) {
-                Config.settings.setOption("Logs.log_console", !Config.settings.getBoolean("Logs.log_console"));
-                open(protocol);
-            } else if (item.equals("Notifications >> Individual")) {
-                Config.settings.setOption("Notifications.individual_only_notifications",
-                        !Config.settings.getBoolean("Notifications.individual_only_notifications"));
-                open(protocol);
-            } else if (item.equals("Notifications >> Enable")) {
-                Config.settings.setOption("Notifications.enable_notifications_on_login",
-                        !Config.settings.getBoolean("Notifications.enable_notifications_on_login"));
-                open(protocol);
-            } else if (item.equals("Notifications >> Awareness")) {
-                Config.settings.setOption("Notifications.awareness_notifications",
-                        !Config.settings.getBoolean("Notifications.awareness_notifications"));
-                open(protocol);
-            } else if (item.equals("Important >> Op")) {
-                Config.settings.setOption("Important.op_bypass", !Config.settings.getBoolean("Important.op_bypass"));
-                open(protocol);
-            } else if (item.equals("Important >> Bedrock On")) {
-                Config.settings.setOption("Important.bedrock_on_protocollib",
-                        !Config.settings.getBoolean("Important.bedrock_on_protocollib"));
-                open(protocol);
-            } else if (item.equals("Important >> Bedrock Client")) {
-                Config.settings.setOption("Important.bedrock_client_permission",
-                        !Config.settings.getBoolean("Important.bedrock_client_permission"));
-                open(protocol);
-            } else if (item.equals("Important >> Enable Developer")) {
-                Config.settings.setOption("Important.enable_developer_api",
-                        !Config.settings.getBoolean("Important.enable_developer_api"));
-                open(protocol);
-            } else if (item.equals("Important >> Enable Watermark")) {
-                Config.settings.setOption("Important.enable_watermark",
-                        !Config.settings.getBoolean("Important.enable_watermark"));
-                open(protocol);
-            } else if (item.equals("Important >> Enable NPC")) {
-                Config.settings.setOption("Important.enable_npc", !Config.settings.getBoolean("Important.enable_npc"));
-                open(protocol);
-            } else if (item.equals("Detections >> Ground Teleport")) {
-                Config.settings.setOption(
-                        "Detections.ground_teleport_on_detection",
-                        !Config.settings.getBoolean("Detections.ground_teleport_on_detection")
-                );
-                open(protocol);
-            } else if (item.equals("Detections >> Damage")) {
-                Config.settings.setOption(
-                        "Detections.damage_on_detection",
-                        !Config.settings.getBoolean("Detections.damage_on_detection")
-                );
-                open(protocol);
-            }
+        } else if (item.equals("Logs >> File")) {
+            Config.settings.setOption("Logs.log_file", !Config.settings.getBoolean("Logs.log_file"));
+            open(protocol);
+        } else if (item.equals("Logs >> Console")) {
+            Config.settings.setOption("Logs.log_console", !Config.settings.getBoolean("Logs.log_console"));
+            open(protocol);
+        } else if (item.equals("Notifications >> Individual Only")) {
+            Config.settings.setOption("Notifications.individual_only_notifications",
+                    !Config.settings.getBoolean("Notifications.individual_only_notifications"));
+            open(protocol);
+        } else if (item.equals("Notifications >> Enable On Login")) {
+            Config.settings.setOption("Notifications.enable_notifications_on_login",
+                    !Config.settings.getBoolean("Notifications.enable_notifications_on_login"));
+            open(protocol);
+        } else if (item.equals("Notifications >> Awareness")) {
+            Config.settings.setOption("Notifications.awareness_notifications",
+                    !Config.settings.getBoolean("Notifications.awareness_notifications"));
+            open(protocol);
+        } else if (item.equals("Important >> Op Bypass")) {
+            Config.settings.setOption("Important.op_bypass", !Config.settings.getBoolean("Important.op_bypass"));
+            open(protocol);
+        } else if (item.equals("Important >> Bedrock On ProtocolLib")) {
+            Config.settings.setOption("Important.bedrock_on_protocollib",
+                    !Config.settings.getBoolean("Important.bedrock_on_protocollib"));
+            open(protocol);
+        } else if (item.equals("Important >> Bedrock Client Permission")) {
+            Config.settings.setOption("Important.bedrock_client_permission",
+                    !Config.settings.getBoolean("Important.bedrock_client_permission"));
+            open(protocol);
+        } else if (item.equals("Important >> Enable Developer API")) {
+            Config.settings.setOption("Important.enable_developer_api",
+                    !Config.settings.getBoolean("Important.enable_developer_api"));
+            open(protocol);
+        } else if (item.equals("Important >> Enable Watermark")) {
+            Config.settings.setOption("Important.enable_watermark",
+                    !Config.settings.getBoolean("Important.enable_watermark"));
+            open(protocol);
+        } else if (item.equals("Important >> Enable NPC")) {
+            Config.settings.setOption("Important.enable_npc", !Config.settings.getBoolean("Important.enable_npc"));
+            open(protocol);
+        } else if (item.equals("Detections >> Ground Teleport")) {
+            Config.settings.setOption(
+                    "Detections.ground_teleport_on_detection",
+                    !Config.settings.getBoolean("Detections.ground_teleport_on_detection")
+            );
+            open(protocol);
+        } else if (item.equals("Detections >> Damage")) {
+            Config.settings.setOption(
+                    "Detections.damage_on_detection",
+                    !Config.settings.getBoolean("Detections.damage_on_detection")
+            );
+            open(protocol);
         }
         return true;
     }

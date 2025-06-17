@@ -30,7 +30,7 @@ public class DetectionsMenu extends InventoryMenu {
             );
             return false;
         }
-        add("§4Back", null, new ItemStack(Material.ARROW), 49);
+        add("§4Back", null, new ItemStack(Material.ARROW), 53);
         return true;
     }
 
