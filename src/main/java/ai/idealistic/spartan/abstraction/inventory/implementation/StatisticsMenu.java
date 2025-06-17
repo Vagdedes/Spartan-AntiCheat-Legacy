@@ -13,7 +13,6 @@ import ai.idealistic.spartan.functionality.moderation.clickable.ClickableMessage
 import ai.idealistic.spartan.functionality.server.PluginBase;
 import ai.idealistic.spartan.functionality.tracking.ResearchEngine;
 import ai.idealistic.spartan.utils.java.TimeUtils;
-import ai.idealistic.spartan.utils.math.AlgebraUtils;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
@@ -46,25 +45,13 @@ public class StatisticsMenu extends InventoryMenu {
         int startingLine = 1;
         Collection<PlayerProfile> profiles = ResearchEngine.getPlayerProfiles();
 
-        for (CheckRunner runner : protocol.getRunners()) {
-            for (CheckDetection detection : runner.getDetections()) {
-
-            }
-        }
         for (CheckEnums.HackCategoryType categoryType : CheckEnums.HackCategoryType.values()) {
             int slot = (startingLine * 9) + 2;
 
             for (CheckEnums.HackType hackType : CheckEnums.HackType.values()) {
                 if (hackType.category == categoryType) {
                     list.clear();
-                    list.add("§6" + hackType.category.toString());
-                    list.add("");
-
-                    if (!profiles.isEmpty()) {
-                        // todo
-                    } else {
-                        list.add("§cNo useful information found.");
-                    }
+                    list.add("§cComing soon.");
                     add("§3" + hackType.getCheck().getName(), list, new ItemStack(hackType.material), slot);
                     slot++;
                 }
