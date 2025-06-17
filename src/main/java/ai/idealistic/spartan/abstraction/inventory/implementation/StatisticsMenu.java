@@ -4,11 +4,15 @@ import ai.idealistic.spartan.abstraction.check.Check;
 import ai.idealistic.spartan.abstraction.check.CheckDetection;
 import ai.idealistic.spartan.abstraction.check.CheckEnums;
 import ai.idealistic.spartan.abstraction.inventory.InventoryMenu;
+import ai.idealistic.spartan.abstraction.profiling.PlayerProfile;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.spartan.api.Permission;
 import ai.idealistic.spartan.functionality.connection.PluginAddons;
 import ai.idealistic.spartan.functionality.moderation.clickable.ClickableMessage;
 import ai.idealistic.spartan.functionality.server.PluginBase;
+import ai.idealistic.spartan.functionality.tracking.ResearchEngine;
+import ai.idealistic.spartan.utils.java.TimeUtils;
+import ai.idealistic.spartan.utils.math.AlgebraUtils;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
@@ -46,24 +50,37 @@ public class StatisticsMenu extends InventoryMenu {
             for (CheckEnums.HackType hackType : CheckEnums.HackType.values()) {
                 if (hackType.category == categoryType) {
                     list.clear();
-                    list.add("§6" + hackType.category.toString());
+                    list.add("§6" + hackType.category.toString() + " detection levels");
                     Collection<CheckDetection> detections = protocol.profile().getRunner(hackType).getDetections();
 
                     if (!detections.isEmpty()) {
-                        list.add("");
-                        list.add("§7Detection Levels§8:");
+                        int count = 0;
 
                         for (CheckDetection detection : detections) {
+                            String name = detection.name;
+
+                            if (AlgebraUtils.validInteger(name)) {
+                                name = "default";
+                            } else {
+                                name = name.toLowerCase().replace("_", "-");
+                            }
                             list.add("");
-                            list.add("§7" + detection.name + "§8:");
+                            list.add("§7" + name + "§8:");
 
                             for (Check.DataType dataType : Check.DataType.values()) {
-                                list.add("§3In " + dataType + " notifies at§8: §b"
+                                list.add("§3In §b" + dataType + " §3notifies at§8: §b"
                                         + detection.getNotificationLevel(dataType));
-                                list.add("§6In " + dataType + " prevents at§8: §e"
-                                        + detection.getNotificationLevel(dataType));
-                                list.add("§4In " + dataType + " punishes at level§8: §c"
-                                        + detection.getNotificationLevel(dataType));
+                                list.add("§6In §e" + dataType + " §6prevents at§8: §e"
+                                        + detection.getPreventionLevel(dataType));
+                                list.add("§4In §c" + dataType + " §4punishes at level§8: §c"
+                                        + detection.getPunishmentLevel(dataType));
+                                list.add("§4Expected time to remove u§8: §c"
+                                        + detection.getPunishmentLevel(dataType));
+                            }
+                            count++;
+
+                            if (count == 4) {
+                                break;
                             }
                         }
                     }
@@ -73,6 +90,36 @@ public class StatisticsMenu extends InventoryMenu {
             }
             startingLine++;
         }
+
+        //
+
+        Collection<PlayerProfile> profiles = ResearchEngine.getPlayerProfiles();
+        int java = 0;
+        long totalOnlineTime = 0L,
+                averageOnlineTime = 0L,
+                violationsFired = 0L;
+
+        for (PlayerProfile profile : profiles) {
+            if (profile.getLastDataType() == Check.DataType.JAVA) {
+                java++;
+            }
+            totalOnlineTime += profile.getContinuity().getOnlineTime();
+            averageOnlineTime += profile.getContinuity().getAverageOnlineTime();
+
+            for (CheckEnums.HackType hackType : CheckEnums.HackType.values()) {
+                violationsFired += profile.getTimeDifferences(hackType, profile.getLastDataType(), null).size(); // todo
+            }
+        }
+        averageOnlineTime /= profiles.size();
+        list.clear();
+        list.add("");
+        list.add("§7Total Player Profiles§8: §f" + profiles.size());
+        list.add("§7Java Player Profiles§8: §f" + java);
+        list.add("§7Bedrock Player Profiles§8: §f" + (profiles.size() - java));
+        list.add("§7Total Player Online Time§8: §f" + TimeUtils.convertMilliseconds(totalOnlineTime));
+        list.add("§7Average Player Online Time§8: §f" + TimeUtils.convertMilliseconds(averageOnlineTime));
+        list.add("§7Violations Fired§8: §f" + violationsFired);
+        add("§4General Statistics", list, new ItemStack(Material.ENDER_CHEST), 4);
         add("§4Back", null, new ItemStack(Material.ARROW), 49);
         return true;
     }
