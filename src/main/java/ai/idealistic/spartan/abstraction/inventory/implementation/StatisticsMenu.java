@@ -1,5 +1,6 @@
 package ai.idealistic.spartan.abstraction.inventory.implementation;
 
+import ai.idealistic.spartan.abstraction.check.Check;
 import ai.idealistic.spartan.abstraction.check.CheckDetection;
 import ai.idealistic.spartan.abstraction.check.CheckEnums;
 import ai.idealistic.spartan.abstraction.inventory.InventoryMenu;
@@ -46,11 +47,25 @@ public class StatisticsMenu extends InventoryMenu {
                 if (hackType.category == categoryType) {
                     list.clear();
                     list.add("§6" + hackType.category.toString());
-                    list.add("");
                     Collection<CheckDetection> detections = protocol.profile().getRunner(hackType).getDetections();
 
                     if (!detections.isEmpty()) {
-                        // todo
+                        list.add("");
+                        list.add("§7Detection Levels§8:");
+
+                        for (CheckDetection detection : detections) {
+                            list.add("");
+                            list.add("§7" + detection.name + "§8:");
+
+                            for (Check.DataType dataType : Check.DataType.values()) {
+                                list.add("§eNotifies at level (§f" + dataType + "§7)§8: §f"
+                                        + detection.getNotificationLevel(dataType));
+                                list.add("§cPrevents at level (§f" + dataType + "§7)§8: §f"
+                                        + detection.getNotificationLevel(dataType));
+                                list.add("§4Punishes at level (§f" + dataType + "§7)§8: §f"
+                                        + detection.getNotificationLevel(dataType));
+                            }
+                        }
                     }
                     add("§3" + hackType.getCheck().getName(), list, new ItemStack(hackType.material), slot);
                     slot++;
