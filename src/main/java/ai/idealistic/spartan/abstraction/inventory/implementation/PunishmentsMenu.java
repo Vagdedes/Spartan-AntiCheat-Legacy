@@ -88,24 +88,20 @@ public class PunishmentsMenu extends InventoryMenu {
 
         if (item.equals("Back")) {
             PluginBase.synMenu.open(protocol, protocol.bukkit().getName());
-        } else {
-            item = item.split(" ")[0];
+        } else if (clickType == ClickType.LEFT) {
+            Check check = Config.getCheckByName(item);
 
-            if (clickType == ClickType.LEFT) {
-                Check check = Config.getCheckByName(item);
-
-                if (check != null) {
-                    check.setPunish(Check.DataType.JAVA, !check.canPunish(Check.DataType.JAVA));
-                }
-                open(protocol);
-            } else if (clickType == ClickType.RIGHT) {
-                Check check = Config.getCheckByName(item);
-
-                if (check != null) {
-                    check.setPunish(Check.DataType.BEDROCK, !check.canPunish(Check.DataType.BEDROCK));
-                }
-                open(protocol);
+            if (check != null) {
+                check.setPunish(Check.DataType.JAVA, !check.canPunish(Check.DataType.JAVA));
             }
+            open(protocol);
+        } else if (clickType == ClickType.RIGHT) {
+            Check check = Config.getCheckByName(item);
+
+            if (check != null) {
+                check.setPunish(Check.DataType.BEDROCK, !check.canPunish(Check.DataType.BEDROCK));
+            }
+            open(protocol);
         }
         return true;
     }

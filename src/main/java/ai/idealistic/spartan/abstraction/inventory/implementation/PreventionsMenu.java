@@ -73,24 +73,20 @@ public class PreventionsMenu extends InventoryMenu {
 
         if (item.equals("Back")) {
             PluginBase.synMenu.open(protocol, protocol.bukkit().getName());
-        } else {
-            item = item.split(" ")[0];
+        } else if (clickType == ClickType.LEFT) {
+            Check check = Config.getCheckByName(item);
 
-            if (clickType == ClickType.LEFT) {
-                Check check = Config.getCheckByName(item);
-
-                if (check != null) {
-                    check.setSilent(Check.DataType.JAVA, !check.isSilent(Check.DataType.JAVA, null));
-                }
-                open(protocol);
-            } else if (clickType == ClickType.RIGHT) {
-                Check check = Config.getCheckByName(item);
-
-                if (check != null) {
-                    check.setSilent(Check.DataType.BEDROCK, !check.isSilent(Check.DataType.BEDROCK, null));
-                }
-                open(protocol);
+            if (check != null) {
+                check.setSilent(Check.DataType.JAVA, !check.isSilent(Check.DataType.JAVA, null));
             }
+            open(protocol);
+        } else if (clickType == ClickType.RIGHT) {
+            Check check = Config.getCheckByName(item);
+
+            if (check != null) {
+                check.setSilent(Check.DataType.BEDROCK, !check.isSilent(Check.DataType.BEDROCK, null));
+            }
+            open(protocol);
         }
         return true;
     }

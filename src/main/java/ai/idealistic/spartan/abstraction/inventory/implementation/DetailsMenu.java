@@ -73,24 +73,20 @@ public class DetailsMenu extends InventoryMenu {
 
         if (item.equals("Back")) {
             PluginBase.synMenu.open(protocol, protocol.bukkit().getName());
-        } else {
-            item = item.split(" ")[0];
+        } else if (clickType == ClickType.LEFT) {
+            Check check = Config.getCheckByName(item);
 
-            if (clickType == ClickType.LEFT) {
-                Check check = Config.getCheckByName(item);
-
-                if (check != null) {
-                    check.setDetectionDetails(Check.DataType.JAVA, !check.isDetectionDetails(Check.DataType.JAVA));
-                }
-                open(protocol);
-            } else if (clickType == ClickType.RIGHT) {
-                Check check = Config.getCheckByName(item);
-
-                if (check != null) {
-                    check.setDetectionDetails(Check.DataType.BEDROCK, !check.isDetectionDetails(Check.DataType.BEDROCK));
-                }
-                open(protocol);
+            if (check != null) {
+                check.setDetectionDetails(Check.DataType.JAVA, !check.isDetectionDetails(Check.DataType.JAVA));
             }
+            open(protocol);
+        } else if (clickType == ClickType.RIGHT) {
+            Check check = Config.getCheckByName(item);
+
+            if (check != null) {
+                check.setDetectionDetails(Check.DataType.BEDROCK, !check.isDetectionDetails(Check.DataType.BEDROCK));
+            }
+            open(protocol);
         }
         return true;
     }

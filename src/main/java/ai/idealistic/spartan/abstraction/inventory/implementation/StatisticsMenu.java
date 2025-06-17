@@ -42,7 +42,7 @@ public class StatisticsMenu extends InventoryMenu {
         if (item.equals("Back")) {
             PluginBase.synMenu.open(protocol, protocol.bukkit().getName());
         } else {
-            item = item.split(" ")[0];
+            // todo
         }
         return true;
     }
