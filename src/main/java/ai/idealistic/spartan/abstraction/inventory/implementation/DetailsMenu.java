@@ -39,13 +39,14 @@ public class DetailsMenu extends InventoryMenu {
             return false;
         }
         int startingLine = 1;
+        List<String> list = new ArrayList<>();
 
         for (CheckEnums.HackCategoryType categoryType : CheckEnums.HackCategoryType.values()) {
             int slot = (startingLine * 9) + 2;
 
             for (HackType hackType : HackType.values()) {
                 if (hackType.category == categoryType) {
-                    List<String> list = new ArrayList<>();
+                    list.clear();
                     list.add("§6" + hackType.category.toString());
                     list.add("");
 

@@ -38,6 +38,7 @@ public class EditionMenu extends InventoryMenu {
             );
             return false;
         }
+        List<String> list = new ArrayList<>();
         int startingLine = 1;
 
         for (CheckEnums.HackCategoryType categoryType : CheckEnums.HackCategoryType.values()) {
@@ -45,7 +46,7 @@ public class EditionMenu extends InventoryMenu {
 
             for (HackType hackType : HackType.values()) {
                 if (hackType.category == categoryType) {
-                    List<String> list = new ArrayList<>();
+                    list.clear();
                     list.add("§6" + hackType.category.toString());
                     list.add("");
 
