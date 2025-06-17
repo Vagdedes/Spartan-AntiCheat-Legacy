@@ -142,6 +142,34 @@ public class PlayerProfile {
         }
     }
 
+    public double getAverageTimeDifference(
+            CheckEnums.HackType hackType,
+            Check.DataType dataType,
+            String detection
+    ) {
+        List<Long> data = this.data[hackType.ordinal()][dataType.ordinal()].get(detection);
+
+        if (data != null
+                && !data.isEmpty()) {
+            double total = 0.0;
+
+            for (Long time : data) {
+                if (time < 0L) {
+                    long absTime = Math.abs(time);
+                    data.remove(time); // Remove negative
+                    data.add(absTime); // Recover negative as positive
+                    total += absTime;
+                } else {
+                    total += time;
+                }
+            }
+            if (total > 0.0) {
+                return total / data.size();
+            }
+        }
+        return 0.0;
+    }
+
     public void setTimeDifferences(
             CheckEnums.HackType hackType,
             Check.DataType dataType,

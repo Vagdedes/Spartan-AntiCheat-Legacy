@@ -44,32 +44,26 @@ public class StatisticsMenu extends InventoryMenu {
         }
         List<String> list = new ArrayList<>();
         int startingLine = 1;
+        Collection<PlayerProfile> profiles = ResearchEngine.getPlayerProfiles();
 
+        for (CheckRunner runner : protocol.getRunners()) {
+            for (CheckDetection detection : runner.getDetections()) {
+
+            }
+        }
         for (CheckEnums.HackCategoryType categoryType : CheckEnums.HackCategoryType.values()) {
             int slot = (startingLine * 9) + 2;
 
             for (CheckEnums.HackType hackType : CheckEnums.HackType.values()) {
                 if (hackType.category == categoryType) {
                     list.clear();
-                    list.add("§6" + hackType.category.toString() + " detection levels"); // todo
-                    Collection<CheckDetection> detections = protocol.profile().getRunner(hackType).getDetections();
+                    list.add("§6" + hackType.category.toString());
+                    list.add("");
 
-                    if (!detections.isEmpty()) {
-                        for (CheckDetection detection : detections) {
-                            String name = detection.name;
-
-                            if (AlgebraUtils.validInteger(name)) {
-                                name = "default";
-                            } else {
-                                name = name.toLowerCase().replace("_", "-");
-                            }
-                            list.add("");
-                            list.add("§7" + name + "§8:");
-
-                            for (Check.DataType dataType : Check.DataType.values()) {
-                                // todo
-                            }
-                        }
+                    if (!profiles.isEmpty()) {
+                        // todo
+                    } else {
+                        list.add("§cNo useful information found.");
                     }
                     add("§3" + hackType.getCheck().getName(), list, new ItemStack(hackType.material), slot);
                     slot++;
@@ -80,26 +74,27 @@ public class StatisticsMenu extends InventoryMenu {
 
         //
 
-        Collection<PlayerProfile> profiles = ResearchEngine.getPlayerProfiles();
         int java = 0;
         long totalOnlineTime = 0L,
                 averageOnlineTime = 0L,
                 violationsFired = 0L;
 
-        for (PlayerProfile profile : profiles) {
-            if (profile.getLastDataType() == Check.DataType.JAVA) {
-                java++;
-            }
-            totalOnlineTime += profile.getContinuity().getOnlineTime();
-            averageOnlineTime += profile.getContinuity().getAverageOnlineTime();
+        if (!profiles.isEmpty()) {
+            for (PlayerProfile profile : profiles) {
+                if (profile.getLastDataType() == Check.DataType.JAVA) {
+                    java++;
+                }
+                totalOnlineTime += profile.getContinuity().getOnlineTime();
+                averageOnlineTime += profile.getContinuity().getAverageOnlineTime();
 
-            for (CheckRunner runner : protocol.getRunners()) {
-                for (CheckDetection detection : runner.getDetections()) {
-                    violationsFired += profile.getTimeDifferences(
-                            runner.hackType,
-                            profile.getLastDataType(),
-                            detection.name
-                    ).size();
+                for (CheckRunner runner : protocol.getRunners()) {
+                    for (CheckDetection detection : runner.getDetections()) {
+                        violationsFired += profile.getTimeDifferences(
+                                runner.hackType,
+                                profile.getLastDataType(),
+                                detection.name
+                        ).size();
+                    }
                 }
             }
         }
