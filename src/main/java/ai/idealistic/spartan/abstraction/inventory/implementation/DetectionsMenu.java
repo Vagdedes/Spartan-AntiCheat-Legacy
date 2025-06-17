@@ -5,13 +5,20 @@ import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.spartan.api.Permission;
 import ai.idealistic.spartan.functionality.connection.PluginAddons;
 import ai.idealistic.spartan.functionality.moderation.clickable.ClickableMessage;
+import ai.idealistic.spartan.functionality.server.Config;
 import ai.idealistic.spartan.functionality.server.PluginBase;
 import org.bukkit.Material;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 public class DetectionsMenu extends InventoryMenu {
 
     public static final String title = "Check Detections";
+    private static final Map<String, ItemStack> items = new HashMap<>(53);
 
     public DetectionsMenu() {
         super(title, 54, Permission.MANAGE);
@@ -30,6 +37,36 @@ public class DetectionsMenu extends InventoryMenu {
             );
             return false;
         }
+        YamlConfiguration configuration = YamlConfiguration.loadConfiguration(Config.advanced.getFile());
+        Set<String> keys = configuration.getKeys(true);
+
+        if (!keys.isEmpty()) {
+            int added = 0;
+
+            for (String key : keys) {
+                if (key.contains(".")
+                        && configuration.isBoolean(key)) {
+                    ItemStack itemStack = items.get(key);
+
+                    while (itemStack == null) {
+                        int maxMaterials = Material.values().length;
+                        int randomIndex = (int) (Math.random() * maxMaterials);
+                        Material material = Material.values()[randomIndex];
+
+                        if (material.isItem()) {
+                            itemStack = new ItemStack(material);
+                            items.put(key, itemStack);
+                        }
+                    }
+                    add("§a" + key, null, itemStack, -1);
+                    added++;
+
+                    if (added == 53) {
+                        break;
+                    }
+                }
+            }
+        }
         add("§4Back", null, new ItemStack(Material.ARROW), 53);
         return true;
     }
@@ -42,7 +79,7 @@ public class DetectionsMenu extends InventoryMenu {
         if (item.equals("Back")) {
             PluginBase.synMenu.open(protocol, protocol.bukkit().getName());
         } else {
-            item = item.split(" ")[0];
+            Config.advanced.setOption(item, !Config.advanced.getBoolean(item));
         }
         return true;
     }

@@ -46,7 +46,7 @@ public class SynMenu extends InventoryMenu {
         list.add("");
         list.add("§7A menu that allows you to");
         list.add("§7toggle the punishments of a");
-        list.add("§7checks and view their commands.");
+        list.add("§7check and view their commands.");
         add("§4" + PunishmentsMenu.title, list, new ItemStack(Material.IRON_AXE), 15);
 
         list.clear();
