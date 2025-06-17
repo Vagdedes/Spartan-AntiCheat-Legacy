@@ -1,5 +1,6 @@
 package ai.idealistic.spartan.abstraction.inventory.implementation;
 
+import ai.idealistic.spartan.Register;
 import ai.idealistic.spartan.abstraction.inventory.InventoryMenu;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.spartan.api.Permission;
@@ -24,27 +25,46 @@ public class SynMenu extends InventoryMenu {
     public boolean internalOpen(PlayerProtocol protocol, boolean permissionMessage, Object object) {
         List<String> list = new ArrayList<>();
         list.add("");
+        list.add("§7A menu that allows you to");
+        list.add("§7toggle the functionality");
+        list.add("§7of checks and their detections.");
         add("§2" + EditionMenu.title, list, new ItemStack(Material.LEVER), 11);
         list.clear();
         list.add("");
-        add("§2" + DetailsMenu.title, list, new ItemStack(Material.PAPER), 12);
+        list.add("§7A menu that allows you to");
+        list.add("§7toggle the details of a");
+        list.add("§7check's detections.");
+        add("§e" + DetailsMenu.title, list, new ItemStack(Material.BOOK), 12);
 
         list.clear();
         list.add("");
-        add("§2" + PreventionsMenu.title, list, new ItemStack(MaterialUtils.get("lead")), 14);
+        list.add("§7A menu that allows you to");
+        list.add("§7toggle the preventions of a");
+        list.add("§7check's detections.");
+        add("§c" + PreventionsMenu.title, list, new ItemStack(MaterialUtils.get("lead")), 14);
         list.clear();
         list.add("");
-        add("§2" + PunishmentsMenu.title, list, new ItemStack(Material.IRON_AXE), 15);
+        list.add("§7A menu that allows you to");
+        list.add("§7toggle the punishments of a");
+        list.add("§7checks and view their commands.");
+        add("§4" + PunishmentsMenu.title, list, new ItemStack(Material.IRON_AXE), 15);
 
         list.clear();
-        list.add("");
-        add("§2", list, new ItemStack(Material.ARROW), 30);
+        list.add("§7A menu that allows you to");
+        list.add("§7manage the detections of");
+        list.add("§7all checks.");
+        add("§b" + DetectionsMenu.title, list, new ItemStack(Material.REDSTONE), 30);
         list.clear();
         list.add("");
-        add("§2", list, new ItemStack(Material.ARROW), 31);
+        list.add("§7A menu that allows you to");
+        list.add("§7manage the general settings");
+        list.add("§7of " + Register.plugin + ".");
+        add("§a" + GeneralMenu.title, list, new ItemStack(Material.ENDER_CHEST), 31);
         list.clear();
         list.add("");
-        add("§2", list, new ItemStack(Material.ARROW), 32);
+        list.add("§7A menu that allows you to");
+        list.add("§7view the statistics of " + Register.plugin + ".");
+        add("§6" + StatisticsMenu.title, list, new ItemStack(Material.PAPER), 32);
         return true;
     }
 
@@ -61,6 +81,12 @@ public class SynMenu extends InventoryMenu {
             PluginBase.preventionsMenu.open(protocol, protocol.bukkit().getName());
         } else if (item.equals(PunishmentsMenu.title)) {
             PluginBase.punishmentsMenu.open(protocol, protocol.bukkit().getName());
+        } else if (item.equals(DetectionsMenu.title)) {
+            PluginBase.detectionsMenu.open(protocol, protocol.bukkit().getName());
+        } else if (item.equals(GeneralMenu.title)) {
+            PluginBase.generalMenu.open(protocol, protocol.bukkit().getName());
+        } else if (item.equals(StatisticsMenu.title)) {
+            PluginBase.statisticsMenu.open(protocol, protocol.bukkit().getName());
         }
         return true;
     }
