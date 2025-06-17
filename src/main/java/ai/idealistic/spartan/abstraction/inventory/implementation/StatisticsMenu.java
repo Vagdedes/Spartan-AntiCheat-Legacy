@@ -3,6 +3,7 @@ package ai.idealistic.spartan.abstraction.inventory.implementation;
 import ai.idealistic.spartan.abstraction.check.Check;
 import ai.idealistic.spartan.abstraction.check.CheckDetection;
 import ai.idealistic.spartan.abstraction.check.CheckEnums;
+import ai.idealistic.spartan.abstraction.check.CheckRunner;
 import ai.idealistic.spartan.abstraction.inventory.InventoryMenu;
 import ai.idealistic.spartan.abstraction.profiling.PlayerProfile;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
@@ -50,12 +51,10 @@ public class StatisticsMenu extends InventoryMenu {
             for (CheckEnums.HackType hackType : CheckEnums.HackType.values()) {
                 if (hackType.category == categoryType) {
                     list.clear();
-                    list.add("§6" + hackType.category.toString() + " detection levels");
+                    list.add("§6" + hackType.category.toString() + " detection levels"); // todo
                     Collection<CheckDetection> detections = protocol.profile().getRunner(hackType).getDetections();
 
                     if (!detections.isEmpty()) {
-                        int count = 0;
-
                         for (CheckDetection detection : detections) {
                             String name = detection.name;
 
@@ -68,19 +67,7 @@ public class StatisticsMenu extends InventoryMenu {
                             list.add("§7" + name + "§8:");
 
                             for (Check.DataType dataType : Check.DataType.values()) {
-                                list.add("§3In §b" + dataType + " §3notifies at§8: §b"
-                                        + detection.getNotificationLevel(dataType));
-                                list.add("§6In §e" + dataType + " §6prevents at§8: §e"
-                                        + detection.getPreventionLevel(dataType));
-                                list.add("§4In §c" + dataType + " §4punishes at level§8: §c"
-                                        + detection.getPunishmentLevel(dataType));
-                                list.add("§4Expected time to remove u§8: §c"
-                                        + detection.getPunishmentLevel(dataType));
-                            }
-                            count++;
-
-                            if (count == 4) {
-                                break;
+                                // todo
                             }
                         }
                     }
@@ -106,8 +93,14 @@ public class StatisticsMenu extends InventoryMenu {
             totalOnlineTime += profile.getContinuity().getOnlineTime();
             averageOnlineTime += profile.getContinuity().getAverageOnlineTime();
 
-            for (CheckEnums.HackType hackType : CheckEnums.HackType.values()) {
-                violationsFired += profile.getTimeDifferences(hackType, profile.getLastDataType(), null).size(); // todo
+            for (CheckRunner runner : protocol.getRunners()) {
+                for (CheckDetection detection : runner.getDetections()) {
+                    violationsFired += profile.getTimeDifferences(
+                            runner.hackType,
+                            profile.getLastDataType(),
+                            detection.name
+                    ).size();
+                }
             }
         }
         averageOnlineTime /= profiles.size();
@@ -118,7 +111,7 @@ public class StatisticsMenu extends InventoryMenu {
         list.add("§7Bedrock Player Profiles§8: §f" + (profiles.size() - java));
         list.add("§7Total Player Online Time§8: §f" + TimeUtils.convertMilliseconds(totalOnlineTime));
         list.add("§7Average Player Online Time§8: §f" + TimeUtils.convertMilliseconds(averageOnlineTime));
-        list.add("§7Violations Fired§8: §f" + violationsFired);
+        list.add("§7Total Violations Fired§8: §f" + violationsFired);
         add("§4General Statistics", list, new ItemStack(Material.ENDER_CHEST), 4);
         add("§4Back", null, new ItemStack(Material.ARROW), 49);
         return true;

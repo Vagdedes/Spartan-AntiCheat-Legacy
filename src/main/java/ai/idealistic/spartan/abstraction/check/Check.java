@@ -158,7 +158,7 @@ public class Check {
 
             optionValue = getOption(
                     "detection_details." + dataType.toString().toLowerCase(),
-                    false,
+                    true,
                     false
             );
             this.detectionDetails[dataType.ordinal()] = optionValue instanceof Boolean ? (boolean) optionValue :
