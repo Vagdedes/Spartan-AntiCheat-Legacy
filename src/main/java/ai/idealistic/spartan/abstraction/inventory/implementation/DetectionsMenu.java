@@ -18,7 +18,7 @@ import java.util.Set;
 public class DetectionsMenu extends InventoryMenu {
 
     public static final String title = "Check Detections";
-    private static final Map<String, ItemStack> items = new HashMap<>(53);
+    private static final Map<String, Material> items = new HashMap<>(53);
 
     public DetectionsMenu() {
         super(title, 54, Permission.MANAGE);
@@ -44,25 +44,33 @@ public class DetectionsMenu extends InventoryMenu {
             int added = 0;
 
             for (String key : keys) {
-                if (key.contains(".")
-                        && configuration.isBoolean(key)) {
-                    ItemStack itemStack = items.get(key);
+                if (key.contains(".")) {
+                    Object value = configuration.get(key);
 
-                    while (itemStack == null) {
-                        int maxMaterials = Material.values().length;
-                        int randomIndex = (int) (Math.random() * maxMaterials);
-                        Material material = Material.values()[randomIndex];
+                    if (value instanceof Boolean) {
+                        Material material = items.get(key);
 
-                        if (material.isItem()) {
-                            itemStack = new ItemStack(material);
-                            items.put(key, itemStack);
+                        while (material == null) {
+                            int maxMaterials = Material.values().length;
+                            int randomIndex = (int) (Math.random() * maxMaterials);
+                            Material find = Material.values()[randomIndex];
+
+                            if (find.isItem()
+                                    && !items.containsValue(find)) {
+                                material = find;
+                                items.put(key, find);
+                            }
                         }
-                    }
-                    add("§a" + key, null, itemStack, -1);
-                    added++;
+                        if ((Boolean) value) {
+                            add("§a" + key, null, new ItemStack(material), -1);
+                        } else {
+                            add("§c" + key, null, new ItemStack(material), -1);
+                        }
+                        added++;
 
-                    if (added == 53) {
-                        break;
+                        if (added == 53) {
+                            break;
+                        }
                     }
                 }
             }
@@ -80,6 +88,7 @@ public class DetectionsMenu extends InventoryMenu {
             PluginBase.synMenu.open(protocol, protocol.bukkit().getName());
         } else {
             Config.advanced.setOption(item, !Config.advanced.getBoolean(item));
+            open(protocol);
         }
         return true;
     }
