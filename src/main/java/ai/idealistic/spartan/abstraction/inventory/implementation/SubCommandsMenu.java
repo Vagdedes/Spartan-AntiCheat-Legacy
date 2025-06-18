@@ -16,7 +16,7 @@ import java.util.List;
 
 public class SubCommandsMenu extends InventoryMenu {
 
-    public static final String title = "Check Commands";
+    private static final String title = "Check Commands: ";
 
     public SubCommandsMenu() {
         super(title, 36, Permission.MANAGE);
@@ -26,7 +26,7 @@ public class SubCommandsMenu extends InventoryMenu {
     public boolean internalOpen(PlayerProtocol protocol, boolean permissionMessage, Object object) {
         if (!PluginAddons.isSyn()) {
             protocol.bukkit().closeInventory();
-            String missing = PluginAddons.synClick.replace(PluginAddons.synMissingPlaceholder, title);
+            String missing = PluginAddons.synClick.replace(PluginAddons.synMissingPlaceholder, title.substring(0, title.length() - 2));
             ClickableMessage.sendURL(
                     protocol.bukkit(),
                     missing,
@@ -38,7 +38,7 @@ public class SubCommandsMenu extends InventoryMenu {
         List<String> list = new ArrayList<>();
         int startingLine = 1;
         Check check = (Check) object;
-        setTitle(protocol, title + ": " + check.getName());
+        setTitle(protocol, title + check.getName());
         List<String> commands = check.getPunishmentCommands();
 
         for (int i = 0; i < Check.maxCommands; i++) {
@@ -48,10 +48,12 @@ public class SubCommandsMenu extends InventoryMenu {
 
             if (i < commands.size()) {
                 list.add("§7" + commands.get(i));
+                list.add("");
+                list.add("§cClick to remove this command.");
                 add("§a" + check.getName() + " #" + (i + 1) + " command",
                         list, new ItemStack(check.hackType.material, i + 1), slot);
             } else {
-                list.add("§cNo command set (Click to set)");
+                list.add("§cNo command set.");
                 add("§a" + check.getName() + " #" + (i + 1) + " command",
                         list, new ItemStack(check.hackType.material, i + 1), slot);
             }
@@ -66,15 +68,20 @@ public class SubCommandsMenu extends InventoryMenu {
     @Override
     public boolean internalHandle(PlayerProtocol protocol) {
         String item = itemStack.getItemMeta().getDisplayName();
-        item = item.startsWith("§") ? item.substring(2) : item;
 
-        if (item.equals("Back")) {
+        if (item.equals("§4Back")) {
             PluginBase.commandsMenu.open(protocol, protocol.bukkit().getName());
         } else {
+            item = item.startsWith("§") ? item.substring(2) : item;
+            item = item.split(" ", 2)[0];
             Check check = Config.getCheckByName(item);
 
             if (check != null) {
-
+                int command = itemStack.getAmount();
+                check.setPunishmentCommand(
+                        command,
+                        ""
+                );
             }
             open(protocol);
         }

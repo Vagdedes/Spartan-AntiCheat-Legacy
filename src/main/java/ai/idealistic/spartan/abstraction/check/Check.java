@@ -104,7 +104,7 @@ public class Check {
     private final Set<String>
             disabledWorlds,
             silentWorlds;
-    private final Collection<String> punishments;
+    private Collection<String> punishments;
 
     // Object Methods
 
@@ -252,41 +252,7 @@ public class Check {
 
         // Separator
 
-        String sectionString = hackType + ".punishments.commands";
-        YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
-
-        if (!configuration.contains(sectionString)) {
-            for (int position = 0; position < defaultPunishments.size(); position++) {
-                ConfigUtils.add(file, sectionString + "." + (position + 1), defaultPunishments.get(position));
-            }
-        }
-        ConfigurationSection section = configuration.getConfigurationSection(sectionString);
-
-        if (section != null) {
-            Collection<String> list = new ArrayList<>();
-            Set<String> keys = section.getKeys(true);
-
-            if (!keys.isEmpty()) {
-                sectionString += ".";
-
-                for (String key : keys) {
-                    if (AlgebraUtils.validInteger(key)) {
-                        int number = Integer.parseInt(key);
-
-                        if (number >= 1 && number <= Check.maxCommands) {
-                            String command = configuration.getString(sectionString + number);
-
-                            if (command != null && !command.isEmpty()) {
-                                list.add(command);
-                            }
-                        }
-                    }
-                }
-            }
-            this.punishments = list;
-        } else {
-            this.punishments = new ArrayList<>(0);
-        }
+        calculatePunishmentCommands();
     }
 
     // Separator
@@ -601,6 +567,64 @@ public class Check {
 
     public List<String> getPunishmentCommands() {
         return new ArrayList<>(this.punishments);
+    }
+
+    private void calculatePunishmentCommands() {
+        String sectionString = hackType + ".punishments.commands";
+        YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+
+        if (!configuration.contains(sectionString)) {
+            for (int position = 0; position < defaultPunishments.size(); position++) {
+                ConfigUtils.add(file, sectionString + "." + (position + 1), defaultPunishments.get(position));
+            }
+        }
+        ConfigurationSection section = configuration.getConfigurationSection(sectionString);
+
+        if (section != null) {
+            Collection<String> list = new ArrayList<>();
+            Set<String> keys = section.getKeys(true);
+
+            if (!keys.isEmpty()) {
+                sectionString += ".";
+
+                for (String key : keys) {
+                    if (AlgebraUtils.validInteger(key)) {
+                        int number = Integer.parseInt(key);
+
+                        if (number >= 1 && number <= Check.maxCommands) {
+                            String command = configuration.getString(sectionString + number);
+
+                            if (command != null && !command.isEmpty()) {
+                                list.add(command);
+                            }
+                        }
+                    }
+                }
+            }
+            this.punishments = list;
+        } else {
+            this.punishments = new ArrayList<>(0);
+        }
+    }
+
+    public void setPunishmentCommand(int position, String command) {
+        if (position < 1 || position > Check.maxCommands) {
+            return;
+        }
+        if (command == null) {
+            command = "";
+        }
+        String sectionString = this.hackType + ".punishments.commands." + position;
+        YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+        configuration.set(sectionString, command);
+
+        try {
+            configuration.save(file);
+            calculatePunishmentCommands();
+        } catch (Exception ex) {
+            AwarenessNotifications.forcefullySend("Failed to store '" + sectionString + "' option in '" + file.getName() + "' file.");
+            ex.printStackTrace();
+        }
     }
 
     public void setPunish(Check.DataType dataType, boolean b) {

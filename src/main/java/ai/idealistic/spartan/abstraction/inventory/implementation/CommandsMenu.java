@@ -21,7 +21,7 @@ public class CommandsMenu extends InventoryMenu {
     public static final String title = "Check Commands";
 
     public CommandsMenu() {
-        super(title, 54, Permission.MANAGE);
+        super(title, 54, new Permission[]{Permission.MANAGE, Permission.INFO});
     }
 
     @Override
@@ -75,11 +75,11 @@ public class CommandsMenu extends InventoryMenu {
     @Override
     public boolean internalHandle(PlayerProtocol protocol) {
         String item = itemStack.getItemMeta().getDisplayName();
-        item = item.startsWith("§") ? item.substring(2) : item;
 
-        if (item.equals("Back")) {
+        if (item.equals("§4Back")) {
             PluginBase.synMenu.open(protocol, protocol.bukkit().getName());
         } else {
+            item = item.startsWith("§") ? item.substring(2) : item;
             Check check = Config.getCheckByName(item);
 
             if (check != null) {

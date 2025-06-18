@@ -102,9 +102,8 @@ public class StatisticsMenu extends InventoryMenu {
     @Override
     public boolean internalHandle(PlayerProtocol protocol) {
         String item = itemStack.getItemMeta().getDisplayName();
-        item = item.startsWith("§") ? item.substring(2) : item;
 
-        if (item.equals("Back")) {
+        if (item.equals("§4Back")) {
             PluginBase.synMenu.open(protocol, protocol.bukkit().getName());
         }
         return true;

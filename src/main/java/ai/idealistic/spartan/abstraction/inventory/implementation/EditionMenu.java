@@ -70,24 +70,27 @@ public class EditionMenu extends InventoryMenu {
     @Override
     public boolean internalHandle(PlayerProtocol protocol) {
         String item = itemStack.getItemMeta().getDisplayName();
-        item = item.startsWith("§") ? item.substring(2) : item;
 
-        if (item.equals("Back")) {
+        if (item.equals("§4Back")) {
             PluginBase.synMenu.open(protocol, protocol.bukkit().getName());
-        } else if (clickType == ClickType.LEFT) {
-            Check check = Config.getCheckByName(item);
+        } else {
+            item = item.startsWith("§") ? item.substring(2) : item;
 
-            if (check != null) {
-                check.setEnabled(Check.DataType.JAVA, !check.isEnabled(Check.DataType.JAVA, null));
-            }
-            open(protocol);
-        } else if (clickType == ClickType.RIGHT) {
-            Check check = Config.getCheckByName(item);
+            if (clickType == ClickType.LEFT) {
+                Check check = Config.getCheckByName(item);
 
-            if (check != null) {
-                check.setEnabled(Check.DataType.BEDROCK, !check.isEnabled(Check.DataType.BEDROCK, null));
+                if (check != null) {
+                    check.setEnabled(Check.DataType.JAVA, !check.isEnabled(Check.DataType.JAVA, null));
+                }
+                open(protocol);
+            } else if (clickType == ClickType.RIGHT) {
+                Check check = Config.getCheckByName(item);
+
+                if (check != null) {
+                    check.setEnabled(Check.DataType.BEDROCK, !check.isEnabled(Check.DataType.BEDROCK, null));
+                }
+                open(protocol);
             }
-            open(protocol);
         }
         return true;
     }

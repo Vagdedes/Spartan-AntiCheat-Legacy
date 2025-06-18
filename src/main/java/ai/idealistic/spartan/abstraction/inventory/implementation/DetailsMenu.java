@@ -70,24 +70,27 @@ public class DetailsMenu extends InventoryMenu {
     @Override
     public boolean internalHandle(PlayerProtocol protocol) {
         String item = itemStack.getItemMeta().getDisplayName();
-        item = item.startsWith("§") ? item.substring(2) : item;
 
-        if (item.equals("Back")) {
+        if (item.equals("§4Back")) {
             PluginBase.synMenu.open(protocol, protocol.bukkit().getName());
-        } else if (clickType == ClickType.LEFT) {
-            Check check = Config.getCheckByName(item);
+        } else {
+            item = item.startsWith("§") ? item.substring(2) : item;
 
-            if (check != null) {
-                check.setDetectionDetails(Check.DataType.JAVA, !check.isDetectionDetails(Check.DataType.JAVA));
-            }
-            open(protocol);
-        } else if (clickType == ClickType.RIGHT) {
-            Check check = Config.getCheckByName(item);
+            if (clickType == ClickType.LEFT) {
+                Check check = Config.getCheckByName(item);
 
-            if (check != null) {
-                check.setDetectionDetails(Check.DataType.BEDROCK, !check.isDetectionDetails(Check.DataType.BEDROCK));
+                if (check != null) {
+                    check.setDetectionDetails(Check.DataType.JAVA, !check.isDetectionDetails(Check.DataType.JAVA));
+                }
+                open(protocol);
+            } else if (clickType == ClickType.RIGHT) {
+                Check check = Config.getCheckByName(item);
+
+                if (check != null) {
+                    check.setDetectionDetails(Check.DataType.BEDROCK, !check.isDetectionDetails(Check.DataType.BEDROCK));
+                }
+                open(protocol);
             }
-            open(protocol);
         }
         return true;
     }
