@@ -85,7 +85,6 @@ public class CommandsMenu extends InventoryMenu {
             if (check != null) {
                 PluginBase.subCommandsMenu.open(protocol, check);
             }
-            open(protocol);
         }
         return true;
     }

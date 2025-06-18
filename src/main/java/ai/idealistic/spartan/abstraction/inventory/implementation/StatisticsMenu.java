@@ -67,7 +67,7 @@ public class StatisticsMenu extends InventoryMenu {
                         violationsFired += amount;
                         detectionViolationTimes.put(
                                 detection.name,
-                                detectionViolationTimes.getOrDefault(detection, 0L)
+                                detectionViolationTimes.getOrDefault(detection.name, 0L)
                                         + amount
                                         + profile.getTimeDifferences(
                                         runner.hackType,
@@ -114,7 +114,7 @@ public class StatisticsMenu extends InventoryMenu {
                                     dataType
                             );
                             list.add("§cAverage " + dataType + " Violation Ms§8: §f"
-                                    + AlgebraUtils.cut(average, 2));
+                                    + ((long) AlgebraUtils.cut(average, 2)));
                         }
                         count++;
 

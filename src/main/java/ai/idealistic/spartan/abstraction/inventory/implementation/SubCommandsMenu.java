@@ -35,10 +35,10 @@ public class SubCommandsMenu extends InventoryMenu {
             );
             return false;
         }
-        List<String> list = new ArrayList<>();
-        int startingLine = 1;
         Check check = (Check) object;
         setTitle(protocol, title + check.getName());
+        List<String> list = new ArrayList<>();
+        int startingLine = 1;
         List<String> commands = check.getPunishmentCommands();
 
         for (int i = 0; i < Check.maxCommands; i++) {
@@ -49,11 +49,11 @@ public class SubCommandsMenu extends InventoryMenu {
             if (i < commands.size()) {
                 list.add("§7" + commands.get(i));
                 list.add("");
-                list.add("§cClick to remove this command.");
+                list.add("§cClick to delete this punishment command.");
                 add("§a" + check.getName() + " #" + (i + 1) + " command",
                         list, new ItemStack(check.hackType.material, i + 1), slot);
             } else {
-                list.add("§cNo command set.");
+                list.add("§cNo punishment command set.");
                 add("§a" + check.getName() + " #" + (i + 1) + " command",
                         list, new ItemStack(check.hackType.material, i + 1), slot);
             }
@@ -77,9 +77,8 @@ public class SubCommandsMenu extends InventoryMenu {
             Check check = Config.getCheckByName(item);
 
             if (check != null) {
-                int command = itemStack.getAmount();
                 check.setPunishmentCommand(
-                        command,
+                        itemStack.getAmount(),
                         ""
                 );
                 open(protocol, check);
