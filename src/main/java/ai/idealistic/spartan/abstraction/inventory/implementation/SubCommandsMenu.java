@@ -55,7 +55,9 @@ public class SubCommandsMenu extends InventoryMenu {
                 add("§a" + check.getName() + " #" + (i + 1) + " command",
                         list, new ItemStack(check.hackType.material, i + 1), slot);
             }
-            startingLine++;
+            if (i == 4) {
+                startingLine++;
+            }
         }
         add("§4Back", null, new ItemStack(Material.ARROW), 31);
         return true;
