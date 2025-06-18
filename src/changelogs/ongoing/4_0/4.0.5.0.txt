@@ -1,0 +1,2 @@
+[#] Added 2 new inventory menus for managing punishment commands
+[#] Completed the statistics menu
