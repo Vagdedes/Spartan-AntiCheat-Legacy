@@ -57,21 +57,6 @@ public class PunishmentsMenu extends InventoryMenu {
                             list.add("§cDisabled for the " + dataType.toString() + " edition. §7(Right click to toggle)");
                         }
                     }
-                    list.add("");
-                    int counter = 0;
-
-                    for (String s : hackType.getCheck().getPunishmentCommands()) {
-                        if (s != null) {
-                            counter++;
-                            String base = "§7" + counter + "§8:§f ";
-
-                            if (s.length() > 40) {
-                                list.add(base + s.substring(0, 40));
-                            } else {
-                                list.add(base + s);
-                            }
-                        }
-                    }
                     add("§3" + hackType.getCheck().getName(), list, new ItemStack(hackType.material), slot);
                     slot++;
                 }

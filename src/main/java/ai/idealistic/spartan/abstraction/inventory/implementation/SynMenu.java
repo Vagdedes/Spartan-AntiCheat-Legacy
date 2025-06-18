@@ -35,13 +35,18 @@ public class SynMenu extends InventoryMenu {
         list.add("§7toggle the details of a");
         list.add("§7check's detections.");
         add("§e" + DetailsMenu.title, list, new ItemStack(Material.BOOK), 12);
-
         list.clear();
         list.add("");
         list.add("§7A menu that allows you to");
         list.add("§7toggle the preventions of a");
         list.add("§7check's detections.");
-        add("§c" + PreventionsMenu.title, list, new ItemStack(MaterialUtils.get("lead")), 14);
+        add("§c" + PreventionsMenu.title, list, new ItemStack(MaterialUtils.get("lead")), 13);
+        list.clear();
+        list.add("");
+        list.add("§7A menu that allows you");
+        list.add("§7to manage the punishment");
+        list.add("§7commands of checks.");
+        add("§e" + DetailsMenu.title, list, new ItemStack(Material.REDSTONE_BLOCK), 14);
         list.clear();
         list.add("");
         list.add("§7A menu that allows you to");
@@ -87,6 +92,8 @@ public class SynMenu extends InventoryMenu {
             PluginBase.generalMenu.open(protocol, protocol.bukkit().getName());
         } else if (item.equals(StatisticsMenu.title)) {
             PluginBase.statisticsMenu.open(protocol, protocol.bukkit().getName());
+        } else if (item.equals(CommandsMenu.title)) {
+            PluginBase.commandsMenu.open(protocol, protocol.bukkit().getName());
         }
         return true;
     }

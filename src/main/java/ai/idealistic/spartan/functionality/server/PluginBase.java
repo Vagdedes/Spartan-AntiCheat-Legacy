@@ -36,6 +36,8 @@ public class PluginBase {
     public static final DetectionsMenu detectionsMenu = new DetectionsMenu();
     public static final GeneralMenu generalMenu = new GeneralMenu();
     public static final StatisticsMenu statisticsMenu = new StatisticsMenu();
+    public static final CommandsMenu commandsMenu = new CommandsMenu();
+    public static final SubCommandsMenu subCommandsMenu = new SubCommandsMenu();
     public static final InventoryMenu[] menus = new InventoryMenu[]{
             playerInfo,
             chargeMenu,
@@ -46,7 +48,9 @@ public class PluginBase {
             synMenu,
             detectionsMenu,
             generalMenu,
-            statisticsMenu
+            statisticsMenu,
+            commandsMenu,
+            subCommandsMenu
     };
 
     public static final int
