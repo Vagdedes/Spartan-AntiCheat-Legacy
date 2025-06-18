@@ -42,7 +42,7 @@ public class SubCommandsMenu extends InventoryMenu {
         List<String> commands = check.getPunishmentCommands();
 
         for (int i = 0; i < Check.maxCommands; i++) {
-            int slot = (startingLine * 9) + 2;
+            int slot = (startingLine * 9) + 2 + i - (i >= 5 ? 5 : 0);
             list.clear();
             list.add("");
 
