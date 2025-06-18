@@ -98,6 +98,12 @@ public class PlayerProfile {
                 : protocol.getRunner(hackType);
     }
 
+    public Check.DataType getOppositeDataType() {
+        return this.lastDataType == Check.DataType.JAVA
+                ? Check.DataType.BEDROCK
+                : Check.DataType.JAVA;
+    }
+
     // Separator
 
     public ItemStack getSkull() {

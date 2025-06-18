@@ -82,8 +82,10 @@ public class SubCommandsMenu extends InventoryMenu {
                         command,
                         ""
                 );
+                open(protocol, check);
+            } else {
+                protocol.bukkit().closeInventory();
             }
-            open(protocol);
         }
         return true;
     }

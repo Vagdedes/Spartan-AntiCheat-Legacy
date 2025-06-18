@@ -13,12 +13,11 @@ import ai.idealistic.spartan.functionality.moderation.clickable.ClickableMessage
 import ai.idealistic.spartan.functionality.server.PluginBase;
 import ai.idealistic.spartan.functionality.tracking.ResearchEngine;
 import ai.idealistic.spartan.utils.java.TimeUtils;
+import ai.idealistic.spartan.utils.math.AlgebraUtils;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 public class StatisticsMenu extends InventoryMenu {
 
@@ -44,27 +43,11 @@ public class StatisticsMenu extends InventoryMenu {
         List<String> list = new ArrayList<>();
         int startingLine = 1;
         Collection<PlayerProfile> profiles = ResearchEngine.getPlayerProfiles();
-
-        for (CheckEnums.HackCategoryType categoryType : CheckEnums.HackCategoryType.values()) {
-            int slot = (startingLine * 9) + 2;
-
-            for (CheckEnums.HackType hackType : CheckEnums.HackType.values()) {
-                if (hackType.category == categoryType) {
-                    list.clear();
-                    list.add("§cComing soon.");
-                    add("§3" + hackType.getCheck().getName(), list, new ItemStack(hackType.material), slot);
-                    slot++;
-                }
-            }
-            startingLine++;
-        }
-
-        //
-
         int java = 0;
         long totalOnlineTime = 0L,
                 averageOnlineTime = 0L,
                 violationsFired = 0L;
+        Map<CheckDetection, Long> detectionViolationTimes = new HashMap<>();
 
         if (!profiles.isEmpty()) {
             for (PlayerProfile profile : profiles) {
@@ -76,16 +59,78 @@ public class StatisticsMenu extends InventoryMenu {
 
                 for (CheckRunner runner : protocol.getRunners()) {
                     for (CheckDetection detection : runner.getDetections()) {
-                        violationsFired += profile.getTimeDifferences(
+                        int amount = profile.getTimeDifferences(
                                 runner.hackType,
                                 profile.getLastDataType(),
                                 detection.name
                         ).size();
+                        violationsFired += amount;
+                        detectionViolationTimes.put(
+                                detection,
+                                detectionViolationTimes.getOrDefault(detection, 0L)
+                                        + amount
+                                        + profile.getTimeDifferences(
+                                        runner.hackType,
+                                        profile.getOppositeDataType(),
+                                        detection.name
+                                ).size()
+                        );
                     }
                 }
             }
         }
         averageOnlineTime /= profiles.size();
+
+        //
+
+        for (CheckEnums.HackCategoryType categoryType : CheckEnums.HackCategoryType.values()) {
+            int slot = (startingLine * 9) + 2;
+
+            for (CheckEnums.HackType hackType : CheckEnums.HackType.values()) {
+                if (hackType.category == categoryType) {
+                    int count = 0;
+                    list.clear();
+                    list.add("§6" + hackType.category.toString());
+
+                    for (CheckDetection detection : protocol.getRunner(hackType).getDetections()) {
+                        long fired = detectionViolationTimes.getOrDefault(detection, 0L);
+                        list.add("");
+                        list.add("§7Violations Fired§8: §f" + fired);
+                        list.add("§7Violations Fired From Total§8: §f" + AlgebraUtils.cut(
+                                (fired / (double) violationsFired) * 100.0, 2
+                        ) + "%");
+                        String name = detection.name;
+
+                        if (AlgebraUtils.validInteger(name)) {
+                            name = "default";
+                        } else {
+                            name = name.toLowerCase().replace("_", "-");
+                        }
+                        list.add("§7" + name + "§8:");
+
+                        for (Check.DataType dataType : Check.DataType.values()) {
+                            double average = ResearchEngine.getAverageViolationTime(
+                                    detection,
+                                    dataType
+                            );
+                            list.add("§7Average " + dataType + " Violation Time§8): §f"
+                                    + TimeUtils.convertMilliseconds((long) average));
+                        }
+                        count++;
+
+                        if (count == 4) {
+                            break;
+                        }
+                    }
+                    add("§3" + hackType.getCheck().getName(), list, new ItemStack(hackType.material), slot);
+                    slot++;
+                }
+            }
+            startingLine++;
+        }
+
+        //
+
         list.clear();
         list.add("");
         list.add("§7Total Player Profiles§8: §f" + profiles.size());
