@@ -46,7 +46,7 @@ public class SynMenu extends InventoryMenu {
         list.add("§7A menu that allows you");
         list.add("§7to manage the punishment");
         list.add("§7commands of checks.");
-        add("§e" + DetailsMenu.title, list, new ItemStack(Material.REDSTONE_BLOCK), 14);
+        add("§4" + CommandsMenu.title, list, new ItemStack(Material.REDSTONE_BLOCK), 14);
         list.clear();
         list.add("");
         list.add("§7A menu that allows you to");
