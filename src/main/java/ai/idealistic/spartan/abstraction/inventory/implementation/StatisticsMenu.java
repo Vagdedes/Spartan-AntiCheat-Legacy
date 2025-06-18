@@ -47,7 +47,7 @@ public class StatisticsMenu extends InventoryMenu {
         long totalOnlineTime = 0L,
                 averageOnlineTime = 0L,
                 violationsFired = 0L;
-        Map<CheckDetection, Long> detectionViolationTimes = new HashMap<>();
+        Map<String, Long> detectionViolationTimes = new HashMap<>();
 
         if (!profiles.isEmpty()) {
             for (PlayerProfile profile : profiles) {
@@ -66,7 +66,7 @@ public class StatisticsMenu extends InventoryMenu {
                         ).size();
                         violationsFired += amount;
                         detectionViolationTimes.put(
-                                detection,
+                                detection.name,
                                 detectionViolationTimes.getOrDefault(detection, 0L)
                                         + amount
                                         + profile.getTimeDifferences(
@@ -93,12 +93,8 @@ public class StatisticsMenu extends InventoryMenu {
                     list.add("§6" + hackType.category.toString());
 
                     for (CheckDetection detection : protocol.getRunner(hackType).getDetections()) {
-                        long fired = detectionViolationTimes.getOrDefault(detection, 0L);
+                        long fired = detectionViolationTimes.getOrDefault(detection.name, 0L);
                         list.add("");
-                        list.add("§7Violations Fired§8: §f" + fired);
-                        list.add("§7Violations Fired From Total§8: §f" + AlgebraUtils.cut(
-                                (fired / (double) violationsFired) * 100.0, 2
-                        ) + "%");
                         String name = detection.name;
 
                         if (AlgebraUtils.validInteger(name)) {
@@ -107,14 +103,18 @@ public class StatisticsMenu extends InventoryMenu {
                             name = name.toLowerCase().replace("_", "-");
                         }
                         list.add("§7" + name + "§8:");
+                        list.add("§aViolations Fired§8: §f" + fired);
+                        list.add("§eViolations Fired From Total§8: §f" + AlgebraUtils.cut(
+                                (fired / (double) violationsFired) * 100.0, 2
+                        ) + "%");
 
                         for (Check.DataType dataType : Check.DataType.values()) {
                             double average = ResearchEngine.getAverageViolationTime(
                                     detection,
                                     dataType
                             );
-                            list.add("§7Average " + dataType + " Violation Time§8): §f"
-                                    + TimeUtils.convertMilliseconds((long) average));
+                            list.add("§cAverage " + dataType + " Violation Ms§8: §f"
+                                    + AlgebraUtils.cut(average, 2));
                         }
                         count++;
 
