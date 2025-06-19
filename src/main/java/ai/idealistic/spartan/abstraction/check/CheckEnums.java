@@ -64,7 +64,7 @@ public class CheckEnums {
         MORE_PACKETS(
                 HackCategoryType.MOVEMENT,
                 ai.idealistic.spartan.abstraction.check.implementation.movement.MorePackets.class,
-                Material.COBWEB
+                Material.FLINT_AND_STEEL
         ),
         X_RAY(
                 HackCategoryType.WORLD,

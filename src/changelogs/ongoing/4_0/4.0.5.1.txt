@@ -1,0 +1,2 @@
+[#] Fixed the plugin version being wrongly set to
+[#] Fixed a missing/changed material on 1.8 and older servers
