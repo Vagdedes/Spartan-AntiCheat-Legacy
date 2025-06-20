@@ -79,7 +79,7 @@ public class CheckEnums {
         FAST_BREAK(
                 HackCategoryType.WORLD,
                 ai.idealistic.spartan.abstraction.check.implementation.world.FastBreak.class,
-                Material.NETHER_WART_BLOCK
+                Material.ENCHANTED_BOOK
         ),
         FAST_PLACE(
                 HackCategoryType.WORLD,
