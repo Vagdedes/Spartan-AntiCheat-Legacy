@@ -1,0 +1,2 @@
+[#] Made Spartan Syn included by default since it wasn't selling well enough.
+[#] Made the GravitySimulation and SpeedSimulation checks not have unneeded options.

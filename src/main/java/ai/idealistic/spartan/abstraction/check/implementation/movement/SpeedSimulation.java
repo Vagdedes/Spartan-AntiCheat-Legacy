@@ -59,7 +59,7 @@ public class SpeedSimulation extends CheckRunner {
                 this,
                 null,
                 null,
-                "check_speed_simulation",
+                null,
                 true
         );
     }
