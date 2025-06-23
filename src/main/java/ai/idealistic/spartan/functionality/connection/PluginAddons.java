@@ -21,7 +21,7 @@ public class PluginAddons {
     @Getter
     private static boolean freeEdition = true;
     @Getter
-    private static boolean syn = false;
+    private static boolean syn = true; // Attention
     public static final String
             synCommand = Register.command + " syn",
             synName = Register.pluginName + " Syn",
