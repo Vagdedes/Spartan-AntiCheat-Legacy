@@ -104,7 +104,7 @@ public class CheckEnums {
         FAST_HEAL(
                 HackCategoryType.MISCELLANEOUS,
                 ai.idealistic.spartan.abstraction.check.implementation.misc.FastHeal.class,
-                Material.SPLASH_POTION
+                Material.APPLE
         ),
         IMPOSSIBLE_INVENTORY(
                 HackCategoryType.MISCELLANEOUS,
