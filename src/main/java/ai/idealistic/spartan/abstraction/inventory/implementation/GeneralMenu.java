@@ -107,7 +107,7 @@ public class GeneralMenu extends InventoryMenu {
         add("§cImportant >> Op Bypass", list, itemStack, 20);
         list.clear();
         list.add("");
-        itemStack = new ItemStack(Material.ENCHANTING_TABLE);
+        itemStack = new ItemStack(MaterialUtils.get("enchanting_table"));
 
         if (Config.settings.getBoolean("Important.bedrock_on_protocollib")) {
             itemStack.addUnsafeEnchantment(EnchantmentUtils.DURABILITY, 1);
