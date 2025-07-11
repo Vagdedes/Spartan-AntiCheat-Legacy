@@ -53,6 +53,7 @@ public class CheckConditions {
 
     public static boolean canCheckCombat(PlayerProtocol protocol) {
         if (!protocol.isLowEyeHeight() // Covers swimming & gliding
+                && !protocol.wasGliding()
                 && !protocol.wasFlying()
                 && protocol.getVehicle() == null
                 && Attributes.getAmount(protocol, Attributes.GENERIC_ARMOR) == Double.MIN_VALUE

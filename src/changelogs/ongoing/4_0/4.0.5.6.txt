@@ -1,0 +1,1 @@
+[#] Fixed some KillAura elytra false positives
