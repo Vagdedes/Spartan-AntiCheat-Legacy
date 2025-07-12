@@ -32,7 +32,7 @@ public class Register extends JavaPlugin {
 
     public void onEnable() {
         plugin = this;
-        new Metrics(this, 25438);
+        //new Metrics(this, 25438);
 
         if (MultiVersion.serverVersion == MultiVersion.MCVersion.OTHER) {
             AwarenessNotifications.forcefullySend(
