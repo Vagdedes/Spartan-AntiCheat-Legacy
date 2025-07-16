@@ -222,15 +222,6 @@ public class PluginAddons {
                     }
                 });
             } else {
-                freeEdition = false;
-
-                for (CheckEnums.HackType hackType : CheckEnums.HackType.values()) {
-                    ownedChecks[hackType.ordinal()] = true;
-                }
-                for (Check.DataType dataType : Check.DataType.values()) {
-                    ownsEditions[dataType.ordinal()] = true;
-                }
-
                 if (!syn) {
                     PluginBase.dataThread.executeIfUnknownThreadElseHere(() -> {
                         String pluginsFolder = Register.plugin.getDataFolder().toString().replace(
@@ -266,49 +257,67 @@ public class PluginAddons {
                         }
                     });
                 }
+
+                if (false) {
+                    freeEdition = false;
+
+                    for (CheckEnums.HackType hackType : CheckEnums.HackType.values()) {
+                        ownedChecks[hackType.ordinal()] = true;
+                    }
+                    for (Check.DataType dataType : Check.DataType.values()) {
+                        ownsEditions[dataType.ordinal()] = true;
+                    }
+                } else {
+                    return judgeFromCloud();
+                }
             }
         } else if (!IDs.enabled) { // No DRM
-            for (CheckEnums.HackType hackType : CheckEnums.HackType.values()) {
-                ownedChecks[hackType.ordinal()] = true;
+            return judgeFromCloud();
+        }
+        return false;
+    }
+
+    private static boolean judgeFromCloud() {
+        for (CheckEnums.HackType hackType : CheckEnums.HackType.values()) {
+            ownedChecks[hackType.ordinal()] = true;
+        }
+        if (Bukkit.getMotd().contains(Register.pluginName)) { // Test Server
+            freeEdition = false;
+            syn = true;
+
+            for (Check.DataType dataType : Check.DataType.values()) {
+                ownsEditions[dataType.ordinal()] = true;
             }
-            if (Bukkit.getMotd().contains(Register.pluginName)) { // Test Server
-                freeEdition = false;
-                syn = true;
+            return true;
+        } else {
+            String[] editions = CloudConnections.getOwnedEditions();
+
+            if (editions == null) { // Cloud failure
+                freeEdition = true;
 
                 for (Check.DataType dataType : Check.DataType.values()) {
                     ownsEditions[dataType.ordinal()] = true;
                 }
-                return true;
-            } else {
-                String[] editions = CloudConnections.getOwnedEditions();
+            } else { // Cloud success
+                for (Check.DataType dataType : Check.DataType.values()) {
+                    ownsEditions[dataType.ordinal()] = false;
+                }
+                for (String edition : editions) {
+                    for (Check.DataType dataType : Check.DataType.values()) {
+                        if (edition.equals(dataType.toString())) {
+                            ownsEditions[dataType.ordinal()] = true;
+                            freeEdition = false;
+                            break;
+                        }
+                    }
+                }
 
-                if (editions == null) { // Cloud failure
-                    freeEdition = true;
-
+                if (freeEdition) {
                     for (Check.DataType dataType : Check.DataType.values()) {
                         ownsEditions[dataType.ordinal()] = true;
                     }
-                } else { // Cloud success
-                    for (Check.DataType dataType : Check.DataType.values()) {
-                        ownsEditions[dataType.ordinal()] = false;
-                    }
-                    for (String edition : editions) {
-                        for (Check.DataType dataType : Check.DataType.values()) {
-                            if (edition.equals(dataType.toString())) {
-                                ownsEditions[dataType.ordinal()] = true;
-                                freeEdition = false;
-                                break;
-                            }
-                        }
-                    }
-
-                    if (freeEdition) {
-                        for (Check.DataType dataType : Check.DataType.values()) {
-                            ownsEditions[dataType.ordinal()] = true;
-                        }
-                    } else {
-                        return true;
-                    }
+                } else {
+                    return true;
                 }
             }
         }
