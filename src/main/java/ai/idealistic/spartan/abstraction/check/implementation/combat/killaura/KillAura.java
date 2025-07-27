@@ -14,7 +14,6 @@ import org.bukkit.event.player.PlayerMoveEvent;
 
 public class KillAura extends CheckRunner {
 
-    private final KAIrregular irregular;
     private final KAHitTime hitTime;
     private final KAMoveDirection moveDirection;
     private final KAMoveLength moveLength;
@@ -22,7 +21,6 @@ public class KillAura extends CheckRunner {
 
     public KillAura(CheckEnums.HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);
-        irregular = new KAIrregular(this);
         hitTime = new KAHitTime(this);
         moveDirection = new KAMoveDirection(this);
         moveLength = new KAMoveLength(this);
@@ -49,7 +47,6 @@ public class KillAura extends CheckRunner {
             LivingEntity target = event.target;
 
             if (canRunEntity(target)) {
-                irregular.run();
                 moveDirection.run(target);
                 hitTime.run();
                 moveLength.runHit();
