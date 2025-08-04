@@ -1,2 +1,2 @@
 [#] Fixed some KillAura elytra mob/animal positives
-[#] Fixed some MorePackets creative/spectator gamemode false positives
+[#] Fixed some MorePackets creative/spectator game-mode false positives
