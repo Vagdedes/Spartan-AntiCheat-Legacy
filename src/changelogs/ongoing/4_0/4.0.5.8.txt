@@ -1,0 +1,1 @@
+[#] Fixed the plugin entering free mode for some paid buyers
