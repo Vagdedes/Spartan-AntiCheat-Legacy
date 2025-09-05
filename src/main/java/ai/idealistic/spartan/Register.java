@@ -12,6 +12,7 @@ import ai.idealistic.spartan.listeners.bukkit.*;
 import ai.idealistic.spartan.listeners.bukkit.standalone.*;
 import ai.idealistic.spartan.utils.minecraft.entity.PlayerUtils;
 import ai.idealistic.spartan.utils.minecraft.server.ProxyUtils;
+import kireiko.dev.millennium.ml.ClientML;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
@@ -85,6 +86,8 @@ public class Register extends JavaPlugin {
         // Commands
         this.getCommand(command).setExecutor(new CommandExecution());
         this.getCommand(command).setTabCompleter(new CommandTab());
+
+        ClientML.run();
     }
 
     public void onDisable() {
