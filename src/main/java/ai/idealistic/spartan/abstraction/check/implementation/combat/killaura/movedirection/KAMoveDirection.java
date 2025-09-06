@@ -52,10 +52,10 @@ public class KAMoveDirection extends CheckDetection {
                         TIME_TO_PREVENT,
                         TIME_TO_PUNISH);
         this.componentDetection = new ImplementedDetection(this, "move_direction_advanced", true,
-                        DEFAULT_AVERAGE_TIME * 30L,
-                        TIME_TO_NOTIFY / 5L,
-                        TIME_TO_PREVENT / 5L,
-                        TIME_TO_PUNISH / 5L);
+                        DEFAULT_AVERAGE_TIME * 4L,
+                        TIME_TO_NOTIFY / 2L,
+                        TIME_TO_PREVENT / 2L,
+                        TIME_TO_PUNISH / 2L);
 
         this.components = new HeuristicComponent[]{
                         new AimConstantCheck(componentDetection, this.protocol),

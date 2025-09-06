@@ -40,6 +40,7 @@ public class MovementEvent implements Listener {
                             new Vec2f(e.getTo().getYaw(), e.getTo().getPitch())
                             );
             protocol.getSensitivityProcessor().setLastDeltaPitch(rotationEvent.getDelta().getY());
+            protocol.getSensitivityProcessor().processSensitivity();
             protocol.getCinematicComponent().process(rotationEvent);
             protocol.executeRunners(false, rotationEvent);
 

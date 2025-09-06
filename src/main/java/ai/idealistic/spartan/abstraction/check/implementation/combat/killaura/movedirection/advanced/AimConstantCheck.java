@@ -37,13 +37,13 @@ public final class AimConstantCheck implements HeuristicComponent {
         final float deltaPitch = rotationUpdate.getAbsDelta().getY();
 
         final double sensitivity = profile.calculateSensitivity();
-        final boolean sensitivityTooLow = sensitivity < 50.0 && sensitivity > -1.0
-                        || (profile.getSensitivityProcessor().totalSensitivityClient < 50);
+        final boolean sensitivityTooLow = sensitivity < 50.0 && sensitivity > -1.0 || (profile.getSensitivityProcessor().totalSensitivityClient < 50);
         final double divisorYaw = Statistics.getGcd((long) (deltaYaw * Statistics.EXPANDER), (long) (lastDeltaYaw * Statistics.EXPANDER));
         final double divisorPitch = Statistics.getGcd((long) (deltaPitch * Statistics.EXPANDER), (long) (lastDeltaPitch * Statistics.EXPANDER));
 
         final double constantYaw = divisorYaw / Statistics.EXPANDER;
         final double constantPitch = divisorPitch / Statistics.EXPANDER;
+        //profile.bukkit().sendMessage("fuckass " + sensitivity + " " + profile.getSensitivity());
         { // type 1
             final long expandedPitch = (long) (Statistics.EXPANDER * deltaPitch);
             final long expandedLastPitch = (long) (Statistics.EXPANDER * lastDeltaPitch);
