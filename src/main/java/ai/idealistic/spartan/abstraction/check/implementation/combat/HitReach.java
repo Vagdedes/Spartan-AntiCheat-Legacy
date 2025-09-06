@@ -210,7 +210,7 @@ public class HitReach extends CheckRunner {
                         { // result?
                             double dev = (StatisticsMath.getMax(minBlockDistanceSet) + 0.03 + 3e-3) - minDistance.get();
                             //profile.getPlayer().sendMessage("d: " + dev);
-                            if (dev < -0.669 && !Double.isInfinite(Math.abs(dev))) {
+                            if (dev < -0.669 && RayUtils.scaleVal(Math.abs(dev), 6) < 10) {
                                 blocksVl++;
                                 throughblocks.cancel("Hitting through block (dev: "
                                         + RayUtils.scaleVal(Math.abs(dev), 6) + ")");
