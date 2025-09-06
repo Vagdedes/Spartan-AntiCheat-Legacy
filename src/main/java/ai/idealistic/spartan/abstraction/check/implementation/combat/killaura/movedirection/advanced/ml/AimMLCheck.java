@@ -11,6 +11,7 @@ import kireiko.dev.millennium.ml.data.ResultML;
 import kireiko.dev.millennium.ml.data.module.FlagType;
 import kireiko.dev.millennium.ml.data.module.ModuleML;
 import kireiko.dev.millennium.ml.data.module.ModuleResultML;
+import kireiko.dev.millennium.ml.logic.MillenniumScheduler;
 import kireiko.dev.millennium.ml.logic.ModelML;
 import kireiko.dev.millennium.types.Pair;
 import kireiko.dev.millennium.types.Vec2f;
@@ -54,54 +55,56 @@ public final class AimMLCheck implements HeuristicComponent {
     }
     
     private void checkResult(List<ObjectML> objectML) {
-        final List<ResultML> results = new ArrayList<>();
-        final Set<String> modelsThatFlagged = new HashSet<>();
-        ModuleResultML finalModuleResult = new ModuleResultML(0, FlagType.NORMAL, null);
+        MillenniumScheduler.run(() -> {
+            final List<ResultML> results = new ArrayList<>();
+            final Set<String> modelsThatFlagged = new HashSet<>();
+            ModuleResultML finalModuleResult = new ModuleResultML(0, FlagType.NORMAL, null);
 
-        for (int i = 0; i < ClientML.MODEL_LIST.size(); i++) {
-            final ResultML resultML = FactoryML.getModel(i).checkData(objectML);
-            ModuleML moduleML = ClientML.MODEL_LIST.get(i);
-            final ModuleResultML moduleResultML = moduleML.getResult(resultML);
+            for (int i = 0; i < ClientML.MODEL_LIST.size(); i++) {
+                final ResultML resultML = FactoryML.getModel(i).checkData(objectML);
+                ModuleML moduleML = ClientML.MODEL_LIST.get(i);
+                final ModuleResultML moduleResultML = moduleML.getResult(resultML);
 
-            if (moduleResultML.getType() != FlagType.NORMAL) {
-                modelsThatFlagged.add(moduleML.getName());
-            }
-
-            if (finalModuleResult.getInfo() == null) {
-                finalModuleResult = moduleResultML;
-            } else {
-                final int finalLevel = finalModuleResult.getType().getLevel();
-                final int tempLevel = moduleResultML.getType().getLevel();
-                final boolean isLevelSmaller = finalLevel < tempLevel;
-                final boolean isPrioritySmaller = finalLevel == tempLevel && finalModuleResult.getPriority() < moduleResultML.getPriority();
-                if (isLevelSmaller || isPrioritySmaller) {
-                    finalModuleResult = moduleResultML;
+                if (moduleResultML.getType() != FlagType.NORMAL) {
+                    modelsThatFlagged.add(moduleML.getName());
                 }
-            }
-            results.add(resultML);
-        }
 
-        //profile.bukkit().sendMessage("t; " + finalModuleResult.getType());
-
-        if (finalModuleResult.getType() != FlagType.NORMAL) {
-            final FlagType type = finalModuleResult.getType();
-            double vl;
-            switch (type) {
-                case UNUSUAL:
-                    vl = UNUSUAL_VL;
-                    break;
-                case STRANGE:
-                    vl = STRANGE_VL;
-                    break;
-                case SUSPECTED:
-                    vl = SUSPECTED_VL;
-                    break;
-                default:
-                    vl = 0f;
+                if (finalModuleResult.getInfo() == null) {
+                    finalModuleResult = moduleResultML;
+                } else {
+                    final int finalLevel = finalModuleResult.getType().getLevel();
+                    final int tempLevel = moduleResultML.getType().getLevel();
+                    final boolean isLevelSmaller = finalLevel < tempLevel;
+                    final boolean isPrioritySmaller = finalLevel == tempLevel && finalModuleResult.getPriority() < moduleResultML.getPriority();
+                    if (isLevelSmaller || isPrioritySmaller) {
+                        finalModuleResult = moduleResultML;
+                    }
+                }
+                results.add(resultML);
             }
-            String reason = "Result: " + type + " " + Arrays.toString(modelsThatFlagged.toArray());
-            detection.cancel(vl, "ML (" + reason + ")", profile.getFromLocation());
-        }
+
+            //profile.bukkit().sendMessage("t; " + finalModuleResult.getType());
+
+            if (finalModuleResult.getType() != FlagType.NORMAL) {
+                final FlagType type = finalModuleResult.getType();
+                double vl;
+                switch (type) {
+                    case UNUSUAL:
+                        vl = UNUSUAL_VL;
+                        break;
+                    case STRANGE:
+                        vl = STRANGE_VL;
+                        break;
+                    case SUSPECTED:
+                        vl = SUSPECTED_VL;
+                        break;
+                    default:
+                        vl = 0f;
+                }
+                String reason = "Result: " + type + " " + Arrays.toString(modelsThatFlagged.toArray());
+                detection.call(() -> detection.cancel(vl, "ML (" + reason + ")", profile.getFromLocation()));
+            }
+        });
     }
 
     private void check() {
@@ -117,7 +120,7 @@ public final class AimMLCheck implements HeuristicComponent {
         objectMLStack.add(pitch);
 
         if (STATUS == 0) {
-            detection.call(() -> checkResult(objectMLStack));
+            checkResult(objectMLStack);
         } else {
             ModelML modelMLLearn = (ModelML) FactoryML.getModel(SAVE_DATA.getX());
             for (int r = 0; r < 1; r++) {
