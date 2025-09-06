@@ -69,7 +69,6 @@ public class FactoryML {
     @SneakyThrows
     public static Millennium loadFromResources(int id, String fileName, int tableSize, int stackSize, ModelVer modelVer) {
         String resourcePath = "/ml/" + fileName;
-
         try (InputStream is = Register.class.getResourceAsStream(resourcePath);
              ObjectInputStream ois = new ObjectInputStream(is)) {
 

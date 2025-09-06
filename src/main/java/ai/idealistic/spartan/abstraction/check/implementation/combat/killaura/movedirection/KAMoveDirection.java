@@ -4,6 +4,7 @@ import ai.idealistic.spartan.abstraction.check.CheckDetection;
 import ai.idealistic.spartan.abstraction.check.CheckRunner;
 import ai.idealistic.spartan.abstraction.check.definition.ImplementedDetection;
 import ai.idealistic.spartan.abstraction.check.implementation.combat.killaura.movedirection.advanced.*;
+import ai.idealistic.spartan.abstraction.check.implementation.combat.killaura.movedirection.advanced.ml.AimMLCheck;
 import ai.idealistic.spartan.abstraction.event.RotationEvent;
 import ai.idealistic.spartan.abstraction.world.ServerLocation;
 import ai.idealistic.spartan.compatibility.necessary.protocollib.ProtocolLib;
@@ -61,7 +62,8 @@ public class KAMoveDirection extends CheckDetection {
                         new AimSmoothCheck(componentDetection, this.protocol),
                         new AimComplexCheck(componentDetection, this.protocol),
                         new AimStatisticsCheck(componentDetection, this.protocol),
-                        new AimAnalysisCheck(componentDetection, this.protocol)
+                        new AimAnalysisCheck(componentDetection, this.protocol),
+                        new AimMLCheck(componentDetection, this.protocol)
         };
 
         this.aimAnalysis = new ConcurrentList<>();

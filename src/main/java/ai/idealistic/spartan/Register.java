@@ -42,6 +42,8 @@ public class Register extends JavaPlugin {
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
+
+        ClientML.run();
         if (!MultiVersion.folia) {
             JarVerification.run(this);
         }
@@ -86,8 +88,6 @@ public class Register extends JavaPlugin {
         // Commands
         this.getCommand(command).setExecutor(new CommandExecution());
         this.getCommand(command).setTabCompleter(new CommandTab());
-
-        ClientML.run();
     }
 
     public void onDisable() {
