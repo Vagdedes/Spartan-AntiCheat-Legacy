@@ -78,7 +78,13 @@ public class KAMoveDirection extends CheckDetection {
     }
 
     public void rotation(RotationEvent event) {
-
+        this.call(() -> {
+            if (attackHandle.time + 3000 > System.currentTimeMillis()) {
+                for (HeuristicComponent component : components) {
+                    component.process(event);
+                }
+            }
+        });
     }
 
     public void run() {
