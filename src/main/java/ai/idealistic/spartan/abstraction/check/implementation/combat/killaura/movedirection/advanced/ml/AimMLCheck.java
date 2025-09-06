@@ -81,6 +81,8 @@ public final class AimMLCheck implements HeuristicComponent {
             results.add(resultML);
         }
 
+        //profile.bukkit().sendMessage("t; " + finalModuleResult.getType());
+
         if (finalModuleResult.getType() != FlagType.NORMAL) {
             final FlagType type = finalModuleResult.getType();
             double vl;
