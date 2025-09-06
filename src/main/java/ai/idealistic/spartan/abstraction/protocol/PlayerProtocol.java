@@ -32,6 +32,10 @@ import ai.idealistic.spartan.utils.minecraft.protocol.ProtocolTools;
 import ai.idealistic.spartan.utils.minecraft.server.PluginUtils;
 import ai.idealistic.spartan.utils.minecraft.world.BlockUtils;
 import ai.idealistic.spartan.utils.minecraft.world.GroundUtils;
+import kireiko.dev.millennium.math.CinematicComponent;
+import kireiko.dev.millennium.math.SensitivityProcessor;
+import kireiko.dev.millennium.math.Statistics;
+import kireiko.dev.millennium.types.EvictingList;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
@@ -122,7 +126,10 @@ public class PlayerProtocol {
     private ComponentXZ componentXZ;
     private Vector clampVector;
     private final Map<PotionEffectType, ExtendedPotionEffect> potionEffects;
-    private boolean afk;
+    private boolean afk, cinematic;
+    private final List<Integer> sensitivity = new EvictingList<>(14);
+    private final SensitivityProcessor sensitivityProcessor = new SensitivityProcessor(this);
+    private final CinematicComponent cinematicComponent = new CinematicComponent(this);
     Entity[] nearbyEntities;
     final double[] maxNearbyEntitiesCoordinate;
     @Getter
@@ -914,6 +921,20 @@ public class PlayerProtocol {
     public boolean wasFlying() {
         return this.isFlying()
                 || System.currentTimeMillis() - this.lastFlight <= TPS.maximum * TPS.tickTime;
+    }
+
+    public int calculateSensitivity() {
+        if (Statistics.getDistinct(getSensitivity()) != getSensitivity().size()) {
+            final Set<Integer> prev = new HashSet<>();
+            for (int i : getSensitivity()) {
+                if (prev.contains(i / 5)) {
+                    return i;
+                } else {
+                    prev.add(i / 5);
+                }
+            }
+        }
+        return -1;
     }
 
 }

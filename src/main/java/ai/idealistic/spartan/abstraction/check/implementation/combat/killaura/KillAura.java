@@ -5,6 +5,7 @@ import ai.idealistic.spartan.abstraction.check.CheckRunner;
 import ai.idealistic.spartan.abstraction.check.implementation.combat.killaura.movedirection.KAMoveDirection;
 import ai.idealistic.spartan.abstraction.event.EntityAttackPlayerEvent;
 import ai.idealistic.spartan.abstraction.event.PlayerAttackEvent;
+import ai.idealistic.spartan.abstraction.event.RotationEvent;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import ai.idealistic.spartan.functionality.tracking.CheckConditions;
@@ -42,6 +43,8 @@ public class KillAura extends CheckRunner {
         if (object instanceof PlayerMoveEvent) {
             moveDirection.run();
             moveLength.run();
+        } else if (object instanceof RotationEvent) {
+            moveDirection.rotation((RotationEvent) object);
         } else if (object instanceof PlayerAttackEvent) {
             PlayerAttackEvent event = (PlayerAttackEvent) object;
             LivingEntity target = event.target;

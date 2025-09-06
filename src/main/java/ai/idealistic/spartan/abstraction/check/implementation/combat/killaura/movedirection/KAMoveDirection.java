@@ -3,6 +3,8 @@ package ai.idealistic.spartan.abstraction.check.implementation.combat.killaura.m
 import ai.idealistic.spartan.abstraction.check.CheckDetection;
 import ai.idealistic.spartan.abstraction.check.CheckRunner;
 import ai.idealistic.spartan.abstraction.check.definition.ImplementedDetection;
+import ai.idealistic.spartan.abstraction.check.implementation.combat.killaura.movedirection.advanced.*;
+import ai.idealistic.spartan.abstraction.event.RotationEvent;
 import ai.idealistic.spartan.abstraction.world.ServerLocation;
 import ai.idealistic.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import ai.idealistic.spartan.utils.java.ConcurrentList;
@@ -24,6 +26,8 @@ import java.util.UUID;
 
 public class KAMoveDirection extends CheckDetection {
 
+    private final CheckDetection componentDetection;
+    private final HeuristicComponent[] components;
     private final CheckDetection layer1, layer2;
     private AttackHandle attackHandle;
     private final List<AttackData> aimAnalysis;
@@ -46,6 +50,20 @@ public class KAMoveDirection extends CheckDetection {
                         TIME_TO_NOTIFY,
                         TIME_TO_PREVENT,
                         TIME_TO_PUNISH);
+        this.componentDetection = new ImplementedDetection(this, "move_direction_advanced", true,
+                        DEFAULT_AVERAGE_TIME * 30L,
+                        TIME_TO_NOTIFY / 5L,
+                        TIME_TO_PREVENT / 5L,
+                        TIME_TO_PUNISH / 5L);
+
+        this.components = new HeuristicComponent[]{
+                        new AimConstantCheck(componentDetection, this.protocol),
+                        new AimSmoothCheck(componentDetection, this.protocol),
+                        new AimComplexCheck(componentDetection, this.protocol),
+                        new AimStatisticsCheck(componentDetection, this.protocol),
+                        new AimAnalysisCheck(componentDetection, this.protocol)
+        };
+
         this.aimAnalysis = new ConcurrentList<>();
         this.attackHandle = new AttackHandle(null, System.currentTimeMillis());
 
@@ -55,6 +73,10 @@ public class KAMoveDirection extends CheckDetection {
         this.punishL2 = "";
         this.targetsOnTheRow = new ConcurrentList<>();
         this.rayTraceAnalysis = new ConcurrentList<>();
+    }
+
+    public void rotation(RotationEvent event) {
+
     }
 
     public void run() {
@@ -161,10 +183,16 @@ public class KAMoveDirection extends CheckDetection {
             yawAverage = sum / yaws.size();
         }
 
-        if (robotizedAmount > 8) addNewPunish("heuristic(sync)", 125);
-        if (aggressiveAim > 8) addNewPunish("heuristic(aggressive)", 50);
-        if (machineKnownMovement > 7) addNewPunish("heuristic(aim)", 100);
-        if (constantRotations > 3) addNewPunish("heuristic(constant)", 65);
+        final int sens = protocol.calculateSensitivity();
+        if (sens > 65) {
+            if (robotizedAmount > 8) addNewPunish("heuristic(sync)", 125);
+            if (aggressiveAim > 8) addNewPunish("heuristic(aggressive)", 50);
+            if (machineKnownMovement > 7) addNewPunish("heuristic(aim)", 100);
+            if (constantRotations > 3) addNewPunish("heuristic(constant)", 65);
+        } else {
+            if (machineKnownMovement > 8) addNewPunish("heuristic(aim)", 100);
+            if (constantRotations > 6) addNewPunish("heuristic(constant)", 65);
+        }
         if (randomizerFlaw > 0) addNewPunish("randomizer(flaw)", randomizerFlaw * 100);
 
         if (infinitives > 1 && Math.abs(yawAverage) > 3.2) {
