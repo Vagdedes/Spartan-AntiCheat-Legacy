@@ -1,15 +1,19 @@
 package kireiko.dev.millennium.ml.logic;
 
+import ai.idealistic.spartan.Register;
+
 public class Logger {
+
+    private static final java.util.logging.Logger logger = Register.plugin.getLogger();
     public static void info(String msg) {
-        System.out.println("[MILLENNIUM] [Info] " + msg);
+        logger.info("[MILLENNIUM] " + msg);
     }
 
     public static void warn(String msg) {
-        System.out.println("[MILLENNIUM] [Warn] " + msg);
+        logger.warning("[MILLENNIUM] " + msg);
     }
 
     public static void error(String msg) {
-        System.out.println("[MILLENNIUM] [Error] " + msg);
+        logger.severe("[MILLENNIUM] " + msg);
     }
 }
