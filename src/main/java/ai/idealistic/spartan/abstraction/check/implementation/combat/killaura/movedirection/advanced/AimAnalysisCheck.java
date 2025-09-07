@@ -125,7 +125,7 @@ public final class AimAnalysisCheck implements HeuristicComponent {
             } else {
                 this.rankBuffer += (distinctRank > 0.9) ? 0.08f : (distinctRank > 0.8) ? 2f : 3f;
                 if (this.rankBuffer >= RANK_VL_LIMIT) {
-                    detection.cancel("Analysis (Incorrect Rank " + distinctRank + ")", profile.getFromLocation());
+                    //detection.cancel("Analysis (Incorrect Rank " + distinctRank + ")", profile.getFromLocation());
                     this.rankBuffer = RANK_VL_LIMIT - 1;
                 }
             }
