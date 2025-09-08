@@ -80,7 +80,7 @@ public final class AimComplexCheck implements HeuristicComponent {
         if (valid && getDifference(shannonYaw, oldShannonYaw) < 1e-5 && getDifference(shannonPitch, oldShannonPitch) < 1e-5) {
             entropyPerfectBuffer = Math.min(200, entropyPerfectBuffer + 1.0f);
             if (entropyPerfectBuffer > ENTROPY_VL_LIMIT) {
-                detection.cancel("Analysis (Perfect Entropy)", profile.getFromLocation());
+                detection.call(() -> detection.cancel("Analysis (Perfect Entropy)", profile.getFromLocation()));
                 entropyPerfectBuffer = ENTROPY_VL_LIMIT - 1;
             }
         } else {
@@ -90,7 +90,7 @@ public final class AimComplexCheck implements HeuristicComponent {
         if (valid && getDifference(shannonYaw, shannonPitch) < 1e-5) {
             entropySimilarBuffer = Math.min(200, entropySimilarBuffer + 1.0f);
             if (entropySimilarBuffer > ENTROPY_VL_LIMIT) {
-                detection.cancel("Analysis (Similar Entropy)", profile.getFromLocation());
+                detection.call(() -> detection.cancel("Analysis (Similar Entropy)", profile.getFromLocation()));
                 entropySimilarBuffer = ENTROPY_VL_LIMIT - 1;
             }
         } else {
@@ -100,7 +100,7 @@ public final class AimComplexCheck implements HeuristicComponent {
         if (disX < 8 && Math.abs(Statistics.getAverage(x)) > 2.5) {
             distinctBuffer = Math.min(200, distinctBuffer + 1.7f);
             if (distinctBuffer >= DISTINCT_VL_LIMIT) {
-                detection.cancel("Flaw (Invalid Distinct)", profile.getFromLocation());
+                detection.call(() -> detection.cancel("Flaw (Invalid Distinct)", profile.getFromLocation()));
                 distinctBuffer = Math.max(0, distinctBuffer - 0.5f);
             }
         } else {
@@ -154,14 +154,14 @@ public final class AimComplexCheck implements HeuristicComponent {
         if ((min < 0.09 && max > 35 && Statistics.getMin(gcdPitch) != 0.0) && profile.calculateSensitivity() > 50) {
             randomizerBuffer = Math.min(200, randomizerBuffer + 1.0f);
             if (randomizerBuffer > RANDOMIZER_VL_LIMIT) {
-                detection.cancel("Analysis (Randomizer Flaw)", profile.getFromLocation());
+                detection.call(() -> detection.cancel("Analysis (Randomizer Flaw)", profile.getFromLocation()));
                 randomizerBuffer = RANDOMIZER_VL_LIMIT - 1;
             }
         } else {
             randomizerBuffer = Math.max(0, randomizerBuffer - 0.4f);
         }
     }
-    
+
     private static double getDifference(double a, double b) {
         return Math.abs(Math.abs(a) - Math.abs(b));
     }

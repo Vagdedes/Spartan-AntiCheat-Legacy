@@ -15,10 +15,10 @@ public final class AimStatisticsCheck implements HeuristicComponent {
     private static final float IQR_VL_LIMIT = 11.0f;
     private static final float ZFACTOR_VL_LIMIT = 7.0f;
     private static final float IMPROBABLE_VL_LIMIT = 15.0f;
-    
+
     private final CheckDetection detection;
     private final PlayerProtocol profile;
-    
+
     private final List<Vec2f> rotationDeltas = new ArrayList<>();
     private final List<Double> shannonAnalysis = new ArrayList<>();
 
@@ -48,7 +48,7 @@ public final class AimStatisticsCheck implements HeuristicComponent {
 
     private void runStatisticalAnalysis() {
         float total = 0;
-        
+
         // Разделяем дельты на списки по осям X и Y
         List<Float> x = new ArrayList<>();
         List<Float> y = new ArrayList<>();
@@ -66,12 +66,12 @@ public final class AimStatisticsCheck implements HeuristicComponent {
 
         int infs = 0;
         for (float j : jiffOmni) if (Float.isInfinite(j)) infs++;
-        
+
         final double iqr = Statistics.getIQR(jiffOmni);
         if (iqr > 12.5 && iqr < 96 && infs > 0) {
             iqrBuffer += (iqr > 20) ? 1.4f : 0.8f;
             if (iqrBuffer > IQR_VL_LIMIT) {
-                detection.cancel("Statistics (IQR)", profile.getFromLocation());
+                detection.call(() -> detection.cancel("Statistics (IQR)", profile.getFromLocation()));
                 iqrBuffer = IQR_VL_LIMIT - 2f;
             }
         } else if (iqr < 13 || infs == 0) {
@@ -88,7 +88,8 @@ public final class AimStatisticsCheck implements HeuristicComponent {
             }
         }
         if (jiffPatterns > 2 && Statistics.getAverage(x) > 3.0 && jiffPatterns != 6 && jiffPatterns != 12 && jiffPatterns != 4) {
-             detection.cancel("Statistics (Bot Pattern " + jiffPatterns + ")", profile.getFromLocation());
+            int jiffPatternsFinal = jiffPatterns;
+            detection.call(() -> detection.cancel("Statistics (Bot Pattern " + jiffPatternsFinal + ")", profile.getFromLocation()));
         }
 
         final List<Double> zFactorYaw = Statistics.getZScoreOutliers(x, 2.0);
@@ -102,7 +103,7 @@ public final class AimStatisticsCheck implements HeuristicComponent {
             zFactorBuffer += 1.5f;
             if (zFactorBuffer > 4) total++;
             if (zFactorBuffer > ZFACTOR_VL_LIMIT) {
-                detection.cancel("Statistics (Suspicious zFactor)", profile.getFromLocation());
+                detection.call(() -> detection.cancel("Statistics (Suspicious zFactor)", profile.getFromLocation()));
                 zFactorBuffer = ZFACTOR_VL_LIMIT - 1f;
             }
         } else {
@@ -119,7 +120,7 @@ public final class AimStatisticsCheck implements HeuristicComponent {
         } else if (total > 2.0) {
             improbableBuffer += 5f;
             if (improbableBuffer >= IMPROBABLE_VL_LIMIT) {
-                detection.cancel("Statistics (Improbable)", profile.getFromLocation());
+                detection.call(() -> detection.cancel("Statistics (Improbable)", profile.getFromLocation()));
                 improbableBuffer = IMPROBABLE_VL_LIMIT - 2.0f;
             }
         }

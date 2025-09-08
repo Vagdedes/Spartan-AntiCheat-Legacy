@@ -15,6 +15,7 @@ public final class AimSmoothCheck implements HeuristicComponent {
     private final CheckDetection detection;
     private final PlayerProtocol profile;
     private final List<Double> stack = new ArrayList<>();
+
     public AimSmoothCheck(final CheckDetection detection, final PlayerProtocol protocol) {
         this.detection = detection;
         this.profile = protocol;
@@ -36,10 +37,10 @@ public final class AimSmoothCheck implements HeuristicComponent {
                     float prePrev = 999;
                     for (float f : jiff) {
                         if (f == 0.0 && prev == 0.0 && prePrev == 0) {
-                            detection.cancel(
-                                            "[Smooth] Invalid smoothing " + Arrays.toString(jiff.toArray()),
-                                            this.profile.getFromLocation()
-                            );
+                            detection.call(() -> detection.cancel(
+                                    "[Smooth] Invalid smoothing " + Arrays.toString(jiff.toArray()),
+                                    this.profile.getFromLocation()
+                            ));
                             break;
                         }
                         prePrev = prev;

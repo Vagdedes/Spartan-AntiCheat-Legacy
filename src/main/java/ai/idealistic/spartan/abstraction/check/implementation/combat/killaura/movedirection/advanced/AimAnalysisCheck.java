@@ -77,7 +77,7 @@ public final class AimAnalysisCheck implements HeuristicComponent {
                 if (d > 0.97) normal++;
             }
             if (avg < 0.95 && normal < 4) {
-                detection.cancel("Analysis (Long Term)", profile.getFromLocation());
+                detection.call(() -> detection.cancel("Analysis (Long Term)", profile.getFromLocation()));
             }
             longTermAnalysis.clear();
         }
@@ -112,7 +112,7 @@ public final class AimAnalysisCheck implements HeuristicComponent {
             if (!query) {
                 query = true;
             } else {
-                detection.cancel("Analysis (Linear)", profile.getFromLocation());
+                detection.call(() -> detection.cancel("Analysis (Linear)", profile.getFromLocation()));
             }
         } else {
             query = false;

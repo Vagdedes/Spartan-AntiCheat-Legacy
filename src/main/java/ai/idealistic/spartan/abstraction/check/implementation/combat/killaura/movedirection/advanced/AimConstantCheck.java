@@ -51,7 +51,7 @@ public final class AimConstantCheck implements HeuristicComponent {
             if (invalid && validAngles && !sensitivityTooLow) {
                 buffer = Math.min(buffer + 1, 200);
                 if (buffer > 10) {
-                    detection.cancel("Constant rotations (3)", profile.getFromLocation());
+                    detection.call(() -> detection.cancel("Constant rotations (3)", profile.getFromLocation()));
                     buffer = 4;
                 }
             } else if (buffer > 0) {
@@ -80,7 +80,7 @@ public final class AimConstantCheck implements HeuristicComponent {
                 if (invalidX && invalidY && !sensitivityTooLow) {
                     buffer2 = Math.min(buffer2 + 1, 200);
                     if (buffer2 > 6) {
-                        detection.cancel("Constant rotations (2)", profile.getFromLocation());
+                        detection.call(() -> detection.cancel("Constant rotations (2)", profile.getFromLocation()));
                         buffer2 = 4;
                     }
                 } else if (buffer2 > 0) {
@@ -111,7 +111,7 @@ public final class AimConstantCheck implements HeuristicComponent {
                     buffer3 = Math.max(buffer3 + ((deltaPitch < 1 || deltaPitch > 13) ? 2f : 1), 0);
                     final float limit = 7;
                     if (buffer3 > ((profile.calculateSensitivity() < 70) ? limit + 1 : limit)) {
-                        detection.cancel("Constant rotations (3)", profile.getFromLocation());
+                        detection.call(() -> detection.cancel("Constant rotations (3)", profile.getFromLocation()));
                         buffer3 = 0;
                     }
                 } else if (buffer3 > 0) {
