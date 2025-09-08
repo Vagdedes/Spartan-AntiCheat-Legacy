@@ -49,7 +49,7 @@ public class KAMoveDirection extends CheckDetection {
                 punishTime - 1_000L,
                 TIME_TO_NOTIFY,
                 TIME_TO_PREVENT,
-                70_000L);
+                punishTime);
         this.components = new HeuristicComponent[]{
                 new AimConstantCheck(aimConstant, this.protocol),
                 new AimSmoothCheck(aimSmooth, this.protocol),
