@@ -68,6 +68,7 @@ public class MovementListener extends PacketAdapter {
             if (flag.equals(tpFlags.Z))
                 result.setZ(loc.getZ() + tp.getZ());
         }
+        p.setTeleportTick(true);
         p.setTeleport(result.clone());
     }
 
@@ -110,7 +111,7 @@ public class MovementListener extends PacketAdapter {
                 }
             }
             boolean legacy = ProtocolTools.isFlying(event, l, r);
-            if (c.toVector().distance(p.getFrom().toVector()) > 1e-5) {
+            if (c.toVector().distance(p.getFrom().toVector()) > 1e-5 && !p.isTeleportTick()) {
                 PlayerTickEvent tickEvent = new PlayerTickEvent(p, legacy, onGround).build();
                 MovementEvent.tick(tickEvent);
                 if (tickEvent.getDelay() > 65) {
@@ -218,6 +219,7 @@ public class MovementListener extends PacketAdapter {
                 if (p.flyingTicks > 0) {
                     p.flyingTicks--;
                 }
+                p.setTeleportTick(false);
             } else {
                 p.executeRunners(
                         event.isCancelled(),

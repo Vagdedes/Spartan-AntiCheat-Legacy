@@ -106,7 +106,7 @@ public class MorePackets extends CheckRunner {
                             );
                         }
                     });
-                } else if (delay < 50 && timerBalancer.getLatency() > 40) {
+                } else if (delay < 50 && timerBalancer.getLatency() > 50) {
                     this.positive_latency.call(() -> {
                         if (multiply >= minTimer) {
                             punish(

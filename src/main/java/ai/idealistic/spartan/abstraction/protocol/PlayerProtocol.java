@@ -126,7 +126,7 @@ public class PlayerProtocol {
     private ComponentXZ componentXZ;
     private Vector clampVector;
     private final Map<PotionEffectType, ExtendedPotionEffect> potionEffects;
-    private boolean afk, cinematic;
+    private boolean afk, cinematic, teleportTick;
     private final List<Integer> sensitivity = new EvictingList<>(14);
     private final SensitivityProcessor sensitivityProcessor = new SensitivityProcessor(this);
     private final CinematicComponent cinematicComponent = new CinematicComponent(this);
@@ -195,6 +195,8 @@ public class PlayerProtocol {
         this.nearbyEntities = new Entity[0];
         this.maxNearbyEntitiesCoordinate = new double[3];
         this.runners = new CheckRunner[CheckEnums.HackType.values().length];
+        this.teleportTick = true;
+        this.cinematic = false;
 
         for (CheckEnums.HackType hackType : CheckEnums.HackType.values()) {
             try {
