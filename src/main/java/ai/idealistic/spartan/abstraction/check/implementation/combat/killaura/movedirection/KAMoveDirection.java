@@ -15,55 +15,48 @@ import org.bukkit.Location;
 import org.bukkit.entity.*;
 import org.bukkit.util.Vector;
 
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.UUID;
-
-import static java.lang.Math.PI;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 public class KAMoveDirection extends CheckDetection {
 
-    private final CheckDetection componentDetection;
     private final HeuristicComponent[] components;
     private final CheckDetection layer1, layer2;
     private AttackHandle attackHandle;
     private final List<AttackData> aimAnalysis;
     private float vl, vlL2;
     private String punish, punishL2;
-    private double lastSwitchYaw;
     private final List<UUID> targetsOnTheRow;
     private final List<Double> rayTraceAnalysis;
     private int streak = 0;
 
     public KAMoveDirection(CheckRunner executor) {
         super(executor, null, null, null, true);
-        this.layer1 = new ImplementedDetection(this, "move_direction_1", true,
-                        DEFAULT_AVERAGE_TIME * 4L,
-                        TIME_TO_NOTIFY,
-                        TIME_TO_PREVENT,
-                        TIME_TO_PUNISH);
-        this.layer2 = new ImplementedDetection(this, "move_direction_2", true,
-                        DEFAULT_AVERAGE_TIME * 4L,
-                        TIME_TO_NOTIFY,
-                        TIME_TO_PREVENT,
-                        TIME_TO_PUNISH);
-        this.componentDetection = new ImplementedDetection(this, "move_direction_advanced", true,
-                        DEFAULT_AVERAGE_TIME * 4L,
-                        TIME_TO_NOTIFY / 2L,
-                        TIME_TO_PREVENT / 2L,
-                        TIME_TO_PUNISH / 2L);
+        this.layer1 = this.createDetection("move_direction_1");
+        this.layer2 = this.createDetection("move_direction_2");
+        CheckDetection aimConstant = this.createDetection("aim_constant");
+        CheckDetection aimSmooth = this.createDetection("aim_smooth");
+        CheckDetection aimComplex = this.createDetection("aim_complex");
+        CheckDetection aimStatistics = this.createDetection("aim_statistics");
+        CheckDetection aimAnalysis = this.createDetection("aim_analysis");
 
+        long punishTime = 70_000L;
+        CheckDetection aimML = new ImplementedDetection(
+                this,
+                "aim_machine_learning",
+                true,
+                punishTime - 1_000L,
+                TIME_TO_NOTIFY,
+                TIME_TO_PREVENT,
+                70_000L);
         this.components = new HeuristicComponent[]{
-                        new AimConstantCheck(componentDetection, this.protocol),
-                        new AimSmoothCheck(componentDetection, this.protocol),
-                        new AimComplexCheck(componentDetection, this.protocol),
-                        new AimStatisticsCheck(componentDetection, this.protocol),
-                        new AimAnalysisCheck(componentDetection, this.protocol),
-                        new AimMLCheck(componentDetection, this.protocol)
+                new AimConstantCheck(aimConstant, this.protocol),
+                new AimSmoothCheck(aimSmooth, this.protocol),
+                new AimComplexCheck(aimComplex, this.protocol),
+                new AimStatisticsCheck(aimStatistics, this.protocol),
+                new AimAnalysisCheck(aimAnalysis, this.protocol),
+                new AimMLCheck(aimML, this.protocol)
         };
 
         this.aimAnalysis = new ConcurrentList<>();
@@ -75,6 +68,17 @@ public class KAMoveDirection extends CheckDetection {
         this.punishL2 = "";
         this.targetsOnTheRow = new ConcurrentList<>();
         this.rayTraceAnalysis = new ConcurrentList<>();
+    }
+
+    private CheckDetection createDetection(String name) {
+        return new ImplementedDetection(
+                this,
+                name,
+                true,
+                DEFAULT_AVERAGE_TIME * 4L,
+                TIME_TO_NOTIFY,
+                TIME_TO_PREVENT,
+                TIME_TO_PUNISH);
     }
 
     public void rotation(RotationEvent event) {
@@ -101,21 +105,21 @@ public class KAMoveDirection extends CheckDetection {
                     double bruteforceRayTrace = RayUtils.bruteforceRayTrace(this.protocol, target);
                     double diff = bruteforceRayTrace - 0.4;
                     double predict = RayUtils.castTo360(
-                                    calculate(
-                                                    this.protocol.getLocation().toVector(),
-                                                    new ServerLocation(targetLoc).toVector()
-                                    ).x
+                            calculate(
+                                    this.protocol.getLocation().toVector(),
+                                    new ServerLocation(targetLoc).toVector()
+                            ).x
                     );
                     double yaw360 = RayUtils.castTo360(this.protocol.getLocation().getYaw());
                     rayTraceAnalysis.add(bruteforceRayTrace);
                     aimAnalysis.add(
-                                    new AttackData(
-                                                    Math.abs(predict - yaw360),
-                                                    this.protocol.getLocation().getYaw(),
-                                                    this.protocol.getLocation().getPitch(),
-                                                    System.currentTimeMillis(),
-                                                    ProtocolLib.getUUID(target)
-                                    )
+                            new AttackData(
+                                    Math.abs(predict - yaw360),
+                                    this.protocol.getLocation().getYaw(),
+                                    this.protocol.getLocation().getPitch(),
+                                    System.currentTimeMillis(),
+                                    ProtocolLib.getUUID(target)
+                            )
                     );
                     if (rayTraceAnalysis.size() >= 10) {
                         analyze();
@@ -137,9 +141,9 @@ public class KAMoveDirection extends CheckDetection {
         double yawChangeFirst = Math.abs(aimAnalysis.get(0).yaw - aimAnalysis.get(1).yaw);
 
         int machineKnownMovement = 0,
-                        constantRotations = 0, gcd = 0, aggressivePatternI = 0,
-                        aggressivePatternD = 0, aggressivePatternI2 = 0, aggressivePatternD2 = 0,
-                        robotizedAmount = 0, aggressiveAim = 0, infinitives = 0, randomizerFlaw = 0;
+                constantRotations = 0, gcd = 0, aggressivePatternI = 0,
+                aggressivePatternD = 0, aggressivePatternI2 = 0, aggressivePatternD2 = 0,
+                robotizedAmount = 0, aggressiveAim = 0, infinitives = 0, randomizerFlaw = 0;
 
         for (AttackData value : aimAnalysis) {
             if (!targetsOnTheRow.contains(value.target))
@@ -211,7 +215,7 @@ public class KAMoveDirection extends CheckDetection {
             addNewPunishL2("pattern(random)", 25);
         }
         if (aggressivePatternI2 > 3 && aggressivePatternD2 > 3
-                        && (aggressivePatternI2 + aggressivePatternD2) > 8) {
+                && (aggressivePatternI2 + aggressivePatternD2) > 8) {
             streak++;
             if (streak > 2) {
                 addNewPunish("pattern(snap)", 55);
@@ -222,21 +226,21 @@ public class KAMoveDirection extends CheckDetection {
 
         if (!punish.isEmpty() && vl > 400) {
             this.layer1.cancel(
-                            "(layer1) type: " + punish + ", rA: "
-                                            + robotizedAmount + ", mKM: " + machineKnownMovement
-                                            + ", aA: " + aggressiveAim + ", cR: " + constantRotations
-                                            + ", gcd: " + gcd + ", aPI: " + aggressivePatternI
-                                            + ", aPD: " + aggressivePatternD + ", aPI2: " + aggressivePatternI2
-                                            + ", aPD2: " + aggressivePatternD2 + ", rF: " + randomizerFlaw,
-                            this.protocol.getFromLocation()
+                    "(layer1) type: " + punish + ", rA: "
+                            + robotizedAmount + ", mKM: " + machineKnownMovement
+                            + ", aA: " + aggressiveAim + ", cR: " + constantRotations
+                            + ", gcd: " + gcd + ", aPI: " + aggressivePatternI
+                            + ", aPD: " + aggressivePatternD + ", aPI2: " + aggressivePatternI2
+                            + ", aPD2: " + aggressivePatternD2 + ", rF: " + randomizerFlaw,
+                    this.protocol.getFromLocation()
             );
             vl -= 10;
         }
 
         if (!punishL2.isEmpty() && vlL2 > 400) {
             this.layer2.cancel(
-                            "(layer2) type: " + punishL2 + ", infs: " + infinitives,
-                            this.protocol.getFromLocation()
+                    "(layer2) type: " + punishL2 + ", infs: " + infinitives,
+                    this.protocol.getFromLocation()
             );
             vlL2 -= 65;
         }
@@ -253,9 +257,9 @@ public class KAMoveDirection extends CheckDetection {
     public void run(Entity targetHandle) {
         this.call(() -> {
             if (targetHandle instanceof Player
-                            || targetHandle instanceof Zombie
-                            || targetHandle instanceof Creeper
-                            || targetHandle instanceof Skeleton) {
+                    || targetHandle instanceof Zombie
+                    || targetHandle instanceof Creeper
+                    || targetHandle instanceof Skeleton) {
                 attackHandle = new AttackHandle(targetHandle, System.currentTimeMillis());
             }
         });
@@ -265,7 +269,7 @@ public class KAMoveDirection extends CheckDetection {
         Vector diff = to.subtract(from);
         double distance = Math.hypot(diff.getX(), diff.getZ());
         float yaw = (float) (Math.atan2(diff.getZ(), diff.getX()) * 180.0F / Math.PI) - 90.0F,
-                        pitch = (float) (-(Math.atan2(diff.getY(), distance) * 180.0F / Math.PI));
+                pitch = (float) (-(Math.atan2(diff.getY(), distance) * 180.0F / Math.PI));
         return new CVector2F(yaw, pitch);
     }
 
