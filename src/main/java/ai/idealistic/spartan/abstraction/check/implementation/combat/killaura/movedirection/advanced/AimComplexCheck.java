@@ -9,7 +9,6 @@ import kireiko.dev.millennium.types.Vec2f;
 import kireiko.dev.millennium.types.Vec2i;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public final class AimComplexCheck implements HeuristicComponent {

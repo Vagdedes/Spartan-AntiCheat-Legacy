@@ -1,6 +1,5 @@
 package ai.idealistic.spartan.abstraction.check.implementation.combat.killaura.movedirection.advanced.ml.modules;
 
-import kireiko.dev.millennium.math.Simplification;
 import kireiko.dev.millennium.ml.data.ResultML;
 import kireiko.dev.millennium.ml.data.module.FlagType;
 import kireiko.dev.millennium.ml.data.module.ModuleML;

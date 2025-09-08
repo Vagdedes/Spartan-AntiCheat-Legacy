@@ -3,14 +3,11 @@ package ai.idealistic.spartan.abstraction.check.implementation.combat.killaura.m
 import ai.idealistic.spartan.abstraction.check.CheckDetection;
 import ai.idealistic.spartan.abstraction.event.RotationEvent;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
-import io.papermc.paper.threadedregions.scheduler.AsyncScheduler;
 import kireiko.dev.millennium.math.Statistics;
 import kireiko.dev.millennium.types.Vec2f;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Function;
 
 public final class AimStatisticsCheck implements HeuristicComponent {

@@ -3,12 +3,9 @@ package ai.idealistic.spartan.abstraction.check.implementation.combat.killaura.m
 import ai.idealistic.spartan.abstraction.check.CheckDetection;
 import ai.idealistic.spartan.abstraction.event.RotationEvent;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
-import kireiko.dev.millennium.math.Simplification;
 import kireiko.dev.millennium.math.Statistics;
-import kireiko.dev.millennium.types.Vec2f;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public final class AimConstantCheck implements HeuristicComponent {

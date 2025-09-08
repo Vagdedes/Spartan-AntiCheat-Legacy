@@ -6,7 +6,9 @@ import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
 import kireiko.dev.millennium.math.Statistics;
 import kireiko.dev.millennium.types.Vec2f;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public final class AimSmoothCheck implements HeuristicComponent {
 

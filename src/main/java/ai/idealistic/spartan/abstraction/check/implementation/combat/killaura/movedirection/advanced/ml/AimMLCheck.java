@@ -16,11 +16,7 @@ import kireiko.dev.millennium.ml.logic.ModelML;
 import kireiko.dev.millennium.types.Pair;
 import kireiko.dev.millennium.types.Vec2f;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public final class AimMLCheck implements HeuristicComponent {
 
