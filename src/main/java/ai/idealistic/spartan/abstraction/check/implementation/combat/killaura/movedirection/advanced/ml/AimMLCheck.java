@@ -24,8 +24,8 @@ public final class AimMLCheck implements HeuristicComponent {
     private static final int STATUS = 0;
     private static final Pair<Integer, String> SAVE_DATA = new Pair<>(0, "plugins/Spartan/models/m_huge1.dat");
 
-    private static final double UNUSUAL_VL = 0.25;
-    private static final double STRANGE_VL = 0.5;
+    private static final double UNUSUAL_VL = 1.0; // 0.25
+    private static final double STRANGE_VL = 1.0; // 0.5
     private static final double SUSPECTED_VL = 1.0;
     private static final int ROTATION_BUFFER_SIZE = 600;
     private static final int ATTACK_TIMEOUT_MS = 2500;
@@ -49,7 +49,7 @@ public final class AimMLCheck implements HeuristicComponent {
             this.check();
         }
     }
-    
+
     private void checkResult(List<ObjectML> objectML) {
         MillenniumScheduler.run(() -> {
             final List<ResultML> results = new ArrayList<>();
@@ -105,10 +105,10 @@ public final class AimMLCheck implements HeuristicComponent {
 
     private void check() {
         final List<ObjectML> objectMLStack = new ArrayList<>();
-        
+
         ObjectML yaw = new ObjectML(new ArrayList<>());
         ObjectML pitch = new ObjectML(new ArrayList<>());
-        for(Vec2f rot : this.rawRotations) {
+        for (Vec2f rot : this.rawRotations) {
             yaw.getValues().add((double) rot.getX());
             pitch.getValues().add((double) rot.getY());
         }
