@@ -1,2 +1,3 @@
 [#] Improved the MorePackets check.
 [#] Added an experimental Elytra check.
+[#] Added a new elytra detection.
