@@ -58,52 +58,53 @@ public class EnvironmentData {
                             protocol
                     ).getTypeOrNull();
 
-                    if (material == null
-                            || materialFrom == null) {
-                        return;
-                    }
                     ServerBlock b = new ServerLocation(
                             new Location(protocol.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
                     ).getBlock();
 
-                    if ((BlockUtils.areHoneyBlocks(material)
+                    if (material != null
+                            && (BlockUtils.areHoneyBlocks(material)
                             || BlockUtils.areBeds(material)
                             || BlockUtils.areSlimeBlocks(material))) {
                         this.slime = true;
                     }
-                    if (Math.abs(dx) < 2
+                    if (material != null
+                            && Math.abs(dx) < 2
                             && Math.abs(dz) < 2
                             && (BlockUtils.areInteractiveBushes(material)
                             || BlockUtils.areBeds(material)
                             || BlockUtils.isPowderSnow(material))) {
                         this.jumpModify = true;
                     }
-                    if (BlockUtils.canClimb(material, false)
-                            || BlockUtils.canClimb(materialTop, false)) {
+                    if (material != null && BlockUtils.canClimb(material, false)
+                            || materialTop != null && BlockUtils.canClimb(materialTop, false)) {
                         this.climb = true;
                     }
                     if (Math.abs(dy) < 2 && h
-                            && (BlockUtils.isPowderSnow(material)
-                            || (BlockUtils.isPowderSnow(materialTop)
-                            || BlockUtils.areHoneyBlocks(material)
-                            || BlockUtils.areWebs(material) || BlockUtils.areWebs(materialTop)
-                            || BlockUtils.areInteractiveBushes(material)
-                            || BlockUtils.areInteractiveBushes(materialTop)))) {
+                            && (material != null && BlockUtils.isPowderSnow(material)
+                            || (materialTop != null && BlockUtils.isPowderSnow(materialTop)
+                            || material != null && BlockUtils.areHoneyBlocks(material)
+                            || material != null && BlockUtils.areWebs(material)
+                            || materialTop != null && BlockUtils.areWebs(materialTop)
+                            || material != null && BlockUtils.areInteractiveBushes(material)
+                            || materialTop != null && BlockUtils.areInteractiveBushes(materialTop)))) {
                         this.glide = true;
                     }
-                    if (!BlockUtils.canClimb(material, false) &&
-                            (BlockUtils.isSemiSolid(material)
-                                    || BlockUtils.isSemiSolid(materialFrom)
-                                    || BlockUtils.isSemiSolid(materialWide)
-                                    || BlockUtils.areWalls(materialFrom)
-                                    || BlockUtils.areCobbleWalls(materialFrom)
-                                    || BlockUtils.areSlimeBlocks(material)
-                                    || BlockUtils.areHoneyBlocks(material)
-                                    || BlockUtils.areWebs(material)
-                                    || BlockUtils.areWebs(materialTop))) {
+                    if (material != null
+                            && !BlockUtils.canClimb(material, false)
+                            && (BlockUtils.isSemiSolid(material)
+                            || materialFrom != null && BlockUtils.isSemiSolid(materialFrom)
+                            || BlockUtils.isSemiSolid(materialWide)
+                            || materialFrom != null && BlockUtils.areWalls(materialFrom)
+                            || materialFrom != null && BlockUtils.areCobbleWalls(materialFrom)
+                            || BlockUtils.areSlimeBlocks(material)
+                            || BlockUtils.areHoneyBlocks(material)
+                            || BlockUtils.areWebs(material)
+                            || materialTop != null && BlockUtils.areWebs(materialTop))) {
                         this.semi = true;
                     }
-                    if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
+                    if (material != null
+                            && MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
                             && material.equals(Material.BUBBLE_COLUMN)) {
                         this.bubble = true;
                     }
@@ -111,7 +112,7 @@ public class EnvironmentData {
                             || BlockUtils.isLiquid(protocol.packetWorld.getBlock(
                             new Location(protocol.getWorld(), x + (double) dx * 0.3, y, z + (double) dz * 0.3)
                     ))
-                            || BlockUtils.isLiquid(material)
+                            || material != null && BlockUtils.isLiquid(material)
                             || BlockUtils.isWaterLogged(b)) {
 
                         this.liquid = true;
