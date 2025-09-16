@@ -109,9 +109,9 @@ public class EnvironmentData {
                         this.bubble = true;
                     }
                     if (BlockUtils.isLiquidOrWaterLogged(b, true)
-                            || BlockUtils.isLiquid(protocol.packetWorld.getBlock(
-                            new Location(protocol.getWorld(), x + (double) dx * 0.3, y, z + (double) dz * 0.3)
-                    ))
+                            || BlockUtils.isLiquid(new ServerLocation(protocol.getWorld(), x + (double) dx * 0.3, y, z + (double) dz * 0.3).getBlock(
+                            protocol
+                    ).getType())
                             || material != null && BlockUtils.isLiquid(material)
                             || BlockUtils.isWaterLogged(b)) {
 
@@ -132,47 +132,46 @@ public class EnvironmentData {
                             }
                         }
                     }
-                    if (BlockUtils.areIceBlocks(material)) {
+                    if (material != null && BlockUtils.areIceBlocks(material)) {
                         this.ice = true;
                     }
-                    {
-                        double xF = protocol.getFromLocation().getX();
-                        double yF = protocol.getFromLocation().getY();
-                        double zF = protocol.getFromLocation().getZ();
-                        Material materialBig = new ServerLocation(protocol.getWorld(), x + (double) dx,
-                                y + (double) dy, z + (double) dz).getBlock(
-                                protocol
-                        ).getTypeOrNull();
+                    double xF = protocol.getFromLocation().getX();
+                    double yF = protocol.getFromLocation().getY();
+                    double zF = protocol.getFromLocation().getZ();
+                    Material materialBig = new ServerLocation(protocol.getWorld(), x + (double) dx,
+                            y + (double) dy, z + (double) dz).getBlock(
+                            protocol
+                    ).getTypeOrNull();
 
-                        if (materialBig != null
-                                && (BlockUtils.areHoneyBlocks(materialBig)
-                                || BlockUtils.areBeds(materialBig)
-                                || BlockUtils.areSlimeBlocks(materialBig))) {
-                            protocol.slime0Tick = 3;
-                        }
-                        Material materialBig2 = protocol.packetWorld.getBlock(
-                                new Location(protocol.getWorld(),
-                                        xF + (double) dx, yF + (double) dy - 1, zF + (double) dz)
-                        );
+                    if (materialBig != null
+                            && (BlockUtils.areHoneyBlocks(materialBig)
+                            || BlockUtils.areBeds(materialBig)
+                            || BlockUtils.areSlimeBlocks(materialBig))) {
+                        protocol.slime0Tick = 3;
+                    }
+                    Material materialBig2 = new ServerLocation(protocol.getWorld(),
+                            xF + (double) dx, yF + (double) dy - 1, zF + (double) dz).getBlock(
+                            protocol
+                    ).getTypeOrNull();
 
-                        if (materialBig2 != null
-                                && BlockUtils.areSlimeBlocks(materialBig2)) {
-                            protocol.slime0Tick = 3;
-                        }
-                        Material materialBigFrom = protocol.packetWorld.getBlock(
-                                new Location(protocol.getWorld(),
-                                        xF + (double) dx, yF + (double) dy + 0.5, zF + (double) dz)
-                        );
-                        if (materialBigFrom != null
-                                && BlockUtils.areSlimeBlocks(materialBigFrom)) {
-                            protocol.slime0Tick = 3;
-                        }
-                        if (protocol.slime0Tick > 0) {
-                            protocol.slime0Tick--;
-                            this.slimeHeight = true;
-                            this.slimeWide = true;
-                            this.slime = true;
-                        }
+                    if (materialBig2 != null
+                            && BlockUtils.areSlimeBlocks(materialBig2)) {
+                        protocol.slime0Tick = 3;
+                    }
+                    Material materialBigFrom = new ServerLocation(protocol.getWorld(),
+                            xF + (double) dx, yF + (double) dy + 0.5, zF + (double) dz).getBlock(
+                            protocol
+                    ).getTypeOrNull();
+
+                    if (materialBigFrom != null
+                            && BlockUtils.areSlimeBlocks(materialBigFrom)) {
+                        protocol.slime0Tick = 3;
+                    }
+                    if (protocol.slime0Tick > 0) {
+                        protocol.slime0Tick--;
+                        this.slimeHeight = true;
+                        this.slimeWide = true;
+                        this.slime = true;
                     }
                 }
             }
