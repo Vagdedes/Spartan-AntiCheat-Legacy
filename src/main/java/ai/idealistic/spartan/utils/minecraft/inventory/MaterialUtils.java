@@ -256,7 +256,7 @@ public class MaterialUtils {
             if (protocol.isSwimming()) {
                 water = true;
             } else {
-                ServerBlock block = new ServerLocation(protocol.getLocation()).add(0, protocol.getEyeHeight(), 0).getBlock();
+                ServerBlock block = new ServerLocation(protocol.getLocation()).add(0, protocol.getEyeHeight(), 0).getBlock(protocol);
                 water = block.isWaterLogged() || block.getType() == MaterialUtils.get("water");
             }
             if (water) {

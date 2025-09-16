@@ -1,6 +1,5 @@
 package ai.idealistic.spartan.utils.minecraft.world;
 
-import ai.idealistic.spartan.abstraction.data.PacketWorld;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.spartan.abstraction.world.ServerBlock;
 import ai.idealistic.spartan.abstraction.world.ServerLocation;
@@ -23,12 +22,12 @@ import java.util.Set;
 public class BlockUtils {
 
     public static final int[][] DIRS = {
-                    { 1,  0,  0},
-                    {-1,  0,  0},
-                    { 0,  0,  1},
-                    { 0,  0, -1},
-                    { 0,  1,  0},
-                    { 0, -1,  0}
+            {1, 0, 0},
+            {-1, 0, 0},
+            {0, 0, 1},
+            {0, 0, -1},
+            {0, 1, 0},
+            {0, -1, 0}
     };
 
     public static boolean blockDataExists = ReflectionUtils.classExists(
@@ -1655,13 +1654,14 @@ public class BlockUtils {
         return true;
     }
 
-    public static boolean isSurroundedByAir(PacketWorld packetWorld, Location loc) {
+    public static boolean isSurroundedByAir(PlayerProtocol protocol, Location loc) {
         World world = loc.getWorld();
         int x = loc.getBlockX();
         int y = loc.getBlockY();
         int z = loc.getBlockZ();
+
         for (int[] d : DIRS) {
-            if (packetWorld.getBlock(new Location(world, x + d[0], y + d[1], z + d[2])) != Material.AIR) {
+            if (new ServerLocation(world, x + d[0], y + d[1], z + d[2]).getBlock(protocol).getType() != Material.AIR) {
                 return false;
             }
         }

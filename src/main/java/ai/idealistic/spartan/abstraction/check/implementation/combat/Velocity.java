@@ -157,7 +157,7 @@ public class Velocity extends CheckRunner {
                 for (int dz = -1; dz <= 1; ++dz) {
                     Material material = new ServerLocation(
                             new Location(this.protocol.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.3, z + (double) dz * 0.3)
-                    ).getBlock().getTypeOrNull();
+                    ).getBlock(this.protocol).getTypeOrNull();
 
                     if (material != null &&
                             (BlockUtils.isSemiSolid(material)

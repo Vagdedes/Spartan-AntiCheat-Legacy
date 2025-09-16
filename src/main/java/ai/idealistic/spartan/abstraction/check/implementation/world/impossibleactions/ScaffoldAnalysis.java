@@ -45,7 +45,7 @@ public class ScaffoldAnalysis extends CheckDetection {
             Block oldB = this.oldBlock;
             Material downBType = new ServerLocation(
                     bL.clone().add(0, -1, 0)
-            ).getBlock().getTypeOrNull();
+            ).getBlock(this.protocol).getTypeOrNull();
             {
                 long delay = System.currentTimeMillis() - this.placeTime;
                 boolean checkHash = false;

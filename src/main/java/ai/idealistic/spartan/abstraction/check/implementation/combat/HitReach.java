@@ -9,6 +9,7 @@ import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.spartan.functionality.server.MultiVersion;
 import ai.idealistic.spartan.functionality.server.PluginBase;
 import ai.idealistic.spartan.functionality.tracking.CheckConditions;
+import ai.idealistic.spartan.listeners.bukkit.standalone.ChunksEvent;
 import ai.idealistic.spartan.utils.java.ConcurrentList;
 import ai.idealistic.spartan.utils.math.ClientMath;
 import ai.idealistic.spartan.utils.math.OptifineMath;
@@ -96,7 +97,7 @@ public class HitReach extends CheckRunner {
                                             t.getY() + (double) dy,
                                             t.getZ() + (double) dz
                                     );
-                                    final Block block = getBlockAsync(l);
+                                    final Block block = ChunksEvent.getBlockAsync(l);
                                     if (block == null) {
                                         continue;
                                     }
@@ -267,14 +268,6 @@ public class HitReach extends CheckRunner {
             }
         }
         return eyeHeight;
-    }
-
-    private static Block getBlockAsync(final Location location) {
-        if (location.getWorld().isChunkLoaded(location.getBlockX() >> 4, location.getBlockZ() >> 4)) {
-            return location.getWorld().getBlockAt(location);
-        } else {
-            return null;
-        }
     }
 
     private static double getDistance(Location loc1, Location loc2) {

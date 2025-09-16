@@ -120,7 +120,7 @@ public class GravitySimulation extends CheckRunner {
             return true;
         }
         for (int i = 0; i < AlgebraUtils.integerCeil(p.getEyeHeight()); i++) {
-            Material m = new ServerLocation(p.getLocation().clone().add(0, i, 0)).getBlock().getType();
+            Material m = new ServerLocation(p.getLocation().clone().add(0, i, 0)).getBlock(this.protocol).getType();
 
             if (BlockUtils.areInteractiveBushes(m)
                     || BlockUtils.areWebs(m)) {
@@ -177,7 +177,7 @@ public class GravitySimulation extends CheckRunner {
                         (atJumpModifyBlock()
                                 && this.jumpMotion() * 1.5 > motion)
                                 ? motion : this.jumpMotion();
-                if (BlockUtils.areWebs(new ServerLocation(to).getBlock().getType())) {
+                if (BlockUtils.areWebs(new ServerLocation(to).getBlock(this.protocol).getType())) {
                     jumpStartMotionY /= 10;
                 }
                 /*

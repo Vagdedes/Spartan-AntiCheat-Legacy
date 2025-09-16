@@ -93,8 +93,8 @@ public class BlockPlaceListener extends PacketAdapter {
                             Block blockAgainst = player.getLocation().getBlock();
                             Location blockLoc = new Location(world, blockPosition.getX(), blockPosition.getY(), blockPosition.getY());
                             if (
-                                !BlockUtils.isSurroundedByAir(protocol.packetWorld, blockLoc)
-                                || !BlockUtils.isSurroundedByAir(protocol.packetWorld, blockLoc.clone().add(0, 1, 0))) {
+                                !BlockUtils.isSurroundedByAir(protocol, blockLoc)
+                                || !BlockUtils.isSurroundedByAir(protocol, blockLoc.clone().add(0, 1, 0))) {
                                 Material material = itemInHand.getType();
                                 protocol.packetWorld.worldChange(new ServerBlockChange(blockPosition, material));
                                 protocol.packetWorld.worldChange(new ServerBlockChange(

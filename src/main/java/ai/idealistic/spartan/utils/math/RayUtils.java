@@ -95,7 +95,7 @@ public class RayUtils {
         for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
             for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
                 for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
-                    ServerBlock block = new ServerLocation(world, x, y, z).getBlock();
+                    ServerBlock block = new ServerLocation(world, x, y, z).getBlock(protocol);
 
                     for (Set<Material> set : sets) {
                         if (set.contains(block.getType())) {
@@ -117,7 +117,7 @@ public class RayUtils {
         for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
             for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
                 for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
-                    ServerBlock block = new ServerLocation(world, x, y, z).getBlock();
+                    ServerBlock block = new ServerLocation(world, x, y, z).getBlock(protocol);
 
                     if (set.contains(block.getType())) {
                         return true;
@@ -137,7 +137,7 @@ public class RayUtils {
         for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
             for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
                 for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
-                    ServerBlock block = new ServerLocation(world, x, y, z).getBlock();
+                    ServerBlock block = new ServerLocation(world, x, y, z).getBlock(protocol);
 
                     if (block.getType() == material) {
                         return true;
@@ -157,7 +157,7 @@ public class RayUtils {
         for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
             for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
                 for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
-                    ServerBlock block = new ServerLocation(world, x, y, z).getBlock();
+                    ServerBlock block = new ServerLocation(world, x, y, z).getBlock(protocol);
 
                     if (BlockUtils.isSolid(block.getType())) {
                         return true;
@@ -177,7 +177,7 @@ public class RayUtils {
         for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
             for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
                 for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
-                    ServerBlock block = new ServerLocation(world, x, y, z).getBlock();
+                    ServerBlock block = new ServerLocation(world, x, y, z).getBlock(protocol);
 
                     if (BlockUtils.isSolid(block.getType())) {
                         return true;
@@ -197,7 +197,7 @@ public class RayUtils {
         for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
             for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
                 for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
-                    ServerBlock block = new ServerLocation(world, x, y, z).getBlock();
+                    ServerBlock block = new ServerLocation(world, x, y, z).getBlock(protocol);
 
                     if (BlockUtils.isSolid(block.getType())) {
                         return true;
@@ -489,7 +489,7 @@ public class RayUtils {
         return f2;
     }
 
-    public static boolean isSaveToTeleport(Player player, Location location) {
+    public static boolean isSaveToTeleport(PlayerProtocol protocol, Location location) {
         double x = location.getX();
         double y = location.getY();
         double z = location.getZ();
@@ -498,8 +498,8 @@ public class RayUtils {
             for (int dy = -1; dy <= 1; dy++) {
                 for (int dz = -1; dz <= 1; dz++) {
                     Material material = new ServerLocation(
-                            new Location(ProtocolLib.getWorld(player), x + (dx * 0.3), y + (dy * 0.3), z + (dz * 0.3))
-                    ).getBlock().getTypeOrNull();
+                            new Location(protocol.getWorld(), x + (dx * 0.3), y + (dy * 0.3), z + (dz * 0.3))
+                    ).getBlock(protocol).getTypeOrNull();
                     if (material == null) continue;
                     if (!BlockUtils.areAir(material)) {
                         return false;

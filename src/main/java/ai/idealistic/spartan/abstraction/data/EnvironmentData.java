@@ -45,9 +45,6 @@ public class EnvironmentData {
             for (int dy = -2; dy <= 2; ++dy) {
                 for (int dz = -2; dz <= 2; ++dz) {
                     boolean h = Math.abs(dx) < 2 && Math.abs(dz) < 2;
-                    ServerBlock b = new ServerLocation(
-                            new Location(protocol.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
-                    ).getBlock();
                     Material material = protocol.packetWorld.getBlock(
                             new Location(protocol.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
                     );
@@ -60,8 +57,12 @@ public class EnvironmentData {
                     Material materialFrom = protocol.packetWorld.getBlock(
                             new Location(protocol.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
                     );
-                    Material m2 = b.getType();
-                    if (material == null || materialFrom == null || m2 == null) return;
+                    if (material == null || materialFrom == null) {
+                        return;
+                    }
+                    ServerBlock b = new ServerLocation(
+                            new Location(protocol.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
+                    ).getBlock();
 
                     if ((BlockUtils.areHoneyBlocks(material)
                             || BlockUtils.areBeds(material)
@@ -100,7 +101,7 @@ public class EnvironmentData {
                         this.semi = true;
                     }
                     if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
-                            && (material.equals(Material.BUBBLE_COLUMN) || m2.equals(Material.BUBBLE_COLUMN))) {
+                            && material.equals(Material.BUBBLE_COLUMN)) {
                         this.bubble = true;
                     }
                     if (BlockUtils.isLiquidOrWaterLogged(b, true)
@@ -108,7 +109,6 @@ public class EnvironmentData {
                             new Location(protocol.getWorld(), x + (double) dx * 0.3, y, z + (double) dz * 0.3)
                     ))
                             || BlockUtils.isLiquid(material)
-                            || BlockUtils.isLiquid(m2)
                             || BlockUtils.isWaterLogged(b)) {
 
                         this.liquid = true;

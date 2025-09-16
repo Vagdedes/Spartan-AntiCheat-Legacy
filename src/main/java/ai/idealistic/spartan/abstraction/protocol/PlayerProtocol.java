@@ -650,7 +650,7 @@ public class PlayerProtocol {
                     )
             );
 
-            if (BlockUtils.isFullSolid(location.getBlock().getType())) {
+            if (BlockUtils.isFullSolid(location.getBlock(this).getType())) {
                 return location.getBlockLocation();
             }
         }
@@ -825,9 +825,9 @@ public class PlayerProtocol {
         Location location = this.getLocation();
         ServerLocation locationP1 = new ServerLocation(location.clone().add(0, 1, 0));
 
-        if (BlockUtils.isSolid(locationP1.getBlock().getType())
-                && !(BlockUtils.areWalls(locationP1.getBlock().getType())
-                || BlockUtils.canClimb(locationP1.getBlock().getType(), false))) {
+        if (BlockUtils.isSolid(locationP1.getBlock(this).getType())
+                && !(BlockUtils.areWalls(locationP1.getBlock(this).getType())
+                || BlockUtils.canClimb(locationP1.getBlock(this).getType(), false))) {
             return false;
         }
         World world = this.getWorld();
@@ -838,7 +838,7 @@ public class PlayerProtocol {
             ServerLocation loopLocation = new ServerLocation(
                     location.clone().add(0.0, -(startY - progressiveY), 0.0)
             );
-            Material material = loopLocation.getBlock().getType();
+            Material material = loopLocation.getBlock(this).getType();
 
             if (iterations != PlayerUtils.chunk
                     && (BlockUtils.canClimb(material, false)

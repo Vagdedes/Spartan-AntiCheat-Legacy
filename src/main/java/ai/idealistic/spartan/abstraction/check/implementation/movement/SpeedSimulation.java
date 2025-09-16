@@ -373,7 +373,7 @@ public class SpeedSimulation extends CheckRunner {
             m *= 1.6;
         if (this.protocol.getNearbyEntities(2).size() > 1)
             m *= 1.4;
-        if (BlockUtils.areWebs(new ServerLocation(this.protocol.getLocation()).getBlock().getType())) {
+        if (BlockUtils.areWebs(new ServerLocation(this.protocol.getLocation()).getBlock(this.protocol).getType())) {
             m *= 0.2;
         }
         if (this.isOnWater() || this.isOnWater()) {

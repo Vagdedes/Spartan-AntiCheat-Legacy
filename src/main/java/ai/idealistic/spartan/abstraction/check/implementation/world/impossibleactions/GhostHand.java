@@ -57,7 +57,7 @@ public class GhostHand extends CheckDetection {
                             this.breaking.cancel(
                                     "breaking"
                                             + ", interacted-block: " + BlockUtils.blockToString(b)
-                                            + ", blocking-block: " + BlockUtils.blockToString(t.getBlock())
+                                            + ", blocking-block: " + BlockUtils.blockToString(t.getBlock(this.protocol))
                                             + ", interacted-distance: " + bDistance
                                             + ", blocking-distance: " + tDistance,
                                     null,
@@ -97,7 +97,7 @@ public class GhostHand extends CheckDetection {
                             this.interact.cancel(
                                     "interact"
                                             + ", interacted-block: " + BlockUtils.blockToString(b)
-                                            + ", blocking-block: " + BlockUtils.blockToString(t.getBlock())
+                                            + ", blocking-block: " + BlockUtils.blockToString(t.getBlock(this.protocol))
                                             + ", interacted-distance: " + bDistance
                                             + ", blocking-distance: " + tDistance,
                                     null,

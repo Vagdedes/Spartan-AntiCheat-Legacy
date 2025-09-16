@@ -44,7 +44,7 @@ public class Criticals extends CheckRunner {
                         && verticalMaxAccuracy > 0
                         && !this.protocol.isOnGround()
                         && this.protocol.isOnGroundFrom()
-                        && !new ServerLocation(this.protocol.getLocation()).getBlock().getType().isBlock()
+                        && !new ServerLocation(this.protocol.getLocation()).getBlock(this.protocol).getType().isBlock()
                         && !RayUtils.onSolidBlock(this.protocol, this.protocol.getLocation().clone().add(0, 2, 0))) {
                     this.detection.cancel("packet");
                 }

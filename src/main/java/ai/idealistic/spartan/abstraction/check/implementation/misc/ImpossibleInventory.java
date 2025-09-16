@@ -140,8 +140,8 @@ public class ImpossibleInventory extends CheckRunner {
             if (BlockUtils.hasMaterial(item)) {
                 ServerLocation loc = new ServerLocation(this.protocol.getLocation());
 
-                if (loc.getBlock().getType() == nether_portal
-                        || loc.clone().add(0, 1, 0).getBlock().getType() == nether_portal) {
+                if (loc.getBlock(this.protocol).getType() == nether_portal
+                        || loc.clone().add(0, 1, 0).getBlock(this.protocol).getType() == nether_portal) {
                     this.portalInventoryDetection.cancel("portal-inventory");
                 }
             }
