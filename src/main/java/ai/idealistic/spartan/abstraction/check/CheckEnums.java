@@ -1,5 +1,6 @@
 package ai.idealistic.spartan.abstraction.check;
 
+import ai.idealistic.spartan.abstraction.check.implementation.ElytraCheck;
 import ai.idealistic.spartan.abstraction.check.implementation.misc.ImpossibleInventory;
 import ai.idealistic.spartan.abstraction.check.implementation.misc.InventoryClicks;
 import ai.idealistic.spartan.abstraction.check.implementation.movement.GravitySimulation;
@@ -55,6 +56,11 @@ public class CheckEnums {
                 HackCategoryType.MOVEMENT,
                 SpeedSimulation.class,
                 Material.FEATHER
+        ),
+        ELYTRA(
+                HackCategoryType.MOVEMENT,
+                ElytraCheck.class,
+                Material.PAPER
         ),
         EXPLOITS(
                 HackCategoryType.MOVEMENT,
