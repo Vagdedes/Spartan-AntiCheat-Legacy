@@ -11,6 +11,10 @@ public class Floodgate {
 
     private static boolean classExists = false;
 
+    static {
+        reload();
+    }
+
     public static void reload() {
         classExists = ReflectionUtils.classExists(
                 "org.geysermc.floodgate.api.FloodgateApi"
