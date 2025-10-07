@@ -20,7 +20,7 @@ public class IMSimulationElytra extends CheckDetection {
 
     private double vl = 0, oldY = 0, oldSpeed = 0, oldAccel = 0;
     private int ground = 0, air = 0, ticks = 0, postSpeed = 0;
-    private final List<Double> lastYMotions = new EvictingList<>(40);
+    private final List<Double> lastYMotions = new EvictingList<>(25);
     private Location from = null;
     private final Buffer.IndividualBuffer buffer;
 
@@ -186,17 +186,17 @@ public class IMSimulationElytra extends CheckDetection {
                 this.vl = 0;
             }
             if (ticks > 1) {
-                if (speed > 0.05 && ec.isAllFalse() && diffAccel < 1e-8) {
-                    this.postSpeed += (diffAccel == 0) ? 3 : 1;
-                    if (this.postSpeed > 12) {
-                        this.cancel("invalid elytra speed: " + diffAccel, this.protocol.getFromLocation(), 0, true);
-                        this.postSpeed = 8;
-                    }
-                } else if (this.postSpeed > 0) this.postSpeed -= 2;
-                //protocol.bukkit().sendMessage("pr: " + pr + " " + speed);
+                //protocol.bukkit().sendMessage("pr: " + pr + " " + speed + " m: " + (Statistics.getMax(lastYMotions)));
                 if (pr != 0) lastYMotions.add(pr);
                 final boolean isInvalid = lastYMotions.isEmpty() || (Statistics.getMax(lastYMotions) > 1e-7);
                 if (isInvalid) {
+                    if (speed > 0.05 && ec.isAllFalse() && diffAccel < 1e-8) {
+                        this.postSpeed += (diffAccel == 0) ? 3 : 1;
+                        if (this.postSpeed > 12) {
+                            this.cancel("invalid elytra speed: " + diffAccel, this.protocol.getFromLocation(), 0, true);
+                            this.postSpeed = 8;
+                        }
+                    } else if (this.postSpeed > 0) this.postSpeed -= 2;
                     if (pr == 0.0 && ec.isAllFalse()) {
                         this.vl += 2.0;
                         if (this.vl >= 5.0) {
