@@ -6,16 +6,21 @@ import ai.idealistic.spartan.abstraction.check.CheckRunner;
 import ai.idealistic.spartan.abstraction.data.Buffer;
 import ai.idealistic.spartan.abstraction.data.EnvironmentData;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
+import kireiko.dev.millennium.math.Statistics;
+import kireiko.dev.millennium.types.EvictingList;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.util.Vector;
 
+import java.util.List;
+
 public class IMSimulationElytra extends CheckDetection {
 
     private double vl = 0, oldY = 0, oldSpeed = 0, oldAccel = 0;
     private int ground = 0, air = 0, ticks = 0, postSpeed = 0;
+    private final List<Double> lastYMotions = new EvictingList<>(40);
     private Location from = null;
     private final Buffer.IndividualBuffer buffer;
 
@@ -176,7 +181,10 @@ public class IMSimulationElytra extends CheckDetection {
             double y = to.getY() - from.getY();
             final EnvironmentData ec = protocol.getEnvironment();
             double pr = Math.abs(Math.abs(y) - Math.abs(oldY));
-
+            if (fireworkBoostTicks > 0) {
+                this.postSpeed = 0;
+                this.vl = 0;
+            }
             if (ticks > 1) {
                 if (speed > 0.05 && ec.isAllFalse() && diffAccel < 1e-8) {
                     this.postSpeed += (diffAccel == 0) ? 3 : 1;
@@ -185,15 +193,20 @@ public class IMSimulationElytra extends CheckDetection {
                         this.postSpeed = 8;
                     }
                 } else if (this.postSpeed > 0) this.postSpeed -= 2;
-                if (pr == 0.0 && ec.isAllFalse()) {
-                    this.vl += 2.0;
-                    if (this.vl >= 5.0) {
-                        this.cancel("invalid elytra gravity: " + pr, this.protocol.getFromLocation(), 0, true);
-                        this.vl /= 1.3;
+                //protocol.bukkit().sendMessage("pr: " + pr + " " + speed);
+                if (pr != 0) lastYMotions.add(pr);
+                final boolean isInvalid = lastYMotions.isEmpty() || (Statistics.getMax(lastYMotions) > 1e-7);
+                if (isInvalid) {
+                    if (pr == 0.0 && ec.isAllFalse()) {
+                        this.vl += 2.0;
+                        if (this.vl >= 5.0) {
+                            this.cancel("invalid elytra gravity: " + pr, this.protocol.getFromLocation(), 0, true);
+                            this.vl /= 1.3;
+                        }
                     }
-                }
-                if (speed > 2.4 || y > 1.7) {
-                    this.cancel("elytra limit", this.protocol.getFromLocation(), 0, true);
+                    if (speed > 2.7 || y > 2.0) {
+                        this.cancel("elytra limit", this.protocol.getFromLocation(), 0, true);
+                    }
                 }
                 this.vl /= 1.15;
             }
@@ -221,7 +234,6 @@ public class IMSimulationElytra extends CheckDetection {
         glidingTicks++;
 
         Vector actualVelocity = new Vector(to.getX() - from.getX(), to.getY() - from.getY(), to.getZ() - from.getZ());
-        actualVelocity.multiply(-1);
 
         if (glidingTicks < 6 && actualVelocity.getY() > 0.15 && fireworkBoostTicks < 1) {
             cancel("Elytra (Limit) d: " + actualVelocity.getY(), from, 0, true);
