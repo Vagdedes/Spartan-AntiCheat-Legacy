@@ -29,8 +29,8 @@ public class M3Module implements ModuleML {
             return new ModuleResultML(20, FlagType.SUSPECTED, scaledUnusual);
 
         if ((UNUSUAL > 0.34 && STRANGE > 0.12 && SUSPECTED > 0.1 && SUSPICIOUSLY > 0) ||
-                        (UNUSUAL > 0.25 && STRANGE > 0.12 && SUSPECTED > 0.12) ||
-                        (UNUSUAL > 0.10 && STRANGE > 0.14 && SUSPECTED > 0.08 && SUSPICIOUSLY > 0))
+                (UNUSUAL > 0.25 && STRANGE > 0.12 && SUSPECTED > 0.12) ||
+                (UNUSUAL > 0.10 && STRANGE > 0.14 && SUSPECTED > 0.08 && SUSPICIOUSLY > 0))
             return new ModuleResultML(20, FlagType.STRANGE, scaledUnusual);
 
         return new ModuleResultML(0, FlagType.NORMAL, scaledUnusual);

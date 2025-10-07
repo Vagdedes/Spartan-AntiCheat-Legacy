@@ -6,7 +6,6 @@ import ai.idealistic.spartan.abstraction.check.CheckRunner;
 import ai.idealistic.spartan.abstraction.data.Buffer;
 import ai.idealistic.spartan.abstraction.data.EnvironmentData;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
-import kireiko.dev.millennium.ml.logic.Logger;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -40,11 +39,11 @@ public class IMSimulationElytra extends CheckDetection {
 
     public IMSimulationElytra(CheckRunner executor) {
         super(
-                        executor,
-                        null,
-                        Check.DetectionType.PACKETS,
-                        "elytra",
-                        false
+                executor,
+                null,
+                Check.DetectionType.PACKETS,
+                "elytra",
+                true
         );
         this.buffer = new Buffer.IndividualBuffer();
     }
@@ -73,14 +72,14 @@ public class IMSimulationElytra extends CheckDetection {
                     if (i.getType() == Material.ELYTRA) {
                         if (i.getDurability() < 432) {
                             double buffer = this.buffer.count(1, 20),
-                                            threshold = 15;
+                                    threshold = 15;
 
                             if (buffer >= threshold) {
                                 cancel(
-                                                "elytra(glide-spam)",
-                                                this.protocol.getFromLocation(),
-                                                0,
-                                                true
+                                        "elytra(glide-spam)",
+                                        this.protocol.getFromLocation(),
+                                        0,
+                                        true
                                 );
 
                                 if (this.prevent()) {
@@ -89,10 +88,10 @@ public class IMSimulationElytra extends CheckDetection {
                             }
                         } else {
                             cancel(
-                                            "elytra(no-durability-glide)",
-                                            this.protocol.getFromLocation(),
-                                            0,
-                                            true
+                                    "elytra(no-durability-glide)",
+                                    this.protocol.getFromLocation(),
+                                    0,
+                                    true
                             );
 
                             if (this.prevent()) {
@@ -101,10 +100,10 @@ public class IMSimulationElytra extends CheckDetection {
                         }
                     } else {
                         cancel(
-                                        "elytra(no-elytra-glide)",
-                                        this.protocol.getFromLocation(),
-                                        0,
-                                        true
+                                "elytra(no-elytra-glide)",
+                                this.protocol.getFromLocation(),
+                                0,
+                                true
                         );
 
                         if (this.prevent()) {
@@ -113,10 +112,10 @@ public class IMSimulationElytra extends CheckDetection {
                     }
                 } else {
                     cancel(
-                                    "elytra(no-chestplate-item-glide)",
-                                    this.protocol.getFromLocation(),
-                                    0,
-                                    true
+                            "elytra(no-chestplate-item-glide)",
+                            this.protocol.getFromLocation(),
+                            0,
+                            true
                     );
 
                     if (this.prevent()) {
@@ -125,10 +124,10 @@ public class IMSimulationElytra extends CheckDetection {
                 }
             } else {
                 cancel(
-                                "elytra(vehicle-glide)",
-                                this.protocol.getFromLocation(),
-                                0,
-                                true
+                        "elytra(vehicle-glide)",
+                        this.protocol.getFromLocation(),
+                        0,
+                        true
                 );
 
                 if (this.prevent()) {
@@ -227,7 +226,7 @@ public class IMSimulationElytra extends CheckDetection {
         if (glidingTicks < 6 && actualVelocity.getY() > 0.15 && fireworkBoostTicks < 1) {
             cancel("Elytra (Limit) d: " + actualVelocity.getY(), from, 0, true);
             lastVelocity = new Vector(0, 0, 0);
-            if(prevent()) {
+            if (prevent()) {
                 protocol.bukkit().setGliding(false);
             }
             glidingTicks = 0;

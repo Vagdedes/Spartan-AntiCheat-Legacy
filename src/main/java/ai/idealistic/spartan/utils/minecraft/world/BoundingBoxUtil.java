@@ -86,6 +86,7 @@ public class BoundingBoxUtil {
         }
         return boxes;
     }
+
     public static List<AxisAlignedBB> getBoundingBoxesLegacy(final Block block) {
         final List<AxisAlignedBB> boxes = new ArrayList<>();
         double x = block.getX();
@@ -158,6 +159,7 @@ public class BoundingBoxUtil {
     public static boolean ignore(final String block) {
         return block.matches(".*(snow|step|frame|table|slab|stair|ladder|vine|waterlily|wall|carpet|fence|rod|bed|skull|pot|hopper|door|bars|piston|lily).*");
     }
+
     public static AxisAlignedBB wrap(final AxisAlignedBB bb) {
         return bb.expand(-1e-4, -1e-4, -1e-4);
     }

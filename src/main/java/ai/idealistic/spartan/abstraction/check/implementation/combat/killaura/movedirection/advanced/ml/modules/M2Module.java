@@ -23,9 +23,9 @@ public class M2Module implements ModuleML {
         final double SUSPECTED = stats.SUSPECTED / M;
 
         FlagType type = (UNUSUAL > 0.5 || (UNUSUAL > 0.4 && SUSPECTED > 0.15)) ? FlagType.SUSPECTED :
-                        (UNUSUAL > 0.4) ? FlagType.STRANGE :
-                                        (UNUSUAL > 0.3) ? FlagType.UNUSUAL :
-                                                        FlagType.NORMAL;
+                (UNUSUAL > 0.4) ? FlagType.STRANGE :
+                        (UNUSUAL > 0.3) ? FlagType.UNUSUAL :
+                                FlagType.NORMAL;
 
         int score = (type == FlagType.NORMAL) ? 0 : 10;
         String message = String.valueOf(Simplification.scaleVal(UNUSUAL, 3));
