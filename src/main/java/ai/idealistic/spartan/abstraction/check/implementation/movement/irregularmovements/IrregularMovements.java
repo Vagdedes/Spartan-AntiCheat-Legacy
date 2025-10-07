@@ -5,11 +5,13 @@ import ai.idealistic.spartan.abstraction.check.CheckRunner;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.spartan.functionality.server.PluginBase;
 import ai.idealistic.spartan.functionality.tracking.CheckConditions;
+import ai.idealistic.spartan.listeners.bukkit.VelocityEvent;
 import ai.idealistic.spartan.listeners.protocol.TeleportListener;
 import ai.idealistic.spartan.utils.minecraft.entity.PlayerUtils;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketEvent;
 import org.bukkit.event.entity.EntityToggleGlideEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
@@ -37,6 +39,10 @@ public class IrregularMovements extends CheckRunner {
             headPosition.run();
             elytra.runSimulation();
             vehicle.run();
+        } else if (object instanceof PlayerInteractEvent) {
+            elytra.handleInteract();
+        } else if (object instanceof VelocityEvent) {
+            elytra.handleVelocity();
         } else if (PlayerUtils.elytra
                 && object instanceof EntityToggleGlideEvent) {
             elytra.runExploit();
