@@ -1,1 +1,2 @@
-[#] Potentially fixed an Exploits ground-spoof false positive with riding ghasts
+[#] Potentially fixed an Exploits ground-spoof false positive with riding ghasts.
+[#] Fixed an issue with reading velocity packets.
