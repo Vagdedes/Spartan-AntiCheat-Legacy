@@ -23,33 +23,35 @@ public final class AimSmoothCheck implements HeuristicComponent {
 
     @Override
     public void process(final RotationEvent event) {
-        if (event.getAbsDelta().getY() == 0 && event.getAbsDelta().getY() == 0) return;
-        final Vec2f delta = event.getDelta();
-        double angle = getAngleInDegrees(delta) % 90;
-        { // check logic
-            if ((event.getAbsDelta().getY() > 1.5 && event.getAbsDelta().getX() > 0.32) || event.getAbsDelta().getX() > 1.5)
-                stack.add(angle);
-            if (stack.size() >= 20) {
-                {
-                    List<Float> jiff = Statistics.getJiffDelta(stack, 1);
-                    //profile.getPlayer().sendMessage("d: " + jiff);
-                    float prev = 999;
-                    float prePrev = 999;
-                    for (float f : jiff) {
-                        if (f == 0.0 && prev == 0.0 && prePrev == 0) {
-                            detection.call(() -> detection.cancel(
-                                    "[Smooth] Invalid smoothing " + Arrays.toString(jiff.toArray()),
-                                    this.profile.getFromLocation()
-                            ));
-                            break;
+        this.detection.call(() -> {
+            if (event.getAbsDelta().getY() == 0 && event.getAbsDelta().getY() == 0) return;
+            final Vec2f delta = event.getDelta();
+            double angle = getAngleInDegrees(delta) % 90;
+            { // check logic
+                if ((event.getAbsDelta().getY() > 1.5 && event.getAbsDelta().getX() > 0.32) || event.getAbsDelta().getX() > 1.5)
+                    stack.add(angle);
+                if (stack.size() >= 20) {
+                    {
+                        List<Float> jiff = Statistics.getJiffDelta(stack, 1);
+                        //profile.getPlayer().sendMessage("d: " + jiff);
+                        float prev = 999;
+                        float prePrev = 999;
+                        for (float f : jiff) {
+                            if (f == 0.0 && prev == 0.0 && prePrev == 0) {
+                                detection.call(() -> detection.cancel(
+                                        "[Smooth] Invalid smoothing " + Arrays.toString(jiff.toArray()),
+                                        this.profile.getFromLocation()
+                                ));
+                                break;
+                            }
+                            prePrev = prev;
+                            prev = f;
                         }
-                        prePrev = prev;
-                        prev = f;
                     }
+                    stack.clear();
                 }
-                stack.clear();
             }
-        }
+        });
     }
 
     private static double getAngleInDegrees(Vec2f delta) {

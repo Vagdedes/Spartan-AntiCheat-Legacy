@@ -42,23 +42,24 @@ public final class AimComplexCheck implements HeuristicComponent {
 
     @Override
     public void process(final RotationEvent rotationUpdate) {
+        this.detection.call(() -> {
+            Vec2f delta = new Vec2f(rotationUpdate.getAbsDelta().getX(), rotationUpdate.getAbsDelta().getY());
+            if (delta.getY() == 0 && delta.getX() == 0) return;
+            this.rawRotations.add(delta);
 
-        Vec2f delta = new Vec2f(rotationUpdate.getAbsDelta().getX(), rotationUpdate.getAbsDelta().getY());
-        if (delta.getY() == 0 && delta.getX() == 0) return;
-        this.rawRotations.add(delta);
+            double gcdValue = Statistics.getGCDValue(0.5d) * 3;
+            this.normalizedRotations.add(new Vec2i(
+                    (int) (delta.getX() / gcdValue),
+                    (int) (delta.getY() / gcdValue)
+            ));
 
-        double gcdValue = Statistics.getGCDValue(0.5d) * 3;
-        this.normalizedRotations.add(new Vec2i(
-                (int) (delta.getX() / gcdValue),
-                (int) (delta.getY() / gcdValue)
-        ));
-
-        if (this.normalizedRotations.size() >= ROTATION_BUFFER_SIZE) {
-            this.checkSpikes();
-        }
-        if (this.rawRotations.size() >= ROTATION_BUFFER_SIZE) {
-            this.checkRaw();
-        }
+            if (this.normalizedRotations.size() >= ROTATION_BUFFER_SIZE) {
+                this.checkSpikes();
+            }
+            if (this.rawRotations.size() >= ROTATION_BUFFER_SIZE) {
+                this.checkRaw();
+            }
+        });
     }
 
     private void checkRaw() {

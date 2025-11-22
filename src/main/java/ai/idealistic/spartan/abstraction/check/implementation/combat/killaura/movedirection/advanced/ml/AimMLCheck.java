@@ -42,12 +42,14 @@ public final class AimMLCheck implements HeuristicComponent {
 
     @Override
     public void process(final RotationEvent rotationUpdate) {
-        if (profile.isCinematic()) return;
-        if (rotationUpdate.getAbsDelta().getY() == 0 && rotationUpdate.getAbsDelta().getY() == 0) return;
-        rawRotations.add(new Vec2f(rotationUpdate.getAbsDelta().getX(), rotationUpdate.getAbsDelta().getY()));
-        if (this.rawRotations.size() >= ROTATION_BUFFER_SIZE) {
-            this.check();
-        }
+        this.detection.call(() -> {
+            if (profile.isCinematic()) return;
+            if (rotationUpdate.getAbsDelta().getY() == 0 && rotationUpdate.getAbsDelta().getY() == 0) return;
+            rawRotations.add(new Vec2f(rotationUpdate.getAbsDelta().getX(), rotationUpdate.getAbsDelta().getY()));
+            if (this.rawRotations.size() >= ROTATION_BUFFER_SIZE) {
+                this.check();
+            }
+        });
     }
 
     private void checkResult(List<ObjectML> objectML) {

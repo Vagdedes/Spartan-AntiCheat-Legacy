@@ -36,19 +36,21 @@ public final class AimAnalysisCheck implements HeuristicComponent {
 
     @Override
     public void process(final RotationEvent rotationUpdate) {
-        Vec2f delta = new Vec2f(rotationUpdate.getAbsDelta().getX(), rotationUpdate.getAbsDelta().getY());
-        this.rawRotations.add(delta);
+        this.detection.call(() -> {
+            Vec2f delta = new Vec2f(rotationUpdate.getAbsDelta().getX(), rotationUpdate.getAbsDelta().getY());
+            this.rawRotations.add(delta);
 
-        if (this.rawRotations.size() >= RAW_ROTATIONS_LIMIT) {
-            this.checkRaw();
-        }
-
-        if (Math.abs(delta.getX()) > 1.35 || (Math.abs(delta.getY()) > 1.35 && Math.abs(delta.getX()) > 0.32)) {
-            this.limitedRotations.add(delta);
-            if (this.limitedRotations.size() >= LIMITED_ROTATIONS_LIMIT) {
-                this.checkLimited();
+            if (this.rawRotations.size() >= RAW_ROTATIONS_LIMIT) {
+                this.checkRaw();
             }
-        }
+
+            if (Math.abs(delta.getX()) > 1.35 || (Math.abs(delta.getY()) > 1.35 && Math.abs(delta.getX()) > 0.32)) {
+                this.limitedRotations.add(delta);
+                if (this.limitedRotations.size() >= LIMITED_ROTATIONS_LIMIT) {
+                    this.checkLimited();
+                }
+            }
+        });
     }
 
     private void checkLimited() {

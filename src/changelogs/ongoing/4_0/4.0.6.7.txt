@@ -1,1 +1,2 @@
 [#] Further improved false positives with ghasts
+[#] Fixed the KillAura machine learning detection running regardless of configuration
