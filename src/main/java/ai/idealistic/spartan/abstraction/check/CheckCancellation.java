@@ -13,7 +13,7 @@ public class CheckCancellation {
     CheckCancellation(Compatibility.CompatibilityType compatibilityType) {
         this.reason = compatibilityType.toString();
         this.pointer = null;
-        this.expiration = 0L;
+        this.expiration = Long.MAX_VALUE;
     }
 
     CheckCancellation(String reason, String pointer, int ticks) {
