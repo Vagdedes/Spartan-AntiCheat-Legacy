@@ -11,9 +11,7 @@ public class CheckCancellation {
     private final long expiration;
 
     CheckCancellation(Compatibility.CompatibilityType compatibilityType) {
-        this.reason = compatibilityType.toString();
-        this.pointer = null;
-        this.expiration = Long.MAX_VALUE;
+        this(compatibilityType.toString(), null, 0);
     }
 
     CheckCancellation(String reason, String pointer, int ticks) {

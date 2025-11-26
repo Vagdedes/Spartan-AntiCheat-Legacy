@@ -1,2 +1,3 @@
-[#] Further improved false positives with ghasts
+[#] Further improved false positives with ghast entities
 [#] Fixed the KillAura machine learning detection running regardless of configuration
+[#] Fixed a numeric bug that could have caused a few compatibilities to malfunction
