@@ -7,6 +7,7 @@ import ai.idealistic.spartan.abstraction.check.definition.ImplementedDetection;
 import ai.idealistic.spartan.abstraction.data.Buffer;
 import ai.idealistic.spartan.abstraction.event.CBlockPlaceEvent;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
+import ai.idealistic.spartan.abstraction.world.ServerBlock;
 import ai.idealistic.spartan.compatibility.manual.abilities.ItemsAdder;
 import ai.idealistic.spartan.compatibility.manual.building.PrinterMode;
 import ai.idealistic.spartan.compatibility.manual.entity.Vehicles;
@@ -33,8 +34,8 @@ public class FastPlace extends CheckRunner {
                 CBlockPlaceEvent event = (CBlockPlaceEvent) object;
 
                 if (!ItemsAdder.is(event.placedBlock)
-                        && !BlockUtils.isScaffoldingBlock(event.placedBlock.getType())) {
-                    Material material = event.placedBlock.getType();
+                        && !BlockUtils.isScaffoldingBlock(new ServerBlock(event.placedBlock).getType())) {
+                    Material material = new ServerBlock(event.placedBlock).getType();
 
                     if (material != Material.FIRE
                             && material != Material.AIR

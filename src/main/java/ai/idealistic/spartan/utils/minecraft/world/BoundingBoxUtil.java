@@ -1,5 +1,6 @@
 package ai.idealistic.spartan.utils.minecraft.world;
 
+import ai.idealistic.spartan.abstraction.world.ServerBlock;
 import ai.idealistic.spartan.listeners.bukkit.standalone.ChunksEvent;
 import ai.idealistic.spartan.utils.minecraft.entity.AxisAlignedBB;
 import org.bukkit.block.Block;
@@ -83,7 +84,7 @@ public class BoundingBoxUtil {
             boxes.add(wrap(base));
             boxes.add(wrap(step));
         } else {
-            if (ignore(block.getType().toString().toLowerCase())) {
+            if (ignore(new ServerBlock(block).getType().toString().toLowerCase())) {
                 return null;
             } else boxes.add(wrap(new AxisAlignedBB(x, y, z, x + 1, y + 1, z + 1)));
         }
@@ -152,7 +153,7 @@ public class BoundingBoxUtil {
             boxes.add(wrap(base));
             boxes.add(wrap(step));
         } else {
-            if (ignore(block.getType().toString().toLowerCase())) {
+            if (ignore(new ServerBlock(block).getType().toString().toLowerCase())) {
                 return null;
             } else boxes.add(wrap(new AxisAlignedBB(x, y, z, x + 1, y + 1, z + 1)));
         }

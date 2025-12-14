@@ -1304,7 +1304,7 @@ public class BlockUtils {
     }
 
     public static boolean isLiquid(Block block) {
-        return isLiquid(block.getType()) || block.isLiquid();
+        return isLiquid(new ServerBlock(block).getType()) || block.isLiquid();
     }
 
     public static boolean isLiquid(Material m) {
@@ -1336,7 +1336,7 @@ public class BlockUtils {
 
     public static boolean isLiquidOrWaterLogged(Block block, boolean lava) {
         return (isLiquid(block) || isWaterLogged(block))
-                && (lava || block.getType() != MaterialUtils.get("lava"));
+                && (lava || new ServerBlock(block).getType() != MaterialUtils.get("lava"));
     }
 
     public static boolean isLiquidOrWaterLogged(BlockData blockData, boolean lava) {
@@ -1552,7 +1552,7 @@ public class BlockUtils {
     }
 
     public static String blockToString(Block b) {
-        return toString(b.getType().toString());
+        return blockToString(new ServerBlock(b));
     }
 
     public static String blockToString(ServerBlock b) {
@@ -1649,7 +1649,8 @@ public class BlockUtils {
         int y = loc.getBlockY();
         int z = loc.getBlockZ();
         for (int[] d : DIRS) {
-            Block relative = world.getBlockAt(x + d[0], y + d[1], z + d[2]);
+            ServerBlock relative = new ServerBlock(world.getBlockAt(x + d[0], y + d[1], z + d[2]));
+
             if (relative.getType() != Material.AIR) {
                 return false;
             }

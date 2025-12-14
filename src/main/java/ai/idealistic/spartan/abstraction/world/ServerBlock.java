@@ -10,7 +10,7 @@ public class ServerBlock {
 
     private final Object block;
 
-    ServerBlock(Object block) {
+    public ServerBlock(Object block) {
         this.block = block;
     }
 

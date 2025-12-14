@@ -6,6 +6,7 @@ import ai.idealistic.spartan.abstraction.check.CheckRunner;
 import ai.idealistic.spartan.abstraction.check.definition.ImplementedDetection;
 import ai.idealistic.spartan.abstraction.data.Buffer;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
+import ai.idealistic.spartan.abstraction.world.ServerBlock;
 import ai.idealistic.spartan.compatibility.Compatibility;
 import ai.idealistic.spartan.compatibility.manual.abilities.AureliumSkills;
 import ai.idealistic.spartan.compatibility.manual.abilities.ItemsAdder;
@@ -54,12 +55,14 @@ public class FastBreak extends CheckRunner {
 
     private void checkDelay(Block block, int seconds) {
         this.delay.call(() -> {
-            if (!BlockUtils.isSensitive(block.getType())) {
+            ServerBlock local = new ServerBlock(block);
+
+            if (!BlockUtils.isSensitive(local.getType())) {
                 GameMode gameMode = this.protocol.getGameMode();
 
                 if (gameMode == GameMode.SURVIVAL || gameMode == GameMode.ADVENTURE) {
                     long time = interactTime.getOrDefault(
-                            Objects.hash(block.getWorld().getName(), block.getType(), block.getX(), block.getY(), block.getZ()),
+                            Objects.hash(block.getWorld().getName(), local.getType(), block.getX(), block.getY(), block.getZ()),
                             0L
                     );
 
@@ -68,7 +71,7 @@ public class FastBreak extends CheckRunner {
 
                         if (time > 0L) { // Make sure the plugin knows when the player started breaking the block
                             ItemStack itemStack = this.protocol.getItemInHand();
-                            long originalLimit = MaterialUtils.getBlockBreakTime(this.protocol, itemStack, block.getType()),
+                            long originalLimit = MaterialUtils.getBlockBreakTime(this.protocol, itemStack, local.getType()),
                                     limit = originalLimit;
 
                             if (limit > -1L) { // Make sure the limit can be calculated on this specific server
@@ -108,7 +111,7 @@ public class FastBreak extends CheckRunner {
                                             + ", original-limit: " + originalLimit
                                             + ", limit: " + limit
                                             + ", difference: " + (limit - time)
-                                            + ", block: " + BlockUtils.materialToString(block.getType())
+                                            + ", block: " + BlockUtils.blockToString(local)
                                             + ", item: " + (emptyItem ? "none" : BlockUtils.materialToString(itemStack.getType()))
                                             + ", enchantments: " + (enchantments.isEmpty() ? "none" : "[" + enchantmentsString + "]")
                                             + ", effects: " + (potionEffects.isEmpty() ? "none" : "[" + effectsString + "]");
@@ -155,7 +158,7 @@ public class FastBreak extends CheckRunner {
             GameMode gameMode = this.protocol.getGameMode();
 
             if ((gameMode == GameMode.SURVIVAL || gameMode == GameMode.ADVENTURE)
-                    && !BlockUtils.isSensitive(this.protocol, block.getType())) {
+                    && !BlockUtils.isSensitive(this.protocol, new ServerBlock(block).getType())) {
                 int bufferTicks = AlgebraUtils.integerCeil(TPS.maximum),
                         limit = hackType.getCheck().getNumericalOption(
                                 "indirect_surroundings_per_second",

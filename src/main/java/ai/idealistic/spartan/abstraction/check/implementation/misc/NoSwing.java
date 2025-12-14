@@ -7,6 +7,7 @@ import ai.idealistic.spartan.abstraction.check.definition.ImplementedDetection;
 import ai.idealistic.spartan.abstraction.data.Buffer;
 import ai.idealistic.spartan.abstraction.event.PlayerAttackEvent;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
+import ai.idealistic.spartan.abstraction.world.ServerBlock;
 import ai.idealistic.spartan.compatibility.Compatibility;
 import ai.idealistic.spartan.compatibility.manual.abilities.AureliumSkills;
 import ai.idealistic.spartan.compatibility.manual.abilities.ItemsAdder;
@@ -65,7 +66,7 @@ public class NoSwing extends CheckRunner {
                 BlockBreakEvent e = (BlockBreakEvent) object;
                 Block block = e.getBlock();
 
-                if (!BlockUtils.isSensitive(this.protocol, block.getType())
+                if (!BlockUtils.isSensitive(this.protocol, new ServerBlock(block).getType())
                         && !TreeFeller.canCancel(block)
                         && !ItemsAdder.is(block)
                         && System.currentTimeMillis() - breakTime > TPS.tickTime) {

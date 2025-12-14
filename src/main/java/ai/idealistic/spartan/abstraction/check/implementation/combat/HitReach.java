@@ -6,6 +6,7 @@ import ai.idealistic.spartan.abstraction.check.CheckRunner;
 import ai.idealistic.spartan.abstraction.check.definition.ImplementedDetection;
 import ai.idealistic.spartan.abstraction.event.PlayerAttackEvent;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
+import ai.idealistic.spartan.abstraction.world.ServerBlock;
 import ai.idealistic.spartan.functionality.server.MultiVersion;
 import ai.idealistic.spartan.functionality.server.PluginBase;
 import ai.idealistic.spartan.functionality.tracking.CheckConditions;
@@ -98,10 +99,11 @@ public class HitReach extends CheckRunner {
                                             t.getZ() + (double) dz
                                     );
                                     final Block block = ChunksEvent.getBlockAsync(l);
+
                                     if (block == null) {
                                         continue;
                                     }
-                                    final Material material = block.getType();
+                                    final Material material = new ServerBlock(block).getType();
                                     final List<AxisAlignedBB> bb = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
                                             ? BoundingBoxUtil.getBoundingBoxes(block)
                                             : BoundingBoxUtil.getBoundingBoxesLegacy(block);

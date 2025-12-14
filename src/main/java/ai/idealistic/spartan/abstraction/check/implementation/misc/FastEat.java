@@ -5,6 +5,7 @@ import ai.idealistic.spartan.abstraction.check.CheckEnums.HackType;
 import ai.idealistic.spartan.abstraction.check.CheckRunner;
 import ai.idealistic.spartan.abstraction.check.definition.ImplementedDetection;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
+import ai.idealistic.spartan.abstraction.world.ServerBlock;
 import ai.idealistic.spartan.compatibility.manual.vanilla.Attributes;
 import ai.idealistic.spartan.functionality.server.MultiVersion;
 import ai.idealistic.spartan.utils.minecraft.inventory.MaterialUtils;
@@ -108,7 +109,7 @@ public class FastEat extends CheckRunner {
 
             switch (e.getAction()) {
                 case RIGHT_CLICK_BLOCK:
-                    if (e.getClickedBlock().getType() == cake) {
+                    if (new ServerBlock(e.getClickedBlock()).getType() == cake) {
                         this.protocol.getRunner(hackType).addDisableCause(null, null, 10);
                     }
                     break;
