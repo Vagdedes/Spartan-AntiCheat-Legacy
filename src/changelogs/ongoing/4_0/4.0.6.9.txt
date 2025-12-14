@@ -1,1 +1,1 @@
-[#] Fixed several issues with the Folia fork revolving around block data access.
+[#] Fixed several issues with the Folia fork revolving around block/material data access.

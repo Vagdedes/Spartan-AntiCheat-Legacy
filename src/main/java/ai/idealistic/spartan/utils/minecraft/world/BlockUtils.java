@@ -1304,7 +1304,8 @@ public class BlockUtils {
     }
 
     public static boolean isLiquid(Block block) {
-        return isLiquid(new ServerBlock(block).getType()) || block.isLiquid();
+        return isLiquid(new ServerBlock(block).getType())
+                || ChunksEvent.isLoaded(block) && block.isLiquid();
     }
 
     public static boolean isLiquid(Material m) {
