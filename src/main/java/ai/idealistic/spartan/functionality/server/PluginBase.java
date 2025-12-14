@@ -12,6 +12,7 @@ import ai.idealistic.spartan.utils.java.ReflectionUtils;
 import ai.idealistic.spartan.utils.math.AlgebraUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
@@ -218,12 +219,20 @@ public class PluginBase {
         ServerSchedulers.run(world, x, z, runnable, false);
     }
 
+    public static void runTask(Block block, Runnable runnable) {
+        ServerSchedulers.run(block.getWorld(), block.getX() >> 4, block.getZ() >> 4, runnable, false);
+    }
+
     public static void transferTask(PlayerProtocol protocol, Runnable runnable) {
         ServerSchedulers.run(protocol, runnable, true);
     }
 
     public static void transferTask(World world, int x, int z, Runnable runnable) {
         ServerSchedulers.run(world, x, z, runnable, true);
+    }
+
+    public static void transferTask(Block block, Runnable runnable) {
+        ServerSchedulers.run(block.getWorld(), block.getX() >> 4, block.getZ() >> 4, runnable, true);
     }
 
     public static void transferTask(Runnable runnable) {

@@ -15,6 +15,7 @@ import ai.idealistic.spartan.compatibility.manual.building.SuperPickaxe;
 import ai.idealistic.spartan.compatibility.manual.building.TreeFeller;
 import ai.idealistic.spartan.compatibility.manual.entity.Vehicles;
 import ai.idealistic.spartan.compatibility.manual.vanilla.Attributes;
+import ai.idealistic.spartan.functionality.server.PluginBase;
 import ai.idealistic.spartan.functionality.server.TPS;
 import ai.idealistic.spartan.utils.math.AlgebraUtils;
 import ai.idealistic.spartan.utils.minecraft.inventory.MaterialUtils;
@@ -212,14 +213,17 @@ public class FastBreak extends CheckRunner {
             if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
                 Block b = event.getClickedBlock();
 
-                if (b != null
-                        && !ItemsAdder.is(b)) {
-                    if (interactTime.size() == TPS.maximum) {
-                        Iterator<Integer> iterator = interactTime.keySet().iterator();
-                        iterator.next();
-                        iterator.remove();
-                    }
-                    interactTime.put(Objects.hash(b.getWorld().getName(), new ServerBlock(b).getType(), b.getX(), b.getY(), b.getZ()), System.currentTimeMillis());
+                if (b != null) {
+                    PluginBase.runTask(b, () -> {
+                        if (!ItemsAdder.is(b)) {
+                            if (interactTime.size() == TPS.maximum) {
+                                Iterator<Integer> iterator = interactTime.keySet().iterator();
+                                iterator.next();
+                                iterator.remove();
+                            }
+                            interactTime.put(Objects.hash(b.getWorld().getName(), new ServerBlock(b).getType(), b.getX(), b.getY(), b.getZ()), System.currentTimeMillis());
+                        }
+                    });
                 }
             }
         } else if (object instanceof BlockBreakEvent) {

@@ -11,6 +11,7 @@ import ai.idealistic.spartan.compatibility.manual.building.PrinterMode;
 import ai.idealistic.spartan.compatibility.manual.building.TreeFeller;
 import ai.idealistic.spartan.compatibility.manual.entity.Vehicles;
 import ai.idealistic.spartan.compatibility.manual.vanilla.Attributes;
+import ai.idealistic.spartan.functionality.server.PluginBase;
 import ai.idealistic.spartan.utils.minecraft.entity.PlayerUtils;
 import ai.idealistic.spartan.utils.minecraft.inventory.MaterialUtils;
 import ai.idealistic.spartan.utils.minecraft.world.BlockUtils;
@@ -80,36 +81,39 @@ public class GhostHand extends CheckDetection {
             if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
                 Block b = event.getClickedBlock();
 
-                if (b != null
-                        && canDo(b)
-                        && BlockUtils.isChangeable(new ServerBlock(b).getType())) {
-                    Location location = this.protocol.getLocationOrVehicle().clone().add(
-                            0,
-                            this.protocol.getEyeHeight(),
-                            0
-                    );
-                    double bDistance = ServerLocation.distance(location, b.getLocation());
-                    ServerLocation t = this.protocol.getTargetBlock(bDistance, PlayerUtils.chunk);
-
-                    if (t != null) {
-                        double tDistance = t.distance(location);
-
-                        if (tDistance < bDistance) {
-                            this.interact.cancel(
-                                    "interact"
-                                            + ", interacted-block: " + BlockUtils.blockToString(b)
-                                            + ", blocking-block: " + BlockUtils.blockToString(t.getBlock(this.protocol))
-                                            + ", interacted-distance: " + bDistance
-                                            + ", blocking-distance: " + tDistance,
-                                    null,
-                                    1
+                if (b != null) {
+                    PluginBase.runTask(b, () -> {
+                        if (canDo(b)
+                                && BlockUtils.isChangeable(new ServerBlock(b).getType())) {
+                            Location location = this.protocol.getLocationOrVehicle().clone().add(
+                                    0,
+                                    this.protocol.getEyeHeight(),
+                                    0
                             );
+                            double bDistance = ServerLocation.distance(location, b.getLocation());
+                            ServerLocation t = this.protocol.getTargetBlock(bDistance, PlayerUtils.chunk);
 
-                            if (this.interact.prevent()) {
-                                event.setCancelled(true);
+                            if (t != null) {
+                                double tDistance = t.distance(location);
+
+                                if (tDistance < bDistance) {
+                                    this.interact.cancel(
+                                            "interact"
+                                                    + ", interacted-block: " + BlockUtils.blockToString(b)
+                                                    + ", blocking-block: " + BlockUtils.blockToString(t.getBlock(this.protocol))
+                                                    + ", interacted-distance: " + bDistance
+                                                    + ", blocking-distance: " + tDistance,
+                                            null,
+                                            1
+                                    );
+
+                                    if (this.interact.prevent()) {
+                                        event.setCancelled(true);
+                                    }
+                                }
                             }
                         }
-                    }
+                    });
                 }
             }
         });

@@ -8,9 +8,11 @@ import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.spartan.abstraction.world.ServerBlock;
 import ai.idealistic.spartan.compatibility.manual.vanilla.Attributes;
 import ai.idealistic.spartan.functionality.server.MultiVersion;
+import ai.idealistic.spartan.functionality.server.PluginBase;
 import ai.idealistic.spartan.utils.minecraft.inventory.MaterialUtils;
 import org.bukkit.Difficulty;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
@@ -109,8 +111,14 @@ public class FastEat extends CheckRunner {
 
             switch (e.getAction()) {
                 case RIGHT_CLICK_BLOCK:
-                    if (new ServerBlock(e.getClickedBlock()).getType() == cake) {
-                        this.protocol.getRunner(hackType).addDisableCause(null, null, 10);
+                    Block block = e.getClickedBlock();
+
+                    if (block != null) {
+                        PluginBase.runTask(block, () -> {
+                            if (new ServerBlock(block).getType() == cake) {
+                                this.protocol.getRunner(hackType).addDisableCause(null, null, 10);
+                            }
+                        });
                     }
                     break;
                 case RIGHT_CLICK_AIR:

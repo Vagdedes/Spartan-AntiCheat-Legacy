@@ -189,8 +189,12 @@ public class ImpossibleActions extends CheckRunner {
 
                         if (b == null) {
                             this.actions.cancel("actions, action: " + action_string + ", case: " + cases);
-                        } else if (!ItemsAdder.is(b)) {
-                            this.actions.cancel("actions, action: " + action_string + ", case: " + cases + ", block: " + BlockUtils.blockToString(b));
+                        } else {
+                            PluginBase.runTask(b, () -> {
+                                if (!ItemsAdder.is(b)) {
+                                    this.actions.cancel("actions, action: " + action_string + ", case: " + cases + ", block: " + BlockUtils.blockToString(b));
+                                }
+                            });
                         }
                     }
                 }

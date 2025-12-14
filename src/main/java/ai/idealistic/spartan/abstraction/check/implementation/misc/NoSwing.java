@@ -14,6 +14,7 @@ import ai.idealistic.spartan.compatibility.manual.abilities.ItemsAdder;
 import ai.idealistic.spartan.compatibility.manual.building.MineBomb;
 import ai.idealistic.spartan.compatibility.manual.building.TreeFeller;
 import ai.idealistic.spartan.compatibility.manual.entity.Vehicles;
+import ai.idealistic.spartan.functionality.server.PluginBase;
 import ai.idealistic.spartan.functionality.server.TPS;
 import ai.idealistic.spartan.functionality.tracking.CheckConditions;
 import ai.idealistic.spartan.utils.minecraft.world.BlockUtils;
@@ -50,9 +51,14 @@ public class NoSwing extends CheckRunner {
             if (e.getAction() == Action.LEFT_CLICK_BLOCK) {
                 Block block = e.getClickedBlock();
 
-                if (block == null
-                        || !ItemsAdder.is(block)) {
+                if (block == null) {
                     this.breakTime = System.currentTimeMillis();
+                } else {
+                    PluginBase.runTask(block, () -> {
+                        if (!ItemsAdder.is(block)) {
+                            this.breakTime = System.currentTimeMillis();
+                        }
+                    });
                 }
             }
         } else if (object instanceof PlayerAnimationEvent) {

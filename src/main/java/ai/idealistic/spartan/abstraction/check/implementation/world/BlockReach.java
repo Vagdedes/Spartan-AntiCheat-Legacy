@@ -16,6 +16,7 @@ import ai.idealistic.spartan.compatibility.manual.building.PrinterMode;
 import ai.idealistic.spartan.compatibility.manual.building.TreeFeller;
 import ai.idealistic.spartan.compatibility.manual.vanilla.Attributes;
 import ai.idealistic.spartan.functionality.server.MultiVersion;
+import ai.idealistic.spartan.functionality.server.PluginBase;
 import ai.idealistic.spartan.utils.minecraft.world.BlockUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -81,21 +82,24 @@ public class BlockReach extends CheckRunner {
             this.interact.call(() -> {
                 Block block = ((PlayerInteractEvent) object).getClickedBlock();
 
-                if (block != null
-                        && canDo(block)
-                        && !ItemsAdder.is(block)
-                        && BlockUtils.isChangeable(new ServerBlock(block).getType())) {
-                    double distance = ServerLocation.distance(this.protocol.getLocationOrVehicle(), block.getLocation()),
-                            limit = getLimit();
+                if (block != null) {
+                    PluginBase.runTask(block, () -> {
+                        if (canDo(block)
+                                && !ItemsAdder.is(block)
+                                && BlockUtils.isChangeable(new ServerBlock(block).getType())) {
+                            double distance = ServerLocation.distance(this.protocol.getLocationOrVehicle(), block.getLocation()),
+                                    limit = getLimit();
 
-                    if (distance >= limit) {
-                        this.interact.cancel(
-                                distance / limit,
-                                "interact, distance: " + distance
-                                        + ", limit: " + limit
-                                        + ", block: " + BlockUtils.blockToString(block)
-                        );
-                    }
+                            if (distance >= limit) {
+                                this.interact.cancel(
+                                        distance / limit,
+                                        "interact, distance: " + distance
+                                                + ", limit: " + limit
+                                                + ", block: " + BlockUtils.blockToString(block)
+                                );
+                            }
+                        }
+                    });
                 }
             });
         } else if (object instanceof CBlockPlaceEvent) {
