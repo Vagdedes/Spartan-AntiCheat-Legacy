@@ -219,7 +219,7 @@ public class FastBreak extends CheckRunner {
                         iterator.next();
                         iterator.remove();
                     }
-                    interactTime.put(Objects.hash(b.getWorld().getName(), b.getType(), b.getX(), b.getY(), b.getZ()), System.currentTimeMillis());
+                    interactTime.put(Objects.hash(b.getWorld().getName(), new ServerBlock(b).getType(), b.getX(), b.getY(), b.getZ()), System.currentTimeMillis());
                 }
             }
         } else if (object instanceof BlockBreakEvent) {

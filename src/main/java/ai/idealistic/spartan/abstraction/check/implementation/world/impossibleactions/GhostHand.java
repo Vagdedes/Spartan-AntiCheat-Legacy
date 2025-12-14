@@ -3,6 +3,7 @@ package ai.idealistic.spartan.abstraction.check.implementation.world.impossiblea
 import ai.idealistic.spartan.abstraction.check.CheckDetection;
 import ai.idealistic.spartan.abstraction.check.CheckRunner;
 import ai.idealistic.spartan.abstraction.check.definition.ImplementedDetection;
+import ai.idealistic.spartan.abstraction.world.ServerBlock;
 import ai.idealistic.spartan.abstraction.world.ServerLocation;
 import ai.idealistic.spartan.compatibility.Compatibility;
 import ai.idealistic.spartan.compatibility.manual.abilities.ItemsAdder;
@@ -37,7 +38,7 @@ public class GhostHand extends CheckDetection {
 
                 if (canDo(b)
                         && !ItemsAdder.is(b)) {
-                    long breakTime = MaterialUtils.getBlockBreakTime(this.protocol, this.protocol.getItemInHand(), b.getType());
+                    long breakTime = MaterialUtils.getBlockBreakTime(this.protocol, this.protocol.getItemInHand(), new ServerBlock(b).getType());
 
                     if (breakTime <= 500L) {
                         return;
@@ -81,7 +82,7 @@ public class GhostHand extends CheckDetection {
 
                 if (b != null
                         && canDo(b)
-                        && BlockUtils.isChangeable(b.getType())) {
+                        && BlockUtils.isChangeable(new ServerBlock(b).getType())) {
                     Location location = this.protocol.getLocationOrVehicle().clone().add(
                             0,
                             this.protocol.getEyeHeight(),

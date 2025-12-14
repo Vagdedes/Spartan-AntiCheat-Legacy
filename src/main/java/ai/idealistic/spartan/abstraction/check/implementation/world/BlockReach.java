@@ -6,6 +6,7 @@ import ai.idealistic.spartan.abstraction.check.CheckRunner;
 import ai.idealistic.spartan.abstraction.check.definition.ImplementedDetection;
 import ai.idealistic.spartan.abstraction.event.CBlockPlaceEvent;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
+import ai.idealistic.spartan.abstraction.world.ServerBlock;
 import ai.idealistic.spartan.abstraction.world.ServerLocation;
 import ai.idealistic.spartan.compatibility.Compatibility;
 import ai.idealistic.spartan.compatibility.manual.abilities.AureliumSkills;
@@ -83,7 +84,7 @@ public class BlockReach extends CheckRunner {
                 if (block != null
                         && canDo(block)
                         && !ItemsAdder.is(block)
-                        && BlockUtils.isChangeable(block.getType())) {
+                        && BlockUtils.isChangeable(new ServerBlock(block).getType())) {
                     double distance = ServerLocation.distance(this.protocol.getLocationOrVehicle(), block.getLocation()),
                             limit = getLimit();
 
@@ -101,12 +102,15 @@ public class BlockReach extends CheckRunner {
             if (this.place.canCall()
                     || this.raytrace.canCall()) {
                 CBlockPlaceEvent event = (CBlockPlaceEvent) object;
+                ServerBlock placedAgainstBlock = new ServerBlock(event.placedAgainstBlock);
 
-                if (BlockUtils.isSolid(event.placedAgainstBlock.getType())) {
+                if (BlockUtils.isSolid(placedAgainstBlock.getType())) {
+                    ServerBlock placedBlock = new ServerBlock(event.placedBlock);
+
                     if (canDo(event.placedBlock)
                             && !ItemsAdder.is(event.placedBlock)
-                            && BlockUtils.isSolid(event.placedBlock.getType())
-                            && !BlockUtils.isScaffoldingBlock(event.placedBlock.getType())) {
+                            && BlockUtils.isSolid(placedBlock.getType())
+                            && !BlockUtils.isScaffoldingBlock(placedBlock.getType())) {
                         Location to = this.protocol.getLocationOrVehicle().clone().add(
                                 0,
                                 this.protocol.getEyeHeight(),
@@ -116,9 +120,9 @@ public class BlockReach extends CheckRunner {
                                 ab_distance = ServerLocation.distance(to, event.placedAgainstBlock.getLocation());
 
                         if (!this.protocol.isBedrockPlayer()
-                                && BlockUtils.isFullSolid(event.placedBlock.getType())
+                                && BlockUtils.isFullSolid(placedBlock.getType())
                                 && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
-                                || event.placedBlock.getType() != Material.BARRIER)
+                                || placedBlock.getType() != Material.BARRIER)
                                 && this.protocol.getVehicle() == null
                                 && distance > (ab_distance + 0.3)) {
                             this.raytrace.call(() -> this.raytrace.cancel(

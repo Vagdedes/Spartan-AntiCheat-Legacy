@@ -73,7 +73,9 @@ public class ServerBlock {
     public boolean isLiquid(Material target) {
         if (this.block instanceof Block) {
             Block block = (Block) this.block;
-            return BlockUtils.isLiquid(block) && block.getType() == target;
+            return ChunksEvent.isLoaded(block)
+                    && BlockUtils.isLiquid(block)
+                    && block.getType() == target;
         } else {
             Material material;
 
