@@ -34,11 +34,9 @@ public class ServerBlock {
     public Material getTypeOrNull() {
         if (this.block instanceof Block) {
             Block local = (Block) this.block;
-            return ChunksEvent.isLoaded(
-                    local.getWorld(),
-                    local.getX() >> 4,
-                    local.getZ() >> 4
-            ) ? local.getType() : null;
+            return ChunksEvent.isLoaded(local)
+                    ? local.getType()
+                    : null;
         } else if (this.block instanceof Material) {
             return (Material) this.block;
         } else if (BlockUtils.blockDataExists

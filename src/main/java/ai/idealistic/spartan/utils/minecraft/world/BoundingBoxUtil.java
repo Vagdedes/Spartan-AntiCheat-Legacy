@@ -1,5 +1,6 @@
 package ai.idealistic.spartan.utils.minecraft.world;
 
+import ai.idealistic.spartan.listeners.bukkit.standalone.ChunksEvent;
 import ai.idealistic.spartan.utils.minecraft.entity.AxisAlignedBB;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -21,7 +22,9 @@ public class BoundingBoxUtil {
         final double x = block.getX();
         final double y = block.getY();
         final double z = block.getZ();
-        final BlockData data = block.getBlockData();
+        final BlockData data = ChunksEvent.isLoaded(block)
+                ? block.getBlockData()
+                : null;
 
         if (data instanceof Slab) {
             final Slab slab = (Slab) data;

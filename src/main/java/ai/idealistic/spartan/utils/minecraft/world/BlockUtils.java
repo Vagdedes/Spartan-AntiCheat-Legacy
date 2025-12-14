@@ -4,6 +4,7 @@ import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.spartan.abstraction.world.ServerBlock;
 import ai.idealistic.spartan.abstraction.world.ServerLocation;
 import ai.idealistic.spartan.functionality.server.MultiVersion;
+import ai.idealistic.spartan.listeners.bukkit.standalone.ChunksEvent;
 import ai.idealistic.spartan.utils.java.ReflectionUtils;
 import ai.idealistic.spartan.utils.minecraft.inventory.MaterialUtils;
 import lombok.experimental.UtilityClass;
@@ -1316,7 +1317,9 @@ public class BlockUtils {
     }
 
     public static boolean isWaterLogged(Block block) {
-        return blockDataExists && isWaterLogged(block.getBlockData());
+        return blockDataExists
+                && ChunksEvent.isLoaded(block)
+                && isWaterLogged(block.getBlockData());
     }
 
     public static boolean isWaterLogged(ServerBlock block) {
