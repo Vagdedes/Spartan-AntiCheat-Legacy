@@ -1,5 +1,6 @@
 package ai.idealistic.spartan.abstraction.world;
 
+import ai.idealistic.spartan.listeners.bukkit.standalone.ChunksEvent;
 import ai.idealistic.spartan.utils.minecraft.world.BlockUtils;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -30,22 +31,14 @@ public class ServerBlock {
                 && this.block instanceof BlockData;
     }
 
-    public Material getType() {
-        if (this.block instanceof Block) {
-            return ((Block) this.block).getType();
-        } else if (this.block instanceof Material) {
-            return (Material) this.block;
-        } else if (BlockUtils.blockDataExists
-                && this.block instanceof BlockData) {
-            return ((BlockData) this.block).getMaterial();
-        } else {
-            return Material.AIR;
-        }
-    }
-
     public Material getTypeOrNull() {
         if (this.block instanceof Block) {
-            return ((Block) this.block).getType();
+            Block local = (Block) this.block;
+            return ChunksEvent.isLoaded(
+                    local.getWorld(),
+                    local.getX() >> 4,
+                    local.getZ() >> 4
+            ) ? local.getType() : null;
         } else if (this.block instanceof Material) {
             return (Material) this.block;
         } else if (BlockUtils.blockDataExists
@@ -54,6 +47,11 @@ public class ServerBlock {
         } else {
             return null;
         }
+    }
+
+    public Material getType() {
+        Material type = this.getTypeOrNull();
+        return type != null ? type : ServerLocation.emptyMaterial;
     }
 
     public boolean isWaterLogged() {

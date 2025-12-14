@@ -20,6 +20,7 @@ import java.util.*;
 @Data
 public class ServerLocation implements Cloneable {
 
+    public static Material emptyMaterial = Material.STONE;
     public static final Location bukkitDefault = new Location(
             Bukkit.getWorlds().get(0),
             AlgebraUtils.randomInteger(Integer.MIN_VALUE, Integer.MAX_VALUE),
@@ -218,7 +219,7 @@ public class ServerLocation implements Cloneable {
                 }
             }
         } else {
-            return new ServerBlock(Material.AIR);
+            return new ServerBlock(emptyMaterial);
         }
     }
 
