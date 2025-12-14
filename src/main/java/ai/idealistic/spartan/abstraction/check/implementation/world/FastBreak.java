@@ -55,7 +55,7 @@ public class FastBreak extends CheckRunner {
     }
 
     private void checkDelay(Block block, int seconds) {
-        this.delay.call(() -> {
+        this.delay.call(() -> PluginBase.runTask(block, () -> {
             ServerBlock local = new ServerBlock(block);
 
             if (!BlockUtils.isSensitive(local.getType())) {
@@ -127,7 +127,7 @@ public class FastBreak extends CheckRunner {
                     }
                 }
             }
-        });
+        }));
     }
 
     private void checkBreaksPerSecond(int seconds, Block block) {

@@ -18,6 +18,7 @@ import ai.idealistic.spartan.functionality.server.PluginBase;
 import ai.idealistic.spartan.functionality.server.TPS;
 import ai.idealistic.spartan.functionality.tracking.CheckConditions;
 import ai.idealistic.spartan.utils.minecraft.world.BlockUtils;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -71,24 +72,27 @@ public class NoSwing extends CheckRunner {
                 }
                 BlockBreakEvent e = (BlockBreakEvent) object;
                 Block block = e.getBlock();
+                Material itemInHand = this.protocol.getItemInHand().getType();
 
-                if (!BlockUtils.isSensitive(this.protocol, new ServerBlock(block).getType())
-                        && !TreeFeller.canCancel(block)
-                        && !ItemsAdder.is(block)
-                        && System.currentTimeMillis() - breakTime > TPS.tickTime) {
-                    if (this.animationTime == Long.MAX_VALUE) {
-                        this.breaking.cancel(
-                                "breaking"
-                                        + ", block: " + BlockUtils.blockToString(block)
-                                        + ", item: " + BlockUtils.materialToString(this.protocol.getItemInHand().getType()));
+                PluginBase.runTask(block, () -> {
+                    if (!BlockUtils.isSensitive(this.protocol, new ServerBlock(block).getType())
+                            && !TreeFeller.canCancel(block)
+                            && !ItemsAdder.is(block)
+                            && System.currentTimeMillis() - breakTime > TPS.tickTime) {
+                        if (this.animationTime == Long.MAX_VALUE) {
+                            this.breaking.cancel(
+                                    "breaking"
+                                            + ", block: " + BlockUtils.blockToString(block)
+                                            + ", item: " + BlockUtils.materialToString(itemInHand));
 
-                        if (this.breaking.prevent()) {
-                            e.setCancelled(true);
+                            if (this.breaking.prevent()) {
+                                e.setCancelled(true);
+                            }
+                        } else {
+                            resetAnimationData();
                         }
-                    } else {
-                        resetAnimationData();
                     }
-                }
+                });
             });
         } else if (object instanceof PlayerAttackEvent) {
             this.damage.call(() -> {

@@ -106,51 +106,56 @@ public class BlockReach extends CheckRunner {
             if (this.place.canCall()
                     || this.raytrace.canCall()) {
                 CBlockPlaceEvent event = (CBlockPlaceEvent) object;
-                ServerBlock placedAgainstBlock = new ServerBlock(event.placedAgainstBlock);
 
-                if (BlockUtils.isSolid(placedAgainstBlock.getType())) {
-                    ServerBlock placedBlock = new ServerBlock(event.placedBlock);
+                PluginBase.runTask(event.placedAgainstBlock, () -> {
+                    ServerBlock placedAgainstBlock = new ServerBlock(event.placedAgainstBlock);
 
-                    if (canDo(event.placedBlock)
-                            && !ItemsAdder.is(event.placedBlock)
-                            && BlockUtils.isSolid(placedBlock.getType())
-                            && !BlockUtils.isScaffoldingBlock(placedBlock.getType())) {
-                        Location to = this.protocol.getLocationOrVehicle().clone().add(
-                                0,
-                                this.protocol.getEyeHeight(),
-                                0
-                        );
-                        double distance = ServerLocation.distance(to, event.placedBlock.getLocation()),
-                                ab_distance = ServerLocation.distance(to, event.placedAgainstBlock.getLocation());
+                    if (BlockUtils.isSolid(placedAgainstBlock.getType())) {
+                        PluginBase.runTask(event.placedBlock, () -> {
+                            ServerBlock placedBlock = new ServerBlock(event.placedBlock);
 
-                        if (!this.protocol.isBedrockPlayer()
-                                && BlockUtils.isFullSolid(placedBlock.getType())
-                                && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
-                                || placedBlock.getType() != Material.BARRIER)
-                                && this.protocol.getVehicle() == null
-                                && distance > (ab_distance + 0.3)) {
-                            this.raytrace.call(() -> this.raytrace.cancel(
-                                    distance / (ab_distance + 0.3),
-                                    "raytrace, distance: " + distance
-                                            + ", block-against-distance: " + ab_distance
-                                            + ", block: " + BlockUtils.blockToString(event.placedBlock)
-                            ));
-                        } else {
-                            this.place.call(() -> {
-                                double limit = getLimit();
+                            if (canDo(event.placedBlock)
+                                    && !ItemsAdder.is(event.placedBlock)
+                                    && BlockUtils.isSolid(placedBlock.getType())
+                                    && !BlockUtils.isScaffoldingBlock(placedBlock.getType())) {
+                                Location to = this.protocol.getLocationOrVehicle().clone().add(
+                                        0,
+                                        this.protocol.getEyeHeight(),
+                                        0
+                                );
+                                double distance = ServerLocation.distance(to, event.placedBlock.getLocation()),
+                                        ab_distance = ServerLocation.distance(to, event.placedAgainstBlock.getLocation());
 
-                                if (distance >= limit) {
-                                    this.place.cancel(
-                                            distance / limit,
-                                            "place, distance: " + distance
-                                                    + ", limit: " + limit
+                                if (!this.protocol.isBedrockPlayer()
+                                        && BlockUtils.isFullSolid(placedBlock.getType())
+                                        && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
+                                        || placedBlock.getType() != Material.BARRIER)
+                                        && this.protocol.getVehicle() == null
+                                        && distance > (ab_distance + 0.3)) {
+                                    this.raytrace.call(() -> this.raytrace.cancel(
+                                            distance / (ab_distance + 0.3),
+                                            "raytrace, distance: " + distance
+                                                    + ", block-against-distance: " + ab_distance
                                                     + ", block: " + BlockUtils.blockToString(event.placedBlock)
-                                    );
+                                    ));
+                                } else {
+                                    this.place.call(() -> {
+                                        double limit = getLimit();
+
+                                        if (distance >= limit) {
+                                            this.place.cancel(
+                                                    distance / limit,
+                                                    "place, distance: " + distance
+                                                            + ", limit: " + limit
+                                                            + ", block: " + BlockUtils.blockToString(event.placedBlock)
+                                            );
+                                        }
+                                    });
                                 }
-                            });
-                        }
+                            }
+                        });
                     }
-                }
+                });
             }
         }
     }
