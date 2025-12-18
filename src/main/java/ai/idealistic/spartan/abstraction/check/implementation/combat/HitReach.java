@@ -228,12 +228,16 @@ public class HitReach extends CheckRunner {
                 LivingEntity target = event.target;
                 if (CheckConditions.canCheckCombat(this.protocol, target)
                         && !this.protocol.getGameMode().equals(GameMode.CREATIVE)) {
-                    double bruteforceRayTrace = RayUtils.bruteforceRayTrace(this.protocol, target),
-                            diff = bruteforceRayTrace - 0.4;
-                    rayTraceAnalysis.add(bruteforceRayTrace);
-                    if (rayTraceAnalysis.size() >= 10) {
-                        analyze(this.protocol.getLocation(), bruteforceRayTrace);
-                    }
+                    boolean sleeping = protocol.bukkit().isSleeping();
+
+                    PluginBase.runTask(target, () -> {
+                        double bruteforceRayTrace = RayUtils.bruteforceRayTrace(this.protocol, target, sleeping),
+                                diff = bruteforceRayTrace - 0.4;
+                        rayTraceAnalysis.add(bruteforceRayTrace);
+                        if (rayTraceAnalysis.size() >= 10) {
+                            analyze(this.protocol.getLocation(), bruteforceRayTrace);
+                        }
+                    });
                 }
             }
         }
@@ -244,7 +248,6 @@ public class HitReach extends CheckRunner {
         float f1 = clientMath.sin(-yaw * 0.017453292F - (float) Math.PI);
         float f2 = -clientMath.cos(-pitch * 0.017453292F);
         float f3 = clientMath.sin(-pitch * 0.017453292F);
-
         return new Vec3(f1 * f2, f3, f * f2);
     }
 

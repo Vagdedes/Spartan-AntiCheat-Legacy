@@ -8,6 +8,7 @@ import ai.idealistic.spartan.abstraction.check.implementation.combat.killaura.mo
 import ai.idealistic.spartan.abstraction.event.RotationEvent;
 import ai.idealistic.spartan.abstraction.world.ServerLocation;
 import ai.idealistic.spartan.compatibility.necessary.protocollib.ProtocolLib;
+import ai.idealistic.spartan.functionality.server.PluginBase;
 import ai.idealistic.spartan.utils.java.ConcurrentList;
 import ai.idealistic.spartan.utils.math.RayUtils;
 import ai.idealistic.spartan.utils.minecraft.vector.CVector2F;
@@ -102,28 +103,32 @@ public class KAMoveDirection extends CheckDetection {
                     if (targetLoc == null) {
                         return;
                     }
-                    double bruteforceRayTrace = RayUtils.bruteforceRayTrace(this.protocol, target);
-                    double diff = bruteforceRayTrace - 0.4;
-                    double predict = RayUtils.castTo360(
-                            calculate(
-                                    this.protocol.getLocation().toVector(),
-                                    new ServerLocation(targetLoc).toVector()
-                            ).x
-                    );
-                    double yaw360 = RayUtils.castTo360(this.protocol.getLocation().getYaw());
-                    rayTraceAnalysis.add(bruteforceRayTrace);
-                    aimAnalysis.add(
-                            new AttackData(
-                                    Math.abs(predict - yaw360),
-                                    this.protocol.getLocation().getYaw(),
-                                    this.protocol.getLocation().getPitch(),
-                                    System.currentTimeMillis(),
-                                    ProtocolLib.getUUID(target)
-                            )
-                    );
-                    if (rayTraceAnalysis.size() >= 10) {
-                        analyze();
-                    }
+                    boolean sleeping = protocol.bukkit().isSleeping();
+
+                    PluginBase.runTask(target, () -> {
+                        double bruteforceRayTrace = RayUtils.bruteforceRayTrace(this.protocol, target, sleeping);
+                        double diff = bruteforceRayTrace - 0.4;
+                        double predict = RayUtils.castTo360(
+                                calculate(
+                                        this.protocol.getLocation().toVector(),
+                                        new ServerLocation(targetLoc).toVector()
+                                ).x
+                        );
+                        double yaw360 = RayUtils.castTo360(this.protocol.getLocation().getYaw());
+                        rayTraceAnalysis.add(bruteforceRayTrace);
+                        aimAnalysis.add(
+                                new AttackData(
+                                        Math.abs(predict - yaw360),
+                                        this.protocol.getLocation().getYaw(),
+                                        this.protocol.getLocation().getPitch(),
+                                        System.currentTimeMillis(),
+                                        ProtocolLib.getUUID(target)
+                                )
+                        );
+                        if (rayTraceAnalysis.size() >= 10) {
+                            analyze();
+                        }
+                    });
                 }
             }
         });

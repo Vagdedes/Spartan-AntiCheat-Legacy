@@ -1,0 +1,1 @@
+[#] Fixed a few remaining issues with the Folia fork revolving around block/material and entity data access.

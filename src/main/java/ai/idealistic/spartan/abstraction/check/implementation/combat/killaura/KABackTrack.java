@@ -32,7 +32,7 @@ public class KABackTrack extends CheckDetection {
             float hitbox = (is1_8) ? 0.4F : 0.3F;
             int i = 0;
             for (Location l : h) {
-                if (RayUtils.inHitbox(this.protocol, l, event.target, hitbox, 3.0F)) {
+                if (RayUtils.inHitbox(this.protocol, l, event.target, hitbox, 3.0F, protocol.bukkit().isSleeping())) {
                     break;
                 } else {
                     i++;

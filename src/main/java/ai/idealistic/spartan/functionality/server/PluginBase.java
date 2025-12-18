@@ -13,6 +13,7 @@ import ai.idealistic.spartan.utils.math.AlgebraUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
@@ -223,6 +224,10 @@ public class PluginBase {
         ServerSchedulers.run(block.getWorld(), block.getX() >> 4, block.getZ() >> 4, runnable, false);
     }
 
+    public static void runTask(Entity entity, Runnable runnable) {
+        ServerSchedulers.run(entity.getWorld(), entity.getLocation().getBlockX() >> 4, entity.getLocation().getBlockZ() >> 4, runnable, false);
+    }
+
     public static void transferTask(PlayerProtocol protocol, Runnable runnable) {
         ServerSchedulers.run(protocol, runnable, true);
     }
@@ -233,6 +238,10 @@ public class PluginBase {
 
     public static void transferTask(Block block, Runnable runnable) {
         ServerSchedulers.run(block.getWorld(), block.getX() >> 4, block.getZ() >> 4, runnable, true);
+    }
+
+    public static void transferTask(Entity entity, Runnable runnable) {
+        ServerSchedulers.run(entity.getWorld(), entity.getLocation().getBlockX() >> 4, entity.getLocation().getBlockZ() >> 4, runnable, true);
     }
 
     public static void transferTask(Runnable runnable) {
