@@ -1,2 +1,3 @@
 [#] Disabled the ground-spoof detection for Folia forks
 [#] Disabled the Elytra check by default
+[#] Added support for spears in the movement checks

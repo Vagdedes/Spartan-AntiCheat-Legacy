@@ -14,6 +14,7 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
@@ -49,7 +50,6 @@ public class HandUseListener extends PacketAdapter {
 
             if (item.getType().equals(Material.TRIDENT)) {
                 double r = Math.toRadians(protocol.getLocation().getYaw());
-
                 CheckThread.run(() -> TridentEvent.event(
                         new CPlayerRiptideEvent(
                                 protocol,
@@ -58,14 +58,14 @@ public class HandUseListener extends PacketAdapter {
                         ),
                         true
                 ));
-            } else if (item.getType().equals(WOODEN_SPEAR)
+            } else if ((item.getType().equals(WOODEN_SPEAR)
                     && item.getType().equals(STONE_SPEAR)
                     && item.getType().equals(IRON_SPEAR)
                     && item.getType().equals(GOLDEN_SPEAR)
                     && item.getType().equals(DIAMOND_SPEAR)
-                    && item.getType().equals(NETHERITE_SPEAR)) {
+                    && item.getType().equals(NETHERITE_SPEAR))
+                    && item.getEnchantmentLevel(Enchantment.LUNGE) > 0) {
                 double r = Math.toRadians(protocol.getLocation().getYaw());
-
                 CheckThread.run(() -> protocol.executeRunners(
                         false,
                         new CPlayerLungeEvent(
