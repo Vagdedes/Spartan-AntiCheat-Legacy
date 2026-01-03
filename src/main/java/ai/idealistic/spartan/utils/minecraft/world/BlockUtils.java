@@ -794,7 +794,7 @@ public class BlockUtils {
                     helper.add(Material.TWISTING_VINES_PLANT);
                     helper.add(Material.WEEPING_VINES);
                     helper.add(Material.WEEPING_VINES_PLANT);
-                    helper.add(Material.CHAIN);
+                    //helper.add(Material.CHAIN);
                     helper.add(Material.SOUL_LANTERN);
                 }
                 helper.add(Material.BELL);
@@ -1208,7 +1208,7 @@ public class BlockUtils {
                     if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)) {
                         helper.add(Material.LIGHTNING_ROD);
                     }
-                    helper.add(Material.CHAIN);
+                    //helper.add(Material.CHAIN);
                 }
                 helper.add(Material.HONEY_BLOCK);
             }
