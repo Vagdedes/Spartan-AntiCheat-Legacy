@@ -115,8 +115,7 @@ public class PlayerProtocol {
             lagTick,
             oldClickTime,
             soulSandWater,
-            magmaCubeWater,
-            lastVelocity;
+            magmaCubeWater;
     private long
             lastInteraction,
             lastFlight,

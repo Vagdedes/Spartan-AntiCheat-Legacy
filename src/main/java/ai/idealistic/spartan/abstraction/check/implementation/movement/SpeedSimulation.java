@@ -4,6 +4,7 @@ import ai.idealistic.spartan.abstraction.check.CheckDetection;
 import ai.idealistic.spartan.abstraction.check.CheckEnums.HackType;
 import ai.idealistic.spartan.abstraction.check.CheckRunner;
 import ai.idealistic.spartan.abstraction.check.definition.ImplementedDetection;
+import ai.idealistic.spartan.abstraction.event.CPlayerLungeEvent;
 import ai.idealistic.spartan.abstraction.event.CPlayerRiptideEvent;
 import ai.idealistic.spartan.abstraction.event.CPlayerVelocityEvent;
 import ai.idealistic.spartan.abstraction.event.SuperPositionPacketEvent;
@@ -71,7 +72,8 @@ public class SpeedSimulation extends CheckRunner {
         } else if (object instanceof SuperPositionPacketEvent) {
             SuperPositionPacketEvent e = (SuperPositionPacketEvent) object;
             this.ground(e.packetEvent.getPacket().getBooleans().read(0));
-        } else if (object instanceof CPlayerRiptideEvent) {
+        } else if (object instanceof CPlayerRiptideEvent
+                || object instanceof CPlayerLungeEvent) {
             this.trident();
         } else if (object instanceof PlayerMoveEvent) {
             this.run();

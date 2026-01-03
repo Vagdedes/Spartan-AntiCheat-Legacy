@@ -4,6 +4,7 @@ import ai.idealistic.spartan.abstraction.check.CheckDetection;
 import ai.idealistic.spartan.abstraction.check.CheckEnums.HackType;
 import ai.idealistic.spartan.abstraction.check.CheckRunner;
 import ai.idealistic.spartan.abstraction.check.definition.ImplementedDetection;
+import ai.idealistic.spartan.abstraction.event.CPlayerLungeEvent;
 import ai.idealistic.spartan.abstraction.event.CPlayerRiptideEvent;
 import ai.idealistic.spartan.abstraction.event.CPlayerVelocityEvent;
 import ai.idealistic.spartan.abstraction.event.PlayerTickEvent;
@@ -67,7 +68,8 @@ public class GravitySimulation extends CheckRunner {
     protected void handleInternal(boolean cancelled, Object object) {
         if (object instanceof PlayerTeleportEvent) {
             this.teleport();
-        } else if (object instanceof CPlayerRiptideEvent) {
+        } else if (object instanceof CPlayerRiptideEvent
+                || object instanceof CPlayerLungeEvent) {
             this.trident();
         } else if (object instanceof PlayerMoveEvent) {
             this.run();

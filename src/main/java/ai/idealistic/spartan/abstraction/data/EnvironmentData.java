@@ -198,11 +198,9 @@ public class EnvironmentData {
 
                         if (type == Material.SOUL_SAND) {
                             protocol.soulSandWater = System.currentTimeMillis();
-                            protocol.lastVelocity = System.currentTimeMillis();
                             return true;
                         } else if (type == MAGMA_BLOCK) {
                             protocol.magmaCubeWater = System.currentTimeMillis();
-                            protocol.lastVelocity = System.currentTimeMillis();
                             return true;
                         } else if (BlockUtils.isSolid(type)) {
                             if (!block.isWaterLogged()) {
