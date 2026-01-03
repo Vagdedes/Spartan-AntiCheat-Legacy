@@ -20,7 +20,7 @@ import org.bukkit.util.Vector;
 
 public class HandUseListener extends PacketAdapter {
 
-    private static Material
+    private static final Material
             WOODEN_SPEAR = MaterialUtils.get("wooden_spear"),
             STONE_SPEAR = MaterialUtils.get("stone_spear"),
             IRON_SPEAR = MaterialUtils.get("iron_spear"),
