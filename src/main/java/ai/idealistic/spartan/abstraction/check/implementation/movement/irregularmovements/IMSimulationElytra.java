@@ -48,7 +48,7 @@ public class IMSimulationElytra extends CheckDetection {
                 null,
                 Check.DetectionType.PACKETS,
                 "elytra",
-                true
+                false
         );
         this.buffer = new Buffer.IndividualBuffer();
     }

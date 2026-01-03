@@ -1,1 +1,2 @@
 [#] Disabled the ground-spoof detection for Folia forks
+[#] Disabled the Elytra check by default
