@@ -29,7 +29,7 @@ public abstract class CheckRunner extends CheckProcess {
     private static final boolean v1_8 = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8);
 
     final long creation;
-    private final Collection<CheckCancellation> disableCauses, silentCauses;
+    private final Map<Integer, CheckCancellation> disableCauses, silentCauses;
     private boolean cancelled;
     private final Map<String, CheckDetection> detections;
 
@@ -37,8 +37,8 @@ public abstract class CheckRunner extends CheckProcess {
         super(hackType, protocol);
         this.creation = System.currentTimeMillis();
         this.detections = new ConcurrentHashMap<>(2);
-        this.disableCauses = Collections.synchronizedList(new ArrayList<>(1));
-        this.silentCauses = Collections.synchronizedList(new ArrayList<>(1));
+        this.disableCauses = new ConcurrentHashMap<>(1);
+        this.silentCauses = new ConcurrentHashMap<>(1);
     }
 
     // Detections
@@ -231,7 +231,7 @@ public abstract class CheckRunner extends CheckProcess {
     }
 
     public final CheckCancellation getDisableCause(boolean informational) {
-        CheckCancellation disableCause = this.getLastCause(this.disableCauses, informational);
+        CheckCancellation disableCause = this.getLastCause(this.disableCauses.values(), informational);
 
         if (disableCause == null) {
             return MythicMobs.is(this.protocol)
@@ -249,11 +249,12 @@ public abstract class CheckRunner extends CheckProcess {
     }
 
     public final CheckCancellation getSilentCause() {
-        return this.getLastCause(this.silentCauses, false);
+        return this.getLastCause(this.silentCauses.values(), false);
     }
 
     public final void addInformationalDisableCause(String reason) {
-        this.disableCauses.add(new CheckCancellation(reason, null, -1));
+        CheckCancellation cc = new CheckCancellation(reason, null, -1);
+        this.disableCauses.put(cc.hashCode(), cc);
         PluginBase.playerInfo.refresh(this.protocol.bukkit().getName());
     }
 
@@ -261,7 +262,8 @@ public abstract class CheckRunner extends CheckProcess {
         if (reason == null) {
             reason = this.hackType.getCheck().getName();
         }
-        this.disableCauses.add(new CheckCancellation(reason, pointer, ticks));
+        CheckCancellation cc = new CheckCancellation(reason, pointer, Math.abs(ticks));
+        this.disableCauses.put(cc.hashCode(), cc);
         PluginBase.playerInfo.refresh(this.protocol.bukkit().getName());
     }
 
@@ -269,7 +271,8 @@ public abstract class CheckRunner extends CheckProcess {
         if (reason == null) {
             reason = this.hackType.getCheck().getName();
         }
-        this.silentCauses.add(new CheckCancellation(reason, pointer, ticks));
+        CheckCancellation cc = new CheckCancellation(reason, pointer, ticks);
+        this.silentCauses.put(cc.hashCode(), cc);
         PluginBase.playerInfo.refresh(this.protocol.bukkit().getName());
     }
 

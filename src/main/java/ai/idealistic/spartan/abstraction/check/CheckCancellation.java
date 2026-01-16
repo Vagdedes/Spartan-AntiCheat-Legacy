@@ -4,11 +4,13 @@ import ai.idealistic.spartan.compatibility.Compatibility;
 import ai.idealistic.spartan.functionality.server.TPS;
 import lombok.Getter;
 
+import java.util.Objects;
+
 public class CheckCancellation {
 
     @Getter
     private final String reason, pointer;
-    private final long expiration;
+    private final long ticks, expiration;
 
     CheckCancellation(Compatibility.CompatibilityType compatibilityType) {
         this(compatibilityType.toString(), null, 0);
@@ -17,11 +19,17 @@ public class CheckCancellation {
     CheckCancellation(String reason, String pointer, int ticks) {
         this.reason = reason;
         this.pointer = pointer;
+        this.ticks = ticks;
         this.expiration = ticks < 0
                 ? -System.currentTimeMillis() - (Math.abs(ticks) * TPS.tickTime)
                 : ticks == 0
                 ? Long.MAX_VALUE
                 : System.currentTimeMillis() + (ticks * TPS.tickTime);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(reason, pointer, ticks);
     }
 
     boolean hasExpired() {
