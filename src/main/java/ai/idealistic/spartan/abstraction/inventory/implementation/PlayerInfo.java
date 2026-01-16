@@ -1,7 +1,6 @@
 package ai.idealistic.spartan.abstraction.inventory.implementation;
 
 import ai.idealistic.spartan.Register;
-import ai.idealistic.spartan.abstraction.check.Check;
 import ai.idealistic.spartan.abstraction.check.CheckCancellation;
 import ai.idealistic.spartan.abstraction.check.CheckEnums;
 import ai.idealistic.spartan.abstraction.check.CheckEnums.HackType;
@@ -147,7 +146,6 @@ public class PlayerInfo extends InventoryMenu {
                 String state = getDetectionNotification(
                         protocol,
                         hackType,
-                        profile.getLastDataType(),
                         isOnline
                 );
 
@@ -189,25 +187,9 @@ public class PlayerInfo extends InventoryMenu {
 
     private String getDetectionNotification(PlayerProtocol protocol,
                                             HackType hackType,
-                                            Check.DataType dataType,
                                             boolean hasPlayer) {
         if (!hasPlayer) {
             return "Player is offline";
-        }
-        if (!PluginAddons.ownsCheck(hackType)) {
-            return "Check is not purchased";
-        }
-        if (!PluginAddons.ownsEdition(dataType)) {
-            return dataType + " edition is not purchased";
-        }
-        if (!DetectionCharge.has()) {
-            return "Detections need to be charged, run /" + Register.pluginName.toLowerCase() + " charge";
-        }
-        String worldName = protocol.getWorld().getName();
-        Check check = hackType.getCheck();
-
-        if (!check.isEnabled(dataType, worldName)) { // Do not put player because we calculate it below
-            return "Check is disabled";
         }
         CheckCancellation disabledCause = protocol.getRunner(hackType).getDisableCause();
         return Permissions.isBypassing(protocol.bukkit(), hackType)

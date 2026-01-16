@@ -1,5 +1,6 @@
 package ai.idealistic.spartan.abstraction.check;
 
+import ai.idealistic.spartan.Register;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.spartan.compatibility.Compatibility;
 import ai.idealistic.spartan.compatibility.manual.abilities.ItemsAdder;
@@ -104,13 +105,19 @@ public abstract class CheckRunner extends CheckProcess {
             if (builder.length() > 0) {
                 builder.append(", ");
             }
-            builder.append("Detection charge is depleted");
+            builder.append("Detections need to be charged, run /")
+                    .append(Register.pluginName.toLowerCase())
+                    .append(" charge");
         }
-        if (!hackType.getCheck().isEnabled(this.protocol.getDataType(), this.protocol.getWorld().getName())) {
+        String world = this.protocol.getWorld().getName();
+
+        if (!hackType.getCheck().isEnabled(this.protocol.getDataType(), world)) {
             if (builder.length() > 0) {
                 builder.append(", ");
             }
-            builder.append("Check is disabled in this world or data type");
+            builder.append("Check is disabled in the world '")
+                    .append(world)
+                    .append("' or player's edition");
         }
         if (cancelled && !hackType.getCheck().handleCancelledEvents) {
             if (builder.length() > 0) {
@@ -143,9 +150,9 @@ public abstract class CheckRunner extends CheckProcess {
                 builder.append(", ");
             }
             builder.append("Edition '")
-                    .append(this.protocol.getDataType().name())
+                    .append(this.protocol.getDataType().toString())
                     .append("' of the check '")
-                    .append(this.hackType.getCheck().getName())
+                    .append(this.hackType.getCheck().hackType.toString())
                     .append("' is not owned");
         }
         if (builder.length() > 0) {
