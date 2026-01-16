@@ -1,1 +1,1 @@
-[#]
+[#] Fixed a typo in a Spartan's static English message
