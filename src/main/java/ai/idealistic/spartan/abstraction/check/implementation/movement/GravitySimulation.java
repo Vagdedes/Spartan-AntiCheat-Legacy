@@ -161,7 +161,7 @@ public class GravitySimulation extends CheckRunner {
                 this.teleportExcept = 0;
                 this.teleportTicks = 0;
                 this.motionY = 0;
-                this.addMomentDisableCause("Code-Patch");
+                this.addInformationalDisableCause("Code-Patch");
                 return;
             }
             boolean ground = (this.protocol.getVehicle() != null)
@@ -488,12 +488,12 @@ public class GravitySimulation extends CheckRunner {
                         if (allowLowJump && air == 1
                                 && this.predictY() > motion
                                 && getDeviance(motion) <= 0.03) {
-                            this.addMomentDisableCause("Low-Jump");
+                            this.addInformationalDisableCause("Low-Jump");
                             return;
                         }
                         if (this.isSolidBlock(from.clone().add(0, 0.5, 0))
                                 && to.distance(from) < 0.3) {
-                            this.addMomentDisableCause("Inside-Block");
+                            this.addInformationalDisableCause("Inside-Block");
                             return;
                         }
                         if (devTotal < 0.1) { // vagdedes patch

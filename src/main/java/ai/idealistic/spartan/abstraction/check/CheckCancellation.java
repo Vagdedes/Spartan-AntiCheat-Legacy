@@ -8,7 +8,7 @@ public class CheckCancellation {
 
     @Getter
     private final String reason, pointer;
-    private long expiration;
+    private final long expiration;
 
     CheckCancellation(Compatibility.CompatibilityType compatibilityType) {
         this(compatibilityType.toString(), null, 0);
@@ -26,8 +26,7 @@ public class CheckCancellation {
 
     boolean hasExpired() {
         if (expiration < 0) {
-            expiration = 0;
-            return false;
+            return Math.abs(expiration) < System.currentTimeMillis();
         } else {
             return expiration < System.currentTimeMillis();
         }
@@ -36,4 +35,9 @@ public class CheckCancellation {
     boolean pointerMatches(String info) {
         return this.pointer == null || info.contains(this.pointer);
     }
+
+    boolean isInformational() {
+        return expiration < 0;
+    }
+
 }

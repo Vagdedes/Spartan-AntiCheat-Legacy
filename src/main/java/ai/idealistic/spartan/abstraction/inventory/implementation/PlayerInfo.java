@@ -191,7 +191,7 @@ public class PlayerInfo extends InventoryMenu {
         if (!hasPlayer) {
             return "Player is offline";
         }
-        CheckCancellation disabledCause = protocol.getRunner(hackType).getDisableCause();
+        CheckCancellation disabledCause = protocol.getRunner(hackType).getDisableCause(true);
         return Permissions.isBypassing(protocol.bukkit(), hackType)
                 ? "Player has permission bypass"
                 : disabledCause != null

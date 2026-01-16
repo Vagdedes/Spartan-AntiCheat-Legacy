@@ -458,12 +458,12 @@ public abstract class CheckDetection extends CheckProcess {
             return;
         }
         if (!this.executor.canRun()) {
-            this.executor.addMomentDisableCause(
+            this.executor.addInformationalDisableCause(
                     "Check executor will not let the detection/s run."
             );
             return;
         }
-        CheckCancellation disableCause = this.executor.getDisableCause();
+        CheckCancellation disableCause = this.executor.getDisableCause(false);
 
         if (disableCause != null
                 && !disableCause.hasExpired()

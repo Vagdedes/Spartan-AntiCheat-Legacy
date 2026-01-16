@@ -156,7 +156,7 @@ public abstract class CheckRunner extends CheckProcess {
                     .append("' is not owned");
         }
         if (builder.length() > 0) {
-            this.addMomentDisableCause(builder.toString());
+            this.addInformationalDisableCause(builder.toString());
             return false;
         } else {
             return true;
@@ -182,7 +182,7 @@ public abstract class CheckRunner extends CheckProcess {
             builder.append("Player is bypassing");
         }
         if (builder.length() > 0) {
-            this.addMomentDisableCause(builder.toString());
+            this.addInformationalDisableCause(builder.toString());
             return false;
         } else {
             return true;
@@ -206,23 +206,32 @@ public abstract class CheckRunner extends CheckProcess {
 
     // Causes
 
-    private CheckCancellation getLastCause(Collection<CheckCancellation> collection) {
+    private CheckCancellation getLastCause(
+            Collection<CheckCancellation> collection,
+            boolean informational
+    ) {
+        CheckCancellation lastCause = null;
         Iterator<CheckCancellation> iterator = collection.iterator();
 
         while (iterator.hasNext()) {
             CheckCancellation cause = iterator.next();
 
             if (cause.hasExpired()) {
+                if (informational
+                        && cause.isInformational()) {
+                    lastCause = cause;
+                }
                 iterator.remove();
             } else {
-                return cause;
+                lastCause = cause;
+                break;
             }
         }
-        return null;
+        return lastCause;
     }
 
-    public final CheckCancellation getDisableCause() {
-        CheckCancellation disableCause = this.getLastCause(this.disableCauses);
+    public final CheckCancellation getDisableCause(boolean informational) {
+        CheckCancellation disableCause = this.getLastCause(this.disableCauses, informational);
 
         if (disableCause == null) {
             return MythicMobs.is(this.protocol)
@@ -240,10 +249,10 @@ public abstract class CheckRunner extends CheckProcess {
     }
 
     public final CheckCancellation getSilentCause() {
-        return this.getLastCause(this.silentCauses);
+        return this.getLastCause(this.silentCauses, false);
     }
 
-    public final void addMomentDisableCause(String reason) {
+    public final void addInformationalDisableCause(String reason) {
         this.disableCauses.add(new CheckCancellation(reason, null, -1));
         PluginBase.playerInfo.refresh(this.protocol.bukkit().getName());
     }
