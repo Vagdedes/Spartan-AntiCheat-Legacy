@@ -207,7 +207,6 @@ public abstract class CheckRunner extends CheckProcess {
     // Causes
 
     private CheckCancellation getLastCause(Collection<CheckCancellation> collection) {
-        CheckCancellation lastCause = null;
         Iterator<CheckCancellation> iterator = collection.iterator();
 
         while (iterator.hasNext()) {
@@ -216,11 +215,10 @@ public abstract class CheckRunner extends CheckProcess {
             if (cause.hasExpired()) {
                 iterator.remove();
             } else {
-                lastCause = cause;
-                break;
+                return cause;
             }
         }
-        return lastCause;
+        return null;
     }
 
     public final CheckCancellation getDisableCause() {
