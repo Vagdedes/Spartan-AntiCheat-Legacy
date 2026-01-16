@@ -156,11 +156,7 @@ public abstract class CheckRunner extends CheckProcess {
                     .append("' is not owned");
         }
         if (builder.length() > 0) {
-            this.addDisableCause(
-                    builder.toString(),
-                    null,
-                    1
-            );
+            this.addMomentDisableCause(builder.toString());
             return false;
         } else {
             return true;
@@ -186,11 +182,7 @@ public abstract class CheckRunner extends CheckProcess {
             builder.append("Player is bypassing");
         }
         if (builder.length() > 0) {
-            this.addDisableCause(
-                    builder.toString(),
-                    null,
-                    1
-            );
+            this.addMomentDisableCause(builder.toString());
             return false;
         } else {
             return true;
@@ -251,6 +243,11 @@ public abstract class CheckRunner extends CheckProcess {
 
     public final CheckCancellation getSilentCause() {
         return this.getLastCause(this.silentCauses);
+    }
+
+    public final void addMomentDisableCause(String reason) {
+        this.disableCauses.add(new CheckCancellation(reason, null, -1));
+        PluginBase.playerInfo.refresh(this.protocol.bukkit().getName());
     }
 
     public final void addDisableCause(String reason, String pointer, int ticks) {

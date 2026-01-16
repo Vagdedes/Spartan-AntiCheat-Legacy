@@ -8,7 +8,7 @@ public class CheckCancellation {
 
     @Getter
     private final String reason, pointer;
-    private final long expiration;
+    private long expiration;
 
     CheckCancellation(Compatibility.CompatibilityType compatibilityType) {
         this(compatibilityType.toString(), null, 0);
@@ -17,13 +17,20 @@ public class CheckCancellation {
     CheckCancellation(String reason, String pointer, int ticks) {
         this.reason = reason;
         this.pointer = pointer;
-        this.expiration = ticks == 0
+        this.expiration = ticks < 0
+                ? ticks
+                : ticks == 0
                 ? Long.MAX_VALUE
                 : System.currentTimeMillis() + (ticks * TPS.tickTime);
     }
 
     boolean hasExpired() {
-        return expiration < System.currentTimeMillis();
+        if (expiration < 0) {
+            expiration = 0;
+            return false;
+        } else {
+            return expiration < System.currentTimeMillis();
+        }
     }
 
     boolean pointerMatches(String info) {
