@@ -134,21 +134,25 @@ public abstract class CheckRunner extends CheckProcess {
             if (builder.length() > 0) {
                 builder.append(", ");
             }
-            builder.append("Plugin edition does not own this check");
+            builder.append("Check '")
+                    .append(this.hackType.getCheck().getName())
+                    .append("' is not owned");
         }
         if (!PluginAddons.ownsEdition(this.protocol.getDataType())) {
             if (builder.length() > 0) {
                 builder.append(", ");
             }
-            builder.append("Plugin edition does not the edition '")
+            builder.append("Edition '")
                     .append(this.protocol.getDataType().name())
-                    .append("' of this check");
+                    .append("' of the check '")
+                    .append(this.hackType.getCheck().getName())
+                    .append("' is not owned");
         }
         if (builder.length() > 0) {
             this.addDisableCause(
                     builder.toString(),
                     null,
-                    2
+                    1
             );
             return false;
         } else {
@@ -178,7 +182,7 @@ public abstract class CheckRunner extends CheckProcess {
             this.addDisableCause(
                     builder.toString(),
                     null,
-                    2
+                    1
             );
             return false;
         } else {

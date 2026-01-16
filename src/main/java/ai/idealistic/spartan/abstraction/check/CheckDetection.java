@@ -461,7 +461,7 @@ public abstract class CheckDetection extends CheckProcess {
             this.executor.addDisableCause(
                     "Check executor will not let the detection/s run.",
                     null,
-                    2
+                    1
             );
             return;
         }
