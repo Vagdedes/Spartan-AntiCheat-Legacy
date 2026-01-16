@@ -95,14 +95,65 @@ public abstract class CheckRunner extends CheckProcess {
     // Separator
 
     final boolean canCall() {
-        return !this.protocol.npc
-                && DetectionCharge.has()
-                && hackType.getCheck().isEnabled(this.protocol.getDataType(), this.protocol.getWorld().getName())
-                && (!cancelled || hackType.getCheck().handleCancelledEvents)
-                && (!v1_8 || this.protocol.getGameMode() != GameMode.SPECTATOR)
-                && Attributes.getAmount(this.protocol, Attributes.GENERIC_SCALE) == Double.MIN_VALUE
-                && PluginAddons.ownsCheck(this.hackType)
-                && PluginAddons.ownsEdition(this.protocol.getDataType());
+        StringBuilder builder = new StringBuilder();
+
+        if (this.protocol.npc) {
+            builder.append("Player was determined to be an NPC");
+        }
+        if (!DetectionCharge.has()) {
+            if (builder.length() > 0) {
+                builder.append(", ");
+            }
+            builder.append("Detection charge is depleted");
+        }
+        if (!hackType.getCheck().isEnabled(this.protocol.getDataType(), this.protocol.getWorld().getName())) {
+            if (builder.length() > 0) {
+                builder.append(", ");
+            }
+            builder.append("Check is disabled in this world or data type");
+        }
+        if (cancelled && !hackType.getCheck().handleCancelledEvents) {
+            if (builder.length() > 0) {
+                builder.append(", ");
+            }
+            builder.append("Event is cancelled and check does not handle cancelled events");
+        }
+        if (v1_8 && this.protocol.getGameMode() == GameMode.SPECTATOR) {
+            if (builder.length() > 0) {
+                builder.append(", ");
+            }
+            builder.append("Player is in spectator mode");
+        }
+        if (Attributes.getAmount(this.protocol, Attributes.GENERIC_SCALE) != Double.MIN_VALUE) {
+            if (builder.length() > 0) {
+                builder.append(", ");
+            }
+            builder.append("Player has a scale attribute applied");
+        }
+        if (!PluginAddons.ownsCheck(this.hackType)) {
+            if (builder.length() > 0) {
+                builder.append(", ");
+            }
+            builder.append("Plugin edition does not own this check");
+        }
+        if (!PluginAddons.ownsEdition(this.protocol.getDataType())) {
+            if (builder.length() > 0) {
+                builder.append(", ");
+            }
+            builder.append("Plugin edition does not the edition '")
+                    .append(this.protocol.getDataType().name())
+                    .append("' of this check");
+        }
+        if (builder.length() > 0) {
+            this.addDisableCause(
+                    builder.toString(),
+                    null,
+                    2
+            );
+            return false;
+        } else {
+            return true;
+        }
     }
 
     final boolean canCancel() {
@@ -176,6 +227,9 @@ public abstract class CheckRunner extends CheckProcess {
     }
 
     public final void addSilentCause(String reason, String pointer, int ticks) {
+        if (reason == null) {
+            reason = this.hackType.getCheck().getName();
+        }
         this.silentCauses.add(new CheckCancellation(reason, pointer, ticks));
         PluginBase.playerInfo.refresh(this.protocol.bukkit().getName());
     }
