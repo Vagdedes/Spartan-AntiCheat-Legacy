@@ -133,6 +133,7 @@ public class SpeedSimulation extends CheckRunner {
                 this.removePistonTick = false;
                 this.vhact = 0;
                 this.tpTicks = 0;
+                this.addMomentDisableCause("Code-Patch");
                 return;
             }
             boolean isOnGround = (p.getVehicle() != null)

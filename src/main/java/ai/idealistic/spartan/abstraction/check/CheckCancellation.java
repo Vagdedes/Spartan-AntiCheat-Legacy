@@ -18,7 +18,7 @@ public class CheckCancellation {
         this.reason = reason;
         this.pointer = pointer;
         this.expiration = ticks < 0
-                ? ticks
+                ? -System.currentTimeMillis() - (Math.abs(ticks) * TPS.tickTime)
                 : ticks == 0
                 ? Long.MAX_VALUE
                 : System.currentTimeMillis() + (ticks * TPS.tickTime);
