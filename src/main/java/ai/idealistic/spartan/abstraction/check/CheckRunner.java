@@ -157,9 +157,33 @@ public abstract class CheckRunner extends CheckProcess {
     }
 
     final boolean canCancel() {
-        return (System.currentTimeMillis() - this.creation) > TPS.maximum * TPS.tickTime
-                && !ProtocolLib.isTemporary(this.protocol.bukkit())
-                && !Permissions.isBypassing(this.protocol.bukkit(), hackType);
+        StringBuilder builder = new StringBuilder();
+
+        if ((System.currentTimeMillis() - this.creation) <= TPS.maximum * TPS.tickTime) {
+            builder.append("Check ran too quickly after creation");
+        }
+        if (ProtocolLib.isTemporary(this.protocol.bukkit())) {
+            if (builder.length() > 0) {
+                builder.append(", ");
+            }
+            builder.append("Player is temporary");
+        }
+        if (Permissions.isBypassing(this.protocol.bukkit(), hackType)) {
+            if (builder.length() > 0) {
+                builder.append(", ");
+            }
+            builder.append("Player is bypassing");
+        }
+        if (builder.length() > 0) {
+            this.addDisableCause(
+                    builder.toString(),
+                    null,
+                    2
+            );
+            return false;
+        } else {
+            return true;
+        }
     }
 
     public final List<String> getEvidence() {
