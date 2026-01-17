@@ -4,6 +4,8 @@ import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.spartan.compatibility.Compatibility;
 import ai.idealistic.spartan.functionality.server.MultiVersion;
 import ai.idealistic.spartan.utils.java.ReflectionUtils;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Registry;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.inventory.ItemStack;
@@ -11,6 +13,7 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Collection;
+import java.util.Locale;
 
 public class Attributes {
 
@@ -59,35 +62,37 @@ public class Attributes {
 
     public static double getAmount(PlayerProtocol p, String attributeString) {
         if (classExists && Compatibility.CompatibilityType.ITEM_ATTRIBUTES.isFunctional()) {
-            for (Attribute attribute : Attribute.values()) {
-                if (attribute.name().equals(attributeString)) {
-                    PlayerInventory inventory = p.getInventory();
-                    double amount = Double.MIN_VALUE;
+            Attribute attribute = Registry.ATTRIBUTE.get(
+                    NamespacedKey.minecraft(attributeString.toLowerCase(Locale.ROOT))
+            );
 
-                    for (ItemStack itemStack : new ItemStack[]{
-                            inventory.getHelmet(),
-                            inventory.getChestplate(),
-                            inventory.getLeggings(),
-                            inventory.getBoots(),
-                            inventory.getItemInHand(),
-                            MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9) ? inventory.getItemInOffHand() : null
-                    }) {
-                        if (itemStack != null && itemStack.hasItemMeta()) {
-                            ItemMeta meta = itemStack.getItemMeta();
+            if (attribute != null) {
+                PlayerInventory inventory = p.getInventory();
+                double amount = Double.MIN_VALUE;
 
-                            if (meta != null && meta.hasAttributeModifiers()) {
-                                Collection<AttributeModifier> modifiers = meta.getAttributeModifiers(attribute);
+                for (ItemStack itemStack : new ItemStack[]{
+                        inventory.getHelmet(),
+                        inventory.getChestplate(),
+                        inventory.getLeggings(),
+                        inventory.getBoots(),
+                        inventory.getItemInHand(),
+                        MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9) ? inventory.getItemInOffHand() : null
+                }) {
+                    if (itemStack != null && itemStack.hasItemMeta()) {
+                        ItemMeta meta = itemStack.getItemMeta();
 
-                                if (modifiers != null && !modifiers.isEmpty()) {
-                                    for (AttributeModifier modifier : modifiers) {
-                                        amount = Math.max(amount, modifier.getAmount());
-                                    }
+                        if (meta != null && meta.hasAttributeModifiers()) {
+                            Collection<AttributeModifier> modifiers = meta.getAttributeModifiers(attribute);
+
+                            if (modifiers != null && !modifiers.isEmpty()) {
+                                for (AttributeModifier modifier : modifiers) {
+                                    amount = Math.max(amount, modifier.getAmount());
                                 }
                             }
                         }
                     }
-                    return amount;
                 }
+                return amount;
             }
         }
         return Double.MIN_VALUE;
