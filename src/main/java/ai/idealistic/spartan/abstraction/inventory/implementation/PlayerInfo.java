@@ -17,10 +17,12 @@ import ai.idealistic.spartan.functionality.moderation.clickable.ClickableMessage
 import ai.idealistic.spartan.functionality.server.Config;
 import ai.idealistic.spartan.functionality.server.Permissions;
 import ai.idealistic.spartan.functionality.server.PluginBase;
+import ai.idealistic.spartan.functionality.server.TPS;
 import ai.idealistic.spartan.functionality.tracking.DetectionCharge;
 import ai.idealistic.spartan.functionality.tracking.ResearchEngine;
 import ai.idealistic.spartan.utils.java.OverflowMap;
 import ai.idealistic.spartan.utils.java.TimeUtils;
+import ai.idealistic.spartan.utils.math.AlgebraUtils;
 import ai.idealistic.spartan.utils.minecraft.inventory.MaterialUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -206,12 +208,16 @@ public class PlayerInfo extends InventoryMenu {
 
         if (!protocols.isEmpty()) {
             for (PlayerProtocol protocol : protocols) {
-                InventoryView inventoryView = protocol.bukkit().getOpenInventory();
+                if (cooldowns.canDo("player-info=" + protocol.getUUID())) {
+                    InventoryView inventoryView = protocol.bukkit().getOpenInventory();
 
-                if (inventoryView.getTitle().equals(PlayerInfo.menu + targetName)
-                        && cooldowns.canDo("player-info=" + protocol.getUUID())) {
-                    cooldowns.add("player-info=" + protocol.getUUID(), 1);
-                    PluginBase.playerInfo.open(protocol, targetName);
+                    if (inventoryView.getTitle().equals(PlayerInfo.menu + targetName)) {
+                        cooldowns.add(
+                                "player-info=" + protocol.getUUID(),
+                                AlgebraUtils.integerRound(TPS.maximum)
+                        );
+                        PluginBase.playerInfo.open(protocol, targetName);
+                    }
                 }
             }
         }
