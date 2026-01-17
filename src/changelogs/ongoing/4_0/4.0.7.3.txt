@@ -1,2 +1,3 @@
 [#] Fixed a typo in a Spartan's static English message
 [#] Improved the amount of error messages in the inventory menus
+[#] Fixed item attributes causing compile errors
