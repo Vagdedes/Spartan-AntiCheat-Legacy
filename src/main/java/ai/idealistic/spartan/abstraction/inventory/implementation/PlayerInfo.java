@@ -17,12 +17,10 @@ import ai.idealistic.spartan.functionality.moderation.clickable.ClickableMessage
 import ai.idealistic.spartan.functionality.server.Config;
 import ai.idealistic.spartan.functionality.server.Permissions;
 import ai.idealistic.spartan.functionality.server.PluginBase;
-import ai.idealistic.spartan.functionality.server.TPS;
 import ai.idealistic.spartan.functionality.tracking.DetectionCharge;
 import ai.idealistic.spartan.functionality.tracking.ResearchEngine;
 import ai.idealistic.spartan.utils.java.OverflowMap;
 import ai.idealistic.spartan.utils.java.TimeUtils;
-import ai.idealistic.spartan.utils.math.AlgebraUtils;
 import ai.idealistic.spartan.utils.minecraft.inventory.MaterialUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -93,7 +91,7 @@ public class PlayerInfo extends InventoryMenu {
                     4
             );
             for (CheckEnums.HackCategoryType checkType : CheckEnums.HackCategoryType.values()) {
-                addChecks(slots[checkType.ordinal()], isOnline, target, profile, lore, checkType);
+                addChecks(slots[checkType.ordinal()], isOnline, target, lore, checkType);
             }
 
             // Separator
@@ -133,7 +131,6 @@ public class PlayerInfo extends InventoryMenu {
     private void addChecks(int slot,
                            boolean isOnline,
                            PlayerProtocol protocol,
-                           PlayerProfile profile,
                            List<String> lore,
                            CheckEnums.HackCategoryType checkType) {
         lore.clear();
@@ -208,16 +205,15 @@ public class PlayerInfo extends InventoryMenu {
 
         if (!protocols.isEmpty()) {
             for (PlayerProtocol protocol : protocols) {
-                if (cooldowns.canDo("player-info=" + protocol.getUUID())) {
-                    InventoryView inventoryView = protocol.bukkit().getOpenInventory();
+                InventoryView inventoryView = protocol.bukkit().getOpenInventory();
 
-                    if (inventoryView.getTitle().equals(PlayerInfo.menu + targetName)) {
-                        cooldowns.add(
-                                "player-info=" + protocol.getUUID(),
-                                AlgebraUtils.integerRound(TPS.maximum)
-                        );
-                        PluginBase.playerInfo.open(protocol, targetName);
-                    }
+                if (inventoryView.getTitle().equals(PlayerInfo.menu + targetName)
+                        && cooldowns.canDo("player-info=" + protocol.getUUID())) {
+                    cooldowns.add(
+                            "player-info=" + protocol.getUUID(),
+                            10
+                    );
+                    PluginBase.playerInfo.open(protocol, targetName);
                 }
             }
         }
