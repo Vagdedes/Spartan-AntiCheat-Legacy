@@ -25,7 +25,6 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.InventoryView;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import java.lang.reflect.Method;
@@ -193,21 +192,10 @@ public class ImpossibleActions extends CheckRunner {
                         cases = 1;
                     } else if (this.protocol.bukkit().isDead()) {
                         cases = 2;
+                    } else if (BlockUtils.hasMaterial(this.protocol.getOpenInventoryCursor())) {
+                        cases = 3;
                     } else {
-                        InventoryView inventoryView = this.protocol.bukkit().getOpenInventory();
-                        ItemStack cursor;
-
-                        try {
-                            cursor = (ItemStack) GET_CURSOR_METHOD.invoke(inventoryView);
-                        } catch (Exception ignored) {
-                            cursor = null;
-                        }
-
-                        if (BlockUtils.hasMaterial(cursor)) {
-                            cases = 3;
-                        } else {
-                            cases = 0;
-                        }
+                        cases = 0;
                     }
 
                     if (cases != 0) {

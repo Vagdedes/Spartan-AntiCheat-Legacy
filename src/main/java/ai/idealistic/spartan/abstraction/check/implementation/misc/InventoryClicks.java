@@ -88,20 +88,7 @@ public class InventoryClicks extends CheckRunner {
                     Material material = item.getType();
 
                     if (!BlockUtils.isSensitive(this.protocol, material)) {
-                        InventoryView inventoryView = this.protocol.bukkit().getOpenInventory();
-                        ItemStack cursor;
-                        int slots;
-
-                        try {
-                            cursor = (ItemStack) GET_CURSOR_METHOD.invoke(inventoryView);
-                        } catch (Exception ignored) {
-                            cursor = null;
-                        }
-                        try {
-                            slots = (int) COUNT_SLOTS_METHOD.invoke(inventoryView);
-                        } catch (Exception ignored) {
-                            slots = PlayerUtils.playerInventorySlots + 1;
-                        }
+                        int slots = this.protocol.getOpenInventoryCountSlots(PlayerUtils.playerInventorySlots + 1);
                         boolean quick = slots <= PlayerUtils.playerInventorySlots,
                                 shift = click.isShiftClick();
                         String type = BlockUtils.materialToString(material);
@@ -112,7 +99,7 @@ public class InventoryClicks extends CheckRunner {
 
                         if (shift
                                 && !quick
-                                && !BlockUtils.hasMaterial(cursor)
+                                && !BlockUtils.hasMaterial(this.protocol.getOpenInventoryCursor())
                                 && shiftBuffer.count(1, 5) == 4) { // Inventory
                             shiftBuffer.reset();
                             this.shift.call(() -> this.shift.cancel("shift, item: " + type));

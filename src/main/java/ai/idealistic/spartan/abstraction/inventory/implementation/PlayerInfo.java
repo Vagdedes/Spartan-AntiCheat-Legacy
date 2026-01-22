@@ -224,16 +224,7 @@ public class PlayerInfo extends InventoryMenu {
                 for (PlayerProtocol protocol : protocols) {
                     if (cooldowns.canDo("player-info=" + protocol.getUUID())) {
                         PluginBase.runTask(protocol, () -> {
-                            InventoryView inventoryView = protocol.bukkit().getOpenInventory();
-                            String viewTitle;
-
-                            try {
-                                viewTitle = (String) GET_TITLE_METHOD.invoke(inventoryView);
-                            } catch (Exception ignored) {
-                                return;
-                            }
-
-                            if (viewTitle.equals(expectedTitle)) {
+                            if (protocol.getOpenInventoryTitle("").equals(expectedTitle)) {
                                 cooldowns.add(
                                         "player-info=" + protocol.getUUID(),
                                         10

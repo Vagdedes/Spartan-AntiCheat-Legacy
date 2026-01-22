@@ -96,27 +96,18 @@ public class ImpossibleInventory extends CheckRunner {
             }
         } else if (object instanceof PlayerMoveEvent) {
             this.cursorUsageDetection.call(() -> {
-                if (!this.protocol.isSwimming() && this.protocol.getVehicle() == null) {
-                    InventoryView inventoryView = this.protocol.bukkit().getOpenInventory();
-                    ItemStack cursor;
+                if (!this.protocol.isSwimming()
+                        && this.protocol.getVehicle() == null
+                        && BlockUtils.hasMaterial(this.protocol.getOpenInventoryCursor())) {
+                    int cases = getActionCase();
 
-                    try {
-                        cursor = (ItemStack) GET_CURSOR_METHOD.invoke(inventoryView);
-                    } catch (Exception ignored) {
-                        cursor = null;
-                    }
-
-                    if (BlockUtils.hasMaterial(cursor)) {
-                        int cases = getActionCase();
-
-                        if (cases != 0) {
-                            this.cursorUsageDetection.cancel(
-                                    "cursor-usage, case: " + cases,
-                                    this.protocol.getFromLocation(),
-                                    0,
-                                    false
-                            );
-                        }
+                    if (cases != 0) {
+                        this.cursorUsageDetection.cancel(
+                                "cursor-usage, case: " + cases,
+                                this.protocol.getFromLocation(),
+                                0,
+                                false
+                        );
                     }
                 }
             });
@@ -160,23 +151,13 @@ public class ImpossibleInventory extends CheckRunner {
                     && !click.isKeyboardClick()
                     && !this.protocol.isSwimming()
                     && this.protocol.getVehicle() == null
+                    && this.protocol.getOpenInventoryCountSlots(0) > PlayerUtils.playerInventorySlots
                     && !BlockPatternUtils.isBlockPattern(
                     belowBlocks,
                     this.protocol.getLocationOrVehicle(),
                     true,
                     BlockUtils.ice, BlockUtils.blue_ice)) {
-                InventoryView inventoryView = this.protocol.bukkit().getOpenInventory();
-                int slotCount;
-
-                try {
-                    slotCount = (int) COUNT_SLOTS_METHOD.invoke(inventoryView);
-                } catch (Exception ignored) {
-                    slotCount = 0;
-                }
-
-                if (slotCount > PlayerUtils.playerInventorySlots) {
-                    this.closedInventoryDetection.cancel("closed-inventory, case: " + cases);
-                }
+                this.closedInventoryDetection.cancel("closed-inventory, case: " + cases);
             }
         });
     }

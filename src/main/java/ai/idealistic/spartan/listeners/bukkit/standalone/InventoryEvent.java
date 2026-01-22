@@ -51,14 +51,7 @@ public class InventoryEvent implements Listener {
 
             if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
                 ClickType click = e.getClick();
-                InventoryView inventoryView = n.getOpenInventory();
-                String title;
-
-                try {
-                    title = (String) GET_TITLE_METHOD.invoke(inventoryView);
-                } catch (Exception ignored) {
-                    return;
-                }
+                String title = p.getOpenInventoryTitle("");
 
                 if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
                     title = StringUtils.getClearColorString(title);
