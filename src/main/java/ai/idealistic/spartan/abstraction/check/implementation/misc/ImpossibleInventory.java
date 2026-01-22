@@ -160,13 +160,23 @@ public class ImpossibleInventory extends CheckRunner {
                     && !click.isKeyboardClick()
                     && !this.protocol.isSwimming()
                     && this.protocol.getVehicle() == null
-                    && this.protocol.bukkit().getOpenInventory().countSlots() > PlayerUtils.playerInventorySlots
                     && !BlockPatternUtils.isBlockPattern(
                     belowBlocks,
                     this.protocol.getLocationOrVehicle(),
                     true,
                     BlockUtils.ice, BlockUtils.blue_ice)) {
-                this.closedInventoryDetection.cancel("closed-inventory, case: " + cases);
+                InventoryView inventoryView = this.protocol.bukkit().getOpenInventory();
+                int slotCount;
+
+                try {
+                    slotCount = (int) COUNT_SLOTS_METHOD.invoke(inventoryView);
+                } catch (Exception ignored) {
+                    slotCount = 0;
+                }
+
+                if (slotCount > PlayerUtils.playerInventorySlots) {
+                    this.closedInventoryDetection.cancel("closed-inventory, case: " + cases);
+                }
             }
         });
     }
