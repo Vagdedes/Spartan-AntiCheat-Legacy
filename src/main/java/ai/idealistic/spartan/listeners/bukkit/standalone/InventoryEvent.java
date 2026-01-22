@@ -14,9 +14,25 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 
+import java.lang.reflect.Method;
+
 public class InventoryEvent implements Listener {
+
+    private static final Method GET_TITLE_METHOD;
+
+    static {
+        Method m;
+
+        try {
+            m = InventoryView.class.getMethod("getTitle");
+        } catch (Exception ignored) {
+            m = null;
+        }
+        GET_TITLE_METHOD = m;
+    }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     private void ItemDrop(PlayerDropItemEvent e) {
@@ -35,9 +51,18 @@ public class InventoryEvent implements Listener {
 
             if (item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
                 ClickType click = e.getClick();
-                String title = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
-                        ? StringUtils.getClearColorString(n.getOpenInventory().getTitle())
-                        : n.getOpenInventory().getTitle();
+                InventoryView inventoryView = n.getOpenInventory();
+                String title;
+
+                try {
+                    title = (String) GET_TITLE_METHOD.invoke(inventoryView);
+                } catch (Exception ignored) {
+                    return;
+                }
+
+                if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
+                    title = StringUtils.getClearColorString(title);
+                }
                 int slot = e.getSlot();
 
                 for (InventoryMenu menu : PluginBase.menus) {
