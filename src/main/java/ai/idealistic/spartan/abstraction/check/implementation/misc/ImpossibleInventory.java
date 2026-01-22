@@ -22,9 +22,38 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 
+import java.lang.reflect.Method;
+
 public class ImpossibleInventory extends CheckRunner {
+
+    private static final Method
+            GET_CURSOR_METHOD,
+            COUNT_SLOTS_METHOD;
+
+    static {
+        Method m;
+
+        try {
+            m = InventoryView.class.getMethod("getCursor");
+        } catch (Exception ignored) {
+            m = null;
+        }
+        GET_CURSOR_METHOD = m;
+
+        // Separator
+
+        Method m1;
+
+        try {
+            m1 = InventoryView.class.getMethod("countSlots");
+        } catch (Exception ignored) {
+            m1 = null;
+        }
+        COUNT_SLOTS_METHOD = m1;
+    }
 
     private final CheckDetection
             autoTotemDetection,
@@ -68,7 +97,14 @@ public class ImpossibleInventory extends CheckRunner {
         } else if (object instanceof PlayerMoveEvent) {
             this.cursorUsageDetection.call(() -> {
                 if (!this.protocol.isSwimming() && this.protocol.getVehicle() == null) {
-                    ItemStack cursor = this.protocol.bukkit().getOpenInventory().getCursor();
+                    InventoryView inventoryView = this.protocol.bukkit().getOpenInventory();
+                    ItemStack cursor;
+
+                    try {
+                        cursor = (ItemStack) GET_CURSOR_METHOD.invoke(inventoryView);
+                    } catch (Exception ignored) {
+                        cursor = null;
+                    }
 
                     if (BlockUtils.hasMaterial(cursor)) {
                         int cases = getActionCase();

@@ -24,13 +24,29 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.InventoryView;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
+import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 public class ImpossibleActions extends CheckRunner {
+
+    private static final Method GET_CURSOR_METHOD;
+
+    static {
+        Method m;
+
+        try {
+            m = InventoryView.class.getMethod("getCursor");
+        } catch (Exception ignored) {
+            m = null;
+        }
+        GET_CURSOR_METHOD = m;
+    }
 
     private final CheckDetection
             scaffoldDirection,
@@ -177,10 +193,21 @@ public class ImpossibleActions extends CheckRunner {
                         cases = 1;
                     } else if (this.protocol.bukkit().isDead()) {
                         cases = 2;
-                    } else if (BlockUtils.hasMaterial(this.protocol.bukkit().getOpenInventory().getCursor())) {
-                        cases = 3;
                     } else {
-                        cases = 0;
+                        InventoryView inventoryView = this.protocol.bukkit().getOpenInventory();
+                        ItemStack cursor;
+
+                        try {
+                            cursor = (ItemStack) GET_CURSOR_METHOD.invoke(inventoryView);
+                        } catch (Exception ignored) {
+                            cursor = null;
+                        }
+
+                        if (BlockUtils.hasMaterial(cursor)) {
+                            cases = 3;
+                        } else {
+                            cases = 0;
+                        }
                     }
 
                     if (cases != 0) {

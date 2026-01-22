@@ -12,9 +12,38 @@ import ai.idealistic.spartan.utils.minecraft.world.BlockUtils;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 
+import java.lang.reflect.Method;
+
 public class InventoryClicks extends CheckRunner {
+
+    private static final Method
+            GET_CURSOR_METHOD,
+            COUNT_SLOTS_METHOD;
+
+    static {
+        Method m;
+
+        try {
+            m = InventoryView.class.getMethod("getCursor");
+        } catch (Exception ignored) {
+            m = null;
+        }
+        GET_CURSOR_METHOD = m;
+
+        // Separator
+
+        Method m1;
+
+        try {
+            m1 = InventoryView.class.getMethod("countSlots");
+        } catch (Exception ignored) {
+            m1 = null;
+        }
+        COUNT_SLOTS_METHOD = m1;
+    }
 
     private final CheckDetection
             shift,
@@ -59,7 +88,21 @@ public class InventoryClicks extends CheckRunner {
                     Material material = item.getType();
 
                     if (!BlockUtils.isSensitive(this.protocol, material)) {
-                        boolean quick = this.protocol.bukkit().getOpenInventory().countSlots() <= PlayerUtils.playerInventorySlots,
+                        InventoryView inventoryView = this.protocol.bukkit().getOpenInventory();
+                        ItemStack cursor;
+                        int slots;
+
+                        try {
+                            cursor = (ItemStack) GET_CURSOR_METHOD.invoke(inventoryView);
+                        } catch (Exception ignored) {
+                            cursor = null;
+                        }
+                        try {
+                            slots = (int) COUNT_SLOTS_METHOD.invoke(inventoryView);
+                        } catch (Exception ignored) {
+                            slots = PlayerUtils.playerInventorySlots + 1;
+                        }
+                        boolean quick = slots <= PlayerUtils.playerInventorySlots,
                                 shift = click.isShiftClick();
                         String type = BlockUtils.materialToString(material);
 
@@ -69,7 +112,7 @@ public class InventoryClicks extends CheckRunner {
 
                         if (shift
                                 && !quick
-                                && !BlockUtils.hasMaterial(this.protocol.bukkit().getOpenInventory().getCursor())
+                                && !BlockUtils.hasMaterial(cursor)
                                 && shiftBuffer.count(1, 5) == 4) { // Inventory
                             shiftBuffer.reset();
                             this.shift.call(() -> this.shift.cancel("shift, item: " + type));
