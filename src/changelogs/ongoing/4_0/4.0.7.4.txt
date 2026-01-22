@@ -1,0 +1,1 @@
+[#] Potentially fixed an error with the PlayerInfo class on older server versions

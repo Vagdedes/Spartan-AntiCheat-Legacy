@@ -27,12 +27,26 @@ import org.bukkit.Material;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class PlayerInfo extends InventoryMenu {
+
+    private static final Method GET_TITLE_METHOD;
+
+    static {
+        Method m;
+
+        try {
+            m = InventoryView.class.getMethod("getTitle");
+        } catch (Exception ignored) {
+            m = null;
+        }
+        GET_TITLE_METHOD = m;
+    }
 
     public static final Permission[] permissions = new Permission[]{Permission.MANAGE, Permission.INFO};
 
@@ -206,8 +220,16 @@ public class PlayerInfo extends InventoryMenu {
         if (!protocols.isEmpty()) {
             for (PlayerProtocol protocol : protocols) {
                 InventoryView inventoryView = protocol.bukkit().getOpenInventory();
+                String viewTitle = "";
 
-                if (inventoryView.getTitle().equals(PlayerInfo.menu + targetName)
+                if (GET_TITLE_METHOD != null) {
+                    try {
+                        viewTitle = (String) GET_TITLE_METHOD.invoke(inventoryView);
+                    } catch (Exception ignored) {
+                    }
+                }
+
+                if (viewTitle.equals(PlayerInfo.menu + targetName)
                         && cooldowns.canDo("player-info=" + protocol.getUUID())) {
                     cooldowns.add(
                             "player-info=" + protocol.getUUID(),
