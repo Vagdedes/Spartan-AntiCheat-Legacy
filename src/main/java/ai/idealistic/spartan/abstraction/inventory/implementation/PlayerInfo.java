@@ -223,22 +223,24 @@ public class PlayerInfo extends InventoryMenu {
 
                 for (PlayerProtocol protocol : protocols) {
                     if (cooldowns.canDo("player-info=" + protocol.getUUID())) {
-                        InventoryView inventoryView = protocol.bukkit().getOpenInventory();
-                        String viewTitle;
+                        PluginBase.runTask(protocol, () -> {
+                            InventoryView inventoryView = protocol.bukkit().getOpenInventory();
+                            String viewTitle;
 
-                        try {
-                            viewTitle = (String) GET_TITLE_METHOD.invoke(inventoryView);
-                        } catch (Exception ignored) {
-                            continue;
-                        }
+                            try {
+                                viewTitle = (String) GET_TITLE_METHOD.invoke(inventoryView);
+                            } catch (Exception ignored) {
+                                return;
+                            }
 
-                        if (viewTitle.equals(expectedTitle)) {
-                            cooldowns.add(
-                                    "player-info=" + protocol.getUUID(),
-                                    10
-                            );
-                            PluginBase.playerInfo.open(protocol, targetName);
-                        }
+                            if (viewTitle.equals(expectedTitle)) {
+                                cooldowns.add(
+                                        "player-info=" + protocol.getUUID(),
+                                        10
+                                );
+                                PluginBase.playerInfo.open(protocol, targetName);
+                            }
+                        });
                     }
                 }
             }
