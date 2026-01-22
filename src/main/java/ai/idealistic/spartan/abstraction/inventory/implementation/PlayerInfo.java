@@ -215,27 +215,31 @@ public class PlayerInfo extends InventoryMenu {
     }
 
     public void refresh(String targetName) {
-        Collection<PlayerProtocol> protocols = PluginBase.getProtocols();
+        if (GET_TITLE_METHOD != null) {
+            Collection<PlayerProtocol> protocols = PluginBase.getProtocols();
 
-        if (!protocols.isEmpty()) {
-            for (PlayerProtocol protocol : protocols) {
-                InventoryView inventoryView = protocol.bukkit().getOpenInventory();
-                String viewTitle = "";
+            if (!protocols.isEmpty()) {
+                String expectedTitle = PlayerInfo.menu + targetName;
 
-                if (GET_TITLE_METHOD != null) {
-                    try {
-                        viewTitle = (String) GET_TITLE_METHOD.invoke(inventoryView);
-                    } catch (Exception ignored) {
+                for (PlayerProtocol protocol : protocols) {
+                    if (cooldowns.canDo("player-info=" + protocol.getUUID())) {
+                        InventoryView inventoryView = protocol.bukkit().getOpenInventory();
+                        String viewTitle;
+
+                        try {
+                            viewTitle = (String) GET_TITLE_METHOD.invoke(inventoryView);
+                        } catch (Exception ignored) {
+                            continue;
+                        }
+
+                        if (viewTitle.equals(expectedTitle)) {
+                            cooldowns.add(
+                                    "player-info=" + protocol.getUUID(),
+                                    10
+                            );
+                            PluginBase.playerInfo.open(protocol, targetName);
+                        }
                     }
-                }
-
-                if (viewTitle.equals(PlayerInfo.menu + targetName)
-                        && cooldowns.canDo("player-info=" + protocol.getUUID())) {
-                    cooldowns.add(
-                            "player-info=" + protocol.getUUID(),
-                            10
-                    );
-                    PluginBase.playerInfo.open(protocol, targetName);
                 }
             }
         }
