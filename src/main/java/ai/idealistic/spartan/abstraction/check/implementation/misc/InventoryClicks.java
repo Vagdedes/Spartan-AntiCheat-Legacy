@@ -19,32 +19,6 @@ import java.lang.reflect.Method;
 
 public class InventoryClicks extends CheckRunner {
 
-    private static final Method
-            GET_CURSOR_METHOD,
-            COUNT_SLOTS_METHOD;
-
-    static {
-        Method m;
-
-        try {
-            m = InventoryView.class.getMethod("getCursor");
-        } catch (Exception ignored) {
-            m = null;
-        }
-        GET_CURSOR_METHOD = m;
-
-        // Separator
-
-        Method m1;
-
-        try {
-            m1 = InventoryView.class.getMethod("countSlots");
-        } catch (Exception ignored) {
-            m1 = null;
-        }
-        COUNT_SLOTS_METHOD = m1;
-    }
-
     private final CheckDetection
             shift,
             slow,

@@ -21,19 +21,6 @@ import java.lang.reflect.Method;
 
 public class InventoryEvent implements Listener {
 
-    private static final Method GET_TITLE_METHOD;
-
-    static {
-        Method m;
-
-        try {
-            m = InventoryView.class.getMethod("getTitle");
-        } catch (Exception ignored) {
-            m = null;
-        }
-        GET_TITLE_METHOD = m;
-    }
-
     @EventHandler(priority = EventPriority.HIGHEST)
     private void ItemDrop(PlayerDropItemEvent e) {
         PlayerProtocol p = PluginBase.getProtocol(e.getPlayer(), true);

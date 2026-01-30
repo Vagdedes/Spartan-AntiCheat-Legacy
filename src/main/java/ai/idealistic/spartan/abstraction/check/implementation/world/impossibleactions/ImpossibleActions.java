@@ -34,19 +34,6 @@ import java.util.Map;
 
 public class ImpossibleActions extends CheckRunner {
 
-    private static final Method GET_CURSOR_METHOD;
-
-    static {
-        Method m;
-
-        try {
-            m = InventoryView.class.getMethod("getCursor");
-        } catch (Exception ignored) {
-            m = null;
-        }
-        GET_CURSOR_METHOD = m;
-    }
-
     private final CheckDetection
             scaffoldDirection,
             scaffoldUp,

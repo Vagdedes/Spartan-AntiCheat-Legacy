@@ -24,29 +24,14 @@ import ai.idealistic.spartan.utils.java.TimeUtils;
 import ai.idealistic.spartan.utils.minecraft.inventory.MaterialUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class PlayerInfo extends InventoryMenu {
-
-    private static final Method GET_TITLE_METHOD;
-
-    static {
-        Method m;
-
-        try {
-            m = InventoryView.class.getMethod("getTitle");
-        } catch (Exception ignored) {
-            m = null;
-        }
-        GET_TITLE_METHOD = m;
-    }
 
     public static final Permission[] permissions = new Permission[]{Permission.MANAGE, Permission.INFO};
 
@@ -215,24 +200,22 @@ public class PlayerInfo extends InventoryMenu {
     }
 
     public void refresh(String targetName) {
-        if (GET_TITLE_METHOD != null) {
-            Collection<PlayerProtocol> protocols = PluginBase.getProtocols();
+        Collection<PlayerProtocol> protocols = PluginBase.getProtocols();
 
-            if (!protocols.isEmpty()) {
-                String expectedTitle = PlayerInfo.menu + targetName;
+        if (!protocols.isEmpty()) {
+            String expectedTitle = PlayerInfo.menu + targetName;
 
-                for (PlayerProtocol protocol : protocols) {
-                    if (cooldowns.canDo("player-info=" + protocol.getUUID())) {
-                        PluginBase.runTask(protocol, () -> {
-                            if (protocol.getOpenInventoryTitle("").equals(expectedTitle)) {
-                                cooldowns.add(
-                                        "player-info=" + protocol.getUUID(),
-                                        10
-                                );
-                                PluginBase.playerInfo.open(protocol, targetName);
-                            }
-                        });
-                    }
+            for (PlayerProtocol protocol : protocols) {
+                if (cooldowns.canDo("player-info=" + protocol.getUUID())) {
+                    PluginBase.runTask(protocol, () -> {
+                        if (protocol.getOpenInventoryTitle("").equals(expectedTitle)) {
+                            cooldowns.add(
+                                    "player-info=" + protocol.getUUID(),
+                                    10
+                            );
+                            PluginBase.playerInfo.open(protocol, targetName);
+                        }
+                    });
                 }
             }
         }
