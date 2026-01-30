@@ -1,1 +1,1 @@
-[#]
+[#] Fixed a bedrock false positive casued by the HitReach check

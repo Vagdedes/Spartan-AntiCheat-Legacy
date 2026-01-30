@@ -193,7 +193,8 @@ public class HitReach extends CheckRunner {
                         boolean flagged = false;
                         if (minDistance.get() > HIT_BOX_VAL) {
                             flagged = true;
-                            if (++hitBoxVL > 3D) {
+                            if (++hitBoxVL > 3D
+                                    && !this.protocol.isBedrockPlayer()) {
                                 this.hitboxRaytrace.cancel("Missing HitBox of " + target.bukkit().getName());
                                 event.setCancelled(true);
                             }
