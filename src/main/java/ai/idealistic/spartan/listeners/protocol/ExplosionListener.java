@@ -14,8 +14,6 @@ import com.comphenix.protocol.events.PacketEvent;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-import java.util.List;
-
 public class ExplosionListener extends PacketAdapter {
 
     public ExplosionListener() {
@@ -26,9 +24,8 @@ public class ExplosionListener extends PacketAdapter {
     @Override
     public void onPacketSending(PacketEvent event) {
         PacketContainer packet = event.getPacket();
-        List<Double> d = packet.getDoubles().getValues();
 
-        if (d.size() >= 3) {
+        if (packet.getDoubles().size() >= 3) {
             Player player = event.getPlayer();
             PlayerProtocol protocol = PluginBase.getProtocol(player);
 
@@ -36,7 +33,12 @@ public class ExplosionListener extends PacketAdapter {
                     && protocol.isBedrockPlayer()) {
                 return;
             }
-            Location l = new Location(player.getWorld(), d.get(0), d.get(1), d.get(2));
+            Location l = new Location(
+                    player.getWorld(),
+                    packet.getDoubles().read(0),
+                    packet.getDoubles().read(1),
+                    packet.getDoubles().read(2)
+            );
 
             if (ServerLocation.distanceSquared(l, protocol.getLocation()) < 10) {
                 CheckThread.run(() -> {

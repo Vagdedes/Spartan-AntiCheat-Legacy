@@ -34,7 +34,7 @@ public class UseEntityListener extends PacketAdapter {
         PacketContainer packet = event.getPacket();
         int entityId = packet.getIntegers().read(0);
 
-        if ((!packet.getEntityUseActions().getValues().isEmpty())
+        if (packet.getEntityUseActions().size() > 0
                 ? !packet.getEntityUseActions().read(0).equals(EnumWrappers.EntityUseAction.ATTACK)
                 : !packet.getEnumEntityUseActions().read(0).getAction().equals(
                 EnumWrappers.EntityUseAction.ATTACK)) {

@@ -40,16 +40,19 @@ public class VelocityListener extends PacketAdapter {
         if (!packet.getType().equals(PacketType.Play.Server.ENTITY_VELOCITY)) {
             return;
         }
-        if (packet.getIntegers().getValues().size() >= 4) {
-            int id = packet.getIntegers().getValues().get(0);
+        if (packet.getIntegers().size() >= 4) {
+            int id = packet.getIntegers().read(0);
 
             if (protocol.getEntityId() == id) {
+                final double x = packet.getIntegers().read(1).doubleValue() / 8000.0D;
+                final double y = packet.getIntegers().read(2).doubleValue() / 8000.0D;
+                final double z = packet.getIntegers().read(3).doubleValue() / 8000.0D;
+                final boolean isCancelled = event.isCancelled();
+
                 CheckThread.run(() -> {
-                    double x = packet.getIntegers().read(1).doubleValue() / 8000.0D,
-                            y = packet.getIntegers().read(2).doubleValue() / 8000.0D,
-                            z = packet.getIntegers().read(3).doubleValue() / 8000.0D;
+                    // Now it's safe to use these variables asynchronously
                     CPlayerVelocityEvent velocityEvent = new CPlayerVelocityEvent(player, new Vector(x, y, z));
-                    velocityEvent.setCancelled(event.isCancelled());
+                    velocityEvent.setCancelled(isCancelled);
                     VelocityEvent.event(velocityEvent, true);
                 });
             }

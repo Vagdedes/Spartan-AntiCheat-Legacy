@@ -50,18 +50,19 @@ public class BlockPlaceListener extends PacketAdapter {
 
         CheckThread.run(() -> {
             if (isPlacingBlock(packet)) {
-                if (packet.getBlockPositionModifier().getValues().isEmpty() && packet.getMovingBlockPositions().getValues().isEmpty()) {
+                if (packet.getBlockPositionModifier().size() == 0
+                        && packet.getMovingBlockPositions().size() == 0) {
                     // stub for debug
                 } else {
                     BlockPosition blockPosition = new BlockPosition(0, 0, 0);
                     EnumWrappers.Direction direction = null;
-                    if (!packet.getMovingBlockPositions().getValues().isEmpty()) {
+                    if (packet.getMovingBlockPositions().size() > 0) {
                         blockPosition = packet.getMovingBlockPositions().read(0).getBlockPosition();
                         direction = packet.getMovingBlockPositions().read(0).getDirection();
                     }
-                    if (!packet.getBlockPositionModifier().getValues().isEmpty()) {
+                    if (packet.getBlockPositionModifier().size() > 0) {
                         blockPosition = packet.getBlockPositionModifier().read(0);
-                        if (packet.getDirections().getValues().isEmpty()) {
+                        if (packet.getDirections().size() == 0) {
                             int directionInt = packet.getIntegers().read(0);
                             direction = EnumWrappers.Direction.values()[directionInt];
                         } else {
@@ -119,11 +120,11 @@ public class BlockPlaceListener extends PacketAdapter {
 
     private boolean isPlacingBlock(PacketContainer packet) {
         BlockPosition blockPosition = new BlockPosition(0, 0, 0);
-        if (packet.getHands().getValues().isEmpty()) {
-            if (!packet.getMovingBlockPositions().getValues().isEmpty()) {
+        if (packet.getHands().size() == 0) {
+            if (packet.getMovingBlockPositions().size() > 0) {
                 blockPosition = packet.getMovingBlockPositions().read(0).getBlockPosition();
             }
-            if (!packet.getBlockPositionModifier().getValues().isEmpty()) {
+            if (packet.getBlockPositionModifier().size() > 0) {
                 blockPosition = packet.getBlockPositionModifier().read(0);
             }
 

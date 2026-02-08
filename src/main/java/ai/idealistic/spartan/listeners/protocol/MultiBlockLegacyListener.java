@@ -29,7 +29,7 @@ public class MultiBlockLegacyListener extends PacketAdapter {
         World world = player.getWorld();
         PacketContainer packet = event.getPacket();
 
-        if (packet.getMultiBlockChangeInfoArrays().getValues().isEmpty()) {
+        if (packet.getMultiBlockChangeInfoArrays().size() == 0) {
             return;
         }
         List<MultiBlockChangeInfo[]> mList = packet.getMultiBlockChangeInfoArrays().getValues();

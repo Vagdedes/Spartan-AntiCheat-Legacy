@@ -61,7 +61,7 @@ public class LegacyCombatListener extends PacketAdapter {
                 }
             }
 
-            if ((!packet.getEntityUseActions().getValues().isEmpty()) ?
+            if (packet.getEntityUseActions().size() > 0 ?
                     packet.getEntityUseActions().read(0).equals(EnumWrappers.EntityUseAction.ATTACK)
                     : packet.getEnumEntityUseActions().read(0).getAction().equals(
                     EnumWrappers.EntityUseAction.ATTACK)) {

@@ -40,11 +40,11 @@ public class UseItemStatusHandle extends PacketAdapter {
                 protocol.useItemPacket = false;
             } else {
                 BlockPosition blockPosition = new BlockPosition(0, 0, 0);
-                if (packet.getHands().getValues().isEmpty()) {
-                    if (!packet.getMovingBlockPositions().getValues().isEmpty()) {
+                if (packet.getHands().size() == 0) {
+                    if (packet.getMovingBlockPositions().size() > 0) {
                         blockPosition = packet.getMovingBlockPositions().read(0).getBlockPosition();
                     }
-                    if (!packet.getBlockPositionModifier().getValues().isEmpty()) {
+                    if (packet.getBlockPositionModifier().size() > 0) {
                         blockPosition = packet.getBlockPositionModifier().read(0);
                     }
                     if (blockPosition.getY() != -1) return;

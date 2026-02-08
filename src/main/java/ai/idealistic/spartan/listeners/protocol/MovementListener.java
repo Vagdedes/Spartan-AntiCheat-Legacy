@@ -52,7 +52,7 @@ public class MovementListener extends PacketAdapter {
         if (tp == null) {
             return;
         }
-        if (!event.getPacket().getFloat().getValues().isEmpty()) {
+        if (event.getPacket().getFloat().size() > 0) {
             tp.setYaw(event.getPacket().getFloat().read(0));
             tp.setPitch(event.getPacket().getFloat().read(1));
         }

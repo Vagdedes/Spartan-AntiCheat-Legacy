@@ -1,1 +1,2 @@
 [#] Fixed a bedrock false positive casued by the HitReach check
+[#] Improved the way the plugin handles most packets for less errors and more functionality
