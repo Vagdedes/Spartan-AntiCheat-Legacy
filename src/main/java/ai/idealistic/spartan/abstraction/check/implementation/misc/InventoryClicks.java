@@ -12,10 +12,7 @@ import ai.idealistic.spartan.utils.minecraft.world.BlockUtils;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
-
-import java.lang.reflect.Method;
 
 public class InventoryClicks extends CheckRunner {
 

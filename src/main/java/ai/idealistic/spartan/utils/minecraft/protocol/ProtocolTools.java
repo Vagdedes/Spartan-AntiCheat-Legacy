@@ -49,7 +49,7 @@ public class ProtocolTools {
     }
 
     public static Set<MovementListener.tpFlags> getTeleportFlags(PacketEvent event) {
-        String s = event.getPacket().getStructures().getValues().get(0).toString();
+        String s = event.getPacket().getStructures().read(0).toString();
         Set<MovementListener.tpFlags> flags = new HashSet<>(3);
         s = s.replace("X_ROT", "").replace("Y_ROT", "");
         if (s.contains("X")) flags.add(MovementListener.tpFlags.X);

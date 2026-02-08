@@ -36,8 +36,8 @@ public class EntityActionListener extends PacketAdapter {
             return;
         }
         CheckThread.run(() -> {
-            if (event.getPacket().getModifier().getValues().size() > 1) {
-                String typeString = event.getPacket().getModifier().getValues().get(1).toString();
+            if (event.getPacket().getModifier().size() > 1) {
+                String typeString = event.getPacket().getModifier().read(1).toString();
                 AbilitiesEnum type = getEnum(typeString);
 
                 if (type != null) {
