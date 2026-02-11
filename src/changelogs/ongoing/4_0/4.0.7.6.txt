@@ -1,0 +1,1 @@
+[#] Fixed an incorrectly placed legacy API class
