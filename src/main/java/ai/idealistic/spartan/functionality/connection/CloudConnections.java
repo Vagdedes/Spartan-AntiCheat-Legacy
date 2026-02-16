@@ -9,6 +9,7 @@ import ai.idealistic.spartan.functionality.server.PluginBase;
 import ai.idealistic.spartan.utils.java.RequestUtils;
 import ai.idealistic.spartan.utils.java.StringUtils;
 import ai.idealistic.spartan.utils.math.AlgebraUtils;
+import org.bukkit.ChatColor;
 
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -117,7 +118,7 @@ public class CloudConnections {
                 String safeName = escapeJson(truncate(name, 32));
                 String safeUuid = escapeJson(truncate(uuid.toString(), 1024));
                 String safeType = escapeJson(truncate(type, 256));
-                String safeInfo = escapeJson(truncate(information.replace("\n", " | "), 1024));
+                String safeInfo = escapeJson(truncate(ChatColor.stripColor(information).replace("\n", " | "), 1024));
                 String safeTitle = escapeJson(truncate(titleSuffix, 224));
                 String jsonPayload = "{"
                         + "\"username\": \"Spartan AntiCheat\","
