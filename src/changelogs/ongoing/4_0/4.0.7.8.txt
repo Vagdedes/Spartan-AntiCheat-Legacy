@@ -1,0 +1,1 @@
+[#] Fixed the plugin's reflection methods improperly identifying open inventory titles

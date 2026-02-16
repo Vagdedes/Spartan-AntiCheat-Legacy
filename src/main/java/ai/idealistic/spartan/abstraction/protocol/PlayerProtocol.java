@@ -977,6 +977,9 @@ public class PlayerProtocol {
     // Separator
 
     public ItemStack getOpenInventoryCursor() {
+        if (GET_CURSOR_METHOD == null) {
+            return null;
+        }
         InventoryView inventoryView = this.bukkit.getOpenInventory();
         ItemStack cursor;
 
@@ -989,6 +992,9 @@ public class PlayerProtocol {
     }
 
     public int getOpenInventoryCountSlots(int defaultValue) {
+        if (COUNT_SLOTS_METHOD == null) {
+            return defaultValue;
+        }
         InventoryView inventoryView = this.bukkit.getOpenInventory();
         Integer slots;
 
@@ -1001,11 +1007,14 @@ public class PlayerProtocol {
     }
 
     public String getOpenInventoryTitle(String defaultValue) {
+        if (GET_TITLE_METHOD == null) {
+            return defaultValue;
+        }
         InventoryView inventoryView = this.bukkit.getOpenInventory();
         String title;
 
         try {
-            title = (String) COUNT_SLOTS_METHOD.invoke(inventoryView);
+            title = (String) GET_TITLE_METHOD.invoke(inventoryView);
         } catch (Exception ignored) {
             title = null;
         }
