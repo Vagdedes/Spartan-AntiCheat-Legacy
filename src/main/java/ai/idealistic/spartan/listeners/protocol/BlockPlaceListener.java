@@ -57,8 +57,8 @@ public class BlockPlaceListener extends PacketAdapter {
                     BlockPosition blockPosition = new BlockPosition(0, 0, 0);
                     EnumWrappers.Direction direction = null;
                     if (packet.getMovingBlockPositions().size() > 0) {
-                        blockPosition = packet.getMovingBlockPositions().read(0).getBlockPosition();
-                        direction = packet.getMovingBlockPositions().read(0).getDirection();
+                        blockPosition = MovingBlockPositionsPlib.getSafeMovingBlockPositions(packet, 0).getBlockPosition();
+                        direction = MovingBlockPositionsPlib.getSafeMovingBlockPositions(packet, 0).getDirection();
                     }
                     if (packet.getBlockPositionModifier().size() > 0) {
                         blockPosition = BlockPositionPlib.getSafeBlockPosition(packet, 0);
@@ -122,7 +122,7 @@ public class BlockPlaceListener extends PacketAdapter {
         BlockPosition blockPosition = new BlockPosition(0, 0, 0);
         if (packet.getHands().size() == 0) {
             if (packet.getMovingBlockPositions().size() > 0) {
-                blockPosition = packet.getMovingBlockPositions().read(0).getBlockPosition();
+                blockPosition = MovingBlockPositionsPlib.getSafeMovingBlockPositions(packet, 0).getBlockPosition();
             }
             if (packet.getBlockPositionModifier().size() > 0) {
                 blockPosition = BlockPositionPlib.getSafeBlockPosition(packet, 0);
