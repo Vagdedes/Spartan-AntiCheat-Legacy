@@ -10,6 +10,7 @@ import ai.idealistic.spartan.utils.minecraft.entity.PlayerUtils;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
+import com.comphenix.protocol.events.PacketContainer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,6 +67,70 @@ public class BackgroundProtocolLib {
             p.addPacketListener(new HandUseListener());
         }
         //p.addPacketListener(new PacketDebug());
+    }
+
+    public static double getSafeDouble(PacketContainer packet, int index) {
+        try {
+            return packet.getDoubles().read(index);
+        } catch (Throwable t) {
+            return (double) packet.getModifier().read(index);
+        }
+    }
+
+    public static int getSafeInt(PacketContainer packet, int index) {
+        try {
+            return packet.getIntegers().read(index);
+        } catch (Throwable t) {
+            return (int) packet.getModifier().read(index);
+        }
+    }
+
+    public static float getSafeFloat(PacketContainer packet, int index) {
+        try {
+            return packet.getFloat().read(index);
+        } catch (Throwable t) {
+            return (float) packet.getModifier().read(index);
+        }
+    }
+
+    public static long getSafeLong(PacketContainer packet, int index) {
+        try {
+            return packet.getLongs().read(index);
+        } catch (Throwable t) {
+            return (long) packet.getModifier().read(index);
+        }
+    }
+
+    public static short getSafeShort(PacketContainer packet, int index) {
+        try {
+            return packet.getShorts().read(index);
+        } catch (Throwable t) {
+            return (short) packet.getModifier().read(index);
+        }
+    }
+
+    public static boolean getSafeBoolean(PacketContainer packet, int index) {
+        try {
+            return packet.getBooleans().read(index);
+        } catch (Throwable t) {
+            return (boolean) packet.getModifier().read(index);
+        }
+    }
+
+    public static byte getSafeByte(PacketContainer packet, int index) {
+        try {
+            return packet.getBytes().read(index);
+        } catch (Throwable t) {
+            return (byte) packet.getModifier().read(index);
+        }
+    }
+
+    public String getSafeString(PacketContainer packet, int index) {
+        try {
+            return packet.getStrings().read(index);
+        } catch (Throwable t) {
+            return (String) packet.getModifier().read(index);
+        }
     }
 
 }
