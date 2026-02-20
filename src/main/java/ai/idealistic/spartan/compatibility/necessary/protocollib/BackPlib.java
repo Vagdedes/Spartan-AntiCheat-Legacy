@@ -15,7 +15,7 @@ import com.comphenix.protocol.events.PacketContainer;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BackgroundProtocolLib {
+public class BackPlib {
 
     private static final List<String> packets = new ArrayList<>();
 

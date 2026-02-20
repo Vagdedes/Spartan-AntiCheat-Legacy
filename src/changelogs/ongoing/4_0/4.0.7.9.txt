@@ -1,1 +1,2 @@
 [#] Chat colors will no longer be included in the Discord webhooks
+[#] Introduced safer reading of packets in case of compilation-rooted errors
