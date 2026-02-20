@@ -52,7 +52,7 @@ public class LegacyCombatListener extends PacketAdapter {
                 return;
             }
             PacketContainer packet = event.getPacket();
-            int entityId = packet.getIntegers().read(0);
+            int entityId = BackPlib.getSafeInt(packet, 0);
 
             Player target = null;
             for (Player player : Bukkit.getOnlinePlayers()) {
@@ -97,7 +97,7 @@ public class LegacyCombatListener extends PacketAdapter {
                     && protocol.isBedrockPlayer()) {
                 return;
             }
-            int entityId = event.getPacket().getIntegers().read(0);
+            int entityId = BackPlib.getSafeInt(event.getPacket(), 0);
             byte status = BackPlib.getSafeByte(event.getPacket(), 0);
             if (status != 2) return;
             pendingAttacks.entrySet().removeIf(entry -> {

@@ -3,6 +3,7 @@ package ai.idealistic.spartan.listeners.protocol;
 import ai.idealistic.spartan.Register;
 import ai.idealistic.spartan.abstraction.event.ServerBlockChange;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
+import ai.idealistic.spartan.compatibility.necessary.protocollib.BackPlib;
 import ai.idealistic.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import ai.idealistic.spartan.functionality.concurrent.CheckThread;
 import ai.idealistic.spartan.functionality.server.Config;
@@ -63,10 +64,10 @@ public class BlockPlaceListener extends PacketAdapter {
                     if (packet.getBlockPositionModifier().size() > 0) {
                         blockPosition = packet.getBlockPositionModifier().read(0);
                         if (packet.getDirections().size() == 0) {
-                            int directionInt = packet.getIntegers().read(0);
+                            int directionInt = BackPlib.getSafeInt(packet, 0);
                             direction = EnumWrappers.Direction.values()[directionInt];
                         } else {
-                            direction = packet.getDirections().read(0);
+                            direction = BackPlib.getSafeDirection(packet, 0);
                         }
                     }
 

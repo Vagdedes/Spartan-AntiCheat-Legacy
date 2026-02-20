@@ -3,6 +3,7 @@ package ai.idealistic.spartan.listeners.protocol;
 import ai.idealistic.spartan.Register;
 import ai.idealistic.spartan.abstraction.event.CPlayerVelocityEvent;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
+import ai.idealistic.spartan.compatibility.necessary.protocollib.BackPlib;
 import ai.idealistic.spartan.functionality.concurrent.CheckThread;
 import ai.idealistic.spartan.functionality.server.Config;
 import ai.idealistic.spartan.functionality.server.PluginBase;
@@ -41,12 +42,12 @@ public class VelocityListener extends PacketAdapter {
             return;
         }
         if (packet.getIntegers().size() >= 4) {
-            int id = packet.getIntegers().read(0);
+            int id = BackPlib.getSafeInt(packet, 0);
 
             if (protocol.getEntityId() == id) {
-                final double x = packet.getIntegers().read(1).doubleValue() / 8000.0D;
-                final double y = packet.getIntegers().read(2).doubleValue() / 8000.0D;
-                final double z = packet.getIntegers().read(3).doubleValue() / 8000.0D;
+                final double x = ((double) BackPlib.getSafeInt(packet, 1)) / 8000.0D;
+                final double y = ((double) BackPlib.getSafeInt(packet, 2)) / 8000.0D;
+                final double z = ((double) BackPlib.getSafeInt(packet, 3)) / 8000.0D;
                 final boolean isCancelled = event.isCancelled();
 
                 CheckThread.run(() -> {
