@@ -2,6 +2,7 @@ package ai.idealistic.spartan.listeners.protocol;
 
 import ai.idealistic.spartan.Register;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
+import ai.idealistic.spartan.compatibility.necessary.protocollib.BackPlib;
 import ai.idealistic.spartan.functionality.concurrent.CheckThread;
 import ai.idealistic.spartan.functionality.server.PluginBase;
 import com.comphenix.protocol.PacketType;
@@ -30,7 +31,7 @@ public class MultiBlockListener extends PacketAdapter {
         int chunkX = b.getX();
         int chunkZ = b.getZ();
         int chunkY = b.getY();
-        short[] records = packet.getShortArrays().read(0);
+        short[] records = BackPlib.getSafeShortArray(packet, 0);
         Object[] blockData = packet.getSpecificModifier(Object[].class).read(0);
 
         CheckThread.run(() -> {

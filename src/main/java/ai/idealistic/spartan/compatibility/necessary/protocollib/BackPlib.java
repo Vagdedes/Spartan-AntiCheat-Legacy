@@ -86,6 +86,14 @@ public class BackPlib {
         }
     }
 
+    public static int[] getSafeIntArray(PacketContainer packet, int index) {
+        try {
+            return packet.getIntegerArrays().read(index);
+        } catch (Throwable t) {
+            return (int[]) packet.getModifier().read(index);
+        }
+    }
+
     public static float getSafeFloat(PacketContainer packet, int index) {
         try {
             return packet.getFloat().read(index);
@@ -110,6 +118,14 @@ public class BackPlib {
         }
     }
 
+    public static short[] getSafeShortArray(PacketContainer packet, int index) {
+        try {
+            return packet.getShortArrays().read(index);
+        } catch (Throwable t) {
+            return (short[]) packet.getModifier().read(index);
+        }
+    }
+
     public static boolean getSafeBoolean(PacketContainer packet, int index) {
         try {
             return packet.getBooleans().read(index);
@@ -126,11 +142,27 @@ public class BackPlib {
         }
     }
 
+    public static byte[] getSafeByteArray(PacketContainer packet, int index) {
+        try {
+            return packet.getByteArrays().read(index);
+        } catch (Throwable t) {
+            return (byte[]) packet.getModifier().read(index);
+        }
+    }
+
     public static String getSafeString(PacketContainer packet, int index) {
         try {
             return packet.getStrings().read(index);
         } catch (Throwable t) {
             return (String) packet.getModifier().read(index);
+        }
+    }
+
+    public static String[] getSafeStringArray(PacketContainer packet, int index) {
+        try {
+            return packet.getStringArrays().read(index);
+        } catch (Throwable t) {
+            return (String[]) packet.getModifier().read(index);
         }
     }
 
