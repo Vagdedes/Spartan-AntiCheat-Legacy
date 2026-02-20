@@ -3,8 +3,7 @@ package ai.idealistic.spartan.listeners.protocol;
 import ai.idealistic.spartan.Register;
 import ai.idealistic.spartan.abstraction.event.ServerBlockChange;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
-import ai.idealistic.spartan.compatibility.necessary.protocollib.BackPlib;
-import ai.idealistic.spartan.compatibility.necessary.protocollib.ProtocolLib;
+import ai.idealistic.spartan.compatibility.necessary.protocollib.*;
 import ai.idealistic.spartan.functionality.concurrent.CheckThread;
 import ai.idealistic.spartan.functionality.server.Config;
 import ai.idealistic.spartan.functionality.server.MultiVersion;
@@ -62,12 +61,12 @@ public class BlockPlaceListener extends PacketAdapter {
                         direction = packet.getMovingBlockPositions().read(0).getDirection();
                     }
                     if (packet.getBlockPositionModifier().size() > 0) {
-                        blockPosition = packet.getBlockPositionModifier().read(0);
+                        blockPosition = BlockPositionPlib.getSafeBlockPosition(packet, 0);
                         if (packet.getDirections().size() == 0) {
                             int directionInt = BackPlib.getSafeInt(packet, 0);
                             direction = EnumWrappers.Direction.values()[directionInt];
                         } else {
-                            direction = BackPlib.getSafeDirection(packet, 0);
+                            direction = DirectionPlib.getSafeDirection(packet, 0);
                         }
                     }
 
@@ -85,7 +84,7 @@ public class BlockPlaceListener extends PacketAdapter {
 
                     if (block == null) return;
                     boolean isMainHand = !MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)
-                            || event.getPacket().getHands().read(0) == EnumWrappers.Hand.MAIN_HAND;
+                            || HandsPlib.getSafeHand(event.getPacket(), 0) == EnumWrappers.Hand.MAIN_HAND;
 
                     ItemStack itemInHand = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)
                             ? (isMainHand ? protocol.getInventory().getItemInMainHand()
@@ -126,14 +125,14 @@ public class BlockPlaceListener extends PacketAdapter {
                 blockPosition = packet.getMovingBlockPositions().read(0).getBlockPosition();
             }
             if (packet.getBlockPositionModifier().size() > 0) {
-                blockPosition = packet.getBlockPositionModifier().read(0);
+                blockPosition = BlockPositionPlib.getSafeBlockPosition(packet, 0);
             }
 
             return (blockPosition.getY() != -1);
         } else {
             return ((packet.getType().equals(PacketType.Play.Client.USE_ITEM)
                     || packet.getType().toString().contains("USE_ITEM_ON"))
-                    && packet.getHands().read(0).equals(EnumWrappers.Hand.MAIN_HAND));
+                    && HandsPlib.getSafeHand(packet, 0).equals(EnumWrappers.Hand.MAIN_HAND));
         }
     }
 

@@ -11,7 +11,6 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.wrappers.EnumWrappers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -163,15 +162,6 @@ public class BackPlib {
             return packet.getStringArrays().read(index);
         } catch (Throwable t) {
             return (String[]) packet.getModifier().read(index);
-        }
-    }
-
-    public static EnumWrappers.Direction getSafeDirection(PacketContainer packet, int index) {
-        try {
-            return packet.getDirections().read(index);
-        } catch (Throwable t) {
-            int directionInt = getSafeInt(packet, index);
-            return EnumWrappers.Direction.values()[directionInt];
         }
     }
 
