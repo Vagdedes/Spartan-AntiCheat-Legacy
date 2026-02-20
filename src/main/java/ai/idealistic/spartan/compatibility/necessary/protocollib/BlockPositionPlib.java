@@ -12,4 +12,13 @@ public class BlockPositionPlib {
             return (BlockPosition) packet.getModifier().read(index);
         }
     }
+
+    public static BlockPosition getSafeSectionPositions(PacketContainer packet, int index) {
+        try {
+            return packet.getSectionPositions().read(index);
+        } catch (Throwable t) {
+            return (BlockPosition) packet.getModifier().read(index);
+        }
+    }
+
 }

@@ -3,6 +3,7 @@ package ai.idealistic.spartan.listeners.protocol;
 import ai.idealistic.spartan.Register;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.spartan.compatibility.necessary.protocollib.BackPlib;
+import ai.idealistic.spartan.compatibility.necessary.protocollib.BlockPositionPlib;
 import ai.idealistic.spartan.functionality.concurrent.CheckThread;
 import ai.idealistic.spartan.functionality.server.PluginBase;
 import com.comphenix.protocol.PacketType;
@@ -27,7 +28,7 @@ public class MultiBlockListener extends PacketAdapter {
         World world = player.getWorld();
         PacketContainer packet = event.getPacket();
 
-        BlockPosition b = packet.getSectionPositions().read(0);
+        BlockPosition b = BlockPositionPlib.getSafeSectionPositions(packet, 0);
         int chunkX = b.getX();
         int chunkZ = b.getZ();
         int chunkY = b.getY();

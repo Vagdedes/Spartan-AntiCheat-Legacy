@@ -4,6 +4,7 @@ import ai.idealistic.spartan.Register;
 import ai.idealistic.spartan.abstraction.event.PlayerUseEvent;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.spartan.compatibility.necessary.protocollib.BackPlib;
+import ai.idealistic.spartan.compatibility.necessary.protocollib.EntityUseActionPlib;
 import ai.idealistic.spartan.functionality.concurrent.CheckThread;
 import ai.idealistic.spartan.functionality.moderation.AwarenessNotifications;
 import ai.idealistic.spartan.functionality.server.Config;
@@ -62,8 +63,8 @@ public class CombatListener extends PacketAdapter {
                 }
             }
             if (packet.getEntityUseActions().size() > 0 ?
-                    packet.getEntityUseActions().read(0).equals(EnumWrappers.EntityUseAction.ATTACK)
-                    : packet.getEnumEntityUseActions().read(0).getAction().equals(
+                    EntityUseActionPlib.getSafeEntityUseActions(packet, 0).equals(EnumWrappers.EntityUseAction.ATTACK)
+                    : EntityUseActionPlib.getSafeEnumEntityUseActions(packet, 0).getAction().equals(
                     EnumWrappers.EntityUseAction.ATTACK)) {
                 if (protocol.isSDesync()) {
                     AwarenessNotifications.optionallySend(protocol.bukkit().getName()
