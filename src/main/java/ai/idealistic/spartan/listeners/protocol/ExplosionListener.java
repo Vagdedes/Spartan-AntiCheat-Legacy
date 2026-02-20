@@ -3,6 +3,7 @@ package ai.idealistic.spartan.listeners.protocol;
 import ai.idealistic.spartan.Register;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.spartan.abstraction.world.ServerLocation;
+import ai.idealistic.spartan.compatibility.necessary.protocollib.BackPlib;
 import ai.idealistic.spartan.functionality.concurrent.CheckThread;
 import ai.idealistic.spartan.functionality.server.Config;
 import ai.idealistic.spartan.functionality.server.PluginBase;
@@ -35,9 +36,9 @@ public class ExplosionListener extends PacketAdapter {
             }
             Location l = new Location(
                     player.getWorld(),
-                    packet.getDoubles().read(0),
-                    packet.getDoubles().read(1),
-                    packet.getDoubles().read(2)
+                    BackPlib.getSafeDouble(packet, 0),
+                    BackPlib.getSafeDouble(packet, 1),
+                    BackPlib.getSafeDouble(packet, 2)
             );
 
             if (ServerLocation.distanceSquared(l, protocol.getLocation()) < 10) {

@@ -3,6 +3,7 @@ package ai.idealistic.spartan.listeners.protocol;
 import ai.idealistic.spartan.Register;
 import ai.idealistic.spartan.abstraction.event.PlayerTransactionEvent;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
+import ai.idealistic.spartan.compatibility.necessary.protocollib.BackPlib;
 import ai.idealistic.spartan.functionality.concurrent.CheckThread;
 import ai.idealistic.spartan.functionality.server.MultiVersion;
 import ai.idealistic.spartan.functionality.server.PluginBase;
@@ -42,11 +43,11 @@ public class PacketLatencyHandler extends PacketAdapter {
         int id;
 
         if (!packet.getShorts().getFields().isEmpty()) {
-            id = packet.getShorts().read(0);
+            id = BackPlib.getSafeShort(packet, 0);
         } else if (!packet.getIntegers().getFields().isEmpty()) {
-            id = packet.getIntegers().read(0);
+            id = BackPlib.getSafeInt(packet, 0);
         } else if (!packet.getLongs().getFields().isEmpty()) {
-            id = Math.toIntExact(packet.getLongs().read(0));
+            id = Math.toIntExact(BackPlib.getSafeLong(packet, 0));
         } else {
             return;
         }

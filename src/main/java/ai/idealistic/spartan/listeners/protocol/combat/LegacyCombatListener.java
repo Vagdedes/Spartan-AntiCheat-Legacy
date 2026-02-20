@@ -3,6 +3,7 @@ package ai.idealistic.spartan.listeners.protocol.combat;
 import ai.idealistic.spartan.Register;
 import ai.idealistic.spartan.abstraction.event.PlayerUseEvent;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
+import ai.idealistic.spartan.compatibility.necessary.protocollib.BackPlib;
 import ai.idealistic.spartan.functionality.concurrent.CheckThread;
 import ai.idealistic.spartan.functionality.moderation.AwarenessNotifications;
 import ai.idealistic.spartan.functionality.server.Config;
@@ -97,7 +98,7 @@ public class LegacyCombatListener extends PacketAdapter {
                 return;
             }
             int entityId = event.getPacket().getIntegers().read(0);
-            byte status = event.getPacket().getBytes().read(0);
+            byte status = BackPlib.getSafeByte(event.getPacket(), 0);
             if (status != 2) return;
             pendingAttacks.entrySet().removeIf(entry -> {
                 UUID playerUUID = entry.getKey();

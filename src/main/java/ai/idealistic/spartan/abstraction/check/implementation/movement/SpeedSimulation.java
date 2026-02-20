@@ -12,6 +12,7 @@ import ai.idealistic.spartan.abstraction.protocol.ExtendedPotionEffect;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.spartan.abstraction.world.ServerLocation;
 import ai.idealistic.spartan.compatibility.manual.vanilla.Attributes;
+import ai.idealistic.spartan.compatibility.necessary.protocollib.BackPlib;
 import ai.idealistic.spartan.functionality.server.PluginBase;
 import ai.idealistic.spartan.functionality.tracking.CheckConditions;
 import ai.idealistic.spartan.listeners.protocol.TeleportListener;
@@ -71,7 +72,7 @@ public class SpeedSimulation extends CheckRunner {
             this.teleport();
         } else if (object instanceof SuperPositionPacketEvent) {
             SuperPositionPacketEvent e = (SuperPositionPacketEvent) object;
-            this.ground(e.packetEvent.getPacket().getBooleans().read(0));
+            this.ground(BackPlib.getSafeBoolean(e.packetEvent.getPacket(), 0));
         } else if (object instanceof CPlayerRiptideEvent
                 || object instanceof CPlayerLungeEvent) {
             this.trident();

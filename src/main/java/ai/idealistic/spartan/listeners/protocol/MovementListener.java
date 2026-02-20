@@ -5,6 +5,7 @@ import ai.idealistic.spartan.abstraction.data.EnvironmentData;
 import ai.idealistic.spartan.abstraction.event.PlayerTickEvent;
 import ai.idealistic.spartan.abstraction.event.SuperPositionPacketEvent;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
+import ai.idealistic.spartan.compatibility.necessary.protocollib.BackPlib;
 import ai.idealistic.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import ai.idealistic.spartan.functionality.concurrent.CheckThread;
 import ai.idealistic.spartan.functionality.moderation.AwarenessNotifications;
@@ -53,8 +54,8 @@ public class MovementListener extends PacketAdapter {
             return;
         }
         if (event.getPacket().getFloat().size() > 0) {
-            tp.setYaw(event.getPacket().getFloat().read(0));
-            tp.setPitch(event.getPacket().getFloat().read(1));
+            tp.setYaw(BackPlib.getSafeFloat(event.getPacket(), 0));
+            tp.setPitch(BackPlib.getSafeFloat(event.getPacket(), 1));
         }
         Location loc = p.getLocation().clone();
         Location result = tp.clone();
@@ -100,8 +101,8 @@ public class MovementListener extends PacketAdapter {
                 return;
             }
             if (ProtocolTools.hasRotation(event.getPacket().getType())) {
-                c.setYaw(event.getPacket().getFloat().read(0));
-                c.setPitch(event.getPacket().getFloat().read(1));
+                c.setYaw(BackPlib.getSafeFloat(event.getPacket(), 0));
+                c.setPitch(BackPlib.getSafeFloat(event.getPacket(), 1));
             }
             double[] v = new double[]{c.getX(), c.getY(), c.getZ(), c.getYaw(), c.getPitch()};
             for (Double check : v) {
@@ -188,8 +189,8 @@ public class MovementListener extends PacketAdapter {
                         }
                     }
                     if (hasRotation) {
-                        l.setYaw(packet.getFloat().read(0));
-                        l.setPitch(packet.getFloat().read(1));
+                        l.setYaw(BackPlib.getSafeFloat(packet, 0));
+                        l.setPitch(BackPlib.getSafeFloat(packet, 1));
                     }
                 }
                 if (p.useItemPacket) {
