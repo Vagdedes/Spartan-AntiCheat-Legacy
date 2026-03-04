@@ -92,7 +92,7 @@ public class CloudConnections {
         }
     }
 
-    public static void executeDiscordWebhook(String webhook, UUID uuid, String name, int x, int y, int z, String type, String information) {
+    public static void executeDiscordWebhook(String webhook, UUID uuid, String name, int ping, int x, int y, int z, String type, String information) {
         String urlString = Config.settings.getString("Discord." + webhook + "_webhook_url");
 
         if (urlString == null
@@ -109,7 +109,8 @@ public class CloudConnections {
                 int colorDecimal = 0;
 
                 try {
-                    if (colorHex != null && !colorHex.isEmpty()) {
+                    if (colorHex != null
+                            && !colorHex.isEmpty()) {
                         colorDecimal = Integer.parseInt(colorHex.replace("#", ""), 16);
                     }
                 } catch (NumberFormatException ignored) {
@@ -119,19 +120,19 @@ public class CloudConnections {
                 String safeUuid = escapeJson(truncate(uuid.toString(), 1024));
                 String safeType = escapeJson(truncate(type, 256));
                 String safeInfo = escapeJson(truncate(ChatColor.stripColor(information).replace("\n", " | "), 1024));
-                String safeTitle = escapeJson(truncate(titleSuffix, 224));
+                String safeTitle = escapeJson(truncate(Register.plugin + " AntiCheat" + titleSuffix, 256));
                 String jsonPayload = "{"
                         + "\"username\": \"Spartan AntiCheat\","
                         + "\"avatar_url\": \"https://vagdedes.com/.images/spartan/logo.png\","
                         + "\"embeds\": [{"
                         + "\"color\": " + colorDecimal + ","
                         + "\"author\": {"
-                        + "\"name\": \"" + safeName + safeTitle + "\","
+                        + "\"name\": \"" + safeTitle + "\","
                         + "\"icon_url\": \"" + avatarUrl + "\""
                         + "},"
                         + "\"fields\": ["
                         + "{\"name\": \"" + safeName + "\", \"value\": \"``" + safeUuid + "``\", \"inline\": true},"
-                        + "{\"name\": \"X, Y, Z\", \"value\": \"``" + x + "``**,** ``" + y + "``**,** ``" + z + "``\", \"inline\": true},"
+                        + "{\"name\": \"X, Y, Z, Ping\", \"value\": \"``" + x + "``**,** ``" + y + "``**,** ``" + z + "``**,** ``" + ping + "``\", \"inline\": true},"
                         + "{\"name\": \"" + safeType + "\", \"value\": \"``" + safeInfo + "``\", \"inline\": false}"
                         + "]"
                         + "}]"
