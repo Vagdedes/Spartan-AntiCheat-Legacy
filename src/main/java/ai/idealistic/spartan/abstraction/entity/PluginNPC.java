@@ -43,44 +43,47 @@ public class PluginNPC {
                 loc,
                 EntityType.ARMOR_STAND
         );
-        armorStand.setGravity(false);
-        armorStand.setSmall(false);
-        armorStand.setVisible(false);
-        armorStand.setCustomName("§2" + Register.pluginName + " §cAnti§4Cheat");
-        armorStand.setCustomNameVisible(true);
-        armorStand.setArms(true);
 
-        if (hasLockType) {
-            armorStand.addEquipmentLock(EquipmentSlot.HEAD, ArmorStand.LockType.REMOVING_OR_CHANGING);
-            armorStand.addEquipmentLock(EquipmentSlot.CHEST, ArmorStand.LockType.REMOVING_OR_CHANGING);
-            armorStand.addEquipmentLock(EquipmentSlot.LEGS, ArmorStand.LockType.REMOVING_OR_CHANGING);
-            armorStand.addEquipmentLock(EquipmentSlot.FEET, ArmorStand.LockType.REMOVING_OR_CHANGING);
-            armorStand.addEquipmentLock(EquipmentSlot.HAND, ArmorStand.LockType.REMOVING_OR_CHANGING);
-            armorStand.addEquipmentLock(EquipmentSlot.OFF_HAND, ArmorStand.LockType.REMOVING_OR_CHANGING);
-        }
-        if (hasSecondHand) {
-            armorStand.getEquipment().setItemInOffHand(new ItemStack(Material.SHIELD));
-        }
-        this.updateBodyAndLegs();
-        this.updateHead();
+        PluginBase.runTask(armorStand, () -> {
+            armorStand.setGravity(false);
+            armorStand.setSmall(false);
+            armorStand.setVisible(false);
+            armorStand.setCustomName("§2" + Register.pluginName + " §cAnti§4Cheat");
+            armorStand.setCustomNameVisible(true);
+            armorStand.setArms(true);
 
-        ItemStack itemStack = new ItemStack(Material.LEATHER_CHESTPLATE);
-        LeatherArmorMeta meta = (LeatherArmorMeta) itemStack.getItemMeta();
-        meta.setColor(Color.RED);
-        itemStack.setItemMeta(meta);
-        armorStand.getEquipment().setChestplate(itemStack);
+            if (hasLockType) {
+                armorStand.addEquipmentLock(EquipmentSlot.HEAD, ArmorStand.LockType.REMOVING_OR_CHANGING);
+                armorStand.addEquipmentLock(EquipmentSlot.CHEST, ArmorStand.LockType.REMOVING_OR_CHANGING);
+                armorStand.addEquipmentLock(EquipmentSlot.LEGS, ArmorStand.LockType.REMOVING_OR_CHANGING);
+                armorStand.addEquipmentLock(EquipmentSlot.FEET, ArmorStand.LockType.REMOVING_OR_CHANGING);
+                armorStand.addEquipmentLock(EquipmentSlot.HAND, ArmorStand.LockType.REMOVING_OR_CHANGING);
+                armorStand.addEquipmentLock(EquipmentSlot.OFF_HAND, ArmorStand.LockType.REMOVING_OR_CHANGING);
+            }
+            if (hasSecondHand) {
+                armorStand.getEquipment().setItemInOffHand(new ItemStack(Material.SHIELD));
+            }
+            this.updateBodyAndLegs();
+            this.updateHead();
 
-        armorStand.getEquipment().setLeggings(new ItemStack(Material.CHAINMAIL_LEGGINGS));
+            ItemStack itemStack = new ItemStack(Material.LEATHER_CHESTPLATE);
+            LeatherArmorMeta meta = (LeatherArmorMeta) itemStack.getItemMeta();
+            meta.setColor(Color.RED);
+            itemStack.setItemMeta(meta);
+            armorStand.getEquipment().setChestplate(itemStack);
 
-        itemStack = new ItemStack(Material.LEATHER_BOOTS);
-        meta = (LeatherArmorMeta) itemStack.getItemMeta();
-        meta.setColor(Color.GRAY);
-        itemStack.setItemMeta(meta);
-        armorStand.getEquipment().setBoots(itemStack);
+            armorStand.getEquipment().setLeggings(new ItemStack(Material.CHAINMAIL_LEGGINGS));
 
-        itemStack = new ItemStack(Material.IRON_SWORD);
-        itemStack.addEnchantment(EnchantmentUtils.DURABILITY, 1);
-        armorStand.getEquipment().setItemInHand(itemStack);
+            itemStack = new ItemStack(Material.LEATHER_BOOTS);
+            meta = (LeatherArmorMeta) itemStack.getItemMeta();
+            meta.setColor(Color.GRAY);
+            itemStack.setItemMeta(meta);
+            armorStand.getEquipment().setBoots(itemStack);
+
+            itemStack = new ItemStack(Material.IRON_SWORD);
+            itemStack.addEnchantment(EnchantmentUtils.DURABILITY, 1);
+            armorStand.getEquipment().setItemInHand(itemStack);
+        });
     }
 
     private void updateBodyAndLegs() {
