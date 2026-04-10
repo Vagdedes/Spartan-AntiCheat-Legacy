@@ -1,1 +1,2 @@
 [#] Fixed a Folia error in relation to the Spartan NPC
+[#] Potentially fixed a Folia login missing data console error

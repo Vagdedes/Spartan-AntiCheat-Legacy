@@ -214,7 +214,8 @@ public class MovementListener extends PacketAdapter {
                         p.getLocation()
                 );
                 moveEvent.setCancelled(event.isCancelled());
-                p.setEnvironment(new EnvironmentData(p));
+
+                PluginBase.runTask(p, () -> p.setEnvironment(new EnvironmentData(p)));
                 MovementEvent.event(moveEvent, true);
 
                 if (p.flyingTicks > 0) {
