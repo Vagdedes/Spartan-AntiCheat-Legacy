@@ -84,21 +84,29 @@ public class PluginNPC {
     }
 
     private void updateBodyAndLegs() {
-        armorStand.setBodyPose(new EulerAngle(
-                0,
-                0,
-                0
-        ));
-        armorStand.setRightLegPose(new EulerAngle(
-                0,
-                0,
-                Math.toRadians(5.0)
-        ));
-        armorStand.setLeftLegPose(new EulerAngle(
-                0,
-                0,
-                -Math.toRadians(5.0)
-        ));
+        Runnable runnable = () -> {
+            armorStand.setBodyPose(new EulerAngle(
+                    0,
+                    0,
+                    0
+            ));
+            armorStand.setRightLegPose(new EulerAngle(
+                    0,
+                    0,
+                    Math.toRadians(5.0)
+            ));
+            armorStand.setLeftLegPose(new EulerAngle(
+                    0,
+                    0,
+                    -Math.toRadians(5.0)
+            ));
+        };
+
+        if (MultiVersion.folia) {
+            PluginBase.runTask(armorStand, runnable);
+        } else {
+            PluginBase.dataThread.executeIfFree(runnable);
+        }
     }
 
     public boolean animate(List<PlayerProtocol> protocols) {
@@ -117,30 +125,6 @@ public class PluginNPC {
                 handPose = -handMax;
             }
             handPose += 0.25;
-
-            armorStand.getWorld().playEffect(
-                    armorStand.getLocation().clone()
-                            .add(0.0, Math.ceil(armorStand.getEyeHeight()) * 2.0, 0.0),
-                    Effect.ENDER_SIGNAL,
-                    (int) PlayerUtils.chunk
-            );
-            armorStand.setHeadPose(
-                    new EulerAngle(
-                            Math.toRadians(Math.abs(headPose)),
-                            0.0,
-                            0.0
-                    )
-            );
-            armorStand.setRightArmPose(new EulerAngle(
-                    0.0,
-                    0.0,
-                    Math.toRadians(Math.abs(handPose))
-            ));
-            armorStand.setLeftArmPose(new EulerAngle(
-                    0.0,
-                    0.0,
-                    -Math.toRadians(Math.abs(handPose))
-            ));
             PlayerProtocol closest = null;
 
             for (PlayerProtocol protocol : protocols) {
@@ -153,21 +137,51 @@ public class PluginNPC {
             Vector playerVec = closest.getLocation().toVector();
             Vector sheepVec = armorStand.getLocation().toVector();
             Vector toLookAtVec = playerVec.subtract(sheepVec);
-            armorStand.teleport(armorStand.getLocation().setDirection(toLookAtVec));
+
+            PluginBase.runTask(armorStand, () -> {
+                armorStand.getWorld().playEffect(
+                        armorStand.getLocation().clone()
+                                .add(0.0, Math.ceil(armorStand.getEyeHeight()) * 2.0, 0.0),
+                        Effect.ENDER_SIGNAL,
+                        (int) PlayerUtils.chunk
+                );
+                armorStand.setHeadPose(
+                        new EulerAngle(
+                                Math.toRadians(Math.abs(headPose)),
+                                0.0,
+                                0.0
+                        )
+                );
+                armorStand.setRightArmPose(new EulerAngle(
+                        0.0,
+                        0.0,
+                        Math.toRadians(Math.abs(handPose))
+                ));
+                armorStand.setLeftArmPose(new EulerAngle(
+                        0.0,
+                        0.0,
+                        -Math.toRadians(Math.abs(handPose))
+                ));
+                armorStand.teleport(armorStand.getLocation().setDirection(toLookAtVec));
+            });
             return true;
         }
     }
 
     public void updateHead() {
-        PluginBase.dataThread.executeIfFree(
-                () -> armorStand.getEquipment().setHelmet(
-                        InventoryUtils.getSkull(offlinePlayer, backupName, true)
-                )
+        Runnable runnable = () -> armorStand.getEquipment().setHelmet(
+                InventoryUtils.getSkull(offlinePlayer, backupName, true)
         );
+
+        if (MultiVersion.folia) {
+            PluginBase.runTask(armorStand, runnable);
+        } else {
+            PluginBase.dataThread.executeIfFree(runnable);
+        }
     }
 
     public void remove() {
-        armorStand.remove();
+        PluginBase.runTask(armorStand, armorStand::remove);
     }
 
     public UUID getUniqueId() {
