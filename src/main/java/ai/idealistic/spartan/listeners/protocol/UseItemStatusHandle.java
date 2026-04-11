@@ -38,7 +38,7 @@ public class UseItemStatusHandle extends PacketAdapter {
         }
         PacketContainer packet = event.getPacket();
 
-        CheckThread.run(() -> {
+        CheckThread.run(protocol, () -> {
             if (packet.getType().equals(PacketType.Play.Client.BLOCK_DIG)) {
                 protocol.useItemPacket = false;
             } else {

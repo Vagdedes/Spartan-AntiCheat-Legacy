@@ -40,7 +40,7 @@ public class UseEntityListener extends PacketAdapter {
                 ? !EntityUseActionPlib.getSafeEntityUseActions(packet, 0).equals(EnumWrappers.EntityUseAction.ATTACK)
                 : !EntityUseActionPlib.getSafeEnumEntityUseActions(packet, 0).getAction().equals(
                 EnumWrappers.EntityUseAction.ATTACK)) {
-            CheckThread.run(() -> {
+            CheckThread.run(protocol, () -> {
                 Entity t = null;
                 for (Entity entity : protocol.getNearbyEntities(5)) {
                     if (entity.getEntityId() == entityId) {

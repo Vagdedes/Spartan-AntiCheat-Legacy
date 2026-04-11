@@ -36,7 +36,7 @@ public class PacketServerBlockHandle extends PacketAdapter {
         BlockPosition blockPosition = BlockPositionPlib.getSafeBlockPosition(packet, 0);
         WrappedBlockData blockData = BlockDataPlib.getSafeBlockData(packet, 0);
         ServerBlockChange serverBlockChange = new ServerBlockChange(blockPosition, blockData.getType());
-        CheckThread.run(() -> protocol.packetWorld.worldChange(serverBlockChange));
+        CheckThread.run(protocol, () -> protocol.packetWorld.worldChange(serverBlockChange));
     }
 
 }

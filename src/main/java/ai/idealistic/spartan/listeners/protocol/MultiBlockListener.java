@@ -35,7 +35,7 @@ public class MultiBlockListener extends PacketAdapter {
         short[] records = BackPlib.getSafeShortArray(packet, 0);
         Object[] blockData = packet.getSpecificModifier(Object[].class).read(0);
 
-        CheckThread.run(() -> {
+        CheckThread.run(protocol, () -> {
             for (int i = 0; i < records.length; i++) {
                 short record = records[i];
                 int relX = (record >> 8) & 0xF;
@@ -57,7 +57,7 @@ public class MultiBlockListener extends PacketAdapter {
 
                 if (nmsData.toString().toLowerCase().contains("slime_block")
                         && loc.distance(protocol.getLocation()) < 14) {
-                    CheckThread.run(() -> protocol.predictedSlimeTicks = 6);
+                    protocol.predictedSlimeTicks = 6;
                 }
             }
         });

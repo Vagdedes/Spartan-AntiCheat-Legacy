@@ -50,7 +50,7 @@ public class VelocityListener extends PacketAdapter {
                 final double z = ((double) BackPlib.getSafeInt(packet, 3)) / 8000.0D;
                 final boolean isCancelled = event.isCancelled();
 
-                CheckThread.run(() -> {
+                CheckThread.run(protocol, () -> {
                     // Now it's safe to use these variables asynchronously
                     CPlayerVelocityEvent velocityEvent = new CPlayerVelocityEvent(player, new Vector(x, y, z));
                     velocityEvent.setCancelled(isCancelled);

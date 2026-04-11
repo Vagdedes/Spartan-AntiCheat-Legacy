@@ -25,13 +25,13 @@ public class PacketLatencyHandler extends PacketAdapter {
                 (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17))
                         ? PacketType.Play.Client.PONG :
                         (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_12))
-                                ? PacketType.Play.Client.TRANSACTION
-                                : PacketType.Play.Client.KEEP_ALIVE,
+                        ? PacketType.Play.Client.TRANSACTION
+                        : PacketType.Play.Client.KEEP_ALIVE,
                 (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17))
                         ? PacketType.Play.Server.PING :
                         (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_12))
-                                ? PacketType.Play.Server.TRANSACTION
-                                : PacketType.Play.Server.KEEP_ALIVE
+                        ? PacketType.Play.Server.TRANSACTION
+                        : PacketType.Play.Server.KEEP_ALIVE
         );
     }
 
@@ -52,7 +52,7 @@ public class PacketLatencyHandler extends PacketAdapter {
             return;
         }
         if (id <= -1939 && id >= -1945) {
-            CheckThread.run(() -> {
+            CheckThread.run(protocol, () -> {
                 protocol.transactionPing = System.currentTimeMillis() - protocol.transactionTime;
                 protocol.transactionLastTime = System.currentTimeMillis();
                 protocol.transactionSentKeep = false;
@@ -71,7 +71,7 @@ public class PacketLatencyHandler extends PacketAdapter {
         Player player = event.getPlayer();
         PlayerProtocol protocol = PluginBase.getProtocol(player);
 
-        CheckThread.run(() -> {
+        CheckThread.run(protocol, () -> {
             protocol.transactionSentKeep = true;
             protocol.transactionTime = System.currentTimeMillis();
         });
@@ -89,8 +89,8 @@ public class PacketLatencyHandler extends PacketAdapter {
                 MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)
                         ? PacketType.Play.Server.PING :
                         (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_12))
-                                ? PacketType.Play.Server.TRANSACTION
-                                : PacketType.Play.Server.KEEP_ALIVE);
+                        ? PacketType.Play.Server.TRANSACTION
+                        : PacketType.Play.Server.KEEP_ALIVE);
 
         if (!packet.getShorts().getFields().isEmpty()) {
             packet.getShorts().write(0, id);

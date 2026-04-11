@@ -39,7 +39,7 @@ public class DeathListener extends PacketAdapter {
 
         if (packet.getType().equals(PacketType.Play.Server.UPDATE_HEALTH)
                 && BackPlib.getSafeFloat(packet, 0) <= 0.0F) {
-            CheckThread.run(() -> {
+            CheckThread.run(protocol, () -> {
                 DeathEvent.event(event.getPlayer(), true, event);
                 protocol.useItemPacket = false;
             });

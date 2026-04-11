@@ -50,7 +50,7 @@ public class HandUseListener extends PacketAdapter {
 
             if (item.getType().equals(Material.TRIDENT)) {
                 double r = Math.toRadians(protocol.getLocation().getYaw());
-                CheckThread.run(() -> TridentEvent.event(
+                CheckThread.run(protocol, () -> TridentEvent.event(
                         new CPlayerRiptideEvent(
                                 protocol,
                                 item,
@@ -66,7 +66,7 @@ public class HandUseListener extends PacketAdapter {
                     && item.getType().equals(NETHERITE_SPEAR))
                     && item.getEnchantmentLevel(Enchantment.LUNGE) > 0) {
                 double r = Math.toRadians(protocol.getLocation().getYaw());
-                CheckThread.run(() -> protocol.executeRunners(
+                CheckThread.run(protocol, () -> protocol.executeRunners(
                         false,
                         new CPlayerLungeEvent(
                                 protocol,

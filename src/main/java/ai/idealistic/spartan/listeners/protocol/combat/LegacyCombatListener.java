@@ -76,7 +76,7 @@ public class LegacyCombatListener extends PacketAdapter {
                 }
                 if (target != null) {
                     Player targetFinal = target;
-                    CheckThread.run(() -> CombatEvent.use(
+                    CheckThread.run(protocol, () -> CombatEvent.use(
                             new PlayerUseEvent(
                                     event.getPlayer(),
                                     targetFinal,
@@ -117,7 +117,7 @@ public class LegacyCombatListener extends PacketAdapter {
                                 0.0D
                         );
                         event1.setCancelled(event.isCancelled());
-                        CheckThread.run(() -> CombatEvent.event(
+                        CheckThread.run(protocol, () -> CombatEvent.event(
                                 event1,
                                 true
                         ));

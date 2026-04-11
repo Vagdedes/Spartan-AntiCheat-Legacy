@@ -34,7 +34,7 @@ public class MultiBlockLegacyListener extends PacketAdapter {
         }
         List<MultiBlockChangeInfo[]> mList = packet.getMultiBlockChangeInfoArrays().getValues();
 
-        CheckThread.run(() -> {
+        CheckThread.run(protocol, () -> {
             for (MultiBlockChangeInfo[] m : mList) {
                 for (MultiBlockChangeInfo info : m) {
                     Material material = info.getData().getType();

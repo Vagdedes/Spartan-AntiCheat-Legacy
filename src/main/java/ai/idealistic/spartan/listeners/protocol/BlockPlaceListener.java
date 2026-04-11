@@ -48,7 +48,7 @@ public class BlockPlaceListener extends PacketAdapter {
         }
         PacketContainer packet = event.getPacket();
 
-        CheckThread.run(() -> {
+        CheckThread.run(protocol, () -> {
             if (isPlacingBlock(packet)) {
                 if (packet.getBlockPositionModifier().size() == 0
                         && packet.getMovingBlockPositions().size() == 0) {
@@ -88,7 +88,7 @@ public class BlockPlaceListener extends PacketAdapter {
 
                     ItemStack itemInHand = MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9)
                             ? (isMainHand ? protocol.getInventory().getItemInMainHand()
-                            : protocol.getInventory().getItemInOffHand()) : player.getItemInHand();
+                               : protocol.getInventory().getItemInOffHand()) : player.getItemInHand();
                     if (itemInHand.getType().isBlock()) {
                         if (!isInPlayer(protocol.getLocation(), block.getLocation())) {
                             Block blockAgainst = player.getLocation().getBlock();

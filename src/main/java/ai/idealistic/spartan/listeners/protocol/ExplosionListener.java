@@ -42,7 +42,7 @@ public class ExplosionListener extends PacketAdapter {
             );
 
             if (ServerLocation.distanceSquared(l, protocol.getLocation()) < 10) {
-                CheckThread.run(() -> {
+                CheckThread.run(protocol, () -> {
                     protocol.getComponentY().explosionTick = true;
                     protocol.getComponentXZ().explosionTick = true;
                 });

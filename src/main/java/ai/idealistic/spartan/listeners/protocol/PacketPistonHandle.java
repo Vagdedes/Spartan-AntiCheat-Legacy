@@ -33,7 +33,7 @@ public class PacketPistonHandle extends PacketAdapter {
             Location blockLocation = BlockPositionPlib.getSafeBlockPosition(packet, 0)
                     .toLocation(protocol.getWorld());
 
-            CheckThread.run(() -> {
+            CheckThread.run(protocol, () -> {
                 protocol.getComponentY().pistonHandle = true;
 
                 if (isPlayerInBox(protocol.getLocation(), blockLocation, 5)) {
