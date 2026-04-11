@@ -12,6 +12,7 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.UtilityClass;
 import lombok.extern.java.Log;
+import org.bukkit.Bukkit;
 
 import java.lang.reflect.Field;
 import java.util.Map;
@@ -42,20 +43,35 @@ public class CheckThread {
         }
     }
 
-    public static void run(PlayerProtocol p, Runnable runnable) {
+    public static Future<?> run(PlayerProtocol p, Runnable runnable) {
         if (MultiVersion.folia) {
             PluginBase.runTask(p, new DecoratedRunnable(runnable));
+            return null;
         } else {
-            scheduler.submit(new DecoratedRunnable(runnable));
+            return scheduler.submit(new DecoratedRunnable(runnable));
         }
     }
 
     public static ScheduledFuture<?> later(Runnable runnable, long delay) {
-        return scheduler.schedule(new DecoratedRunnable(runnable), delay, TimeUnit.MILLISECONDS);
+        DecoratedRunnable decorated = new DecoratedRunnable(runnable);
+
+        if (MultiVersion.folia) {
+            Bukkit.getAsyncScheduler().runDelayed(Register.plugin, task -> decorated.run(), delay, TimeUnit.MILLISECONDS);
+            return null;
+        } else {
+            return scheduler.schedule(decorated, delay, TimeUnit.MILLISECONDS);
+        }
     }
 
     public static ScheduledFuture<?> timer(Runnable runnable, long delay, long period) {
-        return scheduler.scheduleAtFixedRate(new DecoratedRunnable(runnable), delay, period, TimeUnit.MILLISECONDS);
+        DecoratedRunnable decorated = new DecoratedRunnable(runnable);
+
+        if (MultiVersion.folia) {
+            PluginBase.runRepeatingTask(decorated, delay, period);
+            return null;
+        } else {
+            return scheduler.schedule(decorated, delay, TimeUnit.MILLISECONDS);
+        }
     }
 
     public static void cancel(ScheduledFuture<?> timer) {
