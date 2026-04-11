@@ -50,20 +50,6 @@ public class CheckThread {
         }
     }
 
-    public static <T> void run(PlayerProtocol p, Callable<T> callable) {
-        if (MultiVersion.folia) {
-            PluginBase.runTask(p, new DecoratedRunnable(() -> {
-                try {
-                    callable.call();
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            }));
-        } else {
-            scheduler.submit(new DecoratedCallable<>(callable));
-        }
-    }
-
     public static ScheduledFuture<?> later(Runnable runnable, long delay) {
         return scheduler.schedule(new DecoratedRunnable(runnable), delay, TimeUnit.MILLISECONDS);
     }
@@ -110,44 +96,6 @@ public class CheckThread {
                     long after = System.currentTimeMillis() - start;
                     if (after > STOP_WATCH_TIME_MILLIS) {
                         String l = CheckThread.toString(originalRunnable);
-                        if (l.length() > 26) l = l.substring(0, 26) + "...";
-                        log.warning("Busy task " + l + ", it was performed " + after + "ms.");
-                    }
-                }
-            }
-        }
-    }
-
-    @ToString
-    public static class DecoratedCallable<T> implements Callable<T> {
-        @Setter
-        private static Function<Callable<?>, Callable<?>> hotfixDecorator = callable -> callable;
-
-        private final Callable<T> originalCallable;
-        private final Callable<T> decoratedCallable;
-
-        @SuppressWarnings("unchecked")
-        public DecoratedCallable(Callable<T> originalCallable) {
-            this.originalCallable = originalCallable;
-            this.decoratedCallable = (Callable<T>) hotfixDecorator.apply(originalCallable);
-        }
-
-        @Override
-        public T call() throws Exception {
-            long start = System.currentTimeMillis();
-            try {
-                return decoratedCallable.call();
-            } catch (Throwable e) {
-                if (debug || processedErrors.putIfAbsent(e.getMessage(), true) == null) {
-                    log.severe("Error while accepting to call method: " + CheckThread.toString(originalCallable));
-                    e.printStackTrace();
-                }
-                throw e;
-            } finally {
-                if (debug) {
-                    long after = System.currentTimeMillis() - start;
-                    if (after > STOP_WATCH_TIME_MILLIS) {
-                        String l = CheckThread.toString(originalCallable);
                         if (l.length() > 26) l = l.substring(0, 26) + "...";
                         log.warning("Busy task " + l + ", it was performed " + after + "ms.");
                     }

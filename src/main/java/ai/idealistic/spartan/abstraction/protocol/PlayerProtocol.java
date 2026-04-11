@@ -276,7 +276,7 @@ public class PlayerProtocol {
                                 ).toArray(new Entity[0])
                         );
                     }
-                    CheckThread.run(() -> {
+                    CheckThread.run(protocol, () -> {
                         protocol.isFlying();
                         protocol.isGliding();
                         protocol.checkForAFK();

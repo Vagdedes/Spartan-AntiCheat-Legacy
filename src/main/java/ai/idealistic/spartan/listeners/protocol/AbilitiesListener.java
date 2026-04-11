@@ -21,7 +21,8 @@ public class AbilitiesListener extends PacketAdapter {
         Player player = event.getPlayer();
 
         if (player.getAllowFlight()) {
-            CheckThread.run(PluginBase.getProtocol(player), () -> PluginBase.getProtocol(player).flyingTicks = 2);
+            CheckThread.run(PluginBase.getProtocol(player), () ->
+                    PluginBase.getProtocol(player).flyingTicks = 2);
         }
     }
 
