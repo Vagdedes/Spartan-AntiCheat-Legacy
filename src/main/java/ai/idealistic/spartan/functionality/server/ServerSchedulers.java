@@ -44,7 +44,11 @@ class ServerSchedulers {
                     }
                 }
             } else {
-                Bukkit.getGlobalRegionScheduler().run(Register.plugin, consumer -> runnable.run());
+                if (sync) {
+                    Bukkit.getGlobalRegionScheduler().run(Register.plugin, consumer -> runnable.run());
+                } else {
+                    runnable.run();
+                }
             }
         }
     }
