@@ -1,2 +1,3 @@
 [#] Fixed a Folia error in relation to the Spartan NPC
 [#] Potentially fixed a Folia login missing data console error
+[#] Improved asynchronous processing on Folia servers
