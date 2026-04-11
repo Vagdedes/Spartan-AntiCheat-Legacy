@@ -70,7 +70,7 @@ public class CheckThread {
             PluginBase.runRepeatingTask(decorated, delay, period);
             return null;
         } else {
-            return scheduler.schedule(decorated, delay, TimeUnit.MILLISECONDS);
+            return scheduler.scheduleAtFixedRate(decorated, delay, period, TimeUnit.MILLISECONDS);
         }
     }
 
