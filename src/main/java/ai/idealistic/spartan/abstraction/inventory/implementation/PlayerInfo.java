@@ -12,7 +12,6 @@ import ai.idealistic.spartan.api.Permission;
 import ai.idealistic.spartan.compatibility.Compatibility;
 import ai.idealistic.spartan.functionality.command.CommandExecution;
 import ai.idealistic.spartan.functionality.connection.DiscordServer;
-import ai.idealistic.spartan.functionality.connection.PluginAddons;
 import ai.idealistic.spartan.functionality.moderation.clickable.ClickableMessage;
 import ai.idealistic.spartan.functionality.server.Config;
 import ai.idealistic.spartan.functionality.server.Permissions;
@@ -257,8 +256,8 @@ public class PlayerInfo extends InventoryMenu {
         } else if (item.equals("Discord")) {
             protocol.sendImportantMessage("§2§l" + DiscordServer.url);
             protocol.bukkit().closeInventory();
-        } else if (PluginAddons.isFreeEdition()) {
-            protocol.sendImportantMessage("§2§l" + PluginAddons.pluginURL);
+        } else if (Register.isFreeEdition()) {
+            protocol.sendImportantMessage("§2§l" + Register.pluginURL);
             protocol.bukkit().closeInventory();
         }
         return true;

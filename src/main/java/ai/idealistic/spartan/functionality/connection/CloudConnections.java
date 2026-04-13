@@ -1,7 +1,6 @@
 package ai.idealistic.spartan.functionality.connection;
 
 import ai.idealistic.spartan.Register;
-import ai.idealistic.spartan.abstraction.check.Check;
 import ai.idealistic.spartan.functionality.moderation.AwarenessNotifications;
 import ai.idealistic.spartan.functionality.moderation.CrossServerNotifications;
 import ai.idealistic.spartan.functionality.server.Config;
@@ -14,7 +13,6 @@ import org.bukkit.ChatColor;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
@@ -62,34 +60,6 @@ public class CloudConnections {
             CloudBase.throwError(e, "staffAnnouncements:GET");
         }
         return new String[][]{};
-    }
-
-    static String[] getOwnedEditions() {
-        try {
-            String[] results = RequestUtils.get(
-                    StringUtils.decodeBase64(JarVerification.website)
-                            + "?" + CloudBase.identification()
-                            + "&action=get"
-                            + "&data=ownedEditions"
-                            + "&email_address=" + URLEncoder.encode(Config.settings.getString("Purchases.email_address"), "UTF-8")
-                            + "&patreon_full_name=" + URLEncoder.encode(Config.settings.getString("Purchases.patreon_full_name"), "UTF-8")
-                            + "&version=" + Register.plugin.getDescription().getVersion()
-            );
-
-            if (results.length > 0) {
-                return results[0].split(CloudBase.separator, Check.DataType.values().length);
-            }
-        } catch (Exception e) {
-            CloudBase.throwError(e, "ownedEditions:GET");
-        }
-        if (IDs.enabled) {
-            return new String[]{
-                    Check.DataType.JAVA.toString(),
-                    Check.DataType.BEDROCK.toString()
-            };
-        } else {
-            return null;
-        }
     }
 
     public static void executeDiscordWebhook(String webhook, UUID uuid, String name, int ping, int x, int y, int z, String type, String information) {

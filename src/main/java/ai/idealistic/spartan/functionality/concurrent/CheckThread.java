@@ -13,7 +13,6 @@ import lombok.ToString;
 import lombok.experimental.UtilityClass;
 import lombok.extern.java.Log;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Entity;
 
 import java.lang.reflect.Field;
 import java.util.Map;

@@ -28,13 +28,10 @@ public class JarVerification {
         }
 
         if (IDs.enabled) {
-            if (isValid(plugin)) {
-                PluginAddons.refresh();
-            } else {
+            if (!isValid(plugin)) {
                 Bukkit.getPluginManager().disablePlugin(plugin);
             }
-        } else if (!PluginAddons.refresh()
-                && !isValid(plugin)) {
+        } else if (!isValid(plugin)) {
             String message = "This version of " + plugin.getName() + " does not have a license."
                     + " If this download is pirated, please consider purchasing the plugin"
                     + " when your server starts making enough money. We also sell on BuiltByBit"
@@ -67,9 +64,7 @@ public class JarVerification {
                 }
             }
         } catch (Exception e) {
-            if (IDs.canAdvertise()) {
-                AwarenessNotifications.forcefullySend(e.getMessage());
-            }
+            AwarenessNotifications.forcefullySend(e.getMessage());
         }
         return b;
     }
