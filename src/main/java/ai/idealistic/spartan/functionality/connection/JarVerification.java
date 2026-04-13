@@ -3,7 +3,6 @@ package ai.idealistic.spartan.functionality.connection;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.spartan.functionality.moderation.AwarenessNotifications;
 import ai.idealistic.spartan.functionality.server.Permissions;
-import ai.idealistic.spartan.functionality.server.PluginBase;
 import ai.idealistic.spartan.utils.java.RequestUtils;
 import ai.idealistic.spartan.utils.java.StringUtils;
 import org.bukkit.Bukkit;
@@ -17,16 +16,6 @@ public class JarVerification {
     private static boolean valid = true;
 
     public static void run(Plugin plugin) {
-        if (!IDs.enabled) {
-            PluginBase.connectionThread.execute(() -> {
-                int userID = CloudConnections.getUserIdentification();
-
-                if (userID <= 0) {
-                    valid = false;
-                }
-            });
-        }
-
         if (IDs.enabled) {
             if (!isValid(plugin)) {
                 Bukkit.getPluginManager().disablePlugin(plugin);

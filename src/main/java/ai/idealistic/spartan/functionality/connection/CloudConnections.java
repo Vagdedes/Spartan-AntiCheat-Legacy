@@ -7,7 +7,6 @@ import ai.idealistic.spartan.functionality.server.Config;
 import ai.idealistic.spartan.functionality.server.PluginBase;
 import ai.idealistic.spartan.utils.java.RequestUtils;
 import ai.idealistic.spartan.utils.java.StringUtils;
-import ai.idealistic.spartan.utils.math.AlgebraUtils;
 import org.bukkit.ChatColor;
 
 import java.io.OutputStream;
@@ -17,30 +16,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 public class CloudConnections {
-
-    static int getUserIdentification() {
-        try {
-            String[] reply = RequestUtils.get(StringUtils.decodeBase64(JarVerification.website)
-                            + "?action=get"
-                            + "&data=userIdentification"
-                            + "&version=" + Register.plugin.getDescription().getVersion(),
-                    RequestUtils.defaultTimeOut);
-
-            if (reply.length > 0) {
-                String line = reply[0];
-
-                if (AlgebraUtils.validInteger(line)) {
-                    int id = Integer.parseInt(line);
-                    IDs.set(id, id);
-                    return id;
-                }
-            }
-        } catch (Exception e) {
-            CloudBase.throwError(e, "userIdentification:GET");
-            return 0;
-        }
-        return -1;
-    }
 
     static String[][] getStaffAnnouncements() {
         try {
