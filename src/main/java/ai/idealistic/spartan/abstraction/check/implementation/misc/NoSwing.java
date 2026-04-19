@@ -1,7 +1,7 @@
 package ai.idealistic.spartan.abstraction.check.implementation.misc;
 
 import ai.idealistic.spartan.abstraction.check.CheckDetection;
-import ai.idealistic.spartan.abstraction.check.CheckEnums;
+import ai.idealistic.spartan.abstraction.check.CheckEnums.HackType;
 import ai.idealistic.spartan.abstraction.check.CheckRunner;
 import ai.idealistic.spartan.abstraction.check.definition.ImplementedDetection;
 import ai.idealistic.spartan.abstraction.data.Buffer;
@@ -15,55 +15,32 @@ import ai.idealistic.spartan.compatibility.manual.building.MineBomb;
 import ai.idealistic.spartan.compatibility.manual.building.TreeFeller;
 import ai.idealistic.spartan.compatibility.manual.entity.Vehicles;
 import ai.idealistic.spartan.functionality.server.PluginBase;
-import ai.idealistic.spartan.functionality.server.TPS;
 import ai.idealistic.spartan.functionality.tracking.CheckConditions;
 import ai.idealistic.spartan.utils.minecraft.world.BlockUtils;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerAnimationEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
 
 public class NoSwing extends CheckRunner {
 
     private final CheckDetection breaking, damage;
-    private static final int refreshTime = 30 * 20;
-    private long breakTime, animationTime;
-    private final Buffer.IndividualBuffer damageBuffer;
-    private long checkDamage;
+    private long lastAnimationTime;
+    private final Buffer.IndividualBuffer damageBuffer, breakBuffer;
 
-    public NoSwing(CheckEnums.HackType hackType, PlayerProtocol protocol) {
+    public NoSwing(HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);
-        this.breakTime = Long.MAX_VALUE;
-        this.animationTime = Long.MAX_VALUE;
+        this.lastAnimationTime = 0L;
         this.damageBuffer = new Buffer.IndividualBuffer();
+        this.breakBuffer = new Buffer.IndividualBuffer();
         this.breaking = new ImplementedDetection(this, null, null, "breaking", true);
         this.damage = new ImplementedDetection(this, null, null, "damage", true);
     }
 
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
-        if (object instanceof PlayerInteractEvent) {
-            PlayerInteractEvent e = (PlayerInteractEvent) object;
-
-            if (e.getAction() == Action.LEFT_CLICK_BLOCK) {
-                Block block = e.getClickedBlock();
-
-                if (block == null) {
-                    this.breakTime = System.currentTimeMillis();
-                } else {
-                    PluginBase.runTask(block, () -> {
-                        if (!ItemsAdder.is(block)) {
-                            this.breakTime = System.currentTimeMillis();
-                        }
-                    });
-                }
-            }
-        } else if (object instanceof PlayerAnimationEvent) {
-            this.animationTime = System.currentTimeMillis();
+        if (object instanceof PlayerAnimationEvent) {
+            this.lastAnimationTime = System.currentTimeMillis();
         } else if (object instanceof BlockBreakEvent) {
             this.breaking.call(() -> {
                 if (MineBomb.isUsing(this.protocol)
@@ -71,63 +48,61 @@ public class NoSwing extends CheckRunner {
                     return;
                 }
                 BlockBreakEvent e = (BlockBreakEvent) object;
-                Block block = e.getBlock();
-                Material itemInHand = this.protocol.getItemInHand().getType();
+                org.bukkit.block.Block block = e.getBlock();
+                org.bukkit.Material itemInHand = this.protocol.getItemInHand().getType();
 
                 PluginBase.runTask(block, () -> {
                     if (!BlockUtils.isSensitive(this.protocol, new ServerBlock(block).getType())
                             && !TreeFeller.canCancel(block)
-                            && !ItemsAdder.is(block)
-                            && System.currentTimeMillis() - breakTime > TPS.tickTime) {
-                        if (this.animationTime == Long.MAX_VALUE) {
-                            this.breaking.cancel(
-                                    "breaking"
-                                            + ", block: " + BlockUtils.blockToString(block)
-                                            + ", item: " + BlockUtils.materialToString(itemInHand));
+                            && !ItemsAdder.is(block)) {
 
-                            if (this.breaking.prevent()) {
-                                e.setCancelled(true);
+                        long timeSinceAnimation = System.currentTimeMillis() - this.lastAnimationTime;
+
+                        // Safely absorbs out-of-order packet batching up to 150ms
+                        if (timeSinceAnimation > 150L) {
+                            if (breakBuffer.count(1, 20) >= 3) {
+                                this.breaking.cancel(
+                                        "breaking"
+                                                + ", block: " + BlockUtils.blockToString(block)
+                                                + ", item: " + BlockUtils.materialToString(itemInHand)
+                                                + ", ms-since-anim: " + timeSinceAnimation
+                                );
+
+                                if (this.breaking.prevent()) {
+                                    e.setCancelled(true);
+                                }
                             }
                         } else {
-                            resetAnimationData();
+                            breakBuffer.decrease(0.25);
                         }
                     }
                 });
             });
         } else if (object instanceof PlayerAttackEvent) {
             this.damage.call(() -> {
-                if (this.protocol.getAttackCooldown() != 1.0f) {
-                    return;
-                }
                 LivingEntity entity = ((PlayerAttackEvent) object).target;
 
                 if (!CheckConditions.canCheckCombat(this.protocol, entity)) {
                     return;
                 }
-                long time = System.currentTimeMillis();
 
-                if (checkDamage < time) {
-                    checkDamage = time + (20L * TPS.tickTime);
+                long timeSinceAnimation = System.currentTimeMillis() - this.lastAnimationTime;
 
-                    if (this.animationTime == Long.MAX_VALUE) {
-                        if (damageBuffer.count(1, refreshTime) >= 3) {
-                            damageBuffer.reset();
-                            this.damage.cancel(
-                                    "damage"
-                                            + ", entity: " + entityToString(entity)
-                                            + ", item: " + BlockUtils.materialToString(this.protocol.getItemInHand().getType())
-                            );
-                        }
-                    } else {
-                        resetAnimationData();
+                // Removed cooldown requirement to catch 15+ CPS KillAura modules
+                if (timeSinceAnimation > 150L) {
+                    if (damageBuffer.count(1, 20) >= 4) {
+                        this.damage.cancel(
+                                "damage"
+                                        + ", entity: " + entityToString(entity)
+                                        + ", item: " + BlockUtils.materialToString(this.protocol.getItemInHand().getType())
+                                        + ", ms-since-anim: " + timeSinceAnimation
+                        );
                     }
+                } else {
+                    damageBuffer.decrease(0.5);
                 }
             });
         }
-    }
-
-    private void resetAnimationData() {
-        this.animationTime = Long.MAX_VALUE;
     }
 
     @Override
