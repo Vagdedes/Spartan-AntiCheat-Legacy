@@ -30,18 +30,23 @@ public class FastHeal extends CheckRunner {
         this.buffer = new Buffer.IndividualBuffer();
     }
 
+    // EXTENSION: Rebuilt to use perfect Vanilla Ticks-to-MS conversion
     private long calculate() {
         int level = PlayerUtils.getPotionLevel(this.protocol, PotionEffectType.REGENERATION);
-        long i = 0L;
 
         if (level > -1) {
-            if (level <= 10) {
-                i = level == 0 ? 300L : 45L;
-            }
+            // Vanilla Formula: 50 ticks (Regen 1), halved per additional level.
+            // (50 >> 0) = 50 | (50 >> 1) = 25 | (50 >> 2) = 12
+            int vanillaTicks = Math.max(1, 50 >> level);
+            long expectedMs = vanillaTicks * 50L;
+
+            // Subtract a 150ms buffer to safely absorb server tick-rate jitter
+            return Math.max(50L, expectedMs - 150L);
         } else {
-            i = !MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9) ? 3700L : 450L;
+            // Pre-1.9 natural healing: 80 ticks (4000ms) -> Safe limit 3500ms
+            // 1.9+ Saturation healing: 10 ticks (500ms) -> Safe limit 400ms
+            return !MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_9) ? 3500L : 400L;
         }
-        return i;
     }
 
     @Override
@@ -61,16 +66,26 @@ public class FastHeal extends CheckRunner {
                         long limit = calculate();
 
                         if (limit > 0L) {
-                            if (timePassed < limit
-                                    && buffer.count(1, 10) == 3) {
-                                buffer.reset();
-                                this.detection.cancel(
-                                        "default, ms: " + timePassed + ", limit: " + limit
-                                );
+                            if (timePassed < limit) {
+                                // EXTENSION: Dynamic lag-resistant amplitude buffer.
+                                // Blatant packet spam (e.g. 10ms between heals) fills the buffer instantly.
+                                // Mild jitter (e.g. 380ms) requires repeated offenses to flag.
+                                long safeTime = Math.max(timePassed, 1L);
+                                double amplitude = Math.min((double) limit / safeTime, 5.0);
 
-                                if (this.prevent()) {
-                                    event.setCancelled(true);
+                                if (buffer.count(amplitude, 20) >= 15) {
+                                    buffer.reset();
+                                    this.detection.cancel(
+                                            "default, ms: " + timePassed + ", limit: " + limit
+                                    );
+
+                                    if (this.prevent()) {
+                                        event.setCancelled(true);
+                                    }
                                 }
+                            } else {
+                                // Natural buffer decay for legitimate players
+                                buffer.decrease(0.5);
                             }
                         }
                     }
