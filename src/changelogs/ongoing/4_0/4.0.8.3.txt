@@ -1,0 +1,3 @@
+[#] Added support for new Minecraft versions
+[#] Added support new Minecraft blocks
+[#] Fixed several false positives across combat and movement checks

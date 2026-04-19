@@ -12,6 +12,7 @@ import ai.idealistic.spartan.compatibility.manual.abilities.ItemsAdder;
 import ai.idealistic.spartan.compatibility.manual.building.PrinterMode;
 import ai.idealistic.spartan.compatibility.manual.entity.Vehicles;
 import ai.idealistic.spartan.functionality.server.MultiVersion;
+import ai.idealistic.spartan.functionality.server.TPS;
 import ai.idealistic.spartan.utils.minecraft.world.BlockUtils;
 import org.bukkit.Material;
 
@@ -49,7 +50,7 @@ public class FastPlace extends CheckRunner {
                         long max = 150L;
 
                         if (timePassed <= max
-                                && (timePassed > 50L || !this.protocol.isBedrockPlayer())) {
+                                && (timePassed > TPS.tickTime || !this.protocol.isBedrockPlayer())) {
                             double amplitude = max / (double) timePassed;
 
                             if (buffer.count(amplitude, ticks) >= 9) {

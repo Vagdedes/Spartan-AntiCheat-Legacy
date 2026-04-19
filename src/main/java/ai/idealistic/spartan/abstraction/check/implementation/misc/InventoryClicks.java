@@ -7,6 +7,7 @@ import ai.idealistic.spartan.abstraction.check.CheckRunner;
 import ai.idealistic.spartan.abstraction.check.definition.ImplementedDetection;
 import ai.idealistic.spartan.abstraction.data.Buffer;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
+import ai.idealistic.spartan.functionality.server.TPS;
 import ai.idealistic.spartan.utils.minecraft.entity.PlayerUtils;
 import ai.idealistic.spartan.utils.minecraft.world.BlockUtils;
 import org.bukkit.Material;
@@ -92,7 +93,7 @@ public class InventoryClicks extends CheckRunner {
                                             }
                                         });
                                         this.fast.call(() -> {
-                                            if (timePassed < 50L && fastBuffer.count(1, 5) >= 4) {
+                                            if (timePassed < TPS.tickTime && fastBuffer.count(1, 5) >= 4) {
                                                 this.fast.cancel("fast, ms: " + timePassed + ", item: " + type);
                                             }
                                         });
