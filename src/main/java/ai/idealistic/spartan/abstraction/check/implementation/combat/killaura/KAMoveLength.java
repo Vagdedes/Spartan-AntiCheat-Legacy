@@ -4,13 +4,16 @@ import ai.idealistic.spartan.abstraction.check.Check;
 import ai.idealistic.spartan.abstraction.check.CheckDetection;
 import ai.idealistic.spartan.abstraction.check.CheckRunner;
 import ai.idealistic.spartan.abstraction.data.Buffer;
+import ai.idealistic.spartan.abstraction.world.ServerLocation;
 import ai.idealistic.spartan.functionality.server.TPS;
 import ai.idealistic.spartan.utils.math.AlgebraUtils;
+import ai.idealistic.spartan.utils.minecraft.world.BlockUtils;
+import org.bukkit.Material;
 
 public class KAMoveLength extends CheckDetection {
 
     private static final double
-            gcdMultiplier = Math.pow(2, 24), // 16777216
+            gcdMultiplier = Math.pow(2, 24),
             gcdLimit = 16384,
             minimumGCD = 0.005,
             safeGCD = 0.001;
@@ -35,6 +38,12 @@ public class KAMoveLength extends CheckDetection {
 
     void run() {
         this.call(() -> {
+            // PATCH: Exempt micro-pitch adjustments forced by web stability
+            Material currentMat = new ServerLocation(this.protocol.getLocation()).getBlock(this.protocol).getTypeOrNull();
+            if (currentMat != null && BlockUtils.areWebs(currentMat)) {
+                return;
+            }
+
             if (this.hit - System.currentTimeMillis() <= 2_000L
                     && this.hitBy - System.currentTimeMillis() <= 1_000L) {
                 float pitch = this.protocol.getLocation().getPitch(),
@@ -66,7 +75,7 @@ public class KAMoveLength extends CheckDetection {
                                     AlgebraUtils.integerCeil(TPS.maximum)
                             );
                         }
-                    } else { // Some players may false this due to their client, so this helps prevent it
+                    } else {
                         buffer.decrease(1);
                     }
                 }
@@ -83,5 +92,4 @@ public class KAMoveLength extends CheckDetection {
     void runHitBy() {
         this.call(() -> this.hitBy = System.currentTimeMillis());
     }
-
 }
