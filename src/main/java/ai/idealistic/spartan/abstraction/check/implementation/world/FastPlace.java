@@ -12,7 +12,6 @@ import ai.idealistic.spartan.compatibility.manual.abilities.ItemsAdder;
 import ai.idealistic.spartan.compatibility.manual.building.PrinterMode;
 import ai.idealistic.spartan.compatibility.manual.entity.Vehicles;
 import ai.idealistic.spartan.functionality.server.MultiVersion;
-import ai.idealistic.spartan.functionality.server.TPS;
 import ai.idealistic.spartan.utils.minecraft.world.BlockUtils;
 import org.bukkit.Material;
 
@@ -40,20 +39,30 @@ public class FastPlace extends CheckRunner {
 
                     if (material != Material.FIRE
                             && material != Material.AIR
-
                             && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
-                            || material != Material.CAVE_AIR
-                            && material != Material.VOID_AIR)) {
+                            || (material != Material.CAVE_AIR && material != Material.VOID_AIR))) {
+
                         long timePassed = System.currentTimeMillis() - time;
                         time = System.currentTimeMillis();
                         int ticks = 20;
-                        long max = 150L;
 
-                        if (timePassed <= max
-                                && (timePassed > TPS.tickTime || !this.protocol.isBedrockPlayer())) {
-                            double amplitude = max / (double) timePassed;
+                        // EXTENSION: Expanded to 190ms to catch "soft" FastPlace modules (Vanilla limit is 200ms)
+                        long max = 190L;
 
-                            if (buffer.count(amplitude, ticks) >= 9) {
+                        if (timePassed <= max) {
+                            // EXTENSION: Fixed Division by Zero & Server Lag instant bans
+                            long safeTime = Math.max(timePassed, 1L);
+
+                            // Cap amplitude to prevent a single lag spike from instantly filling the buffer
+                            double amplitude = Math.min(max / (double) safeTime, 3.5);
+
+                            // EXTENSION: Patched the Bedrock 50ms bypass
+                            if (this.protocol.isBedrockPlayer() && safeTime < 50) {
+                                amplitude *= 0.4; // Soften batched packets to prevent FP, but do not grant immunity
+                            }
+
+                            // Raised threshold slightly to account for the widened 190ms net and amplitude caps
+                            if (buffer.count(amplitude, ticks) >= 15) {
                                 this.detection.cancel(
                                         "remaining-ticks: " + buffer.ticksRemaining(ticks)
                                                 + ", place-ms: " + timePassed
