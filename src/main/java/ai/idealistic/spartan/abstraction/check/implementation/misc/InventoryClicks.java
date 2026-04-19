@@ -7,7 +7,6 @@ import ai.idealistic.spartan.abstraction.check.CheckRunner;
 import ai.idealistic.spartan.abstraction.check.definition.ImplementedDetection;
 import ai.idealistic.spartan.abstraction.data.Buffer;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
-import ai.idealistic.spartan.functionality.server.TPS;
 import ai.idealistic.spartan.utils.minecraft.entity.PlayerUtils;
 import ai.idealistic.spartan.utils.minecraft.world.BlockUtils;
 import org.bukkit.Material;
@@ -53,47 +52,74 @@ public class InventoryClicks extends CheckRunner {
                 ItemStack item = event.getCurrentItem();
                 ClickType click = event.getClick();
 
-                if (!click.isCreativeAction()
-                        && !click.isKeyboardClick()
-                        && item != null
-                        && item.getItemMeta() != null) {
+                // EXTENSION: Removed item.getItemMeta() != null bypass.
+                // We now check all items, regardless of enchantments or custom names.
+                if (!click.isCreativeAction() && item != null) {
                     Material material = item.getType();
 
-                    if (!BlockUtils.isSensitive(this.protocol, material)) {
+                    if (material != Material.AIR && !BlockUtils.isSensitive(this.protocol, material)) {
                         int slots = this.protocol.getOpenInventoryCountSlots(PlayerUtils.playerInventorySlots + 1);
-                        boolean quick = slots <= PlayerUtils.playerInventorySlots,
-                                shift = click.isShiftClick();
+                        boolean quick = slots <= PlayerUtils.playerInventorySlots;
+                        boolean shift = click.isShiftClick();
+
+                        // EXTENSION: Track Keyboard clicks to catch Auto-Armor and Auto-Refill
+                        boolean hotkey = click.isKeyboardClick();
+
                         String type = BlockUtils.materialToString(material);
 
-                        int newHash = type.hashCode(),
-                                oldHash = this.oldHash;
+                        int newHash = type.hashCode();
+                        int oldHash = this.oldHash;
                         this.oldHash = newHash;
 
-                        if (shift
-                                && !quick
-                                && !BlockUtils.hasMaterial(this.protocol.getOpenInventoryCursor())
-                                && shiftBuffer.count(1, 5) == 4) { // Inventory
-                            shiftBuffer.reset();
-                            this.shift.call(() -> this.shift.cancel("shift, item: " + type));
-                        } else {
-                            long timePassed = System.currentTimeMillis() - time;
-                            time = System.currentTimeMillis();
+                        long timePassed = System.currentTimeMillis() - time;
+                        time = System.currentTimeMillis();
 
-                            if ((!shift && !quick || newHash != oldHash)) {
+                        // EXTENSION: Protect against division-by-zero lag spikes
+                        long safeTime = Math.max(timePassed, 1L);
+
+                        // Detection 1: Auto-Armor / Hotkey Macros
+                        if (hotkey && safeTime < 50L) {
+                            if (shiftBuffer.count(1.5, 10) >= 5) { // Humans cannot hit 5 different number keys in 50ms
+                                this.shift.call(() -> this.shift.cancel("auto-armor/hotkey, ms: " + timePassed + ", item: " + type));
+                            }
+                        }
+                        // Detection 2: Shift-Click Macros
+                        else if (shift
+                                && !quick
+                                && !BlockUtils.hasMaterial(this.protocol.getOpenInventoryCursor())) {
+
+                            if (safeTime < 60L) {
+                                // EXTENSION: Fixed the exact-match '== 4' bypass by using '>='
+                                if (shiftBuffer.count(1, 10) >= 5) {
+                                    shiftBuffer.reset();
+                                    this.shift.call(() -> this.shift.cancel("shift-macro, ms: " + timePassed + ", item: " + type));
+                                }
+                            } else {
+                                shiftBuffer.decrease(0.5);
+                            }
+                        }
+                        // Detection 3: Standard Fast-Clicking (Auto-Clicker in GUI)
+                        else {
+                            if ((!shift && !quick) || newHash != oldHash) {
                                 if (timePassed < 150L) {
+
+                                    // EXTENSION: Dynamic amplitude cap.
+                                    // A 0ms lag spike applies max 3.0 points, preventing instant false bans.
+                                    double amplitude = Math.min(100.0 / (double) safeTime, 3.0);
+
                                     this.slow.call(() -> {
-                                        if (slowBuffer.count(1, 10) >= 8) {
+                                        if (slowBuffer.count(amplitude * 0.5, 20) >= 12) {
                                             this.slow.cancel("slow, ms: " + timePassed + ", item: " + type);
                                         }
                                     });
                                     if (timePassed < 100L) {
                                         this.medium.call(() -> {
-                                            if (mediumBuffer.count(1, 5) >= 4) {
+                                            if (mediumBuffer.count(amplitude * 0.75, 15) >= 8) {
                                                 this.medium.cancel("medium, ms: " + timePassed + ", item: " + type);
                                             }
                                         });
                                         this.fast.call(() -> {
-                                            if (timePassed < TPS.tickTime && fastBuffer.count(1, 5) >= 4) {
+                                            if (timePassed < 50L && fastBuffer.count(amplitude, 10) >= 6) {
                                                 this.fast.cancel("fast, ms: " + timePassed + ", item: " + type);
                                             }
                                         });
@@ -110,5 +136,4 @@ public class InventoryClicks extends CheckRunner {
             }
         }
     }
-
 }
