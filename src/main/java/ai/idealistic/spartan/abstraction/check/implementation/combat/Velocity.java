@@ -5,7 +5,6 @@ import ai.idealistic.spartan.abstraction.check.CheckDetection;
 import ai.idealistic.spartan.abstraction.check.CheckEnums;
 import ai.idealistic.spartan.abstraction.check.CheckRunner;
 import ai.idealistic.spartan.abstraction.check.definition.ImplementedDetection;
-import ai.idealistic.spartan.abstraction.event.PlayerTransactionEvent;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.spartan.abstraction.world.ServerLocation;
 import ai.idealistic.spartan.functionality.tracking.CheckConditions;
@@ -38,19 +37,15 @@ public class Velocity extends CheckRunner {
     private final double[] jumpReset = new double[]{0.248136, 0.3332};
 
     private float vl = 0;
-    private long oldTime = System.currentTimeMillis();
     private double mostCloseYMotion = 1.0;
-    private int timing = 0;
-    private boolean transactionLock = false;
+    private int moveTicks = 0; // Decoupled from transactions
     private Vector velocity = null;
 
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
-        if (object instanceof PlayerTransactionEvent) {
-            transactionLock = false;
-        } else if (object instanceof PlayerVelocityEvent) {
+        if (object instanceof PlayerVelocityEvent) {
             PlayerVelocityEvent event = (PlayerVelocityEvent) object;
-            transactionLock = true;
+
             Location[] locationsToCheck = {
                     this.protocol.getLocation().clone().add(event.getVelocity()),
                     this.protocol.getLocation().clone().add(event.getVelocity()).add(0, 1, 0)
@@ -65,14 +60,12 @@ public class Velocity extends CheckRunner {
             if (allClear) {
                 this.velocity = event.getVelocity();
                 this.mostCloseYMotion = 1.0;
-                this.timing = 0;
+                this.moveTicks = 0; // Reset raw tick counter
             }
 
             if (vl > 0) vl -= 5;
         } else if (object instanceof PlayerMoveEvent) {
-            if (this.horizontal.canCall()
-                    || this.vertical.canCall()) {
-                long delay = System.currentTimeMillis() - oldTime;
+            if (this.horizontal.canCall() || this.vertical.canCall()) {
                 PlayerMoveEvent event = (PlayerMoveEvent) object;
                 Location from = event.getFrom();
                 Location to = event.getTo();
@@ -81,43 +74,51 @@ public class Velocity extends CheckRunner {
                 double y = to.getY() - from.getY();
                 double z = to.getZ() - from.getZ();
 
-                //this.protocol.bukkit().sendMessage("m: " + y);
                 if (velocity != null) {
-                    if (abs(abs(y) - abs(velocity.getY())) < mostCloseYMotion)
+                    this.moveTicks++;
+
+                    double absY = abs(y);
+                    double absVeloY = abs(velocity.getY());
+
+                    if (abs(absY - absVeloY) < mostCloseYMotion) {
                         mostCloseYMotion = y;
-                    // time for vertical
-                    if (abs(abs(y) - abs(velocity.getY())) < 0.0001) {
-                        { // time for horizontal
-                            double xDiff = x - velocity.getX();
-                            double zDiff = z - velocity.getZ();
-                            double total = abs(xDiff) + abs(zDiff);
-                            double multi = 1.0;
-                            if ((!this.protocol.isOnGround() && !this.protocol.isOnGroundFrom())) {
-                                // time for horizontal flag 1
-                                if (total > 0.05 * multi) {
-                                    this.flag("velocity manipulation [xz] (air deviation: " + total + ")", 14, horizontal);
-                                }
-                            } else if (total > 0.2 * multi) {
-                                this.flag("velocity manipulation [xz] (ground deviation: " + total + ")", 30, horizontal);
+                    }
+
+                    // Calculate Percentage Yield for Vertical Reduce cheats
+                    double yieldY = (absVeloY > 0) ? (absY / absVeloY) : 1.0;
+
+                    if (yieldY > 0.98 || (absY > 0 && abs(absY - absVeloY) < 0.0001)) {
+                        // Player accepted vertical velocity. Now check horizontal.
+                        double xDiff = x - velocity.getX();
+                        double zDiff = z - velocity.getZ();
+                        double total = abs(xDiff) + abs(zDiff);
+
+                        // Dynamic tolerance based on knockback severity (absorbs explosive kb + strafing)
+                        double horizontalMagnitude = Math.sqrt((velocity.getX() * velocity.getX()) + (velocity.getZ() * velocity.getZ()));
+                        double dynamicTolerance = Math.max(0.08, horizontalMagnitude * 0.35);
+
+                        if (!this.protocol.isOnGround() && !this.protocol.isOnGroundFrom()) {
+                            if (total > dynamicTolerance) {
+                                this.flag("velocity manipulation [xz] (air deviation: " + r(total) + " > " + r(dynamicTolerance) + ")", 14, horizontal);
                             }
+                        } else if (total > dynamicTolerance * 2.5) {
+                            this.flag("velocity manipulation [xz] (ground deviation: " + r(total) + ")", 30, horizontal);
                         }
-                        //this.protocol.bukkit().sendMessage(x + " " + velocity.getX() + " | " + z + " " + velocity.getZ());
+
                         this.velocity = null;
-                        this.timing = 0;
-                    } else if (delay > 25) {
-                        if (timing < 2) {
-                            if (!transactionLock) timing++;
-                        } else {
-                            // time for vertical flag
-                            if (this.velocity.getY() != 0.003) {
-                                this.flag("velocity manipulation [y] (motion: " + r(this.mostCloseYMotion)
-                                        + ", velocity: " + r(this.velocity.getY()) + ")", this.isJumpReset(this.mostCloseYMotion) ? 12 : 25, vertical);
-                            }
-                            this.velocity = null;
+                        this.moveTicks = 0;
+
+                    } else if (this.moveTicks > 4) { // Timeout decoupled from transactions
+                        // Check if they completely ignored it, or partially reduced it
+                        if (yieldY < 0.98 && yieldY > 0.01 && this.velocity.getY() > 0.1) {
+                            this.flag("velocity reduce [y] (yield: " + r(yieldY * 100) + "%)", 20, vertical);
+                        } else if (this.velocity.getY() != 0.003) {
+                            this.flag("velocity manipulation [y] (motion: " + r(this.mostCloseYMotion)
+                                    + ", velocity: " + r(this.velocity.getY()) + ")", this.isJumpReset(this.mostCloseYMotion) ? 12 : 25, vertical);
                         }
+                        this.velocity = null;
                     }
                 }
-                this.oldTime = System.currentTimeMillis();
             }
         }
     }
@@ -126,7 +127,6 @@ public class Velocity extends CheckRunner {
         e.call(() -> {
             this.vl += (float) vl;
             if (this.vl > 60) {
-                //this.protocol.bukkit().sendMessage("flag: " + reason);
                 e.cancel(reason);
                 this.vl = 50;
             }
@@ -178,6 +178,8 @@ public class Velocity extends CheckRunner {
                 && !this.protocol.getEnvironment().isSlime()
                 && !this.protocol.getEnvironment().isSlimeWide()
                 && !this.protocol.getEnvironment().isSlimeHeight()
+                && !this.protocol.getEnvironment().isLiquid() // Exempt liquids (drastically dampens KB naturally)
+                && !RayUtils.onBlock(this.protocol, this.protocol.getLocationOrVehicle(), BlockUtils.web) // Exempt webs
                 && CheckConditions.canCheckCombat(this.protocol)
                 && !this.protocol.isOutsideOfTheBorder(-1.0);
     }
