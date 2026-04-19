@@ -17,7 +17,9 @@ import ai.idealistic.spartan.compatibility.manual.building.TreeFeller;
 import ai.idealistic.spartan.compatibility.manual.vanilla.Attributes;
 import ai.idealistic.spartan.functionality.server.MultiVersion;
 import ai.idealistic.spartan.functionality.server.PluginBase;
+import ai.idealistic.spartan.utils.math.RayUtils;
 import ai.idealistic.spartan.utils.minecraft.world.BlockUtils;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -44,8 +46,14 @@ public class BlockReach extends CheckRunner {
         return this.protocol.getWorld().equals(b.getWorld());
     }
 
+    // EXTENSION: Calculates the absolute center of the block for highly accurate geometry
+    private Location getBlockCenter(Block block) {
+        return block.getLocation().clone().add(0.5, 0.5, 0.5);
+    }
+
+    // EXTENSION: Dynamic limit based on GameMode
     private double getLimit() {
-        double limit = 7.0;
+        double limit = this.protocol.getGameMode() == GameMode.CREATIVE ? 7.0 : 6.0;
         return Math.max(
                 hackType.getCheck().getDecimalOption("overall_distance", limit),
                 limit
@@ -62,12 +70,14 @@ public class BlockReach extends CheckRunner {
                 if (canDo(block)
                         && !ItemsAdder.is(block)
                         && !TreeFeller.canCancel(block)) {
-                    double distance = ServerLocation.distance(this.protocol.getLocationOrVehicle(), block.getLocation()),
-                            limit = getLimit();
+
+                    Location eyeLoc = this.protocol.getLocationOrVehicle().clone().add(0, this.protocol.getEyeHeight(), 0);
+                    double distance = ServerLocation.distance(eyeLoc, getBlockCenter(block));
+                    double limit = getLimit();
 
                     if (distance >= limit) {
                         this.breaking.cancel(
-                                "breaking, distance: " + distance
+                                "breaking, distance: " + RayUtils.scaleVal(distance, 3)
                                         + ", limit: " + limit
                                         + ", block: " + BlockUtils.blockToString(block)
                         );
@@ -87,13 +97,15 @@ public class BlockReach extends CheckRunner {
                         if (canDo(block)
                                 && !ItemsAdder.is(block)
                                 && BlockUtils.isChangeable(new ServerBlock(block).getType())) {
-                            double distance = ServerLocation.distance(this.protocol.getLocationOrVehicle(), block.getLocation()),
-                                    limit = getLimit();
+
+                            Location eyeLoc = this.protocol.getLocationOrVehicle().clone().add(0, this.protocol.getEyeHeight(), 0);
+                            double distance = ServerLocation.distance(eyeLoc, getBlockCenter(block));
+                            double limit = getLimit();
 
                             if (distance >= limit) {
                                 this.interact.cancel(
                                         distance / limit,
-                                        "interact, distance: " + distance
+                                        "interact, distance: " + RayUtils.scaleVal(distance, 3)
                                                 + ", limit: " + limit
                                                 + ", block: " + BlockUtils.blockToString(block)
                                 );
@@ -118,24 +130,24 @@ public class BlockReach extends CheckRunner {
                                     && !ItemsAdder.is(event.placedBlock)
                                     && BlockUtils.isSolid(placedBlock.getType())
                                     && !BlockUtils.isScaffoldingBlock(placedBlock.getType())) {
-                                Location to = this.protocol.getLocationOrVehicle().clone().add(
-                                        0,
-                                        this.protocol.getEyeHeight(),
-                                        0
-                                );
-                                double distance = ServerLocation.distance(to, event.placedBlock.getLocation()),
-                                        ab_distance = ServerLocation.distance(to, event.placedAgainstBlock.getLocation());
+
+                                Location eyeLoc = this.protocol.getLocationOrVehicle().clone().add(0, this.protocol.getEyeHeight(), 0);
+
+                                double distance = ServerLocation.distance(eyeLoc, getBlockCenter(event.placedBlock));
+                                double ab_distance = ServerLocation.distance(eyeLoc, getBlockCenter(event.placedAgainstBlock));
 
                                 if (!this.protocol.isBedrockPlayer()
                                         && BlockUtils.isFullSolid(placedBlock.getType())
                                         && (!MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_8)
                                         || placedBlock.getType() != Material.BARRIER)
                                         && this.protocol.getVehicle() == null
-                                        && distance > (ab_distance + 0.3)) {
+                                        // EXTENSION: Expanded tolerance to 1.8 to allow diagonal block placement spanning
+                                        && distance > (ab_distance + 1.8)) {
+
                                     this.raytrace.call(() -> this.raytrace.cancel(
-                                            distance / (ab_distance + 0.3),
-                                            "raytrace, distance: " + distance
-                                                    + ", block-against-distance: " + ab_distance
+                                            distance / (ab_distance + 1.8),
+                                            "raytrace, distance: " + RayUtils.scaleVal(distance, 3)
+                                                    + ", block-against-distance: " + RayUtils.scaleVal(ab_distance, 3)
                                                     + ", block: " + BlockUtils.blockToString(event.placedBlock)
                                     ));
                                 } else {
@@ -145,7 +157,7 @@ public class BlockReach extends CheckRunner {
                                         if (distance >= limit) {
                                             this.place.cancel(
                                                     distance / limit,
-                                                    "place, distance: " + distance
+                                                    "place, distance: " + RayUtils.scaleVal(distance, 3)
                                                             + ", limit: " + limit
                                                             + ", block: " + BlockUtils.blockToString(event.placedBlock)
                                             );
