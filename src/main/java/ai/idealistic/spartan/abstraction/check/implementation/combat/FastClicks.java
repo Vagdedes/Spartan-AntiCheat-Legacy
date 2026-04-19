@@ -35,7 +35,7 @@ public class FastClicks extends CheckRunner {
     private final List<Integer> buffer = new ConcurrentList<>();
 
     {
-        for (int i = 0; i < 7; i++) buffer.add(0);
+        for (int i = 0; i < 8; i++) buffer.add(0); // Increased buffer size for new pattern check
     }
 
     private final CheckDetection
@@ -44,7 +44,9 @@ public class FastClicks extends CheckRunner {
             deviation,
             skewness,
             kurtosis,
-            variance;
+            variance,
+            pattern; // EXTENSION: New Pattern Detection
+
     private final List<Long>
             samples = new ConcurrentList<>(),
             samplesMassive = new ConcurrentList<>();
@@ -73,6 +75,11 @@ public class FastClicks extends CheckRunner {
                 CheckDetection.TIME_TO_PREVENT,
                 CheckDetection.TIME_TO_PUNISH);
         this.variance = new ImplementedDetection(this, null, Check.DetectionType.PACKETS, "variance", true,
+                CheckDetection.DEFAULT_AVERAGE_TIME * 4L,
+                CheckDetection.TIME_TO_NOTIFY,
+                CheckDetection.TIME_TO_PREVENT,
+                CheckDetection.TIME_TO_PUNISH);
+        this.pattern = new ImplementedDetection(this, null, Check.DetectionType.PACKETS, "pattern", true,
                 CheckDetection.DEFAULT_AVERAGE_TIME * 4L,
                 CheckDetection.TIME_TO_NOTIFY,
                 CheckDetection.TIME_TO_PREVENT,
@@ -135,7 +142,8 @@ public class FastClicks extends CheckRunner {
             }
             long timePassed = System.currentTimeMillis() - interactTime;
 
-            if (timePassed > 500L) {
+            // EXTENSION: Tightened threshold. A full bow draw mathematically takes 1000ms.
+            if (timePassed > 850L) {
                 return;
             }
             double buffer = bowForce.count(1, 20),
@@ -177,12 +185,15 @@ public class FastClicks extends CheckRunner {
                 || this.deviation.canCall()
                 || this.skewness.canCall()
                 || this.kurtosis.canCall()
-                || this.variance.canCall()) {
+                || this.variance.canCall()
+                || this.pattern.canCall()) {
+
             if (!tickingCorrect()) return;
             this.samples.add(delay);
             this.samplesMassive.add(delay);
+
             if (this.samples.size() >= 20) {
-                { // logic
+                {
                     final double cps = StatisticsMath.getCps(this.samples) * 50;
                     final double limit = hackType.getCheck().getNumericalOption(
                             "clicks_per_second_limit",
@@ -190,8 +201,10 @@ public class FastClicks extends CheckRunner {
                     );
                     final double variance = StatisticsMath.getVariance(this.samples);
                     final double kurtosis = StatisticsMath.getKurtosis(this.samples);
+
                     if (cps > limit) this.cps.cancel("limit ("
                             + (int) cps + "/" + (int) limit + ")");
+
                     { // floor
                         final double floor = Math.abs(Math.floor(cps) - cps);
                         if (floor < 0.07) {
@@ -218,10 +231,18 @@ public class FastClicks extends CheckRunner {
                         }
                     }
                     { // variance
-                        if (variance < 1100 && variance > 200 && cps > 7) {
+                        // EXTENSION: Patched the "Zero-Variance" macro immunity
+                        if (variance < 50 && cps > 8) {
+                            if (addToBuffer(5, 4) > 6) {
+                                this.variance.call(() ->
+                                        this.variance.cancel("blatant zero-variance (" + (int) variance + ")")
+                                );
+                                addToBuffer(5, -2);
+                            }
+                        } else if (variance < 1100 && cps > 7) { // Removed the flawed 'variance > 200' exception
                             if (addToBuffer(5, 3) > 6) {
                                 this.variance.call(() ->
-                                        this.variance.cancel("variance (" + (int) variance + ")")
+                                        this.variance.cancel("low variance (" + (int) variance + ")")
                                 );
                                 addToBuffer(5, -1);
                             }
@@ -229,11 +250,34 @@ public class FastClicks extends CheckRunner {
                             addToBuffer(5, -3);
                         }
                     }
+                    { // EXTENSION: Modal Duplication (Pattern Analysis)
+                        int maxDuplicates = 0;
+                        for (long currentDelay : this.samples) {
+                            int count = 0;
+                            for (long comparisonDelay : this.samples) {
+                                if (currentDelay == comparisonDelay) count++;
+                            }
+                            if (count > maxDuplicates) maxDuplicates = count;
+                        }
+
+                        // If 10 out of 20 clicks hit the exact same millisecond delay, it is an artificial randomized loop
+                        if (maxDuplicates >= 10 && cps > 8) {
+                            if (addToBuffer(6, 3) > 5) {
+                                int finalMaxDuplicates = maxDuplicates;
+                                this.pattern.call(() ->
+                                        this.pattern.cancel("artificial pattern (duplicates: " + finalMaxDuplicates + ")")
+                                );
+                                addToBuffer(6, -2);
+                            }
+                        } else {
+                            addToBuffer(6, -1);
+                        }
+                    }
                 }
                 this.samples.clear();
             }
             if (this.samplesMassive.size() >= 50) {
-                { // logic
+                {
                     final double standardDev = StatisticsMath.getStandardDeviation(this.samplesMassive);
                     final double skewness = StatisticsMath.getSkewness(this.samplesMassive);
                     if (standardDev < 50) {
@@ -283,5 +327,4 @@ public class FastClicks extends CheckRunner {
                 6.0
         ).isEmpty();
     }
-
 }
