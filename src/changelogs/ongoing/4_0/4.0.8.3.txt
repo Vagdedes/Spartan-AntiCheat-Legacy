@@ -1,30 +1,33 @@
-Core & Compatibility
-Versions: Full support for 1.21, 26.1, and 26.2.
-Blocks: Integrated collision data for all new block types.
-Mounts: Adjusted teleport thresholds to stop flags on custom vehicles/mounts.
-Bedrock: Improved Geyser packet-batching handling for building checks.
+Core & Engine
+- Compatibility: Full support verified for 1.21, 26.1, and 26.2.
+- Block Data: Integrated collision mapping for all new block types.
+- Violation Engine: VL points now decay naturally across all checks to stop infinite alert stacking and console spam from regular server latency.
 
 Combat
-KillAura: Added a cutoff to stop false aimbot flags while fighting in webs.
-Reach: Scaled reach limits based on attacker momentum to allow legit combos.
-Criticals: Caught "Zero-Y" hover spoofs and micro-jump offsets (0.0625).
-Velocity: Blocked "Reduce" hacks and fixed bypasses via transaction stalling.
-FastClicks: New pattern analysis to catch randomized macros and RNG flaws.
-FastBow: Tightened draw-time thresholds to 850ms to stop "Insta-Bow" hacks.
-FastEat: Fixed offhand bypasses and "Gapple" consumption at 20/20 hunger.
-FastHeal: Patched Regen math (50>>level) and fixed 1.9+ saturation jitter.
+- NoSwing: Stripped out the 1-second throttle and 1.0f cooldown requirements to catch aggressive 15+ CPS KillAura modules. Added a 150ms temporal buffer to absorb out-of-order packet batching without false flagging.
+- Reach: Scaled reach limits dynamically based on attacker momentum to safely allow legitimate high-speed sprint-combos.
+- KillAura: Added a pipeline cutoff to prevent false aimbot bans when players are fighting inside cobwebs (compensating for the lack of WASD movement).
+- Criticals: Blocked "Zero-Y" hover spoofs and micro-jump offsets (e.g., 0.0625).
+- Velocity: Blocked "Reduce" hacks via yield percentage math and fixed Ping Spoof bypasses by decoupling knockback from network transaction stalling.
+- FastClicks: Injected RNG pattern analysis to catch randomized macros and Modal Duplication flaws.
+- FastBow: Tightened draw-time thresholds to 850ms to shut down server-side "Insta-Bow" exploits.
+
+Inventory & Consumables
+- ImpossibleInventory: Replaced broken death-tracking with Inhuman Damage-Reaction tracking to catch real Auto-Totem hacks. Fixed the InvMove walking bypass by tracking horizontal movement, and added buffers for mid-air inventory clutches and portal-edge desyncs.
+- InventoryClicks: Removed the ItemMeta requirement to catch Auto-Armor/Auto-Pot using generic items. Tracked keyboard actions to catch hotkey macros, fixed exact-match buffer bypasses, and added amplitude caps to stop 0ms lag-spike bans.
+- FastEat: Hooked PlayerItemConsumeEvent to stop bypasses when eating Gapples at 20/20 hunger. Added offhand scanning for potions and kelp.
+- FastHeal: Rebuilt Regen math to use exact vanilla bitshifting to stop bypasses and stabilized 1.9+ saturation jitter.
 
 Movement
-Physics: Overhauled fluid drag for Swimming, Lava, and Depth Strider logic.
-Elytra: Switched to acceleration-based tracking to allow high-speed jump starts.
-Elytra: Fixed "Energy" bypasses used for infinite level-flight.
-Vehicles: Isolated boat speeds from player modifiers like Speed potions.
-Ice Boats: Added support for high-speed Blue Ice/Packed Ice boat travel.
-Gravity: Decoupled fall-start logic to stop desync flags on chunk boundaries.
-VL Engine: Points now decay naturally to stop alert spam and VL stacking.
+- IMFoodSprint: Added a 1000ms latency grace period for server-client food desyncs, and built a VL accumulator to mathematically catch sprint "pulse-toggling" cheats. Explicitly exempted Elytras and Vehicles.
+- Elytra: Switched deployment logic to track vertical acceleration rather than raw Y-speed (allows quick-deploy jumps). Sealed the floating-point "Energy" bypass used for infinite level-flight.
+- Vehicles: Isolated boat/minecart max speeds from player modifiers (Speed potions/Soul Speed). Added exponential limit scaling for Blue/Packed Ice boat highways.
+- Fluid Dynamics: Overhauled fluid drag to accurately support 1.13+ sprint-swimming, Depth Strider, and lava wading.
+- Gravity: Decoupled fall-start predictions to stop false desync flags when crossing chunk boundaries.
+- Custom Mounts: Expanded teleport thresholds to absorb extreme momentum shifts from non-vanilla vehicle systems.
 
-World
-FastBreak: Closed the 0ms insta-break loophole and 400% speed exploit.
-BlockReach: Switched to "Eye-to-Center" math for perfect reach accuracy.
-FastPlace: Fixed lag-spike false flags and caught "soft" 190ms builders.
-Interactions: Fixed the "floor-staring" bypass for block interaction events.
+World & Building
+- FastBreak: Closed the 0ms Insta-Break loophole and completely eliminated the 400% speed exploit by moving to a strict 80% vanilla limit with a flat latency buffer.
+- BlockReach: Transitioned to "Eye-to-Center" coordinate math for perfect accuracy, fixing bypasses when mining straight down and false positives when bridging diagonally.
+- FastPlace: Fixed division-by-zero vulnerabilities during TPS drops and expanded the detection net to catch "soft" 190ms auto-builders.
+- Interactions: Fixed the "floor-staring" bypass for block interaction events.
