@@ -46,7 +46,7 @@ public class HitReach extends CheckRunner {
     private final List<Double> rayTraceAnalysis = new ConcurrentList<>();
     private int vl = 0;
     private static final boolean[] BOOLEANS = {true, false};
-    private static final double REACH_DIST = 3.001, HIT_BOX_VAL = 10.0;
+    private static final double BASE_REACH_DIST = 3.001, HIT_BOX_VAL = 10.0;
     private double hitBoxVL = -1;
     private double reachVl = 0;
     private double blocksVl = 0;
@@ -78,15 +78,24 @@ public class HitReach extends CheckRunner {
             PlayerAttackEvent event = (PlayerAttackEvent) object;
             if (!(event.target instanceof Player)) return;
             if (event.target.getVehicle() != null || this.protocol.getVehicle() != null) return;
+
             if (this.protocol.packetsEnabled()) {
                 if (CheckConditions.canCheckCombat(this.protocol, PluginBase.getProtocol((Player) event.target).bukkit())
                         && !this.protocol.getGameMode().equals(GameMode.CREATIVE)) {
                     PlayerProtocol target = PluginBase.getProtocol((Player) event.target);
                     List<Location> h = target.getPositionHistory();
                     Set<AxisAlignedBB> cachedBlocks = new HashSet<>();
-                    Set<Material> ignored = new HashSet<>();
                     Location hardcodedTargetLoc = target.getLocation().clone();
                     Location hardcodedPlayerLoc = this.protocol.getLocation().clone();
+
+                    // EXTENSION: Calculate Attacker Momentum for Dynamic Reach Scaling
+                    Location lf = this.protocol.getFromLocation();
+                    double horizontalSpeed = Math.sqrt(Math.pow(hardcodedPlayerLoc.getX() - lf.getX(), 2) +
+                            Math.pow(hardcodedPlayerLoc.getZ() - lf.getZ(), 2));
+
+                    // Allow up to 0.5 extra blocks of reach per tick of forward momentum (absorbs the sprint-desync)
+                    double dynamicReach = BASE_REACH_DIST + (horizontalSpeed * 0.85);
+
                     if (getDistance(hardcodedPlayerLoc, hardcodedTargetLoc) > 0.5) {
                         final Location t = target.getLocation();
                         for (int dx = -3; dx <= 3; ++dx) {
@@ -114,15 +123,18 @@ public class HitReach extends CheckRunner {
                             }
                         }
                     }
+
                     final boolean is1_8 = this.protocol.isUsingVersion(MultiVersion.MCVersion.V1_8);
-                    final float hitbox = (is1_8) ? 0.4F : 0.3F;
+                    // EXTENSION: Expanded baseline hitbox to safely blanket StrictMath & Pose transitions
+                    final float hitbox = (is1_8) ? 0.45F : 0.35F;
+
                     AtomicReference<Double> minDistance = new AtomicReference<>(Double.MAX_VALUE);
                     Set<Double> minBlockDistanceSet = new HashSet<>();
+
                     {
                         for (boolean fastMath : BOOLEANS) {
                             final ClientMath buildSpeed = fastMath ? optifineMath : vanillaMath;
                             final Location l = protocol.getLocation();
-                            final Location lf = protocol.getFromLocation();
                             Vec3[] possibleEyeRotation = {
                                     getVectorForRotation(l.getYaw(), l.getPitch(), buildSpeed),
                                     getVectorForRotation(lf.getYaw(), lf.getPitch(), buildSpeed),
@@ -141,10 +153,12 @@ public class HitReach extends CheckRunner {
                                             eyeRotation.yCoord * 6.0D,
                                             eyeRotation.zCoord * 6.0D
                                     );
+
                                     List<Location> positions = new LinkedList<>(h);
                                     positions.add(target.getLocation());
                                     positions.add(target.getFromLocation());
                                     positions.add(target.bukkit().getLocation().clone());
+
                                     for (Location position : positions) {
                                         AxisAlignedBB axisAlignedBB = new AxisAlignedBB(
                                                 position.getX() - hitbox, position.getY() - 0.1f, position.getZ() - hitbox,
@@ -153,12 +167,14 @@ public class HitReach extends CheckRunner {
 
                                         MovingObjectPosition intercept = axisAlignedBB.calculateIntercept(eyePos, endReachRay);
                                         if (intercept != null) {
-                                            double range = intercept.hitVec.distanceTo(eyePos);
+                                            // EXTENSION: StrictMath tolerance subtraction (0.05)
+                                            double range = Math.max(0, intercept.hitVec.distanceTo(eyePos) - 0.05);
                                             if (range < minDistance.get()) {
                                                 minDistance.set(range);
                                             }
                                         }
                                     }
+
                                     double minBlockDist = Double.MAX_VALUE;
                                     for (AxisAlignedBB block : cachedBlocks) {
                                         Vec3 s = new Vec3(
@@ -171,12 +187,7 @@ public class HitReach extends CheckRunner {
                                                 eyeRotation.yCoord * 6.0,
                                                 eyeRotation.zCoord * 6.0
                                         );
-                                    /*
-                                    profile.getPlayer().getWorld().spawnParticle(
-                                                    Particle.DRIP_LAVA,
-                                                    new Location(profile.getPlayer().getWorld(),
-                                                                    e.xCoord, e.yCoord, e.zCoord), 0);
-                                     */
+
                                         MovingObjectPosition intercept = block.calculateIntercept(s, e);
                                         double v = (intercept != null) ? intercept.hitVec.distanceTo(eyePos) : 0;
                                         if (v < (minDistance.get()) && v < minBlockDist
@@ -189,7 +200,6 @@ public class HitReach extends CheckRunner {
                             }
                         }
 
-                        //profile.getPlayer().sendMessage("i: " + minDistance.get() + " " + (minDistance.get() > 999));
                         boolean flagged = false;
                         if (minDistance.get() > HIT_BOX_VAL) {
                             flagged = true;
@@ -201,20 +211,23 @@ public class HitReach extends CheckRunner {
                         } else {
                             hitBoxVL = Math.max(hitBoxVL - 5D, 0);
                         }
-                        if (minDistance.get() > REACH_DIST && minDistance.get() < HIT_BOX_VAL) {
+
+                        // APPLIED EXTENSION: Use dynamicReach instead of static REACH_DIST
+                        if (minDistance.get() > dynamicReach && minDistance.get() < HIT_BOX_VAL) {
                             flagged = true;
                             if (reachVl++ > 2.5D) {
-                                hitboxRaytrace.cancel("Distance " + minDistance.get());
+                                hitboxRaytrace.cancel("Distance " + RayUtils.scaleVal(minDistance.get(), 3) + " (Max: " + RayUtils.scaleVal(dynamicReach, 3) + ")");
                                 event.setCancelled(true);
                             }
-                        } else if (minDistance.get() < REACH_DIST && reachVl > 0) {
+                        } else if (minDistance.get() < dynamicReach && reachVl > 0) {
                             reachVl -= 0.05;
                         }
-                        //profile.getPlayer().sendMessage("d: " + flagged);
-                        { // result?
+
+                        {
                             double dev = (StatisticsMath.getMax(minBlockDistanceSet) + 0.03 + 3e-3) - minDistance.get();
-                            //profile.getPlayer().sendMessage("d: " + dev);
-                            if (dev < -0.669 && RayUtils.scaleVal(Math.abs(dev), 6) < 10) {
+
+                            // EXTENSION: Softened the hardcoded block threshold slightly to account for complex 1.14+ geometry
+                            if (dev < -0.85 && RayUtils.scaleVal(Math.abs(dev), 6) < 10) {
                                 blocksVl++;
                                 throughblocks.cancel("Hitting through block (dev: "
                                         + RayUtils.scaleVal(Math.abs(dev), 6) + ")");
@@ -232,8 +245,7 @@ public class HitReach extends CheckRunner {
                     boolean sleeping = protocol.bukkit().isSleeping();
 
                     PluginBase.runTask(target, () -> {
-                        double bruteforceRayTrace = RayUtils.bruteforceRayTrace(this.protocol, target, sleeping),
-                                diff = bruteforceRayTrace - 0.4;
+                        double bruteforceRayTrace = RayUtils.bruteforceRayTrace(this.protocol, target, sleeping);
                         rayTraceAnalysis.add(bruteforceRayTrace);
                         if (rayTraceAnalysis.size() >= 10) {
                             analyze(this.protocol.getLocation(), bruteforceRayTrace);
@@ -296,7 +308,7 @@ public class HitReach extends CheckRunner {
         int percent = (int) ((result / 0.4) * 100);
         if (punish != null) {
             vl += 100;
-            this.simple.cancel( // ATTENTION: Add more detections to the check if you write more definitions for the 'punish' String field
+            this.simple.cancel(
                     punish + ", hitbox-size-analysis: "
                             + result + ", hitbox-size-last: " + bruteForce + ", percent-of-deviation: "
                             + percent + "%, reach: " + RayUtils.scaleVal((result / 0.4) * 3, 2) + " blocks",
