@@ -62,28 +62,26 @@ public class FastBreak extends CheckRunner {
                 GameMode gameMode = this.protocol.getGameMode();
 
                 if (gameMode == GameMode.SURVIVAL || gameMode == GameMode.ADVENTURE) {
-                    long time = interactTime.getOrDefault(
-                            Objects.hash(block.getWorld().getName(), local.getType(), block.getX(), block.getY(), block.getZ()),
-                            0L
-                    );
+                    int blockHash = Objects.hash(block.getWorld().getName(), local.getType(), block.getX(), block.getY(), block.getZ());
+                    long time = interactTime.getOrDefault(blockHash, 0L);
 
                     if (time > 0L) {
                         time = System.currentTimeMillis() - time;
 
-                        if (time > 0L) { // Make sure the plugin knows when the player started breaking the block
+                        // EXTENSION: Clears the map entry to prevent Ghost-Block Insta-Break exploits
+                        interactTime.remove(blockHash);
+
+                        // EXTENSION: Fixed Insta-Break 0ms Bypass (>= instead of >)
+                        if (time >= 0L) {
                             ItemStack itemStack = this.protocol.getItemInHand();
-                            long originalLimit = MaterialUtils.getBlockBreakTime(this.protocol, itemStack, local.getType()),
-                                    limit = originalLimit;
+                            long originalLimit = MaterialUtils.getBlockBreakTime(this.protocol, itemStack, local.getType());
+                            long limit = originalLimit;
 
-                            if (limit > -1L) { // Make sure the limit can be calculated on this specific server
-                                limit /= 2;
+                            if (limit > -1L) {
+                                // EXTENSION: Removed the 400% speed exploit divisions.
+                                // Applying a strict 80% tolerance with a flat 150ms network desync buffer.
+                                limit = (long) (limit * 0.80) - 150L;
 
-                                // stupid false positive fix
-                                if (block.getY() <= this.protocol.getLocation().getBlockY()
-                                        && Math.abs(block.getX() - this.protocol.getLocation().getBlockX()) <= 1.5
-                                        && Math.abs(block.getZ() - this.protocol.getLocation().getBlockZ()) <= 1.5) {
-                                    limit /= 2;
-                                }
                                 if (limit > (TPS.tickTime * 2L) && time < limit) {
                                     boolean emptyItem = itemStack == null;
                                     Collection<PotionEffect> potionEffects = this.protocol.getActivePotionEffects();
@@ -170,17 +168,17 @@ public class FastBreak extends CheckRunner {
                     double bufferThreshold;
 
                     if (lastBlock != null) {
-                        if (!(block.getX() == lastBlock.getX() && block.getY() == lastBlock.getY() && block.getZ() == lastBlock.getZ() // Same
-                                || block.getX() == (lastBlock.getX() + 1) && block.getY() == lastBlock.getY() && block.getZ() == lastBlock.getZ() // Left
-                                || block.getX() == (lastBlock.getX() - 1) && block.getY() == lastBlock.getY() && block.getZ() == lastBlock.getZ() // Right
-                                || block.getX() == lastBlock.getX() && block.getY() == lastBlock.getY() && block.getZ() == (lastBlock.getZ() + 1) // Front
-                                || block.getX() == lastBlock.getX() && block.getY() == lastBlock.getY() && block.getZ() == (lastBlock.getZ() - 1) // Back
-                                || block.getX() == (lastBlock.getX() + 1) && block.getY() == lastBlock.getY() && block.getZ() == (lastBlock.getZ() + 1) // Left-Diagonal
-                                || block.getX() == (lastBlock.getX() - 1) && block.getY() == lastBlock.getY() && block.getZ() == (lastBlock.getZ() - 1) // Right-Diagonal
-                                || block.getX() == (lastBlock.getX() + 1) && block.getY() == lastBlock.getY() && block.getZ() == (lastBlock.getZ() - 1) // Front-Diagonal
-                                || block.getX() == (lastBlock.getX() - 1) && block.getY() == lastBlock.getY() && block.getZ() == (lastBlock.getZ() + 1) // Back-Diagonal
-                                || block.getX() == lastBlock.getX() && block.getY() == (lastBlock.getY() + 1) && block.getZ() == lastBlock.getZ() // Up
-                                || block.getX() == lastBlock.getX() && block.getY() == (lastBlock.getY() - 1) && block.getZ() == lastBlock.getZ())) { // Down
+                        if (!(block.getX() == lastBlock.getX() && block.getY() == lastBlock.getY() && block.getZ() == lastBlock.getZ()
+                                || block.getX() == (lastBlock.getX() + 1) && block.getY() == lastBlock.getY() && block.getZ() == lastBlock.getZ()
+                                || block.getX() == (lastBlock.getX() - 1) && block.getY() == lastBlock.getY() && block.getZ() == lastBlock.getZ()
+                                || block.getX() == lastBlock.getX() && block.getY() == lastBlock.getY() && block.getZ() == (lastBlock.getZ() + 1)
+                                || block.getX() == lastBlock.getX() && block.getY() == lastBlock.getY() && block.getZ() == (lastBlock.getZ() - 1)
+                                || block.getX() == (lastBlock.getX() + 1) && block.getY() == lastBlock.getY() && block.getZ() == (lastBlock.getZ() + 1)
+                                || block.getX() == (lastBlock.getX() - 1) && block.getY() == lastBlock.getY() && block.getZ() == (lastBlock.getZ() - 1)
+                                || block.getX() == (lastBlock.getX() + 1) && block.getY() == lastBlock.getY() && block.getZ() == (lastBlock.getZ() - 1)
+                                || block.getX() == (lastBlock.getX() - 1) && block.getY() == lastBlock.getY() && block.getZ() == (lastBlock.getZ() + 1)
+                                || block.getX() == lastBlock.getX() && block.getY() == (lastBlock.getY() + 1) && block.getZ() == lastBlock.getZ()
+                                || block.getX() == lastBlock.getX() && block.getY() == (lastBlock.getY() - 1) && block.getZ() == lastBlock.getZ())) {
                             bufferThreshold = individualSurroundingsPerSecondBuffer.count(1, bufferTicks);
                         } else {
                             return;
@@ -216,7 +214,7 @@ public class FastBreak extends CheckRunner {
                 if (b != null) {
                     PluginBase.runTask(b, () -> {
                         if (!ItemsAdder.is(b)) {
-                            if (interactTime.size() == TPS.maximum) {
+                            if (interactTime.size() >= TPS.maximum) {
                                 Iterator<Integer> iterator = interactTime.keySet().iterator();
                                 iterator.next();
                                 iterator.remove();
