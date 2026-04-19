@@ -12,7 +12,9 @@ import ai.idealistic.spartan.functionality.server.PluginBase;
 import ai.idealistic.spartan.utils.java.ConcurrentList;
 import ai.idealistic.spartan.utils.math.RayUtils;
 import ai.idealistic.spartan.utils.minecraft.vector.CVector2F;
+import ai.idealistic.spartan.utils.minecraft.world.BlockUtils;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.*;
 import org.bukkit.util.Vector;
 
@@ -84,6 +86,12 @@ public class KAMoveDirection extends CheckDetection {
 
     public void rotation(RotationEvent event) {
         this.call(() -> {
+            // PATCH: Protect all 6 Heuristic Modules from raw-mouse purity spikes
+            Material currentMat = new ServerLocation(this.protocol.getLocation()).getBlock(this.protocol).getTypeOrNull();
+            if (currentMat != null && BlockUtils.areWebs(currentMat)) {
+                return;
+            }
+
             if (attackHandle.time + 3000 > System.currentTimeMillis()) {
                 for (HeuristicComponent component : components) {
                     component.process(event);
@@ -94,6 +102,12 @@ public class KAMoveDirection extends CheckDetection {
 
     public void run() {
         this.call(() -> {
+            // PATCH: Protect standard MoveDirection execution from raytrace fracturing
+            Material currentMat = new ServerLocation(this.protocol.getLocation()).getBlock(this.protocol).getTypeOrNull();
+            if (currentMat != null && BlockUtils.areWebs(currentMat)) {
+                return;
+            }
+
             if (attackHandle.time + 3000 > System.currentTimeMillis()) {
                 Entity target = attackHandle.target;
 
@@ -293,23 +307,6 @@ public class KAMoveDirection extends CheckDetection {
             punishL2 = reason;
         } else if (!punishL2.contains(reason)) {
             punishL2 += ", " + reason;
-        }
-    }
-
-    private static PriorityType priorityType() {
-        return PriorityType.CAREFUL;
-    }
-
-    private static PriorityData priorityData(PriorityType priorityType) {
-        switch (priorityType) {
-            case AGGRESSIVE:
-                return new PriorityData(200, 4);
-            case LENIENT:
-                return new PriorityData(900, 6);
-            case SILENT:
-                return new PriorityData(1500, 8);
-            default:
-                return new PriorityData(400, 5);
         }
     }
 }
