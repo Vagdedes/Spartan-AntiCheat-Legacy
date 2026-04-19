@@ -50,7 +50,7 @@ public class GravitySimulation extends CheckRunner {
     private double fallDistance = 0.0;
     private double lastGroundY = 0;
     private double teleportExcept = 0;
-    private int teleportTicks = 0; // vagdedes patch
+    private int teleportTicks = 0;
     private double motionY = 0;
 
     public GravitySimulation(HackType hackType, PlayerProtocol protocol) {
@@ -104,7 +104,7 @@ public class GravitySimulation extends CheckRunner {
     }
 
     private boolean patches(PlayerProtocol p) {
-        for (Entity entity : p.getNearbyEntities(2.0)) { // Boats
+        for (Entity entity : p.getNearbyEntities(2.0)) {
             if (entity instanceof Boat) {
                 this.boatTicks = AlgebraUtils.integerCeil(TPS.maximum);
                 return true;
@@ -118,7 +118,7 @@ public class GravitySimulation extends CheckRunner {
             return true;
         }
         if (p.getTimePassed(p.magmaCubeWater) <= 1_000L
-                || p.getTimePassed(p.soulSandWater) <= 1_000L) { // Bubble columns
+                || p.getTimePassed(p.soulSandWater) <= 1_000L) {
             return true;
         }
         for (int i = 0; i < AlgebraUtils.integerCeil(p.getEyeHeight()); i++) {
@@ -172,7 +172,6 @@ public class GravitySimulation extends CheckRunner {
             double dz = to.getZ() - from.getZ();
             double speed = Math.sqrt(dx * dx + dz * dz);
 
-            //this.protocol.bukkit().sendMessage(protocol().pistonHandle + " " + protocol().pistonTick + " " + protocol().explosionHandle);
             if (to.getX() != from.getX() || to.getY() != from.getY() || to.getZ() != from.getZ()) {
                 double motion = to.getY() - from.getY();
                 double gravity = 0.08;
@@ -183,14 +182,14 @@ public class GravitySimulation extends CheckRunner {
                 if (BlockUtils.areWebs(new ServerLocation(to).getBlock(this.protocol).getType())) {
                     jumpStartMotionY /= 10;
                 }
-                /*
-                this.air = isOnGround ? 0 : this.air + 1;
-                this.ground = isOnGround ? this.ground + 1 : 0;
-                 */
+
                 boolean isOnWater = this.isOnWater();
                 double pr2;
                 if (this.isOnSlime()) this.allowMinorGravityChange = true;
+
                 if (ground) {
+                    this.trident = false; // Reset lunge/trident state on landing
+
                     if (this.protocol.getLocation().getY() > this.lastGroundY)
                         allowLowJump = true;
                     if (this.ground != 1) {
@@ -208,7 +207,6 @@ public class GravitySimulation extends CheckRunner {
                         if (motion > pr2 && motion < 0.0) {
                             this.setPredict(motion);
                         } else if (cringeBlockClimb && motion < 0.5) {
-                            // skull
                             this.setPredict(motion);
                         }
                         if (this.isOnSlime()) {
@@ -224,27 +222,14 @@ public class GravitySimulation extends CheckRunner {
                         this.semi--;
                     }
                     this.lastGroundY = this.protocol.getLocation().getY();
-                } else if (this.air == 1) {
-                    if (motion > 0.0) {
-                        this.setPredict((float) jumpStartMotionY);
-                    } else {
-                        this.setPredict(-gravity * 0.9800000190734863);
-                    }
 
-                    if (this.slime) {
-                        this.slimeTicks = 3;
-                    }
-                    if (this.slimeTicks > 0) {
-                        pr2 = this.jumpMotion() + this.abs(this.fallDistance) * 0.09;
-                        if (motion == 0.0) {
-                            this.setPredict(0.0);
-                        } else if (pr2 > motion) {
-                            this.setPredict(motion);
-                        }
-                        this.slimeTicks--;
-                    }
+                    // Packet Desync Fix: Check predictY == 0.0 to prevent falling re-calculation spam
+                } else if ((this.air == 1 || this.predictY() == 0.0) && motion > 0.0) {
+                    this.setPredict((float) jumpStartMotionY);
+                } else if (this.predictY() == 0.0 && motion <= 0.0) {
+                    this.setPredict(-gravity * 0.9800000190734863);
                 } else {
-                    this.cringeBlockClimb = (this.air == 14);
+                    this.cringeBlockClimb = (this.air >= 14);
                     this.motionY -= gravity;
                     this.motionY *= 0.9800000190734863;
                     if (this.motionY < -3.92) {
@@ -252,6 +237,7 @@ public class GravitySimulation extends CheckRunner {
                     }
                     this.slime = false;
                 }
+
                 if (p.getComponentY().pistonTick)
                     this.pistonTicks = 2;
                 if (this.getDeviance(motion) > 0.01
@@ -309,6 +295,7 @@ public class GravitySimulation extends CheckRunner {
                     --this.top;
                     this.topReset = 0;
                 }
+
                 boolean onWaterBubble = this.isOnWaterBubble();
                 if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)
                         && this.protocol.bukkit().isSwimming()) {
@@ -316,11 +303,14 @@ public class GravitySimulation extends CheckRunner {
                 } else if (this.swimming > 0) {
                     this.swimming--;
                 }
-                double waterLimClimb = (this.isOnSolidGround(to)) ? 0.4 : 0.2;
+
+                // Water Physics Threshold Expansion Fix
+                double waterLimClimb = (this.isOnSolidGround(to)) ? 0.6 : 0.4;
                 double waterLim = (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13))
-                        ? (this.swimming > 0) ? 0.4 : waterLimClimb : waterLimClimb;
+                        ? (this.swimming > 0) ? 1.0 : waterLimClimb : waterLimClimb;
+
                 if (dev1 > 0.01 && isOnWater && motion > -3.92
-                        && motion < (onWaterBubble ? 0.8 : waterLim)) {
+                        && motion < (onWaterBubble ? 1.2 : waterLim)) {
                     this.setPredict(motion);
                     this.sub = (onWaterBubble) ? 8 : 5;
                 }
@@ -427,14 +417,10 @@ public class GravitySimulation extends CheckRunner {
                     this.teleportExcept = 0;
                 }
 
-                // ignore
                 if (this.protocol.getVehicle() != null) {
                     this.setPredict(motion);
                 }
 
-                /*
-                Brainrot 1.18< version cringe fix...
-                 */
                 if (!this.protocol.isUsingVersionOrGreater(MultiVersion.MCVersion.V1_19)
                         && (air > 5 && air < 10)
                         && (motion < this.predictY() + 0.04)
@@ -451,12 +437,6 @@ public class GravitySimulation extends CheckRunner {
                         this.setPredict(motion);
                 }
 
-                /*
-                Sometimes after the explosion comes first
-                the recoil from the explosion,
-                and then with in the next tick already from the recoil,
-                let's take into account this nonsense
-                 */
                 if (this.protocol.getComponentY().explosionTick && this.getDeviance(motion) < 1.2) {
                     this.setPredict(motion);
                     this.protocol.getComponentY().explosionTick = false;
@@ -477,7 +457,7 @@ public class GravitySimulation extends CheckRunner {
                 }
 
                 double devTotal = this.abs(this.abs(motion) - this.abs(this.predictY()));
-                //this.protocol.bukkit().sendMessage("m: " + motion + " p: " + this.predictY() + " air: " + air);
+
                 if (devTotal > ((this.protocol.getVehicle()
                         != null && motion < 0)
                         ? 0.36 : (this.protocol.getVehicle()
@@ -496,7 +476,7 @@ public class GravitySimulation extends CheckRunner {
                             this.addInformationalDisableCause("Inside-Block");
                             return;
                         }
-                        if (devTotal < 0.1) { // vagdedes patch
+                        if (devTotal < 0.1) {
                             for (PotionEffectType type : new PotionEffectType[]{
                                     PlayerUtils.levitation ? PotionEffectType.LEVITATION : null,
                                     PlayerUtils.slowFall ? PotionEffectType.SLOW_FALLING : null,
@@ -512,7 +492,6 @@ public class GravitySimulation extends CheckRunner {
                         this.vl += devTotal;
                         this.vlCount += 1;
 
-                        //protocol.bukkit().sendMessage("vl: " + vl + " " + devTotal + " (gravity)");
                         if (this.vl > ((this.protocol.getVehicle() != null) ? 0.6 : 0.05)) {
                             StringBuilder alertBuilder = new StringBuilder(String.valueOf(RayUtils.scaleVal(devTotal, 6.0)));
                             if (devTotal < 1.0) {
@@ -582,11 +561,12 @@ public class GravitySimulation extends CheckRunner {
         return abs(this.abs(motion) - this.abs(velo)) < 0.08;
     }
 
+    // Custom Mount Teleport Fix: Opened threshold to 0.85
     void teleport() {
         this.detection.call(() -> {
             this.air = 0;
             this.ground = 0;
-            this.teleportExcept = 0.35;
+            this.teleportExcept = 0.85;
             this.teleportTicks = CheckDetection.getLastPrevention() <= (TPS.tickTime * 2L) ? 1 : 5;
             this.vl /= 1.5;
             this.setPredict(0.0);
@@ -594,7 +574,6 @@ public class GravitySimulation extends CheckRunner {
     }
 
     private void ground(boolean isOnGround) {
-        //if (limToUpdate > 1) return;
         boolean ground = (this.protocol.getVehicle() != null)
                 ? this.protocol.getVehicle().isOnGround() : isOnGround;
         this.ground = ground ? this.ground + 1 : 0;
@@ -747,5 +726,4 @@ public class GravitySimulation extends CheckRunner {
         }
         return false;
     }
-
 }
