@@ -59,11 +59,11 @@ public class HandUseListener extends PacketAdapter {
                         true
                 ));
             } else if ((item.getType().equals(WOODEN_SPEAR)
-                    && item.getType().equals(STONE_SPEAR)
-                    && item.getType().equals(IRON_SPEAR)
-                    && item.getType().equals(GOLDEN_SPEAR)
-                    && item.getType().equals(DIAMOND_SPEAR)
-                    && item.getType().equals(NETHERITE_SPEAR))
+                    || item.getType().equals(STONE_SPEAR)
+                    || item.getType().equals(IRON_SPEAR)
+                    || item.getType().equals(GOLDEN_SPEAR)
+                    || item.getType().equals(DIAMOND_SPEAR)
+                    || item.getType().equals(NETHERITE_SPEAR))
                     && item.getEnchantmentLevel(Enchantment.LUNGE) > 0) {
                 double r = Math.toRadians(protocol.getLocation().getYaw());
                 CheckThread.run(protocol, () -> protocol.executeRunners(
