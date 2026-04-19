@@ -1101,7 +1101,7 @@ public class BlockUtils {
                         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_17)) {
                             if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_19)) {
                                 if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V26_1)) {
-                                    helper.add(Material.GOLDEN_DANDELION);
+                                    helper.add(Material.getMaterial("GOLDEN_DANDELION"));
                                 }
                                 helper.add(Material.MUD);
                             }
@@ -1334,8 +1334,8 @@ public class BlockUtils {
         return block instanceof Block
                 ? isLiquidOrWaterLogged((Block) block, lava)
                 : blockDataExists
-                && block instanceof BlockData
-                && isLiquidOrWaterLogged((BlockData) block, lava);
+                  && block instanceof BlockData
+                  && isLiquidOrWaterLogged((BlockData) block, lava);
     }
 
     public static boolean isLiquidOrWaterLogged(Block block, boolean lava) {

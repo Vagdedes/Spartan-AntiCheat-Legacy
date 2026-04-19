@@ -381,7 +381,14 @@ public class PlayerProtocol {
                 : ProtocolLib.getLocationOrNull(this.bukkit());
         return loc != null
                 ? loc
-                : ServerLocation.bukkitDefault.clone();
+                : new Location(
+                Bukkit.getWorlds().get(0),
+                ServerLocation.bukkitDefault.getX(),
+                ServerLocation.bukkitDefault.getY(),
+                ServerLocation.bukkitDefault.getZ(),
+                ServerLocation.bukkitDefault.getYaw(),
+                ServerLocation.bukkitDefault.getPitch()
+        );
     }
 
     public Location getFromLocation() {
@@ -648,7 +655,7 @@ public class PlayerProtocol {
                         || this.isUsingVersionOrGreater(MultiVersion.MCVersion.V1_11)
                         || PluginUtils.exists("viaversion")
                         || Compatibility.CompatibilityType.PROTOCOL_SUPPORT.isFunctional() ? 256 :
-                        100;
+                100;
     }
 
     public void sendImportantMessage(String message) {
