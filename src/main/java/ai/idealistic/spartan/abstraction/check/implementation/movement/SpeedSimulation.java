@@ -247,7 +247,7 @@ public class SpeedSimulation extends CheckRunner {
                             ACCELERATION_SPRINT * (1.5) * this.multiplex(),
                             new CVector2D(dx, dz)
                     );
-                    if ((this.isOnSlimeWide(to) || this.isOnSlimeWide(from)))
+                    if ((this.isOnSlimeWide() || this.isOnSlimeWide()))
                         this.nearSlimeStatus = 4;
                     if (!(dx == predictX && dz == predictZ)) {
                         double pr = Math.sqrt(predictX * predictX + predictZ * predictZ);
@@ -377,7 +377,7 @@ public class SpeedSimulation extends CheckRunner {
         if (speedEffect != null)
             m += (double) (speedEffect.bukkitEffect.getAmplifier() + 1) * 0.2;
 
-        if (this.isOnIce(l) || this.isOnSlime(l) || this.isOnIce(lF) || this.isOnSlime(lF))
+        if (this.isOnIce(l) || this.isOnSlime() || this.isOnIce(lF) || this.isOnSlime())
             m *= 1.6;
 
         if (this.protocol.getNearbyEntities(2).size() > 1)
@@ -402,7 +402,7 @@ public class SpeedSimulation extends CheckRunner {
             if (dolphinEffect != null) m *= 6.2;
         }
 
-        if (this.isOnSemi(l)) m *= 1.4;
+        if (this.isOnSemi()) m *= 1.4;
         if (this.protocol.isGliding()) m *= 18.0;
         if (this.protocol.isFlying() || this.protocol.flyingTicks > 0) m *= 25.0;
 
@@ -534,15 +534,15 @@ public class SpeedSimulation extends CheckRunner {
         return false;
     }
 
-    private boolean isOnSemi(Location location) {
+    private boolean isOnSemi() {
         return this.protocol.getEnvironment().isSemi();
     }
 
-    private boolean isOnSlime(Location location) {
+    private boolean isOnSlime() {
         return this.protocol.getEnvironment().isSlime();
     }
 
-    private boolean isOnSlimeWide(Location location) {
+    private boolean isOnSlimeWide() {
         return this.protocol.getEnvironment().isSlimeWide();
     }
 
