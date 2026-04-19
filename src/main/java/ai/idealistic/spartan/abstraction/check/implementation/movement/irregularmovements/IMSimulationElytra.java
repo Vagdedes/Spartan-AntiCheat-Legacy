@@ -6,6 +6,7 @@ import ai.idealistic.spartan.abstraction.check.CheckRunner;
 import ai.idealistic.spartan.abstraction.data.Buffer;
 import ai.idealistic.spartan.abstraction.data.EnvironmentData;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
+import ai.idealistic.spartan.utils.math.RayUtils;
 import kireiko.dev.millennium.math.Statistics;
 import kireiko.dev.millennium.types.EvictingList;
 import org.bukkit.Location;
@@ -59,8 +60,19 @@ public class IMSimulationElytra extends CheckDetection {
 
     public void handleInteract() {
         if (protocol.bukkit().isGliding()) {
-            ItemStack item = protocol.bukkit().getItemInHand();
-            if (item != null && item.getType().name().contains("FIREWORK")) {
+            PlayerInventory inv = protocol.bukkit().getInventory();
+            ItemStack mainHand = inv.getItemInMainHand();
+            ItemStack offHand = inv.getItemInOffHand();
+
+            // EXTENSION: Patched Offhand Firework and Trident Riptide blindspots
+            boolean hasBoostItem = false;
+            if (mainHand != null && (mainHand.getType().name().contains("FIREWORK") || mainHand.getType().name().contains("TRIDENT"))) {
+                hasBoostItem = true;
+            } else if (offHand != null && (offHand.getType().name().contains("FIREWORK") || offHand.getType().name().contains("TRIDENT"))) {
+                hasBoostItem = true;
+            }
+
+            if (hasBoostItem) {
                 this.fireworkBoostTicks = 75;
                 this.newVl = 0;
             }
@@ -186,7 +198,6 @@ public class IMSimulationElytra extends CheckDetection {
                 this.vl = 0;
             }
             if (ticks > 1) {
-                //protocol.bukkit().sendMessage("pr: " + pr + " " + speed + " m: " + (Statistics.getMax(lastYMotions)));
                 if (pr != 0) lastYMotions.add(pr);
                 final boolean isInvalid = lastYMotions.isEmpty() || (Statistics.getMax(lastYMotions) > 1e-7);
                 if (isInvalid) {
@@ -235,8 +246,9 @@ public class IMSimulationElytra extends CheckDetection {
 
         Vector actualVelocity = new Vector(to.getX() - from.getX(), to.getY() - from.getY(), to.getZ() - from.getZ());
 
-        if (glidingTicks < 6 && actualVelocity.getY() > 0.15 && fireworkBoostTicks < 1) {
-            cancel("Elytra (Limit) d: " + actualVelocity.getY(), from, 0, true);
+        // EXTENSION: Fixed Quick-Deploy Jump false positive by checking acceleration, not raw Y velocity
+        if (glidingTicks < 6 && (actualVelocity.getY() > lastVelocity.getY() + 0.05) && fireworkBoostTicks < 1) {
+            cancel("Elytra (Limit) gain: " + RayUtils.scaleVal(actualVelocity.getY() - lastVelocity.getY(), 4), from, 0, true);
             lastVelocity = new Vector(0, 0, 0);
             if (prevent()) {
                 protocol.bukkit().setGliding(false);
@@ -254,9 +266,12 @@ public class IMSimulationElytra extends CheckDetection {
         double actualHorizontalSpeedSq = Math.pow(actualVelocity.getX(), 2) + Math.pow(actualVelocity.getZ(), 2);
         boolean isFlyingLevel = Math.abs(actualVelocity.getY()) < 0.009;
 
-        if (isFlyingLevel && actualHorizontalSpeedSq == lastHorizontalSpeedSq * DRAG_HORIZONTAL_SQ) {
+        double expectedDragSq = lastHorizontalSpeedSq * DRAG_HORIZONTAL_SQ;
+
+        // EXTENSION: Fixed the floating-point strict-equality bypass
+        if (isFlyingLevel && actualHorizontalSpeedSq > 0.02 && actualHorizontalSpeedSq >= (expectedDragSq - 0.0001)) {
             if (++newVl > bufferThreshold) {
-                cancel("Elytra (Energy) hspeed: " + actualHorizontalSpeedSq, from, 0, true);
+                cancel("Elytra (Energy) artificial horizontal maintenance: " + actualHorizontalSpeedSq, from, 0, true);
             }
         } else {
             Vector predictedVelocity = lastVelocity.clone();
