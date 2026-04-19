@@ -163,7 +163,9 @@ public class SpeedSimulation extends CheckRunner {
                     if (this.air == 0) {
                         this.sprintStatus = false;
                         this.velo = false;
-                        double limit = isOnAngle ? 0.2975 : (isOnAngle80) ? 0.289 : 0.235;
+
+                        // Fix 2: Absorb sprint camera flicking by raising base limit from 0.235 to 0.285
+                        double limit = isOnAngle ? 0.2975 : (isOnAngle80) ? 0.289 : 0.285;
                         limit = (this.action > 6 ? 0.061 : this.action > 3 ? 0.09 : this.action > 1 ? 0.17 : limit);
                         double limitAccel = RayUtils.validRayLines(
                                 yawLine, moveLine, 65.0) ? 0.15 : 0.12 + atr;
@@ -214,7 +216,7 @@ public class SpeedSimulation extends CheckRunner {
                         double moveAngle = RayUtils.calculateRayLine(moveLine);
                         double accel = ((this.action > 2)
                                 ? ACCELERATION_ACTION : (this.action > 1) ?
-                                ACCELERATION_BASIC : ACCELERATION_SPRINT) * this.multiplex();
+                                                        ACCELERATION_BASIC : ACCELERATION_SPRINT) * this.multiplex();
                         boolean nearbyEntities = false;
                         for (Entity entity : this.protocol.getNearbyEntities(2.4)) {
                             if (entity.getUniqueId() != this.protocol.getUUID()) {
@@ -245,7 +247,6 @@ public class SpeedSimulation extends CheckRunner {
                             ACCELERATION_SPRINT * (1.5) * this.multiplex(),
                             new CVector2D(dx, dz)
                     );
-                    //protocol().bukkit.sendMessage("i: " + this.protocol.getComponentXZ().pistonTick + " " + this.removePistonTick);
                     if ((this.isOnSlimeWide(to) || this.isOnSlimeWide(from)))
                         this.nearSlimeStatus = 4;
                     if (!(dx == predictX && dz == predictZ)) {
@@ -264,10 +265,13 @@ public class SpeedSimulation extends CheckRunner {
                             this.slimeBoostApply--;
                             this.setPredict(dx, dz);
                         }
-                        if (d >= 0.04 && d <= 3.1 && this.tridentBoostApply > 0) {
+
+                        // Fix 1: Expanded threshold for massive Lunge vectors from 3.1 to 8.5
+                        if (d >= 0.01 && d <= 8.5 && this.tridentBoostApply > 0) {
                             this.tridentBoostApply--;
                             this.setPredict(dx, dz);
                         }
+
                         if (d >= 0.02 && d <= 1.7 && this.protocol.getComponentXZ().explosionTick) {
                             this.protocol.getComponentXZ().explosionTick = false;
                             this.setPredict(dx, dz);
@@ -293,7 +297,6 @@ public class SpeedSimulation extends CheckRunner {
                         pr = Math.sqrt(predictX * predictX + predictZ * predictZ);
                         d = getDeviance(pr, speed);
 
-                        //protocol.bukkit().sendMessage("tp: " + tpTicks);
                         if (tpTicks > 0 && d > 1e-7 && d < 0.09) {
                             tpTicks--;
                             setPredict(dx, dz);
@@ -302,7 +305,6 @@ public class SpeedSimulation extends CheckRunner {
                         if (!(dx == predictX && dz == predictZ)) {
                             this.vlCount += (air == 1) ? 4 : 1;
                             this.vl += (d * 1.5) + (air == 1 ? 0.5 : (d > 0.04) ? 0.12 : 0.06);
-                            //protocol.bukkit().sendMessage("vl: " + vl + " " + d);
                             if (this.vl > 0.05) {
                                 this.ACCELERATION_MOTION /= 2;
                                 flagged = true;
@@ -319,7 +321,7 @@ public class SpeedSimulation extends CheckRunner {
                                 if (this.getSpeedEffect() != null) {
                                     difference = Math.max(
                                             difference,
-                                            0.13 // vagdedes patch
+                                            0.13
                                     );
                                 }
                                 if (d >= difference) {
@@ -334,7 +336,6 @@ public class SpeedSimulation extends CheckRunner {
                                 this.vl -= 0.1;
                             }
                         }
-                        //this.protocol.bukkit().sendMessage("vl: " + this.vl + " " + this.vlCount);
                     }
                 }
                 if (this.removePistonTick) {
@@ -366,29 +367,45 @@ public class SpeedSimulation extends CheckRunner {
         boolean hasSpeed = speedEffect != null;
         Location l = this.protocol.getLocation().clone().add(0, -0.5, 0);
         Location lF = this.protocol.getFromLocation().clone().add(0, -0.5, 0);
+
         if (PlayerUtils.soulSpeed && this.protocol.getInventory().getBoots() != null) {
             int e = this.protocol.getInventory().getBoots().getEnchantmentLevel(Enchantment.SOUL_SPEED);
             double v = (e + 1) * 0.4;
             m += v;
         }
+
         if (speedEffect != null)
             m += (double) (speedEffect.bukkitEffect.getAmplifier() + 1) * 0.2;
+
         if (this.isOnIce(l) || this.isOnSlime(l) || this.isOnIce(lF) || this.isOnSlime(lF))
             m *= 1.6;
+
         if (this.protocol.getNearbyEntities(2).size() > 1)
             m *= 1.4;
+
         if (BlockUtils.areWebs(new ServerLocation(this.protocol.getLocation()).getBlock(this.protocol).getType())) {
             m *= 0.2;
         }
-        if (this.isOnWater() || this.isOnWater()) {
+
+        // Fix 3: Injected missing Depth Strider and Swim Animation multipliers
+        if (this.isOnWater()) {
+            if (this.protocol.getInventory().getBoots() != null) {
+                int ds = this.protocol.getInventory().getBoots().getEnchantmentLevel(Enchantment.DEPTH_STRIDER);
+                if (ds > 0) m += ds * 0.35;
+            }
+            if (this.protocol.bukkit().isSprinting()) {
+                m *= 1.3;
+            }
             ExtendedPotionEffect dolphinEffect = PlayerUtils.dolphinsGrace
                     ? this.protocol.getPotionEffect(PotionEffectType.DOLPHINS_GRACE, 0)
                     : null;
             if (dolphinEffect != null) m *= 6.2;
         }
+
         if (this.isOnSemi(l)) m *= 1.4;
         if (this.protocol.isGliding()) m *= 18.0;
         if (this.protocol.isFlying() || this.protocol.flyingTicks > 0) m *= 25.0;
+
         m *= (this.protocol.bukkit().getWalkSpeed() * 5);
         return m;
     }
@@ -440,8 +457,9 @@ public class SpeedSimulation extends CheckRunner {
         });
     }
 
+    // Fix 1 Continued: Extending active threshold ticks for momentum decay
     private void trident() {
-        this.detection.call(() -> this.tridentBoostApply = 10);
+        this.detection.call(() -> this.tridentBoostApply = 20);
     }
 
     private void vhAct() {
