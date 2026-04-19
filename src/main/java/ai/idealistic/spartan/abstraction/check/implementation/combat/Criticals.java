@@ -15,10 +15,11 @@ import org.bukkit.potion.PotionEffectType;
 public class Criticals extends CheckRunner {
 
     private final CheckDetection detection;
+    private int buffer = 0; // Injected buffer to prevent 1-tick physics false positives
 
     public Criticals(HackType hackType, PlayerProtocol protocol) {
         super(hackType, protocol);
-        this.detection = new ImplementedDetection(this, null, null, null, true,
+        this.detection = new ImplementedDetection(this, null, null, "packet", true,
                 CheckDetection.DEFAULT_AVERAGE_TIME * 4L,
                 CheckDetection.TIME_TO_NOTIFY,
                 CheckDetection.TIME_TO_PREVENT,
@@ -29,26 +30,51 @@ public class Criticals extends CheckRunner {
     protected void handleInternal(boolean cancelled, Object object) {
         if (object instanceof PlayerAttackEvent) {
             this.detection.call(() -> {
-                double verticalMaxAccuracy = this.protocol.getLocation().getY() - this.protocol.getFromLocation().getY();
+                double deltaY = this.protocol.getLocation().getY() - this.protocol.getFromLocation().getY();
+                double absDeltaY = Math.abs(deltaY);
 
-                if (RayUtils.onBlock(
-                        this.protocol,
-                        this.protocol.getLocationOrVehicle(),
-                        BlockUtils.web
-                )
-                ) {
+                // Extended Exemptions: Webs AND Climbables (Ladders/Vines)
+                if (RayUtils.onBlock(this.protocol, this.protocol.getLocationOrVehicle(), BlockUtils.web) ||
+                        this.protocol.getEnvironment().isClimb()) {
                     return;
                 }
 
-                if ((verticalMaxAccuracy < 0.079 || Math.abs(verticalMaxAccuracy) == 0.0625)
-                        && verticalMaxAccuracy > 0
-                        && !this.protocol.isOnGround()
-                        && this.protocol.isOnGroundFrom()
-                        && !new ServerLocation(this.protocol.getLocation()).getBlock(this.protocol).getType().isBlock()
-                        && !RayUtils.onSolidBlock(this.protocol, this.protocol.getLocation().clone().add(0, 2, 0))) {
-                    this.detection.cancel("packet");
+                boolean isGroundToAir = !this.protocol.isOnGround() && this.protocol.isOnGroundFrom();
+                boolean hasCeiling = RayUtils.onSolidBlock(this.protocol, this.protocol.getLocation().clone().add(0, 2, 0)) ||
+                        new ServerLocation(this.protocol.getLocation()).getBlock(this.protocol).getType().isBlock();
+
+                if (!hasCeiling) {
+                    // Detection 1: The "Zero-Y" Spoof
+                    // Client claims to be off the ground, but vertical motion is completely static
+                    if (!this.protocol.isOnGround() && deltaY == 0.0 && !this.protocol.isOnGroundFrom()) {
+                        if (++buffer > 1) {
+                            this.detection.cancel("type: zero-y_spoof");
+                        }
+                    }
+
+                    // Detection 2: Micro-Hops & Magic Offsets
+                    // Catches standard fractions used by modern bypasses (0.0625, 0.046875, 0.015625)
+                    else if (isGroundToAir && deltaY > 0) {
+                        if (deltaY < 0.1 || absDeltaY == 0.0625 || absDeltaY == 0.015625 || absDeltaY == 0.046875) {
+                            if (++buffer > 1) {
+                                this.detection.cancel("type: micro_hop, val: " + deltaY);
+                            }
+                        } else {
+                            this.decreaseBuffer();
+                        }
+                    } else {
+                        this.decreaseBuffer();
+                    }
+                } else {
+                    this.decreaseBuffer();
                 }
             });
+        }
+    }
+
+    private void decreaseBuffer() {
+        if (this.buffer > 0) {
+            this.buffer--;
         }
     }
 
@@ -56,6 +82,7 @@ public class Criticals extends CheckRunner {
     protected boolean canRun() {
         return CheckConditions.canCheckCombat(this.protocol)
                 && !this.protocol.getEnvironment().isLiquid()
-                && !this.protocol.hasPotionEffect(PotionEffectType.BLINDNESS, 0);
+                && !this.protocol.hasPotionEffect(PotionEffectType.BLINDNESS, 0)
+                && !this.protocol.hasPotionEffect(PotionEffectType.LEVITATION, 0); // Added Levitation exemption
     }
 }
