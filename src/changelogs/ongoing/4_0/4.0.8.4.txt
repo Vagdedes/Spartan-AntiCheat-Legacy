@@ -1,4 +1,3 @@
-[+] New quark-e-4.0-131k-a37k-moe KillAura Local ML model,
-    designed for maximum speed & performance balance,
-    trained on 8.500.000 vectors with 96% ROC-AUC.
+[+] New quark-e-4.0-131k-a37k-moe KillAura Local ML model with 150 ticks context window.
+    Designed for maximum speed & performance balance, trained on 8.500.000 vectors with 96% ROC-AUC.
 [#] Fixed NoSwing falses
