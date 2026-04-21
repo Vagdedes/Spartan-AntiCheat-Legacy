@@ -6,6 +6,7 @@ import ai.idealistic.spartan.abstraction.check.CheckRunner;
 import ai.idealistic.spartan.abstraction.check.definition.ImplementedDetection;
 import ai.idealistic.spartan.abstraction.data.Buffer;
 import ai.idealistic.spartan.abstraction.event.PlayerAttackEvent;
+import ai.idealistic.spartan.abstraction.event.PlayerLeftClickEvent;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.spartan.abstraction.world.ServerBlock;
 import ai.idealistic.spartan.compatibility.Compatibility;
@@ -14,6 +15,7 @@ import ai.idealistic.spartan.compatibility.manual.abilities.ItemsAdder;
 import ai.idealistic.spartan.compatibility.manual.building.MineBomb;
 import ai.idealistic.spartan.compatibility.manual.building.TreeFeller;
 import ai.idealistic.spartan.compatibility.manual.entity.Vehicles;
+import ai.idealistic.spartan.functionality.concurrent.CheckThread;
 import ai.idealistic.spartan.functionality.server.PluginBase;
 import ai.idealistic.spartan.functionality.tracking.CheckConditions;
 import ai.idealistic.spartan.utils.minecraft.world.BlockUtils;
@@ -24,8 +26,10 @@ import org.bukkit.event.player.PlayerAnimationEvent;
 
 public class NoSwing extends CheckRunner {
 
+    private static final long ANIMATION_GRACE_MS = 150L;
+
     private final CheckDetection breaking, damage;
-    private long lastAnimationTime;
+    private volatile long lastAnimationTime;
     private final Buffer.IndividualBuffer damageBuffer, breakBuffer;
 
     public NoSwing(HackType hackType, PlayerProtocol protocol) {
@@ -39,8 +43,9 @@ public class NoSwing extends CheckRunner {
 
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
-        if (object instanceof PlayerAnimationEvent) {
-            this.lastAnimationTime = System.currentTimeMillis();
+        if (object instanceof PlayerAnimationEvent
+                || object instanceof PlayerLeftClickEvent) {
+            this.recordAnimation();
         } else if (object instanceof BlockBreakEvent) {
             this.breaking.call(() -> {
                 if (MineBomb.isUsing(this.protocol)
@@ -58,8 +63,7 @@ public class NoSwing extends CheckRunner {
 
                         long timeSinceAnimation = System.currentTimeMillis() - this.lastAnimationTime;
 
-                        // Safely absorbs out-of-order packet batching up to 150ms
-                        if (timeSinceAnimation > 150L) {
+                        if (timeSinceAnimation > ANIMATION_GRACE_MS) {
                             if (breakBuffer.count(1, 20) >= 3) {
                                 this.breaking.cancel(
                                         "breaking"
@@ -86,18 +90,17 @@ public class NoSwing extends CheckRunner {
                     return;
                 }
 
-                long timeSinceAnimation = System.currentTimeMillis() - this.lastAnimationTime;
+                long attackTime = System.currentTimeMillis();
+                long timeSinceAnimation = attackTime - this.lastAnimationTime;
 
-                // Removed cooldown requirement to catch 15+ CPS KillAura modules
-                if (timeSinceAnimation > 150L) {
-                    if (damageBuffer.count(1, 20) >= 4) {
-                        this.damage.cancel(
-                                "damage"
-                                        + ", entity: " + entityToString(entity)
-                                        + ", item: " + BlockUtils.materialToString(this.protocol.getItemInHand().getType())
-                                        + ", ms-since-anim: " + timeSinceAnimation
-                        );
-                    }
+                if (timeSinceAnimation > ANIMATION_GRACE_MS) {
+                    String entityName = entityToString(entity);
+                    String itemName = BlockUtils.materialToString(this.protocol.getItemInHand().getType());
+
+                    CheckThread.later(
+                            () -> this.damage.call(() -> this.checkDelayedDamageSwing(attackTime, entityName, itemName)),
+                            ANIMATION_GRACE_MS
+                    );
                 } else {
                     damageBuffer.decrease(0.5);
                 }
@@ -109,6 +112,31 @@ public class NoSwing extends CheckRunner {
     public boolean canRun() {
         return !Vehicles.has(this.protocol, Vehicles.DRILL)
                 && !Compatibility.CompatibilityType.ADVANCED_ENCHANTMENTS.isFunctional();
+    }
+
+    private void recordAnimation() {
+        this.lastAnimationTime = System.currentTimeMillis();
+    }
+
+    private void checkDelayedDamageSwing(long attackTime, String entityName, String itemName) {
+        long animationTime = this.lastAnimationTime;
+
+        if (animationTime >= attackTime
+                && animationTime - attackTime <= ANIMATION_GRACE_MS) {
+            damageBuffer.decrease(0.5);
+            return;
+        }
+
+        long timeSinceAnimation = Math.max(0L, System.currentTimeMillis() - animationTime);
+
+        if (damageBuffer.count(1, 20) >= 4) {
+            this.damage.cancel(
+                    "damage"
+                            + ", entity: " + entityName
+                            + ", item: " + itemName
+                            + ", ms-since-anim: " + timeSinceAnimation
+            );
+        }
     }
 
     private static String entityToString(Entity e) {
