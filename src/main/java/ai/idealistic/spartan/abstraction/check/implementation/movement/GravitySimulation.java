@@ -264,7 +264,7 @@ public class GravitySimulation extends CheckRunner {
                     p.getComponentY().pistonHandle = false;
                     slimePunch = 4;
                 }
-                if ((this.isOnSemi() || this.isOnSemi() || this.isOnSlimeHeight()) && motion != 0.0 && motion < 0.51) {
+                if ((this.isOnSemi() || this.isOnSlime() || this.isOnSlimeHeight() || this.isOnHoney(to)) && Math.abs(motion) < 0.51) {
                     this.setPredict(motion);
                 }
                 pr2 = this.abs(this.abs(motion) - this.abs(this.predictY()));
