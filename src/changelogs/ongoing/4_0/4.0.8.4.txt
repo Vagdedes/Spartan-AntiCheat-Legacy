@@ -4,3 +4,4 @@
 [#] Fixed Gravity Simulation false positives
 [#] Fixed Inventory Clicks false positives
 [#] Fixed a Folia teleport async console error
+[#] Fixed a Folia block data console error
