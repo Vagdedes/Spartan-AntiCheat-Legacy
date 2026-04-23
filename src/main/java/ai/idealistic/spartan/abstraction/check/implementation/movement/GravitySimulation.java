@@ -46,6 +46,7 @@ public class GravitySimulation extends CheckRunner {
             allowMinorGravityChange = false, allowLowMinorAccel = false;
     private int slimePunch = 0, slimeTicks = 0, pistonTicks = 0, sub = 0;
     private double vl = 0.0, vlCount = 0.0;
+    private double microGlideVl = 0.0; // EXTENSION: New buffer to catch 0.008 micro-glides
     private int semi = 0;
     private double fallDistance = 0.0;
     private double lastGroundY = 0;
@@ -141,6 +142,7 @@ public class GravitySimulation extends CheckRunner {
                 this.ground = 0;
                 this.vl = 0.0;
                 this.vlCount = 0.0;
+                this.microGlideVl = 0.0;
                 this.setPredict(0.0);
                 this.levitation = 0;
                 this.levitationA = 0;
@@ -185,10 +187,12 @@ public class GravitySimulation extends CheckRunner {
 
                 boolean isOnWater = this.isOnWater();
                 double pr2;
-                if (this.isOnSlime()) this.allowMinorGravityChange = true;
+
+                // EXTENSION: Patched Honey Block gravity desyncs
+                if (this.isOnSlime() || this.isOnHoney(to)) this.allowMinorGravityChange = true;
 
                 if (ground) {
-                    this.trident = false; // Reset lunge/trident state on landing
+                    this.trident = false;
 
                     if (this.protocol.getLocation().getY() > this.lastGroundY)
                         allowLowJump = true;
@@ -197,6 +201,7 @@ public class GravitySimulation extends CheckRunner {
                         if (this.abs(motion) < 0.08 && this.abs(motion) > 0.0
                                 && (this.isBlocksOnTop(to)
                                 || this.isOnSlime()
+                                || this.isOnHoney(to)
                                 || isNearGlideBlocks())) {
                             this.setPredict(motion);
                         }
@@ -223,7 +228,6 @@ public class GravitySimulation extends CheckRunner {
                     }
                     this.lastGroundY = this.protocol.getLocation().getY();
 
-                    // Packet Desync Fix: Check predictY == 0.0 to prevent falling re-calculation spam
                 } else if ((this.air == 1 || this.predictY() == 0.0) && motion > 0.0) {
                     this.setPredict((float) jumpStartMotionY);
                 } else if (this.predictY() == 0.0 && motion <= 0.0) {
@@ -304,7 +308,6 @@ public class GravitySimulation extends CheckRunner {
                     this.swimming--;
                 }
 
-                // Water Physics Threshold Expansion Fix
                 double waterLimClimb = (this.isOnSolidGround(to)) ? 0.6 : 0.4;
                 double waterLim = (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13))
                         ? (this.swimming > 0) ? 1.0 : waterLimClimb : waterLimClimb;
@@ -458,6 +461,19 @@ public class GravitySimulation extends CheckRunner {
 
                 double devTotal = this.abs(this.abs(motion) - this.abs(this.predictY()));
 
+                // EXTENSION: Patched the Micro-Glide bypass
+                if (devTotal > 0.002 && devTotal <= 0.009 && this.protocol.getVehicle() == null) {
+                    if (++this.microGlideVl > 12) {
+                        this.detection.cancel(
+                                "y: micro-glide, ry: " + RayUtils.scaleVal(devTotal, 4),
+                                this.protocol.getFromLocation()
+                        );
+                        this.microGlideVl = 6;
+                    }
+                } else {
+                    this.microGlideVl = Math.max(0, this.microGlideVl - 0.25);
+                }
+
                 if (devTotal > ((this.protocol.getVehicle()
                         != null && motion < 0)
                         ? 0.36 : (this.protocol.getVehicle()
@@ -561,7 +577,6 @@ public class GravitySimulation extends CheckRunner {
         return abs(this.abs(motion) - this.abs(velo)) < 0.08;
     }
 
-    // Custom Mount Teleport Fix: Opened threshold to 0.85
     void teleport() {
         this.detection.call(() -> {
             this.air = 0;
@@ -651,15 +666,36 @@ public class GravitySimulation extends CheckRunner {
         return this.protocol.getEnvironment().isSlimeHeight();
     }
 
+    // EXTENSION: Check for Honey Blocks specifically since they alter gravity
+    private boolean isOnHoney(Location location) {
+        double x = location.getX();
+        double y = location.getY();
+        double z = location.getZ();
+
+        for (int dx = -1; dx <= 1; ++dx) {
+            for (int dy = -1; dy <= 0; ++dy) {
+                for (int dz = -1; dz <= 1; ++dz) {
+                    Material material = new ServerLocation(this.protocol.getWorld(), x + dx, y + dy, z + dz).getBlock(this.protocol).getTypeOrNull();
+                    if (material != null && material.name().contains("HONEY_BLOCK")) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    // EXTENSION: Fixed the Stair-Stepping False Positive by shrinking the ceiling radius
     private boolean isBlocksOnTop(Location location) {
         double x = location.getX();
         double y = location.getY() - 0.1;
         double z = location.getZ();
 
-        for (int dx = -2; dx <= 2; ++dx) {
+        // Shrunk from a 5x5 grid (dx=-2 to 2) to a tightly fitted 2x2 mask
+        for (double dx = -0.3; dx <= 0.3; dx += 0.3) {
             for (double dy = 1.0; dy <= 2.0; dy += 0.5) {
-                for (int dz = -2; dz <= 2; ++dz) {
-                    Material material = new ServerLocation(this.protocol.getWorld(), x + (double) dx * 0.5, y + dy, z + (double) dz * 0.5).getBlock(
+                for (double dz = -0.3; dz <= 0.3; dz += 0.3) {
+                    Material material = new ServerLocation(this.protocol.getWorld(), x + dx, y + dy, z + dz).getBlock(
                             this.protocol
                     ).getTypeOrNull();
 

@@ -23,6 +23,7 @@ public class InventoryClicks extends CheckRunner {
             fast;
     private long time;
     private int oldHash;
+    private int lastSlot = -1; // EXTENSION: State tracking for Slot Deltas
     private final Buffer.IndividualBuffer
             slowBuffer,
             mediumBuffer,
@@ -52,8 +53,6 @@ public class InventoryClicks extends CheckRunner {
                 ItemStack item = event.getCurrentItem();
                 ClickType click = event.getClick();
 
-                // EXTENSION: Removed item.getItemMeta() != null bypass.
-                // We now check all items, regardless of enchantments or custom names.
                 if (!click.isCreativeAction() && item != null) {
                     Material material = item.getType();
 
@@ -61,9 +60,15 @@ public class InventoryClicks extends CheckRunner {
                         int slots = this.protocol.getOpenInventoryCountSlots(PlayerUtils.playerInventorySlots + 1);
                         boolean quick = slots <= PlayerUtils.playerInventorySlots;
                         boolean shift = click.isShiftClick();
-
-                        // EXTENSION: Track Keyboard clicks to catch Auto-Armor and Auto-Refill
                         boolean hotkey = click.isKeyboardClick();
+
+                        // EXTENSION: Drag-Detection logic variables
+                        int currentSlot = event.getRawSlot();
+                        boolean slotChanged = (currentSlot != this.lastSlot);
+                        this.lastSlot = currentSlot;
+
+                        ItemStack cursor = event.getCursor();
+                        boolean hasCursorItem = cursor != null && cursor.getType() != Material.AIR;
 
                         String type = BlockUtils.materialToString(material);
 
@@ -74,12 +79,11 @@ public class InventoryClicks extends CheckRunner {
                         long timePassed = System.currentTimeMillis() - time;
                         time = System.currentTimeMillis();
 
-                        // EXTENSION: Protect against division-by-zero lag spikes
                         long safeTime = Math.max(timePassed, 1L);
 
                         // Detection 1: Auto-Armor / Hotkey Macros
                         if (hotkey && safeTime < 50L) {
-                            if (shiftBuffer.count(1.5, 10) >= 5) { // Humans cannot hit 5 different number keys in 50ms
+                            if (shiftBuffer.count(1.5, 10) >= 5) {
                                 this.shift.call(() -> this.shift.cancel("auto-armor/hotkey, ms: " + timePassed + ", item: " + type));
                             }
                         }
@@ -89,7 +93,6 @@ public class InventoryClicks extends CheckRunner {
                                 && !BlockUtils.hasMaterial(this.protocol.getOpenInventoryCursor())) {
 
                             if (safeTime < 60L) {
-                                // EXTENSION: Fixed the exact-match '== 4' bypass by using '>='
                                 if (shiftBuffer.count(1, 10) >= 5) {
                                     shiftBuffer.reset();
                                     this.shift.call(() -> this.shift.cancel("shift-macro, ms: " + timePassed + ", item: " + type));
@@ -103,23 +106,30 @@ public class InventoryClicks extends CheckRunner {
                             if ((!shift && !quick) || newHash != oldHash) {
                                 if (timePassed < 150L) {
 
-                                    // EXTENSION: Dynamic amplitude cap.
-                                    // A 0ms lag spike applies max 3.0 points, preventing instant false bans.
                                     double amplitude = Math.min(100.0 / (double) safeTime, 3.0);
 
+                                    // EXTENSION: Catch Vanilla Click-Dragging and safely dampen the amplitude
+                                    // Bypasses the false positive while ensuring Auto-Clickers on the same slot still flag.
+                                    if (slotChanged && hasCursorItem && (click == ClickType.RIGHT || click == ClickType.LEFT)) {
+                                        amplitude *= 0.15;
+                                    }
+
+                                    // Lambda expression finality requirement
+                                    final double finalAmplitude = amplitude;
+
                                     this.slow.call(() -> {
-                                        if (slowBuffer.count(amplitude * 0.5, 20) >= 12) {
+                                        if (slowBuffer.count(finalAmplitude * 0.5, 20) >= 12) {
                                             this.slow.cancel("slow, ms: " + timePassed + ", item: " + type);
                                         }
                                     });
                                     if (timePassed < 100L) {
                                         this.medium.call(() -> {
-                                            if (mediumBuffer.count(amplitude * 0.75, 15) >= 8) {
+                                            if (mediumBuffer.count(finalAmplitude * 0.75, 15) >= 8) {
                                                 this.medium.cancel("medium, ms: " + timePassed + ", item: " + type);
                                             }
                                         });
                                         this.fast.call(() -> {
-                                            if (timePassed < 50L && fastBuffer.count(amplitude, 10) >= 6) {
+                                            if (timePassed < 50L && fastBuffer.count(finalAmplitude, 10) >= 6) {
                                                 this.fast.cancel("fast, ms: " + timePassed + ", item: " + type);
                                             }
                                         });
