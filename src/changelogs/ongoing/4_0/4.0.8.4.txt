@@ -3,3 +3,4 @@
 [#] Fixed NoSwing false positives
 [#] Fixed Gravity Simulation false positives
 [#] Fixed Inventory Clicks false positives
+[#] Fixed a Folia teleport async console error

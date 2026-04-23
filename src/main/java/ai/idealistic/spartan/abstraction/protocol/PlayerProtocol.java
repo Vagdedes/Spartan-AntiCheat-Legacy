@@ -442,14 +442,15 @@ public class PlayerProtocol {
                 && location.getZ() == ServerLocation.bukkitDefault.getZ()) {
             return false;
         }
-        boolean sync = PluginBase.isSynchronised();
-
         if (MultiVersion.folia) {
-            if (sync) {
-                this.bukkit().leaveVehicle();
-            }
-            this.bukkit().teleportAsync(location);
-        } else if (sync) {
+            PluginBase.runTask(
+                    this,
+                    () -> {
+                        this.bukkit().leaveVehicle();
+                        this.bukkit().teleportAsync(location);
+                    }
+            );
+        } else if (PluginBase.isSynchronised()) {
             this.bukkit().leaveVehicle();
             this.bukkit().teleport(location);
         } else {
