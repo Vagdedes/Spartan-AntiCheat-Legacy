@@ -7,6 +7,7 @@ import ai.idealistic.spartan.utils.java.ConcurrentList;
 import ai.idealistic.spartan.utils.minecraft.world.BlockUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
@@ -44,7 +45,8 @@ public class PacketWorld {
 
     public Material getBlockRaw(Location location) {
         for (ServerBlockChange change : this.query) {
-            Location lL = change.position.toLocation(this.player.getWorld());
+            World world = change.getWorld() != null ? change.getWorld() : this.player.getWorld();
+            Location lL = change.position.toLocation(world);
 
             if (Math.abs(lL.getX() - location.getX()) <= 1.3 &&
                     Math.abs(lL.getY() - location.getY()) <= 1.3 &&
@@ -67,10 +69,13 @@ public class PacketWorld {
 
     public void worldChange(ServerBlockChange blockChange) {
         if (BlockUtils.areAir(blockChange.getData())) {
+            World world = blockChange.getWorld() != null ? blockChange.getWorld() : this.player.getWorld();
             Block b = ChunksEvent.getBlockAsync(
-                    blockChange.position.toLocation(this.player.getWorld())
+                    blockChange.position.toLocation(world)
             );
-            if (b == null || BlockUtils.areAir(b.getType())) return;
+            if (b == null || BlockUtils.areAir(b.getType())) {
+                return;
+            }
             blockChange.setData(b.getType());
         }
         long hash = blockChange.hashCode();
