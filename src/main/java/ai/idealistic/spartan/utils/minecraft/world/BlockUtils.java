@@ -1320,16 +1320,6 @@ public class BlockUtils {
                 && ((Waterlogged) blockData).isWaterlogged();
     }
 
-    public static boolean isWaterLogged(Block block) {
-        return blockDataExists
-                && ChunksEvent.isLoaded(block)
-                && isWaterLogged(block.getBlockData());
-    }
-
-    public static boolean isWaterLogged(ServerBlock block) {
-        return blockDataExists && isWaterLogged(block.getType().createBlockData());
-    }
-
     public static boolean isLiquidOrWaterLogged(Object block, boolean lava) {
         return block instanceof Block
                 ? isLiquidOrWaterLogged((Block) block, lava)
@@ -1339,7 +1329,7 @@ public class BlockUtils {
     }
 
     public static boolean isLiquidOrWaterLogged(Block block, boolean lava) {
-        return (isLiquid(block) || isWaterLogged(block))
+        return (isLiquid(block) || new ServerBlock(block).isWaterLogged())
                 && (lava || new ServerBlock(block).getType() != MaterialUtils.get("lava"));
     }
 

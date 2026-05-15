@@ -113,7 +113,7 @@ public class EnvironmentData {
                             protocol
                     ).getType())
                             || material != null && BlockUtils.isLiquid(material)
-                            || BlockUtils.isWaterLogged(b)) {
+                            || b.isWaterLogged()) {
 
                         this.liquid = true;
 
