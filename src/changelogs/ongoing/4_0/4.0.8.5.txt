@@ -1,2 +1,3 @@
-[#] Fixed a few Folia console errors
-[#] Fixed a few IrregularMovements vehicle/entity false positives
+[#] Fixed Folia console errors
+[#] Fixed IrregularMovements vehicle/entity false positives
+[#] Fixed KillAura move-length water related false positives
