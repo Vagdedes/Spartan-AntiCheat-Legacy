@@ -43,7 +43,7 @@ public class PacketWorld {
         return new ArrayList<>(this.query);
     }
 
-    public Material getBlockRaw(Location location) {
+    private Material getBlockRaw(Location location) {
         for (ServerBlockChange change : this.query) {
             World world = change.getWorld() != null ? change.getWorld() : this.player.getWorld();
             Location lL = change.position.toLocation(world);

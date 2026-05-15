@@ -91,7 +91,7 @@ public class BlockPlaceListener extends PacketAdapter {
                                : protocol.getInventory().getItemInOffHand()) : player.getItemInHand();
                     if (itemInHand.getType().isBlock()) {
                         if (!isInPlayer(protocol.getLocation(), block.getLocation())) {
-                            Block blockAgainst = player.getLocation().getBlock();
+                            Block blockAgainst = ChunksEvent.getBlockAsync(player.getLocation());
                             Location blockLoc = new Location(world, blockPosition.getX(), blockPosition.getY(), blockPosition.getY());
                             if (!BlockUtils.isSurroundedByAir(protocol, blockLoc)
                                     || !BlockUtils.isSurroundedByAir(protocol, blockLoc.clone().add(0, 1, 0))) {
