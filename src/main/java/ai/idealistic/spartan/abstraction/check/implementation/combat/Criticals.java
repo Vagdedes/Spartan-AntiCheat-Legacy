@@ -29,46 +29,49 @@ public class Criticals extends CheckRunner {
     @Override
     protected void handleInternal(boolean cancelled, Object object) {
         if (object instanceof PlayerAttackEvent) {
-            this.detection.call(() -> {
-                double deltaY = this.protocol.getLocation().getY() - this.protocol.getFromLocation().getY();
-                double absDeltaY = Math.abs(deltaY);
+            this.detection.call(
+                    () -> {
+                        double deltaY = this.protocol.getLocation().getY() - this.protocol.getFromLocation().getY();
+                        double absDeltaY = Math.abs(deltaY);
 
-                // Extended Exemptions: Webs AND Climbables (Ladders/Vines)
-                if (RayUtils.onBlock(this.protocol, this.protocol.getLocationOrVehicle(), BlockUtils.web) ||
-                        this.protocol.getEnvironment().isClimb()) {
-                    return;
-                }
-
-                boolean isGroundToAir = !this.protocol.isOnGround() && this.protocol.isOnGroundFrom();
-                boolean hasCeiling = RayUtils.onSolidBlock(this.protocol, this.protocol.getLocation().clone().add(0, 2, 0)) ||
-                        new ServerLocation(this.protocol.getLocation()).getBlock(this.protocol).getType().isBlock();
-
-                if (!hasCeiling) {
-                    // Detection 1: The "Zero-Y" Spoof
-                    // Client claims to be off the ground, but vertical motion is completely static
-                    if (!this.protocol.isOnGround() && deltaY == 0.0 && !this.protocol.isOnGroundFrom()) {
-                        if (++buffer > 1) {
-                            this.detection.cancel("type: zero-y_spoof");
+                        // Extended Exemptions: Webs AND Climbables (Ladders/Vines)
+                        if (RayUtils.onBlock(this.protocol, this.protocol.getLocationOrVehicle(), BlockUtils.web) ||
+                                this.protocol.getEnvironment().isClimb()) {
+                            return;
                         }
-                    }
 
-                    // Detection 2: Micro-Hops & Magic Offsets
-                    // Catches standard fractions used by modern bypasses (0.0625, 0.046875, 0.015625)
-                    else if (isGroundToAir && deltaY > 0) {
-                        if (deltaY < 0.1 || absDeltaY == 0.0625 || absDeltaY == 0.015625 || absDeltaY == 0.046875) {
-                            if (++buffer > 1) {
-                                this.detection.cancel("type: micro_hop, val: " + deltaY);
+                        boolean isGroundToAir = !this.protocol.isOnGround() && this.protocol.isOnGroundFrom();
+                        boolean hasCeiling = RayUtils.onSolidBlock(this.protocol, this.protocol.getLocation().clone().add(0, 2, 0)) ||
+                                new ServerLocation(this.protocol.getLocation()).getBlock(this.protocol).getType().isBlock();
+
+                        if (!hasCeiling) {
+                            // Detection 1: The "Zero-Y" Spoof
+                            // Client claims to be off the ground, but vertical motion is completely static
+                            if (!this.protocol.isOnGround() && deltaY == 0.0 && !this.protocol.isOnGroundFrom()) {
+                                if (++buffer > 1) {
+                                    this.detection.cancel("type: zero-y_spoof");
+                                }
+                            }
+
+                            // Detection 2: Micro-Hops & Magic Offsets
+                            // Catches standard fractions used by modern bypasses (0.0625, 0.046875, 0.015625)
+                            else if (isGroundToAir && deltaY > 0) {
+                                if (deltaY < 0.1 || absDeltaY == 0.0625 || absDeltaY == 0.015625 || absDeltaY == 0.046875) {
+                                    if (++buffer > 1) {
+                                        this.detection.cancel("type: micro_hop, val: " + deltaY);
+                                    }
+                                } else {
+                                    this.decreaseBuffer();
+                                }
+                            } else {
+                                this.decreaseBuffer();
                             }
                         } else {
                             this.decreaseBuffer();
                         }
-                    } else {
-                        this.decreaseBuffer();
-                    }
-                } else {
-                    this.decreaseBuffer();
-                }
-            });
+                    },
+                    () -> this.buffer = 0
+            );
         }
     }
 
