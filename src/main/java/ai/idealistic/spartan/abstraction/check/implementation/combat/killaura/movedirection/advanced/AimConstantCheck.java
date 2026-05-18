@@ -5,9 +5,6 @@ import ai.idealistic.spartan.abstraction.event.RotationEvent;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
 import kireiko.dev.millennium.math.Statistics;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public final class AimConstantCheck implements HeuristicComponent {
 
     private static final double MODULO_THRESHOLD = 60.0;
@@ -28,100 +25,109 @@ public final class AimConstantCheck implements HeuristicComponent {
 
     @Override
     public void process(final RotationEvent rotationUpdate) {
-        this.detection.call(() -> {
-            if (rotationUpdate.getAbsDelta().getY() == 0 && rotationUpdate.getAbsDelta().getY() == 0) return;
-            final float deltaYaw = rotationUpdate.getAbsDelta().getX();
-            final float deltaPitch = rotationUpdate.getAbsDelta().getY();
+        this.detection.call(
+                () -> {
+                    if (rotationUpdate.getAbsDelta().getY() == 0 && rotationUpdate.getAbsDelta().getY() == 0) return;
+                    final float deltaYaw = rotationUpdate.getAbsDelta().getX();
+                    final float deltaPitch = rotationUpdate.getAbsDelta().getY();
 
-            final double sensitivity = profile.calculateSensitivity();
-            final boolean sensitivityTooLow = sensitivity < 50.0 && sensitivity > -1.0 || (profile.getSensitivityProcessor().totalSensitivityClient < 50);
-            final double divisorYaw = Statistics.getGcd((long) (deltaYaw * Statistics.EXPANDER), (long) (lastDeltaYaw * Statistics.EXPANDER));
-            final double divisorPitch = Statistics.getGcd((long) (deltaPitch * Statistics.EXPANDER), (long) (lastDeltaPitch * Statistics.EXPANDER));
+                    final double sensitivity = profile.calculateSensitivity();
+                    final boolean sensitivityTooLow = sensitivity < 50.0 && sensitivity > -1.0 || (profile.getSensitivityProcessor().totalSensitivityClient < 50);
+                    final double divisorYaw = Statistics.getGcd((long) (deltaYaw * Statistics.EXPANDER), (long) (lastDeltaYaw * Statistics.EXPANDER));
+                    final double divisorPitch = Statistics.getGcd((long) (deltaPitch * Statistics.EXPANDER), (long) (lastDeltaPitch * Statistics.EXPANDER));
 
-            final double constantYaw = divisorYaw / Statistics.EXPANDER;
-            final double constantPitch = divisorPitch / Statistics.EXPANDER;
-            //profile.bukkit().sendMessage("fuckass " + sensitivity + " " + profile.getSensitivity());
-            { // type 1
-                final long expandedPitch = (long) (Statistics.EXPANDER * deltaPitch);
-                final long expandedLastPitch = (long) (Statistics.EXPANDER * lastDeltaPitch);
-                final long gcd = Statistics.getGcd(expandedPitch, expandedLastPitch);
-                final boolean validAngles = deltaYaw > 0.25f && deltaPitch > 0.25f && deltaPitch < MAX_DELTA && deltaYaw < MAX_DELTA;
-                final boolean invalid = gcd < 131072L;
+                    final double constantYaw = divisorYaw / Statistics.EXPANDER;
+                    final double constantPitch = divisorPitch / Statistics.EXPANDER;
+                    //profile.bukkit().sendMessage("fuckass " + sensitivity + " " + profile.getSensitivity());
+                    { // type 1
+                        final long expandedPitch = (long) (Statistics.EXPANDER * deltaPitch);
+                        final long expandedLastPitch = (long) (Statistics.EXPANDER * lastDeltaPitch);
+                        final long gcd = Statistics.getGcd(expandedPitch, expandedLastPitch);
+                        final boolean validAngles = deltaYaw > 0.25f && deltaPitch > 0.25f && deltaPitch < MAX_DELTA && deltaYaw < MAX_DELTA;
+                        final boolean invalid = gcd < 131072L;
 
-                if (invalid && validAngles && !sensitivityTooLow) {
-                    buffer = Math.min(buffer + 1, 200);
-                    if (buffer > 10) {
-                        detection.call(() -> detection.cancel("Constant rotations (3)", profile.getFromLocation()));
-                        buffer = 4;
-                    }
-                } else if (buffer > 0) {
-                    buffer -= 2f;
-                }
-            }
-
-            { // type 2
-                final double currentX = deltaYaw / constantYaw;
-                final double currentY = deltaPitch / constantPitch;
-                final double previousX = lastDeltaYaw / constantYaw;
-                final double previousY = lastDeltaPitch / constantPitch;
-
-                final boolean validDelta = deltaYaw > MIN_DELTA && deltaPitch > MIN_DELTA && deltaYaw < MAX_DELTA && deltaPitch < MAX_DELTA;
-
-                if (validDelta) {
-                    final double moduloX = currentX % previousX;
-                    final double moduloY = currentY % previousY;
-
-                    final double floorModuloX = Math.abs(Math.floor(moduloX) - moduloX);
-                    final double floorModuloY = Math.abs(Math.floor(moduloY) - moduloY);
-
-                    final boolean invalidX = moduloX > MODULO_THRESHOLD && floorModuloX > LINEAR_THRESHOLD;
-                    final boolean invalidY = moduloY > MODULO_THRESHOLD && floorModuloY > LINEAR_THRESHOLD;
-
-                    if (invalidX && invalidY && !sensitivityTooLow) {
-                        buffer2 = Math.min(buffer2 + 1, 200);
-                        if (buffer2 > 6) {
-                            detection.call(() -> detection.cancel("Constant rotations (2)", profile.getFromLocation()));
-                            buffer2 = 4;
+                        if (invalid && validAngles && !sensitivityTooLow) {
+                            buffer = Math.min(buffer + 1, 200);
+                            if (buffer > 10) {
+                                detection.call(() -> detection.cancel("Constant rotations (3)", profile.getFromLocation()));
+                                buffer = 4;
+                            }
+                        } else if (buffer > 0) {
+                            buffer -= 2f;
                         }
-                    } else if (buffer2 > 0) {
-                        buffer2 -= 2f;
                     }
-                }
-            }
 
-            { // type 3
-                final double currentX = deltaYaw / constantYaw;
-                final double currentY = deltaPitch / constantPitch;
-                final double previousX = lastDeltaYaw / constantYaw;
-                final double previousY = lastDeltaPitch / constantPitch;
+                    { // type 2
+                        final double currentX = deltaYaw / constantYaw;
+                        final double currentY = deltaPitch / constantPitch;
+                        final double previousX = lastDeltaYaw / constantYaw;
+                        final double previousY = lastDeltaPitch / constantPitch;
 
-                final boolean validDelta = deltaYaw > MIN_DELTA && deltaPitch > MIN_DELTA && deltaYaw < MAX_DELTA && deltaPitch < MAX_DELTA;
+                        final boolean validDelta = deltaYaw > MIN_DELTA && deltaPitch > MIN_DELTA && deltaYaw < MAX_DELTA && deltaPitch < MAX_DELTA;
 
-                if (validDelta) {
-                    final double moduloX = currentX % previousX;
-                    final double moduloY = currentY % previousY;
+                        if (validDelta) {
+                            final double moduloX = currentX % previousX;
+                            final double moduloY = currentY % previousY;
 
-                    final double floorModuloX = Math.abs(Math.floor(moduloX) - moduloX);
-                    final double floorModuloY = Math.abs(Math.floor(moduloY) - moduloY);
+                            final double floorModuloX = Math.abs(Math.floor(moduloX) - moduloX);
+                            final double floorModuloY = Math.abs(Math.floor(moduloY) - moduloY);
 
-                    final boolean invalidX = moduloX > 60.0 && floorModuloX > 0.1;
-                    final boolean invalidY = moduloY > 60.0 && floorModuloY > 0.1;
+                            final boolean invalidX = moduloX > MODULO_THRESHOLD && floorModuloX > LINEAR_THRESHOLD;
+                            final boolean invalidY = moduloY > MODULO_THRESHOLD && floorModuloY > LINEAR_THRESHOLD;
 
-                    if (invalidX && invalidY && !sensitivityTooLow) {
-                        buffer3 = Math.max(buffer3 + ((deltaPitch < 1 || deltaPitch > 13) ? 2f : 1), 0);
-                        final float limit = 7;
-                        if (buffer3 > ((profile.calculateSensitivity() < 70) ? limit + 1 : limit)) {
-                            detection.call(() -> detection.cancel("Constant rotations (3)", profile.getFromLocation()));
-                            buffer3 = 0;
+                            if (invalidX && invalidY && !sensitivityTooLow) {
+                                buffer2 = Math.min(buffer2 + 1, 200);
+                                if (buffer2 > 6) {
+                                    detection.call(() -> detection.cancel("Constant rotations (2)", profile.getFromLocation()));
+                                    buffer2 = 4;
+                                }
+                            } else if (buffer2 > 0) {
+                                buffer2 -= 2f;
+                            }
                         }
-                    } else if (buffer3 > 0) {
-                        buffer3 -= 2f;
                     }
+
+                    { // type 3
+                        final double currentX = deltaYaw / constantYaw;
+                        final double currentY = deltaPitch / constantPitch;
+                        final double previousX = lastDeltaYaw / constantYaw;
+                        final double previousY = lastDeltaPitch / constantPitch;
+
+                        final boolean validDelta = deltaYaw > MIN_DELTA && deltaPitch > MIN_DELTA && deltaYaw < MAX_DELTA && deltaPitch < MAX_DELTA;
+
+                        if (validDelta) {
+                            final double moduloX = currentX % previousX;
+                            final double moduloY = currentY % previousY;
+
+                            final double floorModuloX = Math.abs(Math.floor(moduloX) - moduloX);
+                            final double floorModuloY = Math.abs(Math.floor(moduloY) - moduloY);
+
+                            final boolean invalidX = moduloX > 60.0 && floorModuloX > 0.1;
+                            final boolean invalidY = moduloY > 60.0 && floorModuloY > 0.1;
+
+                            if (invalidX && invalidY && !sensitivityTooLow) {
+                                buffer3 = Math.max(buffer3 + ((deltaPitch < 1 || deltaPitch > 13) ? 2f : 1), 0);
+                                final float limit = 7;
+                                if (buffer3 > ((profile.calculateSensitivity() < 70) ? limit + 1 : limit)) {
+                                    detection.call(() -> detection.cancel("Constant rotations (3)", profile.getFromLocation()));
+                                    buffer3 = 0;
+                                }
+                            } else if (buffer3 > 0) {
+                                buffer3 -= 2f;
+                            }
+                        }
+                    }
+                    this.lastDeltaYaw = deltaYaw;
+                    this.lastDeltaPitch = deltaPitch;
+                },
+                () -> {
+                    this.lastDeltaYaw = 0.0f;
+                    this.lastDeltaPitch = 0.0f;
+                    this.buffer = 0;
+                    this.buffer2 = 0;
+                    this.buffer3 = 0;
                 }
-            }
-            this.lastDeltaYaw = deltaYaw;
-            this.lastDeltaPitch = deltaPitch;
-        });
+        );
     }
 
 }

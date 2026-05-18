@@ -62,9 +62,16 @@ public final class AimComplexCheck implements HeuristicComponent {
                     }
                 },
                 () -> {
-                    normalizedRotations.clear();
-                    rawRotations.clear();
-                    kireikoGeneric.clear();
+                    this.normalizedRotations.clear();
+                    this.rawRotations.clear();
+                    this.kireikoGeneric.clear();
+                    this.oldShannonYaw = 0;
+                    this.oldShannonPitch = 0;
+                    this.entropyPerfectBuffer = 0f;
+                    this.entropySimilarBuffer = 0f;
+                    this.distinctBuffer = 0f;
+                    this.randomizerBuffer = 0f;
+                    this.machineHeartBuffer = 0f;
                 }
         );
     }

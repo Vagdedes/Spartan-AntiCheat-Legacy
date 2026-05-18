@@ -20,7 +20,6 @@ public final class AimStatisticsCheck implements HeuristicComponent {
     private final PlayerProtocol profile;
 
     private final List<Vec2f> rotationDeltas = new ArrayList<>();
-    private final List<Double> shannonAnalysis = new ArrayList<>();
 
     private float iqrBuffer = 0f;
     private float zFactorBuffer = 0f;
@@ -47,7 +46,12 @@ public final class AimStatisticsCheck implements HeuristicComponent {
                         rotationDeltas.clear();
                     }
                 },
-                rotationDeltas::clear
+                () -> {
+                    this.rotationDeltas.clear();
+                    this.iqrBuffer = 0f;
+                    this.zFactorBuffer = 0f;
+                    this.improbableBuffer = 0f;
+                }
         );
     }
 

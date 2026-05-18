@@ -25,36 +25,39 @@ public class KABackTrack extends CheckDetection {
     private List<Integer> analysis = null;
 
     void run(PlayerAttackEvent event) {
-        this.call(() -> {
-            if (!(event.target instanceof Player)) return;
+        this.call(
+                () -> {
+                    if (!(event.target instanceof Player)) return;
 
-            PlayerProtocol target = PluginBase.getProtocol((Player) event.target);
+                    PlayerProtocol target = PluginBase.getProtocol((Player) event.target);
 
-            // PATCH: Exempt if Attacker OR Target is in a cobweb
-            Material attackerMat = new ServerLocation(this.protocol.getLocation()).getBlock(this.protocol).getTypeOrNull();
-            Material targetMat = new ServerLocation(target.getLocation()).getBlock(this.protocol).getTypeOrNull();
-            if ((attackerMat != null && BlockUtils.areWebs(attackerMat)) ||
-                    (targetMat != null && BlockUtils.areWebs(targetMat))) {
-                return;
-            }
+                    // PATCH: Exempt if Attacker OR Target is in a cobweb
+                    Material attackerMat = new ServerLocation(this.protocol.getLocation()).getBlock(this.protocol).getTypeOrNull();
+                    Material targetMat = new ServerLocation(target.getLocation()).getBlock(this.protocol).getTypeOrNull();
+                    if ((attackerMat != null && BlockUtils.areWebs(attackerMat)) ||
+                            (targetMat != null && BlockUtils.areWebs(targetMat))) {
+                        return;
+                    }
 
-            if (analysis == null) analysis = new ConcurrentList<>();
+                    if (analysis == null) analysis = new ConcurrentList<>();
 
-            List<Location> h = target.getPositionHistory();
-            boolean is1_8 = this.protocol.isUsingVersion(MultiVersion.MCVersion.V1_8);
-            float hitbox = (is1_8) ? 0.4F : 0.3F;
-            int i = 0;
-            for (Location l : h) {
-                if (RayUtils.inHitbox(this.protocol, l, event.target, hitbox, 3.0F, protocol.bukkit().isSleeping())) {
-                    break;
-                } else {
-                    i++;
-                }
-            }
-            this.analysis.add(i);
-            if (this.analysis.size() >= 15)
-                this.total();
-        });
+                    List<Location> h = target.getPositionHistory();
+                    boolean is1_8 = this.protocol.isUsingVersion(MultiVersion.MCVersion.V1_8);
+                    float hitbox = (is1_8) ? 0.4F : 0.3F;
+                    int i = 0;
+                    for (Location l : h) {
+                        if (RayUtils.inHitbox(this.protocol, l, event.target, hitbox, 3.0F, protocol.bukkit().isSleeping())) {
+                            break;
+                        } else {
+                            i++;
+                        }
+                    }
+                    this.analysis.add(i);
+                    if (this.analysis.size() >= 15)
+                        this.total();
+                },
+                () -> this.analysis = null
+        );
     }
 
     private void total() {

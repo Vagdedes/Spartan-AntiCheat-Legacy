@@ -56,6 +56,7 @@ public final class AimAnalysisCheck implements HeuristicComponent {
                     this.rawRotations.clear();
                     this.limitedRotations.clear();
                     this.longTermAnalysis.clear();
+                    this.rankBuffer = 0f;
                 }
         );
     }

@@ -64,7 +64,6 @@ public final class AimSmoothCheck implements HeuristicComponent {
         if (angleInDegrees < 0) {
             angleInDegrees += 360;
         }
-
         return angleInDegrees;
     }
 }

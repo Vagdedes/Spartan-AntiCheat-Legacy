@@ -27,7 +27,7 @@ public final class AimMLCheck implements HeuristicComponent {
     private static final int LEGACY_MODEL_COUNT = 7;
     private static final int LEGACY_ROTATION_BUFFER_SIZE = 600;
     private static final int RNN_ROTATION_BUFFER_SIZE = 150;
-    private static final int ATTACK_TIMEOUT_MS = 3000;
+    private static final int ATTACK_TIMEOUT_MS = 3_000;
 
     private final CheckDetection detection;
     private final PlayerProtocol profile;
