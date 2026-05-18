@@ -49,18 +49,22 @@ public final class AimMLCheck implements HeuristicComponent {
 
     @Override
     public void process(final RotationEvent rotationUpdate) {
+        long now = System.currentTimeMillis();
+
+        if (this.lastSampleTime > 0L
+                && now - this.lastSampleTime > ATTACK_TIMEOUT_MS) {
+            this.resetSampleState();
+        }
         this.detection.call(() -> {
-            if (profile.isCinematic()) return;
-
+            if (profile.isCinematic()) {
+                return;
+            }
             Vec2f delta = rotationUpdate.getDelta();
-            if (delta.getX() == 0 && delta.getY() == 0) return;
 
-            long now = System.currentTimeMillis();
-            if (this.lastSampleTime > 0L && now - this.lastSampleTime > ATTACK_TIMEOUT_MS) {
-                this.resetSampleState();
+            if (delta.getX() == 0 && delta.getY() == 0) {
+                return;
             }
             this.lastSampleTime = now;
-
             this.rawRotations.add(delta);
             this.rnnRotations.add(delta);
 
