@@ -55,26 +55,29 @@ public final class AimMLCheck implements HeuristicComponent {
                 && now - this.lastSampleTime > ATTACK_TIMEOUT_MS) {
             this.resetSampleState();
         }
-        this.detection.call(() -> {
-            if (profile.isCinematic()) {
-                return;
-            }
-            Vec2f delta = rotationUpdate.getDelta();
+        this.detection.call(
+                () -> {
+                    if (profile.isCinematic()) {
+                        return;
+                    }
+                    Vec2f delta = rotationUpdate.getDelta();
 
-            if (delta.getX() == 0 && delta.getY() == 0) {
-                return;
-            }
-            this.lastSampleTime = now;
-            this.rawRotations.add(delta);
-            this.rnnRotations.add(delta);
+                    if (delta.getX() == 0 && delta.getY() == 0) {
+                        return;
+                    }
+                    this.lastSampleTime = now;
+                    this.rawRotations.add(delta);
+                    this.rnnRotations.add(delta);
 
-            if (this.rnnRotations.size() >= RNN_ROTATION_BUFFER_SIZE) {
-                this.checkRNN();
-            }
-            if (this.rawRotations.size() >= LEGACY_ROTATION_BUFFER_SIZE) {
-                this.checkLegacy();
-            }
-        });
+                    if (this.rnnRotations.size() >= RNN_ROTATION_BUFFER_SIZE) {
+                        this.checkRNN();
+                    }
+                    if (this.rawRotations.size() >= LEGACY_ROTATION_BUFFER_SIZE) {
+                        this.checkLegacy();
+                    }
+                },
+                this::resetSampleState
+        );
     }
 
     private synchronized void resetSampleState() {

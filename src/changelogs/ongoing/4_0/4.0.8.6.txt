@@ -1,1 +1,1 @@
-[#]
+[#] Improved the plugin's RAM usage when certain checks/detections are disabled

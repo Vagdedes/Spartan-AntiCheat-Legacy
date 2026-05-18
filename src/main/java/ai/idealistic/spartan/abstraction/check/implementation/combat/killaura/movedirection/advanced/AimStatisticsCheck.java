@@ -33,19 +33,22 @@ public final class AimStatisticsCheck implements HeuristicComponent {
 
     @Override
     public void process(final RotationEvent rotationUpdate) {
-        this.detection.call(() -> {
-            if (rotationUpdate.getAbsDelta().getY() == 0 && rotationUpdate.getAbsDelta().getX() == 0) return;
+        this.detection.call(
+                () -> {
+                    if (rotationUpdate.getAbsDelta().getY() == 0 && rotationUpdate.getAbsDelta().getX() == 0) return;
 
-            final float deltaYaw = rotationUpdate.getAbsDelta().getX();
-            final float deltaPitch = rotationUpdate.getAbsDelta().getY();
+                    final float deltaYaw = rotationUpdate.getAbsDelta().getX();
+                    final float deltaPitch = rotationUpdate.getAbsDelta().getY();
 
-            rotationDeltas.add(new Vec2f(deltaYaw, deltaPitch));
+                    rotationDeltas.add(new Vec2f(deltaYaw, deltaPitch));
 
-            if (rotationDeltas.size() >= ROTATION_BUFFER_SIZE) {
-                runStatisticalAnalysis();
-                rotationDeltas.clear();
-            }
-        });
+                    if (rotationDeltas.size() >= ROTATION_BUFFER_SIZE) {
+                        runStatisticalAnalysis();
+                        rotationDeltas.clear();
+                    }
+                },
+                rotationDeltas::clear
+        );
     }
 
     private void runStatisticalAnalysis() {

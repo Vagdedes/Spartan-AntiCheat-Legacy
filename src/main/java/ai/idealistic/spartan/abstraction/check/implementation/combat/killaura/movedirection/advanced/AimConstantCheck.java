@@ -17,7 +17,6 @@ public final class AimConstantCheck implements HeuristicComponent {
 
     private final CheckDetection detection;
     private final PlayerProtocol profile;
-    private final List<Double> stack = new ArrayList<>();
 
     private float lastDeltaYaw = 0.0f, lastDeltaPitch = 0.0f;
     private float buffer = 0, buffer2 = 0, buffer3 = 0;
