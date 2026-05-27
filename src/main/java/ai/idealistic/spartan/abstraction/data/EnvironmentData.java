@@ -108,13 +108,12 @@ public class EnvironmentData {
                             && material.equals(Material.BUBBLE_COLUMN)) {
                         this.bubble = true;
                     }
-                    if (BlockUtils.isLiquidOrWaterLogged(b, true)
+                    if (b.isLiquidOrWaterLogged(true)
                             || BlockUtils.isLiquid(new ServerLocation(protocol.getWorld(), x + (double) dx * 0.3, y, z + (double) dz * 0.3).getBlock(
                             protocol
                     ).getType())
                             || material != null && BlockUtils.isLiquid(material)
                             || b.isWaterLogged()) {
-
                         this.liquid = true;
 
                         for (double i = 0.0; i < Math.ceil(protocol.getEyeHeight()); i++) {

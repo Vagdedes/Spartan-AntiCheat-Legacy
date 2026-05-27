@@ -1320,14 +1320,6 @@ public class BlockUtils {
                 && ((Waterlogged) blockData).isWaterlogged();
     }
 
-    public static boolean isLiquidOrWaterLogged(Object block, boolean lava) {
-        return block instanceof Block
-                ? isLiquidOrWaterLogged((Block) block, lava)
-                : blockDataExists
-                  && block instanceof BlockData
-                  && isLiquidOrWaterLogged((BlockData) block, lava);
-    }
-
     public static boolean isLiquidOrWaterLogged(Block block, boolean lava) {
         return (isLiquid(block) || new ServerBlock(block).isWaterLogged())
                 && (lava || new ServerBlock(block).getType() != MaterialUtils.get("lava"));
