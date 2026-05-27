@@ -1565,7 +1565,7 @@ public class BlockUtils {
                 if (!isSolid(loopLocation.getBlock().getType())) {
                     int y = loc.getBlockY();
 
-                    for (int i = y; i > Math.max(getMinHeight(p.getWorld()), y - blocks); i--) {
+                    for (int i = y; i > Math.max(getMinHeight(loopLocation.getWorld()), y - blocks); i--) {
                         Material m = loopLocation.add(0, -1, 0).getBlock().getType();
 
                         if (m == Material.SLIME_BLOCK) {
@@ -1596,7 +1596,7 @@ public class BlockUtils {
                 if (!isSolid(loopLocation.getBlock().getType())) {
                     int y = loc.getBlockY();
 
-                    for (int i = y; i > Math.max(getMinHeight(p.getWorld()), y - blocks); i--) {
+                    for (int i = y; i > Math.max(getMinHeight(loopLocation.getWorld()), y - blocks); i--) {
                         Material m = loopLocation.add(0, -1, 0).getBlock().getType();
 
                         if (areBeds(m)) {

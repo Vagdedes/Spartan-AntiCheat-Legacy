@@ -46,16 +46,16 @@ public class EnvironmentData {
             for (int dy = -2; dy <= 2; ++dy) {
                 for (int dz = -2; dz <= 2; ++dz) {
                     boolean h = Math.abs(dx) < 2 && Math.abs(dz) < 2;
-                    Material material = new ServerLocation(protocol.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3).getBlock(
+                    Material material = new ServerLocation(location.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3).getBlock(
                             protocol
                     ).getTypeOrNull();
-                    Material materialWide = new ServerLocation(protocol.getWorld(), x + (double) dx * 0.5, y + (double) (dy * 0.5) - 0.3, z + (double) dz * 0.5).getBlock(
+                    Material materialWide = new ServerLocation(location.getWorld(), x + (double) dx * 0.5, y + (double) (dy * 0.5) - 0.3, z + (double) dz * 0.5).getBlock(
                             protocol
                     ).getTypeOrNull();
-                    Material materialTop = new ServerLocation(protocol.getWorld(), x + (double) dx * 0.5, y + (double) (dy * 0.5) + 1.0, z + (double) dz * 0.5).getBlock(
+                    Material materialTop = new ServerLocation(location.getWorld(), x + (double) dx * 0.5, y + (double) (dy * 0.5) + 1.0, z + (double) dz * 0.5).getBlock(
                             protocol
                     ).getTypeOrNull();
-                    Material materialFrom = new ServerLocation(protocol.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3).getBlock(
+                    Material materialFrom = new ServerLocation(location.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3).getBlock(
                             protocol
                     ).getTypeOrNull();
 
@@ -106,7 +106,7 @@ public class EnvironmentData {
                         this.bubble = true;
                     }
                     ServerLocation bLoc = new ServerLocation(
-                            new Location(protocol.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
+                            new Location(location.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
                     );
                     ServerBlock b = bLoc.getBlock();
 
@@ -118,7 +118,7 @@ public class EnvironmentData {
                     });
 
                     if (!this.liquid) {
-                        ServerLocation widerLoc = new ServerLocation(protocol.getWorld(), x + (double) dx * 0.3, y, z + (double) dz * 0.3);
+                        ServerLocation widerLoc = new ServerLocation(location.getWorld(), x + (double) dx * 0.3, y, z + (double) dz * 0.3);
 
                         PluginBase.runTask(widerLoc, () -> {
                             if (BlockUtils.isLiquid(widerLoc.getBlock(protocol).getType())) {
@@ -152,7 +152,7 @@ public class EnvironmentData {
                     double xF = protocol.getFromLocation().getX();
                     double yF = protocol.getFromLocation().getY();
                     double zF = protocol.getFromLocation().getZ();
-                    Material materialBig = new ServerLocation(protocol.getWorld(), x + (double) dx,
+                    Material materialBig = new ServerLocation(location.getWorld(), x + (double) dx,
                             y + (double) dy, z + (double) dz).getBlock(
                             protocol
                     ).getTypeOrNull();
@@ -163,7 +163,7 @@ public class EnvironmentData {
                             || BlockUtils.areSlimeBlocks(materialBig))) {
                         protocol.slime0Tick = 3;
                     }
-                    Material materialBig2 = new ServerLocation(protocol.getWorld(),
+                    Material materialBig2 = new ServerLocation(location.getWorld(),
                             xF + (double) dx, yF + (double) dy - 1, zF + (double) dz).getBlock(
                             protocol
                     ).getTypeOrNull();
@@ -172,7 +172,7 @@ public class EnvironmentData {
                             && BlockUtils.areSlimeBlocks(materialBig2)) {
                         protocol.slime0Tick = 3;
                     }
-                    Material materialBigFrom = new ServerLocation(protocol.getWorld(),
+                    Material materialBigFrom = new ServerLocation(location.getWorld(),
                             xF + (double) dx, yF + (double) dy + 0.5, zF + (double) dz).getBlock(
                             protocol
                     ).getTypeOrNull();
@@ -194,7 +194,7 @@ public class EnvironmentData {
 
     private boolean calculateBubbleWater(PlayerProtocol protocol, ServerLocation location) {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
-            int blockY = location.getBlockY(), minY = BlockUtils.getMinHeight(protocol.getWorld());
+            int blockY = location.getBlockY(), minY = BlockUtils.getMinHeight(location.getWorld());
 
             if (blockY > minY) {
                 ServerLocation locationModified = location.clone();

@@ -377,7 +377,7 @@ public class SpeedSimulation extends CheckRunner {
         if (speedEffect != null)
             m += (double) (speedEffect.bukkitEffect.getAmplifier() + 1) * 0.2;
 
-        if (this.isOnIce(l) || this.isOnSlime() || this.isOnIce(lF) || this.isOnSlime())
+        if (this.isOnIce() || this.isOnSlime() || this.isOnIce() || this.isOnSlime())
             m *= 1.6;
 
         if (this.protocol.getNearbyEntities(2).size() > 1)
@@ -479,7 +479,7 @@ public class SpeedSimulation extends CheckRunner {
         return this.protocol.getEnvironment().isLiquid();
     }
 
-    private boolean isOnIce(Location location) {
+    private boolean isOnIce() {
         return this.protocol.getEnvironment().isIce();
     }
 
@@ -492,7 +492,7 @@ public class SpeedSimulation extends CheckRunner {
                         double y = location.getY();
                         double z = location.getZ();
                         Material material = new ServerLocation(
-                                this.protocol.getWorld(),
+                                location.getWorld(),
                                 x + (double) dx * 0.5,
                                 y + (double) dy * 0.5, z + (double) dz * 0.5
                         ).getBlock(this.protocol).getTypeOrNull();

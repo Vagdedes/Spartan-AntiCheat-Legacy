@@ -152,11 +152,12 @@ public class Velocity extends CheckRunner {
         double x = location.getX();
         double y = location.getY() + 0.1;
         double z = location.getZ();
+
         for (int dx = -1; dx <= 1; ++dx) {
             for (int dy = -1; dy <= 1; ++dy) {
                 for (int dz = -1; dz <= 1; ++dz) {
                     Material material = new ServerLocation(
-                            new Location(this.protocol.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.3, z + (double) dz * 0.3)
+                            new Location(location.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.3, z + (double) dz * 0.3)
                     ).getBlock(this.protocol).getTypeOrNull();
 
                     if (material != null &&

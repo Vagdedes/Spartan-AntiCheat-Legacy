@@ -675,7 +675,7 @@ public class GravitySimulation extends CheckRunner {
         for (int dx = -1; dx <= 1; ++dx) {
             for (int dy = -1; dy <= 0; ++dy) {
                 for (int dz = -1; dz <= 1; ++dz) {
-                    Material material = new ServerLocation(this.protocol.getWorld(), x + dx, y + dy, z + dz).getBlock(this.protocol).getTypeOrNull();
+                    Material material = new ServerLocation(location.getWorld(), x + dx, y + dy, z + dz).getBlock(this.protocol).getTypeOrNull();
                     if (material != null && material.name().contains("HONEY_BLOCK")) {
                         return true;
                     }
@@ -695,7 +695,7 @@ public class GravitySimulation extends CheckRunner {
         for (double dx = -0.3; dx <= 0.3; dx += 0.3) {
             for (double dy = 1.0; dy <= 2.0; dy += 0.5) {
                 for (double dz = -0.3; dz <= 0.3; dz += 0.3) {
-                    Material material = new ServerLocation(this.protocol.getWorld(), x + dx, y + dy, z + dz).getBlock(
+                    Material material = new ServerLocation(location.getWorld(), x + dx, y + dy, z + dz).getBlock(
                             this.protocol
                     ).getTypeOrNull();
 
@@ -718,7 +718,7 @@ public class GravitySimulation extends CheckRunner {
             for (int dy = -1; dy <= 1; dy++) {
                 for (int dz = -1; dz <= 1; dz++) {
                     Material material = new ServerLocation(
-                            this.protocol.getWorld(),
+                            location.getWorld(),
                             x + dx * 0.3,
                             y + dy * 0.3,
                             z + dz * 0.3
@@ -745,7 +745,7 @@ public class GravitySimulation extends CheckRunner {
             for (int dy = -1; dy <= 1; dy++) {
                 for (int dz = -1; dz <= 1; dz++) {
                     Material material = new ServerLocation(
-                            this.protocol.getWorld(),
+                            location.getWorld(),
                             x + dx,
                             y + dy,
                             z + dz
