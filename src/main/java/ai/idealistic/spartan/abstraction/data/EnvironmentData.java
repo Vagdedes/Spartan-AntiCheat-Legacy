@@ -194,7 +194,8 @@ public class EnvironmentData {
 
     private boolean calculateBubbleWater(PlayerProtocol protocol, ServerLocation location) {
         if (MultiVersion.isOrGreater(MultiVersion.MCVersion.V1_13)) {
-            int blockY = location.getBlockY(), minY = BlockUtils.getMinHeight(location.getWorld());
+            int blockY = location.getBlockY(),
+                    minY = BlockUtils.getMinHeight(location.getWorld());
 
             if (blockY > minY) {
                 ServerLocation locationModified = location.clone();
