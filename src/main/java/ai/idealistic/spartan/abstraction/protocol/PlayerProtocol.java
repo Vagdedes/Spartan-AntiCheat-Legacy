@@ -911,7 +911,7 @@ public class PlayerProtocol {
 
     public boolean isOutsideOfTheBorder(double deviation) {
         Location loc = this.getLocation();
-        WorldBorder border = this.getWorld().getWorldBorder();
+        WorldBorder border = loc.getWorld().getWorldBorder();
         double size = (border.getSize() / 2.0) + deviation;
         Location center = border.getCenter();
         return Math.abs(loc.getX() - center.getX()) > size

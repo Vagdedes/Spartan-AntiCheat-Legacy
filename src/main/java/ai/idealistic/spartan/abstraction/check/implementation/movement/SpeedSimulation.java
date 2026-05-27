@@ -520,7 +520,7 @@ public class SpeedSimulation extends CheckRunner {
         for (int dx = -2; dx <= 2; ++dx) {
             for (double dy = 1.0; dy <= 2.0; dy += 0.5) {
                 for (int dz = -2; dz <= 2; ++dz) {
-                    Material material = new ServerLocation(this.protocol.getWorld(), x + (double) dx * 0.5, y + dy, z + (double) dz * 0.5).getBlock(
+                    Material material = new ServerLocation(location.getWorld(), x + (double) dx * 0.5, y + dy, z + (double) dz * 0.5).getBlock(
                             protocol
                     ).getTypeOrNull();
 
