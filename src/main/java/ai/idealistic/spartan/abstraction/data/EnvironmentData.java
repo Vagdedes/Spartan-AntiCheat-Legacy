@@ -4,6 +4,7 @@ import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.spartan.abstraction.world.ServerBlock;
 import ai.idealistic.spartan.abstraction.world.ServerLocation;
 import ai.idealistic.spartan.functionality.server.MultiVersion;
+import ai.idealistic.spartan.functionality.server.PluginBase;
 import ai.idealistic.spartan.utils.math.AlgebraUtils;
 import ai.idealistic.spartan.utils.minecraft.inventory.MaterialUtils;
 import ai.idealistic.spartan.utils.minecraft.world.BlockUtils;
@@ -58,10 +59,6 @@ public class EnvironmentData {
                             protocol
                     ).getTypeOrNull();
 
-                    ServerBlock b = new ServerLocation(
-                            new Location(protocol.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
-                    ).getBlock();
-
                     if (material != null
                             && (BlockUtils.areHoneyBlocks(material)
                             || BlockUtils.areBeds(material)
@@ -108,12 +105,30 @@ public class EnvironmentData {
                             && material.equals(Material.BUBBLE_COLUMN)) {
                         this.bubble = true;
                     }
-                    if (b.isLiquidOrWaterLogged(true)
-                            || BlockUtils.isLiquid(new ServerLocation(protocol.getWorld(), x + (double) dx * 0.3, y, z + (double) dz * 0.3).getBlock(
-                            protocol
-                    ).getType())
-                            || material != null && BlockUtils.isLiquid(material)
-                            || b.isWaterLogged()) {
+                    ServerLocation bLoc = new ServerLocation(
+                            new Location(protocol.getWorld(), x + (double) dx * 0.3, y + (double) dy * 0.5, z + (double) dz * 0.3)
+                    );
+                    ServerBlock b = bLoc.getBlock();
+
+                    PluginBase.runTask(bLoc, () -> {
+                        if (b.isLiquidOrWaterLogged(true)
+                                || b.isWaterLogged()) {
+                            this.liquid = true;
+                        }
+                    });
+
+                    if (!this.liquid) {
+                        ServerLocation widerLoc = new ServerLocation(protocol.getWorld(), x + (double) dx * 0.3, y, z + (double) dz * 0.3);
+
+                        PluginBase.runTask(widerLoc, () -> {
+                            if (BlockUtils.isLiquid(widerLoc.getBlock(protocol).getType())) {
+                                this.liquid = true;
+                            }
+                        });
+                    }
+                    if (!this.liquid
+                            && material != null
+                            && BlockUtils.isLiquid(material)) {
                         this.liquid = true;
 
                         for (double i = 0.0; i < Math.ceil(protocol.getEyeHeight()); i++) {

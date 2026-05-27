@@ -4,6 +4,7 @@ import ai.idealistic.spartan.Register;
 import ai.idealistic.spartan.abstraction.inventory.InventoryMenu;
 import ai.idealistic.spartan.abstraction.inventory.implementation.*;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
+import ai.idealistic.spartan.abstraction.world.ServerLocation;
 import ai.idealistic.spartan.compatibility.Compatibility;
 import ai.idealistic.spartan.compatibility.necessary.protocollib.ProtocolLib;
 import ai.idealistic.spartan.functionality.concurrent.GeneralThread;
@@ -218,6 +219,10 @@ public class PluginBase {
 
     public static void runTask(World world, int x, int z, Runnable runnable) {
         ServerSchedulers.run(world, x, z, runnable, false);
+    }
+
+    public static void runTask(ServerLocation location, Runnable runnable) {
+        ServerSchedulers.run(location.getWorld(), location.getChunkX(), location.getChunkZ(), runnable, false);
     }
 
     public static void runTask(Block block, Runnable runnable) {

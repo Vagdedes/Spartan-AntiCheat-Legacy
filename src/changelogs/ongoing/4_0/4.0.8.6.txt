@@ -1,1 +1,2 @@
 [#] Improved the plugin's RAM usage when certain checks/detections are disabled
+[#] Improved certain code to be more compatible with Folia servers
