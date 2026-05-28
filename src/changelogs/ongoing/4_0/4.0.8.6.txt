@@ -1,3 +1,4 @@
 [#] Improved the plugin's RAM usage when certain checks/detections are disabled
 [#] Improved certain code to be more compatible with Folia servers
 [#] Decreased the amount of potential world errors
+[#] Reworked the gravity simulation check to deal better with water to solid transitions
