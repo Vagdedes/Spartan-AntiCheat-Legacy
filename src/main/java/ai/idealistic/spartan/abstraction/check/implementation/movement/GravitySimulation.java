@@ -46,7 +46,7 @@ public class GravitySimulation extends CheckRunner {
             allowMinorGravityChange = false, allowLowMinorAccel = false;
     private int slimePunch = 0, slimeTicks = 0, pistonTicks = 0, sub = 0;
     private double vl = 0.0, vlCount = 0.0;
-    private double microGlideVl = 0.0; // EXTENSION: New buffer to catch 0.008 micro-glides
+    private double microGlideVl = 0.0;
     private int semi = 0;
     private double fallDistance = 0.0;
     private double lastGroundY = 0;
@@ -188,7 +188,6 @@ public class GravitySimulation extends CheckRunner {
                 boolean isOnWater = this.isOnWater();
                 double pr2;
 
-                // EXTENSION: Patched Honey Block gravity desyncs
                 if (this.isOnSlime() || this.isOnHoney(to)) this.allowMinorGravityChange = true;
 
                 if (ground) {
@@ -209,11 +208,18 @@ public class GravitySimulation extends CheckRunner {
                         pr2 = this.motionY -= gravity;
                         pr2 *= 0.9800000190734863;
                         this.setPredict(0.0);
+
                         if (motion > pr2 && motion < 0.0) {
                             this.setPredict(motion);
                         } else if (cringeBlockClimb && motion < 0.5) {
                             this.setPredict(motion);
                         }
+                        // EXTENSION: The Edge-Landing Fix.
+                        // Safely absorbs gravity desyncs when a player lands on a block mid-jump (positive motion).
+                        else if (motion > 0.0 && motion <= pr2 + 0.001) {
+                            this.setPredict(motion);
+                        }
+
                         if (this.isOnSlime()) {
                             this.slime = true;
                         }
@@ -461,7 +467,6 @@ public class GravitySimulation extends CheckRunner {
 
                 double devTotal = this.abs(this.abs(motion) - this.abs(this.predictY()));
 
-                // EXTENSION: Patched the Micro-Glide bypass
                 if (devTotal > 0.002 && devTotal <= 0.009 && this.protocol.getVehicle() == null) {
                     if (++this.microGlideVl > 12) {
                         this.detection.cancel(
@@ -666,7 +671,6 @@ public class GravitySimulation extends CheckRunner {
         return this.protocol.getEnvironment().isSlimeHeight();
     }
 
-    // EXTENSION: Check for Honey Blocks specifically since they alter gravity
     private boolean isOnHoney(Location location) {
         double x = location.getX();
         double y = location.getY();
@@ -685,13 +689,11 @@ public class GravitySimulation extends CheckRunner {
         return false;
     }
 
-    // EXTENSION: Fixed the Stair-Stepping False Positive by shrinking the ceiling radius
     private boolean isBlocksOnTop(Location location) {
         double x = location.getX();
         double y = location.getY() - 0.1;
         double z = location.getZ();
 
-        // Shrunk from a 5x5 grid (dx=-2 to 2) to a tightly fitted 2x2 mask
         for (double dx = -0.3; dx <= 0.3; dx += 0.3) {
             for (double dy = 1.0; dy <= 2.0; dy += 0.5) {
                 for (double dz = -0.3; dz <= 0.3; dz += 0.3) {
