@@ -111,7 +111,7 @@ public class PluginBase {
     }
 
     public static PlayerProtocol getProtocol(Player player, boolean updateLastInteraction) {
-        if (ProtocolLib.isTemporary(player)) {
+        if (ProtocolLib.isTemporary(player) || !player.isOnline()) { // if the player is "offline" 100% NPC / fake player
             return new PlayerProtocol(player);
         } else {
             PlayerProtocol protocol = playerProtocol.get(player.getUniqueId());
