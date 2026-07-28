@@ -30,7 +30,6 @@ public class PluginBase {
             dataThread = new GeneralThread.ThreadPool(1L);
 
     public static final PlayerInfo playerInfo = new PlayerInfo();
-    public static final PluginChargeMenu chargeMenu = new PluginChargeMenu();
     public static final DetailsMenu detailsMenu = new DetailsMenu();
     public static final EditionMenu editionMenu = new EditionMenu();
     public static final PreventionsMenu preventionsMenu = new PreventionsMenu();
@@ -43,7 +42,6 @@ public class PluginBase {
     public static final SubCommandsMenu subCommandsMenu = new SubCommandsMenu();
     public static final InventoryMenu[] menus = new InventoryMenu[]{
             playerInfo,
-            chargeMenu,
             detailsMenu,
             editionMenu,
             preventionsMenu,

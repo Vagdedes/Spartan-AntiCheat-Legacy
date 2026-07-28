@@ -331,26 +331,6 @@ public class CommandExecution implements CommandExecutor {
             } else if (args.length == 1) {
                 if (isPlayer && args[0].equalsIgnoreCase("Syn")) {
                     PluginBase.synMenu.open(protocol);
-                } else if (args[0].equalsIgnoreCase("Charge")) {
-                    if (isPlayer && !Permissions.isStaff(protocol.bukkit())) {
-                        ClickableMessage.sendURL(
-                                sender,
-                                Config.messages.getColorfulString("no_permission"),
-                                support,
-                                DiscordServer.url
-                        );
-                        return true;
-                    }
-                    if (Register.isFreeEdition()) {
-                        PluginBase.chargeMenu.open(protocol);
-                    } else {
-                        ClickableMessage.sendURL(
-                                sender,
-                                "You have the premium edition/s of the " + Register.pluginName + " anti-cheat.",
-                                support,
-                                DiscordServer.url
-                        );
-                    }
 
                 } else if (args[0].equalsIgnoreCase("Panic")) {
                     if (isPlayer && !Permissions.has(protocol.bukkit(), Permission.MANAGE)) {
