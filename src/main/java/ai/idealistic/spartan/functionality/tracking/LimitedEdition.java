@@ -8,7 +8,7 @@ import ai.idealistic.spartan.functionality.server.PluginBase;
 
 public class LimitedEdition {
 
-    private static final int playerLimit = 10;
+    private static final int playerLimit = 5;
     public static final String message = "Detections are disabled after "
             + playerLimit + " online players on free/limited edition.";
 
