@@ -27,7 +27,10 @@ import com.comphenix.protocol.events.PacketEvent;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Vehicle;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.vehicle.VehicleEnterEvent;
@@ -219,7 +222,7 @@ public class SpeedSimulation extends CheckRunner {
                                                         ACCELERATION_BASIC : ACCELERATION_SPRINT) * this.multiplex();
                         boolean nearbyEntities = false;
                         for (Entity entity : this.protocol.getNearbyEntities(2.4)) {
-                            if (entity.getUniqueId() != this.protocol.getUUID()) {
+                            if (!entity.getUniqueId().equals(this.protocol.getUUID())) {
                                 nearbyEntities = true;
                                 break;
                             }
@@ -380,7 +383,7 @@ public class SpeedSimulation extends CheckRunner {
         if (this.isOnIce() || this.isOnSlime() || this.isOnIce() || this.isOnSlime())
             m *= 1.6;
 
-        if (this.protocol.getNearbyEntities(2).size() > 1)
+        if (this.countPushingEntities(2) > 1)
             m *= 1.4;
 
         if (BlockUtils.areWebs(new ServerLocation(this.protocol.getLocation()).getBlock(this.protocol).getType())) {
@@ -408,6 +411,19 @@ public class SpeedSimulation extends CheckRunner {
 
         m *= (this.protocol.bukkit().getWalkSpeed() * 5);
         return m;
+    }
+
+    // Only entities that can collide with the player may grant a speed allowance (not items, orbs or projectiles)
+    private int countPushingEntities(double radius) {
+        int count = 0;
+
+        for (Entity entity : this.protocol.getNearbyEntities(radius)) {
+            if (entity instanceof Vehicle
+                    || entity instanceof LivingEntity && !(entity instanceof ArmorStand)) {
+                count++;
+            }
+        }
+        return count;
     }
 
     private static double getDeviance(double a, double b) {

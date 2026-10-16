@@ -50,11 +50,9 @@ public class XRay extends CheckRunner {
             }
             double stdDev = Math.sqrt(variance / (double) profileCount);
 
-            if (profileCount >= factorRequirement) {
-                return new double[]{
-                        mean / (double) profileCount,
-                        Math.sqrt(stdDev / (double) profileCount)
-                };
+            if (profileCount >= factorRequirement
+                    && stdDev > 0.0) {
+                return new double[]{mean, stdDev};
             } else {
                 return new double[]{};
             }

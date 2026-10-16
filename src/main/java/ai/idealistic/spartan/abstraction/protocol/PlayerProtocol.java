@@ -431,8 +431,9 @@ public class PlayerProtocol {
 
     public ServerLocation getPastTickRotation() {
         Location l = this.getLocation().clone();
-        l.setYaw(this.from.getYaw());
-        l.setPitch(this.from.getPitch());
+        Location from = this.getFromLocation(); // The from location is null until the first movement
+        l.setYaw(from.getYaw());
+        l.setPitch(from.getPitch());
         return new ServerLocation(l);
     }
 

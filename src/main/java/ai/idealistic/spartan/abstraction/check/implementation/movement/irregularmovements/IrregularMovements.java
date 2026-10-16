@@ -45,7 +45,7 @@ public class IrregularMovements extends CheckRunner {
             elytra.handleVelocity();
         } else if (PlayerUtils.elytra
                 && object instanceof EntityToggleGlideEvent) {
-            elytra.runExploit();
+            elytra.runExploit(((EntityToggleGlideEvent) object).isGliding());
         } else if (PluginBase.packetsEnabled()
                 && object instanceof PacketEvent) {
             PacketType eventType = ((PacketEvent) object).getPacketType();

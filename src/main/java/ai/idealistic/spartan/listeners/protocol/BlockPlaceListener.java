@@ -65,7 +65,12 @@ public class BlockPlaceListener extends PacketAdapter {
                         blockPosition = BlockPositionPlib.getSafeBlockPosition(packet, 0);
                         if (packet.getDirections().size() == 0) {
                             int directionInt = BackPlib.getSafeInt(packet, 0);
-                            direction = EnumWrappers.Direction.values()[directionInt];
+                            EnumWrappers.Direction[] directions = EnumWrappers.Direction.values();
+
+                            if (directionInt < 0 || directionInt >= directions.length) {
+                                return; // Legacy packets use 255 when no face was clicked
+                            }
+                            direction = directions[directionInt];
                         } else {
                             direction = DirectionPlib.getSafeDirection(packet, 0);
                         }
@@ -92,7 +97,7 @@ public class BlockPlaceListener extends PacketAdapter {
                     if (itemInHand.getType().isBlock()) {
                         if (!isInPlayer(protocol.getLocation(), block.getLocation())) {
                             Block blockAgainst = ChunksEvent.getBlockAsync(player.getLocation());
-                            Location blockLoc = new Location(world, blockPosition.getX(), blockPosition.getY(), blockPosition.getY());
+                            Location blockLoc = new Location(world, blockPosition.getX(), blockPosition.getY(), blockPosition.getZ());
                             if (!BlockUtils.isSurroundedByAir(protocol, blockLoc)
                                     || !BlockUtils.isSurroundedByAir(protocol, blockLoc.clone().add(0, 1, 0))) {
                                 Material material = itemInHand.getType();

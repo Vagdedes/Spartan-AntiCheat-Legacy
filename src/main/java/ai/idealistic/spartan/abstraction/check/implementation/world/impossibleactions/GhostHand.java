@@ -34,7 +34,8 @@ public class GhostHand extends CheckDetection {
 
     void breaking(BlockBreakEvent event) {
         this.breaking.call(() -> {
-            if (!Compatibility.CompatibilityType.ADVANCED_ENCHANTMENTS.isFunctional()) {
+            if (!Compatibility.CompatibilityType.ADVANCED_ENCHANTMENTS.isFunctional()
+                    && this.canRun()) {
                 Block b = event.getBlock();
 
                 PluginBase.runTask(b, () -> {
@@ -80,7 +81,8 @@ public class GhostHand extends CheckDetection {
 
     void interact(PlayerInteractEvent event) {
         this.interact.call(() -> {
-            if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+            if (event.getAction() == Action.RIGHT_CLICK_BLOCK
+                    && this.canRun()) {
                 Block b = event.getClickedBlock();
 
                 if (b != null) {

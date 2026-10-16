@@ -37,7 +37,7 @@ public class Velocity extends CheckRunner {
     private final double[] jumpReset = new double[]{0.248136, 0.3332};
 
     private float vl = 0;
-    private double mostCloseYMotion = 1.0;
+    private double mostCloseYMotion = 1.0, mostCloseYDifference = Double.MAX_VALUE;
     private int moveTicks = 0; // Decoupled from transactions
     private Vector velocity = null;
 
@@ -60,6 +60,7 @@ public class Velocity extends CheckRunner {
             if (allClear) {
                 this.velocity = event.getVelocity();
                 this.mostCloseYMotion = 1.0;
+                this.mostCloseYDifference = Double.MAX_VALUE;
                 this.moveTicks = 0; // Reset raw tick counter
             }
 
@@ -80,7 +81,10 @@ public class Velocity extends CheckRunner {
                     double absY = abs(y);
                     double absVeloY = abs(velocity.getY());
 
-                    if (abs(absY - absVeloY) < mostCloseYMotion) {
+                    double yDifference = abs(absY - absVeloY);
+
+                    if (yDifference < mostCloseYDifference) {
+                        mostCloseYDifference = yDifference;
                         mostCloseYMotion = y;
                     }
 

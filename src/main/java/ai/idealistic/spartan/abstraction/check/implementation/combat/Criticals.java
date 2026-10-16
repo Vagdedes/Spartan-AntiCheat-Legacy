@@ -42,7 +42,7 @@ public class Criticals extends CheckRunner {
 
                         boolean isGroundToAir = !this.protocol.isOnGround() && this.protocol.isOnGroundFrom();
                         boolean hasCeiling = RayUtils.onSolidBlock(this.protocol, this.protocol.getLocation().clone().add(0, 2, 0)) ||
-                                new ServerLocation(this.protocol.getLocation()).getBlock(this.protocol).getType().isBlock();
+                                BlockUtils.isSolid(new ServerLocation(this.protocol.getLocation()).getBlock(this.protocol).getType());
 
                         if (!hasCeiling) {
                             // Detection 1: The "Zero-Y" Spoof

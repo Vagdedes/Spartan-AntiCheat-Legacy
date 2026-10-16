@@ -206,7 +206,10 @@ public class HitReach extends CheckRunner {
                             if (++hitBoxVL > 3D
                                     && !this.protocol.isBedrockPlayer()) {
                                 this.hitboxRaytrace.cancel("Missing HitBox of " + target.bukkit().getName());
-                                event.setCancelled(true);
+
+                                if (this.hitboxRaytrace.prevent()) {
+                                    event.setCancelled(true);
+                                }
                             }
                         } else {
                             hitBoxVL = Math.max(hitBoxVL - 5D, 0);
@@ -217,10 +220,13 @@ public class HitReach extends CheckRunner {
                             flagged = true;
                             if (reachVl++ > 2.5D) {
                                 hitboxRaytrace.cancel("Distance " + RayUtils.scaleVal(minDistance.get(), 3) + " (Max: " + RayUtils.scaleVal(dynamicReach, 3) + ")");
-                                event.setCancelled(true);
+
+                                if (hitboxRaytrace.prevent()) {
+                                    event.setCancelled(true);
+                                }
                             }
                         } else if (minDistance.get() < dynamicReach && reachVl > 0) {
-                            reachVl -= 0.05;
+                            reachVl -= 0.25;
                         }
 
                         {
@@ -231,7 +237,10 @@ public class HitReach extends CheckRunner {
                                 blocksVl++;
                                 throughblocks.cancel("Hitting through block (dev: "
                                         + RayUtils.scaleVal(Math.abs(dev), 6) + ")");
-                                event.setCancelled(true);
+
+                                if (throughblocks.prevent()) {
+                                    event.setCancelled(true);
+                                }
                             } else if (blocksVl > 0) {
                                 blocksVl -= 0.5;
                             }

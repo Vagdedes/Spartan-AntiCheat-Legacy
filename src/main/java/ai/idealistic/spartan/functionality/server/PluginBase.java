@@ -116,7 +116,12 @@ public class PluginBase {
 
             if (protocol == null) {
                 protocol = new PlayerProtocol(player);
-                playerProtocol.put(player.getUniqueId(), protocol);
+                PlayerProtocol existing = playerProtocol.putIfAbsent(player.getUniqueId(), protocol);
+
+                if (existing != null) { // Another thread registered the player first
+                    protocol = existing;
+                    protocol.updateBukkit(player);
+                }
             } else {
                 protocol.updateBukkit(player);
             }

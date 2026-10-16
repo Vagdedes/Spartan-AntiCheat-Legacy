@@ -1,2 +1,18 @@
 [#] Fixed support for Minecraft 26.3
 [#] Spartan is now DRM-Free
+[#] Fixed Criticals never detecting due to an always-true ceiling check
+[#] Improved the adaptive false-positive limits so widespread detections raise thresholds while a single player cannot skew them
+[#] Fixed GhostHand ignoring its exemptions (flying, mcMMO, printer mode, gamemode and reach attributes)
+[#] Fixed XRay comparing players against an incorrectly scaled average and deviation
+[#] Fixed Velocity tracking the closest vertical motion incorrectly
+[#] HitReach now only cancels attacks when prevention applies and recovers faster from isolated flags
+[#] Fixed IrregularMovements flagging players whose elytra gliding legitimately stopped (swapping the elytra, it breaking or entering a vehicle)
+[#] Speed no longer grants its nearby-entity allowance for items, experience orbs and projectiles
+[#] Fixed rotation deltas being miscalculated when the view crosses the horizon or the yaw wraps, which affected every aim check
+[#] Fixed violation history losing or overwriting entries, and never being sorted, when stored in internal lists
+[#] Fixed database queries freezing their thread forever when the database is unreachable, and logs breaking on apostrophes
+[#] Fixed background worker threads dying permanently after a single task error, and scheduled tasks being cancelled after one error
+[#] Fixed the z coordinate being read as the y coordinate when analysing block placement
+[#] Fixed configuration values written as whole numbers crashing check loading
+[#] Fixed the bypass command throwing on non-numeric seconds and the wave command looking up players before verifying permission
+[#] Fixed the maximum of all-negative values being reported as zero, and duplicated player profiles under concurrent joins

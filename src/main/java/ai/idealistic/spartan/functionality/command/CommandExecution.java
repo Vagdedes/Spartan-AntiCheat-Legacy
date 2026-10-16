@@ -845,6 +845,10 @@ public class CommandExecution implements CommandExecutor {
                                     }
                                 }
                                 if (!found.isEmpty()) {
+                                    if (!noSeconds && !AlgebraUtils.validInteger(sec)) {
+                                        sender.sendMessage(ChatColor.RED + "Seconds must be between 1 and 3600.");
+                                        return true;
+                                    }
                                     for (CheckEnums.HackType hackType : found) {
                                         int seconds = noSeconds ? 0 : Integer.parseInt(sec);
 
@@ -874,7 +878,6 @@ public class CommandExecution implements CommandExecutor {
                             }
                         } else if (args[0].equalsIgnoreCase("Wave")) {
                             String command = args[1];
-                            OfflinePlayer t = Bukkit.getOfflinePlayer(args[2]);
 
                             if (isPlayer && !Permissions.has(protocol.bukkit(), Permission.WAVE)) {
                                 ClickableMessage.sendURL(
@@ -885,6 +888,7 @@ public class CommandExecution implements CommandExecutor {
                                 );
                                 return true;
                             }
+                            OfflinePlayer t = Bukkit.getOfflinePlayer(args[2]); // Blocking lookup, so only after permission is verified
                             if (command.equalsIgnoreCase("add") && args.length >= 4) {
                                 if (Wave.getWaveList().length >= 100) {
                                     ClickableMessage.sendURL(

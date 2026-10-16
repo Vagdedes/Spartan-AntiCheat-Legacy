@@ -79,8 +79,22 @@ public class IMSimulationElytra extends CheckDetection {
         }
     }
 
-    void runExploit() {
+    void runExploit(boolean gliding) {
         this.call(() -> {
+            if (!gliding) {
+                // Gliding legitimately stops when the elytra is swapped, breaks or a vehicle is entered,
+                // so only the toggle frequency is validated
+                if (this.buffer.count(1, 20) >= 15) {
+                    cancel(
+                            "elytra(glide-spam)",
+                            this.protocol.getFromLocation(),
+                            0,
+                            true
+                    );
+                }
+                return;
+            }
+
             if (protocol.getVehicle() == null) {
                 PlayerInventory inventory = protocol.getInventory();
                 ItemStack i = inventory.getChestplate();
