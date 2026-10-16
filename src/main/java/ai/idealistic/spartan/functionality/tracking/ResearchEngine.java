@@ -9,7 +9,6 @@ import ai.idealistic.spartan.abstraction.profiling.MiningHistory;
 import ai.idealistic.spartan.abstraction.profiling.PlayerProfile;
 import ai.idealistic.spartan.abstraction.protocol.PlayerProtocol;
 import ai.idealistic.spartan.functionality.concurrent.GeneralThread;
-import ai.idealistic.spartan.functionality.connection.CloudBase;
 import ai.idealistic.spartan.functionality.server.Config;
 import ai.idealistic.spartan.functionality.server.PluginBase;
 import ai.idealistic.spartan.utils.java.ConcurrentList;
@@ -346,7 +345,6 @@ public class ResearchEngine {
 
             if (enabledPlugin) {
                 buildCache();
-                CloudBase.refresh();
             }
         };
 
