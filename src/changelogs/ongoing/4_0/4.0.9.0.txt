@@ -1,7 +1,7 @@
 [#] Fixed support for Minecraft 26.3
 [#] Spartan is now DRM-Free
 [#] Fixed Criticals never detecting due to an always-true ceiling check
-[#] Improved the adaptive false-positive limits so widespread detections raise thresholds while a single player cannot skew them
+[#] Improved the adaptive false-positive limits so widespread detections become stricter while a single player cannot lower their own baseline
 [#] Fixed GhostHand ignoring its exemptions (flying, mcMMO, printer mode, gamemode and reach attributes)
 [#] Fixed XRay comparing players against an incorrectly scaled average and deviation
 [#] Fixed Velocity tracking the closest vertical motion incorrectly
